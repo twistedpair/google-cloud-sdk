@@ -14,7 +14,7 @@
 """Defines tool-wide constants."""
 
 # Defaults for instance creation.
-DEFAULT_MACHINE_TYPE = 'D1'
+DEFAULT_MACHINE_TYPE = 'db-n1-standard-1'
 
 # Determining what executables and flags to use for sql connect.
 DB_EXE = {'MYSQL': 'mysql', 'POSTGRES': 'psql'}

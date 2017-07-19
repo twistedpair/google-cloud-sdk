@@ -12,16 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """High-level client for interacting with the Cloud Build API."""
-from googlecloudsdk.api_lib.app import operations_util
+
+import json
+import time
+
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
+from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
+_ERROR_FORMAT_STRING = (u'{status_code? [{?}]}{status_message? {?}}{url?\n{?}}'
+                        '{details?\n\nDetails?COLON?\n{?}}')
+
 
 class BuildFailedError(exceptions.Error):
   """Raised when a Google Cloud Builder build fails."""
+
+
+class OperationTimeoutError(exceptions.Error):
+  """Raised when an operation times out."""
+  pass
+
+
+class OperationError(exceptions.Error):
+  """Raised when an operation contains an error."""
+  pass
 
 
 class CloudBuildClient(object):
@@ -96,28 +114,73 @@ class CloudBuildClient(object):
       else:
         log.status.Print('Logs can be found in the Cloud Console.')
         log_loc = 'in the Cloud Console.'
-      op = operations_util.WaitForOperation(
-          operation_service=self.client.operations,
-          operation=build_op,
-          retry_interval=self._RETRY_INTERVAL,
-          max_retries=self._MAX_RETRIES,
-          retry_callback=log_tailer.Poll)
+      op = self.WaitForOperation(operation=build_op,
+                                 retry_callback=log_tailer.Poll)
       # Poll the logs one final time to ensure we have everything. We know this
       # final poll will get the full log contents because GCS is strongly
       # consistent and Container Builder waits for logs to finish pushing before
       # marking the build complete.
       log_tailer.Poll(is_last=True)
     else:
-      op = operations_util.WaitForOperation(
-          operation_service=self.client.operations,
-          operation=build_op,
-          retry_interval=self._RETRY_INTERVAL,
-          max_retries=self._MAX_RETRIES)
+      op = self.WaitForOperation(operation=build_op)
 
     final_status = _GetStatusFromOp(op)
     if final_status != self.CLOUDBUILD_SUCCESS:
       raise BuildFailedError('Cloud build failed with status '
                              + final_status + '. Check logs ' + log_loc)
+
+  def WaitForOperation(self, operation, retry_callback=None):
+    """Wait until the operation is complete or times out.
+
+    This does not use the core api_lib.util.waiter because the cloud build logs
+    serve as a progress tracker.
+
+    Args:
+      operation: The operation resource to wait on
+      retry_callback: A callback to be executed before each retry, if desired.
+    Returns:
+      The operation resource when it has completed
+    Raises:
+      OperationTimeoutError: when the operation polling times out
+      OperationError: when the operation completed with an error
+    """
+
+    completed_operation = self._PollUntilDone(operation, retry_callback)
+    if not completed_operation:
+      raise OperationTimeoutError(('Operation [{0}] timed out. This operation '
+                                   'may still be underway.').format(
+                                       operation.name))
+
+    if completed_operation.error:
+      message = exceptions.HttpErrorPayload(completed_operation.error).format(
+          _ERROR_FORMAT_STRING)
+
+      raise OperationError(message)
+
+    return completed_operation
+
+  def _PollUntilDone(self, operation, retry_callback):
+    """Polls the operation resource until it is complete or times out."""
+    if operation.done:
+      return operation
+
+    request_type = self.client.operations.GetRequestType('Get')
+    request = request_type(name=operation.name)
+
+    for _ in xrange(self._MAX_RETRIES):
+      operation = self.client.operations.Get(request)
+      if operation.done:
+        log.debug('Operation [{0}] complete. Result: {1}'.format(
+            operation.name,
+            json.dumps(encoding.MessageToDict(operation), indent=4)))
+        return operation
+      log.debug('Operation [{0}] not complete. Waiting {1}s.'.format(
+          operation.name, self._RETRY_INTERVAL))
+      time.sleep(self._RETRY_INTERVAL)
+      if retry_callback is not None:
+        retry_callback()
+
+    return None
 
 
 def _GetStatusFromOp(op):

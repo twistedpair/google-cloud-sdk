@@ -666,7 +666,7 @@
       "type": "object",
       "properties": {
         "breakpoint": {
-          "description": "Updated breakpoint information.\nThe field 'id' must be set.",
+          "description": "Updated breakpoint information.\nThe field `id` must be set.",
           "$ref": "Breakpoint"
         }
       }
@@ -713,7 +713,7 @@
       "type": "object",
       "properties": {
         "breakpoints": {
-          "description": "List of breakpoints matching the request.\nThe fields `id` and `location` are guaranteed to be set on each breakpoint.\nThe fields: `stack_frames`, `evaluated_expressions` and `variable_table`\nare cleared on each breakpoint regardless of it's status.",
+          "description": "List of breakpoints matching the request.\nThe fields `id` and `location` are guaranteed to be set on each breakpoint.\nThe fields: `stack_frames`, `evaluated_expressions` and `variable_table`\nare cleared on each breakpoint regardless of its status.",
           "type": "array",
           "items": {
             "$ref": "Breakpoint"
@@ -776,7 +776,7 @@
                   "path": "v2/controller/debuggees/{debuggeeId}/breakpoints",
                   "flatPath": "v2/controller/debuggees/{debuggeeId}/breakpoints",
                   "httpMethod": "GET",
-                  "description": "Returns the list of all active breakpoints for the debuggee.\n\nThe breakpoint specification (location, condition, and expression\nfields) is semantically immutable, although the field values may\nchange. For example, an agent may update the location line number\nto reflect the actual line where the breakpoint was set, but this\ndoesn't change the breakpoint semantics.\n\nThis means that an agent does not need to check if a breakpoint has changed\nwhen it encounters the same breakpoint on a successive call.\nMoreover, an agent should remember the breakpoints that are completed\nuntil the controller removes them from the active list to avoid\nsetting those breakpoints again.",
+                  "description": "Returns the list of all active breakpoints for the debuggee.\n\nThe breakpoint specification (`location`, `condition`, and `expressions`\nfields) is semantically immutable, although the field values may\nchange. For example, an agent may update the location line number\nto reflect the actual line where the breakpoint was set, but this\ndoesn't change the breakpoint semantics.\n\nThis means that an agent does not need to check if a breakpoint has changed\nwhen it encounters the same breakpoint on a successive call.\nMoreover, an agent should remember the breakpoints that are completed\nuntil the controller removes them from the active list to avoid\nsetting those breakpoints again.",
                   "parameters": {
                     "debuggeeId": {
                       "description": "Identifies the debuggee.",
@@ -811,7 +811,7 @@
                   "path": "v2/controller/debuggees/{debuggeeId}/breakpoints/{id}",
                   "flatPath": "v2/controller/debuggees/{debuggeeId}/breakpoints/{id}",
                   "httpMethod": "PUT",
-                  "description": "Updates the breakpoint state or mutable fields.\nThe entire Breakpoint message must be sent back to the controller\nservice.\n\nUpdates to active breakpoint fields are only allowed if the new value\ndoes not change the breakpoint specification. Updates to the `location`,\n`condition` and `expression` fields should not alter the breakpoint\nsemantics. These may only make changes such as canonicalizing a value\nor snapping the location to the correct line of code.",
+                  "description": "Updates the breakpoint state or mutable fields.\nThe entire Breakpoint message must be sent back to the controller\nservice.\n\nUpdates to active breakpoint fields are only allowed if the new value\ndoes not change the breakpoint specification. Updates to the `location`,\n`condition` and `expressions` fields should not alter the breakpoint\nsemantics. These may only make changes such as canonicalizing a value\nor snapping the location to the correct line of code.",
                   "parameters": {
                     "debuggeeId": {
                       "description": "Identifies the debuggee being debugged.",

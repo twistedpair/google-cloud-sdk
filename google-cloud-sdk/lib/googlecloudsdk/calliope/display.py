@@ -436,7 +436,7 @@ class Displayer(object):
     self._InitPrinter()
     if self._printer:
       for col in self._printer.column_attributes.Columns():
-        keys.add(resource_lex.GetKeyName(col.key))
+        keys.add(resource_lex.GetKeyName(col.key, omit_indices=True))
 
     # Add the filter key references.
     filter_expression = self._GetFilter()
@@ -445,7 +445,7 @@ class Displayer(object):
                                      defaults=self._defaults,
                                      backend=resource_keys_expr.Backend())
       for key in expr.Evaluate(None):
-        keys.add(resource_lex.GetKeyName(key))
+        keys.add(resource_lex.GetKeyName(key, omit_indices=True))
 
     return keys
 

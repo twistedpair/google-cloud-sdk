@@ -279,6 +279,8 @@ class Address(_messages.Message):
   """A reserved address resource.
 
   Enums:
+    AddressTypeValueValuesEnum: The type of address to reserve. If
+      unspecified, defaults to EXTERNAL.
     IpVersionValueValuesEnum: The IP Version that will be used by this
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
@@ -294,6 +296,8 @@ class Address(_messages.Message):
 
   Fields:
     address: The static external IP address represented by this resource.
+    addressType: The type of address to reserve. If unspecified, defaults to
+      EXTERNAL.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -328,9 +332,24 @@ class Address(_messages.Message):
       IN_USE or RESERVED. An address that is RESERVED is currently reserved
       and available to use. An IN_USE address is currently being used by
       another resource and is not available.
+    subnetwork: For external addresses, this field should not be used.  The
+      URL of the subnetwork in which to reserve the address. If an IP address
+      is specified, it must be within the subnetwork's IP range.
     users: [Output Only] The URLs of the resources that are using this
       address.
   """
+
+  class AddressTypeValueValuesEnum(_messages.Enum):
+    """The type of address to reserve. If unspecified, defaults to EXTERNAL.
+
+    Values:
+      EXTERNAL: <no description>
+      INTERNAL: <no description>
+      UNSPECIFIED_TYPE: <no description>
+    """
+    EXTERNAL = 0
+    INTERNAL = 1
+    UNSPECIFIED_TYPE = 2
 
   class IpVersionValueValuesEnum(_messages.Enum):
     """The IP Version that will be used by this address. Valid options are
@@ -385,18 +404,20 @@ class Address(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   address = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 5)
-  kind = _messages.StringField(6, default=u'compute#address')
-  labelFingerprint = _messages.BytesField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  users = _messages.StringField(13, repeated=True)
+  addressType = _messages.EnumField('AddressTypeValueValuesEnum', 2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 6)
+  kind = _messages.StringField(7, default=u'compute#address')
+  labelFingerprint = _messages.BytesField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  region = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  subnetwork = _messages.StringField(14)
+  users = _messages.StringField(15, repeated=True)
 
 
 class AddressAggregatedList(_messages.Message):
@@ -12241,14 +12262,15 @@ class Firewall(_messages.Message):
       sourceServiceAccounts cannot be used at the same time as sourceTags or
       targetTags.
     sourceTags: If source tags are specified, the firewall will apply only to
-      traffic with source IP that belongs to a tag listed in source tags.
-      Source tags cannot be used to control traffic to an instance's external
-      IP address. Because tags are associated with an instance, not an IP
-      address. One or both of sourceRanges and sourceTags may be set. If both
-      properties are set, the firewall will apply to traffic that has source
-      IP address within sourceRanges OR the source IP that belongs to a tag
-      listed in the sourceTags property. The connection does not need to match
-      both properties for the firewall to apply.
+      traffic from VM instances in the same virtual network with a tag listed
+      in the source tags. Source tags cannot be used to control traffic to an
+      instance's external IP address, it only applies to traffic between
+      instances in the same virtual network. Because tags are associated with
+      instances, not IP addresses. One or both of sourceRanges and sourceTags
+      may be set. If both properties are set, the firewall will apply to
+      traffic that has source IP address within sourceRanges OR the source IP
+      that belongs to a tag listed in the sourceTags property. The connection
+      does not need to match both properties for the firewall to apply.
     targetServiceAccounts: A list of service accounts indicating sets of
       instances located in the network that may make network connections as
       specified in allowed[]. targetServiceAccounts cannot be used at the same
@@ -12353,6 +12375,22 @@ class FirewallList(_messages.Message):
   selfLink = _messages.StringField(5)
 
 
+class FixedOrPercent(_messages.Message):
+  """Encapsulates numeric value that can be either absolute or relative.
+
+  Fields:
+    calculated: [Output Only] Absolute value calculated based on mode: mode =
+      fixed -> calculated = fixed = percent -> calculated =
+      ceiling(percent/100 * base_value)
+    fixed: fixed must be non-negative.
+    percent: percent must belong to [0, 100].
+  """
+
+  calculated = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  fixed = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  percent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class ForwardingRule(_messages.Message):
   """A ForwardingRule resource. A ForwardingRule resource specifies which pool
   of target virtual machines to forward a packet to if it matches the given
@@ -12441,9 +12479,9 @@ class ForwardingRule(_messages.Message):
       same [IPAddress, IPProtocol] pair must have disjoint port ranges.  Some
       types of forwarding target have constraints on the acceptable ports:   -
       TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetTcpProxy:
-      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995  - TargetSslProxy:
-      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995  - TargetVpnGateway:
-      500, 4500 -
+      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 5222  -
+      TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
+      5222  - TargetVpnGateway: 500, 4500 -
     ports: This field is used along with the backend_service field for
       internal load balancing.  When the load balancing scheme is INTERNAL, a
       single port or a comma separated list of ports can be configured. Only
@@ -13872,6 +13910,9 @@ class InstanceGroupManager(_messages.Message):
       characters long, and comply with RFC1035.
     namedPorts: Named ports configured for the Instance Groups complementary
       to this Instance Group Manager.
+    pendingActions: [Output Only] The list of instance actions and the number
+      of instances in this managed instance group that are pending for each of
+      those actions.
     region: [Output Only] The URL of the region where the managed instance
       group resides (for regional resources).
     selfLink: [Output Only] The URL for this managed instance group. The
@@ -13887,6 +13928,16 @@ class InstanceGroupManager(_messages.Message):
     targetSize: The target number of running instances for this managed
       instance group. Deleting or abandoning instances reduces this number.
       Resizing the group changes this number.
+    updatePolicy: The update policy for this managed instance group.
+    versions: Versions supported by this IGM. User should set this field if
+      they need fine-grained control over how many instances in each version
+      are run by this IGM. Versions are keyed by instanceTemplate. Every
+      instanceTemplate can appear at most once. This field overrides
+      instanceTemplate field. If both instanceTemplate and versions are set,
+      the user receives a warning. "instanceTemplate: X" is semantically
+      equivalent to "versions [ { instanceTemplate: X } ]". Exactly one
+      version must have targetSize field left unset. Size of such a version
+      will be calculated automatically.
     zone: [Output Only] The URL of the zone where the managed instance group
       is located (for zonal resources).
   """
@@ -13915,12 +13966,15 @@ class InstanceGroupManager(_messages.Message):
   kind = _messages.StringField(11, default=u'compute#instanceGroupManager')
   name = _messages.StringField(12)
   namedPorts = _messages.MessageField('NamedPort', 13, repeated=True)
-  region = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  serviceAccount = _messages.StringField(16)
-  targetPools = _messages.StringField(17, repeated=True)
-  targetSize = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(19)
+  pendingActions = _messages.MessageField('InstanceGroupManagerPendingActionsSummary', 14)
+  region = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  serviceAccount = _messages.StringField(17)
+  targetPools = _messages.StringField(18, repeated=True)
+  targetSize = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 20)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 21, repeated=True)
+  zone = _messages.StringField(22)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -13956,6 +14010,10 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
     restarting: [Output Only] The number of instances in the managed instance
       group that are scheduled to be restarted or are currently being
       restarted.
+    verifying: [Output Only] The number of instances in the managed instance
+      group that are being verified. More details regarding verification
+      process are covered in the documentation of
+      ManagedInstance.InstanceAction.VERIFYING enum field.
   """
 
   abandoning = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -13966,6 +14024,7 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
   recreating = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   refreshing = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   restarting = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  verifying = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerAggregatedList(_messages.Message):
@@ -14062,6 +14121,102 @@ class InstanceGroupManagerList(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#instanceGroupManagerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+
+
+class InstanceGroupManagerPendingActionsSummary(_messages.Message):
+  """A InstanceGroupManagerPendingActionsSummary object.
+
+  Fields:
+    creating: [Output Only] The number of instances in the managed instance
+      group that are pending to be created.
+    deleting: [Output Only] The number of instances in the managed instance
+      group that are pending to be deleted.
+    recreating: [Output Only] The number of instances in the managed instance
+      group that are pending to be recreated.
+    restarting: [Output Only] The number of instances in the managed instance
+      group that are pending to be restarted.
+  """
+
+  creating = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  deleting = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  recreating = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  restarting = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class InstanceGroupManagerUpdatePolicy(_messages.Message):
+  """A InstanceGroupManagerUpdatePolicy object.
+
+  Enums:
+    MinimalActionValueValuesEnum: Minimal action to be taken on an instance.
+      The order of action types is: RESTART < REPLACE.
+    TypeValueValuesEnum:
+
+  Fields:
+    maxSurge: Maximum number of instances that can be created above the
+      InstanceGroupManager.targetSize during the update process. By default, a
+      fixed value of 1 is used. Using maxSurge > 0 will cause instance names
+      to change during the update process. At least one of { maxSurge,
+      maxUnavailable } must be greater than 0.
+    maxUnavailable: Maximum number of instances that can be unavailable during
+      the update process. The instance is considered available if all of the
+      following conditions are satisfied: 1. Instance's status is RUNNING. 2.
+      Instance's liveness health check result was observed to be HEALTHY at
+      least once. By default, a fixed value of 1 is used. At least one of {
+      maxSurge, maxUnavailable } must be greater than 0.
+    minReadySec: Minimum number of seconds to wait for after a newly created
+      instance becomes available. This value must be from range [0, 3600].
+    minimalAction: Minimal action to be taken on an instance. The order of
+      action types is: RESTART < REPLACE.
+    type: A TypeValueValuesEnum attribute.
+  """
+
+  class MinimalActionValueValuesEnum(_messages.Enum):
+    """Minimal action to be taken on an instance. The order of action types
+    is: RESTART < REPLACE.
+
+    Values:
+      REPLACE: <no description>
+      RESTART: <no description>
+    """
+    REPLACE = 0
+    RESTART = 1
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """TypeValueValuesEnum enum type.
+
+    Values:
+      OPPORTUNISTIC: <no description>
+      PROACTIVE: <no description>
+    """
+    OPPORTUNISTIC = 0
+    PROACTIVE = 1
+
+  maxSurge = _messages.MessageField('FixedOrPercent', 1)
+  maxUnavailable = _messages.MessageField('FixedOrPercent', 2)
+  minReadySec = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
+class InstanceGroupManagerVersion(_messages.Message):
+  """A InstanceGroupManagerVersion object.
+
+  Fields:
+    instanceTemplate: A string attribute.
+    name: Name of the version. Unique among all versions in the scope of this
+      managed instance group.
+    targetSize: Intended number of instances that are created from
+      instanceTemplate. The final number of instances created from
+      instanceTemplate will be equal to: * if expressed as fixed number:
+      min(targetSize.fixed, instanceGroupManager.targetSize), * if expressed
+      as percent: ceiling(targetSize.percent *
+      InstanceGroupManager.targetSize). If unset, this version will handle all
+      the remaining instances.
+  """
+
+  instanceTemplate = _messages.StringField(1)
+  name = _messages.StringField(2)
+  targetSize = _messages.MessageField('FixedOrPercent', 3)
 
 
 class InstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -14988,6 +15143,8 @@ class LogConfigCloudAuditOptions(_messages.Message):
       Record.
 
   Fields:
+    isReadPermissionType: True if the log is for a permission of type
+      DATA_READ or ADMIN_READ.
     logName: The log_name to populate in the Cloud Audit Record.
   """
 
@@ -15003,7 +15160,8 @@ class LogConfigCloudAuditOptions(_messages.Message):
     DATA_ACCESS = 1
     UNSPECIFIED_LOG_NAME = 2
 
-  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
+  isReadPermissionType = _messages.BooleanField(1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
 class LogConfigCounterOptions(_messages.Message):
@@ -15326,6 +15484,7 @@ class ManagedInstance(_messages.Message):
       RECREATING: <no description>
       REFRESHING: <no description>
       RESTARTING: <no description>
+      VERIFYING: <no description>
     """
     ABANDONING = 0
     CREATING = 1
@@ -15335,6 +15494,7 @@ class ManagedInstance(_messages.Message):
     RECREATING = 5
     REFRESHING = 6
     RESTARTING = 7
+    VERIFYING = 8
 
   class InstanceStatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the instance. This field is empty when the
@@ -16300,6 +16460,7 @@ class Quota(_messages.Message):
       NETWORKS: <no description>
       NVIDIA_K80_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
+      PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
       ROUTERS: <no description>
@@ -16338,23 +16499,24 @@ class Quota(_messages.Message):
     NETWORKS = 17
     NVIDIA_K80_GPUS = 18
     PREEMPTIBLE_CPUS = 19
-    REGIONAL_AUTOSCALERS = 20
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 21
-    ROUTERS = 22
-    ROUTES = 23
-    SNAPSHOTS = 24
-    SSD_TOTAL_GB = 25
-    SSL_CERTIFICATES = 26
-    STATIC_ADDRESSES = 27
-    SUBNETWORKS = 28
-    TARGET_HTTPS_PROXIES = 29
-    TARGET_HTTP_PROXIES = 30
-    TARGET_INSTANCES = 31
-    TARGET_POOLS = 32
-    TARGET_SSL_PROXIES = 33
-    TARGET_VPN_GATEWAYS = 34
-    URL_MAPS = 35
-    VPN_TUNNELS = 36
+    PREEMPTIBLE_LOCAL_SSD_GB = 20
+    REGIONAL_AUTOSCALERS = 21
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 22
+    ROUTERS = 23
+    ROUTES = 24
+    SNAPSHOTS = 25
+    SSD_TOTAL_GB = 26
+    SSL_CERTIFICATES = 27
+    STATIC_ADDRESSES = 28
+    SUBNETWORKS = 29
+    TARGET_HTTPS_PROXIES = 30
+    TARGET_HTTP_PROXIES = 31
+    TARGET_INSTANCES = 32
+    TARGET_POOLS = 33
+    TARGET_SSL_PROXIES = 34
+    TARGET_VPN_GATEWAYS = 35
+    URL_MAPS = 36
+    VPN_TUNNELS = 37
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

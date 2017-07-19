@@ -17,6 +17,7 @@
 
 import json
 import os
+import posixpath
 import re
 
 from gae_ext_runtime import ext_runtime
@@ -43,6 +44,7 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store as c_store
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.appengine.tools import context_util
 
@@ -344,6 +346,15 @@ def BuildAndPushDockerImage(
 
   metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD_START)
   object_ref = storage_util.ObjectReference(code_bucket_ref, image.tagged_repo)
+
+  if files.IsDirAncestorOf(source_dir, service.file):
+    relative_yaml_path = os.path.relpath(service.file, source_dir)
+  else:
+    yaml_contents = files.GetFileContents(service.file)
+    checksum = files.Checksum().AddContents(yaml_contents).HexDigest()
+    relative_yaml_path = checksum + '.yaml'
+    gen_files[relative_yaml_path] = yaml_contents
+
   try:
     cloud_build.UploadSource(image.dockerfile_dir, object_ref,
                              gen_files=gen_files,
@@ -359,8 +370,10 @@ def BuildAndPushDockerImage(
     builder_reference = runtime_builders.FromServiceInfo(service, source_dir)
     log.info('Using runtime builder [%s]', builder_reference.build_file_uri)
     builder_reference.WarnIfDeprecated()
+    yaml_path = posixpath.join(*relative_yaml_path.split(os.sep))
     build = builder_reference.LoadCloudBuild(
-        {'_OUTPUT_IMAGE': image.tagged_repo})
+        {'_OUTPUT_IMAGE': image.tagged_repo,
+         '_GAE_APPLICATION_YAML_PATH': yaml_path})
     # TODO(b/37542869) Remove this hack once the API can take the gs:// path
     # as a runtime name.
     service.runtime = builder_reference.runtime

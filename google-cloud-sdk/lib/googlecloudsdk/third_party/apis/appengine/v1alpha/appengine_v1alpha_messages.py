@@ -67,15 +67,31 @@ class AppengineAppsAuthorizedCertificatesGetRequest(_messages.Message):
 class AppengineAppsAuthorizedCertificatesListRequest(_messages.Message):
   """A AppengineAppsAuthorizedCertificatesListRequest object.
 
+  Enums:
+    ViewValueValuesEnum: Controls the set of fields returned in the LIST
+      response.
+
   Fields:
     pageSize: Maximum results to return per page.
     pageToken: Continuation token for fetching the next page of results.
     parent: Name of the parent Application resource. Example: apps/myapp.
+    view: Controls the set of fields returned in the LIST response.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Controls the set of fields returned in the LIST response.
+
+    Values:
+      BASIC_CERTIFICATE: <no description>
+      FULL_CERTIFICATE: <no description>
+    """
+    BASIC_CERTIFICATE = 0
+    FULL_CERTIFICATE = 1
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class AppengineAppsAuthorizedCertificatesPatchRequest(_messages.Message):
@@ -172,7 +188,7 @@ class AppengineAppsDomainMappingsPatchRequest(_messages.Message):
     name: Name of the resource to update. Example:
       apps/myapp/domainMappings/example.com.
     noManagedCertificate: Whether a managed certificate should be provided by
-      App Engine. If true, a certificate ID must be manaually set in the
+      App Engine. If true, a certificate ID must be manually set in the
       DomainMapping resource to configure SSL for this domain. If false, a
       managed certificate will be provisioned and a certificate ID will be
       automatically populated. Only applicable if ssl_settings.certificate_id
@@ -252,7 +268,8 @@ class AuthorizedCertificate(_messages.Message):
     domainMappingsCount: Aggregate count of the domain mappings with this
       certificate mapped. This count includes domain mappings on applications
       for which the user does not have VIEWER permissions.Only returned by GET
-      requests when specifically requested by the view=FULL option.@OutputOnly
+      or LIST requests when specifically requested by the
+      view=FULL_CERTIFICATE option.@OutputOnly
     domainNames: Topmost applicable domains of this certificate. This
       certificate applies to these domains and their subdomains. Example:
       example.com.@OutputOnly
@@ -275,8 +292,8 @@ class AuthorizedCertificate(_messages.Message):
       list of mapped domain mappings if the user does not have VIEWER
       permissions on all of the applications that have this certificate
       mapped. See domain_mappings_count for a complete count.Only returned by
-      GET requests when specifically requested by the view=FULL
-      option.@OutputOnly
+      GET or LIST requests when specifically requested by the
+      view=FULL_CERTIFICATE option.@OutputOnly
   """
 
   certificateRawData = _messages.MessageField('CertificateRawData', 1)
@@ -965,7 +982,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details. There will be a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

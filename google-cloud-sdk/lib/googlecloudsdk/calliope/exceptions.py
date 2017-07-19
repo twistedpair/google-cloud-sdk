@@ -374,6 +374,7 @@ def _GetTokenRefreshError(exc):
 # handle them.
 _KNOWN_ERRORS = {
     'apitools.base.py.exceptions.HttpError': HttpException,
+    'googlecloudsdk.calliope.parser_errors.ArgumentError': lambda x: None,
     'googlecloudsdk.core.util.files.Error': lambda x: None,
     'httplib.ResponseNotReady': core_exceptions.NetworkIssueError,
     'oauth2client.client.AccessTokenRefreshError': _GetTokenRefreshError,

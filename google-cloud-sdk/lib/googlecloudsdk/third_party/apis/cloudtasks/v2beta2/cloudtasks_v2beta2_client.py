@@ -250,7 +250,7 @@ associated with the task.
 The payload is intended to store data that the lease holder needs
 to perform the work associated with the task. To return the
 payloads in the PullTasksResponse, set
-PullTasksRequest.response_view to FULL.
+PullTasksRequest.response_view to Task.View.FULL.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksPullRequest) input message

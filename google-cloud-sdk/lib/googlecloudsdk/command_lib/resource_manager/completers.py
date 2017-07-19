@@ -26,7 +26,17 @@ class ProjectCompleter(completers.ResourceParamCompleter):
         collection='cloudresourcemanager.projects',
         list_command='projects list --uri',
         param='projectId',
-        timeout=1*60*60,
+        **kwargs)
+
+
+class OrganizationCompleter(completers.ResourceParamCompleter):
+  """The organization completer."""
+
+  def __init__(self, **kwargs):
+    super(OrganizationCompleter, self).__init__(
+        collection='cloudresourcemanager.organizations',
+        list_command='organizations list --uri',
+        param='organizationsId',
         **kwargs)
 
 

@@ -191,7 +191,7 @@ class MultiError(Exception):
   def __init__(self, errors):
     self.errors = errors
     super(MultiError, self).__init__(
-        'One or more errors occurred:\n' + '\n\n'.join(map(str, errors)))
+        'One or more errors occurred:\n' + '\n\n'.join(map(unicode, errors)))
 
 
 class _MultiFuture(BaseFuture):

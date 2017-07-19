@@ -31,14 +31,14 @@ DEFAULT_VERBOSITY = logging.WARNING
 DEFAULT_VERBOSITY_STRING = 'warning'
 DEFAULT_USER_OUTPUT_ENABLED = True
 
-VERBOSITY_LEVELS = [
+_VERBOSITY_LEVELS = [
     ('debug', logging.DEBUG),
     ('info', logging.INFO),
     ('warning', logging.WARNING),
     ('error', logging.ERROR),
     ('critical', logging.CRITICAL),
     ('none', logging.CRITICAL + 10)]
-VALID_VERBOSITY_STRINGS = dict(VERBOSITY_LEVELS)
+VALID_VERBOSITY_STRINGS = dict(_VERBOSITY_LEVELS)
 LOG_FILE_EXTENSION = '.log'
 # datastore upload and download creates temporary sql3 files in the log dir.
 _KNOWN_LOG_FILE_EXTENSIONS = [LOG_FILE_EXTENSION, '.sql3']
@@ -344,12 +344,12 @@ class _LogManager(object):
 
   def __init__(self):
     # Note: if this ever changes, please update LOG_PREFIX_PATTERN
-    self.file_formatter = logging.Formatter(
+    self._file_formatter = logging.Formatter(
         fmt='%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
 
     # Set up the root logger, it accepts all levels.
-    self.logger = logging.getLogger()
-    self.logger.setLevel(logging.NOTSET)
+    self._root_logger = logging.getLogger()
+    self._root_logger.setLevel(logging.NOTSET)
 
     # This logger will get handlers for each output file, but will not propagate
     # to the root logger.  This allows us to log exceptions and errors to the
@@ -359,18 +359,18 @@ class _LogManager(object):
     self.file_only_logger.setLevel(logging.NOTSET)
     self.file_only_logger.propagate = False
 
-    self.logs_dirs = []
+    self._logs_dirs = []
 
-    self.console_formatter = None
-    self.user_output_filter = _UserOutputFilter(DEFAULT_USER_OUTPUT_ENABLED)
+    self._console_formatter = None
+    self._user_output_filter = _UserOutputFilter(DEFAULT_USER_OUTPUT_ENABLED)
     self.stdout_stream_wrapper = _StreamWrapper(None)
     self.stderr_stream_wrapper = _StreamWrapper(None)
 
     self.stdout_writer = _ConsoleWriter(self.file_only_logger,
-                                        self.user_output_filter,
+                                        self._user_output_filter,
                                         self.stdout_stream_wrapper)
     self.stderr_writer = _ConsoleWriter(self.file_only_logger,
-                                        self.user_output_filter,
+                                        self._user_output_filter,
                                         self.stderr_stream_wrapper)
 
     self.verbosity = None
@@ -381,7 +381,7 @@ class _LogManager(object):
   def Reset(self, stdout, stderr):
     """Resets all logging functionality to its default state."""
     # Clears any existing logging handlers.
-    self.logger.handlers[:] = []
+    self._root_logger.handlers[:] = []
 
     # Refresh the streams for the console writers.
     self.stdout_stream_wrapper.stream = stdout
@@ -394,12 +394,12 @@ class _LogManager(object):
                                                          self.stderr_writer,
                                                          std_console_formatter)
     # Reset the color and structured output handling.
-    self.console_formatter = wrapped_console_formatter
+    self._console_formatter = wrapped_console_formatter
     # A handler to redirect logs to stderr, this one is standard.
     self.stderr_handler = logging.StreamHandler(stderr)
-    self.stderr_handler.setFormatter(self.console_formatter)
+    self.stderr_handler.setFormatter(self._console_formatter)
     self.stderr_handler.setLevel(DEFAULT_VERBOSITY)
-    self.logger.addHandler(self.stderr_handler)
+    self._root_logger.addHandler(self.stderr_handler)
 
     # Reset all the log file handlers.
     self.file_only_logger.handlers[:] = []
@@ -454,7 +454,7 @@ class _LogManager(object):
     if enabled is None:
       enabled = DEFAULT_USER_OUTPUT_ENABLED
 
-    self.user_output_filter.enabled = enabled
+    self._user_output_filter.enabled = enabled
 
     old_enabled = self.user_output_enabled
     self.user_output_enabled = enabled
@@ -488,9 +488,9 @@ class _LogManager(object):
         has no effect if this is None, or if this directory has already been
         registered.
     """
-    if not logs_dir or logs_dir in self.logs_dirs:
+    if not logs_dir or logs_dir in self._logs_dirs:
       return
-    self.logs_dirs.append(logs_dir)
+    self._logs_dirs.append(logs_dir)
 
     # If logs cleanup has been enabled, try to delete old log files
     # in the given directory. Continue normally if we try to delete log files
@@ -509,8 +509,8 @@ class _LogManager(object):
 
     self.current_log_file = log_file
     file_handler.setLevel(logging.NOTSET)
-    file_handler.setFormatter(self.file_formatter)
-    self.logger.addHandler(file_handler)
+    file_handler.setFormatter(self._file_formatter)
+    self._root_logger.addHandler(file_handler)
     self.file_only_logger.addHandler(file_handler)
 
   def _CleanUpLogs(self, logs_dir):
@@ -662,7 +662,7 @@ def Print(*msg):
   out.Print(*msg)
 
 
-def Reset():
+def Reset(stdout=None, stderr=None):
   """Reinitialize the logging system.
 
   This clears all loggers registered in the logging module, and reinitializes
@@ -677,8 +677,14 @@ def Reset():
   possible they will continue to work, but their behavior might change when the
   logging framework is reinitialized.  This is useful mainly for clearing the
   loggers between tests so stubs can get reset.
+
+  Args:
+    stdout: the file-like object to restore to stdout. If not given, sys.stdout
+      is used
+    stderr: the file-like object to restore to stderr. If not given, sys.stderr
+      is used
   """
-  _log_manager.Reset(sys.stdout, sys.stderr)
+  _log_manager.Reset(stdout or sys.stdout, stderr or sys.stderr)
 
 
 def SetVerbosity(verbosity):
@@ -723,7 +729,7 @@ def GetVerbosityName(verbosity=None):
 
 def OrderedVerbosityNames():
   """Gets all the valid verbosity names from most verbose to least verbose."""
-  return [name for name, _ in VERBOSITY_LEVELS]
+  return [name for name, _ in _VERBOSITY_LEVELS]
 
 
 def _GetEffectiveVerbosity(verbosity):

@@ -54,37 +54,11 @@ class ContainerV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Autoscaling(self, request, global_params=None):
-      """Sets the autoscaling settings of a specific node pool.
-
-      Args:
-        request: (ContainerProjectsLocationsClustersNodePoolsAutoscalingRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Autoscaling')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Autoscaling.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.nodePools.autoscaling',
-        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
-        query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling',
-        request_field=u'setNodePoolAutoscalingRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsAutoscalingRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
       """Creates a node pool for a cluster.
 
       Args:
-        request: (ContainerProjectsLocationsClustersNodePoolsCreateRequest) input message
+        request: (CreateNodePoolRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -94,14 +68,15 @@ class ContainerV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools',
         http_method=u'POST',
         method_id=u'container.projects.locations.clusters.nodePools.create',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools',
-        request_field=u'createNodePoolRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsCreateRequest',
+        relative_path=u'v1alpha1/{+parent}/nodePools',
+        request_field='<request>',
+        request_type_name=u'CreateNodePoolRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -120,12 +95,13 @@ class ContainerV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}',
         http_method=u'DELETE',
         method_id=u'container.projects.locations.clusters.nodePools.delete',
-        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
-        query_params=[u'version', u'zone'],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'version', u'zone'],
+        relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersNodePoolsDeleteRequest',
         response_type_name=u'Operation',
@@ -146,12 +122,13 @@ class ContainerV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}',
         http_method=u'GET',
         method_id=u'container.projects.locations.clusters.nodePools.get',
-        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
-        query_params=[u'version', u'zone'],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'version', u'zone'],
+        relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersNodePoolsGetRequest',
         response_type_name=u'NodePool',
@@ -172,12 +149,13 @@ class ContainerV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools',
         http_method=u'GET',
         method_id=u'container.projects.locations.clusters.nodePools.list',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
-        query_params=[u'version', u'zone'],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'clusterId', u'projectId', u'version', u'zone'],
+        relative_path=u'v1alpha1/{+parent}/nodePools',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersNodePoolsListRequest',
         response_type_name=u'ListNodePoolsResponse',
@@ -189,7 +167,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
 This will be an no-op if the last upgrade successfully completed.
 
       Args:
-        request: (ContainerProjectsLocationsClustersNodePoolsRollbackRequest) input message
+        request: (RollbackNodePoolUpgradeRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -199,14 +177,42 @@ This will be an no-op if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     Rollback.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:rollback',
         http_method=u'POST',
         method_id=u'container.projects.locations.clusters.nodePools.rollback',
-        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback',
-        request_field=u'rollbackNodePoolUpgradeRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsRollbackRequest',
+        relative_path=u'v1alpha1/{+name}:rollback',
+        request_field='<request>',
+        request_type_name=u'RollbackNodePoolUpgradeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetAutoscaling(self, request, global_params=None):
+      """Sets the autoscaling settings of a specific node pool.
+
+      Args:
+        request: (SetNodePoolAutoscalingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetAutoscaling')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetAutoscaling.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setAutoscaling',
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.nodePools.setAutoscaling',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:setAutoscaling',
+        request_field='<request>',
+        request_type_name=u'SetNodePoolAutoscalingRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -215,7 +221,7 @@ This will be an no-op if the last upgrade successfully completed.
       """Sets the NodeManagement options for a node pool.
 
       Args:
-        request: (ContainerProjectsLocationsClustersNodePoolsSetManagementRequest) input message
+        request: (SetNodePoolManagementRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -225,14 +231,15 @@ This will be an no-op if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     SetManagement.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setManagement',
         http_method=u'POST',
         method_id=u'container.projects.locations.clusters.nodePools.setManagement',
-        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement',
-        request_field=u'setNodePoolManagementRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsSetManagementRequest',
+        relative_path=u'v1alpha1/{+name}:setManagement',
+        request_field='<request>',
+        request_type_name=u'SetNodePoolManagementRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -241,7 +248,7 @@ This will be an no-op if the last upgrade successfully completed.
       """Sets the size of a specific node pool.
 
       Args:
-        request: (ContainerProjectsLocationsClustersNodePoolsSetSizeRequest) input message
+        request: (SetNodePoolSizeRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -251,14 +258,15 @@ This will be an no-op if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     SetSize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setSize',
         http_method=u'POST',
         method_id=u'container.projects.locations.clusters.nodePools.setSize',
-        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize',
-        request_field=u'setNodePoolSizeRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsSetSizeRequest',
+        relative_path=u'v1alpha1/{+name}:setSize',
+        request_field='<request>',
+        request_type_name=u'SetNodePoolSizeRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -267,7 +275,7 @@ This will be an no-op if the last upgrade successfully completed.
       """Updates the version and/or iamge type of a specific node pool.
 
       Args:
-        request: (ContainerProjectsLocationsClustersNodePoolsUpdateRequest) input message
+        request: (UpdateNodePoolRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -277,14 +285,15 @@ This will be an no-op if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}',
+        http_method=u'PUT',
         method_id=u'container.projects.locations.clusters.nodePools.update',
-        ordered_params=[u'projectId', u'location', u'clusterId', u'nodePoolId'],
-        path_params=[u'clusterId', u'location', u'nodePoolId', u'projectId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/nodePools/{nodePoolId}/update',
-        request_field=u'updateNodePoolRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsUpdateRequest',
+        relative_path=u'v1alpha1/{+name}',
+        request_field='<request>',
+        request_type_name=u'UpdateNodePoolRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -299,37 +308,11 @@ This will be an no-op if the last upgrade successfully completed.
       self._upload_configs = {
           }
 
-    def Addons(self, request, global_params=None):
-      """Sets the addons of a specific cluster.
-
-      Args:
-        request: (ContainerProjectsLocationsClustersAddonsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Addons')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Addons.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.addons',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
-        query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/addons',
-        request_field=u'setAddonsConfigRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersAddonsRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def CompleteIpRotation(self, request, global_params=None):
       """Completes master IP rotation.
 
       Args:
-        request: (ContainerProjectsLocationsClustersCompleteIpRotationRequest) input message
+        request: (CompleteIPRotationRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -339,14 +322,15 @@ This will be an no-op if the last upgrade successfully completed.
           config, request, global_params=global_params)
 
     CompleteIpRotation.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:completeIpRotation',
         http_method=u'POST',
         method_id=u'container.projects.locations.clusters.completeIpRotation',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}:completeIpRotation',
-        request_field=u'completeIPRotationRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersCompleteIpRotationRequest',
+        relative_path=u'v1alpha1/{+name}:completeIpRotation',
+        request_field='<request>',
+        request_type_name=u'CompleteIPRotationRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -367,7 +351,7 @@ Finally, an entry is added to the project's global metadata indicating
 which CIDR range is being used by the cluster.
 
       Args:
-        request: (ContainerProjectsLocationsClustersCreateRequest) input message
+        request: (CreateClusterRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -377,14 +361,15 @@ which CIDR range is being used by the cluster.
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters',
         http_method=u'POST',
         method_id=u'container.projects.locations.clusters.create',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters',
-        request_field=u'createClusterRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersCreateRequest',
+        relative_path=u'v1alpha1/{+parent}/clusters',
+        request_field='<request>',
+        request_type_name=u'CreateClusterRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -411,12 +396,13 @@ at the initial create time.
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
         http_method=u'DELETE',
         method_id=u'container.projects.locations.clusters.delete',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
-        query_params=[u'version', u'zone'],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'clusterId', u'projectId', u'version', u'zone'],
+        relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersDeleteRequest',
         response_type_name=u'Operation',
@@ -437,41 +423,16 @@ at the initial create time.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
         http_method=u'GET',
         method_id=u'container.projects.locations.clusters.get',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
-        query_params=[u'version', u'zone'],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'clusterId', u'projectId', u'version', u'zone'],
+        relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersGetRequest',
         response_type_name=u'Cluster',
-        supports_download=False,
-    )
-
-    def LegacyAbac(self, request, global_params=None):
-      """Enables or disables the ABAC authorization mechanism on a cluster.
-
-      Args:
-        request: (ContainerProjectsLocationsClustersLegacyAbacRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('LegacyAbac')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    LegacyAbac.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.legacyAbac',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
-        query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/legacyAbac',
-        request_field=u'setLegacyAbacRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersLegacyAbacRequest',
-        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -490,118 +451,123 @@ zones.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters',
         http_method=u'GET',
         method_id=u'container.projects.locations.clusters.list',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
-        query_params=[u'version', u'zone'],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'projectId', u'version', u'zone'],
+        relative_path=u'v1alpha1/{+parent}/clusters',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersListRequest',
         response_type_name=u'ListClustersResponse',
         supports_download=False,
     )
 
-    def Locations(self, request, global_params=None):
+    def SetAddons(self, request, global_params=None):
+      """Sets the addons of a specific cluster.
+
+      Args:
+        request: (SetAddonsConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetAddons')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetAddons.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setAddons',
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.setAddons',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:setAddons',
+        request_field='<request>',
+        request_type_name=u'SetAddonsConfigRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetLegacyAbac(self, request, global_params=None):
+      """Enables or disables the ABAC authorization mechanism on a cluster.
+
+      Args:
+        request: (SetLegacyAbacRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLegacyAbac')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLegacyAbac.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLegacyAbac',
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.setLegacyAbac',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:setLegacyAbac',
+        request_field='<request>',
+        request_type_name=u'SetLegacyAbacRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetLocations(self, request, global_params=None):
       """Sets the locations of a specific cluster.
 
       Args:
-        request: (ContainerProjectsLocationsClustersLocationsRequest) input message
+        request: (SetLocationsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
       """
-      config = self.GetMethodConfig('Locations')
+      config = self.GetMethodConfig('SetLocations')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Locations.method_config = lambda: base_api.ApiMethodInfo(
+    SetLocations.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLocations',
         http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.locations',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
+        method_id=u'container.projects.locations.clusters.setLocations',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/locations',
-        request_field=u'setLocationsRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersLocationsRequest',
+        relative_path=u'v1alpha1/{+name}:setLocations',
+        request_field='<request>',
+        request_type_name=u'SetLocationsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
 
-    def Master(self, request, global_params=None):
-      """Updates the master of a specific cluster.
+    def SetLogging(self, request, global_params=None):
+      """Sets the logging service of a specific cluster.
 
       Args:
-        request: (ContainerProjectsLocationsClustersMasterRequest) input message
+        request: (SetLoggingServiceRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
       """
-      config = self.GetMethodConfig('Master')
+      config = self.GetMethodConfig('SetLogging')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Master.method_config = lambda: base_api.ApiMethodInfo(
+    SetLogging.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLogging',
         http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.master',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
+        method_id=u'container.projects.locations.clusters.setLogging',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/master',
-        request_field=u'updateMasterRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersMasterRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def Monitoring(self, request, global_params=None):
-      """Sets the monitoring service of a specific cluster.
-
-      Args:
-        request: (ContainerProjectsLocationsClustersMonitoringRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Monitoring')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Monitoring.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.monitoring',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
-        query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/monitoring',
-        request_field=u'setMonitoringServiceRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersMonitoringRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def ResourceLabels(self, request, global_params=None):
-      """Sets labels on a cluster.
-
-      Args:
-        request: (ContainerProjectsLocationsClustersResourceLabelsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('ResourceLabels')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ResourceLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.projects.locations.clusters.resourceLabels',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
-        query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}/resourceLabels',
-        request_field=u'setLabelsRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersResourceLabelsRequest',
+        relative_path=u'v1alpha1/{+name}:setLogging',
+        request_field='<request>',
+        request_type_name=u'SetLoggingServiceRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -613,7 +579,7 @@ This can be either via password generation or explicitly set.
 Modify basic_auth.csv and reset the K8S API server.
 
       Args:
-        request: (ContainerProjectsLocationsClustersSetMasterAuthRequest) input message
+        request: (SetMasterAuthRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -623,14 +589,42 @@ Modify basic_auth.csv and reset the K8S API server.
           config, request, global_params=global_params)
 
     SetMasterAuth.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMasterAuth',
         http_method=u'POST',
         method_id=u'container.projects.locations.clusters.setMasterAuth',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}:setMasterAuth',
-        request_field=u'setMasterAuthRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersSetMasterAuthRequest',
+        relative_path=u'v1alpha1/{+name}:setMasterAuth',
+        request_field='<request>',
+        request_type_name=u'SetMasterAuthRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetMonitoring(self, request, global_params=None):
+      """Sets the monitoring service of a specific cluster.
+
+      Args:
+        request: (SetMonitoringServiceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMonitoring')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMonitoring.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMonitoring',
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.setMonitoring',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:setMonitoring',
+        request_field='<request>',
+        request_type_name=u'SetMonitoringServiceRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -639,7 +633,7 @@ Modify basic_auth.csv and reset the K8S API server.
       """Enables/Disables Network Policy for a cluster.
 
       Args:
-        request: (ContainerProjectsLocationsClustersSetNetworkPolicyRequest) input message
+        request: (SetNetworkPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -649,14 +643,42 @@ Modify basic_auth.csv and reset the K8S API server.
           config, request, global_params=global_params)
 
     SetNetworkPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setNetworkPolicy',
         http_method=u'POST',
         method_id=u'container.projects.locations.clusters.setNetworkPolicy',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}:setNetworkPolicy',
-        request_field=u'setNetworkPolicyRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersSetNetworkPolicyRequest',
+        relative_path=u'v1alpha1/{+name}:setNetworkPolicy',
+        request_field='<request>',
+        request_type_name=u'SetNetworkPolicyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetResourceLabels(self, request, global_params=None):
+      """Sets labels on a cluster.
+
+      Args:
+        request: (SetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetResourceLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetResourceLabels.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setResourceLabels',
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.setResourceLabels',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:setResourceLabels',
+        request_field='<request>',
+        request_type_name=u'SetLabelsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -665,7 +687,7 @@ Modify basic_auth.csv and reset the K8S API server.
       """Start master IP rotation.
 
       Args:
-        request: (ContainerProjectsLocationsClustersStartIpRotationRequest) input message
+        request: (StartIPRotationRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -675,14 +697,15 @@ Modify basic_auth.csv and reset the K8S API server.
           config, request, global_params=global_params)
 
     StartIpRotation.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:startIpRotation',
         http_method=u'POST',
         method_id=u'container.projects.locations.clusters.startIpRotation',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}:startIpRotation',
-        request_field=u'startIPRotationRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersStartIpRotationRequest',
+        relative_path=u'v1alpha1/{+name}:startIpRotation',
+        request_field='<request>',
+        request_type_name=u'StartIPRotationRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -691,7 +714,7 @@ Modify basic_auth.csv and reset the K8S API server.
       """Updates the settings of a specific cluster.
 
       Args:
-        request: (ContainerProjectsLocationsClustersUpdateRequest) input message
+        request: (UpdateClusterRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -701,14 +724,42 @@ Modify basic_auth.csv and reset the K8S API server.
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
         http_method=u'PUT',
         method_id=u'container.projects.locations.clusters.update',
-        ordered_params=[u'projectId', u'location', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'projectId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/clusters/{clusterId}',
-        request_field=u'updateClusterRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersUpdateRequest',
+        relative_path=u'v1alpha1/{+name}',
+        request_field='<request>',
+        request_type_name=u'UpdateClusterRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def UpdateMaster(self, request, global_params=None):
+      """Updates the master of a specific cluster.
+
+      Args:
+        request: (UpdateMasterRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateMaster')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateMaster.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:updateMaster',
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.updateMaster',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:updateMaster',
+        request_field='<request>',
+        request_type_name=u'UpdateMasterRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -727,7 +778,7 @@ Modify basic_auth.csv and reset the K8S API server.
       """Cancels the specified operation.
 
       Args:
-        request: (ContainerProjectsLocationsOperationsCancelRequest) input message
+        request: (CancelOperationRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Empty) The response message.
@@ -737,14 +788,15 @@ Modify basic_auth.csv and reset the K8S API server.
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
         http_method=u'POST',
         method_id=u'container.projects.locations.operations.cancel',
-        ordered_params=[u'projectId', u'location', u'operationId'],
-        path_params=[u'location', u'operationId', u'projectId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/operations/{operationId}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'ContainerProjectsLocationsOperationsCancelRequest',
+        relative_path=u'v1alpha1/{+name}:cancel',
+        request_field='<request>',
+        request_type_name=u'CancelOperationRequest',
         response_type_name=u'Empty',
         supports_download=False,
     )
@@ -763,12 +815,13 @@ Modify basic_auth.csv and reset the K8S API server.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
         http_method=u'GET',
         method_id=u'container.projects.locations.operations.get',
-        ordered_params=[u'projectId', u'location', u'operationId'],
-        path_params=[u'location', u'operationId', u'projectId'],
-        query_params=[u'version', u'zone'],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/operations/{operationId}',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'operationId', u'projectId', u'version', u'zone'],
+        relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsOperationsGetRequest',
         response_type_name=u'Operation',
@@ -789,12 +842,13 @@ Modify basic_auth.csv and reset the K8S API server.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations',
         http_method=u'GET',
         method_id=u'container.projects.locations.operations.list',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
-        query_params=[u'version', u'zone'],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/operations',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'projectId', u'version', u'zone'],
+        relative_path=u'v1alpha1/{+parent}/operations',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsOperationsListRequest',
         response_type_name=u'ListOperationsResponse',
@@ -811,28 +865,29 @@ Modify basic_auth.csv and reset the K8S API server.
       self._upload_configs = {
           }
 
-    def GetServerconfig(self, request, global_params=None):
+    def GetServerConfig(self, request, global_params=None):
       """Returns configuration info about the Container Engine service.
 
       Args:
-        request: (ContainerProjectsLocationsGetServerconfigRequest) input message
+        request: (ContainerProjectsLocationsGetServerConfigRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ServerConfig) The response message.
       """
-      config = self.GetMethodConfig('GetServerconfig')
+      config = self.GetMethodConfig('GetServerConfig')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    GetServerconfig.method_config = lambda: base_api.ApiMethodInfo(
+    GetServerConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/serverConfig',
         http_method=u'GET',
-        method_id=u'container.projects.locations.getServerconfig',
-        ordered_params=[u'projectId', u'location'],
-        path_params=[u'location', u'projectId'],
-        query_params=[u'version', u'zone'],
-        relative_path=u'v1alpha1/projects/{projectId}/locations/{location}/serverconfig',
+        method_id=u'container.projects.locations.getServerConfig',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'projectId', u'version', u'zone'],
+        relative_path=u'v1alpha1/{+name}/serverConfig',
         request_field='',
-        request_type_name=u'ContainerProjectsLocationsGetServerconfigRequest',
+        request_type_name=u'ContainerProjectsLocationsGetServerConfigRequest',
         response_type_name=u'ServerConfig',
         supports_download=False,
     )
@@ -851,7 +906,7 @@ Modify basic_auth.csv and reset the K8S API server.
       """Sets the autoscaling settings of a specific node pool.
 
       Args:
-        request: (ContainerProjectsZonesClustersNodePoolsAutoscalingRequest) input message
+        request: (SetNodePoolAutoscalingRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -867,8 +922,8 @@ Modify basic_auth.csv and reset the K8S API server.
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling',
-        request_field=u'setNodePoolAutoscalingRequest',
-        request_type_name=u'ContainerProjectsZonesClustersNodePoolsAutoscalingRequest',
+        request_field='<request>',
+        request_type_name=u'SetNodePoolAutoscalingRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -877,7 +932,7 @@ Modify basic_auth.csv and reset the K8S API server.
       """Creates a node pool for a cluster.
 
       Args:
-        request: (ContainerProjectsZonesClustersNodePoolsCreateRequest) input message
+        request: (CreateNodePoolRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -893,8 +948,8 @@ Modify basic_auth.csv and reset the K8S API server.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
-        request_field=u'createNodePoolRequest',
-        request_type_name=u'ContainerProjectsZonesClustersNodePoolsCreateRequest',
+        request_field='<request>',
+        request_type_name=u'CreateNodePoolRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -917,7 +972,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.clusters.nodePools.delete',
         ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-        query_params=[u'location', u'version'],
+        query_params=[u'name', u'version'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersNodePoolsDeleteRequest',
@@ -943,7 +998,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.clusters.nodePools.get',
         ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-        query_params=[u'location', u'version'],
+        query_params=[u'name', u'version'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersNodePoolsGetRequest',
@@ -969,7 +1024,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.clusters.nodePools.list',
         ordered_params=[u'projectId', u'zone', u'clusterId'],
         path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'location', u'version'],
+        query_params=[u'parent', u'version'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersNodePoolsListRequest',
@@ -982,7 +1037,7 @@ Modify basic_auth.csv and reset the K8S API server.
 This will be an no-op if the last upgrade successfully completed.
 
       Args:
-        request: (ContainerProjectsZonesClustersNodePoolsRollbackRequest) input message
+        request: (RollbackNodePoolUpgradeRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -998,8 +1053,8 @@ This will be an no-op if the last upgrade successfully completed.
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback',
-        request_field=u'rollbackNodePoolUpgradeRequest',
-        request_type_name=u'ContainerProjectsZonesClustersNodePoolsRollbackRequest',
+        request_field='<request>',
+        request_type_name=u'RollbackNodePoolUpgradeRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1008,7 +1063,7 @@ This will be an no-op if the last upgrade successfully completed.
       """Sets the NodeManagement options for a node pool.
 
       Args:
-        request: (ContainerProjectsZonesClustersNodePoolsSetManagementRequest) input message
+        request: (SetNodePoolManagementRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1024,8 +1079,8 @@ This will be an no-op if the last upgrade successfully completed.
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement',
-        request_field=u'setNodePoolManagementRequest',
-        request_type_name=u'ContainerProjectsZonesClustersNodePoolsSetManagementRequest',
+        request_field='<request>',
+        request_type_name=u'SetNodePoolManagementRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1034,7 +1089,7 @@ This will be an no-op if the last upgrade successfully completed.
       """Sets the size of a specific node pool.
 
       Args:
-        request: (ContainerProjectsZonesClustersNodePoolsSetSizeRequest) input message
+        request: (SetNodePoolSizeRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1050,8 +1105,8 @@ This will be an no-op if the last upgrade successfully completed.
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize',
-        request_field=u'setNodePoolSizeRequest',
-        request_type_name=u'ContainerProjectsZonesClustersNodePoolsSetSizeRequest',
+        request_field='<request>',
+        request_type_name=u'SetNodePoolSizeRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1060,7 +1115,7 @@ This will be an no-op if the last upgrade successfully completed.
       """Updates the version and/or iamge type of a specific node pool.
 
       Args:
-        request: (ContainerProjectsZonesClustersNodePoolsUpdateRequest) input message
+        request: (UpdateNodePoolRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1076,8 +1131,8 @@ This will be an no-op if the last upgrade successfully completed.
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/update',
-        request_field=u'updateNodePoolRequest',
-        request_type_name=u'ContainerProjectsZonesClustersNodePoolsUpdateRequest',
+        request_field='<request>',
+        request_type_name=u'UpdateNodePoolRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1096,7 +1151,7 @@ This will be an no-op if the last upgrade successfully completed.
       """Sets the addons of a specific cluster.
 
       Args:
-        request: (ContainerProjectsZonesClustersAddonsRequest) input message
+        request: (SetAddonsConfigRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1112,8 +1167,8 @@ This will be an no-op if the last upgrade successfully completed.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons',
-        request_field=u'setAddonsConfigRequest',
-        request_type_name=u'ContainerProjectsZonesClustersAddonsRequest',
+        request_field='<request>',
+        request_type_name=u'SetAddonsConfigRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1122,7 +1177,7 @@ This will be an no-op if the last upgrade successfully completed.
       """Completes master IP rotation.
 
       Args:
-        request: (ContainerProjectsZonesClustersCompleteIpRotationRequest) input message
+        request: (CompleteIPRotationRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1138,8 +1193,8 @@ This will be an no-op if the last upgrade successfully completed.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation',
-        request_field=u'completeIPRotationRequest',
-        request_type_name=u'ContainerProjectsZonesClustersCompleteIpRotationRequest',
+        request_field='<request>',
+        request_type_name=u'CompleteIPRotationRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1160,7 +1215,7 @@ Finally, an entry is added to the project's global metadata indicating
 which CIDR range is being used by the cluster.
 
       Args:
-        request: (ContainerProjectsZonesClustersCreateRequest) input message
+        request: (CreateClusterRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1176,8 +1231,8 @@ which CIDR range is being used by the cluster.
         path_params=[u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters',
-        request_field=u'createClusterRequest',
-        request_type_name=u'ContainerProjectsZonesClustersCreateRequest',
+        request_field='<request>',
+        request_type_name=u'CreateClusterRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1208,7 +1263,7 @@ at the initial create time.
         method_id=u'container.projects.zones.clusters.delete',
         ordered_params=[u'projectId', u'zone', u'clusterId'],
         path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'location', u'version'],
+        query_params=[u'name', u'version'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersDeleteRequest',
@@ -1234,7 +1289,7 @@ at the initial create time.
         method_id=u'container.projects.zones.clusters.get',
         ordered_params=[u'projectId', u'zone', u'clusterId'],
         path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'location', u'version'],
+        query_params=[u'name', u'version'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersGetRequest',
@@ -1246,7 +1301,7 @@ at the initial create time.
       """Enables or disables the ABAC authorization mechanism on a cluster.
 
       Args:
-        request: (ContainerProjectsZonesClustersLegacyAbacRequest) input message
+        request: (SetLegacyAbacRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1262,8 +1317,8 @@ at the initial create time.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac',
-        request_field=u'setLegacyAbacRequest',
-        request_type_name=u'ContainerProjectsZonesClustersLegacyAbacRequest',
+        request_field='<request>',
+        request_type_name=u'SetLegacyAbacRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1287,7 +1342,7 @@ zones.
         method_id=u'container.projects.zones.clusters.list',
         ordered_params=[u'projectId', u'zone'],
         path_params=[u'projectId', u'zone'],
-        query_params=[u'location', u'version'],
+        query_params=[u'parent', u'version'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersListRequest',
@@ -1299,7 +1354,7 @@ zones.
       """Sets the locations of a specific cluster.
 
       Args:
-        request: (ContainerProjectsZonesClustersLocationsRequest) input message
+        request: (SetLocationsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1315,8 +1370,8 @@ zones.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/locations',
-        request_field=u'setLocationsRequest',
-        request_type_name=u'ContainerProjectsZonesClustersLocationsRequest',
+        request_field='<request>',
+        request_type_name=u'SetLocationsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1325,7 +1380,7 @@ zones.
       """Sets the logging service of a specific cluster.
 
       Args:
-        request: (ContainerProjectsZonesClustersLoggingRequest) input message
+        request: (SetLoggingServiceRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1341,8 +1396,8 @@ zones.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/logging',
-        request_field=u'setLoggingServiceRequest',
-        request_type_name=u'ContainerProjectsZonesClustersLoggingRequest',
+        request_field='<request>',
+        request_type_name=u'SetLoggingServiceRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1351,7 +1406,7 @@ zones.
       """Updates the master of a specific cluster.
 
       Args:
-        request: (ContainerProjectsZonesClustersMasterRequest) input message
+        request: (UpdateMasterRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1367,8 +1422,8 @@ zones.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/master',
-        request_field=u'updateMasterRequest',
-        request_type_name=u'ContainerProjectsZonesClustersMasterRequest',
+        request_field='<request>',
+        request_type_name=u'UpdateMasterRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1377,7 +1432,7 @@ zones.
       """Sets the monitoring service of a specific cluster.
 
       Args:
-        request: (ContainerProjectsZonesClustersMonitoringRequest) input message
+        request: (SetMonitoringServiceRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1393,8 +1448,8 @@ zones.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/monitoring',
-        request_field=u'setMonitoringServiceRequest',
-        request_type_name=u'ContainerProjectsZonesClustersMonitoringRequest',
+        request_field='<request>',
+        request_type_name=u'SetMonitoringServiceRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1403,7 +1458,7 @@ zones.
       """Sets labels on a cluster.
 
       Args:
-        request: (ContainerProjectsZonesClustersResourceLabelsRequest) input message
+        request: (SetLabelsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1419,8 +1474,8 @@ zones.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels',
-        request_field=u'setLabelsRequest',
-        request_type_name=u'ContainerProjectsZonesClustersResourceLabelsRequest',
+        request_field='<request>',
+        request_type_name=u'SetLabelsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1432,7 +1487,7 @@ This can be either via password generation or explicitly set.
 Modify basic_auth.csv and reset the K8S API server.
 
       Args:
-        request: (ContainerProjectsZonesClustersSetMasterAuthRequest) input message
+        request: (SetMasterAuthRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1448,8 +1503,8 @@ Modify basic_auth.csv and reset the K8S API server.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth',
-        request_field=u'setMasterAuthRequest',
-        request_type_name=u'ContainerProjectsZonesClustersSetMasterAuthRequest',
+        request_field='<request>',
+        request_type_name=u'SetMasterAuthRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1458,7 +1513,7 @@ Modify basic_auth.csv and reset the K8S API server.
       """Enables/Disables Network Policy for a cluster.
 
       Args:
-        request: (ContainerProjectsZonesClustersSetNetworkPolicyRequest) input message
+        request: (SetNetworkPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1474,8 +1529,8 @@ Modify basic_auth.csv and reset the K8S API server.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setNetworkPolicy',
-        request_field=u'setNetworkPolicyRequest',
-        request_type_name=u'ContainerProjectsZonesClustersSetNetworkPolicyRequest',
+        request_field='<request>',
+        request_type_name=u'SetNetworkPolicyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1484,7 +1539,7 @@ Modify basic_auth.csv and reset the K8S API server.
       """Start master IP rotation.
 
       Args:
-        request: (ContainerProjectsZonesClustersStartIpRotationRequest) input message
+        request: (StartIPRotationRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1500,8 +1555,8 @@ Modify basic_auth.csv and reset the K8S API server.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation',
-        request_field=u'startIPRotationRequest',
-        request_type_name=u'ContainerProjectsZonesClustersStartIpRotationRequest',
+        request_field='<request>',
+        request_type_name=u'StartIPRotationRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1510,7 +1565,7 @@ Modify basic_auth.csv and reset the K8S API server.
       """Updates the settings of a specific cluster.
 
       Args:
-        request: (ContainerProjectsZonesClustersUpdateRequest) input message
+        request: (UpdateClusterRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1526,8 +1581,8 @@ Modify basic_auth.csv and reset the K8S API server.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
-        request_field=u'updateClusterRequest',
-        request_type_name=u'ContainerProjectsZonesClustersUpdateRequest',
+        request_field='<request>',
+        request_type_name=u'UpdateClusterRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -1546,7 +1601,7 @@ Modify basic_auth.csv and reset the K8S API server.
       """Cancels the specified operation.
 
       Args:
-        request: (ContainerProjectsZonesOperationsCancelRequest) input message
+        request: (CancelOperationRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Empty) The response message.
@@ -1562,8 +1617,8 @@ Modify basic_auth.csv and reset the K8S API server.
         path_params=[u'operationId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'ContainerProjectsZonesOperationsCancelRequest',
+        request_field='<request>',
+        request_type_name=u'CancelOperationRequest',
         response_type_name=u'Empty',
         supports_download=False,
     )
@@ -1586,7 +1641,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.operations.get',
         ordered_params=[u'projectId', u'zone', u'operationId'],
         path_params=[u'operationId', u'projectId', u'zone'],
-        query_params=[u'location', u'version'],
+        query_params=[u'name', u'version'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/operations/{operationId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesOperationsGetRequest',
@@ -1612,7 +1667,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.operations.list',
         ordered_params=[u'projectId', u'zone'],
         path_params=[u'projectId', u'zone'],
-        query_params=[u'location', u'version'],
+        query_params=[u'parent', u'version'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/operations',
         request_field='',
         request_type_name=u'ContainerProjectsZonesOperationsListRequest',
@@ -1648,7 +1703,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.getServerconfig',
         ordered_params=[u'projectId', u'zone'],
         path_params=[u'projectId', u'zone'],
-        query_params=[u'location', u'version'],
+        query_params=[u'name', u'version'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/serverconfig',
         request_field='',
         request_type_name=u'ContainerProjectsZonesGetServerconfigRequest',

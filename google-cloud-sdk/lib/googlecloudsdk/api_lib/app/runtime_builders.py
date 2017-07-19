@@ -39,6 +39,7 @@ literal part of the template to be substituted at runtime):
 
     steps:
     - name: 'gcr.io/google_appengine/python-builder:<version>'
+      env: ['GAE_APPLICATION_YAML_PATH=${_GAE_APPLICATION_YAML_PATH}']
     - name: 'gcr.io/cloud-builders/docker:<docker_image_version>'
       args: ['build', '-t', '$_OUTPUT_IMAGE', '.']
     images: ['$_OUTPUT_IMAGE']
@@ -102,7 +103,8 @@ import yaml
 _WHITELISTED_RUNTIMES_GA = {'test-ga'}
 _WHITELISTED_RUNTIMES_BETA = (
     _WHITELISTED_RUNTIMES_GA |
-    {'aspnetcore', 'nodejs', 'ruby', 'php', 'java', 'test-beta'})
+    {'aspnetcore', 'java', 'nodejs', 'php', 'python', 'ruby'} |
+    {'test-beta'})
 
 
 class FileReadError(exceptions.Error):
@@ -288,8 +290,21 @@ class BuilderReference(object):
           .format(runtime=self.runtime))
     messages = cloudbuild_util.GetMessagesModule()
     with _Read(self.build_file_uri) as data:
-      return cloudbuild_config.LoadCloudbuildConfigFromStream(
+      build = cloudbuild_config.LoadCloudbuildConfigFromStream(
           data, messages=messages, params=params)
+    if build.options is None:
+      build.options = messages.BuildOptions()
+    build.options.substitutionOption = (
+        build.options.SubstitutionOptionValueValuesEnum.ALLOW_LOOSE)
+    for step in build.steps:
+      for env in step.env:
+        parts = env.split('=')
+        if len(parts) > 1 and parts[0] == 'GAE_APPLICATION_YAML_PATH':
+          break
+      else:
+        step.env.append(
+            'GAE_APPLICATION_YAML_PATH=${_GAE_APPLICATION_YAML_PATH}')
+    return build
 
   def WarnIfDeprecated(self):
     """Warns that this runtime is deprecated (if it has been marked as such)."""

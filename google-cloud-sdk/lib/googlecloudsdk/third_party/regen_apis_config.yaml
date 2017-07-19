@@ -158,6 +158,8 @@ apis:
       default: true
     v1alpha1:
       discovery_doc: container_v1alpha1.json
+      resources:
+        projects.zones: projects/{projectId}/zones/{zoneId}
   containeranalysis:
     v1alpha1:
       discovery_doc: containeranalysis_v1alpha1.json

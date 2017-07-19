@@ -18,9 +18,6 @@ from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.command_lib.util import time_util
 from googlecloudsdk.core import log
 
-# 30 minute timeout... wild guess on avoiding timeouts on large disk clones.
-# TODO(b/36057405): look into backend metrics to see if we can do something
-# more principled.
 _POLLING_TIMEOUT_SEC = 60 * 30
 _MAX_TIME_BETWEEN_POLLS_SEC = 5
 

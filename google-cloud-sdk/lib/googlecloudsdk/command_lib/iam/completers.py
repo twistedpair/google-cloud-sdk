@@ -18,10 +18,10 @@ from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core import resources
 
 
-class IamRolesCompleter(completers.NoCacheCompleter):
+class IamRolesCompleter(completers.ListCommandCompleter):
   """An IAM role completer for a resource argument.
 
-  This completer bypasses the resource parser and completion cache.
+  The Complete() method override bypasses the completion cache.
 
   Attributes:
     _resource_dest: The argparse Namespace dest string for the resource
@@ -34,13 +34,26 @@ class IamRolesCompleter(completers.NoCacheCompleter):
     self._resource_dest = resource_dest
     self._resource_collection = resource_collection
 
-  def Complete(self, prefix, parameter_info):
-    """Returns the list of role names for the resource that match prefix."""
+  def GetListCommand(self, parameter_info):
     resource_ref = resources.REGISTRY.Parse(
         parameter_info.GetValue(self._resource_dest),
-        collection=self._resource_collection)
+        collection=self._resource_collection,
+        default_resolver=parameter_info.GetValue)
     resource_uri = resource_ref.SelfLink()
-    roles = parameter_info.Execute(
-        ['beta', 'iam', 'list-grantable-roles',
-         '--format=disable', resource_uri])
-    return [role.name for role in roles if role.name.startswith(prefix)]
+    return ['beta', 'iam', 'list-grantable-roles',
+            '--quiet', '--flatten=name[]', '--format=disable', resource_uri]
+
+  def Complete(self, prefix, parameter_info):
+    """Bypasses the cache and returns completions matching prefix."""
+    command = self.GetListCommand(parameter_info)
+    items = self.GetAllItems(command, parameter_info)
+    return [item for item in items or [] if item.startswith(prefix)]
+
+
+class IamServiceAccountCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(IamServiceAccountCompleter, self).__init__(
+        list_command=(
+            'iam service-accounts list --flatten=email[] --format=disable'),
+        **kwargs)

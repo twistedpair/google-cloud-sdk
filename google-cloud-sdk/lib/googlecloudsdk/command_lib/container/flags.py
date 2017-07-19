@@ -131,6 +131,27 @@ https://cloud.google.com/compute/docs/disks/local-ssd for more information."""
       default=0)
 
 
+def AddAcceleratorArgs(parser):
+  """Adds Accelerator-related args."""
+  parser.add_argument(
+      '--accelerator',
+      type=arg_parsers.ArgDict(spec={
+          'type': str,
+          'count': int,
+      }, required_keys=['type'], max_length=2),
+      metavar='type=TYPE,[count=COUNT]',
+      help="""\
+      Attaches accelerators (e.g. GPUs) to all nodes.
+
+      *type*::: (Required) The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
+      of accelerator to attach to the instances. Use 'gcloud compute
+      accelerator-types list' to learn about all available accelerator types.
+
+      *count*::: (Optional) The number of pieces of the accelerator to attach to the
+      instances. The default value is 1.
+      """)
+
+
 def AddZoneFlag(parser):
   # TODO(b/33343238): Remove the short form of the zone flag.
   # TODO(b/18105938): Add zone prompting
@@ -139,6 +160,21 @@ def AddZoneFlag(parser):
       '--zone', '-z',
       help='The compute zone (e.g. us-central1-a) for the cluster',
       action=actions.StoreProperty(properties.VALUES.compute.zone))
+
+
+def AddZoneAndRegionFlags(parser, region_hidden=False):
+  """Adds the --zone and --region flags to the parser."""
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--zone', '-z',
+      help='The compute zone (e.g. us-central1-a) for the cluster',
+      action=actions.StoreProperty(properties.VALUES.compute.zone))
+  group.add_argument(
+      '--region',
+      help='The compute region (e.g. us-central1) for the cluster. '
+           'For the given cluster, only one of flags --zone and --region can '
+           'be specified.',
+      hidden=region_hidden)
 
 
 def AddAsyncFlag(parser):
@@ -626,3 +662,31 @@ Create a new subnetwork with the name "my-subnet" with a default range.
 Can not be specified unless '--enable-ip-alias' is also specified. Can
 not be used in conjunction with the '--subnetwork' option.
 """)
+
+
+def AddTagOrDigestPositional(parser, verb, repeated=True, tags_only=False,
+                             arg_name=None, metavar=None):
+  digest_str = '*.gcr.io/project_id/image_path@sha256:<digest> or'
+  if tags_only:
+    digest_str = ''
+
+  if not arg_name:
+    arg_name = 'image_names' if repeated else 'image_name'
+    metavar = metavar or 'IMAGE_NAME'
+
+  parser.add_argument(
+      arg_name,
+      metavar=metavar or arg_name.upper(),
+      nargs='+' if repeated else None,
+      help=('The fully qualified name(s) of image(s) to {verb}. '
+            'The name(s) should be formatted as {digest_str} '
+            '*.gcr.io/project_id/image_path[:<tag>].'.format(
+                verb=verb, digest_str=digest_str)))
+
+
+def AddImagePositional(parser, verb):
+  parser.add_argument(
+      'image_name',
+      help=('The fully qualified image name of the image to {verb}. The name '
+            'format should be *.gcr.io/project_id/image_path. '.format(
+                verb=verb)))

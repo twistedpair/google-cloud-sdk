@@ -14,15 +14,6 @@
 """Constants for the dataproc tool."""
 
 # TODO(b/36055865): Move defaults to the server
-from googlecloudsdk.api_lib.util import apis as core_apis
-
-messages = core_apis.GetMessagesModule('dataproc', 'v1')
-# Job Status states that do not change.
-TERMINAL_JOB_STATES = [
-    messages.JobStatus.StateValueValuesEnum.CANCELLED,
-    messages.JobStatus.StateValueValuesEnum.DONE,
-    messages.JobStatus.StateValueValuesEnum.ERROR,
-]
 
 # Path inside of GCS bucket, where Dataproc stores metadata.
 GCS_METADATA_PREFIX = 'google-cloud-dataproc-metainfo'

@@ -14,13 +14,60 @@
 """Helpers for parsing flags and arguments."""
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
 
-# Collection names.
-LOCATION_COLLECTION = 'cloudkms.projects.locations'
 KEY_RING_COLLECTION = 'cloudkms.projects.locations.keyRings'
+LOCATION_COLLECTION = 'cloudkms.projects.locations'
+
+
+class LocationCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(LocationCompleter, self).__init__(
+        collection=LOCATION_COLLECTION,
+        list_command='kms locations list --uri',
+        timeout=8*60*60,
+        **kwargs)
+
+
+class KeyRingCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(KeyRingCompleter, self).__init__(
+        collection=KEY_RING_COLLECTION,
+        list_command='kms keyrings list --uri',
+        flags=['location'],
+        timeout=8*60*60,
+        **kwargs)
+
+
+class KeyCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(KeyCompleter, self).__init__(
+        collection='cloudkms.projects.locations.keyRings.cryptoKeys',
+        list_command='kms keys list --uri',
+        flags=['location', 'keyring'],
+        timeout=8*60*60,
+        **kwargs)
+
+
+class KeyVersionCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(KeyVersionCompleter, self).__init__(
+        collection=('cloudkms.projects.locations.keyRings.cryptoKeys'
+                    '.cryptoKeyVersions'),
+        list_command='kms keys versions list --uri',
+        flags=['location', 'key', 'keyring'],
+        timeout=8*60*60,
+        **kwargs)
+
+
+# Collection names.
 CRYPTO_KEY_COLLECTION = 'cloudkms.projects.locations.keyRings.cryptoKeys'
 CRYPTO_KEY_VERSION_COLLECTION = (
     'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions')
@@ -29,28 +76,23 @@ CRYPTO_KEY_VERSION_COLLECTION = (
 # Flags.
 def AddLocationFlag(parser):
 
-  def _CompletionCallback(parser):
-    del parser  # Unused by Callback.
-    return ['kms', 'locations', 'list', '--format=value(locationId)']
-
   parser.add_argument(
       '--location',
-      completion_resource=LOCATION_COLLECTION,
-      list_command_callback_fn=_CompletionCallback,
+      completer=LocationCompleter,
       help='The location of the requested resource.')
 
 
 def AddKeyRingFlag(parser):
   parser.add_argument(
       '--keyring',
-      completion_resource=KEY_RING_COLLECTION,
+      completer=KeyRingCompleter,
       help='The containing keyring.')
 
 
 def AddCryptoKeyFlag(parser, help_text=None):
   parser.add_argument(
       '--key',
-      completion_resource=CRYPTO_KEY_COLLECTION,
+      completer=KeyCompleter,
       help=help_text or 'The containing key.')
 
 
@@ -58,7 +100,7 @@ def AddCryptoKeyVersionFlag(parser, help_action, required=False):
   parser.add_argument(
       '--version',
       required=required,
-      completion_resource=CRYPTO_KEY_VERSION_COLLECTION,
+      completer=KeyVersionCompleter,
       help='The version {0}.'.format(help_action))
 
 
@@ -101,21 +143,21 @@ def AddAadFileFlag(parser):
 def AddKeyRingArgument(parser, help_action):
   parser.add_argument(
       'keyring',
-      completion_resource=KEY_RING_COLLECTION,
+      completer=KeyRingCompleter,
       help='Name of the keyring {0}.'.format(help_action))
 
 
 def AddCryptoKeyArgument(parser, help_action):
   parser.add_argument(
       'key',
-      completion_resource=CRYPTO_KEY_COLLECTION,
+      completer=KeyCompleter,
       help='Name of the key {0}.'.format(help_action))
 
 
 def AddCryptoKeyVersionArgument(parser, help_action):
   parser.add_argument(
       'version',
-      completion_resource=CRYPTO_KEY_VERSION_COLLECTION,
+      completer=KeyVersionCompleter,
       help='Name of the version {0}.'.format(help_action))
 
 

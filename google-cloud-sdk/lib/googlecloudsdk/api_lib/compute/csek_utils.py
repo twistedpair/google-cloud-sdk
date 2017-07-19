@@ -20,7 +20,7 @@ import re
 
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
-
+from googlecloudsdk.core.util import files
 
 CSEK_HELP_URL = ('https://cloud.google.com/compute/docs/disks/'
                  'customer-supplied-encryption')
@@ -222,10 +222,10 @@ def AddCsekKeyArgs(parser, flags_about_creation=True, resource_type='resource'):
       Path to a Customer-Supplied Encryption Key (CSEK) key file, mapping
       Google Compute Engine {resource}s to user managed keys to be used when
       creating, mounting, or snapshotting disks.
+
+      If you pass `-` as value of the flag the CSEK will be read from stdin.
       See {csek_help} for more details.
       """.format(resource=resource_type, csek_help=CSEK_HELP_URL))
-  # TODO(b/36057457)
-  # Argument - indicates the key file should be read from stdin.'
 
   if flags_about_creation:
     parser.add_argument(
@@ -266,8 +266,8 @@ class CsekKeyStore(object):
   # self._state: dictionary from UriPattern to an instance of (a subclass of)
   # CsekKeyBase
 
-  @staticmethod
-  def FromFile(fname, allow_rsa_encrypted):
+  @classmethod
+  def FromFile(cls, fname, allow_rsa_encrypted):
     """FromFile loads a CsekKeyStore from a file.
 
     Args:
@@ -278,15 +278,13 @@ class CsekKeyStore(object):
       A CsekKeyStore, if found
 
     Raises:
-      exceptions.BadFileException: there's a problem reading fname
-      exceptions.InvalidKeyFileException: the key file failed to parse
-        or was otherwise invalid
+      googlecloudsdk.core.util.files.Error: If the file cannot be read or is
+                                            larger than max_bytes.
     """
 
-    with open(fname) as infile:
-      content = infile.read()
+    content = files.GetFileOrStdinContents(fname)
 
-    return CsekKeyStore(content, allow_rsa_encrypted)
+    return cls(content, allow_rsa_encrypted)
 
   @staticmethod
   def FromArgs(args, allow_rsa_encrypted=False):
@@ -386,8 +384,6 @@ class CsekKeyStore(object):
 
     for pat, key in self.state.iteritems():
       if pat.Matches(resource):
-        # TODO(b/36050486) what's the best thing to do if there are multiple
-        # matches?
         if search_state[0]:
           raise InvalidKeyFileException(
               'Uri patterns [{0}] and [{1}] both match '

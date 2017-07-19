@@ -316,7 +316,7 @@ def AddArgsForServiceAccount(parser, for_update=False):
   min_length = 0 if for_update else 1
   source_service_accounts_help = """\
       The email of a service account indicating the set of instances on the
-      network which match as traffic source in the firewall rule.
+      network which match a traffic source in the firewall rule.
 
       If a source service account is specified then neither source tags nor
       target tags can also be specified.

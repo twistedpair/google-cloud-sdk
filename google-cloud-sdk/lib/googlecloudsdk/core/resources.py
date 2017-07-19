@@ -176,7 +176,8 @@ class _ResourceParser(object):
                     endpoint_url=base_url)
 
   def ParseResourceId(self, resource_id, kwargs,
-                      base_url=None, subcollection='', validate=True):
+                      base_url=None, subcollection='', validate=True,
+                      default_resolver=None):
     """Given a command line and some keyword args, get the resource.
 
     Args:
@@ -200,6 +201,8 @@ class _ResourceParser(object):
             strings character by character. Completers need to do the
             string => parameters => string round trip with validate=False to
             handle the "add character TAB" cycle.
+      default_resolver: func(str) => str, a default param resolver function
+        called if kwargs doesn't resolve a param.
 
     Returns:
       protorpc.messages.Message, The object containing info about this resource.
@@ -260,6 +263,8 @@ class _ResourceParser(object):
       resolver = kwargs.get(param)
       if resolver:
         param_values[param] = resolver() if callable(resolver) else resolver
+      elif default_resolver:
+        param_values[param] = default_resolver(param)
 
     ref = Resource(self.collection_info, subcollection, param_values,
                    base_url)
@@ -767,7 +772,8 @@ class Registry(object):
       raise InvalidCollectionException(collection)
     return parser
 
-  def ParseResourceId(self, collection, resource_id, kwargs, validate=True):
+  def ParseResourceId(self, collection, resource_id, kwargs, validate=True,
+                      default_resolver=None):
     """Parse a resource id string into a Resource.
 
     Args:
@@ -789,6 +795,8 @@ class Registry(object):
             strings character by character. Completers need to do the
             string => parameters => string round trip with validate=False to
             handle the "add character TAB" cycle.
+      default_resolver: func(str) => str, a default param resolver function
+        called if kwargs doesn't resolve a param.
 
     Returns:
       protorpc.messages.Message, The object containing info about this resource.
@@ -820,7 +828,8 @@ class Registry(object):
     if len(parser_collection) != len(collection):
       subcollection = collection[len(parser_collection)+1:]
     return parser.ParseResourceId(resource_id, kwargs, base_url, subcollection,
-                                  validate=validate)
+                                  validate=validate,
+                                  default_resolver=default_resolver)
 
   def GetCollectionInfo(self, collection_name, api_version=None):
     api_name = _APINameFromCollection(collection_name)
@@ -966,7 +975,7 @@ class Registry(object):
         kwargs={'bucket': match.group(1)})
 
   def Parse(self, line, params=None, collection=None, enforce_collection=True,
-            validate=True):
+            validate=True, default_resolver=None):
     """Parse a Cloud resource from a command line.
 
     Args:
@@ -981,6 +990,8 @@ class Registry(object):
         specified collection, this is applicable only if line is URL.
       validate: bool, Validate syntax. Use validate=False to handle IDs under
         construction.
+      default_resolver: func(str) => str, a default param resolver function
+        called if params doesn't resolve a param.
 
     Returns:
       A resource object.
@@ -1039,7 +1050,8 @@ class Registry(object):
       raise InvalidResourceException(line)
 
     return self.ParseResourceId(collection, line, params or {},
-                                validate=validate)
+                                validate=validate,
+                                default_resolver=default_resolver)
 
   def Create(self, collection, **params):
     """Create a Resource from known collection and params.

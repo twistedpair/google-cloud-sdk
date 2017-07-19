@@ -3,7 +3,6 @@
   "discoveryVersion": "v1",
   "id": "cloudbilling:v1",
   "name": "cloudbilling",
-  "canonicalName": "Cloudbilling",
   "version": "v1",
   "revision": "0",
   "title": "Google Cloud Billing API",
@@ -20,6 +19,7 @@
   "servicePath": "",
   "baseUrl": "https://cloudbilling.googleapis.com/",
   "batchPath": "batch",
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",

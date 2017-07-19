@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20170623",
+ "revision": "20170707",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -317,7 +317,7 @@
     },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this access configuration and can only take the following values: PREMIUM , SELECT. If this field is not specified, it is assumed to be PREMIUM.",
+     "description": "This signifies the networking tier used for configuring this access configuration and can only take the following values: PREMIUM, STANDARD.\n\nIf an AccessConfig is specified without a valid external IP address, an ephemeral IP will be created with this networkTier.\n\nIf an AccessConfig with a valid external IP address is specified, it must match that of the networkTier associated with the Address resource owning that IP.",
      "enum": [
       "PREMIUM",
       "SELECT",
@@ -439,7 +439,7 @@
     },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this Address and can only take the following values: PREMIUM , SELECT. If this field is not specified, it is assumed to be PREMIUM.",
+     "description": "This signifies the networking tier used for configuring this Address and can only take the following values: PREMIUM , STANDARD.\n\nIf this field is not specified, it is assumed to be PREMIUM.",
      "enum": [
       "PREMIUM",
       "SELECT",
@@ -2930,7 +2930,7 @@
     },
     "sourceTags": {
      "type": "array",
-     "description": "If source tags are specified, the firewall will apply only to traffic with source IP that belongs to a tag listed in source tags. Source tags cannot be used to control traffic to an instance's external IP address. Because tags are associated with an instance, not an IP address. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic that has source IP address within sourceRanges OR the source IP that belongs to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply.",
+     "description": "If source tags are specified, the firewall will apply only to traffic from VM instances in the same virtual network with a tag listed in the source tags. Source tags cannot be used to control traffic to an instance's external IP address, it only applies to traffic between instances in the same virtual network. Because tags are associated with instances, not IP addresses. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic that has source IP address within sourceRanges OR the source IP that belongs to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply.",
      "items": {
       "type": "string"
      }
@@ -3106,7 +3106,7 @@
     },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: PREMIUM , SELECT. If this field is not specified, it is assumed to be PREMIUM.",
+     "description": "This signifies the networking tier used for configuring this load balancer and can only take the following values: PREMIUM , STANDARD.\n\nFor regional ForwardingRule, the valid values are PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.\n\nIf this field is not specified, it is assumed to be PREMIUM. If IPAddress is specified, this value must be equal to the networkTier of the Address.",
      "enum": [
       "PREMIUM",
       "SELECT",
@@ -3120,7 +3120,7 @@
     },
     "portRange": {
      "type": "string",
-     "description": "This field is used along with the target field for TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy, TargetVpnGateway, TargetPool, TargetInstance.\n\nApplicable only when IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the specified range will be forwarded to target. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint port ranges.\n\nSome types of forwarding target have constraints on the acceptable ports:  \n- TargetHttpProxy: 80, 8080 \n- TargetHttpsProxy: 443 \n- TargetTcpProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995 \n- TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995 \n- TargetVpnGateway: 500, 4500\n-"
+     "description": "This field is used along with the target field for TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy, TargetVpnGateway, TargetPool, TargetInstance.\n\nApplicable only when IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the specified range will be forwarded to target. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint port ranges.\n\nSome types of forwarding target have constraints on the acceptable ports:  \n- TargetHttpProxy: 80, 8080 \n- TargetHttpsProxy: 443 \n- TargetTcpProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 5222 \n- TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 5222 \n- TargetVpnGateway: 500, 4500\n-"
     },
     "ports": {
      "type": "array",
@@ -5231,10 +5231,14 @@
      "type": "string",
      "description": "Minimal action to be taken on an instance. The order of action types is: RESTART \u003c REPLACE.",
      "enum": [
+      "NONE",
+      "REFRESH",
       "REPLACE",
       "RESTART"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       ""
      ]
@@ -5302,10 +5306,14 @@
      "type": "string",
      "description": "The maximal action that should be perfomed on the instances. By default REPLACE.",
      "enum": [
+      "NONE",
+      "REFRESH",
       "REPLACE",
       "RESTART"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       ""
      ]
@@ -5314,10 +5322,14 @@
      "type": "string",
      "description": "The minimal action that should be perfomed on the instances. By default NONE.",
      "enum": [
+      "NONE",
+      "REFRESH",
       "REPLACE",
       "RESTART"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       ""
      ]
@@ -5331,20 +5343,6 @@
     "instances": {
      "type": "array",
      "description": "The URLs of one or more instances to delete. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
-     "items": {
-      "type": "string"
-     }
-    }
-   }
-  },
-  "InstanceGroupManagersDeleteOverridesRequest": {
-   "id": "InstanceGroupManagersDeleteOverridesRequest",
-   "type": "object",
-   "description": "InstanceGroupManagers.deleteOverrides",
-   "properties": {
-    "instances": {
-     "type": "array",
-     "description": "The list of instances for which we want to delete overrides on this managed instance group.",
      "items": {
       "type": "string"
      }
@@ -5382,30 +5380,13 @@
     }
    }
   },
-  "InstanceGroupManagersListOverridesResponse": {
-   "id": "InstanceGroupManagersListOverridesResponse",
-   "type": "object",
-   "properties": {
-    "items": {
-     "type": "array",
-     "description": "[Output Only] The list of overrides in the managed instance group.",
-     "items": {
-      "$ref": "ManagedInstanceOverride"
-     }
-    },
-    "nextPageToken": {
-     "type": "string",
-     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
-    }
-   }
-  },
   "InstanceGroupManagersListPerInstanceConfigsResp": {
    "id": "InstanceGroupManagersListPerInstanceConfigsResp",
    "type": "object",
    "properties": {
     "items": {
      "type": "array",
-     "description": "[Output Only] The list of overrides in the managed instance group.",
+     "description": "[Output Only] The list of per-instance configs in the managed instance group.",
      "items": {
       "$ref": "PerInstanceConfig"
      }
@@ -5562,20 +5543,6 @@
      "description": "The list of target pool URLs that instances in this managed instance group belong to. The managed instance group applies these target pools to all of the instances in the group. Existing instances and new instances in the group all receive these target pool settings.",
      "items": {
       "type": "string"
-     }
-    }
-   }
-  },
-  "InstanceGroupManagersUpdateOverridesRequest": {
-   "id": "InstanceGroupManagersUpdateOverridesRequest",
-   "type": "object",
-   "description": "InstanceGroupManagers.updateOverrides",
-   "properties": {
-    "overrides": {
-     "type": "array",
-     "description": "The list of overrides to insert or patch on this managed instance group.",
-     "items": {
-      "$ref": "ManagedInstanceOverride"
      }
     }
    }
@@ -6231,6 +6198,10 @@
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
     },
+    "customerName": {
+     "type": "string",
+     "description": "Customer name, to put in the Letter of Authorization as the party authorized to request a crossconnect."
+    },
     "description": {
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
@@ -6838,7 +6809,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "[Output Only] Type of resource. Always compute#internalIpOwnerList for lists of internal IP owners.",
+     "description": "[Output Only] Type of resource. Always compute#ipOwnerList for lists of IP owners.",
      "default": "compute#ipOwnerList"
     },
     "nextPageToken": {
@@ -6967,6 +6938,10 @@
    "type": "object",
    "description": "Write a Cloud Audit log",
    "properties": {
+    "isReadPermissionType": {
+     "type": "boolean",
+     "description": "True if the log is for a permission of type DATA_READ or ADMIN_READ."
+    },
     "logName": {
      "type": "string",
      "description": "The log_name to populate in the Cloud Audit Record.",
@@ -7347,10 +7322,6 @@
      "items": {
       "$ref": "ManagedInstanceOverrideDiskOverride"
      }
-    },
-    "instance": {
-     "type": "string",
-     "description": "The URL of the instance."
     },
     "metadata": {
      "type": "array",
@@ -8357,7 +8328,9 @@
       "LOCAL_SSD_TOTAL_GB",
       "NETWORKS",
       "NVIDIA_K80_GPUS",
+      "NVIDIA_P100_GPUS",
       "PREEMPTIBLE_CPUS",
+      "PREEMPTIBLE_LOCAL_SSD_GB",
       "REGIONAL_AUTOSCALERS",
       "REGIONAL_INSTANCE_GROUP_MANAGERS",
       "ROUTERS",
@@ -8378,6 +8351,8 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -8704,10 +8679,14 @@
      "type": "string",
      "description": "The maximal action that should be perfomed on the instances. By default REPLACE.",
      "enum": [
+      "NONE",
+      "REFRESH",
       "REPLACE",
       "RESTART"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       ""
      ]
@@ -8716,10 +8695,14 @@
      "type": "string",
      "description": "The minimal action that should be perfomed on the instances. By default NONE.",
      "enum": [
+      "NONE",
+      "REFRESH",
       "REPLACE",
       "RESTART"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       ""
      ]
@@ -8733,20 +8716,6 @@
     "instances": {
      "type": "array",
      "description": "The URLs of one or more instances to delete. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
-     "items": {
-      "type": "string"
-     }
-    }
-   }
-  },
-  "RegionInstanceGroupManagersDeleteOverridesRequest": {
-   "id": "RegionInstanceGroupManagersDeleteOverridesRequest",
-   "type": "object",
-   "description": "RegionInstanceGroupManagers.deleteOverrides",
-   "properties": {
-    "instances": {
-     "type": "array",
-     "description": "The list of instances for which we want to delete overrides on this managed instance group.",
      "items": {
       "type": "string"
      }
@@ -8779,23 +8748,6 @@
      "description": "List of managed instances.",
      "items": {
       "$ref": "ManagedInstance"
-     }
-    },
-    "nextPageToken": {
-     "type": "string",
-     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
-    }
-   }
-  },
-  "RegionInstanceGroupManagersListOverridesResponse": {
-   "id": "RegionInstanceGroupManagersListOverridesResponse",
-   "type": "object",
-   "properties": {
-    "items": {
-     "type": "array",
-     "description": "[Output Only] The list of overrides in the managed instance group.",
-     "items": {
-      "$ref": "ManagedInstanceOverride"
      }
     },
     "nextPageToken": {
@@ -8854,20 +8806,6 @@
     "instanceTemplate": {
      "type": "string",
      "description": "URL of the InstanceTemplate resource from which all new instances will be created."
-    }
-   }
-  },
-  "RegionInstanceGroupManagersUpdateOverridesRequest": {
-   "id": "RegionInstanceGroupManagersUpdateOverridesRequest",
-   "type": "object",
-   "description": "RegionInstanceGroupManagers.updateOverrides",
-   "properties": {
-    "overrides": {
-     "type": "array",
-     "description": "The list of overrides to insert or patch on this managed instance group.",
-     "items": {
-      "$ref": "ManagedInstanceOverride"
-     }
     }
    }
   },
@@ -9922,7 +9860,7 @@
   "SecurityPolicyRule": {
    "id": "SecurityPolicyRule",
    "type": "object",
-   "description": "Represents a rule that describes one or more match conditions along with the action to be taken when traffic matches this condition (allow or deny)",
+   "description": "Represents a rule that describes one or more match conditions along with the action to be taken when traffic matches this condition (allow or deny).",
    "properties": {
     "action": {
      "type": "string",
@@ -9955,7 +9893,7 @@
   "SecurityPolicyRuleMatcher": {
    "id": "SecurityPolicyRuleMatcher",
    "type": "object",
-   "description": "Represents a match condition that incoming traffic is evaluated against. Exactly one of the fields must be set.",
+   "description": "Represents a match condition that incoming traffic is evaluated against. Exactly one field must be specified.",
    "properties": {
     "srcIpRanges": {
      "type": "array",
@@ -10277,7 +10215,7 @@
     },
     "fingerprint": {
      "type": "string",
-     "description": "Fingerprint generated from a hash of the resource contents.",
+     "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a Subnetwork. An up-to-date fingerprint must be provided in order to update the Subnetwork.",
      "format": "byte"
     },
     "gatewayAddress": {
@@ -18311,48 +18249,6 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
-    "deleteOverrides": {
-     "id": "compute.instanceGroupManagers.deleteOverrides",
-     "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/deleteOverrides",
-     "httpMethod": "POST",
-     "description": "Delete selected overrides for the managed instance group.",
-     "parameters": {
-      "instanceGroupManager": {
-       "type": "string",
-       "description": "The name of the managed instance group.",
-       "required": true,
-       "location": "path"
-      },
-      "project": {
-       "type": "string",
-       "description": "Project ID for this request.",
-       "required": true,
-       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
-       "location": "path"
-      },
-      "zone": {
-       "type": "string",
-       "description": "The name of the zone where the managed instance group is located. It should conform to RFC1035.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "project",
-      "zone",
-      "instanceGroupManager"
-     ],
-     "request": {
-      "$ref": "InstanceGroupManagersDeleteOverridesRequest"
-     },
-     "response": {
-      "$ref": "Operation"
-     },
-     "scopes": [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
-     ]
-    },
     "deletePerInstanceConfigs": {
      "id": "compute.instanceGroupManagers.deletePerInstanceConfigs",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/deletePerInstanceConfigs",
@@ -18583,69 +18479,6 @@
      ],
      "response": {
       "$ref": "InstanceGroupManagersListManagedInstancesResponse"
-     },
-     "scopes": [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/compute.readonly"
-     ]
-    },
-    "listOverrides": {
-     "id": "compute.instanceGroupManagers.listOverrides",
-     "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/listOverrides",
-     "httpMethod": "POST",
-     "description": "Lists all of the overrides defined for the managed instance group.",
-     "parameters": {
-      "filter": {
-       "type": "string",
-       "description": "Sets a filter {expression} for filtering listed resources. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances that do not have a name of example-instance, you would use name ne example-instance.\n\nYou can filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. Use filtering on nested fields to take advantage of labels to organize and search for results based on label values.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.",
-       "location": "query"
-      },
-      "instanceGroupManager": {
-       "type": "string",
-       "description": "The name of the managed instance group. It should conform to RFC1035.",
-       "required": true,
-       "location": "path"
-      },
-      "maxResults": {
-       "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
-       "default": "500",
-       "format": "uint32",
-       "minimum": "0",
-       "location": "query"
-      },
-      "orderBy": {
-       "type": "string",
-       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
-       "location": "query"
-      },
-      "pageToken": {
-       "type": "string",
-       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
-       "location": "query"
-      },
-      "project": {
-       "type": "string",
-       "description": "Project ID for this request.",
-       "required": true,
-       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
-       "location": "path"
-      },
-      "zone": {
-       "type": "string",
-       "description": "The name of the zone where the managed instance group is located. It should conform to RFC1035.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "project",
-      "zone",
-      "instanceGroupManager"
-     ],
-     "response": {
-      "$ref": "InstanceGroupManagersListOverridesResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -19134,53 +18967,6 @@
      ],
      "request": {
       "$ref": "InstanceGroupManager"
-     },
-     "response": {
-      "$ref": "Operation"
-     },
-     "scopes": [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
-     ]
-    },
-    "updateOverrides": {
-     "id": "compute.instanceGroupManagers.updateOverrides",
-     "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/updateOverrides",
-     "httpMethod": "POST",
-     "description": "Insert or patch (for the ones that already exist) overrides for the managed instance group.",
-     "parameters": {
-      "instanceGroupManager": {
-       "type": "string",
-       "description": "The name of the managed instance group. It should conform to RFC1035.",
-       "required": true,
-       "location": "path"
-      },
-      "project": {
-       "type": "string",
-       "description": "Project ID for this request.",
-       "required": true,
-       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
-       "location": "path"
-      },
-      "requestId": {
-       "type": "string",
-       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-       "location": "query"
-      },
-      "zone": {
-       "type": "string",
-       "description": "The name of the zone where the managed instance group is located. It should conform to RFC1035.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "project",
-      "zone",
-      "instanceGroupManager"
-     ],
-     "request": {
-      "$ref": "InstanceGroupManagersUpdateOverridesRequest"
      },
      "response": {
       "$ref": "Operation"
@@ -25092,48 +24878,6 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
-    "deleteOverrides": {
-     "id": "compute.regionInstanceGroupManagers.deleteOverrides",
-     "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/deleteOverrides",
-     "httpMethod": "POST",
-     "description": "Delete selected overrides for the managed instance group.",
-     "parameters": {
-      "instanceGroupManager": {
-       "type": "string",
-       "description": "The name of the managed instance group. It should conform to RFC1035.",
-       "required": true,
-       "location": "path"
-      },
-      "project": {
-       "type": "string",
-       "description": "Project ID for this request.",
-       "required": true,
-       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
-       "location": "path"
-      },
-      "region": {
-       "type": "string",
-       "description": "Name of the region scoping this request, should conform to RFC1035.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "project",
-      "region",
-      "instanceGroupManager"
-     ],
-     "request": {
-      "$ref": "RegionInstanceGroupManagersDeleteOverridesRequest"
-     },
-     "response": {
-      "$ref": "Operation"
-     },
-     "scopes": [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
-     ]
-    },
     "deletePerInstanceConfigs": {
      "id": "compute.regionInstanceGroupManagers.deletePerInstanceConfigs",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/deletePerInstanceConfigs",
@@ -25364,69 +25108,6 @@
      ],
      "response": {
       "$ref": "RegionInstanceGroupManagersListInstancesResponse"
-     },
-     "scopes": [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/compute.readonly"
-     ]
-    },
-    "listOverrides": {
-     "id": "compute.regionInstanceGroupManagers.listOverrides",
-     "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/listOverrides",
-     "httpMethod": "POST",
-     "description": "Lists all of the overrides defined for the managed instance group.",
-     "parameters": {
-      "filter": {
-       "type": "string",
-       "description": "Sets a filter {expression} for filtering listed resources. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances that do not have a name of example-instance, you would use name ne example-instance.\n\nYou can filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. Use filtering on nested fields to take advantage of labels to organize and search for results based on label values.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.",
-       "location": "query"
-      },
-      "instanceGroupManager": {
-       "type": "string",
-       "description": "The name of the managed instance group. It should conform to RFC1035.",
-       "required": true,
-       "location": "path"
-      },
-      "maxResults": {
-       "type": "integer",
-       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
-       "default": "500",
-       "format": "uint32",
-       "minimum": "0",
-       "location": "query"
-      },
-      "orderBy": {
-       "type": "string",
-       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
-       "location": "query"
-      },
-      "pageToken": {
-       "type": "string",
-       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
-       "location": "query"
-      },
-      "project": {
-       "type": "string",
-       "description": "Project ID for this request.",
-       "required": true,
-       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
-       "location": "path"
-      },
-      "region": {
-       "type": "string",
-       "description": "Name of the region scoping this request, should conform to RFC1035.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "project",
-      "region",
-      "instanceGroupManager"
-     ],
-     "response": {
-      "$ref": "RegionInstanceGroupManagersListOverridesResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -25869,48 +25550,6 @@
      ],
      "request": {
       "$ref": "InstanceGroupManager"
-     },
-     "response": {
-      "$ref": "Operation"
-     },
-     "scopes": [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/compute"
-     ]
-    },
-    "updateOverrides": {
-     "id": "compute.regionInstanceGroupManagers.updateOverrides",
-     "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/updateOverrides",
-     "httpMethod": "POST",
-     "description": "Insert or patch (for the ones that already exist) overrides for the managed instance group.",
-     "parameters": {
-      "instanceGroupManager": {
-       "type": "string",
-       "description": "The name of the managed instance group. It should conform to RFC1035.",
-       "required": true,
-       "location": "path"
-      },
-      "project": {
-       "type": "string",
-       "description": "Project ID for this request.",
-       "required": true,
-       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
-       "location": "path"
-      },
-      "region": {
-       "type": "string",
-       "description": "Name of the region scoping this request, should conform to RFC1035.",
-       "required": true,
-       "location": "path"
-      }
-     },
-     "parameterOrder": [
-      "project",
-      "region",
-      "instanceGroupManager"
-     ],
-     "request": {
-      "$ref": "RegionInstanceGroupManagersUpdateOverridesRequest"
      },
      "response": {
       "$ref": "Operation"

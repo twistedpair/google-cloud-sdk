@@ -18,6 +18,7 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
+from googlecloudsdk.command_lib.iam import completers
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -51,44 +52,21 @@ class IamEtagReadError(core_exceptions.Error):
   """IamEtagReadError is raised when etag is badly formatted."""
 
 
-def _AddRoleArgument(
-    parser, help_text, completion_resource_arg, completion_resource_collection):
-  """Helper function to add the --role flag with remote completion."""
-
-  def CompletionCallback(parsed_args):
-    resource_ref = resources.REGISTRY.Parse(
-        getattr(parsed_args, completion_resource_arg),
-        collection=completion_resource_collection)
-    resource_uri = resource_ref.SelfLink()
-    return ['beta', 'iam', 'list-grantable-roles', '--format=value(name)',
-            resource_uri]
-  have_completion = (completion_resource_arg and completion_resource_collection)
-
-  parser.add_argument(
-      '--role', required=True,
-      completion_resource='iam.roles' if have_completion else None,
-      list_command_callback_fn=CompletionCallback if have_completion else None,
-      help=help_text)
-
-
-def AddArgsForAddIamPolicyBinding(
-    parser, completion_resource_arg=None, completion_resource_collection=None):
+def AddArgsForAddIamPolicyBinding(parser, completer=None):
   """Adds the IAM policy binding arguments for role and members.
 
   Args:
     parser: An argparse.ArgumentParser-like object to which we add the argss.
-    completion_resource_arg: str, Name of the argument that holds the resource
-      upon which the policy is applied to.
-    completion_resource_collection: str, Collection of the resource.
-      completion_resource_arg and completion_resource_collection are optional,
-      but role tab completion is not possible without specifying them.
+    completer: A command_lib.iam.completers.IamRolesCompleter class to complete
+      the --role flag value.
 
   Raises:
     ArgumentError if one of the arguments is already defined in the parser.
   """
 
-  _AddRoleArgument(parser, 'Define the role of the member.',
-                   completion_resource_arg, completion_resource_collection)
+  parser.add_argument(
+      '--role', required=True, completer=completer,
+      help='Define the role of the member.')
   parser.add_argument(
       '--member', required=True,
       help='The member to add to the binding. '
@@ -96,24 +74,21 @@ def AddArgsForAddIamPolicyBinding(
       '(e.g. `user:test-user@gmail.com.`)')
 
 
-def AddArgsForRemoveIamPolicyBinding(
-    parser, completion_resource_arg=None, completion_resource_collection=None):
+def AddArgsForRemoveIamPolicyBinding(parser, completer=None):
   """Adds the IAM policy binding arguments for role and members.
 
   Args:
     parser: An argparse.ArgumentParser-like object to which we add the argss.
-    completion_resource_arg: str, Name of the argument that hold the resource
-      upon which the policy is applied to.
-    completion_resource_collection: str, Collection of the resource.
-      completion_resource_arg and completion_resource_collection are optional,
-      but role tab completion is not possible without specifying them.
+    completer: A command_lib.iam.completers.IamRolesCompleter class to complete
+      the --role flag value.
 
   Raises:
     ArgumentError if one of the arguments is already defined in the parser.
   """
 
-  _AddRoleArgument(parser, 'The role to remove the member from.',
-                   completion_resource_arg, completion_resource_collection)
+  parser.add_argument(
+      '--role', required=True, completer=completer,
+      help='The role to remove the member from.')
   parser.add_argument(
       '--member', required=True,
       help='The member to add to the binding. '
@@ -563,23 +538,35 @@ def ServiceAccountsUriFunc(resource):
   return ref.SelfLink()
 
 
-def AddServiceAccountNameArg(parser, help_text):
+def AddServiceAccountNameArg(parser, action='to act on'):
   """Adds the IAM service account name argument that supports tab completion.
 
   Args:
     parser: An argparse.ArgumentParser-like object to which we add the args.
-    help_text: Help message to display for the service account name argument.
+    action: Action to display in the help message. Should be something like
+      'to act on' or a relative phrase like 'whose policy to get'.
 
   Raises:
     ArgumentError if one of the arguments is already defined in the parser.
   """
 
-  parser.add_argument('name',
-                      metavar='IAM_ACCOUNT',
-                      completion_resource='iam.service_accounts',
-                      list_command_path='iam.service_accounts',
-                      help=help_text)
+  parser.add_argument('service_account',
+                      metavar='SERVICE_ACCOUNT',
+                      type=GetIamAccountFormatValidator(),
+                      completer=completers.IamServiceAccountCompleter,
+                      help=('The service account {}. The account should be '
+                            'formatted as an email, like this: '
+                            'my-iam-account@somedomain.com.'.format(action)))
 
 
 def LogSetIamPolicy(name, kind):
   log.status.Print('Updated IAM policy for {} [{}].'.format(kind, name))
+
+
+def GetIamAccountFormatValidator():
+  """Checks that provided iam account identifier is a valid email address."""
+  return arg_parsers.RegexpValidator(
+      r'^.+@.+\..+$',  # Overly broad on purpose but catches most common issues.
+      'Not a valid email address. It should be of the form: '
+      'my-iam-account@somedomain.com or '
+      'my-iam-account@PROJECT_ID.iam.gserviceaccount.com')

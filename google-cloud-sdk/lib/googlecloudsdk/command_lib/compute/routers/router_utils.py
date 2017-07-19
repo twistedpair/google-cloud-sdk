@@ -27,7 +27,7 @@ _INCOMPATIBLE_INCREMENTAL_FLAGS_ERROR_MESSAGE = (
     '--advertisement flags.')
 
 _CUSTOM_WITH_DEFAULT_ERROR_MESSAGE = (
-    'Cannot modify custom advertisements for a {resource} with default mode.')
+    'Cannot specify custom advertisements for a {resource} with default mode.')
 
 _GROUP_NOT_FOUND_ERROR_MESSAGE = (
     'Advertised group {group} not found on this {resource}.')

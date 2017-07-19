@@ -276,6 +276,9 @@ def _GetGsutilPath():
 def RunGsutilCommand(command_name, command_arg_str, run_concurrent=False):
   """Runs the specified gsutil command and returns the command's exit code.
 
+  This is more reliable than storage_api.StorageClient.CopyFilesToGcs especially
+  for large files.
+
   Args:
     command_name: The gsutil command to run.
     command_arg_str: Arguments to pass to the command.

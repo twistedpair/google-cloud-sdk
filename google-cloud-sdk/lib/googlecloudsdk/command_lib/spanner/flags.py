@@ -16,22 +16,70 @@
 import itertools
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.util import completers
+
+
+class DatabaseCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(DatabaseCompleter, self).__init__(
+        collection='spanner.projects.instances.databases',
+        list_command='spanner databases list --uri',
+        flags=['instance'],
+        **kwargs)
+
+
+class DatabaseOperationCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(DatabaseOperationCompleter, self).__init__(
+        collection='spanner.projects.instances.databases.operations',
+        list_command='spanner operations list --uri',
+        flags=['instance'],
+        **kwargs)
+
+
+class InstanceCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(InstanceCompleter, self).__init__(
+        collection='spanner.projects.instances',
+        list_command='spanner instances list --uri',
+        **kwargs)
+
+
+class InstanceConfigCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(InstanceConfigCompleter, self).__init__(
+        collection='spanner.projects.instanceConfigs',
+        list_command='spanner instance-configs list --uri',
+        **kwargs)
+
+
+class OperationCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(OperationCompleter, self).__init__(
+        collection='spanner.projects.instances.operations',
+        list_command='spanner operations list --uri',
+        flags=['instance'],
+        **kwargs)
 
 
 def Database(positional=True,
              required=True,
              text='Cloud Spanner database ID.'):
-  resource = 'spanner.projects.instances.databases'
   if positional:
     return base.Argument(
         'database',
-        completion_resource=resource,
+        completer=DatabaseCompleter,
         help=text)
   else:
     return base.Argument(
         '--database',
         required=required,
-        completion_resource=resource,
+        completer=DatabaseCompleter,
         help=text)
 
 
@@ -43,9 +91,22 @@ def Ddl(required=False, help_text=''):
       help=help_text)
 
 
-def FixDdl(ddl):
+def SplitDdlIntoStatements(ddl):
   """Break DDL statements on semicolon to support multiple in one argument."""
-  return list(itertools.chain.from_iterable(x.split(';') for x in ddl))
+  statements = []
+  for x in ddl:
+    # Disallow empty strings to allow for trailing semi-colons.
+    statements.append(s for s in x.split(';') if s)
+
+  return list(itertools.chain.from_iterable(statements))
+
+
+def Config(required=True):
+  return base.Argument(
+      '--config',
+      completer=InstanceConfigCompleter,
+      required=required,
+      help='Instance config for the instance.')
 
 
 def Description(required=True):
@@ -56,17 +117,16 @@ def Description(required=True):
 
 
 def Instance(positional=True, text='Cloud Spanner instance ID.'):
-  resource = 'spanner.projects.instances'
   if positional:
     return base.Argument(
         'instance',
-        completion_resource=resource,
+        completer=InstanceCompleter,
         help=text)
   else:
     return base.Argument(
         '--instance',
         required=True,
-        completion_resource=resource,
+        completer=InstanceCompleter,
         help=text)
 
 
@@ -82,6 +142,5 @@ def OperationId(database=False):
   return base.Argument(
       'operation',
       metavar='OPERATION-ID',
-      completion_resource='spanner.projects.instances.databases.operations'
-      if database else 'spanner.projects.instances.operations',
+      completer=DatabaseOperationCompleter if database else OperationCompleter,
       help='ID of the operation')

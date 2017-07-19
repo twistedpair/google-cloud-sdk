@@ -244,8 +244,11 @@ class AccessConfig(_messages.Message):
   Enums:
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this access configuration and can only take the following
-      values: PREMIUM , SELECT. If this field is not specified, it is assumed
-      to be PREMIUM.
+      values: PREMIUM, STANDARD.  If an AccessConfig is specified without a
+      valid external IP address, an ephemeral IP will be created with this
+      networkTier.  If an AccessConfig with a valid external IP address is
+      specified, it must match that of the networkTier associated with the
+      Address resource owning that IP.
     TypeValueValuesEnum: The type of configuration. The default and only
       option is ONE_TO_ONE_NAT.
 
@@ -261,8 +264,12 @@ class AccessConfig(_messages.Message):
       you specify a static external IP address, it must live in the same
       region as the zone of the instance.
     networkTier: This signifies the networking tier used for configuring this
-      access configuration and can only take the following values: PREMIUM ,
-      SELECT. If this field is not specified, it is assumed to be PREMIUM.
+      access configuration and can only take the following values: PREMIUM,
+      STANDARD.  If an AccessConfig is specified without a valid external IP
+      address, an ephemeral IP will be created with this networkTier.  If an
+      AccessConfig with a valid external IP address is specified, it must
+      match that of the networkTier associated with the Address resource
+      owning that IP.
     publicDnsName: [Output Only] The public DNS domain name for the instance.
     publicPtrDomainName: The DNS domain name for the public PTR record. This
       field can only be set when the set_public_ptr field is enabled.
@@ -277,8 +284,11 @@ class AccessConfig(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this access
-    configuration and can only take the following values: PREMIUM , SELECT. If
-    this field is not specified, it is assumed to be PREMIUM.
+    configuration and can only take the following values: PREMIUM, STANDARD.
+    If an AccessConfig is specified without a valid external IP address, an
+    ephemeral IP will be created with this networkTier.  If an AccessConfig
+    with a valid external IP address is specified, it must match that of the
+    networkTier associated with the Address resource owning that IP.
 
     Values:
       PREMIUM: <no description>
@@ -320,7 +330,8 @@ class Address(_messages.Message):
       a global address.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this Address and can only take the following values: PREMIUM
-      , SELECT. If this field is not specified, it is assumed to be PREMIUM.
+      , STANDARD.  If this field is not specified, it is assumed to be
+      PREMIUM.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be either IN_USE or RESERVED. An address that is RESERVED is currently
       reserved and available to use. An IN_USE address is currently being used
@@ -363,7 +374,7 @@ class Address(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     networkTier: This signifies the networking tier used for configuring this
-      Address and can only take the following values: PREMIUM , SELECT. If
+      Address and can only take the following values: PREMIUM , STANDARD.  If
       this field is not specified, it is assumed to be PREMIUM.
     region: [Output Only] URL of the region where the regional address
       resides. This field is not applicable to global addresses.
@@ -408,8 +419,8 @@ class Address(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this Address
-    and can only take the following values: PREMIUM , SELECT. If this field is
-    not specified, it is assumed to be PREMIUM.
+    and can only take the following values: PREMIUM , STANDARD.  If this field
+    is not specified, it is assumed to be PREMIUM.
 
     Values:
       PREMIUM: <no description>
@@ -5953,25 +5964,6 @@ class ComputeInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
-class ComputeInstanceGroupManagersDeleteOverridesRequest(_messages.Message):
-  """A ComputeInstanceGroupManagersDeleteOverridesRequest object.
-
-  Fields:
-    instanceGroupManager: The name of the managed instance group.
-    instanceGroupManagersDeleteOverridesRequest: A
-      InstanceGroupManagersDeleteOverridesRequest resource to be passed as the
-      request body.
-    project: Project ID for this request.
-    zone: The name of the zone where the managed instance group is located. It
-      should conform to RFC1035.
-  """
-
-  instanceGroupManager = _messages.StringField(1, required=True)
-  instanceGroupManagersDeleteOverridesRequest = _messages.MessageField('InstanceGroupManagersDeleteOverridesRequest', 2)
-  project = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
-
-
 class ComputeInstanceGroupManagersDeletePerInstanceConfigsRequest(_messages.Message):
   """A ComputeInstanceGroupManagersDeletePerInstanceConfigsRequest object.
 
@@ -6075,61 +6067,6 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   instanceGroupManager = _messages.StringField(2, required=True)
   maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
   order_by = _messages.StringField(4)
-  pageToken = _messages.StringField(5)
-  project = _messages.StringField(6, required=True)
-  zone = _messages.StringField(7, required=True)
-
-
-class ComputeInstanceGroupManagersListOverridesRequest(_messages.Message):
-  """A ComputeInstanceGroupManagersListOverridesRequest object.
-
-  Fields:
-    filter: Sets a filter {expression} for filtering listed resources. Your
-      {expression} must be in the format: field_name comparison_string
-      literal_string.  The field_name is the name of the field you want to
-      compare. Only atomic field types are supported (string, number,
-      boolean). The comparison_string must be either eq (equals) or ne (not
-      equals). The literal_string is the string value to filter to. The
-      literal value must be valid for the type of field you are filtering by
-      (string, number, boolean). For string fields, the literal value is
-      interpreted as a regular expression using RE2 syntax. The literal value
-      must match the entire field.  For example, to filter for instances that
-      do not have a name of example-instance, you would use name ne example-
-      instance.  You can filter on nested fields. For example, you could
-      filter on instances that have set the scheduling.automaticRestart field
-      to true. Use filtering on nested fields to take advantage of labels to
-      organize and search for results based on label values.  To filter on
-      multiple expressions, provide each separate expression within
-      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
-      us-central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
-    instanceGroupManager: The name of the managed instance group. It should
-      conform to RFC1035.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than maxResults,
-      Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests. Acceptable values are 0 to
-      500, inclusive. (Default: 500)
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name.  You can
-      also sort results in descending order based on the creation timestamp
-      using orderBy="creationTimestamp desc". This sorts results based on the
-      creationTimestamp field in reverse chronological order (newest result
-      first). Use this to sort resources like operations so that the newest
-      operation is returned first.  Currently, only sorting by name or
-      creationTimestamp desc is supported.
-    pageToken: Specifies a page token to use. Set pageToken to the
-      nextPageToken returned by a previous list request to get the next page
-      of results.
-    project: Project ID for this request.
-    zone: The name of the zone where the managed instance group is located. It
-      should conform to RFC1035.
-  """
-
-  filter = _messages.StringField(1)
-  instanceGroupManager = _messages.StringField(2, required=True)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   zone = _messages.StringField(7, required=True)
@@ -6460,37 +6397,6 @@ class ComputeInstanceGroupManagersTestIamPermissionsRequest(_messages.Message):
   resource = _messages.StringField(2, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
   zone = _messages.StringField(4, required=True)
-
-
-class ComputeInstanceGroupManagersUpdateOverridesRequest(_messages.Message):
-  """A ComputeInstanceGroupManagersUpdateOverridesRequest object.
-
-  Fields:
-    instanceGroupManager: The name of the managed instance group. It should
-      conform to RFC1035.
-    instanceGroupManagersUpdateOverridesRequest: A
-      InstanceGroupManagersUpdateOverridesRequest resource to be passed as the
-      request body.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
-    zone: The name of the zone where the managed instance group is located. It
-      should conform to RFC1035.
-  """
-
-  instanceGroupManager = _messages.StringField(1, required=True)
-  instanceGroupManagersUpdateOverridesRequest = _messages.MessageField('InstanceGroupManagersUpdateOverridesRequest', 2)
-  project = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersUpdatePerInstanceConfigsRequest(_messages.Message):
@@ -9999,26 +9905,6 @@ class ComputeRegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message
   requestId = _messages.StringField(5)
 
 
-class ComputeRegionInstanceGroupManagersDeleteOverridesRequest(_messages.Message):
-  """A ComputeRegionInstanceGroupManagersDeleteOverridesRequest object.
-
-  Fields:
-    instanceGroupManager: The name of the managed instance group. It should
-      conform to RFC1035.
-    project: Project ID for this request.
-    region: Name of the region scoping this request, should conform to
-      RFC1035.
-    regionInstanceGroupManagersDeleteOverridesRequest: A
-      RegionInstanceGroupManagersDeleteOverridesRequest resource to be passed
-      as the request body.
-  """
-
-  instanceGroupManager = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  regionInstanceGroupManagersDeleteOverridesRequest = _messages.MessageField('RegionInstanceGroupManagersDeleteOverridesRequest', 4)
-
-
 class ComputeRegionInstanceGroupManagersDeletePerInstanceConfigsRequest(_messages.Message):
   """A ComputeRegionInstanceGroupManagersDeletePerInstanceConfigsRequest
   object.
@@ -10122,61 +10008,6 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
   instanceGroupManager = _messages.StringField(2, required=True)
   maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
   order_by = _messages.StringField(4)
-  pageToken = _messages.StringField(5)
-  project = _messages.StringField(6, required=True)
-  region = _messages.StringField(7, required=True)
-
-
-class ComputeRegionInstanceGroupManagersListOverridesRequest(_messages.Message):
-  """A ComputeRegionInstanceGroupManagersListOverridesRequest object.
-
-  Fields:
-    filter: Sets a filter {expression} for filtering listed resources. Your
-      {expression} must be in the format: field_name comparison_string
-      literal_string.  The field_name is the name of the field you want to
-      compare. Only atomic field types are supported (string, number,
-      boolean). The comparison_string must be either eq (equals) or ne (not
-      equals). The literal_string is the string value to filter to. The
-      literal value must be valid for the type of field you are filtering by
-      (string, number, boolean). For string fields, the literal value is
-      interpreted as a regular expression using RE2 syntax. The literal value
-      must match the entire field.  For example, to filter for instances that
-      do not have a name of example-instance, you would use name ne example-
-      instance.  You can filter on nested fields. For example, you could
-      filter on instances that have set the scheduling.automaticRestart field
-      to true. Use filtering on nested fields to take advantage of labels to
-      organize and search for results based on label values.  To filter on
-      multiple expressions, provide each separate expression within
-      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
-      us-central1-f). Multiple expressions are treated as AND expressions,
-      meaning that resources must match all expressions to pass the filters.
-    instanceGroupManager: The name of the managed instance group. It should
-      conform to RFC1035.
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than maxResults,
-      Compute Engine returns a nextPageToken that can be used to get the next
-      page of results in subsequent list requests. Acceptable values are 0 to
-      500, inclusive. (Default: 500)
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name.  You can
-      also sort results in descending order based on the creation timestamp
-      using orderBy="creationTimestamp desc". This sorts results based on the
-      creationTimestamp field in reverse chronological order (newest result
-      first). Use this to sort resources like operations so that the newest
-      operation is returned first.  Currently, only sorting by name or
-      creationTimestamp desc is supported.
-    pageToken: Specifies a page token to use. Set pageToken to the
-      nextPageToken returned by a previous list request to get the next page
-      of results.
-    project: Project ID for this request.
-    region: Name of the region scoping this request, should conform to
-      RFC1035.
-  """
-
-  filter = _messages.StringField(1)
-  instanceGroupManager = _messages.StringField(2, required=True)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(4)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   region = _messages.StringField(7, required=True)
@@ -10475,26 +10306,6 @@ class ComputeRegionInstanceGroupManagersTestIamPermissionsRequest(_messages.Mess
   region = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
-
-
-class ComputeRegionInstanceGroupManagersUpdateOverridesRequest(_messages.Message):
-  """A ComputeRegionInstanceGroupManagersUpdateOverridesRequest object.
-
-  Fields:
-    instanceGroupManager: The name of the managed instance group. It should
-      conform to RFC1035.
-    project: Project ID for this request.
-    region: Name of the region scoping this request, should conform to
-      RFC1035.
-    regionInstanceGroupManagersUpdateOverridesRequest: A
-      RegionInstanceGroupManagersUpdateOverridesRequest resource to be passed
-      as the request body.
-  """
-
-  instanceGroupManager = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  regionInstanceGroupManagersUpdateOverridesRequest = _messages.MessageField('RegionInstanceGroupManagersUpdateOverridesRequest', 4)
 
 
 class ComputeRegionInstanceGroupManagersUpdatePerInstanceConfigsRequest(_messages.Message):
@@ -14884,14 +14695,15 @@ class Firewall(_messages.Message):
       sourceServiceAccounts cannot be used at the same time as sourceTags or
       targetTags.
     sourceTags: If source tags are specified, the firewall will apply only to
-      traffic with source IP that belongs to a tag listed in source tags.
-      Source tags cannot be used to control traffic to an instance's external
-      IP address. Because tags are associated with an instance, not an IP
-      address. One or both of sourceRanges and sourceTags may be set. If both
-      properties are set, the firewall will apply to traffic that has source
-      IP address within sourceRanges OR the source IP that belongs to a tag
-      listed in the sourceTags property. The connection does not need to match
-      both properties for the firewall to apply.
+      traffic from VM instances in the same virtual network with a tag listed
+      in the source tags. Source tags cannot be used to control traffic to an
+      instance's external IP address, it only applies to traffic between
+      instances in the same virtual network. Because tags are associated with
+      instances, not IP addresses. One or both of sourceRanges and sourceTags
+      may be set. If both properties are set, the firewall will apply to
+      traffic that has source IP address within sourceRanges OR the source IP
+      that belongs to a tag listed in the sourceTags property. The connection
+      does not need to match both properties for the firewall to apply.
     targetServiceAccounts: A list of service accounts indicating sets of
       instances located in the network that may make network connections as
       specified in allowed[]. targetServiceAccounts cannot be used at the same
@@ -15032,8 +14844,11 @@ class ForwardingRule(_messages.Message):
       LB, SSL Proxy)
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this load balancer and can only take the following values:
-      PREMIUM , SELECT. If this field is not specified, it is assumed to be
-      PREMIUM.
+      PREMIUM , STANDARD.  For regional ForwardingRule, the valid values are
+      PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is
+      PREMIUM.  If this field is not specified, it is assumed to be PREMIUM.
+      If IPAddress is specified, this value must be equal to the networkTier
+      of the Address.
 
   Messages:
     LabelsValue: Labels to apply to this resource. These can be later modified
@@ -15097,8 +14912,11 @@ class ForwardingRule(_messages.Message):
       IP should belong to for this Forwarding Rule. If this field is not
       specified, the default network will be used.
     networkTier: This signifies the networking tier used for configuring this
-      load balancer and can only take the following values: PREMIUM , SELECT.
-      If this field is not specified, it is assumed to be PREMIUM.
+      load balancer and can only take the following values: PREMIUM ,
+      STANDARD.  For regional ForwardingRule, the valid values are PREMIUM and
+      STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.  If this
+      field is not specified, it is assumed to be PREMIUM. If IPAddress is
+      specified, this value must be equal to the networkTier of the Address.
     portRange: This field is used along with the target field for
       TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy,
       TargetVpnGateway, TargetPool, TargetInstance.  Applicable only when
@@ -15107,9 +14925,9 @@ class ForwardingRule(_messages.Message):
       same [IPAddress, IPProtocol] pair must have disjoint port ranges.  Some
       types of forwarding target have constraints on the acceptable ports:   -
       TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetTcpProxy:
-      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995  - TargetSslProxy:
-      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995  - TargetVpnGateway:
-      500, 4500 -
+      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 5222  -
+      TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
+      5222  - TargetVpnGateway: 500, 4500 -
     ports: This field is used along with the backend_service field for
       internal load balancing.  When the load balancing scheme is INTERNAL, a
       single port or a comma separated list of ports can be configured. Only
@@ -15195,8 +15013,11 @@ class ForwardingRule(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this load
-    balancer and can only take the following values: PREMIUM , SELECT. If this
-    field is not specified, it is assumed to be PREMIUM.
+    balancer and can only take the following values: PREMIUM , STANDARD.  For
+    regional ForwardingRule, the valid values are PREMIUM and STANDARD. For
+    GlobalForwardingRule, the valid value is PREMIUM.  If this field is not
+    specified, it is assumed to be PREMIUM. If IPAddress is specified, this
+    value must be equal to the networkTier of the Address.
 
     Values:
       PREMIUM: <no description>
@@ -17536,11 +17357,15 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     is: RESTART < REPLACE.
 
     Values:
+      NONE: <no description>
+      REFRESH: <no description>
       REPLACE: <no description>
       RESTART: <no description>
     """
-    REPLACE = 0
-    RESTART = 1
+    NONE = 0
+    REFRESH = 1
+    REPLACE = 2
+    RESTART = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     """TypeValueValuesEnum enum type.
@@ -17620,22 +17445,30 @@ class InstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     REPLACE.
 
     Values:
+      NONE: <no description>
+      REFRESH: <no description>
       REPLACE: <no description>
       RESTART: <no description>
     """
-    REPLACE = 0
-    RESTART = 1
+    NONE = 0
+    REFRESH = 1
+    REPLACE = 2
+    RESTART = 3
 
   class MinimalActionValueValuesEnum(_messages.Enum):
     """The minimal action that should be perfomed on the instances. By default
     NONE.
 
     Values:
+      NONE: <no description>
+      REFRESH: <no description>
       REPLACE: <no description>
       RESTART: <no description>
     """
-    REPLACE = 0
-    RESTART = 1
+    NONE = 0
+    REFRESH = 1
+    REPLACE = 2
+    RESTART = 3
 
   instances = _messages.StringField(1, repeated=True)
   maximalAction = _messages.EnumField('MaximalActionValueValuesEnum', 2)
@@ -17648,17 +17481,6 @@ class InstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   Fields:
     instances: The URLs of one or more instances to delete. This can be a full
       URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
-  """
-
-  instances = _messages.StringField(1, repeated=True)
-
-
-class InstanceGroupManagersDeleteOverridesRequest(_messages.Message):
-  """InstanceGroupManagers.deleteOverrides
-
-  Fields:
-    instances: The list of instances for which we want to delete overrides on
-      this managed instance group.
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -17692,27 +17514,12 @@ class InstanceGroupManagersListManagedInstancesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class InstanceGroupManagersListOverridesResponse(_messages.Message):
-  """A InstanceGroupManagersListOverridesResponse object.
-
-  Fields:
-    items: [Output Only] The list of overrides in the managed instance group.
-    nextPageToken: [Output Only] This token allows you to get the next page of
-      results for list requests. If the number of results is larger than
-      maxResults, use the nextPageToken as a value for the query parameter
-      pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
-  """
-
-  items = _messages.MessageField('ManagedInstanceOverride', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
 class InstanceGroupManagersListPerInstanceConfigsResp(_messages.Message):
   """A InstanceGroupManagersListPerInstanceConfigsResp object.
 
   Fields:
-    items: [Output Only] The list of overrides in the managed instance group.
+    items: [Output Only] The list of per-instance configs in the managed
+      instance group.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -17908,17 +17715,6 @@ class InstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
 
   fingerprint = _messages.BytesField(1)
   targetPools = _messages.StringField(2, repeated=True)
-
-
-class InstanceGroupManagersUpdateOverridesRequest(_messages.Message):
-  """InstanceGroupManagers.updateOverrides
-
-  Fields:
-    overrides: The list of overrides to insert or patch on this managed
-      instance group.
-  """
-
-  overrides = _messages.MessageField('ManagedInstanceOverride', 1, repeated=True)
 
 
 class InstanceGroupManagersUpdatePerInstanceConfigsReq(_messages.Message):
@@ -18627,6 +18423,8 @@ class Interconnect(_messages.Message):
       facility provider to connect to the specified crossconnect ports.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    customerName: Customer name, to put in the Letter of Authorization as the
+      party authorized to request a crossconnect.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     expectedOutages: [Output Only] List of outages expected for this
@@ -18700,23 +18498,24 @@ class Interconnect(_messages.Message):
   adminEnabled = _messages.BooleanField(1)
   connectionAuthorization = _messages.StringField(2)
   creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  expectedOutages = _messages.MessageField('InterconnectOutageNotification', 5, repeated=True)
-  googleIpAddress = _messages.StringField(6)
-  googleReferenceId = _messages.StringField(7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  interconnectAttachments = _messages.StringField(9, repeated=True)
-  interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 10)
-  kind = _messages.StringField(11, default=u'compute#interconnect')
-  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 12)
-  location = _messages.StringField(13)
-  name = _messages.StringField(14)
-  nocContactEmail = _messages.StringField(15)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 16)
-  peerIpAddress = _messages.StringField(17)
-  provisionedLinkCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  requestedLinkCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(20)
+  customerName = _messages.StringField(4)
+  description = _messages.StringField(5)
+  expectedOutages = _messages.MessageField('InterconnectOutageNotification', 6, repeated=True)
+  googleIpAddress = _messages.StringField(7)
+  googleReferenceId = _messages.StringField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  interconnectAttachments = _messages.StringField(10, repeated=True)
+  interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 11)
+  kind = _messages.StringField(12, default=u'compute#interconnect')
+  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 13)
+  location = _messages.StringField(14)
+  name = _messages.StringField(15)
+  nocContactEmail = _messages.StringField(16)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 17)
+  peerIpAddress = _messages.StringField(18)
+  provisionedLinkCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  requestedLinkCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(21)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -19220,8 +19019,8 @@ class IpOwnerList(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     items: [Output Only] A list of InternalIpOwner resources.
-    kind: [Output Only] Type of resource. Always compute#internalIpOwnerList
-      for lists of internal IP owners.
+    kind: [Output Only] Type of resource. Always compute#ipOwnerList for lists
+      of IP owners.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
@@ -19328,6 +19127,8 @@ class LogConfigCloudAuditOptions(_messages.Message):
       Record.
 
   Fields:
+    isReadPermissionType: True if the log is for a permission of type
+      DATA_READ or ADMIN_READ.
     logName: The log_name to populate in the Cloud Audit Record.
   """
 
@@ -19343,7 +19144,8 @@ class LogConfigCloudAuditOptions(_messages.Message):
     DATA_ACCESS = 1
     UNSPECIFIED_LOG_NAME = 2
 
-  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
+  isReadPermissionType = _messages.BooleanField(1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
 class LogConfigCounterOptions(_messages.Message):
@@ -19782,7 +19584,6 @@ class ManagedInstanceOverride(_messages.Message):
 
   Fields:
     disks: Disk overrides defined for this instance
-    instance: The URL of the instance.
     metadata: Metadata overrides defined for this instance.
   """
 
@@ -19805,8 +19606,7 @@ class ManagedInstanceOverride(_messages.Message):
     value = _messages.StringField(2)
 
   disks = _messages.MessageField('ManagedInstanceOverrideDiskOverride', 1, repeated=True)
-  instance = _messages.StringField(2)
-  metadata = _messages.MessageField('MetadataValueListEntry', 3, repeated=True)
+  metadata = _messages.MessageField('MetadataValueListEntry', 2, repeated=True)
 
 
 class ManagedInstanceOverrideDiskOverride(_messages.Message):
@@ -20832,7 +20632,9 @@ class Quota(_messages.Message):
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
       NVIDIA_K80_GPUS: <no description>
+      NVIDIA_P100_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
+      PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
       ROUTERS: <no description>
@@ -20872,25 +20674,27 @@ class Quota(_messages.Message):
     LOCAL_SSD_TOTAL_GB = 17
     NETWORKS = 18
     NVIDIA_K80_GPUS = 19
-    PREEMPTIBLE_CPUS = 20
-    REGIONAL_AUTOSCALERS = 21
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 22
-    ROUTERS = 23
-    ROUTES = 24
-    SNAPSHOTS = 25
-    SSD_TOTAL_GB = 26
-    SSL_CERTIFICATES = 27
-    STATIC_ADDRESSES = 28
-    SUBNETWORKS = 29
-    TARGET_HTTPS_PROXIES = 30
-    TARGET_HTTP_PROXIES = 31
-    TARGET_INSTANCES = 32
-    TARGET_POOLS = 33
-    TARGET_SSL_PROXIES = 34
-    TARGET_TCP_PROXIES = 35
-    TARGET_VPN_GATEWAYS = 36
-    URL_MAPS = 37
-    VPN_TUNNELS = 38
+    NVIDIA_P100_GPUS = 20
+    PREEMPTIBLE_CPUS = 21
+    PREEMPTIBLE_LOCAL_SSD_GB = 22
+    REGIONAL_AUTOSCALERS = 23
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 24
+    ROUTERS = 25
+    ROUTES = 26
+    SNAPSHOTS = 27
+    SSD_TOTAL_GB = 28
+    SSL_CERTIFICATES = 29
+    STATIC_ADDRESSES = 30
+    SUBNETWORKS = 31
+    TARGET_HTTPS_PROXIES = 32
+    TARGET_HTTP_PROXIES = 33
+    TARGET_INSTANCES = 34
+    TARGET_POOLS = 35
+    TARGET_SSL_PROXIES = 36
+    TARGET_TCP_PROXIES = 37
+    TARGET_VPN_GATEWAYS = 38
+    URL_MAPS = 39
+    VPN_TUNNELS = 40
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -21121,22 +20925,30 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
     REPLACE.
 
     Values:
+      NONE: <no description>
+      REFRESH: <no description>
       REPLACE: <no description>
       RESTART: <no description>
     """
-    REPLACE = 0
-    RESTART = 1
+    NONE = 0
+    REFRESH = 1
+    REPLACE = 2
+    RESTART = 3
 
   class MinimalActionValueValuesEnum(_messages.Enum):
     """The minimal action that should be perfomed on the instances. By default
     NONE.
 
     Values:
+      NONE: <no description>
+      REFRESH: <no description>
       REPLACE: <no description>
       RESTART: <no description>
     """
-    REPLACE = 0
-    RESTART = 1
+    NONE = 0
+    REFRESH = 1
+    REPLACE = 2
+    RESTART = 3
 
   instances = _messages.StringField(1, repeated=True)
   maximalAction = _messages.EnumField('MaximalActionValueValuesEnum', 2)
@@ -21149,17 +20961,6 @@ class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   Fields:
     instances: The URLs of one or more instances to delete. This can be a full
       URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
-  """
-
-  instances = _messages.StringField(1, repeated=True)
-
-
-class RegionInstanceGroupManagersDeleteOverridesRequest(_messages.Message):
-  """RegionInstanceGroupManagers.deleteOverrides
-
-  Fields:
-    instances: The list of instances for which we want to delete overrides on
-      this managed instance group.
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -21195,22 +20996,6 @@ class RegionInstanceGroupManagersListInstancesResponse(_messages.Message):
   """
 
   managedInstances = _messages.MessageField('ManagedInstance', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class RegionInstanceGroupManagersListOverridesResponse(_messages.Message):
-  """A RegionInstanceGroupManagersListOverridesResponse object.
-
-  Fields:
-    items: [Output Only] The list of overrides in the managed instance group.
-    nextPageToken: [Output Only] This token allows you to get the next page of
-      results for list requests. If the number of results is larger than
-      maxResults, use the nextPageToken as a value for the query parameter
-      pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
-  """
-
-  items = _messages.MessageField('ManagedInstanceOverride', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -21261,17 +21046,6 @@ class RegionInstanceGroupManagersSetTemplateRequest(_messages.Message):
   """
 
   instanceTemplate = _messages.StringField(1)
-
-
-class RegionInstanceGroupManagersUpdateOverridesRequest(_messages.Message):
-  """RegionInstanceGroupManagers.updateOverrides
-
-  Fields:
-    overrides: The list of overrides to insert or patch on this managed
-      instance group.
-  """
-
-  overrides = _messages.MessageField('ManagedInstanceOverride', 1, repeated=True)
 
 
 class RegionInstanceGroupsListInstances(_messages.Message):
@@ -22316,7 +22090,7 @@ class SecurityPolicyReference(_messages.Message):
 
 class SecurityPolicyRule(_messages.Message):
   """Represents a rule that describes one or more match conditions along with
-  the action to be taken when traffic matches this condition (allow or deny)
+  the action to be taken when traffic matches this condition (allow or deny).
 
   Fields:
     action: The Action to preform when the client connection triggers the
@@ -22344,7 +22118,7 @@ class SecurityPolicyRule(_messages.Message):
 
 class SecurityPolicyRuleMatcher(_messages.Message):
   """Represents a match condition that incoming traffic is evaluated against.
-  Exactly one of the fields must be set.
+  Exactly one field must be specified.
 
   Fields:
     srcIpRanges: CIDR IP address range. Only IPv4 is supported.
@@ -22706,7 +22480,10 @@ class Subnetwork(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource. This field can be set only at
       resource creation time.
-    fingerprint: Fingerprint generated from a hash of the resource contents.
+    fingerprint: Fingerprint of this resource. A hash of the contents stored
+      in this object. This field is used in optimistic locking. This field
+      will be ignored when inserting a Subnetwork. An up-to-date fingerprint
+      must be provided in order to update the Subnetwork.
     gatewayAddress: [Output Only] The gateway address for default routes to
       reach destination addresses outside this subnetwork. This field can be
       set only at resource creation time.

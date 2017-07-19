@@ -79,7 +79,12 @@ def AddCreateArgs(parser):
       must be specified in CIDR format:
       [](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
 
-      This flag only works if mode is legacy.
+      This flag only works if mode is
+      [legacy](https://cloud.google.com/compute/docs/vpc/legacy).
+
+      Using legacy networks is **not recommended**, given that many newer Google
+      Cloud Platform features are not supported on legacy networks. Please be
+      advised that legacy networks may not be supported in the future.
       """)
 
 

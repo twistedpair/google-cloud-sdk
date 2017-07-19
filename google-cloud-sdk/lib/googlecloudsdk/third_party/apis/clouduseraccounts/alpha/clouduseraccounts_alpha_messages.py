@@ -849,6 +849,8 @@ class LogConfigCloudAuditOptions(_messages.Message):
       Record.
 
   Fields:
+    isReadPermissionType: True if the log is for a permission of type
+      DATA_READ or ADMIN_READ.
     logName: The log_name to populate in the Cloud Audit Record.
   """
 
@@ -864,7 +866,8 @@ class LogConfigCloudAuditOptions(_messages.Message):
     DATA_ACCESS = 1
     UNSPECIFIED_LOG_NAME = 2
 
-  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
+  isReadPermissionType = _messages.BooleanField(1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
 class LogConfigCounterOptions(_messages.Message):

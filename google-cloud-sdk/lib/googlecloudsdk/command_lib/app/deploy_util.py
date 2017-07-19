@@ -242,14 +242,14 @@ class ServiceDeployer(object):
           service_info, source_dir, code_bucket_ref)
 
     # Actually create the new version of the service.
+    metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)
+    self.api_client.DeployService(new_version.service, new_version.id,
+                                  service_info, manifest, image,
+                                  endpoints_info)
+    metrics.CustomTimedEvent(metric_names.DEPLOY_API)
     message = 'Updating service [{service}]'.format(
         service=new_version.service)
     with progress_tracker.ProgressTracker(message):
-      metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)
-      self.api_client.DeployService(new_version.service, new_version.id,
-                                    service_info, manifest, image,
-                                    endpoints_info)
-      metrics.CustomTimedEvent(metric_names.DEPLOY_API)
       self._PossiblyPromote(all_services, new_version)
 
 
@@ -539,9 +539,9 @@ def _PossiblyRepairApp(api_client, app):
     resources, including code bucket.
   """
   if not app.codeBucket:
-    with progress_tracker.ProgressTracker('Initializing App Engine resources'):
-      api_client.RepairApplication()
-      app = api_client.GetApplication()
+    message = 'Initializing App Engine resources'
+    api_client.RepairApplication(progress_message=message)
+    app = api_client.GetApplication()
   return app
 
 

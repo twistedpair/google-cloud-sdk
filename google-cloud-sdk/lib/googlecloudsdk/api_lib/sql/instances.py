@@ -20,7 +20,6 @@ from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util import labels_util
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
@@ -385,10 +384,6 @@ class _BaseInstances(object):
 
     # Reverting to default if creating instance and no flags are set.
     if not machine_type and not instance:
-      # TODO(b/37718516): Remove warning when defaults are changed.
-      log.warning('The default instance type will change from First Generation '
-                  '"D1" to Second Generation "db-n1-standard-1" on 2017-07-19. '
-                  'Specifying a tier will avoid unexpected behavior.')
       machine_type = constants.DEFAULT_MACHINE_TYPE
 
     return machine_type

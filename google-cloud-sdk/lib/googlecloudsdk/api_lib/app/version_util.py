@@ -24,7 +24,6 @@ from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
-from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import text
 from googlecloudsdk.core.util import times
@@ -206,11 +205,8 @@ def DeleteVersions(api_client, versions):
   errors = {}
   for version in versions:
     version_path = '{0}/{1}'.format(version.service, version.id)
-    # TODO(b/37279801): Use the core gcloud pollers instead.
     try:
-      with progress_tracker.ProgressTracker(
-          'Deleting [{0}]'.format(version_path)):
-        api_client.DeleteVersion(version.service, version.id)
+      api_client.DeleteVersion(version.service, version.id)
     except (core_api_exceptions.HttpException, operations_util.OperationError,
             operations_util.OperationTimeoutError, app_exceptions.Error) as err:
       errors[version_path] = str(err)

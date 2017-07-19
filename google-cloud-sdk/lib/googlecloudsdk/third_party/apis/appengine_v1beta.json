@@ -191,7 +191,7 @@
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details. There will be a common set of message types for APIs to use.",
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -1665,14 +1665,14 @@
           "$ref": "CertificateRawData"
         },
         "visibleDomainMappings": {
-          "description": "The full paths to user visible Domain Mapping resources that have this certificate mapped. Example: apps\/myapp\/domainMappings\/example.com.This may not represent the full list of mapped domain mappings if the user does not have VIEWER permissions on all of the applications that have this certificate mapped. See domain_mappings_count for a complete count.Only returned by GET requests when specifically requested by the view=FULL option.@OutputOnly",
+          "description": "The full paths to user visible Domain Mapping resources that have this certificate mapped. Example: apps\/myapp\/domainMappings\/example.com.This may not represent the full list of mapped domain mappings if the user does not have VIEWER permissions on all of the applications that have this certificate mapped. See domain_mappings_count for a complete count.Only returned by GET or LIST requests when specifically requested by the view=FULL_CERTIFICATE option.@OutputOnly",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "domainMappingsCount": {
-          "description": "Aggregate count of the domain mappings with this certificate mapped. This count includes domain mappings on applications for which the user does not have VIEWER permissions.Only returned by GET requests when specifically requested by the view=FULL option.@OutputOnly",
+          "description": "Aggregate count of the domain mappings with this certificate mapped. This count includes domain mappings on applications for which the user does not have VIEWER permissions.Only returned by GET or LIST requests when specifically requested by the view=FULL_CERTIFICATE option.@OutputOnly",
           "type": "integer",
           "format": "int32"
         }
@@ -2926,6 +2926,15 @@
                   "required": true,
                   "pattern": "^apps\/[^\/]+$",
                   "type": "string"
+                },
+                "view": {
+                  "description": "Controls the set of fields returned in the LIST response.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "BASIC_CERTIFICATE",
+                    "FULL_CERTIFICATE"
+                  ]
                 },
                 "pageSize": {
                   "description": "Maximum results to return per page.",

@@ -143,7 +143,7 @@ class AppEngineRouting(_messages.Message):
   engine).  Note: The routing for some queues or tasks which were not created
   using the Cloud Tasks API may not be parsable into AppEngineRouting. For
   example, if numeric version names are used, then urls such as `123.my-
-  service.appspot.com` are ambiguous because `123` can be interpretted as a
+  service.appspot.com` are ambiguous because `123` can be interpreted as a
   version or instance number. See
   [here](https://cloud.google.com/appengine/docs/python/how-requests-are-
   routed#soft_routing) for more information. If the routing is unparsable,
@@ -184,7 +184,7 @@ class AppEngineTaskTarget(_messages.Message):
   files](https://cloud.google.com/appengine/docs/python/config/dispatchref).
   The AppEngineRouting used to construct the URL can be set at the queue-level
   or task-level:  *  If set, AppEngineQueueConfig.app_engine_routing_overrides
-  is used for all    tasks in the queue, no matter what the setting is for the
+  is used for    all tasks in the queue, no matter what the setting is for the
   task-level app_engine_routing.   The `url` that the task will be sent to is:
   * `url = host +` AppEngineTaskTarget.relative_url  * `host =
   [application_domain_name]`</br>   `| [service] + '.' +
@@ -389,7 +389,7 @@ class AttemptStatus(_messages.Message):
     dispatchTime: Output only.  The time that this attempt was dispatched.
     responseStatus: Output only.  The response from the target for this
       attempt.  If the task has not been attempted or the task is currently
-      running then the response status will be UNKNOWN.
+      running then the response status will be google.rpc.Code.UNKNOWN.
     responseTime: Output only.  The time that this attempt response was
       received.
     scheduleTime: Output only.  The time that this attempt was scheduled.
@@ -1064,7 +1064,8 @@ class Queue(_messages.Message):
       using CloudTasks.PurgeQueue, the [App Engine Task Queue SDK, or the
       Cloud Console](https://cloud.google.com/appengine/docs/standard/python/t
       askqueue/push/deleting-tasks-and-queues#purging_all_tasks_from_a_queue).
-      Purge time will be truncated to the nearest microsecond.
+      Purge time will be truncated to the nearest microsecond. Purge time will
+      be zero if the queue has never been purged.
     queueState: Output only.  The state of the queue.  `queue_state` can only
       be changed by called CloudTasks.PauseQueue, CloudTasks.EnableQueue, or
       uploading [queue.yaml](https://cloud.google.com/appengine/docs/python/co
@@ -1085,7 +1086,7 @@ class Queue(_messages.Message):
 
     Values:
       QUEUE_STATE_UNSPECIFIED: Unspecified state.
-      ENABLED: Queue is enabled. Tasks are executing normally.
+      ENABLED: Queue is enabled. Tasks can be dispatched.
       PAUSED: Tasks are paused by the user. If the queue is paused then Cloud
         Tasks will stop delivering tasks from it, but more tasks can still be
         added to it by the user. When a pull queue is paused, all
@@ -1319,7 +1320,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details.  There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

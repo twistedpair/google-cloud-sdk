@@ -16,7 +16,6 @@
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.ml import content_source
 from googlecloudsdk.api_lib.ml.speech import exceptions
-from googlecloudsdk.api_lib.ml.speech import operations
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
@@ -155,7 +154,11 @@ class SpeechClient(object):
     message = 'Waiting for operation [{}] to complete'.format(
         operation_ref.operationsId)
     return waiter.WaitFor(
-        operations.SpeechOperationPoller(self.client.operations),
+        waiter.CloudOperationPollerNoResources(
+            self.client.operations,
+            # TODO(b/62478975): remove this workaround when operation resources
+            # are compatible with gcloud parsing.
+            get_name_func=lambda x: x.operationsId),
         operation_ref,
         message,
         exponential_sleep_multiplier=2.0,

@@ -54,7 +54,7 @@ class ClouddebuggerV2(base_api.BaseApiClient):
     def List(self, request, global_params=None):
       """Returns the list of all active breakpoints for the debuggee.
 
-The breakpoint specification (location, condition, and expression
+The breakpoint specification (`location`, `condition`, and `expressions`
 fields) is semantically immutable, although the field values may
 change. For example, an agent may update the location line number
 to reflect the actual line where the breakpoint was set, but this
@@ -96,7 +96,7 @@ service.
 
 Updates to active breakpoint fields are only allowed if the new value
 does not change the breakpoint specification. Updates to the `location`,
-`condition` and `expression` fields should not alter the breakpoint
+`condition` and `expressions` fields should not alter the breakpoint
 semantics. These may only make changes such as canonicalizing a value
 or snapping the location to the correct line of code.
 

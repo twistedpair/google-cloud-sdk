@@ -18,20 +18,17 @@ Bulk object uploads and downloads use methods that shell out to gsutil.
 Lightweight metadata / streaming operations use the StorageClient class.
 """
 
-import os
 import sys
 import urlparse
 
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import transfer
 
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import config
-from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.util import platforms
 
 
 # URI scheme for GCS.
@@ -46,49 +43,6 @@ urlparse.uses_relative.append(STORAGE_SCHEME)
 urlparse.uses_netloc.append(STORAGE_SCHEME)
 
 
-def _GetGsutilPath():
-  """Determines the path to the gsutil binary."""
-  sdk_bin_path = config.Paths().sdk_bin_path
-  if not sdk_bin_path:
-    # TODO(b/36051088): check if gsutil component is installed and offer user
-    # to install it if it is not.
-    raise exceptions.ToolException(('A SDK root could not be found. Please '
-                                    'check your installation.'))
-
-  gsutil_path = os.path.join(sdk_bin_path, 'gsutil')
-  if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
-    gsutil_path += '.cmd'
-  return gsutil_path
-
-
-def _RunGsutilCommand(command_name, command_args, run_concurrent=False):
-  """Runs the specified gsutil command and returns the command's exit code.
-
-  Args:
-    command_name: The gsutil command to run.
-    command_args: List of arguments to pass to the command.
-    run_concurrent: Whether concurrent uploads should be enabled while running
-      the command.
-
-  Returns:
-    The exit code of the call to the gsutil command.
-  """
-  gsutil_path = _GetGsutilPath()
-
-  gsutil_args = []
-  if run_concurrent:
-    gsutil_args += ['-m']
-  gsutil_args += [command_name]
-  gsutil_args += command_args
-  env = None
-
-  gsutil_cmd = execution_utils.ArgsForExecutableTool(gsutil_path, *gsutil_args)
-  log.debug('Running command: [{args}], Env: [{env}]'.format(
-      args=' '.join(gsutil_cmd),
-      env=env))
-  return execution_utils.Exec(gsutil_cmd, no_exit=True, env=env)
-
-
 def Upload(files, destination):
   """Upload a list of local files to GCS.
 
@@ -98,7 +52,7 @@ def Upload(files, destination):
   """
   args = files
   args += [destination]
-  exit_code = _RunGsutilCommand('cp', args)
+  exit_code = storage_util.RunGsutilCommand('cp', ' '.join(args))
   if exit_code != 0:
     raise exceptions.ToolException(
         "Failed to upload files {0} to '{1}' using gsutil.".format(

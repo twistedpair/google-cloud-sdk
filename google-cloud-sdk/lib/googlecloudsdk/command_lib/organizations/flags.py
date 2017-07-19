@@ -13,15 +13,12 @@
 # limitations under the License.
 """Flags for commands that deal with Organizations."""
 from googlecloudsdk.calliope import base
-
-
-ORGS_COLLECTION = 'cloudresourcemanager.organizations'
+from googlecloudsdk.command_lib.resource_manager import completers
 
 
 def IdArg(description):
   return base.Argument(
       'id',
       metavar='ORGANIZATION_ID',
-      completion_resource=ORGS_COLLECTION,
-      list_command_path='organizations list --uri',
+      completer=completers.OrganizationCompleter,
       help='ID for the organization {0}'.format(description))

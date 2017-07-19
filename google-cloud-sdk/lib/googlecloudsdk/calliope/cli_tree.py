@@ -178,10 +178,9 @@ class Positional(Argument):
   def __init__(self, positional, name):
 
     super(Positional, self).__init__(positional, name)
-    try:
-      self.required = bool(int(positional.nargs))
-    except (TypeError, ValueError):
-      self.required = False
+    if positional.nargs is None:
+      self.nargs = '1'
+    self.required = positional.nargs not in (0, '?', '*', '...')
 
 
 class Command(object):

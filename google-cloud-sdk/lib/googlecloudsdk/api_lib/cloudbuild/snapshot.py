@@ -88,6 +88,7 @@ class Snapshot(object):
     for dpath in self.dirs:
       t = tarfile.TarInfo(dpath)
       t.type = tarfile.DIRTYPE
+      t.mode = os.stat(dpath).st_mode
       tf.addfile(t)
       log.debug('Added dir [%s]', dpath)
     for path in self.files:

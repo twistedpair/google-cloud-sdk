@@ -19,6 +19,7 @@ from apitools.base.py import extra_types
 from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.resource_manager import completers
 from googlecloudsdk.core import log as sdk_log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -80,7 +81,7 @@ def AddNonProjectArgs(parser, help_string):
   entity_group = parser.add_mutually_exclusive_group()
   entity_group.add_argument(
       '--organization', required=False, metavar='ORGANIZATION_ID',
-      completion_resource='cloudresourcemanager.organizations',
+      completer=completers.OrganizationCompleter,
       help='{0} associated with this organization.'.format(help_string))
 
   entity_group.add_argument(

@@ -66,7 +66,8 @@ def _GetBalancingModes():
           Spreads load based on how many requests per second (RPS) the group
           can handle. There are two ways to specify max RPS: *--max-rate* which
           defines the max RPS for the whole group or *--max-rate-per-instance*,
-          which defines the max RPS on a per-instance basis.
+          which defines the max RPS on a per-instance basis. Available only for
+          HTTP based protocols.
           """,
       'UTILIZATION': """\
           Relies on the CPU utilization of the instances in the group when
@@ -75,7 +76,8 @@ def _GetBalancingModes():
           *--max-rate* to optionally limit based on RPS in addition to CPU.
           You can optionally also limit based on connections (for TCP/SSL) in
           addition to CPU by setting *--max-connections* or
-          *--max-connections-per-instance*.
+          *--max-connections-per-instance*. Available for all services without
+          *--load-balancing-scheme INTERNAL*.
           """,
       'CONNECTION': """\
           Spreads load based on how many concurrent connections the group
@@ -83,6 +85,7 @@ def _GetBalancingModes():
           *--max-connections* which defines the max number of connections
           for the whole group or *--max-connections-per-instance*, which
           defines the max number of connections on a per-instance basis.
+          Available for all services.
           """,
   }
   return balancing_modes
@@ -95,13 +98,7 @@ def AddBalancingMode(parser):
       choices=_GetBalancingModes(),
       type=lambda x: x.upper(),
       help="""\
-      Defines the strategy for balancing load.
-
-      *RATE* and the max rate arguments are available only
-      in backend services with HTTP based protocols.
-
-      For backend services with TCP/SSL protocol either *UTILIZATION* or
-      *CONNECTION* are available.""")
+      Defines the strategy for balancing load.""")
 
 
 def AddMaxUtilization(parser):

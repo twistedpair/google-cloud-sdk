@@ -25,7 +25,6 @@ from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 import ipaddr
 
 
@@ -307,7 +306,7 @@ def CreateNetworkInterfaceMessage(resources,
         subnet,
         collection='compute.subnetworks',
         params={
-            'project': properties.VALUES.core.project.GetOrFail,
+            'project': instance_refs[0].project,
             'region': region
         })
     network_interface.subnetwork = subnet_ref.SelfLink()
@@ -315,14 +314,14 @@ def CreateNetworkInterfaceMessage(resources,
     network_ref = resources.Parse(
         network,
         params={
-            'project': properties.VALUES.core.project.GetOrFail,
+            'project': instance_refs[0].project,
         },
         collection='compute.networks')
     network_interface.network = network_ref.SelfLink()
   elif subnet is None:
     network_ref = resources.Parse(
         constants.DEFAULT_NETWORK,
-        params={'project': properties.VALUES.core.project.GetOrFail},
+        params={'project': instance_refs[0].project},
         collection='compute.networks')
     network_interface.network = network_ref.SelfLink()
 
@@ -685,7 +684,7 @@ def UseExistingBootDisk(disks):
 
 
 def CreateLocalSsdMessage(resources, messages, device_name, interface,
-                          size_bytes=None, zone=None):
+                          size_bytes=None, zone=None, project=None):
   """Create a message representing a local ssd."""
 
   if zone:
@@ -693,7 +692,7 @@ def CreateLocalSsdMessage(resources, messages, device_name, interface,
         'local-ssd',
         collection='compute.diskTypes',
         params={
-            'project': properties.VALUES.core.project.GetOrFail,
+            'project': project,
             'zone': zone
         }
     )

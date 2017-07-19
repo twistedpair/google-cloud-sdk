@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20170623",
+ "revision": "20170707",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -337,6 +337,20 @@
      "type": "string",
      "description": "The static external IP address represented by this resource."
     },
+    "addressType": {
+     "type": "string",
+     "description": "The type of address to reserve. If unspecified, defaults to EXTERNAL.",
+     "enum": [
+      "EXTERNAL",
+      "INTERNAL",
+      "UNSPECIFIED_TYPE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -410,6 +424,10 @@
       "",
       ""
      ]
+    },
+    "subnetwork": {
+     "type": "string",
+     "description": "For external addresses, this field should not be used.\n\nThe URL of the subnetwork in which to reserve the address. If an IP address is specified, it must be within the subnetwork's IP range."
     },
     "users": {
      "type": "array",
@@ -2708,7 +2726,7 @@
     },
     "sourceTags": {
      "type": "array",
-     "description": "If source tags are specified, the firewall will apply only to traffic with source IP that belongs to a tag listed in source tags. Source tags cannot be used to control traffic to an instance's external IP address. Because tags are associated with an instance, not an IP address. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic that has source IP address within sourceRanges OR the source IP that belongs to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply.",
+     "description": "If source tags are specified, the firewall will apply only to traffic from VM instances in the same virtual network with a tag listed in the source tags. Source tags cannot be used to control traffic to an instance's external IP address, it only applies to traffic between instances in the same virtual network. Because tags are associated with instances, not IP addresses. One or both of sourceRanges and sourceTags may be set. If both properties are set, the firewall will apply to traffic that has source IP address within sourceRanges OR the source IP that belongs to a tag listed in the sourceTags property. The connection does not need to match both properties for the firewall to apply.",
      "items": {
       "type": "string"
      }
@@ -2757,6 +2775,28 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
+    }
+   }
+  },
+  "FixedOrPercent": {
+   "id": "FixedOrPercent",
+   "type": "object",
+   "description": "Encapsulates numeric value that can be either absolute or relative.",
+   "properties": {
+    "calculated": {
+     "type": "integer",
+     "description": "[Output Only] Absolute value calculated based on mode: mode = fixed -\u003e calculated = fixed = percent -\u003e calculated = ceiling(percent/100 * base_value)",
+     "format": "int32"
+    },
+    "fixed": {
+     "type": "integer",
+     "description": "fixed must be non-negative.",
+     "format": "int32"
+    },
+    "percent": {
+     "type": "integer",
+     "description": "percent must belong to [0, 100].",
+     "format": "int32"
     }
    }
   },
@@ -2862,7 +2902,7 @@
     },
     "portRange": {
      "type": "string",
-     "description": "This field is used along with the target field for TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy, TargetVpnGateway, TargetPool, TargetInstance.\n\nApplicable only when IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the specified range will be forwarded to target. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint port ranges.\n\nSome types of forwarding target have constraints on the acceptable ports:  \n- TargetHttpProxy: 80, 8080 \n- TargetHttpsProxy: 443 \n- TargetTcpProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995 \n- TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995 \n- TargetVpnGateway: 500, 4500\n-"
+     "description": "This field is used along with the target field for TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy, TargetVpnGateway, TargetPool, TargetInstance.\n\nApplicable only when IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the specified range will be forwarded to target. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint port ranges.\n\nSome types of forwarding target have constraints on the acceptable ports:  \n- TargetHttpProxy: 80, 8080 \n- TargetHttpsProxy: 443 \n- TargetTcpProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 5222 \n- TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 5222 \n- TargetVpnGateway: 500, 4500\n-"
     },
     "ports": {
      "type": "array",
@@ -4128,6 +4168,10 @@
       "$ref": "NamedPort"
      }
     },
+    "pendingActions": {
+     "$ref": "InstanceGroupManagerPendingActionsSummary",
+     "description": "[Output Only] The list of instance actions and the number of instances in this managed instance group that are pending for each of those actions."
+    },
     "region": {
      "type": "string",
      "description": "[Output Only] The URL of the region where the managed instance group resides (for regional resources)."
@@ -4156,6 +4200,17 @@
        "compute.instanceGroupManagers.insert",
        "compute.regionInstanceGroupManagers.insert"
       ]
+     }
+    },
+    "updatePolicy": {
+     "$ref": "InstanceGroupManagerUpdatePolicy",
+     "description": "The update policy for this managed instance group."
+    },
+    "versions": {
+     "type": "array",
+     "description": "Versions supported by this IGM. User should set this field if they need fine-grained control over how many instances in each version are run by this IGM. Versions are keyed by instanceTemplate. Every instanceTemplate can appear at most once. This field overrides instanceTemplate field. If both instanceTemplate and versions are set, the user receives a warning. \"instanceTemplate: X\" is semantically equivalent to \"versions [ { instanceTemplate: X } ]\". Exactly one version must have targetSize field left unset. Size of such a version will be calculated automatically.",
+     "items": {
+      "$ref": "InstanceGroupManagerVersion"
      }
     },
     "zone": {
@@ -4206,6 +4261,11 @@
     "restarting": {
      "type": "integer",
      "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be restarted or are currently being restarted.",
+     "format": "int32"
+    },
+    "verifying": {
+     "type": "integer",
+     "description": "[Output Only] The number of instances in the managed instance group that are being verified. More details regarding verification process are covered in the documentation of ManagedInstance.InstanceAction.VERIFYING enum field.",
      "format": "int32"
     }
    }
@@ -4284,6 +4344,91 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
+    }
+   }
+  },
+  "InstanceGroupManagerPendingActionsSummary": {
+   "id": "InstanceGroupManagerPendingActionsSummary",
+   "type": "object",
+   "properties": {
+    "creating": {
+     "type": "integer",
+     "description": "[Output Only] The number of instances in the managed instance group that are pending to be created.",
+     "format": "int32"
+    },
+    "deleting": {
+     "type": "integer",
+     "description": "[Output Only] The number of instances in the managed instance group that are pending to be deleted.",
+     "format": "int32"
+    },
+    "recreating": {
+     "type": "integer",
+     "description": "[Output Only] The number of instances in the managed instance group that are pending to be recreated.",
+     "format": "int32"
+    },
+    "restarting": {
+     "type": "integer",
+     "description": "[Output Only] The number of instances in the managed instance group that are pending to be restarted.",
+     "format": "int32"
+    }
+   }
+  },
+  "InstanceGroupManagerUpdatePolicy": {
+   "id": "InstanceGroupManagerUpdatePolicy",
+   "type": "object",
+   "properties": {
+    "maxSurge": {
+     "$ref": "FixedOrPercent",
+     "description": "Maximum number of instances that can be created above the InstanceGroupManager.targetSize during the update process. By default, a fixed value of 1 is used. Using maxSurge \u003e 0 will cause instance names to change during the update process. At least one of { maxSurge, maxUnavailable } must be greater than 0."
+    },
+    "maxUnavailable": {
+     "$ref": "FixedOrPercent",
+     "description": "Maximum number of instances that can be unavailable during the update process. The instance is considered available if all of the following conditions are satisfied: 1. Instance's status is RUNNING. 2. Instance's liveness health check result was observed to be HEALTHY at least once. By default, a fixed value of 1 is used. At least one of { maxSurge, maxUnavailable } must be greater than 0."
+    },
+    "minReadySec": {
+     "type": "integer",
+     "description": "Minimum number of seconds to wait for after a newly created instance becomes available. This value must be from range [0, 3600].",
+     "format": "int32"
+    },
+    "minimalAction": {
+     "type": "string",
+     "description": "Minimal action to be taken on an instance. The order of action types is: RESTART \u003c REPLACE.",
+     "enum": [
+      "REPLACE",
+      "RESTART"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "type": {
+     "type": "string",
+     "enum": [
+      "OPPORTUNISTIC",
+      "PROACTIVE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "InstanceGroupManagerVersion": {
+   "id": "InstanceGroupManagerVersion",
+   "type": "object",
+   "properties": {
+    "instanceTemplate": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of the version. Unique among all versions in the scope of this managed instance group."
+    },
+    "targetSize": {
+     "$ref": "FixedOrPercent",
+     "description": "Intended number of instances that are created from instanceTemplate. The final number of instances created from instanceTemplate will be equal to: * if expressed as fixed number: min(targetSize.fixed, instanceGroupManager.targetSize), * if expressed as percent: ceiling(targetSize.percent * InstanceGroupManager.targetSize). If unset, this version will handle all the remaining instances."
     }
    }
   },
@@ -5142,6 +5287,10 @@
    "type": "object",
    "description": "Write a Cloud Audit log",
    "properties": {
+    "isReadPermissionType": {
+     "type": "boolean",
+     "description": "True if the log is for a permission of type DATA_READ or ADMIN_READ."
+    },
     "logName": {
      "type": "string",
      "description": "The log_name to populate in the Cloud Audit Record.",
@@ -5398,9 +5547,11 @@
       "NONE",
       "RECREATING",
       "REFRESHING",
-      "RESTARTING"
+      "RESTARTING",
+      "VERIFYING"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -6359,6 +6510,7 @@
       "NETWORKS",
       "NVIDIA_K80_GPUS",
       "PREEMPTIBLE_CPUS",
+      "PREEMPTIBLE_LOCAL_SSD_GB",
       "REGIONAL_AUTOSCALERS",
       "REGIONAL_INSTANCE_GROUP_MANAGERS",
       "ROUTERS",
@@ -6378,6 +6530,7 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",

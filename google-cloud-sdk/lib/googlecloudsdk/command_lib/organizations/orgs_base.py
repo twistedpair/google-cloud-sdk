@@ -19,35 +19,37 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 
 
-ORGS_COLLECTION = 'cloudresourcemanager.organizations'
-ORGS_API_VERSION = 'v1'
-
-
 class OrganizationCommand(base.Command):
   """Common methods for an organization command."""
 
-  def Collection(self):
-    return ORGS_COLLECTION
+  ORGS_API = 'cloudresourcemanager'
+  ORGS_COLLECTION = ORGS_API + '.organizations'
+  ORGS_API_VERSION = 'v1'
 
-  def OrganizationsClient(self):
-    client = apis.GetClientInstance('cloudresourcemanager', 'v1')
+  @classmethod
+  def OrganizationsClient(cls):
+    client = apis.GetClientInstance(cls.ORGS_API, cls.ORGS_API_VERSION)
     return client.organizations
 
-  def OrganizationsMessages(self):
-    return apis.GetMessagesModule('cloudresourcemanager', 'v1')
+  @classmethod
+  def OrganizationsMessages(cls):
+    return apis.GetMessagesModule(cls.ORGS_API, cls.ORGS_API_VERSION)
 
-  def GetOrganizationRef(self, organization_id):
+  @classmethod
+  def GetOrganizationRef(cls, organization_id):
     registry = resources.REGISTRY.Clone()
-    registry.RegisterApiByName('cloudresourcemanager', ORGS_API_VERSION)
+    registry.RegisterApiByName(cls.ORGS_API, cls.ORGS_API_VERSION)
+    prefix = 'organizations/'
+    if organization_id.startswith(prefix):
+      organization_id = organization_id[len(prefix):]
     return registry.Parse(
         None,
         params={
             'organizationsId': organization_id,
         },
-        collection=self.Collection())
+        collection=cls.ORGS_COLLECTION)
 
-  def GetUriFunc(self):
-    def _GetUri(resource):
-      return self.GetOrganizationRef(resource.name[len(
-          'organizations/'):]).SelfLink()
-    return _GetUri
+
+def OrganizationsUriFunc(resource):
+  ref = OrganizationCommand.GetOrganizationRef(resource.name)
+  return ref.SelfLink()

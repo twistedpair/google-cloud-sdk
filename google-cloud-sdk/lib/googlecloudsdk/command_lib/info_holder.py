@@ -20,6 +20,7 @@ installations, and so on.
 """
 
 import datetime
+import getpass
 import os
 import platform as system_platform
 import re
@@ -40,16 +41,90 @@ from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import platforms
 
 
+class NoopAnonymizer(object):
+  """Noop anonymizer."""
+
+  def ProcessPath(self, path):
+    return path
+
+  def ProcessAccount(self, account):
+    return account
+
+  def ProcessProject(self, project):
+    return project
+
+  def ProcessUsername(self, username):
+    return username
+
+  def ProcessPassword(self, password):
+    return password
+
+
+class Anonymizer(object):
+  """Removed personal identifiable infor from paths, account and project."""
+
+  def __init__(self):
+    cfg_paths = config.Paths()
+    # Ordered list of replacements. First match wins, more specific paths should
+    # be placed before more general ones.
+    self._replacements = [
+        (re.escape(os.path.normpath(cfg_paths.global_config_dir)),
+         '${CLOUDSDK_CONFIG}'),
+        (re.escape(platforms.GetHomePath()), '${HOME}'),
+        (re.escape(getpass.getuser()), '${USER}')
+    ]
+    if cfg_paths.sdk_root:
+      self._replacements.append(
+          (re.escape(os.path.normpath(cfg_paths.sdk_root)),
+           '${SDK_ROOT}'))
+
+  def ProcessPath(self, path):
+    """Check if path prefix matches known prefixes which might have pii."""
+
+    if not path:
+      return path
+    norm_path = os.path.normpath(path)
+    for repl_from, repl_to in self._replacements:
+      norm_path, num_matches = re.subn(repl_from, repl_to, norm_path)
+      if num_matches:
+        return norm_path
+    return path
+
+  def ProcessAccount(self, account):
+    """Anonymize account by leaving first and last letters."""
+    if not account:
+      return account
+    idx = account.index('@')
+    return (account[0] + '..' + account[idx-1] + '@' +
+            account[idx+1] + '..' + account[-1])
+
+  def ProcessProject(self, project):
+    """Anonymize project by leaving first and last letters."""
+    if not project:
+      return project
+    return project[0] + '..' + project[-1]
+
+  def ProcessUsername(self, username):
+    if not username:
+      return username
+    return username[0] + '..' + username[-1]
+
+  def ProcessPassword(self, password):
+    if not password:
+      return password
+    return 'PASSWORD'
+
+
 class InfoHolder(object):
   """Base object to hold all the configuration info."""
 
-  def __init__(self):
-    self.basic = BasicInfo()
-    self.installation = InstallationInfo()
-    self.config = ConfigInfo()
-    self.env_proxy = ProxyInfoFromEnvironmentVars()
-    self.logs = LogsInfo()
-    self.tools = ToolsInfo()
+  def __init__(self, anonymizer=None):
+    self.basic = BasicInfo(anonymizer)
+    self.installation = InstallationInfo(anonymizer)
+    self.config = ConfigInfo(anonymizer)
+    self.env_proxy = ProxyInfoFromEnvironmentVars(anonymizer)
+    self.logs = LogsInfo(anonymizer)
+    self.tools = ToolsInfo(anonymizer)
 
   def __str__(self):
     out = StringIO.StringIO()
@@ -66,12 +141,14 @@ class InfoHolder(object):
 class BasicInfo(object):
   """Holds basic information about your system setup."""
 
-  def __init__(self):
+  def __init__(self, anonymizer=None):
+    anonymizer = anonymizer or NoopAnonymizer()
     platform = platforms.Platform.Current()
     self.version = config.CLOUD_SDK_VERSION
     self.operating_system = platform.operating_system
     self.architecture = platform.architecture
-    self.python_location = sys.executable and encoding.Decode(sys.executable)
+    self.python_location = anonymizer.ProcessPath(
+        sys.executable and encoding.Decode(sys.executable))
     self.python_version = sys.version
     self.site_packages = 'site' in sys.modules
 
@@ -97,24 +174,28 @@ class BasicInfo(object):
 class InstallationInfo(object):
   """Holds information about your Cloud SDK installation."""
 
-  def __init__(self):
-    self.sdk_root = config.Paths().sdk_root
+  def __init__(self, anonymizer=None):
+    anonymizer = anonymizer or NoopAnonymizer()
+    self.sdk_root = anonymizer.ProcessPath(config.Paths().sdk_root)
     self.release_channel = config.INSTALLATION_CONFIG.release_channel
     self.repo_url = config.INSTALLATION_CONFIG.snapshot_url
     repos = properties.VALUES.component_manager.additional_repositories.Get(
         validate=False)
     self.additional_repos = repos.split(',') if repos else []
     # Keep it as array for structured output.
-    self.path = encoding.GetEncodedValue(
-        os.environ, 'PATH', '').split(os.pathsep)
-    self.python_path = [encoding.Decode(path_elem) for path_elem in sys.path]
+    path = encoding.GetEncodedValue(os.environ, 'PATH', '').split(os.pathsep)
+    self.python_path = [anonymizer.ProcessPath(encoding.Decode(path_elem))
+                        for path_elem in sys.path]
 
     if self.sdk_root:
       manager = update_manager.UpdateManager()
       self.components = manager.GetCurrentVersionsInformation()
-      self.old_tool_paths = manager.FindAllOldToolsOnPath()
-      self.duplicate_tool_paths = manager.FindAllDuplicateToolsOnPath()
-      paths = [os.path.realpath(p) for p in self.path]
+      self.old_tool_paths = [anonymizer.ProcessPath(p)
+                             for p in manager.FindAllOldToolsOnPath()]
+      self.duplicate_tool_paths = [
+          anonymizer.ProcessPath(p)
+          for p in manager.FindAllDuplicateToolsOnPath()]
+      paths = [os.path.realpath(p) for p in path]
       this_path = os.path.realpath(
           os.path.join(self.sdk_root,
                        update_manager.UpdateManager.BIN_DIR_NAME))
@@ -127,9 +208,10 @@ class InstallationInfo(object):
       self.duplicate_tool_paths = []
       self.on_path = False
 
+    self.path = [anonymizer.ProcessPath(p) for p in path]
     self.kubectl = file_utils.SearchForExecutableOnPath('kubectl')
     if self.kubectl:
-      self.kubectl = self.kubectl[0]
+      self.kubectl = anonymizer.ProcessPath(self.kubectl[0])
 
   def __str__(self):
     out = StringIO.StringIO()
@@ -167,18 +249,29 @@ class InstallationInfo(object):
 class ConfigInfo(object):
   """Holds information about where config is stored and what values are set."""
 
-  def __init__(self):
+  def __init__(self, anonymizer=None):
+    anonymizer = anonymizer or NoopAnonymizer()
     cfg_paths = config.Paths()
     active_config = named_configs.ConfigurationStore.ActiveConfig()
     self.active_config_name = active_config.name
     self.paths = {
-        'installation_properties_path': cfg_paths.installation_properties_path,
-        'global_config_dir': cfg_paths.global_config_dir,
-        'active_config_path': active_config.file_path
+        'installation_properties_path':
+            anonymizer.ProcessPath(cfg_paths.installation_properties_path),
+        'global_config_dir':
+            anonymizer.ProcessPath(cfg_paths.global_config_dir),
+        'active_config_path': anonymizer.ProcessPath(active_config.file_path),
     }
-    self.account = properties.VALUES.core.account.Get(validate=False)
-    self.project = properties.VALUES.core.project.Get(validate=False)
+    self.account = anonymizer.ProcessAccount(
+        properties.VALUES.core.account.Get(validate=False))
+    self.project = anonymizer.ProcessProject(
+        properties.VALUES.core.project.Get(validate=False))
     self.properties = properties.VALUES.AllValues()
+    if self.properties.get('core', {}).get('account'):
+      self.properties['core']['account'] = anonymizer.ProcessAccount(
+          self.properties['core']['account'])
+    if self.properties.get('core', {}).get('project'):
+      self.properties['core']['project'] = anonymizer.ProcessProject(
+          self.properties['core']['project'])
 
   def __str__(self):
     out = StringIO.StringIO()
@@ -207,7 +300,8 @@ class ConfigInfo(object):
 class ProxyInfoFromEnvironmentVars(object):
   """Proxy info if it is in the environment but not set in gcloud properties."""
 
-  def __init__(self):
+  def __init__(self, anonymizer=None):
+    anonymizer = anonymizer or NoopAnonymizer()
     self.type = None
     self.address = None
     self.port = None
@@ -224,8 +318,8 @@ class ProxyInfoFromEnvironmentVars(object):
           proxy_info.proxy_type, 'UNKNOWN PROXY TYPE')
       self.address = proxy_info.proxy_host
       self.port = proxy_info.proxy_port
-      self.username = proxy_info.proxy_user
-      self.password = proxy_info.proxy_pass
+      self.username = anonymizer.ProcessUsername(proxy_info.proxy_user)
+      self.password = anonymizer.ProcessPassword(proxy_info.proxy_pass)
 
   def __str__(self):
     if not any([self.type, self.address, self.port, self.username,
@@ -399,11 +493,15 @@ class LogsInfo(object):
 
   NUM_RECENT_LOG_FILES = 5
 
-  def __init__(self):
+  def __init__(self, anonymizer=None):
+    anonymizer = anonymizer or NoopAnonymizer()
     paths = config.Paths()
-    self.logs_dir = paths.logs_dir
-    self.last_log = LastLogFile(self.logs_dir)
-    self.last_logs = RecentLogFiles(self.logs_dir, self.NUM_RECENT_LOG_FILES)
+    logs_dir = paths.logs_dir
+    self.last_log = anonymizer.ProcessPath(LastLogFile(logs_dir))
+    self.last_logs = [
+        anonymizer.ProcessPath(f)
+        for f in RecentLogFiles(logs_dir, self.NUM_RECENT_LOG_FILES)]
+    self.logs_dir = anonymizer.ProcessPath(logs_dir)
 
   def __str__(self):
     return textwrap.dedent(u"""\
@@ -412,9 +510,10 @@ class LogsInfo(object):
         """.format(logs_dir=self.logs_dir, log_file=self.last_log))
 
   def LastLogContents(self):
+    last_log = LastLogFile(config.Paths().logs_dir)
     if not self.last_log:
       return ''
-    with open(self.last_log) as fp:
+    with open(last_log) as fp:
       return fp.read()
 
   def GetRecentRuns(self):
@@ -423,13 +522,16 @@ class LogsInfo(object):
     Returns:
       A list of LogData
     """
-    return [LogData.FromFile(log_file) for log_file in self.last_logs]
+    last_logs = RecentLogFiles(config.Paths().logs_dir,
+                               self.NUM_RECENT_LOG_FILES)
+    return [LogData.FromFile(log_file) for log_file in last_logs]
 
 
 class ToolsInfo(object):
   """Holds info about tools gcloud interacts with."""
 
-  def __init__(self):
+  def __init__(self, anonymize=None):
+    del anonymize  # Nothing to anonymize here.
     self.git_version = self._GitVersion()
     self.ssh_version = self._SshVersion()
 

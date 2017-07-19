@@ -64,10 +64,14 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         self.messages.Application.ServingStatusValueValuesEnum.SYSTEM_DISABLED]
     return stopped
 
-  def RepairApplication(self):
+  def RepairApplication(self, progress_message=None):
     """Creates missing app resources.
 
     In particular, the Application.code_bucket GCS reference.
+
+    Args:
+      progress_message: str, the message to use while the operation is polled,
+        if not the default.
 
     Returns:
       A long running operation.
@@ -82,7 +86,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         operation=operation.name))
 
     return operations_util.WaitForOperation(
-        self.client.apps_operations, operation)
+        self.client.apps_operations, operation, message=progress_message)
 
   def CreateApp(self, location):
     """Creates an App Engine app within the current cloud project.
@@ -108,8 +112,11 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     log.debug('Received operation: [{operation}]'.format(
         operation=operation.name))
 
+    message = ('Creating App Engine application in project [{project}] and '
+               'region [{region}].'.format(project=self.project,
+                                           region=location))
     return operations_util.WaitForOperation(self.client.apps_operations,
-                                            operation)
+                                            operation, message=message)
 
   def DeployService(
       self, service_name, version_id, service_config, manifest, image,
@@ -142,8 +149,11 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     log.debug('Received operation: [{operation}]'.format(
         operation=operation.name))
 
+    message = 'Updating service [{service}]'.format(service=service_name)
+
     return operations_util.WaitForOperation(self.client.apps_operations,
-                                            operation)
+                                            operation,
+                                            message=message)
 
   def GetServiceResource(self, service):
     """Describe the given service.
@@ -218,8 +228,9 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     operation = requests.MakeRequest(
         self.client.apps_services_versions.Delete,
         delete_request)
+    message = 'Deleting [{0}/{1}]'.format(service_name, version_id)
     return operations_util.WaitForOperation(
-        self.client.apps_operations, operation)
+        self.client.apps_operations, operation, message=message)
 
   def SetServingStatus(self, service_name, version_id, serving_status,
                        block=True):
@@ -474,8 +485,10 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     operation = requests.MakeRequest(
         self.client.apps_services.Delete,
         delete_request)
+    message = 'Deleting [{}]'.format(service_name)
     return operations_util.WaitForOperation(self.client.apps_operations,
-                                            operation)
+                                            operation,
+                                            message=message)
 
   def GetOperation(self, op_id):
     """Grabs details about a particular gcloud operation.

@@ -157,7 +157,8 @@ def _GetCatalog(client, messages, environment_type):
     calliope_exceptions.HttpException: If it could not connect to the service.
   """
   request = messages.TestingTestEnvironmentCatalogGetRequest(
-      environmentType=environment_type)
+      environmentType=environment_type,
+      projectId=properties.VALUES.core.project.Get())
   try:
     return client.testEnvironmentCatalog.Get(request)
   except apitools_exceptions.HttpError as error:

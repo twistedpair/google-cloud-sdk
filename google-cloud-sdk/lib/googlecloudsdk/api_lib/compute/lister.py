@@ -15,11 +15,10 @@
 
 import itertools
 
-from apitools.base.py import encoding
-
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.core import remote_completion
+from googlecloudsdk.core.resource import resource_projector
 
 
 def _ConvertProtobufsToDicts(resources):
@@ -27,7 +26,7 @@ def _ConvertProtobufsToDicts(resources):
     if resource is None:
       continue
 
-    yield encoding.MessageToDict(resource)
+    yield resource_projector.MakeSerializable(resource)
 
 
 def ProcessResults(resources, field_selector, sort_key_fn=None,
@@ -140,6 +139,39 @@ def GetZonalResources(service, project, requested_zones,
       make_requests=request_helper.MakeRequests)
 
 
+def GetZonalResourcesDicts(service, project, requested_zones, filter_expr, http,
+                           batch_url, errors):
+  """Lists resources that are scoped by zone and returns them as dicts.
+
+  It has the same functionality as GetZonalResouces but skips translating
+  JSON to messages saving lot of CPU cycles.
+
+  Args:
+    service: An apitools service object.
+    project: The Compute Engine project name for which listing should be
+      performed.
+    requested_zones: A list of zone names that can be used to control
+      the scope of the list call.
+    filter_expr: A filter to pass to the list API calls.
+    http: An httplib2.Http-like object.
+    batch_url: The handler for making batch requests.
+    errors: A list for capturing errors.
+
+  Returns:
+    A list of dicts representing the results.
+  """
+  return _GetResources(
+      service=service,
+      project=project,
+      scopes=requested_zones,
+      scope_name='zone',
+      filter_expr=filter_expr,
+      http=http,
+      batch_url=batch_url,
+      errors=errors,
+      make_requests=request_helper.ListJson)
+
+
 def GetRegionalResources(service, project, requested_regions,
                          filter_expr, http, batch_url, errors):
   """Lists resources that are scoped by region.
@@ -170,6 +202,36 @@ def GetRegionalResources(service, project, requested_regions,
       make_requests=request_helper.MakeRequests)
 
 
+def GetRegionalResourcesDicts(service, project, requested_regions, filter_expr,
+                              http, batch_url, errors):
+  """Lists resources that are scoped by region and returns them as dicts.
+
+  Args:
+    service: An apitools service object.
+    project: The Compute Engine project name for which listing should be
+      performed.
+    requested_regions: A list of region names that can be used to
+      control the scope of the list call.
+    filter_expr: A filter to pass to the list API calls.
+    http: An httplib2.Http-like object.
+    batch_url: The handler for making batch requests.
+    errors: A list for capturing errors.
+
+  Returns:
+    A list of dicts representing the results.
+  """
+  return _GetResources(
+      service=service,
+      project=project,
+      scopes=requested_regions,
+      scope_name='region',
+      filter_expr=filter_expr,
+      http=http,
+      batch_url=batch_url,
+      errors=errors,
+      make_requests=request_helper.ListJson)
+
+
 def GetGlobalResources(service, project, filter_expr, http,
                        batch_url, errors):
   """Lists resources in the global scope.
@@ -196,3 +258,31 @@ def GetGlobalResources(service, project, filter_expr, http,
       batch_url=batch_url,
       errors=errors,
       make_requests=request_helper.MakeRequests)
+
+
+def GetGlobalResourcesDicts(service, project, filter_expr, http, batch_url,
+                            errors):
+  """Lists resources in the global scope and returns them as dicts.
+
+  Args:
+    service: An apitools service object.
+    project: The Compute Engine project name for which listing should be
+      performed.
+    filter_expr: A filter to pass to the list API calls.
+    http: An httplib2.Http-like object.
+    batch_url: The handler for making batch requests.
+    errors: A list for capturing errors.
+
+  Returns:
+    A list of dicts representing the results.
+  """
+  return _GetResources(
+      service=service,
+      project=project,
+      scopes=None,
+      scope_name=None,
+      filter_expr=filter_expr,
+      http=http,
+      batch_url=batch_url,
+      errors=errors,
+      make_requests=request_helper.ListJson)

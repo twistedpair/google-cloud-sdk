@@ -18,7 +18,6 @@ from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.console import progress_tracker
 
 
 APP_CREATE_WARNING = """\
@@ -77,16 +76,13 @@ def CreateApp(api_client, project, region, suppress_warning=False):
     log.status.Print('You are creating an app for project [{project}].'.format(
         project=project))
     log.warn(APP_CREATE_WARNING)
-  message = ('Creating App Engine application in project [{project}] and '
-             'region [{region}].'.format(project=project, region=region))
-  with progress_tracker.ProgressTracker(message):
-    try:
-      api_client.CreateApp(region)
-    except api_lib_exceptions.ConflictError:
-      raise AppAlreadyExistsError(
-          'The project [{project}] already contains an App Engine application. '
-          'You can deploy your application using `gcloud app deploy`.'.format(
-              project=project))
+  try:
+    api_client.CreateApp(region)
+  except api_lib_exceptions.ConflictError:
+    raise AppAlreadyExistsError(
+        'The project [{project}] already contains an App Engine application. '
+        'You can deploy your application using `gcloud app deploy`.'.format(
+            project=project))
 
 
 def CreateAppInteractively(api_client, project):

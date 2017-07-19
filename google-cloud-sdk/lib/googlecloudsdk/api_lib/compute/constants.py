@@ -36,7 +36,7 @@ DEFAULT_NETWORK_INTERFACE = 'nic0'
 DEFAULT_NETWORK_TIER = 'PREMIUM'
 NETWORK_TIER_CHOICES_FOR_INSTANCE = ['PREMIUM', 'SELECT', 'STANDARD']
 
-DEFAULT_IMAGE_FAMILY = 'debian-8'
+DEFAULT_IMAGE_FAMILY = 'debian-9'
 
 ImageAlias = collections.namedtuple(
     'ImageAlias', ['project', 'name_prefix', 'family'])
@@ -151,6 +151,15 @@ DEFAULT_SCOPES = sorted([
     _SERVICE_CONTROL_SCOPE, _SERVICE_MANAGEMENT_SCOPE, _PUBSUB,
     _STACKDRIVER_TRACE,
 ])
+
+DEPRECATED_SQL_SCOPE_MSG = ("""
+      DEPRECATION WARNING: 'https://www.googleapis.com/auth/sqlservice' account scope and
+      `sql` alias do not provide SQL instance management capabilities and have been deprecated.
+      Please, use 'https://www.googleapis.com/auth/sqlservice.admin' or `sql.admin` to manage
+      your Google SQL Service instances.
+    """)
+
+DEPRECATED_SCOPES_MESSAGES = DEPRECATED_SQL_SCOPE_MSG
 
 SCOPES = {
     'bigquery': ['https://www.googleapis.com/auth/bigquery'],

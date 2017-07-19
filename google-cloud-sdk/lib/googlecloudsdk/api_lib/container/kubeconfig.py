@@ -130,15 +130,24 @@ class Kubeconfig(object):
 
     if os.environ.get('KUBECONFIG'):
       return os.environ['KUBECONFIG']
-    # kubectl doesn't do windows-compatible homedir detection, it
-    # expects HOME to be set.
-    # TODO(b/36050345): remove this once
-    # https://github.com/kubernetes/kubernetes/issues/23199
-    if not os.environ.get('HOME'):
+
+    # This follows the same resolution process as kubectl for the config file.
+    home_dir = os.environ.get('HOME')
+    if not home_dir and platforms.OperatingSystem.IsWindows():
+      home_drive = os.environ.get('HOMEDRIVE')
+      home_path = os.environ.get('HOMEPATH')
+      if home_drive and home_path:
+        home_dir = os.path.join(home_drive, home_path)
+      if not home_dir:
+        home_dir = os.environ.get('USERPROFILE')
+
+    if not home_dir:
       raise MissingEnvVarError(
-          'environment variable HOME or KUBECONFIG must be set to store '
-          'credentials for kubectl')
-    return os.path.join(os.environ.get('HOME'), '.kube/config')
+          'environment variable {vars} or KUBECONFIG must be set to store '
+          'credentials for kubectl'.format(
+              vars='HOMEDRIVE/HOMEPATH, USERPROFILE, HOME,'
+              if platforms.OperatingSystem.IsWindows() else 'HOME'))
+    return os.path.join(home_dir, '.kube', 'config')
 
 
 def Cluster(name, server, ca_path=None, ca_data=None):

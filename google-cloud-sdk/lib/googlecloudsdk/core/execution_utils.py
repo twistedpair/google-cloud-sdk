@@ -38,7 +38,7 @@ class PermissionError(exceptions.Error):
 
   def __init__(self, error):
     super(PermissionError, self).__init__(
-        '{err}\nPlease verify that you have execute permission for all'
+        '{err}\nPlease verify that you have execute permission for all '
         'files in your CLOUD SDK bin folder'.format(err=error))
 
 

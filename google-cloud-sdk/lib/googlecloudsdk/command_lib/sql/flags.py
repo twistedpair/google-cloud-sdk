@@ -148,6 +148,7 @@ INSTANCES_FORMAT_BETA = """
   {0}
   table(
     name,
+    databaseVersion,
     region,
     settings.tier,
     ipAddresses[0].ipAddress.yesno(no="-"):label=ADDRESS,

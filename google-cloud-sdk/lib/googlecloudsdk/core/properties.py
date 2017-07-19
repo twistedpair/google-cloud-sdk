@@ -730,7 +730,9 @@ class _SectionCore(_Section):
         'disable_prompts',
         help_text='If True, the default answer will be assumed for all user '
         'prompts.  For any prompts that require user input, an error will be '
-        'raised. This is the equivalent of using the global `--quiet` flag.')
+        'raised. This is equivalent to either using the global `--quiet` flag '
+        'or setting the environment variable `CLOUDSDK_CORE_DISABLE_PROMPTS` '
+        'to 1.')
     self.disable_usage_reporting = self._AddBool(
         'disable_usage_reporting',
         help_text='If True, anonymous statistics on SDK usage will not be '
@@ -963,9 +965,7 @@ class _SectionAuth(_Section):
     self.credential_file_override = self._Add(
         'credential_file_override', hidden=True)
     self.use_sqlite_store = self._AddBool(
-        'use_sqlite_store', default=False, hidden=True,
-        callbacks=[config.INSTALLATION_CONFIG.IsAlternateReleaseChannel]
-    )
+        'use_sqlite_store', default=True, hidden=True)
 
 
 class _SectionBilling(_Section):

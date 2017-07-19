@@ -81,6 +81,7 @@ def ValidateRepositoryPath(repository_path):
     raise InvalidImageNameError(
         'Image name cannot end with \'/\'. '
         'Remove the trailing \'/\' and try again.')
+
   try:
     if repository_path in constants.MIRROR_REGISTRIES:
       repository = docker_name.Registry(repository_path)
@@ -297,6 +298,14 @@ def GetDockerTagsForDigest(digest, http_obj):
   return tags
 
 
+def ValidateImagePathAndReturn(digest_or_tag):
+  # Repository should contain project/image_path.
+  if '/' not in digest_or_tag.repository:
+    raise InvalidImageNameError('Image name should start with '
+                                '*.gcr.io/project_id/image_path. ')
+  return digest_or_tag
+
+
 def GetDockerImageFromTagOrDigest(image_name):
   """Gets an image object given either a tag or a digest.
 
@@ -314,7 +323,7 @@ def GetDockerImageFromTagOrDigest(image_name):
     image_name += ':latest'
 
   try:
-    return docker_name.Tag(image_name)
+    return ValidateImagePathAndReturn(docker_name.Tag(image_name))
   except docker_name.BadNameException:
     pass
 
@@ -334,7 +343,7 @@ def GetDockerImageFromTagOrDigest(image_name):
         raise InvalidImageNameError(
             '[{0}] could not be resolved to a full digest.'.format(image_name))
       image_name = resolved
-  return docker_name.Digest(image_name)
+  return ValidateImagePathAndReturn(docker_name.Digest(image_name))
 
 
 def GetDigestFromName(image_name):

@@ -156,7 +156,7 @@ class AppengineV1beta(base_api.BaseApiClient):
         method_id=u'appengine.apps.authorizedCertificates.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'pageSize', u'pageToken', u'view'],
         relative_path=u'v1beta/{+parent}/authorizedCertificates',
         request_field='',
         request_type_name=u'AppengineAppsAuthorizedCertificatesListRequest',

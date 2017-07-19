@@ -589,7 +589,7 @@ class ListBreakpointsResponse(_messages.Message):
     breakpoints: List of breakpoints matching the request. The fields `id` and
       `location` are guaranteed to be set on each breakpoint. The fields:
       `stack_frames`, `evaluated_expressions` and `variable_table` are cleared
-      on each breakpoint regardless of it's status.
+      on each breakpoint regardless of its status.
     nextWaitToken: A wait token that can be used in the next call to `list`
       (REST) or `ListBreakpoints` (RPC) to block until the list of breakpoints
       has changes.
@@ -838,7 +838,7 @@ class UpdateActiveBreakpointRequest(_messages.Message):
   """Request to update an active breakpoint.
 
   Fields:
-    breakpoint: Updated breakpoint information. The field 'id' must be set.
+    breakpoint: Updated breakpoint information. The field `id` must be set.
   """
 
   breakpoint = _messages.MessageField('Breakpoint', 1)

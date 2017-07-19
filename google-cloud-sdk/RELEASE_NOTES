@@ -3,15 +3,30 @@
 Copyright 2014-2017 Google Inc. All rights reserved.
 
 
-## 162.0.1 (2017-07-14)
+## 163.0.0 (2017-07-19)
 
-### Cloud SDK
+### Google Cloud Bigquery
 
-*   Revert breaking change released with 162.0.0: the `:` operator for the
-    `--filter` flag formerly performed a substring match, but with release
-    162.0.0 it performed a full string match (in agreement with its
-    documentation). The change has been reverted, since it was deployed without
-    warning.
+*   Table list command (bq ls [dataset]) now displays Time Partitioning information about listed tables.
+
+### Google Cloud SQL
+
+*   'gcloud sql instance create' now defaults to the Second Generation 'db-n1-standard-1' tier instead of the First Generation 'D1' tier. 'create' commands in which a tier is specified, will be unaffected.
+*   'sql instances list' and 'beta sql instances list' commands now list DATABASE_VERSION of each instance.
+
+### Google Cloud Container Builder
+
+*   Fix bug where permission bits weren't set on directories in tar files uploaded to Cloud Storage
+
+### Google Compute Engine
+
+*   `gcloud beta compute images list` shows BLOCKED_BY_POLICY status for images blocked by compute.trustedImageProjects for user project.
+*   Changed the default value of the `--image-family` flag to debian-9 for the `gcloud compute instances create` and `gcloud compute instance-templates create` commands.
+
+### Google Container Engine
+
+*   `gcloud container clusters get-credentials` now correctly respects the HOMEDRIVE/HOMEPATH and USERPROFILE environment variables when generating the kubectl config file.
+*   Added --region flag to gcloud alpha containers to manage regional clusters.
 
 
 ## 162.0.0 (2017-07-12)

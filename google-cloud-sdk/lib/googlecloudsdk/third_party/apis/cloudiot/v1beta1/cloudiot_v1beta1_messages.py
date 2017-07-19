@@ -122,6 +122,8 @@ class CloudAuditOptions(_messages.Message):
       Record.
 
   Fields:
+    isReadPermissionType: True if the log is for a permission of type
+      DATA_READ or ADMIN_READ.
     logName: The log_name to populate in the Cloud Audit Record.
   """
 
@@ -137,7 +139,8 @@ class CloudAuditOptions(_messages.Message):
     ADMIN_ACTIVITY = 1
     DATA_ACCESS = 2
 
-  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
+  isReadPermissionType = _messages.BooleanField(1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
 class CloudiotProjectsLocationsRegistriesCreateRequest(_messages.Message):
@@ -1073,7 +1076,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details.  There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

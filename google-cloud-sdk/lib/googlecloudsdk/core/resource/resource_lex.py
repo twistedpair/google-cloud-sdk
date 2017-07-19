@@ -813,7 +813,7 @@ def ParseKey(name):
   return key
 
 
-def GetKeyName(key, quote=True):
+def GetKeyName(key, quote=True, omit_indices=False):
   """Returns the string representation for a parsed key.
 
   This is the inverse of Lexer.Key(). That docstring has the input/output
@@ -831,6 +831,7 @@ def GetKeyName(key, quote=True):
         None - A list slice. Selects all members of a list or dict like object.
           A slice of an empty dict or list is an empty dict or list.
     quote: "..." the key name if it contains non-alphanum characters.
+    omit_indices: Omit [...] indices if True.
 
   Returns:
     The string representation of the parsed key.
@@ -838,11 +839,15 @@ def GetKeyName(key, quote=True):
   parts = []
   for part in key:
     if part is None:
+      if omit_indices:
+        continue
       part = '[]'
       if parts:
         parts[-1] += part
         continue
     elif isinstance(part, (int, long)):
+      if omit_indices:
+        continue
       part = '[{part}]'.format(part=part)
       if parts:
         parts[-1] += part

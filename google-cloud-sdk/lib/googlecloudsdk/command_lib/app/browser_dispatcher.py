@@ -20,6 +20,7 @@ from googlecloudsdk.api_lib.app.appinfo import appinfo
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.command_lib.util import check_browser
 from googlecloudsdk.core import log
+from googlecloudsdk.core.credentials import devshell
 
 
 def OpenURL(url):
@@ -31,8 +32,11 @@ def OpenURL(url):
   # Import in here for performance reasons
   # pylint: disable=g-import-not-at-top
   import webbrowser
-  log.status.Print(
-      'Opening [{0}] in a new tab in your default browser.'.format(url))
+  # Devshell has its own 'browser' handler which simply prints the URL; this is
+  # redundant
+  if not devshell.IsDevshellEnvironment():
+    log.status.Print(
+        'Opening [{0}] in a new tab in your default browser.'.format(url))
   webbrowser.open_new_tab(url)
 
 

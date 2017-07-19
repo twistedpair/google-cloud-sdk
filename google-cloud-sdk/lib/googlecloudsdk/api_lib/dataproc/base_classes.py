@@ -53,14 +53,14 @@ class JobSubmitter(base.Command):
 
   def Run(self, args):
     """This is what gets called when the user runs this command."""
-    dataproc = dp.Dataproc()
+    dataproc = dp.Dataproc(self.ReleaseTrack())
 
     job_id = util.GetJobId(args.id)
-    job_ref = dataproc.ParseJob(job_id)
+    job_ref = util.ParseJob(job_id, dataproc)
 
     self.PopulateFilesByType(args)
 
-    cluster_ref = dataproc.ParseCluster(args.cluster)
+    cluster_ref = util.ParseCluster(args.cluster, dataproc)
     request = dataproc.messages.DataprocProjectsRegionsClustersGetRequest(
         projectId=cluster_ref.projectId,
         region=cluster_ref.region,
@@ -92,7 +92,8 @@ class JobSubmitter(base.Command):
     log.status.Print('Job [{0}] submitted.'.format(job_id))
 
     if not args.async:
-      job = dataproc.WaitForJobTermination(
+      job = util.WaitForJobTermination(
+          dataproc,
           job,
           message='Waiting for job completion',
           goal_state=dataproc.messages.JobStatus.StateValueValuesEnum.DONE,

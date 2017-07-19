@@ -24,40 +24,51 @@ class Collections(enum.Enum):
 
   PROJECTS = (
       'projects',
-      'projects/{projectId}',
+      'projects/{projectsId}',
       {},
-      [u'projectId']
+      [u'projectsId']
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
-      'projects/{projectId}/locations/{location}',
+      'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectId', u'location']
+      [u'projectsId', u'locationsId']
   )
   PROJECTS_LOCATIONS_CLUSTERS = (
       'projects.locations.clusters',
-      'projects/{projectId}/locations/{location}/clusters/{clusterId}',
-      {},
-      [u'projectId', u'location', u'clusterId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/clusters/'
+              '{clustersId}',
+      },
+      [u'name']
   )
   PROJECTS_LOCATIONS_CLUSTERS_NODEPOOLS = (
       'projects.locations.clusters.nodePools',
-      'projects/{projectId}/locations/{location}/clusters/{clusterId}/'
-      'nodePools/{nodePoolId}',
-      {},
-      [u'projectId', u'location', u'clusterId', u'nodePoolId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/clusters/'
+              '{clustersId}/nodePools/{nodePoolsId}',
+      },
+      [u'name']
   )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
-      'projects/{projectId}/locations/{location}/operations/{operationId}',
-      {},
-      [u'projectId', u'location', u'operationId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
+      },
+      [u'name']
   )
   PROJECTS_ZONES = (
       'projects.zones',
-      'projects/{projectId}/zones/{zone}',
+      'projects/{projectId}/zones/{zoneId}',
       {},
-      [u'projectId', u'zone']
+      ['projectId', 'zoneId']
   )
   PROJECTS_ZONES_CLUSTERS = (
       'projects.zones.clusters',

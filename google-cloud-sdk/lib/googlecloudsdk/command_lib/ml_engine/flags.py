@@ -21,6 +21,8 @@ from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.iam import completers as iam_completers
+from googlecloudsdk.command_lib.ml_engine import models_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -28,6 +30,15 @@ from googlecloudsdk.core import properties
 
 class ArgumentError(exceptions.Error):
   pass
+
+
+class MlEngineIamRolesCompleter(iam_completers.IamRolesCompleter):
+
+  def __init__(self, **kwargs):
+    super(MlEngineIamRolesCompleter, self).__init__(
+        resource_collection=models_util.MODELS_COLLECTION,
+        resource_dest='model',
+        **kwargs)
 
 
 # Run flags
@@ -99,8 +110,22 @@ Storage bucket given by `--staging-bucket`, or Cloud Storage URLs
 """)
 
 
-def GetJobDirFlag(upload_help=True):
-  """Get base.Argument() for `--job-dir`."""
+def GetJobDirFlag(upload_help=True, allow_local=False):
+  """Get base.Argument() for `--job-dir`.
+
+  If allow_local is provided, this Argument gives a str when parsed; otherwise,
+  it gives a (possibly empty) ObjectReference.
+
+  Args:
+    upload_help: bool, whether to include help text related to object upload.
+      Only useful in remote situations (`jobs submit training`).
+    allow_local: bool, whether to allow local directories (only useful in local
+      situations, like `local train`) or restrict input to directories in Cloud
+      Storage.
+
+  Returns:
+    base.Argument() for the corresponding `--job-dir` flag.
+  """
   help_ = """\
 A {dir_type} in which to store training outputs and other data
 needed for training.
@@ -108,19 +133,21 @@ needed for training.
 This path will be passed to your TensorFlow program as `--job_dir` command-line
 arg. The benefit of specifying this field is that Cloud ML Engine will validate
 the path for use in training.
-""".format(dir_type=('Google Cloud Storage path' if upload_help else
-                     'local directory'))
+""".format(dir_type=('Google Cloud Storage path' +
+                     (' or local_directory' if allow_local else '')))
   if upload_help:
     help_ += """\
 
 If packages must be uploaded and `--staging-bucket` is not provided, this path
 will be used instead.
 """
-  return base.Argument(
-      '--job-dir',
-      type=functools.partial(storage_util.ObjectReference.FromArgument,
-                             allow_empty_object=True),
-      help=help_)
+
+  if allow_local:
+    type_ = str
+  else:
+    type_ = functools.partial(storage_util.ObjectReference.FromArgument,
+                              allow_empty_object=True)
+  return base.Argument('--job-dir', type=type_, help=help_)
 
 
 def GetUserArgs(local=False):

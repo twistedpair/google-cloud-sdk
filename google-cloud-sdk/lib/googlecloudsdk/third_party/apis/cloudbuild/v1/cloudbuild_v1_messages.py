@@ -53,6 +53,7 @@ class Build(_messages.Message):
     options: Special options for this build.
     projectId: ID of the project. @OutputOnly.
     results: Results of the build. @OutputOnly
+    secrets: Secrets to decrypt using Cloud KMS.
     source: Describes where to find the source files to build.
     sourceProvenance: A permanent fixed identifier for source. @OutputOnly
     startTime: Time at which execution of the build was started. @OutputOnly
@@ -125,15 +126,16 @@ class Build(_messages.Message):
   options = _messages.MessageField('BuildOptions', 8)
   projectId = _messages.StringField(9)
   results = _messages.MessageField('Results', 10)
-  source = _messages.MessageField('Source', 11)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 12)
-  startTime = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  statusDetail = _messages.StringField(15)
-  steps = _messages.MessageField('BuildStep', 16, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 17)
-  tags = _messages.StringField(18, repeated=True)
-  timeout = _messages.StringField(19)
+  secrets = _messages.MessageField('Secret', 11, repeated=True)
+  source = _messages.MessageField('Source', 12)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 13)
+  startTime = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  statusDetail = _messages.StringField(16)
+  steps = _messages.MessageField('BuildStep', 17, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 18)
+  tags = _messages.StringField(19, repeated=True)
+  timeout = _messages.StringField(20)
 
 
 class BuildOperationMetadata(_messages.Message):
@@ -228,6 +230,9 @@ class BuildStep(_messages.Message):
       you attempt to use them.  If you built an image in a previous build
       step, it will be stored in the host's Docker daemon's cache and is
       available to use as the name for a later build step.
+    secretEnv: A list of environment variables which are encrypted using a
+      Cloud KMS crypto key. These values must be specified in the build's
+      secrets.
     waitFor: The ID(s) of the step(s) that this build step depends on. This
       build step will not start until all the build steps in wait_for have
       completed successfully. If wait_for is empty, this build step will start
@@ -241,7 +246,8 @@ class BuildStep(_messages.Message):
   env = _messages.StringField(4, repeated=True)
   id = _messages.StringField(5)
   name = _messages.StringField(6)
-  waitFor = _messages.StringField(7, repeated=True)
+  secretEnv = _messages.StringField(7, repeated=True)
+  waitFor = _messages.StringField(8, repeated=True)
 
 
 class BuildTrigger(_messages.Message):
@@ -697,6 +703,58 @@ class Results(_messages.Message):
   images = _messages.MessageField('BuiltImage', 2, repeated=True)
 
 
+class Secret(_messages.Message):
+  """Secret pairs a set of secret environment variables containing encrypted
+  values with the Cloud KMS key to use to decrypt the value.
+
+  Messages:
+    SecretEnvValue: Map of environment variable name to its encrypted value.
+      Secret environment variables must be unique across all of a build's
+      secrets, and must be used by at least one build step. Values can be at
+      most 1 KB in size. There can be at most ten secret values across all of
+      a build's secrets.
+
+  Fields:
+    kmsKeyName: Cloud KMS key name to use to decrypt these envs.
+    secretEnv: Map of environment variable name to its encrypted value.
+      Secret environment variables must be unique across all of a build's
+      secrets, and must be used by at least one build step. Values can be at
+      most 1 KB in size. There can be at most ten secret values across all of
+      a build's secrets.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SecretEnvValue(_messages.Message):
+    """Map of environment variable name to its encrypted value.  Secret
+    environment variables must be unique across all of a build's secrets, and
+    must be used by at least one build step. Values can be at most 1 KB in
+    size. There can be at most ten secret values across all of a build's
+    secrets.
+
+    Messages:
+      AdditionalProperty: An additional property for a SecretEnvValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type SecretEnvValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a SecretEnvValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A byte attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.BytesField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  kmsKeyName = _messages.StringField(1)
+  secretEnv = _messages.MessageField('SecretEnvValue', 2)
+
+
 class Source(_messages.Message):
   """Source describes the location of the source in a supported storage
   service.
@@ -882,7 +940,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details.  There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

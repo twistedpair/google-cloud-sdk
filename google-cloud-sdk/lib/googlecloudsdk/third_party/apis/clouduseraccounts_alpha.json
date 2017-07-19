@@ -5,7 +5,7 @@
  "name": "clouduseraccounts",
  "canonicalName": "Cloud User Accounts",
  "version": "alpha",
- "revision": "20170623",
+ "revision": "20170707",
  "title": "Cloud User Accounts API",
  "description": "Creates and manages users and groups for accessing Google Compute Engine virtual machines.",
  "ownerDomain": "google.com",
@@ -507,6 +507,10 @@
    "type": "object",
    "description": "Write a Cloud Audit log",
    "properties": {
+    "isReadPermissionType": {
+     "type": "boolean",
+     "description": "True if the log is for a permission of type DATA_READ or ADMIN_READ."
+    },
     "logName": {
      "type": "string",
      "description": "The log_name to populate in the Cloud Audit Record.",

@@ -14,6 +14,7 @@
 """Parse cloudbuild config files.
 
 """
+import base64
 import os
 
 from apitools.base.protorpclite import messages as proto_messages
@@ -212,6 +213,13 @@ def LoadCloudbuildConfigFromStream(stream, messages, params=None,
   if params:
     subst.update(params)
   build.substitutions = cloudbuild_util.EncodeSubstitutions(subst, messages)
+
+  # Re-base64-encode secrets[].secretEnv values, which apitools' DictToMessage
+  # "helpfully" base64-decodes since it can tell it's a bytes field. We need to
+  # send a base64-encoded string in the JSON request, not raw bytes.
+  for s in build.secrets:
+    for i in s.secretEnv.additionalProperties:
+      i.value = base64.b64encode(i.value)
 
   # Some problems can be caught before talking to the cloudbuild service.
   if build.source:

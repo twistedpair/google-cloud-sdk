@@ -16,7 +16,6 @@
 import base64
 
 from googlecloudsdk.api_lib.ml import content_source
-from googlecloudsdk.api_lib.ml.video import operations_poller
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
@@ -246,8 +245,11 @@ class VideoClient(object):
     message = 'Waiting for operation [{}] to complete'.format(
         operation_ref.operationsId)
     return waiter.WaitFor(
-        operations_poller.VideoOperationPoller(
-            self.operations_client.operations),
+        waiter.CloudOperationPollerNoResources(
+            self.operations_client.operations,
+            # TODO(b/62478975): remove this workaround when operation resources
+            # are compatible with gcloud parsing.
+            get_name_func=lambda x: x.operationsId),
         operation_ref,
         message,
         exponential_sleep_multiplier=2.0,

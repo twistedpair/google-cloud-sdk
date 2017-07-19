@@ -69,6 +69,20 @@ def RouterArgumentForOtherResources(required=True):
       'it will be inherited from --region.')
 
 
+def AddCreateRouterArgs(parser):
+  """Adds common arguments for creating routers."""
+
+  parser.add_argument(
+      '--description', help='An optional description of this router.')
+
+  parser.add_argument(
+      '--asn',
+      required=True,
+      type=int,
+      help='The BGP autonomous system number (ASN) for this router. '
+      'For more information see: https://tools.ietf.org/html/rfc6996.')
+
+
 def AddInterfaceArgs(parser, for_update=False):
   """Adds common arguments for routers add-interface or update-interface."""
 
@@ -93,36 +107,45 @@ def AddInterfaceArgs(parser, for_update=False):
       help='The mask for network used for the server IP address.')
 
 
-def AddUpdateBgpPeerArgs(parser):
-  """Adds common update Bgp peer arguments."""
+def AddBgpPeerArgs(parser, for_add_bgp_peer=False):
+  """Adds common arguments for managing BGP peers."""
 
-  # TODO(b/62667314): add a test case to test the required field.
+  operation = 'updated'
+  if for_add_bgp_peer:
+    operation = 'added'
+
   parser.add_argument(
-      '--peer-name', required=True, help='The name of the peer being modified.')
+      '--peer-name',
+      required=True,
+      help='The name of the new BGP peer being {0}.'.format(operation))
 
   parser.add_argument(
       '--interface',
-      help='The name of the new Cloud Router interface for this BGP peer.')
+      required=for_add_bgp_peer,
+      help='The name of the interface for this BGP peer.')
 
   parser.add_argument(
       '--peer-asn',
+      required=for_add_bgp_peer,
       type=int,
-      help='The new BGP autonomous system number (ASN) for this BGP peer. '
+      help='The BGP autonomous system number (ASN) for this BGP peer. '
       'For more information see: https://tools.ietf.org/html/rfc6996.')
 
-  parser.add_argument(
-      '--ip-address',
-      type=utils.IPV4Argument,
-      help='The new link local address of the Cloud Router interface for this '
-      'BGP peer. Must be a link-local IP address belonging to the range '
-      '169.254.0.0/16 and must belong to same subnet as the interface '
-      'address of the peer router.')
+  # For add_bgp_peer, we only require the interface and infer the IP instead.
+  if not for_add_bgp_peer:
+    parser.add_argument(
+        '--ip-address',
+        type=utils.IPV4Argument,
+        help='The link-local address of the Cloud Router interface for this '
+        'BGP peer. Must be a link-local IPv4 address belonging to the range '
+        '169.254.0.0/16 and must belong to same subnet as the interface '
+        'address of the peer router.')
 
   parser.add_argument(
       '--peer-ip-address',
       type=utils.IPV4Argument,
-      help='The new link local address of the peer router. Must be a '
-      'link-local IP address belonging to the range 169.254.0.0/16.')
+      help='The link-local address of the peer router. Must be a link-local '
+      'IPv4 address belonging to the range 169.254.0.0/16.')
 
   parser.add_argument(
       '--advertised-route-priority',
@@ -130,11 +153,18 @@ def AddUpdateBgpPeerArgs(parser):
       help='The priority of routes advertised to this BGP peer. In the case '
       'where there is more than one matching route of maximum length, '
       'the routes with lowest priority value win. 0 <= priority <= '
-      '65535.')
+      '65535. If not specified, will use Google-managed priorities.')
 
 
 def AddCustomAdvertisementArgs(parser, resource_str):
   """Adds common arguments for setting/updating custom advertisements."""
+
+  AddReplaceCustomAdvertisementArgs(parser, resource_str)
+  AddIncrementalCustomAdvertisementArgs(parser, resource_str)
+
+
+def AddReplaceCustomAdvertisementArgs(parser, resource_str):
+  """Adds common arguments for replacing custom advertisements."""
 
   parser.add_argument(
       '--advertisement-mode',
@@ -164,6 +194,10 @@ def AddCustomAdvertisementArgs(parser, resource_str):
               `--advertisement-ranges=192.168.10.0/24=my-networks`. This list
               can only be specified in custom advertisement mode."""
       .format(resource_str))
+
+
+def AddIncrementalCustomAdvertisementArgs(parser, resource_str):
+  """Adds common arguments for incrementally updating custom advertisements."""
 
   incremental_args = parser.add_mutually_exclusive_group(required=False)
 

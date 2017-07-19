@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,15 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Common flags for projects commands."""
-
-from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.resource_manager import completers
-
-
-def GetProjectFlag(verb):
-  return base.Argument(
-      'id',
-      metavar='PROJECT_ID',
-      completer=completers.ProjectCompleter,
-      help='ID for the project you want to {0}.'.format(verb))
+"""Package marker file."""

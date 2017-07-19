@@ -125,7 +125,11 @@ def DisplayQueryResults(result, out):
     result (spanner_v1_messages.ResultSet): The server response to a query.
     out: Output stream to which we print.
   """
-  fields = [field.name for field in result.metadata.rowType.fields]
+  # Print "(Unspecified)" for computed columns.
+  fields = [
+      field.name or '(Unspecified)' for field in result.metadata.rowType.fields
+  ]
+
   # Create the format string we pass to the table layout.
   table_format = ','.join('row.slice({0}).join():label="{1}"'.format(i, f)
                           for i, f in enumerate(fields))

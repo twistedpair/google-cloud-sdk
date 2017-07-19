@@ -974,8 +974,8 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
     service-management
       - https://www.googleapis.com/auth/service.management.readonly
 
-    sql
-      - https://www.googleapis.com/auth/sqlservice
+    sql (DEPRECATED)
+      - https://www.googleapis.com/auth/sqlservice:
 
     sql-admin
       - https://www.googleapis.com/auth/sqlservice.admin
@@ -1000,8 +1000,11 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
 
     userinfo-email
       - https://www.googleapis.com/auth/userinfo.email
+
+    {scope_deprecation_msg}
     """.format(scopes_exists if instance_exists else scopes_not_exists,
-               scopes_default_list=scopes_default_list)
+               scopes_default_list=scopes_default_list,
+               scope_deprecation_msg=constants.DEPRECATED_SCOPES_MESSAGES)
   scopes_group.add_argument(
       '--scopes',
       type=arg_parsers.ArgList(),
