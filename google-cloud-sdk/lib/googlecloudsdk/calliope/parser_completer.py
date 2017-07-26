@@ -53,11 +53,11 @@ class ArgumentCompleter(object):
       try:
         completer = self._completer_class()
         parameter_info = completer.ParameterInfo(parsed_args, self._argument)
-        if not isinstance(completer,
-                          deprecated_completers.DeprecatedListCommandCompleter):
+        if (hasattr(completer, 'GetListCommand') and not isinstance(
+            completer, deprecated_completers.DeprecatedListCommandCompleter)):
+          list_command = ' '.join(completer.GetListCommand(parameter_info))
           completer = deprecated_completers.DeprecatedListCommandCompleter(
-              collection=completer.collection,
-              list_command=' '.join(completer.GetListCommand(parameter_info)))
+              collection=completer.collection, list_command=list_command)
         return completer.Complete(prefix, parameter_info)
       except (Exception, SystemExit) as e:  # pylint: disable=broad-except, e shall not pass
         # Fatal completer errors return two "completions", each an error

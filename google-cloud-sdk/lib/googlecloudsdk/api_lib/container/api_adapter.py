@@ -77,6 +77,10 @@ Cannot specify both '--subnetwork' and '--create-subnetwork' at the same time.
 
 MAX_NODES_PER_POOL = 1000
 
+INGRESS = 'HttpLoadBalancing'
+HPA = 'HorizontalPodAutoscaling'
+DASHBOARD = 'KubernetesDashboard'
+
 
 def CheckResponse(response):
   """Wrap http_wrapper.CheckResponse to skip retry on 503."""
@@ -355,8 +359,6 @@ class APIAdapter(object):
     self.compute_messages = compute_messages
 
   def ParseCluster(self, name, location):
-    if not location:
-      location = properties.VALUES.compute.zone.GetOrFail
     # TODO(b/63383536): Migrate to container.projects.locations.clusters when
     # apiserver supports it.
     return self.registry.Parse(
@@ -376,9 +378,7 @@ class APIAdapter(object):
   def PrintNodePools(self, node_pools):
     raise NotImplementedError('PrintNodePools is not overriden')
 
-  def ParseOperation(self, operation_id, location=None):
-    if not location:
-      location = properties.VALUES.compute.zone.GetOrFail
+  def ParseOperation(self, operation_id, location):
     # TODO(b/63383536): Migrate to container.projects.locations.operations when
     # apiserver supports it.
     return self.registry.Parse(
@@ -390,8 +390,6 @@ class APIAdapter(object):
         collection='container.projects.zones.operations')
 
   def ParseNodePool(self, node_pool_id, location):
-    if not location:
-      location = properties.VALUES.compute.zone.GetOrFail
     # TODO(b/63383536): Migrate to container.projects.locations.nodePools when
     # apiserver supports it.
     return self.registry.Parse(
@@ -686,15 +684,17 @@ class APIAdapter(object):
     if options.disable_addons:
       addons = self._AddonsConfig(
           disable_ingress=INGRESS in options.disable_addons or None,
-          disable_hpa=HPA in options.disable_addons or None)
+          disable_hpa=HPA in options.disable_addons or None,
+          disable_dashboard=DASHBOARD in options.disable_addons or None)
       cluster.addonsConfig = addons
     if options.enable_master_authorized_networks:
-      authorized_networks = self.messages.MasterAuthorizedNetworks(
+      authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
           enabled=options.enable_master_authorized_networks)
       if options.master_authorized_networks:
         for network in options.master_authorized_networks:
-          authorized_networks.cidrs.append(self.messages.CIDR(network=network))
-      cluster.masterAuthorizedNetworks = authorized_networks
+          authorized_networks.cidrBlocks.append(self.messages.CidrBlock(
+              cidrBlock=network))
+      cluster.masterAuthorizedNetworksConfig = authorized_networks
     elif options.master_authorized_networks:
       # Raise error if use --master-authorized-networks without
       # --enable-master-authorized-networks.
@@ -780,7 +780,8 @@ class APIAdapter(object):
     elif options.disable_addons:
       addons = self._AddonsConfig(
           disable_ingress=options.disable_addons.get(INGRESS),
-          disable_hpa=options.disable_addons.get(HPA))
+          disable_hpa=options.disable_addons.get(HPA),
+          disable_dashboard=options.disable_addons.get(DASHBOARD))
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif options.enable_autoscaling is not None:
       # For update, we can either enable or disable.
@@ -796,13 +797,14 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(desiredLocations=options.locations)
     elif options.enable_master_authorized_networks is not None:
       # For update, we can either enable or disable.
-      authorized_networks = self.messages.MasterAuthorizedNetworks(
+      authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
           enabled=options.enable_master_authorized_networks)
       if options.master_authorized_networks:
         for network in options.master_authorized_networks:
-          authorized_networks.cidrs.append(self.messages.CIDR(network=network))
+          authorized_networks.cidrBlocks.append(self.messages.CidrBlock(
+              cidrBlock=network))
       update = self.messages.ClusterUpdate(
-          desiredMasterAuthorizedNetworks=authorized_networks)
+          desiredMasterAuthorizedNetworksConfig=authorized_networks)
     if (options.master_authorized_networks
         and not options.enable_master_authorized_networks):
       # Raise error if use --master-authorized-networks without
@@ -816,14 +818,31 @@ class APIAdapter(object):
   def SetLegacyAuthorization(self, cluster_ref, enable_legacy_authorization):
     raise NotImplementedError('SetLegacyAuthorization is not overriden')
 
-  def _AddonsConfig(self, disable_ingress=None, disable_hpa=None):
+  def _AddonsConfig(self,
+                    disable_ingress=None,
+                    disable_hpa=None,
+                    disable_dashboard=None):
+    """Generates an AddonsConfig object given specific parameters.
+
+    Args:
+      disable_ingress: whether to disable the GCLB ingress controller.
+      disable_hpa: whether to disable the horizontal pod autoscaling controller.
+      disable_dashboard: whether to disable the Kuberntes Dashboard.
+
+    Returns:
+      An AddonsConfig object that contains the options defining what addons to
+      run in the cluster.
+    """
     addons = self.messages.AddonsConfig()
     if disable_ingress is not None:
       addons.httpLoadBalancing = self.messages.HttpLoadBalancing(
-          disabled=bool(disable_ingress))
+          disabled=disable_ingress)
     if disable_hpa is not None:
       addons.horizontalPodAutoscaling = self.messages.HorizontalPodAutoscaling(
-          disabled=bool(disable_hpa))
+          disabled=disable_hpa)
+    if disable_dashboard is not None:
+      addons.kubernetesDashboard = self.messages.KubernetesDashboard(
+          disabled=disable_dashboard)
     return addons
 
   def SetNetworkPolicyCommon(self, options):

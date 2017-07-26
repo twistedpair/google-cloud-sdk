@@ -641,7 +641,7 @@
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -701,7 +701,7 @@
           "type": "boolean"
         },
         "deploymentUri": {
-          "description": "Required. The Google Cloud Storage location of the trained model used to\ncreate the version. See the\n[overview of model\ndeployment](\/ml-engine\/docs\/concepts\/deployment-overview) for more\ninformaiton.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.\nThe total number of model files can't exceed 1000.",
+          "description": "Required. The Google Cloud Storage location of the trained model used to\ncreate the version. See the\n[overview of model\ndeployment](\/ml-engine\/docs\/concepts\/deployment-overview) for more\ninformation.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.\nThe total number of model files can't exceed 1000.",
           "type": "string"
         },
         "createTime": {
@@ -718,12 +718,12 @@
           "description": "Optional. The Google Cloud ML runtime version to use for this deployment.\nIf not set, Google Cloud ML will choose a version.",
           "type": "string"
         },
-        "automaticScaling": {
+        "autoScaling": {
           "description": "Automatically scale the number of nodes used to serve the model in\nresponse to increases and decreases in traffic. Care should be\ntaken to ramp up traffic according to the model's ability to scale\nor you will start seeing increases in latency and 429 response codes.",
-          "$ref": "GoogleCloudMlV1__AutomaticScaling"
+          "$ref": "GoogleCloudMlV1__AutoScaling"
         },
         "manualScaling": {
-          "description": "Manually select the number of nodes to use for serving the\nmodel. You should generally use `automatic_scaling` with an appropriate\n`min_nodes` instead, but this option is available if you want more\npredictable billing. Beware that latency and error rates will increase\nif the traffic exceeds that capability of the system to serve it based\non the selected number of nodes.",
+          "description": "Manually select the number of nodes to use for serving the\nmodel. You should generally use `auto_scaling` with an appropriate\n`min_nodes` instead, but this option is available if you want more\npredictable billing. Beware that latency and error rates will increase\nif the traffic exceeds that capability of the system to serve it based\non the selected number of nodes.",
           "$ref": "GoogleCloudMlV1__ManualScaling"
         },
         "state": {
@@ -731,19 +731,25 @@
           "enumDescriptions": [
             "The version state is unspecified.",
             "The version is ready for prediction.",
-            "The version is still in the process of creation."
+            "The version is still in the process of creation.",
+            "The version failed to be created, possibly cancelled.\n`error_message` should contain the details of the failure."
           ],
           "type": "string",
           "enum": [
             "UNKNOWN",
             "READY",
-            "CREATING"
+            "CREATING",
+            "FAILED"
           ]
+        },
+        "errorMessage": {
+          "description": "Output only. The details of a failure or a cancellation.",
+          "type": "string"
         }
       }
     },
-    "GoogleCloudMlV1__AutomaticScaling": {
-      "id": "GoogleCloudMlV1__AutomaticScaling",
+    "GoogleCloudMlV1__AutoScaling": {
+      "id": "GoogleCloudMlV1__AutoScaling",
       "description": "Options for automatically scaling a model.",
       "type": "object",
       "properties": {
@@ -1323,7 +1329,7 @@
           "type": "boolean"
         },
         "deploymentUri": {
-          "description": "Required. The Google Cloud Storage location of the trained model used to\ncreate the version. See the\n[overview of model\ndeployment](\/ml-engine\/docs\/concepts\/deployment-overview) for more\ninformaiton.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.\nThe total number of model files can't exceed 1000.",
+          "description": "Required. The Google Cloud Storage location of the trained model used to\ncreate the version. See the\n[overview of model\ndeployment](\/ml-engine\/docs\/concepts\/deployment-overview) for more\ninformation.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.\nThe total number of model files can't exceed 1000.",
           "type": "string"
         },
         "createTime": {
@@ -1340,32 +1346,38 @@
           "description": "Optional. The Google Cloud ML runtime version to use for this deployment.\nIf not set, Google Cloud ML will choose a version.",
           "type": "string"
         },
-        "automaticScaling": {
+        "autoScaling": {
           "description": "Automatically scale the number of nodes used to serve the model in\nresponse to increases and decreases in traffic. Care should be\ntaken to ramp up traffic according to the model's ability to scale\nor you will start seeing increases in latency and 429 response codes.",
-          "$ref": "GoogleCloudMlV1beta1__AutomaticScaling"
+          "$ref": "GoogleCloudMlV1beta1__AutoScaling"
         },
         "manualScaling": {
-          "description": "Manually select the number of nodes to use for serving the\nmodel. You should generally use `automatic_scaling` with an appropriate\n`min_nodes` instead, but this option is available if you want predictable\nbilling. Beware that latency and error rates will increase if the\ntraffic exceeds that capability of the system to serve it based on\nthe selected number of nodes.",
+          "description": "Manually select the number of nodes to use for serving the\nmodel. You should generally use `auto_scaling` with an appropriate\n`min_nodes` instead, but this option is available if you want more\npredictable billing. Beware that latency and error rates will increase\nif the traffic exceeds that capability of the system to serve it based\non the selected number of nodes.",
           "$ref": "GoogleCloudMlV1beta1__ManualScaling"
         },
         "state": {
           "description": "Output only. The state of a version.",
           "enumDescriptions": [
-            "\/ The version state is unspecified.",
+            "The version state is unspecified.",
             "The version is ready for prediction.",
-            "The version is still in the process of creation."
+            "The version is still in the process of creation.",
+            "The version failed to be created, possibly cancelled.\n`error_message` should contain the details of the failure."
           ],
           "type": "string",
           "enum": [
             "UNKNOWN",
             "READY",
-            "CREATING"
+            "CREATING",
+            "FAILED"
           ]
+        },
+        "errorMessage": {
+          "description": "Output only. The details of a failure or a cancellation.",
+          "type": "string"
         }
       }
     },
-    "GoogleCloudMlV1beta1__AutomaticScaling": {
-      "id": "GoogleCloudMlV1beta1__AutomaticScaling",
+    "GoogleCloudMlV1beta1__AutoScaling": {
+      "id": "GoogleCloudMlV1beta1__AutoScaling",
       "description": "Options for automatically scaling a model.",
       "type": "object",
       "properties": {
@@ -1382,7 +1394,7 @@
       "type": "object",
       "properties": {
         "nodes": {
-          "description": "The number of nodes to allocate for this model. These nodes are always up,\nstarting from the time the model is deployed, so the cost of operating\nthis model will be proportional to `nodes` * number of hours since\nlast billing cycle.",
+          "description": "The number of nodes to allocate for this model. These nodes are always up,\nstarting from the time the model is deployed, so the cost of operating\nthis model will be proportional to `nodes` * number of hours since\nlast billing cycle plus the cost for each prediction performed.",
           "type": "integer",
           "format": "int32"
         }

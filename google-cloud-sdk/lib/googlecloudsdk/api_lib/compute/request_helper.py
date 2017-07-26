@@ -201,7 +201,7 @@ def ListJson(requests, http, batch_url, errors):
       yield item
 
 
-def MakeRequests(requests, http, batch_url, errors):
+def MakeRequests(requests, http, batch_url, errors, progress_tracker=None):
   """Makes one or more requests to the API.
 
   Each request can be either a synchronous API call or an asynchronous
@@ -228,6 +228,8 @@ def MakeRequests(requests, http, batch_url, errors):
     batch_url: The handler for making batch requests.
     errors: A list for capturing errors. If any response contains an error,
       it is added to this list.
+    progress_tracker: progress tracker to be ticked while waiting for operations
+                      to finish.
 
   Yields:
     A response for each request. For deletion requests, no corresponding
@@ -293,6 +295,7 @@ def MakeRequests(requests, http, batch_url, errors):
         http=http,
         batch_url=batch_url,
         warnings=warnings,
+        progress_tracker=progress_tracker,
         errors=errors):
       yield response
 

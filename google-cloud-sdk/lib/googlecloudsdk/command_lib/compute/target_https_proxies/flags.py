@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute target-https-proxies commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 DEFAULT_LIST_FORMAT = """\
@@ -23,10 +24,19 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+class TargetHttpsProxiesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(TargetHttpsProxiesCompleter, self).__init__(
+        collection='compute.targetHttpsProxies',
+        list_command='compute target-https-proxies list --uri',
+        **kwargs)
+
+
 def TargetHttpsProxyArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='target HTTPS proxy',
-      completion_resource_id='compute.targetHttpsProxies',
+      completer=TargetHttpsProxiesCompleter,
       plural=plural,
       custom_plural='target HTTPS proxies',
       required=required,

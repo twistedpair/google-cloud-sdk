@@ -21,6 +21,7 @@ from googlecloudsdk.api_lib.compute.regions import service as regions_service
 from googlecloudsdk.api_lib.compute.zones import service as zones_service
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.compute import completers
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute import scope_prompter
 from googlecloudsdk.core import exceptions
@@ -123,7 +124,7 @@ def AddZoneFlag(parser, resource_type, operation_type, flag_prefix=None,
   parser.add_argument(
       '--' + flag_name,
       hidden=hidden,
-      completion_resource='compute.zones',
+      completer=completers.ZonesCompleter,
       action=actions.StoreProperty(properties.VALUES.compute.zone),
       help='{0} {1}'.format(short_help, explanation))
 
@@ -156,7 +157,7 @@ def AddRegionFlag(parser, resource_type, operation_type,
     flag_name = flag_prefix + '-' + flag_name
   parser.add_argument(
       '--' + flag_name,
-      completion_resource='compute.regions',
+      completer=completers.RegionsCompleter,
       action=actions.StoreProperty(properties.VALUES.compute.region),
       hidden=hidden,
       help='{0} {1}'.format(short_help, explanation))
@@ -461,12 +462,12 @@ class ResourceArgument(object):
     class MyCommand(base.Command):
       _BACKEND_SERVICE_ARG = flags.ResourceArgument(
           resource_name='backend service',
-          completion_resource_id='compute.backendService',
+          completer=compute_completers.BackendServiceCompleter,
           regional_collection='compute.regionBackendServices',
           global_collection='compute.backendServices')
       _INSTANCE_GROUP_ARG = flags.ResourceArgument(
           resource_name='instance group',
-          completion_resource_id='compute.InstanceGroup',
+          completer=compute_completers.InstanceGroupsCompleter,
           zonal_collection='compute.instanceGroups',)
 
       @staticmethod
@@ -494,22 +495,18 @@ class ResourceArgument(object):
     and zonal qualifiers (or any combination of) for each resource.
   """
 
-  def __init__(self, name=None,
-               resource_name=None,
-               completion_resource_id=None,
+  def __init__(self, name=None, resource_name=None, completer=None,
                plural=False, required=True, zonal_collection=None,
                regional_collection=None, global_collection=None,
                region_explanation=None, zone_explanation=None,
-               short_help=None, detailed_help=None,
-               custom_plural=None,
-               list_command_path=None):
+               short_help=None, detailed_help=None, custom_plural=None):
 
     """Constructor.
 
     Args:
       name: str, argument name.
       resource_name: str, human readable name for resources eg "instance group".
-      completion_resource_id: str, id of registered resource.
+      completer: completion_cache.Completer, The completer class type.
       plural: bool, whether to accept multiple values.
       required: bool, whether this argument is required.
       zonal_collection: str, include zone flag and use this collection
@@ -531,7 +528,7 @@ class ResourceArgument(object):
                           provided there will be no detailed help for the flag.
       custom_plural: str, If plural is True then this string will be used as
                           plural resource name.
-      list_command_path: the list_command_path for the main argument
+
     Raises:
       exceptions.Error: if there some inconsistency in arguments.
     """
@@ -548,7 +545,7 @@ class ResourceArgument(object):
       self.scopes = ResourceArgScopes(flag_prefix=None)
       self.name = self.name_arg  # arg name is same as its spec.
     self.resource_name = resource_name
-    self.completion_resource_id = completion_resource_id
+    self.completer = completer
     self.plural = plural
     self.custom_plural = custom_plural
     self.required = required
@@ -567,7 +564,6 @@ class ResourceArgument(object):
     self._region_explanation = region_explanation or ''
     self._zone_explanation = zone_explanation or ''
     self._resource_resolver = ResourceResolver(self.scopes, resource_name)
-    self._list_command_path = list_command_path
 
   # TODO(b/31933786) remove cust_metavar once surface supports metavars for
   # plural flags.
@@ -581,7 +577,7 @@ class ResourceArgument(object):
 
     params = dict(
         metavar=cust_metavar if cust_metavar else self.name.upper(),
-        completion_resource=self.completion_resource_id,
+        completer=self.completer,
     )
 
     if self._detailed_help:
@@ -606,9 +602,6 @@ class ResourceArgument(object):
           params['nargs'] = '+'
       else:
         params['nargs'] = '*' if self.plural else '?'
-
-    if self._list_command_path:
-      params['list_command_path'] = self._list_command_path
 
     (mutex_group or parser).add_argument(self.name_arg, **params)
 

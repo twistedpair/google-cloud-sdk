@@ -433,19 +433,21 @@ def AddMasterAuthorizedNetworksFlags(parser, update_group=None, hidden=False):
   authorized_networks_group.add_argument(
       '--enable-master-authorized-networks',
       default=None if update_group else False,
-      help='Allow only Authorized Networks and GCE Public IPs to connect to '
-      'Kubernetes master through HTTPS. By default public internet (0.0.0.0/0)'
-      ' is allowed to connect to Kubernetes master through HTTPS.',
+      help='Allow only Authorized Networks (specified by the '
+      '`--master-authorized-networks` flag) and Google Compute Engine Public '
+      'IPs to connect to Kubernetes master through HTTPS. By default public  '
+      'internet (0.0.0.0/0) is allowed to connect to Kubernetes master through '
+      'HTTPS.',
       hidden=hidden,
       action='store_true')
   group.add_argument(
       '--master-authorized-networks',
-      type=arg_parsers.ArgList(min_length=1),
+      type=arg_parsers.ArgList(min_length=1, max_length=10),
       metavar='NETWORK',
-      help='The list of external networks that are allowed to connect to '
-      'Kubernetes master through HTTPS. Specified in CIDR notation '
-      '(e.g. 192.168.100.0/24). Can not be specified unless '
-      '--enable-master-authorized-networks is also specified.',
+      help='The list of external networks (up to 10) that are allowed to '
+      'connect to Kubernetes master through HTTPS. Specified in CIDR notation '
+      '(e.g. 1.2.3.4/30). Can not be specified unless '
+      '`--enable-master-authorized-networks` is also specified.',
       hidden=hidden)
 
 

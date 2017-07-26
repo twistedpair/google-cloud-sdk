@@ -20,8 +20,14 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files
 
+SSL_VERSIONS_MAP = {
+    calliope_base.ReleaseTrack.GA: 'v1',
+    calliope_base.ReleaseTrack.ALPHA: 'v1alpha',
+    calliope_base.ReleaseTrack.BETA: 'v1beta'
+}
 
-def GetApiClient(release_track):
+
+def GetApiClientForTrack(release_track):
   """Retrieves a client based on the release track.
 
   The API clients override the base class for each track so that methods with
@@ -35,9 +41,8 @@ def GetApiClient(release_track):
   Returns:
     A client that calls appengine using the v1beta or v1alpha API.
   """
-  if release_track == calliope_base.ReleaseTrack.ALPHA:
-    return AppengineSslApiAlphaClient.GetApiClient()
-  return AppengineSslApiClient.GetApiClient()
+  api_version = SSL_VERSIONS_MAP[release_track]
+  return AppengineSslApiClient.GetApiClient(api_version)
 
 
 class AppengineSslApiClient(base.AppengineApiClientBase):
@@ -47,11 +52,8 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
     base.AppengineApiClientBase.__init__(self, client)
 
     self._registry = resources.REGISTRY.Clone()
-    self._registry.RegisterApiByName('appengine', self.ApiVersion())
-
-  @classmethod
-  def ApiVersion(cls):
-    return 'v1beta'
+    # pylint: disable=protected-access
+    self._registry.RegisterApiByName('appengine', client._VERSION)
 
   def CreateSslCertificate(self, display_name, cert_path, private_key_path):
     """Creates a certificate for the given application.
@@ -186,11 +188,3 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
         params={'appsId': self.project},
         collection='appengine.apps.authorizedCertificates')
     return res.RelativeName()
-
-
-class AppengineSslApiAlphaClient(AppengineSslApiClient):
-  """Client used by gcloud to communicate with the App Engine SSL APIs."""
-
-  @classmethod
-  def ApiVersion(cls):
-    return 'v1alpha'

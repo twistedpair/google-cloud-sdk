@@ -307,6 +307,50 @@ returned in Task.schedule_time.
         supports_download=False,
     )
 
+    def Run(self, request, global_params=None):
+      """Forces a task to run now.
+
+When this method is called, Cloud Tasks will dispatch the task to its
+target, even if the queue is Queue.QueueState.PAUSED.
+
+The dispatched task is returned. That is, the task that is returned
+contains the Task.task_status after the task is dispatched but
+before the task is received by its target.
+
+If Cloud Tasks receives a successful response from the task's
+handler, then the task will be deleted; otherwise the task's
+Task.schedule_time will be reset to the time that RunTask was called
+plus the retry delay specified in the queue and task's RetryConfig.
+
+RunTask returns google.rpc.Code.NOT_FOUND when it is called
+on a task that has already succeeded or permanently
+failed. google.rpc.Code.FAILED_PRECONDITION is returned when
+RunTask is called on task that is dispatched or already running.
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesTasksRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Task) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks/{tasksId}:run',
+        http_method=u'POST',
+        method_id=u'cloudtasks.projects.locations.queues.tasks.run',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2beta2/{+name}:run',
+        request_field=u'runTaskRequest',
+        request_type_name=u'CloudtasksProjectsLocationsQueuesTasksRunRequest',
+        response_type_name=u'Task',
+        supports_download=False,
+    )
+
   class ProjectsLocationsQueuesService(base_api.BaseApiService):
     """Service class for the projects_locations_queues resource."""
 
@@ -388,49 +432,6 @@ carefully and then sign up for
         supports_download=False,
     )
 
-    def Enable(self, request, global_params=None):
-      """Enable a queue.
-
-This method re-enables a queue after it has been
-Queue.QueueState.PAUSED or Queue.QueueState.DISABLED. The state of
-a queue is stored in Queue.queue_state; after calling this method it
-will be set to Queue.QueueState.ENABLED.
-
-WARNING: This method is only available to whitelisted
-users. Using this method carries some risk. Read
-[Overview of Queue Management and queue.yaml](https://cloud.google.com/cloud-tasks/docs/queue-yaml)
-carefully and then sign up for
-[whitelist access to this method](https://goo.gl/Fe5mUy).
-
-WARNING: Re-enabling many high-QPS queues at the same time can
-lead to target overloading. If you are re-enabling high-QPS
-queues, follow the 500/50/5 pattern described in
-[Managing Cloud Tasks Scaling Risks](https://cloud.google.com/cloud-tasks/pdfs/managing-cloud-tasks-scaling-risks-2017-06-05.pdf).
-
-      Args:
-        request: (CloudtasksProjectsLocationsQueuesEnableRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Queue) The response message.
-      """
-      config = self.GetMethodConfig('Enable')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Enable.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:enable',
-        http_method=u'POST',
-        method_id=u'cloudtasks.projects.locations.queues.enable',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v2beta2/{+name}:enable',
-        request_field=u'enableQueueRequest',
-        request_type_name=u'CloudtasksProjectsLocationsQueuesEnableRequest',
-        response_type_name=u'Queue',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       """Gets a queue.
 
@@ -455,6 +456,41 @@ queues, follow the 500/50/5 pattern described in
         request_field='',
         request_type_name=u'CloudtasksProjectsLocationsQueuesGetRequest',
         response_type_name=u'Queue',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a queue.
+
+Requires IAM "cloudtasks.queues.getIamPolicy" permission.
+
+Attempting this RPC on a resource without the needed permission
+will result in a google.rpc.Code.PERMISSION_DENIED error.
+Attempting this RPC on a non-existent resource will result in
+google.rpc.Code.NOT_FOUND if the user has list permission on
+the queues, or a google.rpc.Code.PERMISSION_DENIED otherwise.
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:getIamPolicy',
+        http_method=u'POST',
+        method_id=u'cloudtasks.projects.locations.queues.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v2beta2/{+resource}:getIamPolicy',
+        request_field=u'getIamPolicyRequest',
+        request_type_name=u'CloudtasksProjectsLocationsQueuesGetIamPolicyRequest',
+        response_type_name=u'Policy',
         supports_download=False,
     )
 
@@ -527,8 +563,8 @@ carefully and then sign up for
       """Pauses the queue.
 
 If a queue is paused then the system will stop executing the
-tasks in the queue until it is re-enabled via
-CloudTasks.EnableQueue. Tasks can still be added when the
+tasks in the queue until it is resumed via
+CloudTasks.ResumeQueue. Tasks can still be added when the
 queue is paused. The state of the queue is stored in
 Queue.queue_state; if paused it will be set to
 Queue.QueueState.PAUSED.
@@ -566,11 +602,10 @@ carefully and then sign up for
     def Purge(self, request, global_params=None):
       """Purges a queue by deleting all of its tasks.
 
+All tasks created before this method is called are permanently deleted.
+
 Purge operations can take up to one minute to take effect. Tasks
 might be dispatched before the purge takes effect. A purge is irreversible.
-
-Note: this command purges all tasks that were created five
-minutes or more before now.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesPurgeRequest) input message
@@ -593,6 +628,117 @@ minutes or more before now.
         request_field=u'purgeQueueRequest',
         request_type_name=u'CloudtasksProjectsLocationsQueuesPurgeRequest',
         response_type_name=u'Queue',
+        supports_download=False,
+    )
+
+    def Resume(self, request, global_params=None):
+      """Resume a queue.
+
+This method resumes a queue after it has been
+Queue.QueueState.PAUSED or Queue.QueueState.DISABLED. The state of
+a queue is stored in Queue.queue_state; after calling this method it
+will be set to Queue.QueueState.RUNNING.
+
+WARNING: This method is only available to whitelisted
+users. Using this method carries some risk. Read
+[Overview of Queue Management and queue.yaml](https://cloud.google.com/cloud-tasks/docs/queue-yaml)
+carefully and then sign up for
+[whitelist access to this method](https://goo.gl/Fe5mUy).
+
+WARNING: Resuming many high-QPS queues at the same time can
+lead to target overloading. If you are resuming high-QPS
+queues, follow the 500/50/5 pattern described in
+[Managing Cloud Tasks Scaling Risks](https://cloud.google.com/cloud-tasks/pdfs/managing-cloud-tasks-scaling-risks-2017-06-05.pdf).
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Queue) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:resume',
+        http_method=u'POST',
+        method_id=u'cloudtasks.projects.locations.queues.resume',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2beta2/{+name}:resume',
+        request_field=u'resumeQueueRequest',
+        request_type_name=u'CloudtasksProjectsLocationsQueuesResumeRequest',
+        response_type_name=u'Queue',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy for a queue.
+
+Requires IAM "cloudtasks.queues.setIamPolicy" permission.
+
+Attempting this RPC on a resource without the needed permission
+will result in a google.rpc.Code.PERMISSION_DENIED
+error. Attempting this RPC on a non-existent resource will result
+in google.rpc.Code.NOT_FOUND if the user has list permission
+on the queues, or a google.rpc.Code.PERMISSION_DENIED
+otherwise.
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'cloudtasks.projects.locations.queues.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v2beta2/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'CloudtasksProjectsLocationsQueuesSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns the permissions that a caller has on the specified queue.
+
+Requires "cloudtasks.queues.list" permission.  Attempting this
+RPC on a non-existent resource will result in
+google.rpc.Code.NOT_FOUND if the user has list permission on
+the queues, or a google.rpc.Code.PERMISSION_DENIED otherwise.
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'cloudtasks.projects.locations.queues.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v2beta2/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
 

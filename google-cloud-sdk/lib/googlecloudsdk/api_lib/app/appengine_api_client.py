@@ -27,10 +27,23 @@ from googlecloudsdk.api_lib.app import service_util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base
 from googlecloudsdk.api_lib.app.api import requests
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
 
 import yaml
+
+
+APPENGINE_VERSIONS_MAP = {
+    calliope_base.ReleaseTrack.GA: 'v1',
+    calliope_base.ReleaseTrack.ALPHA: 'v1alpha',
+    calliope_base.ReleaseTrack.BETA: 'v1beta'
+}
+
+
+def GetApiClientForTrack(release_track):
+  api_version = APPENGINE_VERSIONS_MAP[release_track]
+  return AppengineApiClient.GetApiClient(api_version)
 
 
 class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
@@ -584,7 +597,3 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     # Add an ID for the version which is to be created.
     version_resource.id = version_id
     return version_resource
-
-
-def GetApiClient():
-  return AppengineApiClient.GetApiClient()

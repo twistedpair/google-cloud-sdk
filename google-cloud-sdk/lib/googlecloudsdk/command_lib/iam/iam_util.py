@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """General IAM utilities used by the Cloud SDK."""
+import re
+
 from apitools.base.protorpclite import messages as apitools_messages
 from apitools.base.py import encoding
 
@@ -35,6 +37,7 @@ CREATE_KEY_TYPES = (msgs.CreateServiceAccountKeyRequest
 KEY_TYPES = (msgs.ServiceAccountKey.PrivateKeyTypeValueValuesEnum)
 PUBLIC_KEY_TYPES = (
     msgs.IamProjectsServiceAccountsKeysGetRequest.PublicKeyTypeValueValuesEnum)
+STAGE_TYPES = (msgs.Role.StageValueValuesEnum)
 
 SERVICE_ACCOUNTS_COLLECTION = 'iam.projects.serviceAccounts'
 
@@ -288,6 +291,48 @@ def ParseYamlPolicyFile(policy_file_path, policy_message_type):
   return policy
 
 
+def ParseYamlToRole(file_path, role_message_type):
+  """Construct an IAM Role protorpc.Message from a Yaml formated file.
+
+  Args:
+    file_path: Path to the Yaml IAM Role file.
+    role_message_type: Role message type to convert Yaml to.
+  Returns:
+    a protorpc.Message of type role_message_type filled in from the Yaml
+    role file.
+  Raises:
+    BadFileException if the Yaml file is malformed or does not exist.
+  """
+  try:
+    with open(file_path) as role_file:
+      role_to_parse = yaml.safe_load(role_file)
+  except EnvironmentError:
+    # EnvironmnetError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise core_exceptions.Error(
+        'Unable to read the role file {0}'.format(file_path))
+  except (yaml.scanner.ScannerError, yaml.parser.ParserError) as e:
+    # Raised when the YAML file is not properly formatted.
+    raise gcloud_exceptions.BadFileException(
+        'Role file {0} is not a properly formatted YAML role file. {1}'
+        .format(file_path, str(e)))
+  if 'stage' in role_to_parse:
+    role_to_parse['stage'] = role_to_parse['stage'].upper()
+  try:
+    role = encoding.PyValueToMessage(role_message_type, role_to_parse)
+  except (AttributeError) as e:
+    # Raised when the YAML file is not properly formatted YAML role file.
+    raise gcloud_exceptions.BadFileException(
+        'Role file {0} is not a properly formatted YAML role file. {1}'
+        .format(file_path, str(e)))
+  except (apitools_messages.DecodeError) as e:
+    # DecodeError is raised when etag is badly formatted (not proper Base64)
+    raise IamEtagReadError(
+        'The etag of role file {0} is not properly formatted. {1}'
+        .format(file_path, str(e)))
+  return role
+
+
 def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more='',
                                    additional_flags=''):
   """Returns a detailed_help for a set-iam-policy command.
@@ -522,6 +567,94 @@ def PublicKeyTypeFromString(key_str):
   return PUBLIC_KEY_TYPES.TYPE_RAW_PUBLIC_KEY
 
 
+def StageTypeFromString(stage_str):
+  """Parses a string into a stage enum.
+
+  Args:
+    stage_str: A string representation of a StageType. Can be *alpha* or *beta*
+    or *ga* or *deprecated* or *disabled*.
+
+  Returns:
+    A StageValueValuesEnum value.
+  """
+  lower_stage_str = stage_str.lower()
+  stage_dict = {
+      'alpha': STAGE_TYPES.ALPHA,
+      'beta': STAGE_TYPES.BETA,
+      'ga': STAGE_TYPES.GA,
+      'deprecated': STAGE_TYPES.DEPRECATED,
+      'disabled': STAGE_TYPES.DISABLED
+  }
+  if lower_stage_str not in stage_dict:
+    raise gcloud_exceptions.InvalidArgumentException(
+        'stage',
+        'The stage should be one of ' + ','.join(sorted(stage_dict)) + '.')
+  return stage_dict[lower_stage_str]
+
+
+def VerifyParent(organization, project, attribute='custom roles'):
+  """Verify the parent name."""
+  if organization is None and project is None:
+    raise gcloud_exceptions.RequiredArgumentException(
+        '--organization or --project',
+        'Should specify the project or organization name for {0}.'
+        .format(attribute))
+  if organization and project:
+    raise gcloud_exceptions.ConflictingArgumentsException(
+        'organization', 'project')
+
+
+def GetRoleName(organization,
+                project,
+                role,
+                attribute='custom roles',
+                parameter_name='ROLE_ID'):
+  """Gets the Role name from organization Id and role Id."""
+  if role.startswith('roles/'):
+    if project or organization:
+      raise gcloud_exceptions.InvalidArgumentException(
+          parameter_name,
+          'The role id that starts with \'roles/\' only stands for curated '
+          'role. Should not specify the project or organization for curated '
+          'roles')
+    return role
+
+  if role.startswith('projects/') or role.startswith('organizations/'):
+    raise gcloud_exceptions.InvalidArgumentException(
+        parameter_name, 'The role id should not include any \'projects/\' or '
+        '\'organizations/\' prefix.')
+  if '/' in role:
+    raise gcloud_exceptions.InvalidArgumentException(
+        parameter_name, 'The role id should not include any \'/\' character.')
+  VerifyParent(organization, project, attribute)
+  if organization:
+    return 'organizations/{0}/roles/{1}'.format(organization, role)
+  return 'projects/{0}/roles/{1}'.format(project, role)
+
+
+def GetParentName(organization, project, attribute='custom roles'):
+  """Gets the Role parent name from organization name or project name."""
+  VerifyParent(organization, project, attribute)
+  if organization:
+    return 'organizations/{0}'.format(organization)
+  return 'projects/{0}'.format(project)
+
+
+def GetResourceName(resource_ref):
+  """Convert a full resource URL to an atomic path."""
+  full_name = resource_ref.SelfLink()
+  full_name = re.sub(r'\w+://', '//', full_name)  # no protocol at the start
+  full_name = re.sub(r'/v[0-9]+[0-9a-zA-z]*/', '/', full_name)  # no version
+  if full_name.startswith('//www.'):
+    # Convert '//www.googleapis.com/compute/' to '//compute.googleapis.com/'
+    splitted_list = full_name.split('/')
+    service = full_name.split('/')[3]
+    splitted_list.pop(3)
+    full_name = '/'.join(splitted_list)
+    full_name = full_name.replace('//www.', '//{0}.'.format(service))
+  return full_name
+
+
 def ServiceAccountsUriFunc(resource):
   """Transforms a service account resource into a URL string.
 
@@ -570,3 +703,14 @@ def GetIamAccountFormatValidator():
       'Not a valid email address. It should be of the form: '
       'my-iam-account@somedomain.com or '
       'my-iam-account@PROJECT_ID.iam.gserviceaccount.com')
+
+
+def SetRoleStageIfAlpha(role):
+  """Set the role stage to Alpha if None.
+
+  Args:
+    role: A protorpc.Message of type Role.
+  """
+  if role.stage is None:
+    role.stage = StageTypeFromString('alpha')
+

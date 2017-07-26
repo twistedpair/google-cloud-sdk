@@ -13,7 +13,9 @@
 # limitations under the License.
 """Command util functions for gcloud container commands."""
 
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import text
 
 
@@ -74,3 +76,69 @@ def ClusterUpgradeMessage(cluster, master=False, node_pool=None,
           'on the cluster (including delete) until it has run to completion.'
           .format(node_message, cluster.name, current_version,
                   new_version_message))
+
+
+def GetZone(args, ignore_property=False, required=True):
+  """Get a zone from argument or property.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+        command invocation.
+    ignore_property: bool, if true, will get location only from argument.
+    required: bool, if true, lack of zone will cause raise an exception.
+
+  Raises:
+    MinimumArgumentException: if location if required and not provided.
+
+  Returns:
+    str, a zone selected by user.
+  """
+  zone = getattr(args, 'zone', None)
+
+  if ignore_property:
+    zone_property = None
+  else:
+    zone_property = properties.VALUES.compute.zone.Get()
+
+  if required and not zone and not zone_property:
+    raise calliope_exceptions.MinimumArgumentException(
+        ['--zone'], 'Please specify zone')
+
+  return zone or zone_property
+
+
+def GetZoneOrRegion(args, ignore_property=False, required=True):
+  """Get a location (zone or region) from argument or property.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+        command invocation.
+    ignore_property: bool, if true, will get location only from argument.
+    required: bool, if true, lack of zone will cause raise an exception.
+
+  Raises:
+    MinimumArgumentException: if location if required and not provided.
+    ConflictingArgumentsException: if both --zone and --region arguments
+        provided.
+
+  Returns:
+    str, a location selected by user.
+  """
+  zone = getattr(args, 'zone', None)
+  region = getattr(args, 'region', None)
+
+  if ignore_property:
+    zone_property = None
+  else:
+    zone_property = properties.VALUES.compute.zone.Get()
+
+  if zone and region:
+    raise calliope_exceptions.ConflictingArgumentsException(
+        '--zone', '--region')
+
+  location = region or zone or zone_property
+  if required and not location:
+    raise calliope_exceptions.MinimumArgumentException(
+        ['--zone', '--region'], 'Please specify location.')
+
+  return location

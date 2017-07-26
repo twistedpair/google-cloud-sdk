@@ -14,6 +14,7 @@
 
 """Flags and helpers for the compute networks commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 DEFAULT_LIST_FORMAT = """\
@@ -35,10 +36,19 @@ ALPHA_LIST_FORMAT = """\
     )"""
 
 
+class NetworksCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(NetworksCompleter, self).__init__(
+        collection='compute.networks',
+        list_command='compute networks list --uri',
+        **kwargs)
+
+
 def NetworkArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='network',
-      completion_resource_id='compute.networks',
+      completer=NetworksCompleter,
       plural=plural,
       required=required,
       global_collection='compute.networks')
@@ -50,7 +60,7 @@ def NetworkArgumentForOtherResource(short_help,
   return compute_flags.ResourceArgument(
       name='--network',
       resource_name='network',
-      completion_resource_id='compute.networks',
+      completer=NetworksCompleter,
       plural=False,
       required=required,
       global_collection='compute.networks',

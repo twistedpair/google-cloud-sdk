@@ -14,6 +14,7 @@
 
 """Flags and helpers for the compute http-health-checks commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 DEFAULT_LIST_FORMAT = """\
@@ -28,7 +29,7 @@ DEFAULT_LIST_FORMAT = """\
 def HttpHealthCheckArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='HTTP health check',
-      completion_resource_id='compute.httpHealthChecks',
+      completer=compute_completers.DeprecatedHttpHealthChecksCompleter,
       plural=plural,
       required=required,
       global_collection='compute.httpHealthChecks')
@@ -38,7 +39,7 @@ def HttpHealthCheckArgumentForTargetPool(action, required=True):
   return compute_flags.ResourceArgument(
       resource_name='http health check',
       name='--http-health-check',
-      completion_resource_id='compute.httpHealthChecks',
+      completer=compute_completers.DeprecatedHttpHealthChecksCompleter,
       plural=False,
       required=required,
       global_collection='compute.httpHealthChecks',
@@ -50,7 +51,7 @@ def HttpHealthCheckArgumentForTargetPoolCreate(required=True):
   return compute_flags.ResourceArgument(
       resource_name='http health check',
       name='--http-health-check',
-      completion_resource_id='compute.httpHealthChecks',
+      completer=compute_completers.DeprecatedHttpHealthChecksCompleter,
       plural=False,
       required=required,
       global_collection='compute.httpHealthChecks',

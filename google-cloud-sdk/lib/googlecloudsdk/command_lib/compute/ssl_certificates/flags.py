@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute ssl-certificates commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 DEFAULT_LIST_FORMAT = """\
@@ -22,10 +23,19 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+class SslCertificatesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(SslCertificatesCompleter, self).__init__(
+        collection='compute.sslCertificates',
+        list_command='compute ssl-certificates list --uri',
+        **kwargs)
+
+
 def SslCertificateArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='SSL certificate',
-      completion_resource_id='compute.sslCertificates',
+      completer=SslCertificatesCompleter,
       plural=plural,
       required=required,
       global_collection='compute.sslCertificates')
@@ -36,7 +46,7 @@ def SslCertificateArgumentForOtherResource(resource, required=True):
   return compute_flags.ResourceArgument(
       name='--ssl-certificate',
       resource_name='ssl certificate',
-      completion_resource_id='compute.sslCertificates',
+      completer=SslCertificatesCompleter,
       plural=False,
       required=required,
       global_collection='compute.sslCertificates',
@@ -53,7 +63,7 @@ def SslCertificatesArgumentForOtherResource(resource, required=True):
   return compute_flags.ResourceArgument(
       name='--ssl-certificates',
       resource_name='ssl certificate',
-      completion_resource_id='compute.sslCertificates',
+      completer=SslCertificatesCompleter,
       plural=True,
       required=required,
       global_collection='compute.sslCertificates',

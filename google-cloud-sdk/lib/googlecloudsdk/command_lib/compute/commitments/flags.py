@@ -15,10 +15,20 @@
 """Flags and helpers for the compute commitments commands."""
 
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 VALID_PLANS = ['12-month', '36-month']
 _REQUIRED_RESOURCES = sorted(['VCPU', 'MEMORY'])
+
+
+class RegionCommitmentsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionCommitmentsCompleter, self).__init__(
+        collection='compute.regionCommitments',
+        list_command='alpha compute commitments list --uri',
+        **kwargs)
 
 
 def _GetFlagToPlanMap(messages):
@@ -57,7 +67,7 @@ def TranslateResourcesArg(messages, resources_arg):
 def MakeCommitmentArg(plural):
   return compute_flags.ResourceArgument(
       resource_name='commitment',
-      completion_resource_id='compute.regionCommitments',
+      completer=RegionCommitmentsCompleter,
       plural=plural,
       name='commitment',
       regional_collection='compute.regionCommitments',

@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute target-vpn-gateways commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 DEFAULT_LIST_FORMAT = """\
@@ -23,10 +24,19 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+class TargetVpnGatewaysCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(TargetVpnGatewaysCompleter, self).__init__(
+        collection='compute.targetVpnGateways',
+        list_command='compute target-vpn-gateways list --uri',
+        **kwargs)
+
+
 def TargetVpnGatewayArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='Target VPN Gateway',
-      completion_resource_id='compute.targetVpnGateways',
+      completer=TargetVpnGatewaysCompleter,
       plural=plural,
       required=required,
       regional_collection='compute.targetVpnGateways',
@@ -37,7 +47,7 @@ def TargetVpnGatewayArgumentForVpnTunnel(required=True):
   return compute_flags.ResourceArgument(
       resource_name='Target VPN Gateway',
       name='--target-vpn-gateway',
-      completion_resource_id='compute.targetVpnGateways',
+      completer=TargetVpnGatewaysCompleter,
       plural=False,
       required=required,
       regional_collection='compute.targetVpnGateways',

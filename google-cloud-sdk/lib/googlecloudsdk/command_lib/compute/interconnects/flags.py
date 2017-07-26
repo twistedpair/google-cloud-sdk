@@ -13,13 +13,23 @@
 # limitations under the License.
 """Flags and helpers for the compute interconnects commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+
+
+class InterconnectsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(InterconnectsCompleter, self).__init__(
+        collection='compute.interconnects',
+        list_command='alpha compute interconnects list --uri',
+        **kwargs)
 
 
 def InterconnectArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='interconnect',
-      completion_resource_id='compute.interconnects',
+      completer=InterconnectsCompleter,
       plural=plural,
       required=required,
       global_collection='compute.interconnects')
@@ -31,7 +41,7 @@ def InterconnectArgumentForOtherResource(short_help,
   return compute_flags.ResourceArgument(
       name='--interconnect',
       resource_name='interconnect',
-      completion_resource_id='compute.interconnects',
+      completer=InterconnectsCompleter,
       plural=False,
       required=required,
       global_collection='compute.interconnects',
@@ -105,7 +115,18 @@ def AddNocContactEmail(parser):
       '--noc-contact-email',
       help="""\
       Email address to contact the customer NOC for operations and maintenance
-      notifications regarding this Interconnect.
+      notifications regarding this interconnect.
+      """)
+
+
+def AddCustomerName(parser):
+  """Adds customerName flag to the argparse."""
+  parser.add_argument(
+      '--customer-name',
+      required=True,
+      help="""\
+      Customer name to put in the Letter of Authorization as the party
+      authorized to request a crossconnect.
       """)
 
 
@@ -118,6 +139,6 @@ def AddAdminEnabled(parser):
       default=None,
       help="""\
       Administrative status of the interconnect. When this is provided, the
-      Interconnect is functional and may carry traffic (assuming there are
+      interconnect is functional and may carry traffic (assuming there are
       functional InterconnectAttachments and other requirements are satisfied).
       """)

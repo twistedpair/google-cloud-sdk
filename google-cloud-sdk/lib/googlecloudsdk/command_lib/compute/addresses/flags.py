@@ -17,13 +17,41 @@
 import argparse
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util import completers
+
+
+class RegionalAddressesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionalAddressesCompleter, self).__init__(
+        collection='compute.addresses',
+        list_command='compute addresses list --filter=region:* --uri',
+        **kwargs)
+
+
+class GlobalAddressesCompleter(compute_completers.GlobalListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalAddressesCompleter, self).__init__(
+        collection='compute.globalAddresses',
+        list_command='alpha compute addresses list --global --uri',
+        **kwargs)
+
+
+class AddressesCompleter(completers.MultiResourceCompleter):
+
+  def __init__(self, **kwargs):
+    super(AddressesCompleter, self).__init__(
+        completers=[RegionalAddressesCompleter, GlobalAddressesCompleter],
+        **kwargs)
 
 
 def AddressArgument(required=True, plural=True):
   return compute_flags.ResourceArgument(
       resource_name='address',
-      completion_resource_id='compute.addresses',
+      completer=AddressesCompleter,
       plural=plural,
       custom_plural='addresses',
       required=required,

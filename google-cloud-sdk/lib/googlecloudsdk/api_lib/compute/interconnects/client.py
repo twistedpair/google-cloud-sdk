@@ -29,7 +29,7 @@ class Interconnect(object):
 
   def _MakeCreateRequestTuple(self, description, location, interconnect_type,
                               requested_link_count, link_type, admin_enabled,
-                              noc_contact_email):
+                              noc_contact_email, customer_name):
     return (self._client.interconnects, 'Insert',
             self._messages.ComputeInterconnectsInsertRequest(
                 project=self.ref.project,
@@ -41,7 +41,8 @@ class Interconnect(object):
                     nocContactEmail=noc_contact_email,
                     requestedLinkCount=requested_link_count,
                     location=location,
-                    adminEnabled=admin_enabled)))
+                    adminEnabled=admin_enabled,
+                    customerName=customer_name)))
 
   def _MakePatchRequestTuple(self, description, location, interconnect_type,
                              requested_link_count, link_type, admin_enabled,
@@ -82,12 +83,14 @@ class Interconnect(object):
              link_type=None,
              admin_enabled=False,
              noc_contact_email=None,
+             customer_name=None,
              only_generate_request=False):
     """Create an interconnect."""
     requests = [
         self._MakeCreateRequestTuple(description, location, interconnect_type,
                                      requested_link_count, link_type,
-                                     admin_enabled, noc_contact_email)
+                                     admin_enabled, noc_contact_email,
+                                     customer_name)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

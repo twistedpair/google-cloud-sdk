@@ -27,3 +27,9 @@ KUBERNETES_ALPHA_PROMPT = (
     "- You will not be able to upgrade the master or nodes.\n"
     "- The cluster will be deleted after 30 days.\n"
 )
+
+KUBERNETES_REGIONAL_CHARGES_PROMPT = (
+    "This will create a regional cluster.\n"
+    "While this feature is available at no charge in Alpha, "
+    "in the future you may be charged for it.\n"
+)

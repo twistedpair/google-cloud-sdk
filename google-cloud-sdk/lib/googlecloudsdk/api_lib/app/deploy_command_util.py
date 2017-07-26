@@ -517,7 +517,7 @@ def GetAppHostname(app=None, app_id=None, service=None, version=None,
 
   domain = DEFAULT_DOMAIN
   if not app and ':' in app_id:
-    api_client = appengine_api_client.GetApiClient()
+    api_client = appengine_api_client.AppengineApiClient.GetApiClient()
     app = api_client.GetApplication()
   if app:
     app_id, domain = app.defaultHostname.split('.', 1)

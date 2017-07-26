@@ -146,11 +146,6 @@ class InstanceGroupListInstancesBase(base_classes.BaseLister):
     """Retrieves response with instance in the instance group."""
     pass
 
-  @staticmethod
-  def GetUriCacheUpdateOp():
-    """This command class does not update the URI cache."""
-    return None
-
   def GetUriFunc(self):
 
     def _GetUri(resource):

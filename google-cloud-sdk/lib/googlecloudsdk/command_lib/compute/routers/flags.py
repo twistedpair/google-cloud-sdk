@@ -15,6 +15,7 @@
 
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 DEFAULT_LIST_FORMAT = """\
@@ -34,10 +35,19 @@ _GROUP_CHOICES = {
 }
 
 
+class RoutersCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RoutersCompleter, self).__init__(
+        collection='compute.routers',
+        list_command='compute routers list --uri',
+        **kwargs)
+
+
 def RouterArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='router',
-      completion_resource_id='compute.routers',
+      completer=RoutersCompleter,
       plural=plural,
       required=required,
       regional_collection='compute.routers',
@@ -48,7 +58,7 @@ def RouterArgumentForVpnTunnel(required=True):
   return compute_flags.ResourceArgument(
       resource_name='router',
       name='--router',
-      completion_resource_id='compute.routers',
+      completer=RoutersCompleter,
       plural=False,
       required=required,
       regional_collection='compute.routers',
@@ -60,7 +70,7 @@ def RouterArgumentForOtherResources(required=True):
   return compute_flags.ResourceArgument(
       resource_name='router',
       name='--router',
-      completion_resource_id='compute.routers',
+      completer=RoutersCompleter,
       plural=False,
       required=required,
       regional_collection='compute.routers',

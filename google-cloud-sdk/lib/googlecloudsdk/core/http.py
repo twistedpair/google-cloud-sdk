@@ -28,6 +28,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.resource import session_capturer
 from googlecloudsdk.core.util import platforms
 import httplib2
 
@@ -60,13 +61,16 @@ def Http(timeout='unset'):
 
   # Wrap the request method to put in our own user-agent, and trace reporting.
   gcloud_ua = MakeUserAgentString(properties.VALUES.metrics.command_name.Get())
+  capture_session_file = properties.VALUES.core.capture_session_file.Get()
   http_client = _Wrap(
       http_client,
       properties.VALUES.core.trace_token.Get(),
       properties.VALUES.core.trace_email.Get(),
       properties.VALUES.core.trace_log.GetBool(),
       gcloud_ua,
-      properties.VALUES.core.log_http.GetBool()
+      properties.VALUES.core.log_http.GetBool(),
+      None if capture_session_file is None else
+      session_capturer.SessionCapturer(open(capture_session_file, 'w'))
   )
 
   return http_client
@@ -106,17 +110,18 @@ def GetDefaultTimeout():
   return properties.VALUES.core.http_timeout.GetInt() or 300
 
 
-def _Wrap(
-    http_client, trace_token, trace_email, trace_log, gcloud_ua, log_http):
+def _Wrap(http_client, trace_token, trace_email, trace_log, gcloud_ua,
+          log_http, capturer):
   """Wrap request with user-agent, and trace reporting.
 
   Args:
     http_client: The original http object.
     trace_token: str, Token to be used to route service request traces.
     trace_email: str, username to which service request traces should be sent.
-    trace_log: bool, Enable/diable server side logging of service requests.
+    trace_log: bool, Enable/disable server side logging of service requests.
     gcloud_ua: str, User agent string to be included in the request.
     log_http: bool, True to enable request/response logging.
+    capturer: SessionCapturer, instance to pass request and response to
 
   Returns:
     http, The same http object but with the request method wrapped.
@@ -147,6 +152,11 @@ def _Wrap(
     handlers.append(Modifiers.Handler(
         Modifiers.LogRequest(),
         Modifiers.LogResponse()))
+
+  if capturer is not None:
+    handlers.append(Modifiers.Handler(
+        Modifiers.DumpRequest(capturer),
+        Modifiers.DumpResponse(capturer)))
 
   return Modifiers.WrapRequest(http_client, handlers)
 
@@ -338,26 +348,8 @@ class Modifiers(object):
     """
     def _LogRequest(args, kwargs):
       """Replacement http.request() method."""
-      # http.request has the following signature:
-      # request(self, uri, method="GET", body=None, headers=None,
-      #         redirections=DEFAULT_MAX_REDIRECTS, connection_type=None)
-      uri = args[0]
-      method = 'GET'
-      body = ''
-      headers = {}
 
-      if len(args) > 1:
-        method = args[1]
-      elif 'method' in kwargs:
-        method = kwargs['method']
-      if len(args) > 2:
-        body = args[2]
-        if len(args) > 3:
-          headers = args[3]
-      if 'body' in kwargs:
-        body = kwargs['body']
-      if 'headers' in kwargs:
-        headers = kwargs['headers']
+      uri, method, body, headers = Modifiers._GetRequest(args, kwargs)
 
       log.status.Print('=======================')
       log.status.Print('==== request start ====')
@@ -374,6 +366,26 @@ class Modifiers(object):
 
       return Modifiers.Result(data=time.time())
     return _LogRequest
+
+  @classmethod
+  def DumpRequest(cls, capturer):
+    """Dumps the contents of the http request to capturer.
+
+    Args:
+      capturer: SessionCapturer, instance to pass request to
+
+    Returns:
+      A function that can be used in a Handler.request.
+    """
+
+    def _DumpRequest(args, kwargs):
+      """Replacement http.request() method."""
+
+      capturer.capture_http_request(*Modifiers._GetRequest(args, kwargs))
+
+      return Modifiers.Result()
+
+    return _DumpRequest
 
   @classmethod
   def LogResponse(cls):
@@ -399,6 +411,23 @@ class Modifiers(object):
       log.status.Print('---- response end ----')
       log.status.Print('----------------------')
     return _LogResponse
+
+  @classmethod
+  def DumpResponse(cls, capturer):
+    """Dumps the contents of the http response to capturer.
+
+    Args:
+      capturer: SessionCapturer, instance to pass response to
+
+    Returns:
+      A function that can be used in a Handler.request.
+    """
+
+    def _DumpResponse(response, unused_args):
+      """Response handler."""
+      capturer.capture_http_response(*response)
+
+    return _DumpResponse
 
   @classmethod
   def RecordStartTime(cls):
@@ -459,3 +488,30 @@ class Modifiers(object):
       kwargs['headers'] = {header: value}
 
     return modified_args
+
+  @classmethod
+  def _GetRequest(cls, args, kwargs):
+    """Parse args and kwargs to get uri, method, body, headers."""
+    # http.request has the following signature:
+    # request(self, uri, method="GET", body=None, headers=None,
+    #         redirections=DEFAULT_MAX_REDIRECTS, connection_type=None)
+
+    uri = args[0]
+    method = 'GET'
+    body = ''
+    headers = {}
+
+    if len(args) > 1:
+      method = args[1]
+    elif 'method' in kwargs:
+      method = kwargs['method']
+    if len(args) > 2:
+      body = args[2]
+      if len(args) > 3:
+        headers = args[3]
+    if 'body' in kwargs:
+      body = kwargs['body']
+    if 'headers' in kwargs:
+      headers = kwargs['headers']
+
+    return uri, method, body, headers

@@ -14,11 +14,12 @@
 
 """Flags for the compute regions commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
 def MakeRegionArg():
   return compute_flags.ResourceArgument(
       resource_name='region',
-      completion_resource_id='compute.regions',
+      completer=compute_completers.RegionsCompleter,
       global_collection='compute.regions')

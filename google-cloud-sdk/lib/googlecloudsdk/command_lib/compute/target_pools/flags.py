@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute target-pools commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 DEFAULT_LIST_FORMAT = """\
@@ -25,10 +26,19 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+class TargetPoolsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(TargetPoolsCompleter, self).__init__(
+        collection='compute.targetPools',
+        list_command='compute target-pools list --uri',
+        **kwargs)
+
+
 def TargetPoolArgument(required=True, help_suffix='.', plural=False):
   return compute_flags.ResourceArgument(
       resource_name='target pool',
-      completion_resource_id='compute.targetPools',
+      completer=TargetPoolsCompleter,
       plural=plural,
       required=required,
       regional_collection='compute.targetPools',
@@ -41,7 +51,7 @@ def BackupPoolArgument(required=True):
   return compute_flags.ResourceArgument(
       resource_name='backup pool',
       name='--backup-pool',
-      completion_resource_id='compute.targetPools',
+      completer=TargetPoolsCompleter,
       plural=False,
       required=required,
       regional_collection='compute.targetPools')
@@ -50,7 +60,7 @@ def BackupPoolArgument(required=True):
 def TargetPoolArgumentForAddRemoveInstances(required=True, help_suffix='.'):
   return compute_flags.ResourceArgument(
       resource_name='target pool',
-      completion_resource_id='compute.targetPools',
+      completer=TargetPoolsCompleter,
       plural=False,
       required=required,
       regional_collection='compute.targetPools',

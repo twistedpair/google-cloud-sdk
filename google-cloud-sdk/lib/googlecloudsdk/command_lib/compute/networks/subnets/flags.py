@@ -14,6 +14,8 @@
 
 """Flags and helpers for the compute subnetworks commands."""
 
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 
@@ -26,10 +28,20 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+class SubnetworksCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(SubnetworksCompleter, self).__init__(
+        collection='compute.subnetworks',
+        list_command='beta compute networks subnets list --uri',
+        api_version='beta',
+        **kwargs)
+
+
 def SubnetworkArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='subnetwork',
-      completion_resource_id='compute.subnetworks',
+      completer=SubnetworksCompleter,
       plural=plural,
       required=required,
       regional_collection='compute.subnetworks',
@@ -39,3 +51,43 @@ def SubnetworkArgument(required=True, plural=False):
 def SubnetworkResolver():
   return compute_flags.ResourceResolver.FromMap(
       'subnetwork', {compute_scope.ScopeEnum.REGION: 'compute.subnetworks'})
+
+
+def AddUpdateArgs(parser, include_secondary_ranges=False):
+  """Add args to the parser for subnet update."""
+  updated_field = parser.add_mutually_exclusive_group()
+
+  updated_field.add_argument(
+      '--enable-private-ip-google-access',
+      action='store_true',
+      default=None,  # Tri-valued, None => do not change.
+      help=('Enable/disable access to Google Cloud APIs from this subnet for '
+            'instances without a public ip address.'))
+
+  if include_secondary_ranges:
+    updated_field.add_argument(
+        '--add-secondary-ranges',
+        type=arg_parsers.ArgDict(min_length=1),
+        action='append',
+        metavar='PROPERTY=VALUE',
+        help="""\
+        Adds secondary IP ranges to the subnetwork for use in IP aliasing.
+
+        For example, `--add-secondary-ranges range1=192.168.64.0/24` adds
+        a secondary range 192.168.64.0/24 with name range1.
+
+        * `RANGE_NAME` - Name of the secondary range.
+        * `RANGE` - `IP range in CIDR format.`
+        """)
+
+    updated_field.add_argument(
+        '--remove-secondary-ranges',
+        type=arg_parsers.ArgList(min_length=1),
+        action='append',
+        metavar='PROPERTY=VALUE',
+        help="""\
+        Removes secondary ranges from the subnetwork.
+
+        For example, `--remove-secondary-ranges range2,range3` removes the
+        secondary ranges with names range2 and range3.
+        """)

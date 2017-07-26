@@ -84,7 +84,6 @@ class AppEngineQueueConfig(_messages.Message):
       takes precedence.  Settings that determine the retry behavior.  The
       task's retry configuration (AppEngineTaskTarget.retry_config) overrides
       the queue's retry configuration (AppEngineQueueConfig.retry_config).
-    throttleConfig: Config for throttling task dispatches.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -131,20 +130,19 @@ class AppEngineQueueConfig(_messages.Message):
   appEngineRoutingOverrides = _messages.MessageField('AppEngineRouting', 1)
   headers = _messages.MessageField('HeadersValue', 2)
   retryConfig = _messages.MessageField('RetryConfig', 3)
-  throttleConfig = _messages.MessageField('ThrottleConfig', 4)
 
 
 class AppEngineRouting(_messages.Message):
   """App Engine Routing.  For more information about services, versions, and
   instances see [An Overview of App
   Engine](https://cloud.google.com/appengine/docs/python/an-overview-of-app-
-  engine) and [Microservices Architecture on Google App
+  engine), [Microservices Architecture on Google App
   Engine](https://cloud.google.com/appengine/docs/python/microservices-on-app-
-  engine).  Note: The routing for some queues or tasks which were not created
-  using the Cloud Tasks API may not be parsable into AppEngineRouting. For
-  example, if numeric version names are used, then urls such as `123.my-
-  service.appspot.com` are ambiguous because `123` can be interpreted as a
-  version or instance number. See
+  engine), and How Requests are Routed.  Note: The routing for some queues or
+  tasks which were not created using the Cloud Tasks API may not be parsable
+  into AppEngineRouting. For example, if numeric version names are used, then
+  urls such as `123.my-service.appspot.com` are ambiguous because `123` can be
+  interpreted as a version or instance number. See
   [here](https://cloud.google.com/appengine/docs/python/how-requests-are-
   routed#soft_routing) for more information. If the routing is unparsable,
   AppEngineRouting will be empty; the routing information can be viewed in the
@@ -401,6 +399,31 @@ class AttemptStatus(_messages.Message):
   scheduleTime = _messages.StringField(4)
 
 
+class Binding(_messages.Message):
+  """Associates `members` with a `role`.
+
+  Fields:
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. `members` can have the following values:  * `allUsers`: A
+      special identifier that represents anyone who is    on the internet;
+      with or without a Google account.  * `allAuthenticatedUsers`: A special
+      identifier that represents anyone    who is authenticated with a Google
+      account or a service account.  * `user:{emailid}`: An email address that
+      represents a specific Google    account. For example, `alice@gmail.com`
+      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
+      that represents a service    account. For example, `my-other-
+      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: A Google Apps domain name that represents all the
+      users of that domain. For example, `google.com` or `example.com`.
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`. Required
+  """
+
+  members = _messages.StringField(1, repeated=True)
+  role = _messages.StringField(2)
+
+
 class CancelLeaseRequest(_messages.Message):
   """Request message for canceling a lease using CloudTasks.CancelLease.
 
@@ -483,18 +506,19 @@ class CloudtasksProjectsLocationsQueuesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class CloudtasksProjectsLocationsQueuesEnableRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesEnableRequest object.
+class CloudtasksProjectsLocationsQueuesGetIamPolicyRequest(_messages.Message):
+  """A CloudtasksProjectsLocationsQueuesGetIamPolicyRequest object.
 
   Fields:
-    enableQueueRequest: A EnableQueueRequest resource to be passed as the
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
-    name: Required.  The queue name. For example:
-      `projects/PROJECT_ID/location/LOCATION_ID/queues/QUEUE_ID`
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
   """
 
-  enableQueueRequest = _messages.MessageField('EnableQueueRequest', 1)
-  name = _messages.StringField(2, required=True)
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class CloudtasksProjectsLocationsQueuesGetRequest(_messages.Message):
@@ -512,13 +536,13 @@ class CloudtasksProjectsLocationsQueuesListRequest(_messages.Message):
   """A CloudtasksProjectsLocationsQueuesListRequest object.
 
   Fields:
-    filter: `filter` can be used to specify a subset of queues. Any queue
+    filter: `filter` can be used to specify a subset of queues. Any Queue
       field can be used as a filter and several operators as supported. For
       example: `<=, <, >=, >, !=, =, :`. The filter syntax is the same as
       described in
       https://cloud.google.com/logging/docs/view/advanced_filters.  Sample
-      filter "pull_queue_config: *".  Note that using filters might cause
-      fewer queues than the requested_page size to be returned.
+      filter "app_engine_queue_config: *".  Note that using filters might
+      cause fewer queues than the requested_page size to be returned.
     pageSize: Requested page size.  The maximum page size is 9800. If
       unspecified, the max will be returned. Fewer queues than requested might
       be returned.
@@ -588,6 +612,35 @@ class CloudtasksProjectsLocationsQueuesPurgeRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   purgeQueueRequest = _messages.MessageField('PurgeQueueRequest', 2)
+
+
+class CloudtasksProjectsLocationsQueuesResumeRequest(_messages.Message):
+  """A CloudtasksProjectsLocationsQueuesResumeRequest object.
+
+  Fields:
+    name: Required.  The queue name. For example:
+      `projects/PROJECT_ID/location/LOCATION_ID/queues/QUEUE_ID`
+    resumeQueueRequest: A ResumeQueueRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resumeQueueRequest = _messages.MessageField('ResumeQueueRequest', 2)
+
+
+class CloudtasksProjectsLocationsQueuesSetIamPolicyRequest(_messages.Message):
+  """A CloudtasksProjectsLocationsQueuesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class CloudtasksProjectsLocationsQueuesTasksAcknowledgeRequest(_messages.Message):
@@ -787,6 +840,36 @@ class CloudtasksProjectsLocationsQueuesTasksRenewLeaseRequest(_messages.Message)
   renewLeaseRequest = _messages.MessageField('RenewLeaseRequest', 2)
 
 
+class CloudtasksProjectsLocationsQueuesTasksRunRequest(_messages.Message):
+  """A CloudtasksProjectsLocationsQueuesTasksRunRequest object.
+
+  Fields:
+    name: Required.  The task name. For example:
+      `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID
+      `
+    runTaskRequest: A RunTaskRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  runTaskRequest = _messages.MessageField('RunTaskRequest', 2)
+
+
+class CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest(_messages.Message):
+  """A CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class CreateTaskRequest(_messages.Message):
   """Request message for CloudTasks.CreateTask.
 
@@ -866,8 +949,8 @@ class Empty(_messages.Message):
 
 
 
-class EnableQueueRequest(_messages.Message):
-  """Request message for CloudTasks.EnableQueue."""
+class GetIamPolicyRequest(_messages.Message):
+  """Request message for `GetIamPolicy` method."""
 
 
 class ListQueuesResponse(_messages.Message):
@@ -902,6 +985,41 @@ class ListTasksResponse(_messages.Message):
 
 class PauseQueueRequest(_messages.Message):
   """Request message for CloudTasks.PauseQueue."""
+
+
+class Policy(_messages.Message):
+  """Defines an Identity and Access Management (IAM) policy. It is used to
+  specify access control policies for Cloud Platform resources.   A `Policy`
+  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  `role`, where the members can be user accounts, Google groups, Google
+  domains, and service accounts. A `role` is a named list of permissions
+  defined by IAM.  **Example**      {       "bindings": [         {
+  "role": "roles/owner",           "members": [
+  "user:mike@example.com",             "group:admins@example.com",
+  "domain:google.com",             "serviceAccount:my-other-
+  app@appspot.gserviceaccount.com",           ]         },         {
+  "role": "roles/viewer",           "members": ["user:sean@example.com"]
+  }       ]     }  For a description of IAM and its features, see the [IAM
+  developer's guide](https://cloud.google.com/iam).
+
+  Fields:
+    bindings: Associates a list of `members` to a `role`. `bindings` with no
+      members will result in an error.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
+      the existing policy is overwritten blindly.
+    version: Version of the `Policy`. The default version is 0.
+  """
+
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class PullQueueConfig(_messages.Message):
@@ -1043,7 +1161,7 @@ class Queue(_messages.Message):
   Enums:
     QueueStateValueValuesEnum: Output only.  The state of the queue.
       `queue_state` can only be changed by called CloudTasks.PauseQueue,
-      CloudTasks.EnableQueue, or uploading [queue.yaml](https://cloud.google.c
+      CloudTasks.ResumeQueue, or uploading [queue.yaml](https://cloud.google.c
       om/appengine/docs/python/config/queueref). CloudTasks.UpdateQueue cannot
       be used to change `queue_state`.
 
@@ -1067,7 +1185,7 @@ class Queue(_messages.Message):
       Purge time will be truncated to the nearest microsecond. Purge time will
       be zero if the queue has never been purged.
     queueState: Output only.  The state of the queue.  `queue_state` can only
-      be changed by called CloudTasks.PauseQueue, CloudTasks.EnableQueue, or
+      be changed by called CloudTasks.PauseQueue, CloudTasks.ResumeQueue, or
       uploading [queue.yaml](https://cloud.google.com/appengine/docs/python/co
       nfig/queueref). CloudTasks.UpdateQueue cannot be used to change
       `queue_state`.
@@ -1079,14 +1197,14 @@ class Queue(_messages.Message):
 
   class QueueStateValueValuesEnum(_messages.Enum):
     """Output only.  The state of the queue.  `queue_state` can only be
-    changed by called CloudTasks.PauseQueue, CloudTasks.EnableQueue, or
+    changed by called CloudTasks.PauseQueue, CloudTasks.ResumeQueue, or
     uploading [queue.yaml](https://cloud.google.com/appengine/docs/python/conf
     ig/queueref). CloudTasks.UpdateQueue cannot be used to change
     `queue_state`.
 
     Values:
       QUEUE_STATE_UNSPECIFIED: Unspecified state.
-      ENABLED: Queue is enabled. Tasks can be dispatched.
+      RUNNING: The queue is running. Tasks can be dispatched.
       PAUSED: Tasks are paused by the user. If the queue is paused then Cloud
         Tasks will stop delivering tasks from it, but more tasks can still be
         added to it by the user. When a pull queue is paused, all
@@ -1101,7 +1219,7 @@ class Queue(_messages.Message):
         of its tasks, call CloudTasks.DeleteQueue.
     """
     QUEUE_STATE_UNSPECIFIED = 0
-    ENABLED = 1
+    RUNNING = 1
     PAUSED = 2
     DISABLED = 3
 
@@ -1173,6 +1291,10 @@ class RenewLeaseRequest(_messages.Message):
   scheduleTime = _messages.StringField(3)
 
 
+class ResumeQueueRequest(_messages.Message):
+  """Request message for CloudTasks.ResumeQueue."""
+
+
 class RetryConfig(_messages.Message):
   """Retry config.  These settings determine retry behavior.  If a task does
   not complete successfully, meaning that an acknowledgement is not received
@@ -1211,6 +1333,70 @@ class RetryConfig(_messages.Message):
   minBackoff = _messages.StringField(4)
   taskAgeLimit = _messages.StringField(5)
   unlimitedAttempts = _messages.BooleanField(6)
+
+
+class RunTaskRequest(_messages.Message):
+  """Request message for forcing a task to run now using CloudTasks.RunTask.
+
+  Enums:
+    ResponseViewValueValuesEnum: The response_view specifies which subset of
+      the Task will be returned.  By default response_view is Task.View.BASIC;
+      not all information is retrieved by default because some data, such as
+      payloads, might be desirable to return only when needed because of its
+      large size or because of the sensitivity of data that it contains.
+      Authorization for Task.View.FULL requires `cloudtasks.tasks.fullView`
+      [Google IAM](https://cloud.google.com/iam/) permission on the Task.name
+      resource.
+
+  Fields:
+    responseView: The response_view specifies which subset of the Task will be
+      returned.  By default response_view is Task.View.BASIC; not all
+      information is retrieved by default because some data, such as payloads,
+      might be desirable to return only when needed because of its large size
+      or because of the sensitivity of data that it contains.  Authorization
+      for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
+      IAM](https://cloud.google.com/iam/) permission on the Task.name
+      resource.
+  """
+
+  class ResponseViewValueValuesEnum(_messages.Enum):
+    """The response_view specifies which subset of the Task will be returned.
+    By default response_view is Task.View.BASIC; not all information is
+    retrieved by default because some data, such as payloads, might be
+    desirable to return only when needed because of its large size or because
+    of the sensitivity of data that it contains.  Authorization for
+    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
+    IAM](https://cloud.google.com/iam/) permission on the Task.name resource.
+
+    Values:
+      VIEW_UNSPECIFIED: Unspecified. Defaults to BASIC.
+      BASIC: The basic view omits fields which can be large or can contain
+        sensitive data.  This view does not include the payload.
+      FULL: All information is returned.  Payloads might be desirable to
+        return only when needed, because they can be large and because of the
+        sensitivity of the data that you choose to store in it.  Authorization
+        for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
+        IAM](https://cloud.google.com/iam/) permission on the Queue.name
+        resource.
+    """
+    VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  responseView = _messages.EnumField('ResponseViewValueValuesEnum', 1)
+
+
+class SetIamPolicyRequest(_messages.Message):
+  """Request message for `SetIamPolicy` method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the `resource`. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Cloud Platform services (such as Projects)
+      might reject them.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1448,18 +1634,34 @@ class TaskStatus(_messages.Message):
   lastAttemptStatus = _messages.MessageField('AttemptStatus', 4)
 
 
+class TestIamPermissionsRequest(_messages.Message):
+  """Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestIamPermissionsResponse(_messages.Message):
+  """Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
 class ThrottleConfig(_messages.Message):
   """Throttle config.  These settings determine the throttling behavior.
 
   Fields:
-    bucketSize: Deprecated: This field is replaced by `max_burst_size`.
-      Output only.  The max burst size limits how fast the queue is processed
-      when many tasks are in the queue and the rate is high. This field allows
-      the queue to have a high rate so processing starts shortly after a task
-      is enqueued, but still limits resource usage when many tasks are
-      enqueued in a short period of time.  This field has the same meaning as
-      [bucket_size in queue.yaml](https://cloud.google.com/appengine/docs/stan
-      dard/python/config/queueref#bucket_size).
     maxBurstSize: Output only.  The max burst size limits how fast the queue
       is processed when many tasks are in the queue and the rate is high. This
       field allows the queue to have a high rate so processing starts shortly
@@ -1475,26 +1677,11 @@ class ThrottleConfig(_messages.Message):
       values specified above.  This field has the same meaning as [bucket_size
       in queue.yaml](https://cloud.google.com/appengine/docs/standard/python/c
       onfig/queueref#bucket_size).
-    maxOutstandingRequests: Deprecated: This field is replaced by
-      `max_outstanding_tasks`.  The maximum number of outstanding tasks that
-      Cloud Tasks allows to be dispatched for this queue. After this threshold
-      has been reached, Cloud Tasks stops dispatching tasks until the number
-      of outstanding requests decreases.  This field is 10 by default. The
-      maximum allowed value is 15,000.  This field has the same meaning as
-      [max_concurrent_requests in queue.yaml](https://cloud.google.com/appengi
-      ne/docs/standard/python/config/queueref#max_concurrent_requests).  This
-      field is output only for pull queues.
     maxOutstandingTasks: * For App Engine queues, this field is 10 by default.
       * For pull queues, this field is output only and always -1, which
       indicates no limit.  This field has the same meaning as
       [max_concurrent_requests in queue.yaml](https://cloud.google.com/appengi
       ne/docs/standard/python/config/queueref#max_concurrent_requests).
-    maxRequestsPerSecond: Deprecated: This field is replaced by
-      `max_tasks_dispatched_per_second`.  The maximum rate at which tasks are
-      dispatched from this queue.  This field has the same meaning as [rate in
-      queue.yaml](https://cloud.google.com/appengine/docs/standard/python/conf
-      ig/queueref#rate).  This field is 1 by default. The maximum allowed
-      value is 500.  This field is output only for pull queues.
     maxTasksDispatchedPerSecond: The maximum rate at which tasks are
       dispatched from this queue.  The maximum allowed value is 500.  * For
       App Engine queues, this field is 1 by default. * For pull queues, this
@@ -1503,12 +1690,9 @@ class ThrottleConfig(_messages.Message):
       /python/config/queueref#rate).
   """
 
-  bucketSize = _messages.FloatField(1)
-  maxBurstSize = _messages.FloatField(2)
-  maxOutstandingRequests = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  maxOutstandingTasks = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maxRequestsPerSecond = _messages.FloatField(5)
-  maxTasksDispatchedPerSecond = _messages.FloatField(6)
+  maxBurstSize = _messages.FloatField(1)
+  maxOutstandingTasks = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxTasksDispatchedPerSecond = _messages.FloatField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

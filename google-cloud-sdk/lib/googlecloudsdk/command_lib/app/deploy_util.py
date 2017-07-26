@@ -18,7 +18,6 @@ tracks.
 """
 import argparse
 
-from googlecloudsdk.api_lib.app import appengine_api_client
 from googlecloudsdk.api_lib.app import appengine_client
 from googlecloudsdk.api_lib.app import cloud_endpoints
 from googlecloudsdk.api_lib.app import deploy_app_command_util
@@ -306,16 +305,10 @@ def ArgsDeploy(parser):
       action='store_true',
       default=False,
       help=argparse.SUPPRESS)
-  # For internal use only
-  parser.add_argument(
-      '--skip-image-url-validation',
-      action='store_true',
-      default=False,
-      help=argparse.SUPPRESS)
 
 
 def RunDeploy(
-    args, enable_endpoints=False, use_beta_stager=False,
+    args, api_client, enable_endpoints=False, use_beta_stager=False,
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
     use_service_management=False, check_for_stopped=False):
   """Perform a deployment based on the given args.
@@ -323,6 +316,8 @@ def RunDeploy(
   Args:
     args: argparse.Namespace, An object that contains the values for the
         arguments specified in the ArgsDeploy() function.
+    api_client: api_lib.app.appengine_api_client.AppengineClient, App Engine
+        Admin API client.
     enable_endpoints: Enable Cloud Endpoints for the deployed app.
     use_beta_stager: Use the stager registry defined for the beta track rather
         than the default stager registry.
@@ -354,11 +349,8 @@ def RunDeploy(
         args.deployables, stager, deployables.GetPathMatchers())
     service_infos = [d.service_info for d in services]
 
-    if not args.skip_image_url_validation:
-      flags.ValidateImageUrl(args.image_url, service_infos)
+    flags.ValidateImageUrl(args.image_url, service_infos)
 
-    # The new API client.
-    api_client = appengine_api_client.GetApiClient()
     # pylint: disable=protected-access
     log.debug('API endpoint: [{endpoint}], API version: [{version}]'.format(
         endpoint=api_client.client.url,

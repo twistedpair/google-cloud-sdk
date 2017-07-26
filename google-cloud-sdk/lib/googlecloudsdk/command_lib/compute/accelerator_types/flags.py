@@ -13,11 +13,22 @@
 # limitations under the License.
 """Flags and helpers for the compute accelerator-types commands."""
 
+from googlecloudsdk.command_lib.compute import completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+
+
+class AcceleratorTypesCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(AcceleratorTypesCompleter, self).__init__(
+        collection='compute.acceleratorTypes',
+        list_command='compute accelerator-types list --uri',
+        **kwargs)
+
 
 ACCELERATOR_TYPES_ARG = compute_flags.ResourceArgument(
     resource_name='accelerator type',
-    completion_resource_id='compute.acceleratorTypes',
+    completer=AcceleratorTypesCompleter,
     plural=False,
     required=True,
     zonal_collection='compute.acceleratorTypes')

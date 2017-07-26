@@ -100,4 +100,4 @@ def _CreateActionsText(text, igm_field, action_types):
     action_count = getattr(igm_field, action, 0)
     if action_count > 0:
       actions.append('{0}: {1}'.format(action, action_count))
-  return text + ','.join(actions) if actions else ''
+  return text + ', '.join(actions) if actions else ''

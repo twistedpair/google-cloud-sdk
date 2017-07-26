@@ -16,6 +16,7 @@
 
 import argparse
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 _DETAILED_SOURCE_SNAPSHOT_HELP = """\
@@ -34,10 +35,29 @@ _DETAILED_SOURCE_SNAPSHOT_HELP = """\
 """
 
 
+DEFAULT_LIST_FORMAT = """\
+    table(
+      name,
+      zone.basename(),
+      sizeGb,
+      type.basename(),
+      status
+    )"""
+
+
+class SnapshotsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(SnapshotsCompleter, self).__init__(
+        collection='compute.snapshots',
+        list_command='compute snapshots list --uri',
+        **kwargs)
+
+
 def MakeDiskArg(plural):
   return compute_flags.ResourceArgument(
       resource_name='disk',
-      completion_resource_id='compute.disks',
+      completer=compute_completers.DisksCompleter,
       plural=plural,
       name='DISK_NAME',
       zonal_collection='compute.disks',
@@ -47,7 +67,7 @@ def MakeDiskArg(plural):
 def MakeDiskArgZonalOrRegional(plural):
   return compute_flags.ResourceArgument(
       resource_name='disk',
-      completion_resource_id='compute.disks',
+      completer=compute_completers.DisksCompleter,
       plural=plural,
       name='DISK_NAME',
       zonal_collection='compute.disks',
@@ -57,7 +77,7 @@ def MakeDiskArgZonalOrRegional(plural):
 
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',
-    completion_resource_id='compute.snapshots',
+    completer=SnapshotsCompleter,
     name='--source-snapshot',
     plural=False,
     required=False,

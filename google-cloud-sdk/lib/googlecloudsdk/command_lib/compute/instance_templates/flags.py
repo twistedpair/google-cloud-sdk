@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute instance groups commands."""
 
+from googlecloudsdk.command_lib.compute import completers
 from googlecloudsdk.command_lib.compute import flags
 
 DEFAULT_LIST_FORMAT = """\
@@ -27,6 +28,6 @@ DEFAULT_LIST_FORMAT = """\
 def MakeInstanceTemplateArg(plural=False):
   return flags.ResourceArgument(
       resource_name='instance template',
-      completion_resource_id='compute.instanceTemplates',
+      completer=completers.DeprecatedInstanceTemplatesCompleter,
       plural=plural,
       global_collection='compute.instanceTemplates')

@@ -5,7 +5,6 @@
 
 echo Welcome to the Google Cloud SDK!
 
-
 # <cloud-sdk-sh-preamble>
 #
 #  CLOUDSDK_ROOT_DIR            (a)  installation root dir
@@ -113,7 +112,6 @@ export CLOUDSDK_ROOT_DIR CLOUDSDK_PYTHON_ARGS
 
 # </cloud-sdk-sh-preamble>
 
-
 if [ -z "$CLOUDSDK_PYTHON" ]; then
   if [ -z "$(which python)" ]; then
     echo
@@ -122,6 +120,12 @@ if [ -z "$CLOUDSDK_PYTHON" ]; then
     echo "to the location of your Python executable."
     exit 1
   fi
+fi
+
+# Warns user if they are running as root.
+if [ $(id -u) = 0 ]; then
+  echo "WARNING: You appear to be running this script as root. This may cause "
+  echo "the installation to be inaccessible to users other than the root user."
 fi
 
 "$CLOUDSDK_PYTHON" $CLOUDSDK_PYTHON_ARGS "${CLOUDSDK_ROOT_DIR}/bin/bootstrapping/install.py" "$@"

@@ -16,20 +16,53 @@
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags
+from googlecloudsdk.command_lib.util import completers
+
+
+class RegionalInstanceGroupManagersCompleter(
+    compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionalInstanceGroupManagersCompleter, self).__init__(
+        collection='compute.regionInstanceGroupManagers',
+        list_command=('compute instance-groups managed list --uri '
+                      '--filter=region:*'),
+        **kwargs)
+
+
+class ZonalInstanceGroupManagersCompleter(
+    compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(ZonalInstanceGroupManagersCompleter, self).__init__(
+        collection='compute.instanceGroupManagers',
+        list_command=('compute instance-groups managed list --uri '
+                      '--filter=zone:*'),
+        **kwargs)
+
+
+class InstanceGroupManagersCompleter(completers.MultiResourceCompleter):
+
+  def __init__(self, **kwargs):
+    super(InstanceGroupManagersCompleter, self).__init__(
+        completers=[RegionalInstanceGroupManagersCompleter,
+                    ZonalInstanceGroupManagersCompleter],
+        **kwargs)
 
 
 def MakeZonalInstanceGroupArg(plural=False):
   return flags.ResourceArgument(
       resource_name='instance group',
-      completion_resource_id='compute.instanceGroups',
+      completer=compute_completers.InstanceGroupsCompleter,
       plural=plural,
       zonal_collection='compute.instanceGroups',
       zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
 
 MULTISCOPE_INSTANCE_GROUP_ARG = flags.ResourceArgument(
     resource_name='instance group',
-    completion_resource_id='compute.instanceGroups',
+    completer=compute_completers.InstanceGroupsCompleter,
     zonal_collection='compute.instanceGroups',
     regional_collection='compute.regionInstanceGroups',
     zone_explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT,
@@ -37,7 +70,7 @@ MULTISCOPE_INSTANCE_GROUP_ARG = flags.ResourceArgument(
 
 ZONAL_INSTANCE_GROUP_MANAGER_ARG = flags.ResourceArgument(
     resource_name='managed instance group',
-    completion_resource_id='compute.instanceGroupManagers',
+    completer=ZonalInstanceGroupManagersCompleter,
     zonal_collection='compute.instanceGroupManagers',
     zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
 
@@ -45,13 +78,13 @@ ZONAL_INSTANCE_GROUP_MANAGERS_ARG = flags.ResourceArgument(
     resource_name='managed instance group',
     plural=True,
     name='names',
-    completion_resource_id='compute.instanceGroupManagers',
+    completer=ZonalInstanceGroupManagersCompleter,
     zonal_collection='compute.instanceGroupManagers',
     zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
 
 MULTISCOPE_INSTANCE_GROUP_MANAGER_ARG = flags.ResourceArgument(
     resource_name='managed instance group',
-    completion_resource_id='compute.regionInstanceGroupManagers',
+    completer=InstanceGroupManagersCompleter,
     zonal_collection='compute.instanceGroupManagers',
     regional_collection='compute.regionInstanceGroupManagers',
     zone_explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT,
@@ -61,7 +94,7 @@ MULTISCOPE_INSTANCE_GROUP_MANAGERS_ARG = flags.ResourceArgument(
     resource_name='managed instance group',
     plural=True,
     name='names',
-    completion_resource_id='compute.regionInstanceGroupManagers',
+    completer=InstanceGroupManagersCompleter,
     zonal_collection='compute.instanceGroupManagers',
     regional_collection='compute.regionInstanceGroupManagers',
     zone_explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT,
@@ -129,7 +162,7 @@ def AddZonesFlag(parser):
           mutually exclusive with --zone flag.""",
       hidden=True,
       type=arg_parsers.ArgList(min_length=1),
-      completion_resource='compute.zones',
+      completer=compute_completers.ZonesCompleter,
       default=[])
 
 

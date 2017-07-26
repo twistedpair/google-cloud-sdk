@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute url-maps commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 DEFAULT_LIST_FORMAT = """\
@@ -22,11 +23,20 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+class UrlMapsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(UrlMapsCompleter, self).__init__(
+        collection='compute.urlMaps',
+        list_command='compute url-maps list --uri',
+        **kwargs)
+
+
 def UrlMapArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       name='url_map_name',
       resource_name='URL map',
-      completion_resource_id='compute.urlMaps',
+      completer=UrlMapsCompleter,
       plural=plural,
       required=required,
       global_collection='compute.urlMaps')
@@ -36,7 +46,7 @@ def UrlMapArgumentForTargetProxy(required=True, proxy_type='HTTP'):
   return compute_flags.ResourceArgument(
       name='--url-map',
       resource_name='url map',
-      completion_resource_id='compute.urlMaps',
+      completer=UrlMapsCompleter,
       plural=False,
       required=required,
       global_collection='compute.urlMaps',

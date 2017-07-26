@@ -17,7 +17,9 @@
 import argparse
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util import completers
 
 
 DEFAULT_LIST_FORMAT = """\
@@ -28,10 +30,48 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+class RegionalBackendServicesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionalBackendServicesCompleter, self).__init__(
+        collection='compute.regionBackendServices',
+        list_command=('compute backend-services list '
+                      '--filter=region:* --uri'),
+        **kwargs)
+
+
+class GlobalBackendServicesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalBackendServicesCompleter, self).__init__(
+        collection='compute.backendServices',
+        list_command=('compute backend-services list --global --uri'),
+        **kwargs)
+
+
+class BackendServicesCompleter(completers.MultiResourceCompleter):
+
+  def __init__(self, **kwargs):
+    super(BackendServicesCompleter, self).__init__(
+        completers=[RegionalBackendServicesCompleter,
+                    GlobalBackendServicesCompleter],
+        **kwargs)
+
+
+class DeprecatedBackendServicesCompleter(
+    compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(DeprecatedBackendServicesCompleter, self).__init__(
+        collection='compute.backendServices',
+        list_command='compute backend-services list --uri',
+        **kwargs)
+
+
 ZONAL_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
     name='--instance-group',
     resource_name='instance group',
-    completion_resource_id='compute.instanceGroups',
+    completer=compute_completers.InstanceGroupsCompleter,
     zonal_collection='compute.instanceGroups',
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
@@ -39,7 +79,7 @@ ZONAL_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
 MULTISCOPE_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
     name='--instance-group',
     resource_name='instance group',
-    completion_resource_id='compute.instanceGroups',
+    completer=compute_completers.InstanceGroupsCompleter,
     zonal_collection='compute.instanceGroups',
     regional_collection='compute.regionInstanceGroups',
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
@@ -49,14 +89,14 @@ MULTISCOPE_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
 GLOBAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
     resource_name='backend service',
-    completion_resource_id='compute.backendServices',
+    completer=GlobalBackendServicesCompleter,
     global_collection='compute.backendServices')
 
 
 GLOBAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
     resource_name='backend service',
-    completion_resource_id='compute.backendServices',
+    completer=DeprecatedBackendServicesCompleter,
     plural=True,
     global_collection='compute.backendServices')
 
@@ -64,7 +104,7 @@ GLOBAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
 GLOBAL_REGIONAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
     resource_name='backend service',
-    completion_resource_id='compute.backendServices',
+    completer=DeprecatedBackendServicesCompleter,
     regional_collection='compute.regionBackendServices',
     global_collection='compute.backendServices')
 
@@ -72,7 +112,7 @@ GLOBAL_REGIONAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
 GLOBAL_REGIONAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
     resource_name='backend service',
-    completion_resource_id='compute.backendServices',
+    completer=DeprecatedBackendServicesCompleter,
     plural=True,
     regional_collection='compute.regionBackendServices',
     global_collection='compute.backendServices')
@@ -83,7 +123,7 @@ def BackendServiceArgumentForUrlMap(required=True):
       resource_name='backend service',
       name='--default-service',
       required=required,
-      completion_resource_id='compute.backendServices',
+      completer=DeprecatedBackendServicesCompleter,
       global_collection='compute.backendServices',
       short_help=(
           'A backend service that will be used for requests for which this '
@@ -95,7 +135,7 @@ def BackendServiceArgumentForUrlMapPathMatcher(required=True):
       resource_name='backend service',
       name='--default-service',
       required=required,
-      completion_resource_id='compute.backendServices',
+      completer=DeprecatedBackendServicesCompleter,
       global_collection='compute.backendServices',
       short_help=(
           'A backend service that will be used for requests that the path '
@@ -107,7 +147,7 @@ def BackendServiceArgumentForTargetSslProxy(required=True):
       resource_name='backend service',
       name='--backend-service',
       required=required,
-      completion_resource_id='compute.backendServices',
+      completer=DeprecatedBackendServicesCompleter,
       global_collection='compute.backendServices',
       short_help=('.'),
       detailed_help="""\
@@ -121,7 +161,7 @@ def BackendServiceArgumentForTargetTcpProxy(required=True):
       resource_name='backend service',
       name='--backend-service',
       required=required,
-      completion_resource_id='compute.backendServices',
+      completer=DeprecatedBackendServicesCompleter,
       global_collection='compute.backendServices',
       short_help=('.'),
       detailed_help="""\
@@ -253,7 +293,7 @@ def HealthCheckArgument(required=False):
   return compute_flags.ResourceArgument(
       resource_name='health check',
       name='--health-checks',
-      completion_resource_id='compute.healthChecks',
+      completer=compute_completers.DeprecatedHealthChecksCompleter,
       plural=True,
       required=required,
       global_collection='compute.healthChecks',
@@ -268,7 +308,7 @@ def HttpHealthCheckArgument(required=False):
   return compute_flags.ResourceArgument(
       resource_name='http health check',
       name='--http-health-checks',
-      completion_resource_id='compute.httpHealthChecks',
+      completer=compute_completers.DeprecatedHttpHealthChecksCompleter,
       plural=True,
       required=required,
       global_collection='compute.httpHealthChecks',
@@ -282,7 +322,7 @@ def HttpsHealthCheckArgument(required=False):
   return compute_flags.ResourceArgument(
       resource_name='https health check',
       name='--https-health-checks',
-      completion_resource_id='compute.httpsHealthChecks',
+      completer=compute_completers.DeprecatedHttpsHealthChecksCompleter,
       plural=True,
       required=required,
       global_collection='compute.httpsHealthChecks',

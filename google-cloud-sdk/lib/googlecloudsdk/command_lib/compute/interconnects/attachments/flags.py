@@ -13,13 +13,23 @@
 # limitations under the License.
 """Flags and helpers for the compute interconnects commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+
+
+class InterconnectAttachmentsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(InterconnectAttachmentsCompleter, self).__init__(
+        collection='compute.interconnectAttachments',
+        list_command='alpha compute interconnects attachments list --uri',
+        **kwargs)
 
 
 def InterconnectAttachmentArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='interconnect attachment',
-      completion_resource_id='compute.interconnectAttachments',
+      completer=InterconnectAttachmentsCompleter,
       plural=plural,
       required=required,
       regional_collection='compute.interconnectAttachments',
@@ -33,7 +43,7 @@ def InterconnectAttachmentArgumentForRouter(required=False,
   return compute_flags.ResourceArgument(
       resource_name=resource_name,
       name='--interconnect-attachment',
-      completion_resource_id='compute.interconnectAttachments',
+      completer=InterconnectAttachmentsCompleter,
       plural=plural,
       required=required,
       regional_collection='compute.interconnectAttachments',

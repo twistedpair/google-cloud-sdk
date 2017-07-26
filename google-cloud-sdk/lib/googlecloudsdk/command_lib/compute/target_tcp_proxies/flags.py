@@ -13,13 +13,23 @@
 # limitations under the License.
 """Flags and helpers for the compute target-tcp-proxies commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+
+
+class TargetTcpProxiesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(TargetTcpProxiesCompleter, self).__init__(
+        collection='compute.targetTcpProxies',
+        list_command='compute target-tcp-proxies list --uri',
+        **kwargs)
 
 
 def TargetTcpProxyArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='target TCP proxy',
-      completion_resource_id='compute.targetTcpProxies',
+      completer=TargetTcpProxiesCompleter,
       plural=plural,
       custom_plural='target TCP proxies',
       required=required,

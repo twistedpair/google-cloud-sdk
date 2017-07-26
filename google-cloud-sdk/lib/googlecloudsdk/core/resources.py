@@ -88,9 +88,11 @@ class UserError(exceptions.Error, Error):
 class InvalidResourceException(UserError):
   """A collection-path that was given could not be parsed."""
 
-  def __init__(self, line):
-    super(InvalidResourceException, self).__init__(
-        'could not parse resource: [{line}]'.format(line=line))
+  def __init__(self, line, reason=None):
+    message = 'could not parse resource [{line}]'.format(line=line)
+    if reason:
+      message += ': ' + reason
+    super(InvalidResourceException, self).__init__(message)
 
 
 class WrongResourceCollectionException(UserError):
@@ -164,8 +166,9 @@ class _ResourceParser(object):
     match = re.match(path_template, relative_name)
     if not match:
       raise InvalidResourceException(
-          '{0} is not in {1} collection as it does not match path template {2}'
-          .format(relative_name, self.collection_info.full_name, path_template))
+          relative_name,
+          'It is not in {0} collection as it does not match path template {1}'
+          .format(self.collection_info.full_name, path_template))
     params = self.collection_info.GetParams(subcollection)
     fields = match.groups()
     if url_unescape:
@@ -873,7 +876,7 @@ class Registry(object):
     """
     match = _URL_RE.match(url)
     if not match:
-      raise InvalidResourceException('unknown API host: [{0}]'.format(url))
+      raise InvalidResourceException(url, reason='unknown API host')
 
     # pylint:disable=protected-access
     default_enpoint_url = apis_internal._GetDefaultEndpointUrl(url)
@@ -886,9 +889,10 @@ class Registry(object):
     try:
       versions = apis_internal._GetVersions(api_name)
     except apis_util.UnknownAPIError:
-      raise InvalidResourceException(url)
+      raise InvalidResourceException(url, 'unknown api {}'.format(api_name))
     if api_version not in versions:
-      raise InvalidResourceException(url)
+      raise InvalidResourceException(
+          url, 'unknown api version {}'.format(api_version))
 
     tokens = [api_name, api_version] + resource_path.split('/')
     endpoint = url[:-len(resource_path)]
@@ -896,9 +900,11 @@ class Registry(object):
     # Register relevant API if necessary and possible
     try:
       self.RegisterApiByName(api_name, api_version=api_version)
-    except (apis_util.UnknownAPIError, apis_util.UnknownVersionError):
-      # The caught InvalidResourceException has a less detailed message.
-      raise InvalidResourceException(url)
+    except apis_util.UnknownAPIError:
+      raise InvalidResourceException(url, 'unknown api {}'.format(api_name))
+    except apis_util.UnknownVersionError:
+      raise InvalidResourceException(
+          url, 'unknown api version {}'.format(api_version))
 
     params = []
     cur_level = self.parsers_by_url
@@ -906,37 +912,33 @@ class Registry(object):
       if token in cur_level:
         # If the literal token is already here, follow it down.
         cur_level = cur_level[token]
-      elif len(cur_level) == 1:
-        # If the literal token is not here, and there is only one key, it must
-        # be a parameter that will be added to the params dict.
-        param, next_level = next(cur_level.iteritems())
-        if param != '{}':
-          raise InvalidResourceException(url)
+        continue
 
-        if len(next_level) == 1 and None in next_level:
-          # This is the last parameter so we can combine the remaining tokens.
-          token = '/'.join(tokens[i:])
-          params.append(urllib.unquote(token))
-          cur_level = next_level
+      # If the literal token is not here, see if this can be a parameter.
+      param, next_level = '', {}  # Predefine these to silence linter.
+      for param, next_level in cur_level.iteritems():
+        if param == '{}':
           break
-
-        # Clean up the provided value
-        params.append(urllib.unquote(token))
-
-        # Keep digging down.
-        cur_level = next_level
       else:
-        # If the token we want isn't here, and there isn't a single parameter,
-        # the URL we've been given doesn't match anything we know about.
-        raise InvalidResourceException(url)
-      # Note: This will break if there are multiple parameters that could be
-      # specified at a given level. As far as I can tell, this never happens and
-      # never should happen. But in theory it's possible so we'll keep an eye
-      # out for this issue.
+        raise InvalidResourceException(
+            url, reason='Could not parse at [{}]'.format(token))
 
-      # No more tokens, so look for a parser.
+      if len(next_level) == 1 and None in next_level:
+        # This is the last parameter so we can combine the remaining tokens.
+        token = '/'.join(tokens[i:])
+        params.append(urllib.unquote(token))
+        cur_level = next_level
+        break
+
+      # Clean up the provided value
+      params.append(urllib.unquote(token))
+
+      # Keep digging down.
+      cur_level = next_level
+
+    # No more tokens, so look for a parser.
     if None not in cur_level:
-      raise InvalidResourceException(url)
+      raise InvalidResourceException(url, 'Url too short.')
     subcollection, parser = cur_level[None]
     params = dict(zip(parser.collection_info.GetParams(subcollection), params))
     return parser.ParseResourceId(
@@ -957,7 +959,7 @@ class Registry(object):
     """Parse gs://bucket/object_path into storage.v1 api resource."""
     match = _GCS_URL_RE.match(url)
     if not match:
-      raise InvalidResourceException('Invalid storage url: [{0}]'.format(url))
+      raise InvalidResourceException(url, 'Not a storage url')
     if match.group(2):
       if collection and collection != 'storage.objects':
         raise WrongResourceCollectionException('storage.objects', collection,

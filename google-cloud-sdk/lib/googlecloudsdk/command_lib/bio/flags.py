@@ -16,6 +16,7 @@
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 
 
 # Operation flags
@@ -70,7 +71,7 @@ def GetPipelineZonesFlag():
       '--zones',
       metavar='ZONE',
       type=arg_parsers.ArgList(),
-      completion_resource='compute.zones',
+      completer=compute_completers.ZonesCompleter,
       help="""A list of Google Compute Engine zones which may
         be used to run the pipeline. A zone with available quota will be
         randomly selected at the time of execution. If empty, any zone may

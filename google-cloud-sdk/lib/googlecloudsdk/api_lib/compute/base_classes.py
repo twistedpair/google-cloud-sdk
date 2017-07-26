@@ -31,10 +31,10 @@ from googlecloudsdk.api_lib.compute import resource_specs
 from googlecloudsdk.api_lib.compute import scope_prompter
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis as core_apis
-from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.compute import completers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import text
@@ -191,7 +191,7 @@ class BaseLister(base.ListCommand, BaseCommand):
         metavar='NAME',
         nargs='*',
         default=[],
-        completion_resource='compute.instances',
+        completer=completers.DeprecatedInstancesCompleter,
         help=('If provided, show details for the specified names and/or URIs '
               'of resources.'))
 
@@ -250,7 +250,7 @@ class BaseLister(base.ListCommand, BaseCommand):
 
       # At this point, we have to do filtering because there was at
       # least one positional argument.
-      elif item.selfLink in self.self_links or item.name in self.names:
+      elif item['selfLink'] in self.self_links or item['name'] in self.names:
         yield item
 
   def ComputeDynamicProperties(self, args, items):
@@ -303,7 +303,7 @@ class GlobalLister(BaseLister):
   """Base class for listing global resources."""
 
   def GetResources(self, args, errors):
-    return lister.GetGlobalResources(
+    return lister.GetGlobalResourcesDicts(
         service=self.service,
         project=self.project,
         filter_expr=self.GetFilterExpr(args),
@@ -349,7 +349,7 @@ class RegionalLister(BaseLister):
         self.CreateGlobalReference(region, resource_type='regions').Name()
         for region in args.regions]
 
-    return lister.GetRegionalResources(
+    return lister.GetRegionalResourcesDicts(
         service=self.service,
         project=self.project,
         requested_regions=region_names,
@@ -397,14 +397,14 @@ class ZonalLister(BaseLister):
         metavar='ZONE',
         help='If provided, only resources from the given zones are queried.',
         type=arg_parsers.ArgList(min_length=1),
-        completion_resource='compute.zones',
+        completer=completers.ZonesCompleter,
         default=[])
 
   def GetResources(self, args, errors):
     zone_names = [
         self.CreateGlobalReference(zone, resource_type='zones').Name()
         for zone in args.zones]
-    return lister.GetZonalResources(
+    return lister.GetZonalResourcesDicts(
         service=self.service,
         project=self.project,
         requested_zones=zone_names,
@@ -571,7 +571,7 @@ class MultiScopeLister(BaseLister):
                maxResults=max_results,
                project=project)))
 
-    return request_helper.MakeRequests(
+    return request_helper.ListJson(
         requests=requests,
         http=self.http,
         batch_url=self.batch_url,
@@ -670,16 +670,14 @@ class BaseDescriber(base.DescribeCommand, BaseCommand):
   """Base class for the describe subcommands."""
 
   @staticmethod
-  def Args(parser, resource=None, list_command_path=None):
-    BaseDescriber.AddArgs(parser, resource, list_command_path)
+  def Args(parser, resource=None):
+    BaseDescriber.AddArgs(parser, resource)
 
   @staticmethod
-  def AddArgs(parser, resource=None, list_command_path=None):
+  def AddArgs(parser, resource=None):
     parser.add_argument(
         'name',
         metavar='NAME',
-        completion_resource=resource,
-        list_command_path=list_command_path,
         help='The name of the resource to fetch.')
 
   @property
@@ -730,141 +728,6 @@ class BaseDescriber(base.DescribeCommand, BaseCommand):
           errors,
           error_message='Could not fetch resource:')
     return resource_list[0]
-
-
-class MultiScopeDescriber(BaseDescriber):
-  """Base class for describing global or regional resources."""
-
-  @staticmethod
-  def AddScopeArgs(parser, resource_type, scope_types, command=None):
-    resource = resource_type
-    BaseDescriber.AddArgs(parser, 'compute.' + resource, command)
-
-    scope = parser.add_mutually_exclusive_group()
-
-    if ScopeType.zonal_scope in scope_types:
-      scope.add_argument(
-          '--zone',
-          help='The zone of the resource to fetch.',
-          completion_resource='compute.zones',
-          action=actions.StoreProperty(properties.VALUES.compute.zone))
-    if ScopeType.regional_scope in scope_types:
-      scope.add_argument(
-          '--region',
-          help='The region of the resource to fetch.',
-          completion_resource='compute.regions',
-          action=actions.StoreProperty(properties.VALUES.compute.region))
-    if ScopeType.global_scope in scope_types:
-      scope.add_argument(
-          '--global',
-          action='store_true',
-          help=('If provided, it is assumed that the requested resource is '
-                'global.'))
-
-  @abc.abstractproperty
-  def global_service(self):
-    """The service used to list global resources."""
-
-  @abc.abstractproperty
-  def regional_service(self):
-    """The service used to list regional resources."""
-
-  @abc.abstractproperty
-  def zonal_service(self):
-    """The service used to list zonal resources."""
-
-  @abc.abstractproperty
-  def global_resource_type(self):
-    """The type of global resources."""
-
-  @abc.abstractproperty
-  def regional_resource_type(self):
-    """The type of regional resources."""
-
-  @abc.abstractproperty
-  def zonal_resource_type(self):
-    """The type of regional resources."""
-
-  @property
-  def service(self):
-    return self._service
-
-  def CreateReference(self, args, default=None):
-    # Check if scope was provided
-    has_region = bool(getattr(args, 'region', None))
-    has_zone = bool(getattr(args, 'zone', None))
-    has_global = bool(getattr(args, 'global', None))
-
-    null = object()
-
-    # Check if only one kind of scope can be provided
-    only_zone_prompt = ((getattr(args, 'zone', null) is not null) and
-                        (getattr(args, 'region', null) is null))
-    only_region_prompt = ((getattr(args, 'region', null) is not null) and
-                          (getattr(args, 'zone', null) is null))
-
-    if not (has_region or has_zone or has_global):
-      if default == ScopeType.global_scope:
-        has_global = True
-      elif default == ScopeType.regional_scope:
-        has_region = True
-      elif default == ScopeType.zonal_scope:
-        has_zone = True
-
-    ref = None
-    try:
-      params = {}
-      if has_region:
-        params['region'] = args.region
-      if has_zone:
-        params['zone'] = args.zone
-      ref = self.resources.Parse(args.name, params=params)
-    except resources.UnknownCollectionException:
-      ref = None
-
-    if ref is None:
-      if has_global:
-        ref = self.CreateGlobalReference(
-            args.name, resource_type=self.global_resource_type)
-      elif has_region or only_region_prompt:
-        ref = self.CreateRegionalReference(
-            args.name, args.region, resource_type=self.regional_resource_type)
-      elif has_zone or only_zone_prompt:
-        ref = self.CreateZonalReference(
-            args.name, args.zone, resource_type=self.zonal_resource_type)
-      else:
-        ref = self.PromptForMultiScopedReferences(
-            [args.name],
-            scope_names=['zone', 'region'],
-            scope_services=[self.compute.zones, self.compute.regions],
-            resource_types=[
-                self.zonal_resource_type, self.regional_resource_type],
-            flag_names=['--zone', '--region'])[0]
-
-    valid_collections = ['compute.{0}'.format(resource_type)
-                         for resource_type in [self.zonal_resource_type,
-                                               self.regional_resource_type,
-                                               self.global_resource_type]
-                         if resource_type is not None]
-
-    if ref.Collection() not in valid_collections:
-      raise calliope_exceptions.ToolException(
-          'You must pass in a reference to a global or regional resource.')
-
-    ref_resource_type = utils.CollectionToResourceType(ref.Collection())
-    if ref_resource_type == self.global_resource_type:
-      self._service = self.global_service
-    elif ref_resource_type == self.regional_resource_type:
-      self._service = self.regional_service
-    else:
-      self._service = self.zonal_service
-    return ref
-
-  def ScopeRequest(self, ref, request):
-    if ref.Collection() == 'compute.{0}'.format(self.regional_resource_type):
-      request.region = ref.region
-    if ref.Collection() == 'compute.{0}'.format(self.zonal_resource_type):
-      request.zone = ref.zone
 
 
 def GetMultiScopeDescriberHelp(resource, scopes):

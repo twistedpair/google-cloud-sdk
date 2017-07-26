@@ -13,19 +13,50 @@
 # limitations under the License.
 """High-level client for interacting with the Cloud Build API."""
 
+import io
 import json
 import time
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
-from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.resource import resource_printer
 
-_ERROR_FORMAT_STRING = (u'{status_code? [{?}]}{status_message? {?}}{url?\n{?}}'
-                        '{details?\n\nDetails?COLON?\n{?}}')
+
+_ERROR_FORMAT_STRING = ('Error Response:{status_code? [{?}]}'
+                        '{status_message? {?}}{url?\n{?}}'
+                        '{details?\n\nDetails:\n{?}}')
+
+
+# TODO(b/64025279): Move functionality into core.
+def _ExtractErrorMessage(error_details):
+  """Extracts error details from a Status message.
+
+  Adapted from api_lib.app.requests.ExtractErrorMessage.
+
+  Args:
+    error_details: a python dictionary returned from decoding a Status message
+      that was serialized to json.
+
+  Returns:
+    Multiline string containing a detailed error message suitable to show to a
+    user.
+  """
+  error_message = io.BytesIO()
+  error_message.write('Error Response: [{code}] {message}'.format(
+      code=error_details.get('code', 'UNKNOWN'),  # error_details.code is an int
+      message=error_details.get('message', u'').encode('utf-8')))
+
+  if 'details' in error_details:
+    error_message.write('\n\nDetails: ')
+    resource_printer.Print(
+        resources=[error_details['details']],
+        print_format='json',
+        out=error_message)
+  return error_message.getvalue()
 
 
 class BuildFailedError(exceptions.Error):
@@ -152,8 +183,8 @@ class CloudBuildClient(object):
                                        operation.name))
 
     if completed_operation.error:
-      message = exceptions.HttpErrorPayload(completed_operation.error).format(
-          _ERROR_FORMAT_STRING)
+      message = _ExtractErrorMessage(
+          encoding.MessageToPyValue(completed_operation.error))
 
       raise OperationError(message)
 

@@ -16,8 +16,24 @@
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
 from googlecloudsdk.api_lib.app.api import requests
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+
+
+DEFAULT_VERSION = 'v1beta'
+
+# 'app update' is currently only exposed in beta.
+UPDATE_VERSIONS_MAP = {
+    calliope_base.ReleaseTrack.GA: DEFAULT_VERSION,
+    calliope_base.ReleaseTrack.ALPHA: DEFAULT_VERSION,
+    calliope_base.ReleaseTrack.BETA: DEFAULT_VERSION
+}
+
+
+def GetApiClientForTrack(release_track):
+  return AppengineAppUpdateApiClient.GetApiClient(
+      UPDATE_VERSIONS_MAP[release_track])
 
 
 class AppengineAppUpdateApiClient(base.AppengineApiClientBase):
@@ -27,11 +43,8 @@ class AppengineAppUpdateApiClient(base.AppengineApiClientBase):
     base.AppengineApiClientBase.__init__(self, client)
 
     self._registry = resources.REGISTRY.Clone()
-    self._registry.RegisterApiByName('appengine', self.ApiVersion())
-
-  @classmethod
-  def ApiVersion(cls):
-    return 'v1beta'
+    # pylint: disable=protected-access
+    self._registry.RegisterApiByName('appengine', client._VERSION)
 
   def PatchApplication(self,
                        split_health_checks=None):

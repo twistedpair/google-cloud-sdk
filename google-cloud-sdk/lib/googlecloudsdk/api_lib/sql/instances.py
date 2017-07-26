@@ -442,6 +442,32 @@ class _BaseInstances(object):
         default=True,
         cancel_on_no=True)
 
+  @classmethod
+  def UpdateMessage(cls, message, diff):
+    """Recursively update message from diff object.
+
+    Args:
+      message: An apitools.base.protorpclite.messages.Message instance.
+      diff: A dict of changes to apply to the message
+        e.g. {'settings': {'availabilityType': 'REGIONAL'}}.
+
+    Returns:
+      The modified message instance.
+    """
+    if diff:
+      return cls._UpdateMessageHelper(message, diff)
+    return message
+
+  @classmethod
+  def _UpdateMessageHelper(cls, message, diff):
+    for key, val in diff.iteritems():
+      if hasattr(message, key):
+        if isinstance(val, dict):
+          cls._UpdateMessageHelper(getattr(message, key), diff[key])
+        else:
+          setattr(message, key, val)
+    return message
+
 
 class InstancesV1Beta3(_BaseInstances):
   """Common utility functions for sql instances V1Beta3."""

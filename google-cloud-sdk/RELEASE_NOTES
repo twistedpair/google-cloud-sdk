@@ -3,6 +3,58 @@
 Copyright 2014-2017 Google Inc. All rights reserved.
 
 
+## 164.0.0 (2017-07-26)
+
+### Breaking Changes
+
+* Removed the `--show-execution-ids`, `--show-function-names`,
+`--show-log-levels`, and `--show-timestamps` flags from the
+`gcloud alpha function logs read` and `gcloud beta function logs read` commands.
+
+* Removed `appengine.gcr.io` from the list of default repositories that
+`gcloud docker` authenticates for.
+
+### Deprecations
+
+* Deprecated the `NAME...` argument, `--zones` flag, and `--regexp` flag for
+the commands listed below. Please use the `--filter` flag instead.
+  * `gcloud compute disks list`
+  * `gcloud compute disk-types list`
+  * `gcloud compute instance-groups unmanaged list`
+  * `gcloud compute instances list`
+  * `gcloud compute machine-types list`
+  * `gcloud compute target-instances list`
+
+### Google Cloud Container Builder
+
+* First release of the local builder. Install the `container-builder-local`
+component, and run `container-builder-local` to try it out.
+
+### Google Compute Engine
+
+* `gcloud beta compute ssh` can now connect to instances using their private IP.
+
+* Added the `gcloud alpha compute instances simulate-maintenance-event` command.
+
+### Google Container Engine
+
+* `gcloud beta container clusters create` now supports enabling authorized
+networks for Kubernetes Master via `--enable-master-authorized-networks` and
+`--master-authorized-networks` flags.
+
+* `gcloud beta container clusters update` now supports configuring authorized
+networks for Kubernetes Master via `--enable-master-authorized-networks`,
+`--no-enable-master-authorized-networks`, and `--master-authorized-networks`
+flags.
+
+* `gcloud container clusters create` now allows the Kubernetes Dashboard to be
+disabled for a new cluster via the `--disable-addons=KubernetesDashboard` flag.
+
+* `gcloud container clusters update` now allows the Kubernetes Dashboard to be
+disabled on existing clusters via the
+`--update-addons=KubernetesDashboard=DISABLED` flag.
+
+
 ## 163.0.0 (2017-07-19)
 
 ### Google Cloud Bigquery

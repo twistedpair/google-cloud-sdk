@@ -17,7 +17,10 @@
 import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute.addresses import flags as addresses_flags
+from googlecloudsdk.command_lib.util import completers
 
 
 FORWARDING_RULES_OVERVIEW = """\
@@ -37,10 +40,38 @@ FORWARDING_RULES_OVERVIEW = """\
         """
 
 
+class ForwardingRulesZonalCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(ForwardingRulesZonalCompleter, self).__init__(
+        collection='compute.forwardingRules',
+        list_command=('compute forwarding-rules list --filter=region:* --uri'),
+        **kwargs)
+
+
+class ForwardingRulesGlobalCompleter(
+    compute_completers.GlobalListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(ForwardingRulesGlobalCompleter, self).__init__(
+        collection='compute.globalForwardingRules',
+        list_command='compute forwarding-rules list --global --uri',
+        **kwargs)
+
+
+class ForwardingRulesCompleter(completers.MultiResourceCompleter):
+
+  def __init__(self, **kwargs):
+    super(ForwardingRulesCompleter, self).__init__(
+        completers=[ForwardingRulesGlobalCompleter,
+                    ForwardingRulesZonalCompleter],
+        **kwargs)
+
+
 def ForwardingRuleArgument(required=True):
   return compute_flags.ResourceArgument(
       resource_name='forwarding rule',
-      completion_resource_id='compute.forwardingRules',
+      completer=ForwardingRulesCompleter,
       required=required,
       regional_collection='compute.forwardingRules',
       global_collection='compute.globalForwardingRules',
@@ -50,7 +81,7 @@ def ForwardingRuleArgument(required=True):
 def ForwardingRuleArgumentPlural(required=True):
   return compute_flags.ResourceArgument(
       resource_name='forwarding rule',
-      completion_resource_id='compute.forwardingRules',
+      completer=ForwardingRulesCompleter,
       plural=True,
       required=required,
       regional_collection='compute.forwardingRules',
@@ -165,7 +196,7 @@ ADDRESS_ARG = compute_flags.ResourceArgument(
     name='--address',
     required=False,
     resource_name='address',
-    completion_resource_id='compute.addresses',
+    completer=addresses_flags.AddressesCompleter,
     regional_collection='compute.addresses',
     global_collection='compute.globalAddresses',
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,

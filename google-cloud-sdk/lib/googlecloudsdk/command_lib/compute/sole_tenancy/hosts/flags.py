@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute routes commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 DEFAULT_LIST_FORMAT = """\
@@ -24,10 +25,30 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+class HostsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(HostsCompleter, self).__init__(
+        collection='compute.hosts',
+        api_version='alpha',
+        list_command='alpha compute sole-tenancy hosts list --uri',
+        **kwargs)
+
+
+class HostTypesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(HostTypesCompleter, self).__init__(
+        collection='compute.hostTypes',
+        api_version='alpha',
+        list_command='alpha compute sole-tenancy host-types list --uri',
+        **kwargs)
+
+
 def MakeHostArg(plural=False):
   return compute_flags.ResourceArgument(
       resource_name='host',
-      completion_resource_id='compute.hosts',
+      completer=HostsCompleter,
       plural=plural,
       zonal_collection='compute.hosts',
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)

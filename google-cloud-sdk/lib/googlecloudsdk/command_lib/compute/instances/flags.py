@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute.zones import service as zones_service
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.core import log
@@ -84,14 +85,14 @@ DEFAULT_LIST_FORMAT = """\
 INSTANCE_ARG = compute_flags.ResourceArgument(
     resource_name='instance',
     name='instance_name',
-    completion_resource_id='compute.instances',
+    completer=compute_completers.DeprecatedInstancesCompleter,
     zonal_collection='compute.instances',
     zone_explanation=ZONE_PROPERTY_EXPLANATION)
 
 INSTANCES_ARG = compute_flags.ResourceArgument(
     resource_name='instance',
     name='instance_names',
-    completion_resource_id='compute.instances',
+    completer=compute_completers.DeprecatedInstancesCompleter,
     zonal_collection='compute.instances',
     zone_explanation=ZONE_PROPERTY_EXPLANATION,
     plural=True)
@@ -99,7 +100,7 @@ INSTANCES_ARG = compute_flags.ResourceArgument(
 INSTANCES_ARG_FOR_CREATE = compute_flags.ResourceArgument(
     resource_name='instance',
     name='instance_names',
-    completion_resource_id='compute.instances',
+    completer=compute_completers.DeprecatedInstancesCompleter,
     zonal_collection='compute.instances',
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
     plural=True)
@@ -153,7 +154,7 @@ def InstanceArgumentForRoute(required=True):
   return compute_flags.ResourceArgument(
       resource_name='instance',
       name='--next-hop-instance',
-      completion_resource_id='compute.instances',
+      completer=compute_completers.DeprecatedInstancesCompleter,
       required=required,
       zonal_collection='compute.instances',
       zone_explanation=ZONE_PROPERTY_EXPLANATION)
@@ -163,7 +164,7 @@ def InstanceArgumentForTargetInstance(required=True):
   return compute_flags.ResourceArgument(
       resource_name='instance',
       name='--instance',
-      completion_resource_id='compute.instances',
+      completer=compute_completers.DeprecatedInstancesCompleter,
       required=required,
       zonal_collection='compute.instances',
       short_help=('The name of the virtual machine instance that will handle '
@@ -176,7 +177,7 @@ def InstanceArgumentForTargetPool(action, required=True):
   return compute_flags.ResourceArgument(
       resource_name='instance',
       name='--instances',
-      completion_resource_id='compute.instances',
+      completer=compute_completers.DeprecatedInstancesCompleter,
       required=required,
       zonal_collection='compute.instances',
       short_help=(
@@ -190,7 +191,7 @@ def MakeSourceInstanceTemplateArg():
   return compute_flags.ResourceArgument(
       name='--source-instance-template',
       resource_name='instance template',
-      completion_resource_id='compute.instanceTemplates',
+      completer=compute_completers.DeprecatedInstanceTemplatesCompleter,
       required=False,
       global_collection='compute.instanceTemplates',
       short_help=('The name of the instance template that the instance will '
@@ -825,7 +826,7 @@ def AddMachineTypeArgs(parser, required=False, unspecified_help=None):
     unspecified_help = ' If unspecified, the default type is n1-standard-1.'
   parser.add_argument(
       '--machine-type',
-      completion_resource='compute.machineTypes',
+      completer=compute_completers.MachineTypesCompleter,
       required=required,
       help="""\
       Specifies the machine type used for the instances. To get a

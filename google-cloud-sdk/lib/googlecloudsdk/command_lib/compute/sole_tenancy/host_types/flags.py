@@ -14,11 +14,12 @@
 """Flags for the compute sole-tenancy host-types commands."""
 
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute.sole_tenancy.hosts import flags as hosts_flags
 
 
 def MakeHostTypeArg():
   return compute_flags.ResourceArgument(
       resource_name='host type',
-      completion_resource_id='compute.hostTypes',
+      completer=hosts_flags.HostTypesCompleter,
       zonal_collection='compute.hostTypes',
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)

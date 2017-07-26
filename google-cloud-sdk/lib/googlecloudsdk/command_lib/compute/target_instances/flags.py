@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute target-instances commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 DEFAULT_LIST_FORMAT = """\
@@ -24,10 +25,19 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+class TargetInstancesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(TargetInstancesCompleter, self).__init__(
+        collection='compute.targetInstances',
+        list_command='compute target-instances list --uri',
+        **kwargs)
+
+
 def TargetInstanceArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='target instance',
-      completion_resource_id='compute.targetInstances',
+      completer=TargetInstancesCompleter,
       plural=plural,
       required=required,
       zonal_collection='compute.targetInstances',

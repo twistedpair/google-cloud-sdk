@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute firewall-rules commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 # Needs to be indented to show up correctly in help text
@@ -58,11 +59,19 @@ To show all fields in table format, please see the examples in --help.
 """
 
 
+class FirewallsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(FirewallsCompleter, self).__init__(
+        collection='compute.firewalls',
+        list_command='compute firewall-rules list --uri',
+        **kwargs)
+
+
 def FirewallRuleArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='firewall rule',
-      completion_resource_id='compute.firewalls',
+      completer=FirewallsCompleter,
       plural=plural,
       required=required,
-      global_collection='compute.firewalls',
-      list_command_path='compute target-http-proxies list --uri')
+      global_collection='compute.firewalls')

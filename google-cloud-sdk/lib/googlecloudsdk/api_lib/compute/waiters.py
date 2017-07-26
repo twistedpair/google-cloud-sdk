@@ -121,9 +121,9 @@ class OperationData(object):
     return not self == o
 
 
-def WaitForOperations(operations_data,
-                      http, batch_url, warnings, errors,
-                      timeout=None):
+def WaitForOperations(
+    operations_data, http, batch_url, warnings, errors,
+    progress_tracker=None, timeout=None):
   """Blocks until the given operations are done or until a timeout is reached.
 
   Args:
@@ -132,6 +132,8 @@ def WaitForOperations(operations_data,
     batch_url: The URL to which batch requests should be sent.
     warnings: An output parameter for capturing warnings.
     errors: An output parameter for capturing errors.
+    progress_tracker: progress tracker to tick while waiting for operations to
+                      finish.
     timeout: The maximum amount of time, in seconds, to wait for the
       operations to reach the DONE state.
 
@@ -158,6 +160,8 @@ def WaitForOperations(operations_data,
   sleep_sec = 0
 
   while unfinished_operations:
+    if progress_tracker:
+      progress_tracker.Tick()
     resource_requests = []
     operation_requests = []
 

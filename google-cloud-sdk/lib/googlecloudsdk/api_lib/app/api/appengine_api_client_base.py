@@ -34,12 +34,16 @@ class AppengineApiClientBase(object):
     return 'v1'
 
   @classmethod
-  def GetApiClient(cls):
+  def GetApiClient(cls, api_version=None):
     """Initializes an AppengineApiClient using the specified API version.
 
     Uses the api_client_overrides/appengine property to determine which client
-    version to use. Additionally uses the api_endpoint_overrides/appengine
-    property to determine the server endpoint for the App Engine API.
+    version to use if api_version is not set. Additionally uses the
+    api_endpoint_overrides/appengine property to determine the server endpoint
+    for the App Engine API.
+
+    Args:
+      api_version: The api version override.
 
     Returns:
       An AppengineApiClient used by gcloud to communicate with the App Engine
@@ -49,7 +53,10 @@ class AppengineApiClientBase(object):
       ValueError: If default_version does not correspond to a supported version
       of the API.
     """
-    return cls(core_apis.GetClientInstance('appengine', cls.ApiVersion()))
+    if api_version is None:
+      api_version = cls.ApiVersion()
+
+    return cls(core_apis.GetClientInstance('appengine', api_version))
 
   def _FormatApp(self):
     res = resources.REGISTRY.Parse(

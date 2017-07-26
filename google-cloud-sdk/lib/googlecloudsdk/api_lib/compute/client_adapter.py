@@ -73,14 +73,17 @@ class ClientAdapter(object):
   def messages(self):
     return self._client.MESSAGES_MODULE
 
-  def MakeRequests(self, requests, errors_to_collect=None):
+  def MakeRequests(
+      self, requests, errors_to_collect=None, progress_tracker=None):
     """Sends given request in batch mode."""
     errors = errors_to_collect if errors_to_collect is not None else []
     objects = list(request_helper.MakeRequests(
         requests=requests,
         http=self._client.http,
         batch_url=self._batch_url,
-        errors=errors))
+        errors=errors,
+        progress_tracker=progress_tracker,
+    ))
     if errors_to_collect is None and errors:
       utils.RaiseToolException(
           errors, error_message='Could not fetch resource:')

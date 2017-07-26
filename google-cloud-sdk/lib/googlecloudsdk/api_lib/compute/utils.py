@@ -219,3 +219,35 @@ def IPV4Argument(value):
     raise argparse.ArgumentTypeError("invalid ipv4 value: '{0}'".format(value))
 
   return value
+
+
+def MakeGetUriFunc():
+  return lambda x: x['selfLink']
+
+
+def GetListPager(client, request, get_value_fn):
+  """Returns the paged results for request from client.
+
+  Args:
+    client: The client object.
+    request: The request.
+    get_value_fn: Called to extract a value from an additionlProperties list
+      item.
+
+  Returns:
+    The list of request results.
+  """
+
+  def _GetNextListPage():
+    response = client.AggregatedList(request)
+    items = []
+    for item in response.items.additionalProperties:
+      items += get_value_fn(item)
+    return items, response.nextPageToken
+
+  results, next_page_token = _GetNextListPage()
+  while next_page_token:
+    request.pageToken = next_page_token
+    page, next_page_token = _GetNextListPage()
+    results += page
+  return results

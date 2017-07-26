@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute vpn-tunnels commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 DEFAULT_LIST_FORMAT = """\
@@ -24,10 +25,19 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+class VpnTunnelsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(VpnTunnelsCompleter, self).__init__(
+        collection='compute.vpnTunnels',
+        list_command='compute vpn-tunnels list --uri',
+        **kwargs)
+
+
 def VpnTunnelArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='VPN Tunnel',
-      completion_resource_id='compute.vpnTunnels',
+      completer=VpnTunnelsCompleter,
       plural=plural,
       required=required,
       regional_collection='compute.vpnTunnels',
@@ -38,7 +48,7 @@ def VpnTunnelArgumentForRoute(required=True):
   return compute_flags.ResourceArgument(
       resource_name='vpn tunnel',
       name='--next-hop-vpn-tunnel',
-      completion_resource_id='compute.vpnTunnels',
+      completer=VpnTunnelsCompleter,
       plural=False,
       required=required,
       regional_collection='compute.vpnTunnels',
@@ -50,7 +60,7 @@ def VpnTunnelArgumentForRouter(required=True, operation_type='added'):
   return compute_flags.ResourceArgument(
       resource_name='vpn tunnel',
       name='--vpn-tunnel',
-      completion_resource_id='compute.vpnTunnels',
+      completer=VpnTunnelsCompleter,
       plural=False,
       required=required,
       regional_collection='compute.vpnTunnels',

@@ -838,6 +838,10 @@ class _SectionCore(_Section):
         hidden=True,
         help_text='If true, will prompt to enable an API if a command fails due'
         ' to the API not being enabled.')
+    self.capture_session_file = self._Add(
+        'capture_session_file',
+        hidden=True,
+        help_text='If provided, will capture session to the file')
 
     def ShowStructuredLogsValidator(show_structured_logs):
       if show_structured_logs is None:

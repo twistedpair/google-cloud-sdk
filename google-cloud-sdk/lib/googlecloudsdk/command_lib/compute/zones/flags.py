@@ -13,13 +13,14 @@
 # limitations under the License.
 """Flags for the compute zones commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
 def MakeZoneArg():
   return compute_flags.ResourceArgument(
       resource_name='zone',
-      completion_resource_id='compute.zones',
+      completer=compute_completers.ZonesCompleter,
       plural=False,
       required=True,
       global_collection='compute.zones')

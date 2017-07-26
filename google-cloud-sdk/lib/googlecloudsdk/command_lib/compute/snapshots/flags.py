@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute snapshots commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
@@ -20,6 +21,6 @@ def MakeSnapshotArg(plural=False):
   return compute_flags.ResourceArgument(
       resource_name='snapshot',
       name='snapshot_name',
-      completion_resource_id='compute.snapshots',
+      completer=compute_completers.RoutesCompleter,
       plural=plural,
       global_collection='compute.snapshots')

@@ -13,7 +13,19 @@
 # limitations under the License.
 """Flags and helpers for the compute routes commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+
+
+class NextHopGatewaysCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(NextHopGatewaysCompleter, self).__init__(
+        collection='compute.nextHopGateways',
+        # REVIEWER: what command lists this resource?
+        list_command='alpha compute routes list --uri',
+        **kwargs)
+
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -33,7 +45,7 @@ DEFAULT_LIST_FORMAT = """\
 NEXT_HOP_GATEWAY_ARG = compute_flags.ResourceArgument(
     name='--next-hop-gateway',
     resource_name='next hop gateway',
-    completion_resource_id='compute.nextHopGateways',
+    completer=NextHopGatewaysCompleter,
     required=False,
     global_collection='compute.nextHopGateways',
     short_help=(
@@ -46,7 +58,7 @@ NEXT_HOP_GATEWAY_ARG = compute_flags.ResourceArgument(
 def RouteArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='route',
-      completion_resource_id='compute.routes',
+      completer=compute_completers.RoutesCompleter,
       plural=plural,
       required=required,
       global_collection='compute.routes')

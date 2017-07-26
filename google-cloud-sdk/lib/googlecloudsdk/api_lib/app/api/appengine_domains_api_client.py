@@ -16,8 +16,24 @@
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
 from googlecloudsdk.api_lib.app.api import requests
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import resources
+
+
+DOMAINS_VERSION_MAP = {
+    calliope_base.ReleaseTrack.GA: 'v1beta',
+    calliope_base.ReleaseTrack.ALPHA: 'v1alpha',
+    calliope_base.ReleaseTrack.BETA: 'v1beta'
+}
+
+
+def GetApiClientForTrack(release_track):
+  api_version = DOMAINS_VERSION_MAP[release_track]
+  if api_version == 'v1alpha':
+    return AppengineDomainsApiAlphaClient.GetApiClient('v1alpha')
+  else:
+    return AppengineDomainsApiClient.GetApiClient(api_version)
 
 
 class AppengineDomainsApiClient(base.AppengineApiClientBase):
@@ -27,11 +43,8 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
     base.AppengineApiClientBase.__init__(self, client)
 
     self._registry = resources.REGISTRY.Clone()
-    self._registry.RegisterApiByName('appengine', self.ApiVersion())
-
-  @classmethod
-  def ApiVersion(cls):
-    return 'v1beta'
+    # pylint: disable=protected-access
+    self._registry.RegisterApiByName('appengine', client._VERSION)
 
   def CreateDomainMapping(self, domain, certificate_id):
     """Creates a domain mapping for the given application.
@@ -157,10 +170,6 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
 
 class AppengineDomainsApiAlphaClient(AppengineDomainsApiClient):
   """Client used by gcloud to communicate with the App Engine API."""
-
-  @classmethod
-  def ApiVersion(cls):
-    return 'v1alpha'
 
   def CreateDomainMapping(self, domain, certificate_id, no_managed_certificate):
     """Creates a domain mapping for the given application.

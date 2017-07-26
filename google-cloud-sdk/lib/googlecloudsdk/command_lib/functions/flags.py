@@ -15,12 +15,39 @@
 """Helpers for flags in commands working with Google Cloud Functions."""
 
 from googlecloudsdk.calliope import actions
+from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
+
+
+API = 'cloudfunctions'
+API_VERSION = 'v1beta2'
+LOCATIONS_COLLECTION = API + '.projects.locations'
+
+
+def GetLocationsUri(resource):
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName(API, API_VERSION)
+  ref = registry.Parse(
+      resource.name,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection=LOCATIONS_COLLECTION)
+  return ref.SelfLink()
+
+
+class LocationsCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(LocationsCompleter, self).__init__(
+        collection=LOCATIONS_COLLECTION,
+        api_version=API_VERSION,
+        list_command='alpha functions regions list --uri',
+        **kwargs)
 
 
 def AddRegionFlag(parser):
   parser.add_argument(
       '--region',
       help='The region in which the function will run.',
-      completion_resource='cloudfunctions.locations',
+      completer=LocationsCompleter,
       action=actions.StoreProperty(properties.VALUES.functions.region))

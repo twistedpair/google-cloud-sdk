@@ -17,7 +17,9 @@
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util import completers
 
 _SOURCE_DISK_DETAILED_HELP = """\
         A source disk to create the image from. The value for this option can be
@@ -43,11 +45,28 @@ LIST_FORMAT = """\
     )"""
 
 
+class ImagesCompleter(completers.ResourceSearchCompleter):
+
+  def __init__(self, **kwargs):
+    super(ImagesCompleter, self).__init__(
+        collection='compute.images',
+        **kwargs)
+
+
+class DeprecatedImagesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(DeprecatedImagesCompleter, self).__init__(
+        collection='compute.images',
+        list_command='compute images list --uri',
+        **kwargs)
+
+
 def MakeDiskImageArg(plural=False):
   return compute_flags.ResourceArgument(
       resource_name='disk image',
       name='image_name',
-      completion_resource_id='compute.images',
+      completer=DeprecatedImagesCompleter,
       plural=plural,
       global_collection='compute.images')
 
@@ -66,7 +85,7 @@ def MakeForceCreateArg():
 REPLACEMENT_DISK_IMAGE_ARG = compute_flags.ResourceArgument(
     resource_name='disk image',
     name='--replacement',
-    completion_resource_id='compute.images',
+    completer=DeprecatedImagesCompleter,
     global_collection='compute.images',
     required=False,
     short_help='Specifies a Compute Engine image as a replacement.',
@@ -75,7 +94,7 @@ REPLACEMENT_DISK_IMAGE_ARG = compute_flags.ResourceArgument(
 SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     resource_name='source disk',
     name='--source-disk',
-    completion_resource_id='compute.disks',
+    completer=compute_completers.DisksCompleter,
     zonal_collection='compute.disks',
     short_help='The deprecation state to set on the image.',
     detailed_help=_SOURCE_DISK_DETAILED_HELP,

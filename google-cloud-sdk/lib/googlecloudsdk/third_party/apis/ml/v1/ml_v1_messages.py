@@ -74,7 +74,7 @@ class GoogleApiHttpBody(_messages.Message):
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
-class GoogleCloudMlV1AutomaticScaling(_messages.Message):
+class GoogleCloudMlV1AutoScaling(_messages.Message):
   """Options for automatically scaling a model.
 
   Fields:
@@ -777,14 +777,14 @@ class GoogleCloudMlV1Version(_messages.Message):
     StateValueValuesEnum: Output only. The state of a version.
 
   Fields:
-    automaticScaling: Automatically scale the number of nodes used to serve
-      the model in response to increases and decreases in traffic. Care should
-      be taken to ramp up traffic according to the model's ability to scale or
+    autoScaling: Automatically scale the number of nodes used to serve the
+      model in response to increases and decreases in traffic. Care should be
+      taken to ramp up traffic according to the model's ability to scale or
       you will start seeing increases in latency and 429 response codes.
     createTime: Output only. The time the version was created.
     deploymentUri: Required. The Google Cloud Storage location of the trained
       model used to create the version. See the [overview of model deployment
-      ](/ml-engine/docs/concepts/deployment-overview) for more informaiton.
+      ](/ml-engine/docs/concepts/deployment-overview) for more information.
       When passing Version to [projects.models.versions.create](/ml-
       engine/reference/rest/v1/projects.models.versions/create) the model
       service uses the specified location as the source of the model. Once
@@ -793,6 +793,7 @@ class GoogleCloudMlV1Version(_messages.Message):
       model files can't exceed 1000.
     description: Optional. The description specified for the version when it
       was created.
+    errorMessage: Output only. The details of a failure or a cancellation.
     isDefault: Output only. If true, this version will be used to handle
       prediction requests that do not specify a version.  You can change the
       default version by calling [projects.methods.versions.setDefault](/ml-
@@ -800,7 +801,7 @@ class GoogleCloudMlV1Version(_messages.Message):
     lastUseTime: Output only. The time the version was last used for
       prediction.
     manualScaling: Manually select the number of nodes to use for serving the
-      model. You should generally use `automatic_scaling` with an appropriate
+      model. You should generally use `auto_scaling` with an appropriate
       `min_nodes` instead, but this option is available if you want more
       predictable billing. Beware that latency and error rates will increase
       if the traffic exceeds that capability of the system to serve it based
@@ -819,24 +820,28 @@ class GoogleCloudMlV1Version(_messages.Message):
       UNKNOWN: The version state is unspecified.
       READY: The version is ready for prediction.
       CREATING: The version is still in the process of creation.
+      FAILED: The version failed to be created, possibly cancelled.
+        `error_message` should contain the details of the failure.
     """
     UNKNOWN = 0
     READY = 1
     CREATING = 2
+    FAILED = 3
 
-  automaticScaling = _messages.MessageField('GoogleCloudMlV1AutomaticScaling', 1)
+  autoScaling = _messages.MessageField('GoogleCloudMlV1AutoScaling', 1)
   createTime = _messages.StringField(2)
   deploymentUri = _messages.StringField(3)
   description = _messages.StringField(4)
-  isDefault = _messages.BooleanField(5)
-  lastUseTime = _messages.StringField(6)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 7)
-  name = _messages.StringField(8)
-  runtimeVersion = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  errorMessage = _messages.StringField(5)
+  isDefault = _messages.BooleanField(6)
+  lastUseTime = _messages.StringField(7)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 8)
+  name = _messages.StringField(9)
+  runtimeVersion = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
-class GoogleCloudMlV1beta1AutomaticScaling(_messages.Message):
+class GoogleCloudMlV1beta1AutoScaling(_messages.Message):
   """Options for automatically scaling a model.
 
   Fields:
@@ -868,7 +873,7 @@ class GoogleCloudMlV1beta1ManualScaling(_messages.Message):
     nodes: The number of nodes to allocate for this model. These nodes are
       always up, starting from the time the model is deployed, so the cost of
       operating this model will be proportional to `nodes` * number of hours
-      since last billing cycle.
+      since last billing cycle plus the cost for each prediction performed.
   """
 
   nodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -925,14 +930,14 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
     StateValueValuesEnum: Output only. The state of a version.
 
   Fields:
-    automaticScaling: Automatically scale the number of nodes used to serve
-      the model in response to increases and decreases in traffic. Care should
-      be taken to ramp up traffic according to the model's ability to scale or
+    autoScaling: Automatically scale the number of nodes used to serve the
+      model in response to increases and decreases in traffic. Care should be
+      taken to ramp up traffic according to the model's ability to scale or
       you will start seeing increases in latency and 429 response codes.
     createTime: Output only. The time the version was created.
     deploymentUri: Required. The Google Cloud Storage location of the trained
       model used to create the version. See the [overview of model deployment
-      ](/ml-engine/docs/concepts/deployment-overview) for more informaiton.
+      ](/ml-engine/docs/concepts/deployment-overview) for more information.
       When passing Version to [projects.models.versions.create](/ml-
       engine/reference/rest/v1beta1/projects.models.versions/create) the model
       service uses the specified location as the source of the model. Once
@@ -941,6 +946,7 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
       model files can't exceed 1000.
     description: Optional. The description specified for the version when it
       was created.
+    errorMessage: Output only. The details of a failure or a cancellation.
     isDefault: Output only. If true, this version will be used to handle
       prediction requests that do not specify a version.  You can change the
       default version by calling [projects.methods.versions.setDefault](/ml-
@@ -948,8 +954,8 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
     lastUseTime: Output only. The time the version was last used for
       prediction.
     manualScaling: Manually select the number of nodes to use for serving the
-      model. You should generally use `automatic_scaling` with an appropriate
-      `min_nodes` instead, but this option is available if you want
+      model. You should generally use `auto_scaling` with an appropriate
+      `min_nodes` instead, but this option is available if you want more
       predictable billing. Beware that latency and error rates will increase
       if the traffic exceeds that capability of the system to serve it based
       on the selected number of nodes.
@@ -964,24 +970,28 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
     """Output only. The state of a version.
 
     Values:
-      UNKNOWN: / The version state is unspecified.
+      UNKNOWN: The version state is unspecified.
       READY: The version is ready for prediction.
       CREATING: The version is still in the process of creation.
+      FAILED: The version failed to be created, possibly cancelled.
+        `error_message` should contain the details of the failure.
     """
     UNKNOWN = 0
     READY = 1
     CREATING = 2
+    FAILED = 3
 
-  automaticScaling = _messages.MessageField('GoogleCloudMlV1beta1AutomaticScaling', 1)
+  autoScaling = _messages.MessageField('GoogleCloudMlV1beta1AutoScaling', 1)
   createTime = _messages.StringField(2)
   deploymentUri = _messages.StringField(3)
   description = _messages.StringField(4)
-  isDefault = _messages.BooleanField(5)
-  lastUseTime = _messages.StringField(6)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1beta1ManualScaling', 7)
-  name = _messages.StringField(8)
-  runtimeVersion = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  errorMessage = _messages.StringField(5)
+  isDefault = _messages.BooleanField(6)
+  lastUseTime = _messages.StringField(7)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1beta1ManualScaling', 8)
+  name = _messages.StringField(9)
+  runtimeVersion = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
@@ -1559,7 +1569,7 @@ class GoogleRpcStatus(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details.  There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

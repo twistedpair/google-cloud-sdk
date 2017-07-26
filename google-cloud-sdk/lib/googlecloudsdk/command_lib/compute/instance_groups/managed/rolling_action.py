@@ -63,7 +63,6 @@ def CreateRequest(args,
   current_time_str = str(times.Now(times.UTC))
   for i, version in enumerate(versions):
     version.name = '%d/%s' % (i, current_time_str)
-    version.tag = version.name
 
   update_policy = client.messages.InstanceGroupManagerUpdatePolicy(
       maxSurge=max_surge,

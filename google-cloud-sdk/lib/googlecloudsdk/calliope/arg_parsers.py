@@ -694,11 +694,13 @@ class ArgDict(ArgList):
   key-value pairs to get a dict.
   """
 
-  def __init__(self, value_type=None, spec=None, min_length=0, max_length=None,
-               allow_key_only=False, required_keys=None, operators=None):
+  def __init__(self, key_type=None, value_type=None, spec=None, min_length=0,
+               max_length=None, allow_key_only=False, required_keys=None,
+               operators=None):
     """Initialize an ArgDict.
 
     Args:
+      key_type: (str)->str, A function to apply to each of the dict keys.
       value_type: (str)->str, A function to apply to each of the dict values.
       spec: {str: (str)->str}, A mapping of expected keys to functions.
         The functions are applied to the values. If None, an arbitrary
@@ -723,6 +725,7 @@ class ArgDict(ArgList):
     super(ArgDict, self).__init__(min_length=min_length, max_length=max_length)
     if spec and value_type:
       raise ValueError('cannot have both spec and sub_type')
+    self.key_type = key_type
     self.spec = spec
     self.allow_key_only = allow_key_only
     self.required_keys = required_keys or []
@@ -767,9 +770,17 @@ class ArgDict(ArgList):
             ('Bad syntax for dict arg: [{0}]. Please see `gcloud topic '
              'escaping` if you would like information on escaping list or '
              'dictionary flag values.').format(arg))
+      if self.key_type:
+        try:
+          key = self.key_type(key)
+        except ValueError:
+          raise ArgumentTypeError('Invalid key [{0}]'.format(key))
       convert_value = self.operators.get(op, None)
       if convert_value:
-        value = convert_value(value)
+        try:
+          value = convert_value(value)
+        except ValueError:
+          raise ArgumentTypeError('Invalid value [{0}]'.format(value))
       if self.spec:
         value = self._ApplySpec(key, value)
       arg_dict[key] = value

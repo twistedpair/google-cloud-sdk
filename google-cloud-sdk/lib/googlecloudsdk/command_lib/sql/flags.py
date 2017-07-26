@@ -49,6 +49,7 @@ class UserCompleter(completers.ListCommandCompleter):
         flags=['instance'],
         **kwargs)
 
+# TODO(b/63773705): Convert all flags into functions.
 
 INSTANCE_FLAG = base.Argument(
     '--instance',
@@ -105,6 +106,184 @@ PROMPT_FOR_PASSWORD_FLAG = base.Argument(
     help=('Prompt for the Cloud SQL user\'s password with character echo '
           'disabled. The password is all typed characters up to but not '
           'including the RETURN or ENTER key.'))
+
+
+# Instance create and patch flags
+
+
+def AddActivationPolicy(parser):
+  parser.add_argument(
+      '--activation-policy',
+      required=False,
+      choices=['ALWAYS', 'NEVER', 'ON_DEMAND'],
+      default=None,
+      help=('The activation policy for this instance. This specifies when '
+            'the instance should be activated and is applicable only when '
+            'the instance state is RUNNABLE. More information on activation '
+            'policies can be found here: '
+            'https://cloud.google.com/sql/faq#activation_policy'))
+
+
+def AddAssignIp(parser):
+  parser.add_argument(
+      '--assign-ip',
+      action='store_true',
+      default=None,  # Tri-valued: None => don't change the setting.
+      help='The instance must be assigned an IP address.')
+
+
+def AddAuthorizedGAEApps(parser):
+  parser.add_argument(
+      '--authorized-gae-apps',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='APP',
+      required=False,
+      help=('First Generation instances only. List of IDs for App Engine '
+            'applications running in the Standard environment that '
+            'can access this instance.'))
+
+
+def AddAuthorizedNetworks(parser):
+  parser.add_argument(
+      '--authorized-networks',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='NETWORK',
+      required=False,
+      default=[],
+      help=('The list of external networks that are allowed to connect to '
+            'the instance. Specified in CIDR notation, also known as '
+            '\'slash\' notation (e.g. 192.168.100.0/24).'))
+
+
+def AddBackupStartTime(parser):
+  parser.add_argument(
+      '--backup-start-time',
+      required=False,
+      help=('The start time of daily backups, specified in the 24 hour '
+            'format - HH:MM, in the UTC timezone.'))
+
+
+def AddDatabaseFlags(parser):
+  parser.add_argument(
+      '--database-flags',
+      type=arg_parsers.ArgDict(min_length=1),
+      metavar='FLAG=VALUE',
+      required=False,
+      help=('A comma-separated list of database flags to set on the '
+            'instance. Use an equals sign to separate flag name and value. '
+            'Flags without values, like skip_grant_tables, can be written '
+            'out without a value after, e.g., `skip_grant_tables=`. Use '
+            'on/off for booleans. View the Instance Resource API for allowed '
+            'flags. (e.g., `--database-flags max_allowed_packet=55555,'
+            'skip_grant_tables=,log_output=1`)'))
+
+
+def AddCPU(parser):
+  parser.add_argument(
+      '--cpu',
+      type=int,
+      required=False,
+      help=('A whole number value indicating how many cores are desired in '
+            'the machine. Both --cpu and --memory must be specified if a '
+            'custom machine type is desired, and the --tier flag must be '
+            'omitted.'))
+
+
+def AddEnableBinLog(parser):
+  parser.add_argument(
+      '--enable-bin-log',
+      required=False,
+      action='store_true',
+      default=None,  # Tri-valued: None => don't change the setting.
+      help=('Specified if binary log should be enabled. If backup '
+            'configuration is disabled, binary log must be disabled as well.'))
+
+
+def AddFollowGAEApp(parser):
+  parser.add_argument(
+      '--follow-gae-app',
+      required=False,
+      help=('First Generation instances only. The App Engine app '
+            'this instance should follow. It must be in the same region as '
+            'the instance. WARNING: Instance may be restarted.'))
+
+
+def AddMaintenanceReleaseChannel(parser):
+  parser.add_argument(
+      '--maintenance-release-channel',
+      choices={
+          'production': 'Production updates are stable and recommended '
+                        'for applications in production.',
+          'preview': 'Preview updates release prior to production '
+                     'updates. You may wish to use the preview channel '
+                     'for dev/test applications so that you can preview '
+                     'their compatibility with your application prior '
+                     'to the production release.'
+      },
+      type=str.lower,
+      help="Which channel's updates to apply during the maintenance window.")
+
+
+def AddMaintenanceWindowDay(parser):
+  parser.add_argument(
+      '--maintenance-window-day',
+      choices=arg_parsers.DayOfWeek.DAYS,
+      type=arg_parsers.DayOfWeek.Parse,
+      help='Day of week for maintenance window, in UTC time zone.')
+
+
+def AddMaintenanceWindowHour(parser):
+  parser.add_argument(
+      '--maintenance-window-hour',
+      type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=23),
+      help='Hour of day for maintenance window, in UTC time zone.')
+
+
+def AddMemory(parser):
+  parser.add_argument(
+      '--memory',
+      type=arg_parsers.BinarySize(),
+      required=False,
+      help=('A whole number value indicating how much memory is desired in '
+            'the machine. A size unit should be provided (eg. 3072MiB or '
+            '9GiB) - if no units are specified, GiB is assumed. Both --cpu '
+            'and --memory must be specified if a custom machine type is '
+            'desired, and the --tier flag must be omitted.'))
+
+
+def AddReplication(parser):
+  parser.add_argument(
+      '--replication',
+      required=False,
+      choices=['SYNCHRONOUS', 'ASYNCHRONOUS'],
+      default=None,
+      help='The type of replication this instance uses.')
+
+
+def AddStorageAutoIncrease(parser):
+  parser.add_argument(
+      '--storage-auto-increase',
+      action='store_true',
+      default=None,
+      help=('Storage size can be increased, but it cannot be decreased; '
+            'storage increases are permanent for the life of the instance. '
+            'With this setting enabled, a spike in storage requirements '
+            'can result in permanently increased storage costs for your '
+            'instance. However, if an instance runs out of available space, '
+            'it can result in the instance going offline, dropping existing '
+            'connections.'))
+
+
+def AddStorageSize(parser):
+  parser.add_argument(
+      '--storage-size',
+      type=arg_parsers.BinarySize(
+          lower_bound='10GB',
+          upper_bound='10230GB',
+          suggested_binary_size_scales=['GB']),
+      help=('Amount of storage allocated to the instance. Must be an integer '
+            'number of GB between 10GB and 10230GB inclusive.'))
+
 
 # Database specific flags
 

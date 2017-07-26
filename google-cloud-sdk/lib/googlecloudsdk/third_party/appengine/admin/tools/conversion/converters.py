@@ -15,8 +15,12 @@
 
 import re
 
-from googlecloudsdk.third_party.appengine.api import appinfo
-
+# pylint:disable=g-import-not-at-top
+try:
+  from googlecloudsdk.third_party.appengine.api import appinfo
+except ImportError:
+  from google.appengine.api import appinfo
+# pylint:enable=g-import-not-at-top
 
 _SECONDS_PER_MINUTE = 60
 _MILLISECONDS_PER_SECOND = 1000

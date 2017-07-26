@@ -14,7 +14,9 @@
 
 """Flags and helpers for the compute backend-buckets commands."""
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+
 _GCS_BUCKET_DETAILED_HELP = """\
 The name of the Google Cloud Storage bucket to serve from. The storage
         bucket must be owned by the project's owner."""
@@ -27,17 +29,26 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+class BackendBucketsCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(BackendBucketsCompleter, self).__init__(
+        collection='compute.backendBuckets',
+        list_command='compute backend-buckets list --uri',
+        **kwargs)
+
+
 def BackendBucketArgument(plural=False):
   return compute_flags.ResourceArgument(
       name='backend_bucket_name',
       resource_name='backend bucket',
       plural=plural,
-      completion_resource_id='compute.backendBuckets',
+      completer=BackendBucketsCompleter,
       global_collection='compute.backendBuckets')
 
 GCS_BUCKET_ARG = compute_flags.ResourceArgument(
     resource_name='backend bucket',
-    completion_resource_id='compute.backendBuckets',
+    completer=BackendBucketsCompleter,
     name='--gcs-bucket-name',
     plural=False,
     required=False,
@@ -46,7 +57,7 @@ GCS_BUCKET_ARG = compute_flags.ResourceArgument(
 
 REQUIRED_GCS_BUCKET_ARG = compute_flags.ResourceArgument(
     resource_name='backend bucket',
-    completion_resource_id='compute.backendBuckets',
+    completer=BackendBucketsCompleter,
     name='--gcs-bucket-name',
     plural=False,
     global_collection='compute.backendBuckets',
@@ -58,5 +69,5 @@ def BackendBucketArgumentForUrlMap(required=True):
       resource_name='backend bucket',
       name='--default-backend-bucket',
       required=required,
-      completion_resource_id='compute.backendBuckets',
+      completer=BackendBucketsCompleter,
       global_collection='compute.backendBuckets')
