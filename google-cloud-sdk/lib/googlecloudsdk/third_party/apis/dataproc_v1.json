@@ -185,7 +185,7 @@
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details. There will be a common set of message types for APIs to use.",
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -293,7 +293,7 @@
       "type": "object",
       "properties": {
         "zoneUri": {
-          "description": "Optional. The zone where the Google Compute Engine cluster will be located. On a create request, it is required in the \"global\" region. If omitted in a non-global Cloud Dataproc region, the service will pick a zone in the corresponding GCE region. On a get request, zone will always be present.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/[zone]\nprojects\/[project_id]\/zones\/[zone]\nus-central1-f",
+          "description": "Optional. The zone where the Google Compute Engine cluster will be located. On a create request, it is required in the \"global\" region. If omitted in a non-global Cloud Dataproc region, the service will pick a zone in the corresponding Compute Engine region. On a get request, zone will always be present.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/[zone]\nprojects\/[project_id]\/zones\/[zone]\nus-central1-f",
           "type": "string"
         },
         "networkUri": {

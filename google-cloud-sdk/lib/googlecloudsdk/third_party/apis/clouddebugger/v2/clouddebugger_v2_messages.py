@@ -385,8 +385,8 @@ class Debuggee(_messages.Message):
 
   Fields:
     agentVersion: Version ID of the agent release. The version ID is
-      structured as following: `domain/type/vmajor.minor` (for example
-      `google.com/gcp-java/v1.1`).
+      structured as following: `domain/language-platform/vmajor.minor` (for
+      example `google.com/java-gcp/v1.1`).
     description: Human readable description of the debuggee. Including a
       human-readable project name, environment name and version information is
       recommended.

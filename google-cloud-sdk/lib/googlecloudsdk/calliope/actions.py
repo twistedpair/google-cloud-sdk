@@ -550,7 +550,7 @@ def DeprecationAction(flag_name,
                       action=None):
   """Prints a warning or error message for a flag that is being deprecated.
 
-  Uses a _PreActionHook to wraps any existing Action on the flag and
+  Uses a _PreActionHook to wrap any existing Action on the flag and
   also adds deprecation messaging to flag help.
 
   Args:

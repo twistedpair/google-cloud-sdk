@@ -429,6 +429,22 @@ def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id,
   }
 
 
+def GetHintForServiceAccountResource(action='act on'):
+  """Returns a hint message for commands treating service account as a resource.
+
+  Args:
+    action: the action to take on the service account resource (with necessary
+        prepositions), such as 'add iam policy bindings to'.
+  """
+
+  return ('When managing IAM roles, you can treat a service account either as '
+          'a resource or as an identity. This command is to {action} a '
+          'service account resource. There are other gcloud commands to '
+          'manage IAM policies for other types of resources. For example, to '
+          'manage IAM policies on a project, use the ```gcloud projects``` '
+          'commands.'.format(action=action))
+
+
 def ManagedByFromString(managed_by):
   """Parses a string into a MANAGED_BY enum.
 

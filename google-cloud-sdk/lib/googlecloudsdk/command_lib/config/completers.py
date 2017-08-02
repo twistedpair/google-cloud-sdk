@@ -15,6 +15,9 @@
 """Argcomplete completers for various config related things."""
 
 
+from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.command_lib.util import deprecated_completers
+from googlecloudsdk.core import module_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
 
@@ -48,3 +51,43 @@ def NamedConfigCompleter(prefix, **unused_kwargs):
   """An argcomplete completer for existing named configuration names."""
   configs = named_configs.ConfigurationStore.AllConfigs().keys()
   return [c for c in configs if c.startswith(prefix)]
+
+
+class PropertyValueCompleter(completers.Converter):
+  """A completer for a specific property value.
+
+  The property value to be completed is not known until completion time.
+  """
+
+  def Complete(self, prefix, parameter_info):
+    properties.VALUES.core.print_completion_tracebacks.Set(True)
+    prop_name = parameter_info.GetValue('property')
+    if not prop_name:
+      # No property specified. This should have been caught by the caller.
+      return None
+    prop = properties.FromString(prop_name)
+    if not prop:
+      # Property is invalid. This should have been caught by the caller.
+      return None
+
+    if prop.choices:
+      # Fixed set of possible values - easy.
+      return [c for c in prop.choices if c.startswith(prefix)]
+
+    if prop.completer:
+      # prop.completer is the module path for the resource value completer.
+      completer_class = module_util.ImportModule(prop.completer)
+      completer = completer_class()
+      if (hasattr(completer, 'GetListCommand') and not isinstance(
+          completer, deprecated_completers.DeprecatedListCommandCompleter)):
+        list_command = ' '.join(completer.GetListCommand(parameter_info))
+        completer = deprecated_completers.DeprecatedListCommandCompleter(
+            collection=completer.collection, list_command=list_command)
+      return completer.Complete(prefix, parameter_info)
+
+    # No completer for this property.
+    return None
+
+  def Update(self, parameter_info=None, aggregations=None):
+    """No completion cache for properties."""
+    del parameter_info, aggregations

@@ -20,7 +20,7 @@ import traceback
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.error_reporting import util
 from googlecloudsdk.api_lib.util import apis as core_apis
-from googlecloudsdk.calliope import backend
+from googlecloudsdk.calliope import command_loading
 from googlecloudsdk.command_lib import error_reporting_util
 from googlecloudsdk.core import config
 from googlecloudsdk.core import http
@@ -39,7 +39,7 @@ def _IsInstallationCorruption(err):
   Returns:
     bool, True if installation error, False otherwise
   """
-  return (isinstance(err, backend.CommandLoadFailure) and
+  return (isinstance(err, command_loading.CommandLoadFailure) and
           isinstance(err.root_exception, ImportError))
 
 

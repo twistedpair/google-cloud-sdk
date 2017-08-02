@@ -64,12 +64,12 @@ class AcceleratorTypeAggregatedList(_messages.Message):
   """A AcceleratorTypeAggregatedList object.
 
   Messages:
-    ItemsValue: [Output Only] A map of scoped accelerator type lists.
+    ItemsValue: A list of AcceleratorTypesScopedList resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A map of scoped accelerator type lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of AcceleratorTypesScopedList resources.
     kind: [Output Only] Type of resource. Always
       compute#acceleratorTypeAggregatedList for aggregated lists of
       accelerator types.
@@ -83,7 +83,7 @@ class AcceleratorTypeAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """[Output Only] A map of scoped accelerator type lists.
+    """A list of AcceleratorTypesScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -122,8 +122,11 @@ class AcceleratorTypeList(_messages.Message):
     items: A list of AcceleratorType resources.
     kind: [Output Only] Type of resource. Always compute#acceleratorTypeList
       for lists of accelerator types.
-    nextPageToken: [Output Only] A token used to continue a truncated list
-      request.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
@@ -424,12 +427,12 @@ class AddressAggregatedList(_messages.Message):
   """A AddressAggregatedList object.
 
   Messages:
-    ItemsValue: [Output Only] A map of scoped address lists.
+    ItemsValue: A list of AddressesScopedList resources.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
-    items: [Output Only] A map of scoped address lists.
+    items: A list of AddressesScopedList resources.
     kind: [Output Only] Type of resource. Always compute#addressAggregatedList
       for aggregated lists of addresses.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -442,7 +445,7 @@ class AddressAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """[Output Only] A map of scoped address lists.
+    """A list of AddressesScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -476,9 +479,9 @@ class AddressList(_messages.Message):
   """Contains a list of addresses.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of addresses.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Address resources.
     kind: [Output Only] Type of resource. Always compute#addressList for lists
       of addresses.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -486,7 +489,7 @@ class AddressList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -872,6 +875,36 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuthorizationLoggingOptions(_messages.Message):
+  """Authorization-related information used by Cloud Audit Logging.
+
+  Enums:
+    PermissionTypeValueValuesEnum: The type of the permission that was
+      checked.
+
+  Fields:
+    permissionType: The type of the permission that was checked.
+  """
+
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    """The type of the permission that was checked.
+
+    Values:
+      ADMIN_READ: <no description>
+      ADMIN_WRITE: <no description>
+      DATA_READ: <no description>
+      DATA_WRITE: <no description>
+      PERMISSION_TYPE_UNSPECIFIED: <no description>
+    """
+    ADMIN_READ = 0
+    ADMIN_WRITE = 1
+    DATA_READ = 2
+    DATA_WRITE = 3
+    PERMISSION_TYPE_UNSPECIFIED = 4
+
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
+
+
 class Autoscaler(_messages.Message):
   """Represents an Autoscaler resource. Autoscalers allow you to automatically
   scale virtual machine instances in managed instance groups according to an
@@ -947,12 +980,12 @@ class AutoscalerAggregatedList(_messages.Message):
   """A AutoscalerAggregatedList object.
 
   Messages:
-    ItemsValue: A map of scoped autoscaler lists.
+    ItemsValue: A list of AutoscalersScopedList resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: A map of scoped autoscaler lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of AutoscalersScopedList resources.
     kind: [Output Only] Type of resource. Always
       compute#autoscalerAggregatedList for aggregated lists of autoscalers.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -965,7 +998,7 @@ class AutoscalerAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """A map of scoped autoscaler lists.
+    """A list of AutoscalersScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -999,8 +1032,8 @@ class AutoscalerList(_messages.Message):
   """Contains a list of Autoscaler resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of Autoscaler resources.
     kind: [Output Only] Type of resource. Always compute#autoscalerList for
       lists of autoscalers.
@@ -1328,14 +1361,15 @@ class Backend(_messages.Message):
     BalancingModeValueValuesEnum: Specifies the balancing mode for this
       backend. For global HTTP(S) or TCP/SSL load balancing, the default is
       UTILIZATION. Valid values are UTILIZATION, RATE (for HTTP(S)) and
-      CONNECTION (for TCP/SSL).  This cannot be used for internal load
-      balancing.
+      CONNECTION (for TCP/SSL).  For Internal Load Balancing, the default and
+      only supported mode is CONNECTION.
 
   Fields:
     balancingMode: Specifies the balancing mode for this backend. For global
       HTTP(S) or TCP/SSL load balancing, the default is UTILIZATION. Valid
       values are UTILIZATION, RATE (for HTTP(S)) and CONNECTION (for TCP/SSL).
-      This cannot be used for internal load balancing.
+      For Internal Load Balancing, the default and only supported mode is
+      CONNECTION.
     capacityScaler: A multiplier applied to the group's maximum servicing
       capacity (based on UTILIZATION, RATE or CONNECTION). Default value is 1,
       which means the group will serve up to 100% of its configured capacity
@@ -1344,15 +1378,15 @@ class Backend(_messages.Message):
       is [0.0,1.0].  This cannot be used for internal load balancing.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    group: The fully-qualified URL of a zonal Instance Group resource. This
-      instance group defines the list of instances that serve traffic. Member
-      virtual machine instances from each instance group must live in the same
-      zone as the instance group itself. No two backends in a backend service
-      are allowed to use same Instance Group resource.  Note that you must
-      specify an Instance Group resource using the fully-qualified URL, rather
-      than a partial URL.  When the BackendService has load balancing scheme
-      INTERNAL, the instance group must be in a zone within the same region as
-      the BackendService.
+    group: The fully-qualified URL of a Instance Group resource. This instance
+      group defines the list of instances that serve traffic. Member virtual
+      machine instances from each instance group must live in the same zone as
+      the instance group itself. No two backends in a backend service are
+      allowed to use same Instance Group resource.  Note that you must specify
+      an Instance Group resource using the fully-qualified URL, rather than a
+      partial URL.  When the BackendService has load balancing scheme
+      INTERNAL, the instance group must be within the same region as the
+      BackendService.
     maxConnections: The max number of simultaneous connections for the group.
       Can be used with either CONNECTION or UTILIZATION balancing modes. For
       CONNECTION mode, either maxConnections or maxConnectionsPerInstance must
@@ -1380,8 +1414,9 @@ class Backend(_messages.Message):
   class BalancingModeValueValuesEnum(_messages.Enum):
     """Specifies the balancing mode for this backend. For global HTTP(S) or
     TCP/SSL load balancing, the default is UTILIZATION. Valid values are
-    UTILIZATION, RATE (for HTTP(S)) and CONNECTION (for TCP/SSL).  This cannot
-    be used for internal load balancing.
+    UTILIZATION, RATE (for HTTP(S)) and CONNECTION (for TCP/SSL).  For
+    Internal Load Balancing, the default and only supported mode is
+    CONNECTION.
 
     Values:
       CONNECTION: <no description>
@@ -1444,8 +1479,11 @@ class BackendBucketList(_messages.Message):
       server.
     items: A list of BackendBucket resources.
     kind: Type of resource.
-    nextPageToken: [Output Only] A token used to continue a truncated list
-      request.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
@@ -1523,6 +1561,8 @@ class BackendService(_messages.Message):
       and the default is TCP.
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services.
+    securityPolicy: [Output Only] The resource URL for the security policy
+      associated with this backend service.
     selfLink: [Output Only] Server-defined URL for the resource.
     sessionAffinity: Type of session affinity to use. The default is NONE.
       When the load balancing scheme is EXTERNAL, can be NONE, CLIENT_IP, or
@@ -1602,30 +1642,34 @@ class BackendService(_messages.Message):
   portName = _messages.StringField(16)
   protocol = _messages.EnumField('ProtocolValueValuesEnum', 17)
   region = _messages.StringField(18)
-  selfLink = _messages.StringField(19)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 20)
-  timeoutSec = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  securityPolicy = _messages.StringField(19)
+  selfLink = _messages.StringField(20)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 21)
+  timeoutSec = _messages.IntegerField(22, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
   """Contains a list of BackendServicesScopedList.
 
   Messages:
-    ItemsValue: A map of scoped BackendService lists.
+    ItemsValue: A list of BackendServicesScopedList resources.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
-    items: A map of scoped BackendService lists.
+    items: A list of BackendServicesScopedList resources.
     kind: Type of resource.
-    nextPageToken: [Output Only] A token used to continue a truncated list
-      request.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """A map of scoped BackendService lists.
+    """A list of BackendServicesScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -1994,12 +2038,12 @@ class CommitmentAggregatedList(_messages.Message):
   """A CommitmentAggregatedList object.
 
   Messages:
-    ItemsValue: Commitments by scope.
+    ItemsValue: A list of CommitmentsScopedList resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: Commitments by scope.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of CommitmentsScopedList resources.
     kind: [Output Only] Type of resource. Always
       compute#commitmentAggregatedList for aggregated lists of commitments.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -2012,7 +2056,7 @@ class CommitmentAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """Commitments by scope.
+    """A list of CommitmentsScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -2046,8 +2090,8 @@ class CommitmentList(_messages.Message):
   """Contains a list of Commitment resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of Commitment resources.
     kind: [Output Only] Type of resource. Always compute#commitmentList for
       lists of commitments.
@@ -3084,6 +3128,33 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeBackendServicesSetSecurityPolicyRequest(_messages.Message):
+  """A ComputeBackendServicesSetSecurityPolicyRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to which the security
+      policy should be set. The name should conform to RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicyReference: A SecurityPolicyReference resource to be passed
+      as the request body.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  securityPolicyReference = _messages.MessageField('SecurityPolicyReference', 4)
 
 
 class ComputeBackendServicesTestIamPermissionsRequest(_messages.Message):
@@ -8929,6 +9000,155 @@ class ComputeRoutesTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeSecurityPoliciesDeleteRequest(_messages.Message):
+  """A ComputeSecurityPoliciesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeSecurityPoliciesGetRequest(_messages.Message):
+  """A ComputeSecurityPoliciesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to update.
+  """
+
+  project = _messages.StringField(1, required=True)
+  securityPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeSecurityPoliciesInsertRequest(_messages.Message):
+  """A ComputeSecurityPoliciesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: A SecurityPolicy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.MessageField('SecurityPolicy', 3)
+
+
+class ComputeSecurityPoliciesListRequest(_messages.Message):
+  """A ComputeSecurityPoliciesListRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeSecurityPoliciesPatchRequest(_messages.Message):
+  """A ComputeSecurityPoliciesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+    securityPolicyResource: A SecurityPolicy resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyResource = _messages.MessageField('SecurityPolicy', 4)
+
+
+class ComputeSecurityPoliciesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeSecurityPoliciesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeSnapshotsDeleteRequest(_messages.Message):
   """A ComputeSnapshotsDeleteRequest object.
 
@@ -11619,7 +11839,8 @@ class Disk(_messages.Message):
       sourceSnapshot parameter, or specify it alone to create an empty
       persistent disk.  If you specify this field along with sourceImage or
       sourceSnapshot, the value of sizeGb must not be less than the size of
-      the sourceImage or the size of the snapshot.
+      the sourceImage or the size of the snapshot. Acceptable values are 1 to
+      65536, inclusive.
     sourceImage: The source image used to create this disk. If the source
       image is deleted, this field will not be set.  To create a disk with one
       of the public operating system images, specify the image by its family
@@ -11744,12 +11965,12 @@ class DiskAggregatedList(_messages.Message):
   """A DiskAggregatedList object.
 
   Messages:
-    ItemsValue: [Output Only] A map of scoped disk lists.
+    ItemsValue: A list of DisksScopedList resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A map of scoped disk lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of DisksScopedList resources.
     kind: [Output Only] Type of resource. Always compute#diskAggregatedList
       for aggregated lists of persistent disks.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -11757,13 +11978,12 @@ class DiskAggregatedList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-      Acceptable values are 0 to 500, inclusive. (Default: 500)
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """[Output Only] A map of scoped disk lists.
+    """A list of DisksScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -11802,11 +12022,11 @@ class DiskList(_messages.Message):
     items: A list of Disk resources.
     kind: [Output Only] Type of resource. Always compute#diskList for lists of
       disks.
-    nextPageToken: This token allows you to get the next page of results for
-      list requests. If the number of results is larger than maxResults, use
-      the nextPageToken as a value for the query parameter pageToken in the
-      next list request. Subsequent list requests will have their own
-      nextPageToken to continue paging through the results.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
@@ -11874,12 +12094,12 @@ class DiskTypeAggregatedList(_messages.Message):
   """A DiskTypeAggregatedList object.
 
   Messages:
-    ItemsValue: [Output Only] A map of scoped disk type lists.
+    ItemsValue: A list of DiskTypesScopedList resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A map of scoped disk type lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of DiskTypesScopedList resources.
     kind: [Output Only] Type of resource. Always
       compute#diskTypeAggregatedList.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -11892,7 +12112,7 @@ class DiskTypeAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """[Output Only] A map of scoped disk type lists.
+    """A list of DiskTypesScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -11926,9 +12146,9 @@ class DiskTypeList(_messages.Message):
   """Contains a list of disk types.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of Disk Type resources.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of DiskType resources.
     kind: [Output Only] Type of resource. Always compute#diskTypeList for disk
       types.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -12261,16 +12481,17 @@ class Firewall(_messages.Message):
       need to match both properties for the firewall to apply.
       sourceServiceAccounts cannot be used at the same time as sourceTags or
       targetTags.
-    sourceTags: If source tags are specified, the firewall will apply only to
-      traffic from VM instances in the same virtual network with a tag listed
-      in the source tags. Source tags cannot be used to control traffic to an
-      instance's external IP address, it only applies to traffic between
-      instances in the same virtual network. Because tags are associated with
-      instances, not IP addresses. One or both of sourceRanges and sourceTags
-      may be set. If both properties are set, the firewall will apply to
-      traffic that has source IP address within sourceRanges OR the source IP
-      that belongs to a tag listed in the sourceTags property. The connection
-      does not need to match both properties for the firewall to apply.
+    sourceTags: If source tags are specified, the firewall rule applies only
+      to traffic with source IPs that match the primary network interfaces of
+      VM instances that have the tag and are in the same VPC network. Source
+      tags cannot be used to control traffic to an instance's external IP
+      address, it only applies to traffic between instances in the same
+      virtual network. Because tags are associated with instances, not IP
+      addresses. One or both of sourceRanges and sourceTags may be set. If
+      both properties are set, the firewall will apply to traffic that has
+      source IP address within sourceRanges OR the source IP that belongs to a
+      tag listed in the sourceTags property. The connection does not need to
+      match both properties for the firewall to apply.
     targetServiceAccounts: A list of service accounts indicating sets of
       instances located in the network that may make network connections as
       specified in allowed[]. targetServiceAccounts cannot be used at the same
@@ -12303,7 +12524,7 @@ class Firewall(_messages.Message):
       IPProtocol: The IP protocol to which this rule applies. The protocol
         type is required when creating a firewall rule. This value can either
         be one of the following well known protocol strings (tcp, udp, icmp,
-        esp, ah, sctp), or the IP protocol number.
+        esp, ah, ipip, sctp), or the IP protocol number.
       ports: An optional list of ports to which this rule applies. This field
         is only applicable for UDP or TCP protocol. Each entry must be either
         an integer or a range. If not specified, this rule applies to
@@ -12321,7 +12542,7 @@ class Firewall(_messages.Message):
       IPProtocol: The IP protocol to which this rule applies. The protocol
         type is required when creating a firewall rule. This value can either
         be one of the following well known protocol strings (tcp, udp, icmp,
-        esp, ah, sctp), or the IP protocol number.
+        esp, ah, ipip, sctp), or the IP protocol number.
       ports: An optional list of ports to which this rule applies. This field
         is only applicable for UDP or TCP protocol. Each entry must be either
         an integer or a range. If not specified, this rule applies to
@@ -12355,9 +12576,9 @@ class FirewallList(_messages.Message):
   """Contains a list of firewalls.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of Firewall resources.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Firewall resources.
     kind: [Output Only] Type of resource. Always compute#firewallList for
       lists of firewalls.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -12479,9 +12700,9 @@ class ForwardingRule(_messages.Message):
       same [IPAddress, IPProtocol] pair must have disjoint port ranges.  Some
       types of forwarding target have constraints on the acceptable ports:   -
       TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetTcpProxy:
-      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 5222  -
+      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1883, 5222  -
       TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
-      5222  - TargetVpnGateway: 500, 4500 -
+      1883, 5222  - TargetVpnGateway: 500, 4500 -
     ports: This field is used along with the backend_service field for
       internal load balancing.  When the load balancing scheme is INTERNAL, a
       single port or a comma separated list of ports can be configured. Only
@@ -12618,12 +12839,12 @@ class ForwardingRuleAggregatedList(_messages.Message):
   """A ForwardingRuleAggregatedList object.
 
   Messages:
-    ItemsValue: A map of scoped forwarding rule lists.
+    ItemsValue: A list of ForwardingRulesScopedList resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: A map of scoped forwarding rule lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of ForwardingRulesScopedList resources.
     kind: [Output Only] Type of resource. Always
       compute#forwardingRuleAggregatedList for lists of forwarding rules.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -12636,7 +12857,7 @@ class ForwardingRuleAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """A map of scoped forwarding rule lists.
+    """A list of ForwardingRulesScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -12670,7 +12891,8 @@ class ForwardingRuleList(_messages.Message):
   """Contains a list of ForwardingRule resources.
 
   Fields:
-    id: [Output Only] Unique identifier for the resource. Set by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of ForwardingRule resources.
     kind: Type of resource.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -13061,8 +13283,8 @@ class HealthCheckList(_messages.Message):
   """Contains a list of HealthCheck resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of HealthCheck resources.
     kind: Type of resource.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -13201,7 +13423,7 @@ class HttpHealthCheckList(_messages.Message):
   """Contains a list of HttpHealthCheck resources.
 
   Fields:
-    id: [Output Only] Unique identifier for the resource. Defined by the
+    id: [Output Only] Unique identifier for the resource; defined by the
       server.
     items: A list of HttpHealthCheck resources.
     kind: Type of resource.
@@ -13509,9 +13731,9 @@ class ImageList(_messages.Message):
   """Contains a list of images.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of Image resources.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Image resources.
     kind: Type of resource.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
@@ -13533,7 +13755,7 @@ class Instance(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
-      the following values: PROVISIONING, STAGING, RUNNING, STOPPING,
+      the following values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED,
       SUSPENDING, SUSPENDED, and TERMINATED.
 
   Messages:
@@ -13590,10 +13812,10 @@ class Instance(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
-    networkInterfaces: An array of configurations for this interface. This
-      specifies how this interface is configured to interact with other
-      network services, such as connecting to the internet. Only one interface
-      is supported per instance.
+    networkInterfaces: An array of network configurations for this instance.
+      These specify how interfaces are configured to interact with other
+      network services, such as connecting to the internet. Multiple
+      interfaces are supported per instance.
     scheduling: Sets the scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
     serviceAccounts: A list of service accounts, with their specified scopes,
@@ -13604,8 +13826,8 @@ class Instance(_messages.Message):
     startRestricted: [Output Only] Whether a VM has been restricted for start
       because Compute Engine has detected suspicious activity.
     status: [Output Only] The status of the instance. One of the following
-      values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
-      and TERMINATED.
+      values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED, SUSPENDING,
+      SUSPENDED, and TERMINATED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
     tags: A list of tags to apply to this instance. Tags are used to identify
@@ -13617,8 +13839,8 @@ class Instance(_messages.Message):
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the instance. One of the following values:
-    PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED, and
-    TERMINATED.
+    PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED, SUSPENDING, SUSPENDED,
+    and TERMINATED.
 
     Values:
       PROVISIONING: <no description>
@@ -13693,12 +13915,12 @@ class InstanceAggregatedList(_messages.Message):
   """A InstanceAggregatedList object.
 
   Messages:
-    ItemsValue: [Output Only] A map of scoped instance lists.
+    ItemsValue: A list of InstancesScopedList resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A map of scoped instance lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InstancesScopedList resources.
     kind: [Output Only] Type of resource. Always
       compute#instanceAggregatedList for aggregated lists of Instance
       resources.
@@ -13712,7 +13934,7 @@ class InstanceAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """[Output Only] A map of scoped instance lists.
+    """A list of InstancesScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -13796,12 +14018,12 @@ class InstanceGroupAggregatedList(_messages.Message):
   """A InstanceGroupAggregatedList object.
 
   Messages:
-    ItemsValue: A map of scoped instance group lists.
+    ItemsValue: A list of InstanceGroupsScopedList resources.
 
   Fields:
-    id: [Output Only] A unique identifier for this aggregated list of instance
-      groups. The server generates this identifier.
-    items: A map of scoped instance group lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InstanceGroupsScopedList resources.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroupAggregatedList for aggregated lists of instance
       groups.
@@ -13810,13 +14032,12 @@ class InstanceGroupAggregatedList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] The URL for this resource type. The server
-      generates this URL.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """A map of scoped instance group lists.
+    """A list of InstanceGroupsScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -13850,9 +14071,9 @@ class InstanceGroupList(_messages.Message):
   """A list of InstanceGroup resources.
 
   Fields:
-    id: [Output Only] A unique identifier for this list of instance groups.
-      The server generates this identifier.
-    items: A list of instance groups.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InstanceGroup resources.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroupList for instance group lists.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -13860,8 +14081,7 @@ class InstanceGroupList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] The URL for this resource type. The server
-      generates this URL.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -13917,11 +14137,11 @@ class InstanceGroupManager(_messages.Message):
       group resides (for regional resources).
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
-    serviceAccount: Service account will be used as credentials for all
-      operations performed by managed instance group on instances. The service
-      accounts needs all permissions required to create and delete instances.
-      When not specified, the service account
-      {projectNumber}@cloudservices.gserviceaccount.com will be used.
+    serviceAccount: [Output Only] The service account to be used as
+      credentials for all operations performed by the managed instance group
+      on instances. The service accounts needs all permissions required to
+      create and delete instances. By default, the service account
+      {projectNumber}@cloudservices.gserviceaccount.com is used.
     targetPools: The URLs for all TargetPool resources to which instances in
       the instanceGroup field are added. The target pools automatically apply
       to all of the instances in the managed instance group.
@@ -14031,12 +14251,12 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
   """A InstanceGroupManagerAggregatedList object.
 
   Messages:
-    ItemsValue: [Output Only] A map of filtered managed instance group lists.
+    ItemsValue: A list of InstanceGroupManagersScopedList resources.
 
   Fields:
-    id: [Output Only] A unique identifier for this aggregated list of managed
-      instance groups. The server generates this identifier.
-    items: [Output Only] A map of filtered managed instance group lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InstanceGroupManagersScopedList resources.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroupManagerAggregatedList for an aggregated list of
       managed instance groups.
@@ -14045,13 +14265,12 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] The URL for this resource type. The server
-      generates this URL.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """[Output Only] A map of filtered managed instance group lists.
+    """A list of InstanceGroupManagersScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -14103,9 +14322,9 @@ class InstanceGroupManagerList(_messages.Message):
   """[Output Only] A list of managed instance groups.
 
   Fields:
-    id: [Output Only] A unique identifier for this resource type. The server
-      generates this identifier.
-    items: [Output Only] A list of managed instance groups.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InstanceGroupManager resources.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroupManagerList for a list of managed instance groups.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -14459,10 +14678,9 @@ class InstanceGroupsListInstances(_messages.Message):
   """A InstanceGroupsListInstances object.
 
   Fields:
-    id: [Output Only] A unique identifier for this list of instances in the
-      specified instance group. The server generates this identifier.
-    items: [Output Only] A list of instances and any named ports that are
-      assigned to those instances.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InstanceWithNamedPorts resources.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroupsListInstances for the list of instances in the
       specified instance group.
@@ -14471,8 +14689,7 @@ class InstanceGroupsListInstances(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] The URL for this list of instances in the
-      specified instance groups. The server generates this URL.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -14646,9 +14863,9 @@ class InstanceList(_messages.Message):
   """Contains a list of instances.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of instances.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Instance resources.
     kind: [Output Only] Type of resource. Always compute#instanceList for
       lists of Instance resources.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -14670,9 +14887,9 @@ class InstanceListReferrers(_messages.Message):
   """Contains a list of instance referrers.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of referrers.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Reference resources.
     kind: [Output Only] Type of resource. Always compute#instanceListReferrers
       for lists of Instance referrers.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -14842,9 +15059,9 @@ class InstanceTemplateList(_messages.Message):
   """A list of instance templates.
 
   Fields:
-    id: [Output Only] A unique identifier for this instance template. The
-      server defines this identifier.
-    items: [Output Only] list of InstanceTemplate resources.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InstanceTemplate resources.
     kind: [Output Only] The resource type, which is always
       compute#instanceTemplatesListResponse for instance template lists.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -14852,8 +15069,7 @@ class InstanceTemplateList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] The URL for this instance template list. The
-      server defines this URL.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -15143,8 +15359,8 @@ class LogConfigCloudAuditOptions(_messages.Message):
       Record.
 
   Fields:
-    isReadPermissionType: True if the log is for a permission of type
-      DATA_READ or ADMIN_READ.
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
     logName: The log_name to populate in the Cloud Audit Record.
   """
 
@@ -15160,7 +15376,7 @@ class LogConfigCloudAuditOptions(_messages.Message):
     DATA_ACCESS = 1
     UNSPECIFIED_LOG_NAME = 2
 
-  isReadPermissionType = _messages.BooleanField(1)
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
   logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
@@ -15224,12 +15440,12 @@ class MachineTypeAggregatedList(_messages.Message):
   """A MachineTypeAggregatedList object.
 
   Messages:
-    ItemsValue: [Output Only] A map of scoped machine type lists.
+    ItemsValue: A list of MachineTypesScopedList resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A map of scoped machine type lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of MachineTypesScopedList resources.
     kind: [Output Only] Type of resource. Always
       compute#machineTypeAggregatedList for aggregated lists of machine types.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -15242,7 +15458,7 @@ class MachineTypeAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """[Output Only] A map of scoped machine type lists.
+    """A list of MachineTypesScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -15276,9 +15492,9 @@ class MachineTypeList(_messages.Message):
   """Contains a list of machine types.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of Machine Type resources.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of MachineType resources.
     kind: [Output Only] Type of resource. Always compute#machineTypeList for
       lists of machine types.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -15615,7 +15831,7 @@ class Metadata(_messages.Message):
       value: Value for the metadata entry. These are free-form strings, and
         only have meaning as interpreted by the image running in the instance.
         The only restriction placed on values is that their size must be less
-        than or equal to 32768 bytes.
+        than or equal to 262144 bytes (256 KiB).
     """
 
     key = _messages.StringField(1)
@@ -15740,9 +15956,9 @@ class NetworkList(_messages.Message):
   """Contains a list of networks.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of Network resources.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Network resources.
     kind: [Output Only] Type of resource. Always compute#networkList for lists
       of networks.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -16465,6 +16681,8 @@ class Quota(_messages.Message):
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
       ROUTERS: <no description>
       ROUTES: <no description>
+      SECURITY_POLICIES: <no description>
+      SECURITY_POLICY_RULES: <no description>
       SNAPSHOTS: <no description>
       SSD_TOTAL_GB: <no description>
       SSL_CERTIFICATES: <no description>
@@ -16504,19 +16722,21 @@ class Quota(_messages.Message):
     REGIONAL_INSTANCE_GROUP_MANAGERS = 22
     ROUTERS = 23
     ROUTES = 24
-    SNAPSHOTS = 25
-    SSD_TOTAL_GB = 26
-    SSL_CERTIFICATES = 27
-    STATIC_ADDRESSES = 28
-    SUBNETWORKS = 29
-    TARGET_HTTPS_PROXIES = 30
-    TARGET_HTTP_PROXIES = 31
-    TARGET_INSTANCES = 32
-    TARGET_POOLS = 33
-    TARGET_SSL_PROXIES = 34
-    TARGET_VPN_GATEWAYS = 35
-    URL_MAPS = 36
-    VPN_TUNNELS = 37
+    SECURITY_POLICIES = 25
+    SECURITY_POLICY_RULES = 26
+    SNAPSHOTS = 27
+    SSD_TOTAL_GB = 28
+    SSL_CERTIFICATES = 29
+    STATIC_ADDRESSES = 30
+    SUBNETWORKS = 31
+    TARGET_HTTPS_PROXIES = 32
+    TARGET_HTTP_PROXIES = 33
+    TARGET_INSTANCES = 34
+    TARGET_POOLS = 35
+    TARGET_SSL_PROXIES = 36
+    TARGET_VPN_GATEWAYS = 37
+    URL_MAPS = 38
+    VPN_TUNNELS = 39
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -16592,12 +16812,15 @@ class RegionAutoscalerList(_messages.Message):
   """Contains a list of autoscalers.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: A list of autoscalers.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Autoscaler resources.
     kind: Type of resource.
-    nextPageToken: [Output Only] A token used to continue a truncated list
-      request.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
   """
 
@@ -16612,8 +16835,8 @@ class RegionInstanceGroupList(_messages.Message):
   """Contains a list of InstanceGroup resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of InstanceGroup resources.
     kind: The resource type.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -16621,8 +16844,7 @@ class RegionInstanceGroupList(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] The URL for this resource type. The server
-      generates this URL.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -16636,16 +16858,18 @@ class RegionInstanceGroupManagerList(_messages.Message):
   """Contains a list of managed instance groups.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: A list of managed instance groups.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InstanceGroupManager resources.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroupManagerList for a list of managed instance groups
       that exist in th regional scope.
-    nextPageToken: [Output only] A token used to continue a truncated list
-      request.
-    selfLink: [Output only] The URL for this resource type. The server
-      generates this URL.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -16747,17 +16971,16 @@ class RegionInstanceGroupsListInstances(_messages.Message):
   """A RegionInstanceGroupsListInstances object.
 
   Fields:
-    id: [Output Only] Unique identifier for the resource. Defined by the
+    id: [Output Only] Unique identifier for the resource; defined by the
       server.
-    items: A list of instances and any named ports that are assigned to those
-      instances.
+    items: A list of InstanceWithNamedPorts resources.
     kind: The resource type.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLink: [Output Only] Server-defined URL for this resource.
   """
 
   id = _messages.StringField(1)
@@ -16818,9 +17041,9 @@ class RegionList(_messages.Message):
   """Contains a list of region resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of Region resources.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Region resources.
     kind: [Output Only] Type of resource. Always compute#regionList for lists
       of regions.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -17098,9 +17321,9 @@ class RouteList(_messages.Message):
   """Contains a list of Route resources.
 
   Fields:
-    id: [Output Only] Unique identifier for the resource. Defined by the
+    id: [Output Only] Unique identifier for the resource; defined by the
       server.
-    items: [Output Only] A list of Route resources.
+    items: A list of Route resources.
     kind: Type of resource.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
@@ -17164,12 +17387,12 @@ class RouterAggregatedList(_messages.Message):
   """Contains a list of routers.
 
   Messages:
-    ItemsValue: A map of scoped router lists.
+    ItemsValue: A list of Router resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: A map of scoped router lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Router resources.
     kind: Type of resource.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
@@ -17181,7 +17404,7 @@ class RouterAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """A map of scoped router lists.
+    """A list of Router resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -17274,8 +17497,8 @@ class RouterList(_messages.Message):
   """Contains a list of Router resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of Router resources.
     kind: [Output Only] Type of resource. Always compute#router for routers.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -17611,6 +17834,121 @@ class Scheduling(_messages.Message):
   preemptible = _messages.BooleanField(3)
 
 
+class SecurityPoliciesList(_messages.Message):
+  """A SecurityPoliciesList object.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of SecurityPolicy resources.
+    kind: [Output Only] Type of resource. Always compute#securityPoliciesList
+      for listsof securityPolicies
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+  """
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('SecurityPolicy', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#securityPoliciesList')
+  nextPageToken = _messages.StringField(4)
+
+
+class SecurityPolicy(_messages.Message):
+  """A security policy is comprised of one or more rules. It can also be
+  associated with one or more 'targets'.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    fingerprint: Specifies a fingerprint for this resource, which is
+      essentially a hash of the metadata's contents and used for optimistic
+      locking. The fingerprint is initially generated by Compute Engine and
+      changes after every request to modify or update metadata. You must
+      always provide an up-to-date fingerprint hash in order to update or
+      change metadata.  To see the latest fingerprint, make get() request to
+      the security policy.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output only] Type of the resource. Always compute#securityPolicyfor
+      security policies
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    rules: List of rules that belong to this policy. There must always be a
+      default rule (rule with priority 2147483647 and match "*"). If no rules
+      are provided when creating a security policy, a default rule with action
+      "allow" will be added.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  fingerprint = _messages.BytesField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#securityPolicy')
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('SecurityPolicyRule', 7, repeated=True)
+  selfLink = _messages.StringField(8)
+
+
+class SecurityPolicyReference(_messages.Message):
+  """A SecurityPolicyReference object.
+
+  Fields:
+    securityPolicy: A string attribute.
+  """
+
+  securityPolicy = _messages.StringField(1)
+
+
+class SecurityPolicyRule(_messages.Message):
+  """Represents a rule that describes one or more match conditions along with
+  the action to be taken when traffic matches this condition (allow or deny).
+
+  Fields:
+    action: The Action to preform when the client connection triggers the
+      rule. Can currently be either "allow" or "deny()" where valid values for
+      status are 403, 404, and 502.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    kind: [Output only] Type of the resource. Always compute#rulefor security
+      policies
+    match: A match condition that incoming traffic is evaluated against. If it
+      evaluates to true, the corresponding ?action? is enforced.
+    preview: If set to true, the specified action is not enforced.
+    priority: An integer indicating the priority of a rule in the list. The
+      priority must be a positive value between 0 and 2147483647. Rules are
+      evaluated in the increasing order of priority.
+  """
+
+  action = _messages.StringField(1)
+  description = _messages.StringField(2)
+  kind = _messages.StringField(3, default=u'compute#securityPolicyRule')
+  match = _messages.MessageField('SecurityPolicyRuleMatcher', 4)
+  preview = _messages.BooleanField(5)
+  priority = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class SecurityPolicyRuleMatcher(_messages.Message):
+  """Represents a match condition that incoming traffic is evaluated against.
+  Exactly one field must be specified.
+
+  Fields:
+    srcIpRanges: CIDR IP address range. Only IPv4 is supported.
+  """
+
+  srcIpRanges = _messages.StringField(1, repeated=True)
+
+
 class SerialPortOutput(_messages.Message):
   """An instance's serial console output.
 
@@ -17799,9 +18137,9 @@ class SnapshotList(_messages.Message):
   """Contains a list of Snapshot resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of Snapshot resources.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Snapshot resources.
     kind: Type of resource.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
@@ -17861,7 +18199,7 @@ class SslCertificateList(_messages.Message):
   """Contains a list of SslCertificate resources.
 
   Fields:
-    id: [Output Only] Unique identifier for the resource. Defined by the
+    id: [Output Only] Unique identifier for the resource; defined by the
       server.
     items: A list of SslCertificate resources.
     kind: Type of resource.
@@ -17984,12 +18322,12 @@ class SubnetworkAggregatedList(_messages.Message):
   """A SubnetworkAggregatedList object.
 
   Messages:
-    ItemsValue: [Output] A map of scoped Subnetwork lists.
+    ItemsValue: A list of SubnetworksScopedList resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output] A map of scoped Subnetwork lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of SubnetworksScopedList resources.
     kind: [Output Only] Type of resource. Always
       compute#subnetworkAggregatedList for aggregated lists of subnetworks.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -18002,7 +18340,7 @@ class SubnetworkAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """[Output] A map of scoped Subnetwork lists.
+    """A list of SubnetworksScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -18036,9 +18374,9 @@ class SubnetworkList(_messages.Message):
   """Contains a list of Subnetwork resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: The Subnetwork resources.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Subnetwork resources.
     kind: [Output Only] Type of resource. Always compute#subnetworkList for
       lists of subnetworks.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -18297,8 +18635,8 @@ class TargetHttpProxyList(_messages.Message):
   """A list of TargetHttpProxy resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of TargetHttpProxy resources.
     kind: Type of resource. Always compute#targetHttpProxyList for lists of
       target HTTP proxies.
@@ -18373,8 +18711,8 @@ class TargetHttpsProxyList(_messages.Message):
   """Contains a list of TargetHttpsProxy resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of TargetHttpsProxy resources.
     kind: Type of resource. Always compute#targetHttpsProxyList for lists of
       target HTTPS proxies.
@@ -18454,12 +18792,12 @@ class TargetInstanceAggregatedList(_messages.Message):
   """A TargetInstanceAggregatedList object.
 
   Messages:
-    ItemsValue: A map of scoped target instance lists.
+    ItemsValue: A list of TargetInstance resources.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
-    items: A map of scoped target instance lists.
+    items: A list of TargetInstance resources.
     kind: Type of resource.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
@@ -18471,7 +18809,7 @@ class TargetInstanceAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """A map of scoped target instance lists.
+    """A list of TargetInstance resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -18505,8 +18843,8 @@ class TargetInstanceList(_messages.Message):
   """Contains a list of TargetInstance resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of TargetInstance resources.
     kind: Type of resource.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -18736,12 +19074,12 @@ class TargetPoolAggregatedList(_messages.Message):
   """A TargetPoolAggregatedList object.
 
   Messages:
-    ItemsValue: [Output Only] A map of scoped target pool lists.
+    ItemsValue: A list of TargetPool resources.
 
   Fields:
-    id: [Output Only] Unique identifier for the resource. Defined by the
+    id: [Output Only] Unique identifier for the resource; defined by the
       server.
-    items: [Output Only] A map of scoped target pool lists.
+    items: A list of TargetPool resources.
     kind: [Output Only] Type of resource. Always
       compute#targetPoolAggregatedList for aggregated lists of target pools.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -18754,7 +19092,7 @@ class TargetPoolAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """[Output Only] A map of scoped target pool lists.
+    """A list of TargetPool resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -18802,7 +19140,7 @@ class TargetPoolList(_messages.Message):
   """Contains a list of TargetPool resources.
 
   Fields:
-    id: [Output Only] Unique identifier for the resource. Defined by the
+    id: [Output Only] Unique identifier for the resource; defined by the
       server.
     items: A list of TargetPool resources.
     kind: [Output Only] Type of resource. Always compute#targetPoolList for
@@ -19091,8 +19429,8 @@ class TargetSslProxyList(_messages.Message):
   """Contains a list of TargetSslProxy resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of TargetSslProxy resources.
     kind: Type of resource.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -19202,8 +19540,8 @@ class TargetTcpProxyList(_messages.Message):
   """Contains a list of TargetTcpProxy resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of TargetTcpProxy resources.
     kind: Type of resource.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -19288,12 +19626,12 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
   """A TargetVpnGatewayAggregatedList object.
 
   Messages:
-    ItemsValue: A map of scoped target vpn gateway lists.
+    ItemsValue: A list of TargetVpnGateway resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: A map of scoped target vpn gateway lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of TargetVpnGateway resources.
     kind: [Output Only] Type of resource. Always compute#targetVpnGateway for
       target VPN gateways.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -19306,7 +19644,7 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """A map of scoped target vpn gateway lists.
+    """A list of TargetVpnGateway resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -19340,9 +19678,9 @@ class TargetVpnGatewayList(_messages.Message):
   """Contains a list of TargetVpnGateway resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of TargetVpnGateway resources.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of TargetVpnGateway resources.
     kind: [Output Only] Type of resource. Always compute#targetVpnGateway for
       target VPN gateways.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -19572,7 +19910,8 @@ class UrlMapList(_messages.Message):
   """Contains a list of UrlMap resources.
 
   Fields:
-    id: [Output Only] Unique identifier for the resource. Set by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: A list of UrlMap resources.
     kind: Type of resource.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -19777,12 +20116,12 @@ class VpnTunnelAggregatedList(_messages.Message):
   """A VpnTunnelAggregatedList object.
 
   Messages:
-    ItemsValue: [Output Only] A map of scoped vpn tunnel lists.
+    ItemsValue: A list of VpnTunnelsScopedList resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A map of scoped vpn tunnel lists.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of VpnTunnelsScopedList resources.
     kind: [Output Only] Type of resource. Always compute#vpnTunnel for VPN
       tunnels.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -19795,7 +20134,7 @@ class VpnTunnelAggregatedList(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ItemsValue(_messages.Message):
-    """[Output Only] A map of scoped vpn tunnel lists.
+    """A list of VpnTunnelsScopedList resources.
 
     Messages:
       AdditionalProperty: An additional property for a ItemsValue object.
@@ -19829,9 +20168,9 @@ class VpnTunnelList(_messages.Message):
   """Contains a list of VpnTunnel resources.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of VpnTunnel resources.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of VpnTunnel resources.
     kind: [Output Only] Type of resource. Always compute#vpnTunnel for VPN
       tunnels.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -19955,8 +20294,8 @@ class XpnHostList(_messages.Message):
   """A XpnHostList object.
 
   Fields:
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
     items: [Output Only] A list of shared VPC host project URLs.
     kind: [Output Only] Type of resource. Always compute#xpnHostList for lists
       of shared VPC hosts.
@@ -20055,7 +20394,7 @@ class ZoneList(_messages.Message):
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
-    items: [Output Only] A list of Zone resources.
+    items: A list of Zone resources.
     kind: Type of resource.
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than

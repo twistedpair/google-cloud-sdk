@@ -4895,6 +4895,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetGuestAttributes(self, request, global_params=None):
+      """Returns the specified guest attributes entry.
+
+      Args:
+        request: (ComputeInstancesGetGuestAttributesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GuestAttributes) The response message.
+      """
+      config = self.GetMethodConfig('GetGuestAttributes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetGuestAttributes.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.instances.getGuestAttributes',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'variableKey'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/getGuestAttributes',
+        request_field='',
+        request_type_name=u'ComputeInstancesGetGuestAttributesRequest',
+        response_type_name=u'GuestAttributes',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
@@ -5468,7 +5494,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdateAccessConfig(self, request, global_params=None):
-      """Updates the specified access config from an instance's network interface with the data included in the request.
+      """Updates the specified access config from an instance's network interface with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInstancesUpdateAccessConfigRequest) input message

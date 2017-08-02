@@ -122,7 +122,7 @@ available to be leased to the next caller of CloudTasks.PullTasks.
       """Creates a task and adds it to a queue.
 
 To add multiple tasks at the same time, use
-[HTTP batching](https://cloud.google.com/storage/docs/json_api/v1/how-tos/batch)
+[HTTP batching](/storage/docs/json_api/v1/how-tos/batch)
 or the batching documentation for your client library, for example
 https://developers.google.com/api-client-library/python/guide/batch.
 
@@ -154,6 +154,10 @@ Tasks cannot be updated after creation; there is no UpdateTask command.
 
     def Delete(self, request, global_params=None):
       """Deletes a task.
+
+A task can be deleted if it is scheduled or dispatched. A task
+cannot be deleted if it has completed successfully or permanently
+failed.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksDeleteRequest) input message
@@ -310,6 +314,11 @@ returned in Task.schedule_time.
     def Run(self, request, global_params=None):
       """Forces a task to run now.
 
+This command is meant to be used for manual debugging. For
+example, CloudTasks.RunTask can be used to retry a failed
+task after a fix has been made or to manually force a task to be
+dispatched now.
+
 When this method is called, Cloud Tasks will dispatch the task to its
 target, even if the queue is Queue.QueueState.PAUSED.
 
@@ -319,13 +328,15 @@ before the task is received by its target.
 
 If Cloud Tasks receives a successful response from the task's
 handler, then the task will be deleted; otherwise the task's
-Task.schedule_time will be reset to the time that RunTask was called
-plus the retry delay specified in the queue and task's RetryConfig.
+Task.schedule_time will be reset to the time that
+CloudTasks.RunTask was called plus the retry delay specified
+in the queue and task's RetryConfig.
 
-RunTask returns google.rpc.Code.NOT_FOUND when it is called
-on a task that has already succeeded or permanently
+CloudTasks.RunTask returns google.rpc.Code.NOT_FOUND when
+it is called on a task that has already succeeded or permanently
 failed. google.rpc.Code.FAILED_PRECONDITION is returned when
-RunTask is called on task that is dispatched or already running.
+CloudTasks.RunTask is called on task that is dispatched or
+already running.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksRunRequest) input message
@@ -366,7 +377,7 @@ RunTask is called on task that is dispatched or already running.
 
 WARNING: This method is only available to whitelisted
 users. Using this method carries some risk. Read
-[Overview of Queue Management and queue.yaml](https://cloud.google.com/cloud-tasks/docs/queue-yaml)
+[Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
 carefully and then sign up for
 [whitelist access to this method](https://goo.gl/Fe5mUy).
 
@@ -404,7 +415,7 @@ for 7 days.
 
 WARNING: This method is only available to whitelisted
 users. Using this method carries some risk. Read
-[Overview of Queue Management and queue.yaml](https://cloud.google.com/cloud-tasks/docs/queue-yaml)
+[Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
 carefully and then sign up for
 [whitelist access to this method](https://goo.gl/Fe5mUy).
 
@@ -460,15 +471,14 @@ carefully and then sign up for
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a queue.
+      """Gets the access control policy for a Queue.
+Returns an empty policy if the resource exists and does not have a policy
+set.
 
-Requires IAM "cloudtasks.queues.getIamPolicy" permission.
+Authorization requires the following [Google IAM](/iam) permission on the
+specified resource parent:
 
-Attempting this RPC on a resource without the needed permission
-will result in a google.rpc.Code.PERMISSION_DENIED error.
-Attempting this RPC on a non-existent resource will result in
-google.rpc.Code.NOT_FOUND if the user has list permission on
-the queues, or a google.rpc.Code.PERMISSION_DENIED otherwise.
+* `cloudtasks.queues.getIamPolicy`
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesGetIamPolicyRequest) input message
@@ -531,7 +541,7 @@ the queue if it does exist.
 
 WARNING: This method is only available to whitelisted
 users. Using this method carries some risk. Read
-[Overview of Queue Management and queue.yaml](https://cloud.google.com/cloud-tasks/docs/queue-yaml)
+[Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
 carefully and then sign up for
 [whitelist access to this method](https://goo.gl/Fe5mUy).
 
@@ -571,7 +581,7 @@ Queue.QueueState.PAUSED.
 
 WARNING: This method is only available to whitelisted
 users. Using this method carries some risk. Read
-[Overview of Queue Management and queue.yaml](https://cloud.google.com/cloud-tasks/docs/queue-yaml)
+[Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
 carefully and then sign up for
 [whitelist access to this method](https://goo.gl/Fe5mUy).
 
@@ -641,14 +651,14 @@ will be set to Queue.QueueState.RUNNING.
 
 WARNING: This method is only available to whitelisted
 users. Using this method carries some risk. Read
-[Overview of Queue Management and queue.yaml](https://cloud.google.com/cloud-tasks/docs/queue-yaml)
+[Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
 carefully and then sign up for
 [whitelist access to this method](https://goo.gl/Fe5mUy).
 
 WARNING: Resuming many high-QPS queues at the same time can
 lead to target overloading. If you are resuming high-QPS
 queues, follow the 500/50/5 pattern described in
-[Managing Cloud Tasks Scaling Risks](https://cloud.google.com/cloud-tasks/pdfs/managing-cloud-tasks-scaling-risks-2017-06-05.pdf).
+[Managing Cloud Tasks Scaling Risks](/cloud-tasks/pdfs/managing-cloud-tasks-scaling-risks-2017-06-05.pdf).
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesResumeRequest) input message
@@ -675,16 +685,13 @@ queues, follow the 500/50/5 pattern described in
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy for a queue.
+      """Sets the access control policy for a Queue. Replaces any existing.
+policy.
 
-Requires IAM "cloudtasks.queues.setIamPolicy" permission.
+Authorization requires the following [Google IAM](/iam) permission on the
+specified resource parent:
 
-Attempting this RPC on a resource without the needed permission
-will result in a google.rpc.Code.PERMISSION_DENIED
-error. Attempting this RPC on a non-existent resource will result
-in google.rpc.Code.NOT_FOUND if the user has list permission
-on the queues, or a google.rpc.Code.PERMISSION_DENIED
-otherwise.
+* `cloudtasks.queues.setIamPolicy`
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesSetIamPolicyRequest) input message
@@ -711,12 +718,13 @@ otherwise.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns the permissions that a caller has on the specified queue.
+      """Returns permissions that a caller has on a Queue.
+If the resource does not exist, this will return an empty set of
+permissions, not a google.rpc.Code.NOT_FOUND error.
 
-Requires "cloudtasks.queues.list" permission.  Attempting this
-RPC on a non-existent resource will result in
-google.rpc.Code.NOT_FOUND if the user has list permission on
-the queues, or a google.rpc.Code.PERMISSION_DENIED otherwise.
+Note: This operation is designed to be used for building permission-aware
+UIs and command-line tools, not for authorization checking. This operation
+may "fail open" without warning.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest) input message

@@ -119,5 +119,4 @@ def Update(taxonomy_id, annotation_id, description):
   return _GetService().Patch(
       messages.DatapolTaxonomyStoresDataTaxonomiesAnnotationsPatchRequest(
           name=utils.GetAnnotationRelativeName(taxonomy_id, annotation_id),
-          updateAnnotationRequest=messages.UpdateAnnotationRequest(
-              description=description)))
+          annotation=messages.Annotation(description=description)))

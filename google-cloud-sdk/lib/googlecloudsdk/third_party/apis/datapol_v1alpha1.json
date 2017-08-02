@@ -487,6 +487,35 @@
             "ADMIN_ACTIVITY",
             "DATA_ACCESS"
           ]
+        },
+        "authorizationLoggingOptions": {
+          "description": "Information used by the Cloud Audit Logging pipeline.",
+          "$ref": "AuthorizationLoggingOptions"
+        }
+      }
+    },
+    "AuthorizationLoggingOptions": {
+      "id": "AuthorizationLoggingOptions",
+      "description": "Authorization-related information used by Cloud Audit Logging.",
+      "type": "object",
+      "properties": {
+        "permissionType": {
+          "description": "The type of the permission that was checked.",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "A read of admin (meta) data.",
+            "A write of admin (meta) data.",
+            "A read of standard data.",
+            "A write of standard data."
+          ],
+          "type": "string",
+          "enum": [
+            "PERMISSION_TYPE_UNSPECIFIED",
+            "ADMIN_READ",
+            "ADMIN_WRITE",
+            "DATA_READ",
+            "DATA_WRITE"
+          ]
         }
       }
     },
@@ -516,11 +545,11 @@
           "type": "string"
         },
         "storeId": {
-          "description": "Id of the enclosing store. Read-only.",
+          "description": "Id of the enclosing store. Output only.",
           "type": "string"
         },
         "id": {
-          "description": "Id of this taxonomy. Read-only.",
+          "description": "Id of this taxonomy. Output only.",
           "type": "string"
         },
         "displayName": {
@@ -583,7 +612,7 @@
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -592,6 +621,17 @@
               "description": "Properties of the object. Contains field @type with type URL."
             }
           }
+        }
+      }
+    },
+    "CopyDataTaxonomyRequest": {
+      "id": "CopyDataTaxonomyRequest",
+      "description": "Request message for \"DataTaxonomyService.CopyDataTaxonomy\".",
+      "type": "object",
+      "properties": {
+        "sourceTaxonomyName": {
+          "description": "Resource name of the taxonomy to be copied from.",
+          "type": "string"
         }
       }
     },
@@ -623,19 +663,19 @@
           "type": "string"
         },
         "storeId": {
-          "description": "Id of the enclosing store. Read-only.",
+          "description": "Id of the enclosing store. Output only.",
           "type": "string"
         },
         "taxonomyId": {
-          "description": "Id of the enclosing taxonomy. Read-only.",
+          "description": "Id of the enclosing taxonomy. Output only.",
           "type": "string"
         },
         "taxonomyDisplayName": {
-          "description": "Human readable name of the enclosing taxonomy. Read-only.",
+          "description": "Human readable name of the enclosing taxonomy. Output only.",
           "type": "string"
         },
         "id": {
-          "description": "Id of this annotation. Read-only.",
+          "description": "Id of this annotation. Output only.",
           "type": "string"
         },
         "displayName": {
@@ -659,13 +699,17 @@
         }
       }
     },
-    "UpdateAnnotationRequest": {
-      "id": "UpdateAnnotationRequest",
-      "description": "Request message for \"DataAnnotation.UpdateAnnotation\".",
+    "CopyAnnotationRequest": {
+      "id": "CopyAnnotationRequest",
+      "description": "Request message for \"DataAnnotation.CopyAnnotation\".",
       "type": "object",
       "properties": {
-        "description": {
-          "description": "New description of the annotation.",
+        "sourceAnnotationName": {
+          "description": "Resource name of the annotation to be copied from.",
+          "type": "string"
+        },
+        "parentAnnotationId": {
+          "description": "If provided, the copied annotation will be a child annotation of the given\nannotation.",
           "type": "string"
         }
       }
@@ -717,23 +761,23 @@
           "type": "string"
         },
         "storeId": {
-          "description": "Id of the enclosing taxonomy store. Read-only.",
+          "description": "Id of the enclosing taxonomy store. Output only.",
           "type": "string"
         },
         "taxonomyId": {
-          "description": "Id of the taxonomy enclosing the annotation corresponding to this tag.\nRead-only.",
+          "description": "Id of the taxonomy enclosing the annotation corresponding to this tag.\nOutput only.",
           "type": "string"
         },
         "taxonomyDisplayName": {
-          "description": "Human readable name of the taxonomy enclosing the annotation corresponding\nto this tag. Read-only.",
+          "description": "Human readable name of the taxonomy enclosing the annotation corresponding\nto this tag. Output only.",
           "type": "string"
         },
         "annotationId": {
-          "description": "Id of the annotation corresponding to this tag. Read-only.",
+          "description": "Id of the annotation corresponding to this tag. Output only.",
           "type": "string"
         },
         "annotationDisplayName": {
-          "description": "Human readable name of the annotation corresponding to this tag. Read-only.",
+          "description": "Human readable name of the annotation corresponding to this tag. Output\nonly.",
           "type": "string"
         }
       }
@@ -826,30 +870,117 @@
         "description": {
           "description": "Description of the data asset, if available.",
           "type": "string"
+        },
+        "creationTime": {
+          "description": "The creation time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "modificationTime": {
+          "description": "The last modified time.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "TaxonomyReport": {
+      "id": "TaxonomyReport",
+      "description": "A message that represents a taxonomy report.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the taxonomy report, e.g.\ntaxonomyStores\/{store_id}\/taxonomyReports\/{id}",
+          "type": "string"
+        },
+        "storeId": {
+          "description": "The taxonomy store id.",
+          "type": "string"
+        },
+        "id": {
+          "description": "The report id.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "A human-readable display name of the report.",
+          "type": "string"
+        },
+        "description": {
+          "description": "A human-readable description of the report.",
+          "type": "string"
+        },
+        "query": {
+          "description": "The saved search query for this report.",
+          "$ref": "ListAssetsRequest"
+        }
+      }
+    },
+    "ListAssetsRequest": {
+      "id": "ListAssetsRequest",
+      "description": "Request message for \"DataAnnotationTagging.ListAssets\".\nReserve tag 1 for future parent.",
+      "type": "object",
+      "properties": {
+        "annotations": {
+          "description": "Resource names of annotations to be looked up.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "includeAnnotatedByGroup": {
+          "description": "If set to true, for any group annotation, also list data assets that are\nannotated by annotation belongs to this group.",
+          "type": "boolean"
+        },
+        "annotatableOnly": {
+          "description": "If set to true, only returns data assets that are annotatable by the\ncaller.",
+          "type": "boolean"
+        },
+        "filter": {
+          "description": "A filter string that includes additional predicates for data assets.",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "The maximum number of items to return.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "The next_page_token value returned from a previous List request, if any.",
+          "type": "string"
+        }
+      }
+    },
+    "ListTaxonomyReportsResponse": {
+      "id": "ListTaxonomyReportsResponse",
+      "description": "Response message for \"TaxonomyReports.ListTaxonomyReports\".",
+      "type": "object",
+      "properties": {
+        "reports": {
+          "description": "Taxonomy reports that the taxonomy store contains.",
+          "type": "array",
+          "items": {
+            "$ref": "TaxonomyReport"
+          }
         }
       }
     }
   },
   "resources": {
-    "projects": {
+    "taxonomyStores": {
       "methods": {
-        "getDefaultTaxonomyStore": {
-          "id": "datapol.projects.getDefaultTaxonomyStore",
-          "path": "v1alpha1/{+name}",
-          "flatPath": "v1alpha1/projects/{projectsId}/defaultTaxonomyStore",
+        "getDefault": {
+          "id": "datapol.taxonomyStores.getDefault",
+          "path": "v1alpha1/taxonomyStores:getDefault",
+          "flatPath": "v1alpha1/taxonomyStores:getDefault",
           "httpMethod": "GET",
-          "description": "Search for the taxonomy store for the given project.",
+          "description": "Get the taxonomy store that can be used in the given project to create,\nmodify, and use taxonomies.",
           "parameters": {
-            "name": {
-              "description": "[Required] Resource name of the taxonomy store.",
-              "location": "path",
-              "required": true,
-              "pattern": "^projects\/[^\/]+\/defaultTaxonomyStore$",
+            "projectId": {
+              "description": "[Required] project id for getting the taxonomy store.",
+              "location": "query",
               "type": "string"
             }
           },
           "parameterOrder": [
-            "name"
           ],
           "response": {
             "$ref": "TaxonomyStore"
@@ -858,11 +989,25 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/xapi.zoo"
           ]
-        }
-      }
-    },
-    "taxonomyStores": {
-      "methods": {
+        },
+        "getCommon": {
+          "id": "datapol.taxonomyStores.getCommon",
+          "path": "v1alpha1/taxonomyStores:getCommon",
+          "flatPath": "v1alpha1/taxonomyStores:getCommon",
+          "httpMethod": "GET",
+          "description": "Get the read-only taxonomy store with predefined taxonomies. Taxonomies in\nthis store can only be read or copied out.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "TaxonomyStore"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/xapi.zoo"
+          ]
+        },
         "getIamPolicy": {
           "id": "datapol.taxonomyStores.getIamPolicy",
           "path": "v1alpha1/{+resource}:getIamPolicy",
@@ -915,6 +1060,35 @@
           },
           "response": {
             "$ref": "Policy"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/xapi.zoo"
+          ]
+        },
+        "copy": {
+          "id": "datapol.taxonomyStores.copy",
+          "path": "v1alpha1/{+parent}:copy",
+          "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}:copy",
+          "httpMethod": "POST",
+          "description": "Copy a taxonomy to a given taxonomy store. Copy will fail if there is a\ntaxonomy with the same display name in the taxonomy store.",
+          "parameters": {
+            "parent": {
+              "description": "[Required] Resource name of the taxonomy store that the taxonomy is\ncopied to.",
+              "location": "path",
+              "required": true,
+              "pattern": "^taxonomyStores\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "parent"
+          ],
+          "request": {
+            "$ref": "CopyDataTaxonomyRequest"
+          },
+          "response": {
+            "$ref": "DataTaxonomy"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
@@ -999,6 +1173,41 @@
               "parameterOrder": [
                 "name"
               ],
+              "response": {
+                "$ref": "DataTaxonomy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/xapi.zoo"
+              ]
+            },
+            "patch": {
+              "id": "datapol.taxonomyStores.dataTaxonomies.patch",
+              "path": "v1alpha1/{+name}",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}",
+              "httpMethod": "PATCH",
+              "description": "Updates a taxonomy. Currently only support updating descriptions.",
+              "parameters": {
+                "name": {
+                  "description": "[Required] Resource name of the taxonomy to be updated.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask\nWill only update description if update_mask is not provided.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "DataTaxonomy"
+              },
               "response": {
                 "$ref": "DataTaxonomy"
               },
@@ -1101,6 +1310,35 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
               ]
+            },
+            "copy": {
+              "id": "datapol.taxonomyStores.dataTaxonomies.copy",
+              "path": "v1alpha1/{+parent}:copy",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}:copy",
+              "httpMethod": "POST",
+              "description": "Copy an annotation to a given taxonomy. Copy will fail if there is an\nannotation with the same in the taxonomy.",
+              "parameters": {
+                "parent": {
+                  "description": "[Required] Resource name of the taxonomy that the annotation is copied\nto.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "CopyAnnotationRequest"
+              },
+              "response": {
+                "$ref": "Annotation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/xapi.zoo"
+              ]
             }
           }
           ,
@@ -1141,7 +1379,7 @@
                   "path": "v1alpha1/{+name}",
                   "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotations/{annotationsId}",
                   "httpMethod": "PATCH",
-                  "description": "Updates description of an annotation.",
+                  "description": "Updates an annotation. Currently only support updating descriptions.",
                   "parameters": {
                     "name": {
                       "description": "[Required] Resource name of the annotation to be updated.",
@@ -1149,13 +1387,19 @@
                       "required": true,
                       "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+\/annotations\/[^\/]+$",
                       "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask\nWill only update description if update_mask is not provided.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
                     }
                   },
                   "parameterOrder": [
                     "name"
                   ],
                   "request": {
-                    "$ref": "UpdateAnnotationRequest"
+                    "$ref": "Annotation"
                   },
                   "response": {
                     "$ref": "Annotation"
@@ -1257,6 +1501,182 @@
               }
             }
           }
+        },
+        "taxonomyReports": {
+          "methods": {
+            "create": {
+              "id": "datapol.taxonomyStores.taxonomyReports.create",
+              "path": "v1alpha1/{+parent}/taxonomyReports",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomyReports",
+              "httpMethod": "POST",
+              "description": "Creates a taxonomy report.",
+              "parameters": {
+                "parent": {
+                  "description": "The resource parent.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^taxonomyStores\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "TaxonomyReport"
+              },
+              "response": {
+                "$ref": "TaxonomyReport"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/xapi.zoo"
+              ]
+            },
+            "get": {
+              "id": "datapol.taxonomyStores.taxonomyReports.get",
+              "path": "v1alpha1/{+name}",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomyReports/{taxonomyReportsId}",
+              "httpMethod": "GET",
+              "description": "Gets a taxonomy report.",
+              "parameters": {
+                "name": {
+                  "description": "The resource name.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^taxonomyStores\/[^\/]+\/taxonomyReports\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "TaxonomyReport"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/xapi.zoo"
+              ]
+            },
+            "patch": {
+              "id": "datapol.taxonomyStores.taxonomyReports.patch",
+              "path": "v1alpha1/{+name}",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomyReports/{taxonomyReportsId}",
+              "httpMethod": "PATCH",
+              "description": "Updates a taxonomy report.",
+              "parameters": {
+                "name": {
+                  "description": "The resource name.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^taxonomyStores\/[^\/]+\/taxonomyReports\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask\nWill update query, display name and description if update_mask is not\nprovided.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "TaxonomyReport"
+              },
+              "response": {
+                "$ref": "TaxonomyReport"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/xapi.zoo"
+              ]
+            },
+            "delete": {
+              "id": "datapol.taxonomyStores.taxonomyReports.delete",
+              "path": "v1alpha1/{+name}",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomyReports/{taxonomyReportsId}",
+              "httpMethod": "DELETE",
+              "description": "Deletes a taxonomy report.",
+              "parameters": {
+                "name": {
+                  "description": "The resource name.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^taxonomyStores\/[^\/]+\/taxonomyReports\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/xapi.zoo"
+              ]
+            },
+            "list": {
+              "id": "datapol.taxonomyStores.taxonomyReports.list",
+              "path": "v1alpha1/{+parent}/taxonomyReports",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomyReports",
+              "httpMethod": "GET",
+              "description": "Lists all taxonomy reports for the taxonomy store.",
+              "parameters": {
+                "parent": {
+                  "description": "The resource parent.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^taxonomyStores\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListTaxonomyReportsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/xapi.zoo"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "operations": {
+      "methods": {
+        "get": {
+          "id": "datapol.operations.get",
+          "path": "v1alpha1/{+name}",
+          "flatPath": "v1alpha1/operations/{operationsId}",
+          "httpMethod": "GET",
+          "description": "Gets the latest state of a long-running operation.",
+          "parameters": {
+            "name": {
+              "description": "The name of the operation resource.",
+              "location": "path",
+              "required": true,
+              "pattern": "^operations\/.+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/xapi.zoo"
+          ]
         }
       }
     },

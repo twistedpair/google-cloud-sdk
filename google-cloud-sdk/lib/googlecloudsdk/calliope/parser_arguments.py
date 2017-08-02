@@ -22,9 +22,7 @@ import argparse
 from googlecloudsdk.calliope import display_info
 from googlecloudsdk.calliope import parser_completer
 from googlecloudsdk.calliope import parser_errors
-from googlecloudsdk.command_lib.util import deprecated_completers
 from googlecloudsdk.core.cache import completion_cache
-from googlecloudsdk.core.resource import resource_property
 
 
 _MUTEX_GROUP_REQUIRED_DESCRIPTION = 'Exactly one of these must be specified:'
@@ -218,14 +216,6 @@ class ArgumentInterceptor(object):
     suggestion_aliases = kwargs.pop('suggestion_aliases', [])
     # The unbound completer object or raw argcomplete completer function).
     completer = kwargs.pop('completer', None)
-    # The resource name for the purposes of doing remote completion.
-    completion_resource = kwargs.pop('completion_resource', None)
-    # An explicit command to run for remote completion instead of the default
-    # for this resource type.
-    list_command_path = kwargs.pop('list_command_path', None)
-    # Callback function that receives the currently entered args at the time of
-    # remote completion processing, and returns the command to run.
-    list_command_callback_fn = kwargs.pop('list_command_callback_fn', None)
     # hidden=True => help=argparse.SUPPRESS, but retains help in the source.
     if kwargs.pop('hidden', False):
       kwargs['help'] = argparse.SUPPRESS
@@ -290,14 +280,7 @@ class ArgumentInterceptor(object):
       added_argument = self.parser.AddRemainderArgument(*args, **kwargs)
     else:
       added_argument = self.parser.add_argument(*args, **kwargs)
-    self._AttachCompleter(
-        added_argument,
-        name,
-        completer,
-        positional,
-        deprecated_collection=completion_resource,
-        deprecated_list_command=list_command_path,
-        deprecated_list_command_callback=list_command_callback_fn)
+    self._AttachCompleter(added_argument, completer, positional)
     if positional:
       if category:
         raise parser_errors.ArgumentException(
@@ -485,57 +468,16 @@ class ArgumentInterceptor(object):
     return False, None
 
   # TODO(b/38374705): Drop the deprecated code.
-  def _AttachCompleter(self, arg, name, completer, positional,
-                       deprecated_collection=None,
-                       deprecated_list_command=None,
-                       deprecated_list_command_callback=None):
+  def _AttachCompleter(self, arg, completer, positional):
     """Attaches a completer to arg if one is specified.
 
     Args:
       arg: The argument to attach the completer to.
-      name: The arg name for messaging.
       completer: The completer Completer class or argcomplete function object.
       positional: True if argument is a positional.
-      deprecated_collection: The collection name for the resource to complete.
-      deprecated_list_command: The command whose Run() method returns the
-        current resource list.
-      deprecated_list_command_callback: A callback function that returns the
-        list command to run.
     """
     if not completer:
-      if not deprecated_collection:
-        if deprecated_list_command or deprecated_list_command_callback:
-          raise parser_errors.ArgumentException(
-              'Command [{}] argument [{}] does not have completion_resource '
-              'set but has one or more of the deprecated list_command_path '
-              'and list_command_callback_fn attributes.'.format(
-                  ' '.join(self.data.command_name), name))
-        return
-
-      class DeprecatedCompleter(
-          deprecated_completers.DeprecatedListCommandCompleter):
-
-        def __init__(self, **kwargs):
-          super(DeprecatedCompleter, self).__init__(
-              collection=deprecated_collection,
-              list_command=deprecated_list_command,
-              list_command_callback=deprecated_list_command_callback,
-              **kwargs)
-
-      DeprecatedCompleter.__name__ = (
-          resource_property.ConvertToCamelCase(
-              deprecated_collection.capitalize().replace('.', '_')) +
-          'DeprecatedCompleter')
-
-      completer = DeprecatedCompleter
-    elif (deprecated_collection or
-          deprecated_list_command or
-          deprecated_list_command_callback):
-      raise parser_errors.ArgumentException(
-          'Command [{}] argument [{}] has a completer set with one or more '
-          'of the deprecated completion_resource, list_command_path, and '
-          'list_command_callback_fn attributes.'.format(
-              ' '.join(self.data.command_name), name))
+      return
     if isinstance(completer, type):
       # A completer class that will be instantiated at completion time.
       if positional and issubclass(completer, completion_cache.Completer):

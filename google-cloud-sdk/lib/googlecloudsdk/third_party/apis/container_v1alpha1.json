@@ -724,7 +724,7 @@
           "type": "boolean"
         },
         "subnetworkName": {
-          "description": "A custom subnetwork name to be used if `create_subnetwork` is true.  If\nthis field is empty, then an automatic name will choosen for the new\nsubnetwork.",
+          "description": "A custom subnetwork name to be used if `create_subnetwork` is true.  If\nthis field is empty, then an automatic name will be chosen for the new\nsubnetwork.",
           "type": "string"
         },
         "clusterIpv4Cidr": {

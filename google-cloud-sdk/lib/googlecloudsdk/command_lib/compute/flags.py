@@ -325,6 +325,110 @@ class ResourceResolver(object):
       scopes.AddScope(scope, resource)
     return ResourceResolver(scopes, resource_name)
 
+  def _ValidateNames(self, names):
+    if not isinstance(names, list):
+      raise BadArgumentException(
+          'Expected names to be a list but it is {0!r}'.format(names))
+
+  def _ValidateDefaultScope(self, default_scope):
+    if default_scope is not None and default_scope not in self.scopes:
+      raise BadArgumentException(
+          'Unexpected value for default_scope {0}, expected None or {1}'
+          .format(default_scope,
+                  ' or '.join([s.scope_enum.name for s in self.scopes])))
+
+  def _GetResourceScopeParam(
+      self, resource_scope, scope_value, project, api_resource_registry):
+    if scope_value is not None:
+      if resource_scope.scope_enum == compute_scope.ScopeEnum.GLOBAL:
+        return None
+      else:
+        collection = compute_scope.ScopeEnum.CollectionForScope(
+            resource_scope.scope_enum)
+        return api_resource_registry.Parse(
+            scope_value,
+            params={'project': project},
+            collection=collection).Name()
+    else:
+      if resource_scope and (
+          resource_scope.scope_enum != compute_scope.ScopeEnum.GLOBAL):
+        return resource_scope.scope_enum.property_func
+
+  def _GetRefsAndUnderspecifiedNames(
+      self, names, params, collection, scope_defined, api_resource_registry):
+    """Returns pair of lists: resolved references and unresolved names.
+
+    Args:
+      names: list of names to attempt resolving
+      params: params given when attempting to resolve references
+      collection: collection for the names
+      scope_defined: bool, whether scope is known
+      api_resource_registry: Registry object
+    """
+    refs = []
+    underspecified_names = []
+    for name in names:
+      try:
+        # Make each element an array so that we can do in place updates.
+        ref = [api_resource_registry.Parse(name, params=params,
+                                           collection=collection,
+                                           enforce_collection=False)]
+      except (resources.UnknownCollectionException,
+              resources.RequiredFieldOmittedException,
+              properties.RequiredPropertyError):
+        if scope_defined:
+          raise
+        ref = [name]
+        underspecified_names.append(ref)
+      refs.append(ref)
+    return refs, underspecified_names
+
+  def _ResolveUnderspecifiedNames(
+      self, underspecified_names, default_scope, scope_lister, project,
+      api_resource_registry):
+    """Attempt to resolve scope for unresolved names.
+
+    If unresolved_names was generated with _GetRefsAndUnderspecifiedNames
+    changing them will change corresponding elements of refs list.
+
+    Args:
+      underspecified_names: list of one-items lists containing str
+      default_scope: default scope for the resources
+      scope_lister: callback used to list potential scopes for the resources
+      project: str, id of the project
+      api_resource_registry: resources Registry
+
+    Raises:
+      UnderSpecifiedResourceError: when resource scope can't be resolved.
+    """
+    if not underspecified_names:
+      return
+
+    names = [n[0] for n in underspecified_names]
+
+    if not console_io.CanPrompt():
+      raise UnderSpecifiedResourceError(names, [s.flag for s in self.scopes])
+
+    resource_scope_enum, scope_value = scope_prompter.PromptForScope(
+        self.resource_name, names, [s.scope_enum for s in self.scopes],
+        default_scope.scope_enum if default_scope is not None else None,
+        scope_lister)
+    if resource_scope_enum is None:
+      raise UnderSpecifiedResourceError(names, [s.flag for s in self.scopes])
+
+    resource_scope = self.scopes[resource_scope_enum]
+    params = {'project': project,}
+
+    if resource_scope.scope_enum != compute_scope.ScopeEnum.GLOBAL:
+      params[resource_scope.scope_enum.param_name] = scope_value
+
+    for name in underspecified_names:
+      name[0] = api_resource_registry.Parse(
+          name[0],
+          params=params,
+          collection=resource_scope.collection,
+          enforce_collection=True)
+
   def ResolveResources(self,
                        names,
                        resource_scope,
@@ -363,83 +467,37 @@ class ResourceResolver(object):
       UnderSpecifiedResourceError: if it was not possible to resolve given names
           as resources references.
     """
-    if not isinstance(names, list):
-      raise BadArgumentException(
-          'Expected names to be a list but it is {0!r}'.format(names))
+    self._ValidateNames(names)
+    self._ValidateDefaultScope(default_scope)
     if resource_scope is not None:
       resource_scope = self.scopes[resource_scope]
     if default_scope is not None:
-      if default_scope not in self.scopes:
-        raise BadArgumentException(
-            'Unexpected value for default_scope {0}, expected None or {1}'
-            .format(default_scope,
-                    ' or '.join([s.scope_enum.name for s in self.scopes])))
       default_scope = self.scopes[default_scope]
+    project = properties.VALUES.core.project.GetOrFail
     params = {
-        'project': properties.VALUES.core.project.GetOrFail,
+        'project': project,
     }
-    if scope_value is not None:
-      if resource_scope.scope_enum == compute_scope.ScopeEnum.GLOBAL:
-        stored_value = scope_value
-      else:
-        collection = compute_scope.ScopeEnum.CollectionForScope(
-            resource_scope.scope_enum)
-        stored_value = api_resource_registry.Parse(
-            scope_value,
-            params=params,
-            collection=collection).Name()
-        params[resource_scope.scope_enum.param_name] = stored_value
-    else:
+    if scope_value is None:
       resource_scope = self.scopes.GetImplicitScope(default_scope)
-      if resource_scope and (
-          resource_scope.scope_enum != compute_scope.ScopeEnum.GLOBAL):
-        params[resource_scope.scope_enum.param_name] = (
-            resource_scope.scope_enum.property_func)
+
+    resource_scope_param = self._GetResourceScopeParam(
+        resource_scope, scope_value, project, api_resource_registry)
+    if resource_scope_param is not None:
+      params[resource_scope.scope_enum.param_name] = resource_scope_param
 
     collection = resource_scope and resource_scope.collection
 
     # See if we can resolve names with so far deduced scope and its value.
-    refs = []
-    underspecified_names = []
-    for name in names:
-      try:
-        # Make each element an array so that we can do in place updates.
-        ref = [api_resource_registry.Parse(name, params=params,
-                                           collection=collection,
-                                           enforce_collection=False)]
-      except (resources.UnknownCollectionException,
-              resources.RequiredFieldOmittedException,
-              properties.RequiredPropertyError):
-        if scope_value:
-          raise
-        ref = [name]
-        underspecified_names.append(ref)
-      refs.append(ref)
+    refs, underspecified_names = self._GetRefsAndUnderspecifiedNames(
+        names, params, collection, scope_value is not None,
+        api_resource_registry)
 
     # If we still have some resources which need to be resolve see if we can
     # prompt the user and try to resolve these again.
-    if underspecified_names:
-      names = [n[0] for n in underspecified_names]
-      if not console_io.CanPrompt():
-        raise UnderSpecifiedResourceError(names, [s.flag for s in self.scopes])
-      resource_scope_enum, scope_value = scope_prompter.PromptForScope(
-          self.resource_name, names, [s.scope_enum for s in self.scopes],
-          default_scope.scope_enum if default_scope is not None else None,
-          scope_lister)
-      if resource_scope_enum is None:
-        raise UnderSpecifiedResourceError(names, [s.flag for s in self.scopes])
-      resource_scope = self.scopes[resource_scope_enum]
-      params = {
-          'project': properties.VALUES.core.project.GetOrFail,
-      }
-      if resource_scope.scope_enum != compute_scope.ScopeEnum.GLOBAL:
-        params[resource_scope.scope_enum.param_name] = scope_value
-      for name in underspecified_names:
-        name[0] = api_resource_registry.Parse(
-            name[0],
-            params=params,
-            collection=resource_scope.collection,
-            enforce_collection=True)
+    self._ResolveUnderspecifiedNames(
+        underspecified_names, default_scope, scope_lister, project,
+        api_resource_registry)
+
     # Now unpack each element.
     refs = [ref[0] for ref in refs]
 

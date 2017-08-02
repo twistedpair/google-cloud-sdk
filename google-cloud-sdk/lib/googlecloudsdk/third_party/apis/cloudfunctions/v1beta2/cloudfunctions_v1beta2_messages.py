@@ -49,6 +49,9 @@ class CloudFunction(_messages.Message):
       written.
     StatusValueValuesEnum: Output only. Status of the function deployment.
 
+  Messages:
+    LabelsValue: Labels associated with this Cloud Function.
+
   Fields:
     availableMemoryMb: The amount of memory in MB available for a function.
       Defaults to 256MB.
@@ -62,6 +65,7 @@ class CloudFunction(_messages.Message):
       another service.
     httpsTrigger: An HTTPS endpoint type of source that can be triggered via
       URL.
+    labels: Labels associated with this Cloud Function.
     language: The programming language in which the function is written.
     latestOperation: Output only. Name of the most recent operation modifying
       the function. If the function status is `DEPLOYING` or `DELETING`, then
@@ -122,22 +126,47 @@ class CloudFunction(_messages.Message):
     DEPLOYING = 3
     DELETING = 4
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels associated with this Cloud Function.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   entryPoint = _messages.StringField(2)
   eventTrigger = _messages.MessageField('EventTrigger', 3)
   httpsTrigger = _messages.MessageField('HTTPSTrigger', 4)
-  language = _messages.EnumField('LanguageValueValuesEnum', 5)
-  latestOperation = _messages.StringField(6)
-  name = _messages.StringField(7)
-  serviceAccount = _messages.StringField(8)
-  sourceArchiveUrl = _messages.StringField(9)
-  sourceRepository = _messages.MessageField('SourceRepository', 10)
-  sourceRepositoryUrl = _messages.StringField(11)
-  sourceUploadUrl = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  timeout = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  versionId = _messages.IntegerField(16)
+  labels = _messages.MessageField('LabelsValue', 5)
+  language = _messages.EnumField('LanguageValueValuesEnum', 6)
+  latestOperation = _messages.StringField(7)
+  name = _messages.StringField(8)
+  serviceAccount = _messages.StringField(9)
+  sourceArchiveUrl = _messages.StringField(10)
+  sourceRepository = _messages.MessageField('SourceRepository', 11)
+  sourceRepositoryUrl = _messages.StringField(12)
+  sourceUploadUrl = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  timeout = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  versionId = _messages.IntegerField(17)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):

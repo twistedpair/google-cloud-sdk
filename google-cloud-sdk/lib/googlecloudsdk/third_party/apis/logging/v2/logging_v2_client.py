@@ -232,6 +232,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.
+
+      Args:
+        request: (LoggingBillingAccountsSinksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogSink) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}',
+        http_method=u'PATCH',
+        method_id=u'logging.billingAccounts.sinks.patch',
+        ordered_params=[u'sinkName'],
+        path_params=[u'sinkName'],
+        query_params=[u'uniqueWriterIdentity'],
+        relative_path=u'v2/{+sinkName}',
+        request_field=u'logSink',
+        request_type_name=u'LoggingBillingAccountsSinksPatchRequest',
+        response_type_name=u'LogSink',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.
 
@@ -513,6 +540,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.
+
+      Args:
+        request: (LoggingFoldersSinksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogSink) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/folders/{foldersId}/sinks/{sinksId}',
+        http_method=u'PATCH',
+        method_id=u'logging.folders.sinks.patch',
+        ordered_params=[u'sinkName'],
+        path_params=[u'sinkName'],
+        query_params=[u'uniqueWriterIdentity'],
+        relative_path=u'v2/{+sinkName}',
+        request_field=u'logSink',
+        request_type_name=u'LoggingFoldersSinksPatchRequest',
+        response_type_name=u'LogSink',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.
 
@@ -765,6 +819,33 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'LoggingOrganizationsSinksListRequest',
         response_type_name=u'ListSinksResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.
+
+      Args:
+        request: (LoggingOrganizationsSinksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogSink) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/sinks/{sinksId}',
+        http_method=u'PATCH',
+        method_id=u'logging.organizations.sinks.patch',
+        ordered_params=[u'sinkName'],
+        path_params=[u'sinkName'],
+        query_params=[u'uniqueWriterIdentity'],
+        relative_path=u'v2/{+sinkName}',
+        request_field=u'logSink',
+        request_type_name=u'LoggingOrganizationsSinksPatchRequest',
+        response_type_name=u'LogSink',
         supports_download=False,
     )
 
@@ -1129,6 +1210,33 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'LoggingProjectsSinksListRequest',
         response_type_name=u'ListSinksResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.
+
+      Args:
+        request: (LoggingProjectsSinksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogSink) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/sinks/{sinksId}',
+        http_method=u'PATCH',
+        method_id=u'logging.projects.sinks.patch',
+        ordered_params=[u'sinkName'],
+        path_params=[u'sinkName'],
+        query_params=[u'uniqueWriterIdentity'],
+        relative_path=u'v2/{+sinkName}',
+        request_field=u'logSink',
+        request_type_name=u'LoggingProjectsSinksPatchRequest',
+        response_type_name=u'LogSink',
         supports_download=False,
     )
 

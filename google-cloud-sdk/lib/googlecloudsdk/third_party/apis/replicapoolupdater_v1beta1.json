@@ -4,7 +4,7 @@
  "id": "replicapoolupdater:v1beta1",
  "name": "replicapoolupdater",
  "version": "v1beta1",
- "revision": "20170623",
+ "revision": "20170724",
  "title": "Google Compute Engine Instance Group Updater API",
  "description": "[Deprecated. Please use compute.instanceGroupManagers.update method. replicapoolupdater API will be disabled after December 30th, 2016] Updates groups of Compute Engine instances.",
  "ownerDomain": "google.com",

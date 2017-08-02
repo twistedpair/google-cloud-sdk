@@ -233,6 +233,11 @@ class BuildStep(_messages.Message):
     secretEnv: A list of environment variables which are encrypted using a
       Cloud KMS crypto key. These values must be specified in the build's
       secrets.
+    volumes: List of volumes to mount into the build step.  Each volume will
+      be created as an empty volume prior to execution of the build step. Upon
+      completion of the build, volumes and their contents will be discarded.
+      Using a named volume in only one step is not valid as it is indicative
+      of a mis-configured build request.
     waitFor: The ID(s) of the step(s) that this build step depends on. This
       build step will not start until all the build steps in wait_for have
       completed successfully. If wait_for is empty, this build step will start
@@ -247,7 +252,8 @@ class BuildStep(_messages.Message):
   id = _messages.StringField(5)
   name = _messages.StringField(6)
   secretEnv = _messages.StringField(7, repeated=True)
-  waitFor = _messages.StringField(8, repeated=True)
+  volumes = _messages.MessageField('Volume', 8, repeated=True)
+  waitFor = _messages.StringField(9, repeated=True)
 
 
 class BuildTrigger(_messages.Message):
@@ -995,6 +1001,23 @@ class StorageSource(_messages.Message):
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
+
+
+class Volume(_messages.Message):
+  """Volume describes a Docker container volume which is mounted into build
+  steps in order to persist files across build step execution.
+
+  Fields:
+    name: Name of the volume to mount.  Volume names must be unique per build
+      step and must be valid names for Docker volumes. Each named volume must
+      be used by at least two build steps.
+    path: Path at which to mount the volume.  Paths must be absolute and
+      cannot conflict with other volume paths on the same build step or with
+      certain reserved volume paths.
+  """
+
+  name = _messages.StringField(1)
+  path = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -25,6 +25,7 @@ import argcomplete
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import backend
 from googlecloudsdk.calliope import base as calliope_base
+from googlecloudsdk.calliope import command_loading
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.core import config
@@ -111,7 +112,7 @@ class CLILoader(object):
     self.__name = name
     self.__command_root_directory = command_root_directory
     if not self.__command_root_directory:
-      raise backend.LayoutException(
+      raise command_loading.LayoutException(
           'You must specify a command root directory.')
 
     self.__allow_non_existing_modules = allow_non_existing_modules
@@ -306,7 +307,7 @@ class CLILoader(object):
               # might not be enabled for that particular release channel, so it
               # is valid to not exist.
               continue
-            exception_if_present = backend.LayoutException(
+            exception_if_present = command_loading.LayoutException(
                 'Root [{root}] for command group [{group}] does not exist.'
                 .format(root=root, group=name))
 
@@ -327,7 +328,7 @@ class CLILoader(object):
           elif component:
             prefix = track.prefix + '.' if track.prefix else ''
             self.__missing_components[prefix + module_dot_path] = component
-      except backend.CommandLoadFailure as e:
+      except command_loading.CommandLoadFailure as e:
         log.exception(e)
 
     cli = self.__MakeCLI(top_group)
@@ -394,7 +395,7 @@ class CLILoader(object):
     if not pkg_resources.IsImportable(module, module_root):
       if allow_non_existing_modules:
         return None
-      raise backend.LayoutException(
+      raise command_loading.LayoutException(
           'The given module directory does not exist: {0}'.format(
               module_dir_path))
     elif exception_if_present:

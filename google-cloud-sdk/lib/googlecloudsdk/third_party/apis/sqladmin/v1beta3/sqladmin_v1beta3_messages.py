@@ -536,8 +536,7 @@ class IpConfiguration(_messages.Message):
       'slash' notation (e.g. 192.168.100.0/24).
     enabled: Whether the instance should be assigned an IP address or not.
     kind: This is always sql#ipConfiguration.
-    requireSsl: Whether the mysqld should default to 'REQUIRE X509' for users
-      connecting over IP.
+    requireSsl: Whether SSL connections over IP should be enforced or not.
   """
 
   authorizedNetworks = _messages.StringField(1, repeated=True)

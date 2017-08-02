@@ -67,6 +67,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.regions = self.RegionsService(self)
     self.routers = self.RoutersService(self)
     self.routes = self.RoutesService(self)
+    self.securityPolicies = self.SecurityPoliciesService(self)
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
     self.subnetworks = self.SubnetworksService(self)
@@ -934,6 +935,32 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path=u'projects/{project}/global/backendServices/{backendService}',
         request_field=u'backendServiceResource',
         request_type_name=u'ComputeBackendServicesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetSecurityPolicy(self, request, global_params=None):
+      """Sets the security policy for the specified backend service.
+
+      Args:
+        request: (ComputeBackendServicesSetSecurityPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSecurityPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSecurityPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.backendServices.setSecurityPolicy',
+        ordered_params=[u'project', u'backendService'],
+        path_params=[u'backendService', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/backendServices/{backendService}/setSecurityPolicy',
+        request_field=u'securityPolicyReference',
+        request_type_name=u'ComputeBackendServicesSetSecurityPolicyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -6844,6 +6871,172 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/global/routes/{resource}/testIamPermissions',
         request_field=u'testPermissionsRequest',
         request_type_name=u'ComputeRoutesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class SecurityPoliciesService(base_api.BaseApiService):
+    """Service class for the securityPolicies resource."""
+
+    _NAME = u'securityPolicies'
+
+    def __init__(self, client):
+      super(ComputeBeta.SecurityPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified policy.
+
+      Args:
+        request: (ComputeSecurityPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.securityPolicies.delete',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}',
+        request_field='',
+        request_type_name=u'ComputeSecurityPoliciesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """List all of the ordered rules present in a single specified policy.
+
+      Args:
+        request: (ComputeSecurityPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.securityPolicies.get',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}',
+        request_field='',
+        request_type_name=u'ComputeSecurityPoliciesGetRequest',
+        response_type_name=u'SecurityPolicy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a new policy in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeSecurityPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.securityPolicies.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/securityPolicies',
+        request_field=u'securityPolicy',
+        request_type_name=u'ComputeSecurityPoliciesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """List all the policies that have been configured for the specified project.
+
+      Args:
+        request: (ComputeSecurityPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPoliciesList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.securityPolicies.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/securityPolicies',
+        request_field='',
+        request_type_name=u'ComputeSecurityPoliciesListRequest',
+        response_type_name=u'SecurityPoliciesList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Patches the specified policy with the data included in the request.
+
+      Args:
+        request: (ComputeSecurityPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.securityPolicies.patch',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}',
+        request_field=u'securityPolicyResource',
+        request_type_name=u'ComputeSecurityPoliciesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeSecurityPoliciesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.securityPolicies.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/securityPolicies/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeSecurityPoliciesTestIamPermissionsRequest',
         response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )

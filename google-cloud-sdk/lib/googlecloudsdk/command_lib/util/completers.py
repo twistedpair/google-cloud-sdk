@@ -256,7 +256,7 @@ class ListCommandCompleter(ResourceCompleter):
     for name in (self._flags +
                  [parameter.name for parameter in self.parameters] +
                  parameter_info.GetAdditionalParams()):
-      flag = parameter_info.GetFlag(name)
+      flag = parameter_info.GetFlag(name, check_properties=False)
       if flag:
         flag_name = _FlagName(flag)
         if flag_name not in flags:

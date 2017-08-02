@@ -363,6 +363,130 @@ class GoogleCloudVideointelligenceV1beta1LabelLocation(_messages.Message):
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1beta1VideoSegment', 3)
 
 
+class GoogleCloudVideointelligenceV1beta1SafeSearchAnnotation(_messages.Message):
+  """Safe search annotation (based on per-frame visual signals only). If no
+  unsafe content has been detected in a frame, no annotations are present for
+  that frame. If only some types of unsafe content have been detected in a
+  frame, the likelihood is set to `UNKNOWN` for all other types of unsafe
+  content.
+
+  Enums:
+    AdultValueValuesEnum: Likelihood of adult content.
+    MedicalValueValuesEnum: Likelihood of medical content.
+    RacyValueValuesEnum: Likelihood of racy content.
+    SpoofValueValuesEnum: Likelihood that an obvious modification was made to
+      the original version to make it appear funny or offensive.
+    ViolentValueValuesEnum: Likelihood of violent content.
+
+  Fields:
+    adult: Likelihood of adult content.
+    medical: Likelihood of medical content.
+    racy: Likelihood of racy content.
+    spoof: Likelihood that an obvious modification was made to the original
+      version to make it appear funny or offensive.
+    timeOffset: Video time offset in microseconds.
+    violent: Likelihood of violent content.
+  """
+
+  class AdultValueValuesEnum(_messages.Enum):
+    """Likelihood of adult content.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: Very unlikely.
+      UNLIKELY: Unlikely.
+      POSSIBLE: Possible.
+      LIKELY: Likely.
+      VERY_LIKELY: Very likely.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class MedicalValueValuesEnum(_messages.Enum):
+    """Likelihood of medical content.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: Very unlikely.
+      UNLIKELY: Unlikely.
+      POSSIBLE: Possible.
+      LIKELY: Likely.
+      VERY_LIKELY: Very likely.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class RacyValueValuesEnum(_messages.Enum):
+    """Likelihood of racy content.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: Very unlikely.
+      UNLIKELY: Unlikely.
+      POSSIBLE: Possible.
+      LIKELY: Likely.
+      VERY_LIKELY: Very likely.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class SpoofValueValuesEnum(_messages.Enum):
+    """Likelihood that an obvious modification was made to the original
+    version to make it appear funny or offensive.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: Very unlikely.
+      UNLIKELY: Unlikely.
+      POSSIBLE: Possible.
+      LIKELY: Likely.
+      VERY_LIKELY: Very likely.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class ViolentValueValuesEnum(_messages.Enum):
+    """Likelihood of violent content.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: Very unlikely.
+      UNLIKELY: Unlikely.
+      POSSIBLE: Possible.
+      LIKELY: Likely.
+      VERY_LIKELY: Very likely.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  adult = _messages.EnumField('AdultValueValuesEnum', 1)
+  medical = _messages.EnumField('MedicalValueValuesEnum', 2)
+  racy = _messages.EnumField('RacyValueValuesEnum', 3)
+  spoof = _messages.EnumField('SpoofValueValuesEnum', 4)
+  timeOffset = _messages.IntegerField(5)
+  violent = _messages.EnumField('ViolentValueValuesEnum', 6)
+
+
 class GoogleCloudVideointelligenceV1beta1VideoAnnotationProgress(_messages.Message):
   """Annotation progress for a single video.
 
@@ -391,6 +515,7 @@ class GoogleCloudVideointelligenceV1beta1VideoAnnotationResults(_messages.Messag
       Storage](https://cloud.google.com/storage/).
     labelAnnotations: Label annotations. There is exactly one element for each
       unique label.
+    safeSearchAnnotations: Safe search annotations.
     shotAnnotations: Shot annotations. Each shot is represented as a video
       segment.
   """
@@ -398,7 +523,8 @@ class GoogleCloudVideointelligenceV1beta1VideoAnnotationResults(_messages.Messag
   error = _messages.MessageField('GoogleRpcStatus', 1)
   inputUri = _messages.StringField(2)
   labelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta1LabelAnnotation', 3, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta1VideoSegment', 4, repeated=True)
+  safeSearchAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta1SafeSearchAnnotation', 4, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta1VideoSegment', 5, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1beta1VideoSegment(_messages.Message):
@@ -587,7 +713,7 @@ class GoogleRpcStatus(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details.  There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

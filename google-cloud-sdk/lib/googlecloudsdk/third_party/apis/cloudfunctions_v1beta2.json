@@ -315,6 +315,13 @@
           "description": "Output only. Google internal. The version of a Cloud Function.",
           "type": "string",
           "format": "int64"
+        },
+        "labels": {
+          "description": "Labels associated with this Cloud Function.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

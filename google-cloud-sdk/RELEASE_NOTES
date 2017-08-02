@@ -2,6 +2,51 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 165.0.0 (2017-08-02)
+
+### Breaking Changes
+
+*   **(DEPRECATED)** Deprecated `names`, `--regions` and `--regexp` flags for
+    the following commands. Use `--filter` instead.
+
+    * `gcloud compute target-vpn-gateways list`
+    * `gcloud compute target-pools list`
+    * `gcloud compute vpn-tunnels list`
+    * `gcloud compute commitments list`
+
+### Google Cloud Bigquery
+
+*   Changed the structure of the `bq ls` command output when the `format` flag
+    is set to `json`, `prettyjson` or `csv`.
+*   Added `--schema` option to `bq show` command that outputs the
+    JSON-formatted schema for a table, suitable for use as a schema input
+    file for `bq load` or `bq mk --schema`.
+
+
+### Google Cloud Functions
+
+*   Added `--source` flag to alpha and beta functions deploy commands.
+
+### Google Cloud IAM
+
+*   `gcloud beta iam roles` command group is now available. These commands
+    allow you to create and manipulate IAM predefined/custom roles:
+
+    * `gcloud beta iam roles create`
+    * `gcloud beta iam roles describe`
+    * `gcloud beta iam roles update`
+    * `gcloud beta iam roles copy`
+    * `gcloud beta iam roles list`
+    * `gcloud beta iam roles delete`
+    * `gcloud beta iam roles undelete`
+
+*   `gcloud beta iam list-testable-permissions` is now available. This command
+    allows you to list all the permissions that apply to the given resource,
+    which also includes the `customRolesSupportLevel` field.
+
+### Google Container Engine
+
+*   Updated Google Container Engine's `kubectl` from version 1.7.0 to 1.7.2.
 
 ## 164.0.0 (2017-07-26)
 

@@ -58,6 +58,16 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.StringField(2)
 
 
+class AuthorizationLoggingOptions(_messages.Message):
+  """Authorization-related information used by Cloud Audit Logging.
+
+  Fields:
+    permissionType: The type of the permission that was checked.
+  """
+
+  permissionType = _messages.StringField(1)
+
+
 class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
@@ -855,10 +865,13 @@ class LogConfigCloudAuditOptions(_messages.Message):
   """Write a Cloud Audit log
 
   Fields:
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
     logName: The log_name to populate in the Cloud Audit Record.
   """
 
-  logName = _messages.StringField(1)
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
+  logName = _messages.StringField(2)
 
 
 class LogConfigCounterOptions(_messages.Message):

@@ -191,6 +191,10 @@ class RecognitionConfig(_messages.Message):
       `RecognitionAudio` messages.
 
   Fields:
+    enableWordTimeOffsets: *Optional* If `true`, a list of `words` are
+      returned in the top result, containing the start and end timestamps for
+      those words. The default value, 'false' does not return any word-level
+      timing information.
     encoding: *Required* Encoding of audio data sent in all `RecognitionAudio`
       messages.
     languageCode: *Required* The language of the supplied audio as a
@@ -263,12 +267,13 @@ class RecognitionConfig(_messages.Message):
     OGG_OPUS = 6
     SPEEX_WITH_HEADER_BYTE = 7
 
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 1)
-  languageCode = _messages.StringField(2)
-  maxAlternatives = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  profanityFilter = _messages.BooleanField(4)
-  sampleRateHertz = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 6, repeated=True)
+  enableWordTimeOffsets = _messages.BooleanField(1)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 2)
+  languageCode = _messages.StringField(3)
+  maxAlternatives = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  profanityFilter = _messages.BooleanField(5)
+  sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 7, repeated=True)
 
 
 class RecognizeRequest(_messages.Message):
@@ -376,10 +381,13 @@ class SpeechRecognitionAlternative(_messages.Message):
       indicating `confidence` was not set.
     transcript: *Output-only* Transcript text representing the words that the
       user spoke.
+    words: *Output-only* List of word-specific information for each recognized
+      word.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   transcript = _messages.StringField(2)
+  words = _messages.MessageField('WordInfo', 3, repeated=True)
 
 
 class SpeechRecognitionResult(_messages.Message):
@@ -502,7 +510,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details.  There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -538,6 +546,28 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class WordInfo(_messages.Message):
+  """Word-specific information detected along with speech recognition when
+  certain request parameters are set.
+
+  Fields:
+    endTime: *Output-only* Time offset relative to the beginning of the audio,
+      and corresponding to the end of the spoken word. This field is only set
+      if `enable_word_time_offsets=true` and only in the top hypothesis. This
+      is an experimental feature and the accuracy of the time offset can vary.
+    startTime: *Output-only* Time offset relative to the beginning of the
+      audio, and corresponding to the start of the spoken word. This field is
+      only set if `enable_word_time_offsets=true` and only in the top
+      hypothesis. This is an experimental feature and the accuracy of the time
+      offset can vary.
+    word: *Output-only* The word corresponding to this set of information.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+  word = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

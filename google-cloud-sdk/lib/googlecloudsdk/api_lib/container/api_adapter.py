@@ -203,7 +203,8 @@ class CreateClusterOptions(object):
                services_ipv4_cidr=None,
                enable_ip_alias=None,
                create_subnetwork=None,
-               accelerators=None):
+               accelerators=None,
+               enable_audit_logging=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -243,6 +244,7 @@ class CreateClusterOptions(object):
     self.enable_ip_alias = enable_ip_alias
     self.create_subnetwork = create_subnetwork
     self.accelerators = accelerators
+    self.enable_audit_logging = enable_audit_logging
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -370,13 +372,13 @@ class APIAdapter(object):
         collection='container.projects.zones.clusters')
 
   def PrintClusters(self, clusters):
-    raise NotImplementedError('PrintClusters is not overriden')
+    raise NotImplementedError('PrintClusters is not overridden')
 
   def PrintOperations(self, operations):
-    raise NotImplementedError('PrintOperations is not overriden')
+    raise NotImplementedError('PrintOperations is not overridden')
 
   def PrintNodePools(self, node_pools):
-    raise NotImplementedError('PrintNodePools is not overriden')
+    raise NotImplementedError('PrintNodePools is not overridden')
 
   def ParseOperation(self, operation_id, location):
     # TODO(b/63383536): Migrate to container.projects.locations.operations when
@@ -713,6 +715,10 @@ class APIAdapter(object):
           enabled=options.enable_network_policy,
           provider=self.messages.NetworkPolicy.ProviderValueValuesEnum.CALICO)
 
+    if options.enable_audit_logging:
+      cluster.auditConfig = self.messages.AuditConfig(
+          enabled=options.enable_audit_logging)
+
     if options.labels is not None:
       labels = self.messages.Cluster.ResourceLabelsValue()
       props = []
@@ -760,7 +766,7 @@ class APIAdapter(object):
     return cluster
 
   def CreateCluster(self, cluster_ref, options):
-    raise NotImplementedError('CreateCluster is not overriden')
+    raise NotImplementedError('CreateCluster is not overridden')
 
   def UpdateClusterCommon(self, options):
     """Returns an UpdateCluster operation."""
@@ -813,10 +819,10 @@ class APIAdapter(object):
     return update
 
   def UpdateCluster(self, cluster_ref, options):
-    raise NotImplementedError('UpdateCluster is not overriden')
+    raise NotImplementedError('UpdateCluster is not overridden')
 
   def SetLegacyAuthorization(self, cluster_ref, enable_legacy_authorization):
-    raise NotImplementedError('SetLegacyAuthorization is not overriden')
+    raise NotImplementedError('SetLegacyAuthorization is not overridden')
 
   def _AddonsConfig(self,
                     disable_ingress=None,
@@ -853,7 +859,7 @@ class APIAdapter(object):
         provider=self.messages.NetworkPolicy.ProviderValueValuesEnum.CALICO)
 
   def SetNetworkPolicy(self, cluster_ref, options):
-    raise NotImplementedError('SetNetworkPolicy is not overriden')
+    raise NotImplementedError('SetNetworkPolicy is not overridden')
 
   def SetMasterAuthCommon(self, options):
     """Returns a SetMasterAuth action."""
@@ -867,13 +873,13 @@ class APIAdapter(object):
     return update, action
 
   def SetMasterAuth(self, cluster_ref, options):
-    raise NotImplementedError('SetMasterAuth is not overriden')
+    raise NotImplementedError('SetMasterAuth is not overridden')
 
   def StartIpRotation(self, cluster_ref):
-    raise NotImplementedError('StartIpRotation is not overriden')
+    raise NotImplementedError('StartIpRotation is not overridden')
 
   def CompleteIpRotation(self, cluster_ref):
-    raise NotImplementedError('CompleteIpRotation is not overriden')
+    raise NotImplementedError('CompleteIpRotation is not overridden')
 
   def DeleteCluster(self, cluster_ref):
     operation = self.client.projects_zones_clusters.Delete(
@@ -942,7 +948,7 @@ class APIAdapter(object):
     return pool
 
   def CreateNodePool(self, node_pool_ref, options):
-    raise NotImplementedError('CreateNodePool is not overriden')
+    raise NotImplementedError('CreateNodePool is not overridden')
 
   def ListNodePools(self, cluster_ref):
     req = self.messages.ContainerProjectsZonesClustersNodePoolsListRequest(
@@ -978,7 +984,7 @@ class APIAdapter(object):
     return node_management
 
   def UpdateNodePool(self, node_pool_ref, options):
-    raise NotImplementedError('UpdateNodePool is not overriden')
+    raise NotImplementedError('UpdateNodePool is not overridden')
 
   def DeleteNodePool(self, node_pool_ref):
     operation = self.client.projects_zones_clusters_nodePools.Delete(
@@ -990,10 +996,10 @@ class APIAdapter(object):
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
   def RollbackUpgrade(self, node_pool_ref):
-    raise NotImplementedError('RollbackUpgrade is not overriden')
+    raise NotImplementedError('RollbackUpgrade is not overridden')
 
   def CancelOperation(self, op_ref):
-    raise NotImplementedError('CancelOperation is not overriden')
+    raise NotImplementedError('CancelOperation is not overridden')
 
   def IsRunning(self, cluster):
     return (cluster.status ==
@@ -1074,7 +1080,7 @@ class APIAdapter(object):
     return labels, clus.labelFingerprint
 
   def UpdateLabels(self, cluster_ref, update_labels):
-    raise NotImplementedError('UpdateLabels is not overriden')
+    raise NotImplementedError('UpdateLabels is not overridden')
 
   def RemoveLabelsCommon(self, cluster_ref, remove_labels):
     """Removes labels from a cluster.
@@ -1121,7 +1127,7 @@ class APIAdapter(object):
     return labels, clus.labelFingerprint
 
   def RemoveLabels(self, cluster_ref, remove_labels):
-    raise NotImplementedError('RemoveLabels is not overriden')
+    raise NotImplementedError('RemoveLabels is not overridden')
 
 
 class V1Adapter(APIAdapter):

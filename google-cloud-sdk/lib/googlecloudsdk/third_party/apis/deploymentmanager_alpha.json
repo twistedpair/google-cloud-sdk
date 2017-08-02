@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager Alpha",
  "version": "alpha",
- "revision": "20170623",
+ "revision": "20170724",
  "title": "Google Cloud Deployment Manager Alpha API",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -125,6 +125,17 @@
     "logType": {
      "type": "string",
      "description": "The log type that this config enables."
+    }
+   }
+  },
+  "AuthorizationLoggingOptions": {
+   "id": "AuthorizationLoggingOptions",
+   "type": "object",
+   "description": "Authorization-related information used by Cloud Audit Logging.",
+   "properties": {
+    "permissionType": {
+     "type": "string",
+     "description": "The type of the permission that was checked."
     }
    }
   },
@@ -561,6 +572,10 @@
    "type": "object",
    "description": "Write a Cloud Audit log",
    "properties": {
+    "authorizationLoggingOptions": {
+     "$ref": "AuthorizationLoggingOptions",
+     "description": "Information used by the Cloud Audit Logging pipeline."
+    },
     "logName": {
      "type": "string",
      "description": "The log_name to populate in the Cloud Audit Record."

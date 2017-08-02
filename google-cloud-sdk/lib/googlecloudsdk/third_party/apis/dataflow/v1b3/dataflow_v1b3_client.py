@@ -217,6 +217,32 @@ class DataflowV1b3(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Aggregated(self, request, global_params=None):
+      """List the jobs of a project across all regions.
+
+      Args:
+        request: (DataflowProjectsJobsAggregatedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Aggregated')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Aggregated.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'dataflow.projects.jobs.aggregated',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[u'filter', u'location', u'pageSize', u'pageToken', u'view'],
+        relative_path=u'v1b3/projects/{projectId}/jobs:aggregated',
+        request_field='',
+        request_type_name=u'DataflowProjectsJobsAggregatedRequest',
+        response_type_name=u'ListJobsResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       """Creates a Cloud Dataflow job.
 
@@ -296,7 +322,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """List the jobs of a project.
+      """List the jobs of a project in a given region.
 
       Args:
         request: (DataflowProjectsJobsListRequest) input message
@@ -596,7 +622,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """List the jobs of a project.
+      """List the jobs of a project in a given region.
 
       Args:
         request: (DataflowProjectsLocationsJobsListRequest) input message

@@ -172,7 +172,7 @@
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -737,6 +737,35 @@
             "UNSPECIFIED_LOG_NAME",
             "ADMIN_ACTIVITY",
             "DATA_ACCESS"
+          ]
+        },
+        "authorizationLoggingOptions": {
+          "description": "Information used by the Cloud Audit Logging pipeline.",
+          "$ref": "AuthorizationLoggingOptions"
+        }
+      }
+    },
+    "AuthorizationLoggingOptions": {
+      "id": "AuthorizationLoggingOptions",
+      "description": "Authorization-related information used by Cloud Audit Logging.",
+      "type": "object",
+      "properties": {
+        "permissionType": {
+          "description": "The type of the permission that was checked.",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "A read of admin (meta) data.",
+            "A write of admin (meta) data.",
+            "A read of standard data.",
+            "A write of standard data."
+          ],
+          "type": "string",
+          "enum": [
+            "PERMISSION_TYPE_UNSPECIFIED",
+            "ADMIN_READ",
+            "ADMIN_WRITE",
+            "DATA_READ",
+            "DATA_WRITE"
           ]
         }
       }

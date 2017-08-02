@@ -1513,7 +1513,7 @@
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -3805,7 +3805,72 @@
               "path": "v1b3/projects/{projectId}/jobs",
               "flatPath": "v1b3/projects/{projectId}/jobs",
               "httpMethod": "GET",
-              "description": "List the jobs of a project.",
+              "description": "List the jobs of a project in a given region.",
+              "parameters": {
+                "projectId": {
+                  "description": "The project which owns the jobs.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "The kind of filter to use.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "UNKNOWN",
+                    "ALL",
+                    "TERMINATED",
+                    "ACTIVE"
+                  ]
+                },
+                "view": {
+                  "description": "Level of information requested in response. Default is `JOB_VIEW_SUMMARY`.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "JOB_VIEW_UNKNOWN",
+                    "JOB_VIEW_SUMMARY",
+                    "JOB_VIEW_ALL",
+                    "JOB_VIEW_DESCRIPTION"
+                  ]
+                },
+                "pageSize": {
+                  "description": "If there are many jobs, limit response to at most this many.\nThe actual number of jobs returned will be the lesser of max_responses\nand an unspecified server-defined limit.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Set this to the 'next_page_token' field of a previous response\nto request additional results in a long list.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "location": {
+                  "description": "The location that contains this job.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "response": {
+                "$ref": "ListJobsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute",
+                "https://www.googleapis.com/auth/compute.readonly",
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
+            },
+            "aggregated": {
+              "id": "dataflow.projects.jobs.aggregated",
+              "path": "v1b3/projects/{projectId}/jobs:aggregated",
+              "flatPath": "v1b3/projects/{projectId}/jobs:aggregated",
+              "httpMethod": "GET",
+              "description": "List the jobs of a project across all regions.",
               "parameters": {
                 "projectId": {
                   "description": "The project which owns the jobs.",
@@ -4472,7 +4537,7 @@
                   "path": "v1b3/projects/{projectId}/locations/{location}/jobs",
                   "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs",
                   "httpMethod": "GET",
-                  "description": "List the jobs of a project.",
+                  "description": "List the jobs of a project in a given region.",
                   "parameters": {
                     "projectId": {
                       "description": "The project which owns the jobs.",

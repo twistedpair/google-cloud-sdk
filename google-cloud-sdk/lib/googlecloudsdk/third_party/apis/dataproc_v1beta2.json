@@ -186,7 +186,7 @@
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details. There will be a common set of message types for APIs to use.",
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -294,15 +294,15 @@
       "type": "object",
       "properties": {
         "zoneUri": {
-          "description": "Required. The zone where the Google Compute Engine cluster will be located. Example: https:\/\/www.googleapis.com\/compute\/v1beta2\/projects\/[project_id]\/zones\/[zone].",
+          "description": "Optional. The zone where the Google Compute Engine cluster will be located. On a create request, it is required in the \"global\" region. If omitted in a non-global Cloud Dataproc region, the service will pick a zone in the corresponding Compute Engine region. On a get request, zone will always be present.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/[zone]\nprojects\/[project_id]\/zones\/[zone]\nus-central1-f",
           "type": "string"
         },
         "networkUri": {
-          "description": "Optional. The Google Compute Engine network to be used for machine communications. Cannot be specified with subnetwork_uri. If neither network_uri nor subnetwork_uri is specified, the \"default\" network of the project is used, if it exists. Cannot be a \"Custom Subnet Network\" (see Using Subnetworks for more information). Example: https:\/\/www.googleapis.com\/compute\/v1beta2\/projects\/[project_id]\/regions\/global\/default.",
+          "description": "Optional. The Google Compute Engine network to be used for machine communications. Cannot be specified with subnetwork_uri. If neither network_uri nor subnetwork_uri is specified, the \"default\" network of the project is used, if it exists. Cannot be a \"Custom Subnet Network\" (see Using Subnetworks for more information).A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/global\/default\nprojects\/[project_id]\/regions\/global\/default\ndefault",
           "type": "string"
         },
         "subnetworkUri": {
-          "description": "Optional. The Google Compute Engine subnetwork to be used for machine communications. Cannot be specified with network_uri. Example: https:\/\/www.googleapis.com\/compute\/v1beta2\/projects\/[project_id]\/regions\/us-east1\/sub0.",
+          "description": "Optional. The Google Compute Engine subnetwork to be used for machine communications. Cannot be specified with network_uri.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/us-east1\/sub0\nprojects\/[project_id]\/regions\/us-east1\/sub0\nsub0",
           "type": "string"
         },
         "internalIpOnly": {
@@ -342,7 +342,7 @@
       "type": "object",
       "properties": {
         "numInstances": {
-          "description": "Required. The number of VM instances in the instance group. For master instance groups, must be set to 1.",
+          "description": "Optional. The number of VM instances in the instance group. For master instance groups, must be set to 1.",
           "type": "integer",
           "format": "int32"
         },
@@ -358,7 +358,7 @@
           "type": "string"
         },
         "machineTypeUri": {
-          "description": "Required. The Google Compute Engine machine type used for cluster instances. Example: https:\/\/www.googleapis.com\/compute\/v1beta2\/projects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2.",
+          "description": "Optional. The Google Compute Engine machine type used for cluster instances.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2\nprojects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2\nn1-standard-2",
           "type": "string"
         },
         "diskConfig": {
@@ -420,7 +420,7 @@
       "type": "object",
       "properties": {
         "acceleratorTypeUri": {
-          "description": "Full or partial URI of the accelerator type resource to expose to this instance. See Google Compute Engine AcceleratorTypes( \/compute\/docs\/reference\/beta\/acceleratorTypes)",
+          "description": "Full URL, partial URI, or short name of the accelerator type resource to expose to this instance. See Google Compute Engine AcceleratorTypes( \/compute\/docs\/reference\/beta\/acceleratorTypes)Examples * https:\/\/www.googleapis.com\/compute\/beta\/projects\/[project_id]\/zones\/us-east1-a\/acceleratorTypes\/nvidia-tesla-k80 * projects\/[project_id]\/zones\/us-east1-a\/acceleratorTypes\/nvidia-tesla-k80 * nvidia-tesla-k80",
           "type": "string"
         },
         "acceleratorCount": {
@@ -1150,6 +1150,17 @@
       "properties": {
       }
     },
+    "DiagnoseClusterResults": {
+      "id": "DiagnoseClusterResults",
+      "description": "The location of diagnostic output.",
+      "type": "object",
+      "properties": {
+        "outputUri": {
+          "description": "Output-only. The Google Cloud Storage URI of the diagnostic output. The output report is a plain text file with a summary of collected diagnostics.",
+          "type": "string"
+        }
+      }
+    },
     "ClusterOperationMetadata": {
       "id": "ClusterOperationMetadata",
       "description": "Metadata describing the operation.",
@@ -1420,6 +1431,12 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
+                    },
+                    "gracefulDecommissionTimeout": {
+                      "description": "Optional. Timeout for graceful YARN decomissioning. Graceful decommissioning allows removing nodes from the cluster without interrupting jobs in progress. Timeout specifies how long to wait for jobs in progress to finish before forcefully removing nodes (and potentially interrupting jobs). Default timeout is 0 (for forceful decommission), and the maximum allowed timeout is 24 hours. Timeouts greater than the maximum timeout will also be truncated to 24 hours.Only supported on Dataproc image versions 1.2 and higher.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-duration"
                     },
                     "updateMask": {
                       "description": "Required. Specifies the path, relative to <code>Cluster<\/code>, of the field to update. For example, to change the number of workers in a cluster to 5, the <code>update_mask<\/code> parameter would be specified as <code>config.worker_config.num_instances<\/code>, and the PATCH request body would specify the new value, as follows:\n{\n  \"config\":{\n    \"workerConfig\":{\n      \"numInstances\":\"5\"\n    }\n  }\n}\nSimilarly, to change the number of preemptible workers in a cluster to 5, the <code>update_mask<\/code> parameter would be <code>config.secondary_worker_config.num_instances<\/code>, and the PATCH request body would be set as follows:\n{\n  \"config\":{\n    \"secondaryWorkerConfig\":{\n      \"numInstances\":\"5\"\n    }\n  }\n}\n<strong>Note:<\/strong> currently only some fields can be updated: |Mask|Purpose| |labels|Updates labels| |config.worker_config.num_instances|Resize primary worker group| |config.secondary_worker_config.num_instances|Resize secondary worker group|",

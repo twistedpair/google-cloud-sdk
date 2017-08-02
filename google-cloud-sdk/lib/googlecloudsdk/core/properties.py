@@ -411,12 +411,11 @@ class _Section(object):
 
   def _Add(self, name, help_text=None, internal=False, hidden=False,
            callbacks=None, default=None, validator=None, choices=None,
-           resource=None, resource_command_path=None):
+           completer=None):
     prop = _Property(
         section=self.__name, name=name, help_text=help_text, internal=internal,
         hidden=(self.is_hidden or hidden), callbacks=callbacks, default=default,
-        validator=validator, choices=choices,
-        resource=resource, resource_command_path=resource_command_path)
+        validator=validator, choices=choices, completer=completer)
     self.__properties[name] = prop
     return prop
 
@@ -530,7 +529,7 @@ class _SectionSpanner(_Section):
         help_text='The default instance to use when working with Cloud Spanner '
         'resources. When an `instance` is required but not provided by a flag, '
         'the command will fall back to this value, if set.',
-        resource='spanner.instances')
+        completer='command_lib.spanner.flags.InstanceCompleter')
 
 
 class _SectionCompute(_Section):
@@ -544,14 +543,14 @@ class _SectionCompute(_Section):
         'Engine resources. When a `--zone` flag is required but not provided, '
         'the command will fall back to this value, if set. To see valid '
         'choices, run `gcloud compute zones list`.',
-        resource='compute.zones')
+        completer='command_lib.compute.completers.ZonesCompleter')
     self.region = self._Add(
         'region',
         help_text='The default region to use when working with regional Compute'
         ' Engine resources. When a `--region` flag is required but not '
         'provided, the command will fall back to this value, if set. To see '
         'valid choices, run `gcloud compute regions list`.',
-        resource='compute.regions')
+        completer='command_lib.compute.completers.RegionsCompleter')
     self.gce_metadata_read_timeout_sec = self._Add(
         'gce_metadata_read_timeout_sec',
         default=1,
@@ -570,7 +569,7 @@ class _SectionFunctions(_Section):
         'functions resources. When a `--region` flag is required but not '
         'provided, the command will fall back to this value, if set. To see '
         'valid choices, run `gcloud functions regions list`.',
-        resource='cloudfunctions.locations')
+        completer='command_lib.functions.flags.LocationsCompleter')
 
 
 class _SectionApp(_Section):
@@ -929,8 +928,7 @@ class _SectionCore(_Section):
         'by default.  This can be overridden by using the global `--project` '
         'flag.',
         validator=ProjectValidator,
-        resource='cloudresourcemanager.projects',
-        resource_command_path='beta projects list --uri')
+        completer='command_lib.resource_manager.completers.ProjectCompleter')
     self.credentialed_hosted_repo_domains = self._Add(
         'credentialed_hosted_repo_domains',
         hidden=True)
@@ -1262,7 +1260,7 @@ class _Property(object):
 
   def __init__(self, section, name, help_text=None, hidden=False,
                internal=False, callbacks=None, default=None, validator=None,
-               choices=None, resource=None, resource_command_path=None):
+               choices=None, completer=None):
     self.__section = section
     self.__name = name
     self.__help_text = help_text
@@ -1272,8 +1270,7 @@ class _Property(object):
     self.__default = default
     self.__validator = validator
     self.__choices = choices
-    self.__resource = resource
-    self.__resource_command_path = resource_command_path
+    self.__completer = completer
 
   @property
   def section(self):
@@ -1308,12 +1305,8 @@ class _Property(object):
     return self.__choices
 
   @property
-  def resource(self):
-    return self.__resource
-
-  @property
-  def resource_command_path(self):
-    return self.__resource_command_path
+  def completer(self):
+    return self.__completer
 
   def __eq__(self, other):
     return self.section == other.section and self.name == other.name

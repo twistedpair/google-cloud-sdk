@@ -31,9 +31,10 @@ class AppEngineQueueConfig(_messages.Message):
   """App Engine queue config.  The task will be delivered to the App Engine
   application URL specified by its AppEngineQueueConfig and
   AppEngineTaskTarget. The documentation for AppEngineTaskTarget explains how
-  the task's host URL is constructed.  When creating or updating this type of
-  target, the following scope must be used: `https://www.googleapis.com/auth
-  /cloud-platform`.
+  the task's host URL is constructed.  Using this type of queue configuration
+  requires [`appengine.applications.get`](/appengine/docs/admin-api/access-
+  control) Google IAM permission for the project and the following scope:
+  `https://www.googleapis.com/auth/cloud-platform`
 
   Messages:
     HeadersValue: HTTP request headers.  This map contains the header field
@@ -46,14 +47,14 @@ class AppEngineQueueConfig(_messages.Message):
       an error will be returned. * Content-Length: This will be computed and
       overwritten by Cloud Tasks. * X-Google-*: For Google internal use only.
       * X-AppEngine-*: For Google internal use only. See
-      [here](https://cloud.google.com/appengine/docs/python/taskqueue/push
-      /creating-handlers#reading_request_headers).  When a task is attempted,
+      [here](/appengine/docs/python/taskqueue/push/creating-
+      handlers#reading_request_headers).  When a task is attempted,
       AppEngineQueueConfig.headers will be merged with the task's
       AppEngineTaskTarget.headers and the merged headers will be sent with the
       task's overrides. In addition, some App Engine headers, which contain
       task-specific information, will also be sent to the task handler; see
-      [here](https://cloud.google.com/appengine/docs/python/taskqueue/push
-      /creating-handlers#reading_request_headers).
+      [here](/appengine/docs/python/taskqueue/push/creating-
+      handlers#reading_request_headers).
 
   Fields:
     appEngineRoutingOverrides: Overrides for the task-level
@@ -71,14 +72,14 @@ class AppEngineQueueConfig(_messages.Message):
       an error will be returned. * Content-Length: This will be computed and
       overwritten by Cloud Tasks. * X-Google-*: For Google internal use only.
       * X-AppEngine-*: For Google internal use only. See
-      [here](https://cloud.google.com/appengine/docs/python/taskqueue/push
-      /creating-handlers#reading_request_headers).  When a task is attempted,
+      [here](/appengine/docs/python/taskqueue/push/creating-
+      handlers#reading_request_headers).  When a task is attempted,
       AppEngineQueueConfig.headers will be merged with the task's
       AppEngineTaskTarget.headers and the merged headers will be sent with the
       task's overrides. In addition, some App Engine headers, which contain
       task-specific information, will also be sent to the task handler; see
-      [here](https://cloud.google.com/appengine/docs/python/taskqueue/push
-      /creating-handlers#reading_request_headers).
+      [here](/appengine/docs/python/taskqueue/push/creating-
+      handlers#reading_request_headers).
     retryConfig: Deprecated. Queue.retry_config replaces this field. If both
       this field and Queue.retry_config are specified, Queue.retry_config
       takes precedence.  Settings that determine the retry behavior.  The
@@ -98,14 +99,14 @@ class AppEngineQueueConfig(_messages.Message):
     returned. * Content-Length: This will be computed and overwritten by Cloud
     Tasks. * X-Google-*: For Google internal use only. * X-AppEngine-*: For
     Google internal use only. See
-    [here](https://cloud.google.com/appengine/docs/python/taskqueue/push
-    /creating-handlers#reading_request_headers).  When a task is attempted,
+    [here](/appengine/docs/python/taskqueue/push/creating-
+    handlers#reading_request_headers).  When a task is attempted,
     AppEngineQueueConfig.headers will be merged with the task's
     AppEngineTaskTarget.headers and the merged headers will be sent with the
     task's overrides. In addition, some App Engine headers, which contain
     task-specific information, will also be sent to the task handler; see
-    [here](https://cloud.google.com/appengine/docs/python/taskqueue/push
-    /creating-handlers#reading_request_headers).
+    [here](/appengine/docs/python/taskqueue/push/creating-
+    handlers#reading_request_headers).
 
     Messages:
       AdditionalProperty: An additional property for a HeadersValue object.
@@ -134,34 +135,32 @@ class AppEngineQueueConfig(_messages.Message):
 
 class AppEngineRouting(_messages.Message):
   """App Engine Routing.  For more information about services, versions, and
-  instances see [An Overview of App
-  Engine](https://cloud.google.com/appengine/docs/python/an-overview-of-app-
-  engine), [Microservices Architecture on Google App
-  Engine](https://cloud.google.com/appengine/docs/python/microservices-on-app-
-  engine), and How Requests are Routed.  Note: The routing for some queues or
-  tasks which were not created using the Cloud Tasks API may not be parsable
-  into AppEngineRouting. For example, if numeric version names are used, then
-  urls such as `123.my-service.appspot.com` are ambiguous because `123` can be
+  instances see [An Overview of App Engine](/appengine/docs/python/an-
+  overview-of-app-engine), [Microservices Architecture on Google App
+  Engine](/appengine/docs/python/microservices-on-app-engine), and How
+  Requests are Routed.  Note: The routing for some queues or tasks which were
+  not created using the Cloud Tasks API may not be parsable into
+  AppEngineRouting. For example, if numeric version names are used, then urls
+  such as `123.my-service.appspot.com` are ambiguous because `123` can be
   interpreted as a version or instance number. See
-  [here](https://cloud.google.com/appengine/docs/python/how-requests-are-
-  routed#soft_routing) for more information. If the routing is unparsable,
-  AppEngineRouting will be empty; the routing information can be viewed in the
-  HOST header in AppEngineQueueConfig.headers and AppEngineTaskTarget.headers.
+  [here](/appengine/docs/python/how-requests-are-routed#soft_routing) for more
+  information. If the routing is unparsable, AppEngineRouting will be empty;
+  the routing information can be viewed in the HOST header in
+  AppEngineQueueConfig.headers and AppEngineTaskTarget.headers.
 
   Fields:
     instance: App instance.  By default, the task will be sent to an instance
       which is available when the task is attempted.  Requests can only be
       sent to a specific instance if basic or manual scaling is used. For more
-      information see [here](https://cloud.google.com/appengine/docs/python
-      /an-overview-of-app-engine?hl=en_US#scaling_types_and_instance_classes).
+      information see [here](/appengine/docs/python/an-overview-of-app-
+      engine?hl=en_US#scaling_types_and_instance_classes).
     service: App service.  By default, the task will be sent to the service
       which is the default service when the task is attempted ("default").
     version: App version.  Version names should begin with a letter, to
       distinguish them from numeric instances in the app URL; for more
-      information see [here](https://cloud.google.com/appengine/docs/python
-      /how-requests-are-routed#soft_routing).  By default, the task will be
-      sent to the version which is the default version when the task is
-      attempted ("default").
+      information see [here](/appengine/docs/python/how-requests-are-
+      routed#soft_routing).  By default, the task will be sent to the version
+      which is the default version when the task is attempted ("default").
   """
 
   instance = _messages.StringField(1)
@@ -171,18 +170,18 @@ class AppEngineRouting(_messages.Message):
 
 class AppEngineTaskTarget(_messages.Message):
   """App Engine task target.  This proto can only be used for tasks in a queue
-  which has Queue.app_engine_queue_config set.  When creating this type of
-  task target, the following scope must be used:
-  `https://www.googleapis.com/auth/cloud-platform`.  The task will be
-  delivered to the URL specified by the AppEngineQueueConfig and
-  AppEngineTaskTarget in the App Engine app which belongs to the same project
-  as the queue. See [here](https://cloud.google.com/appengine/docs/python/how-
-  requests-are-routed) for information on how requests are routed in App
-  Engine and how routing is affected by [dispatch
-  files](https://cloud.google.com/appengine/docs/python/config/dispatchref).
-  The AppEngineRouting used to construct the URL can be set at the queue-level
-  or task-level:  *  If set, AppEngineQueueConfig.app_engine_routing_overrides
-  is used for    all tasks in the queue, no matter what the setting is for the
+  which has Queue.app_engine_queue_config set.  Using this type of task target
+  requires [`appengine.applications.get`](/appengine/docs/admin-api/access-
+  control) Google IAM permission for the project and the following scope:
+  `https://www.googleapis.com/auth/cloud-platform`  The task will be delivered
+  to the URL specified by the AppEngineQueueConfig and AppEngineTaskTarget in
+  the App Engine app which belongs to the same project as the queue. See
+  [here](/appengine/docs/python/how-requests-are-routed) for information on
+  how requests are routed in App Engine and how routing is affected by
+  [dispatch files](/appengine/docs/python/config/dispatchref).  The
+  AppEngineRouting used to construct the URL can be set at the queue-level or
+  task-level:  *  If set, AppEngineQueueConfig.app_engine_routing_overrides is
+  used for    all tasks in the queue, no matter what the setting is for the
   task-level app_engine_routing.   The `url` that the task will be sent to is:
   * `url = host +` AppEngineTaskTarget.relative_url  * `host =
   [application_domain_name]`</br>   `| [service] + '.' +
@@ -227,12 +226,11 @@ class AppEngineTaskTarget(_messages.Message):
       the task attempt will fail with error code 405 "Method Not Allowed"
       because "the method specified in the Request-Line is not allowed for the
       resource identified by the Request-URI". See [Writing a push task
-      request
-      handler](https://cloud.google.com/appengine/docs/java/taskqueue/push
-      /creating-handlers#writing_a_push_task_request_handler) and the
-      documentation for the request handlers in the language your app is
-      written in e.g. [python RequestHandler](https://cloud.google.com/appengi
-      ne/docs/python/tools/webapp/requesthandlerclass).
+      request handler](/appengine/docs/java/taskqueue/push/creating-
+      handlers#writing_a_push_task_request_handler) and the documentation for
+      the request handlers in the language your app is written in e.g. [python
+      RequestHandler](/appengine/docs/python/tools/webapp/requesthandlerclass)
+      .
 
   Messages:
     HeadersValue: HTTP request headers.  This map contains the header field
@@ -245,14 +243,14 @@ class AppEngineTaskTarget(_messages.Message):
       an error will be returned. * Content-Length: This will be computed and
       overwritten by Cloud Tasks. * X-Google-*: For Google internal use only.
       * X-AppEngine-*: For Google internal use only. See
-      [here](https://cloud.google.com/appengine/docs/python/taskqueue/push
-      /creating-handlers#reading_request_headers).  When a task is attempted,
+      [here](/appengine/docs/python/taskqueue/push/creating-
+      handlers#reading_request_headers).  When a task is attempted,
       AppEngineQueueConfig.headers will be merged with the task's
       AppEngineTaskTarget.headers and the merged headers will be sent with the
       task's HTTP request. In addition, some App Engine headers will be set
       which contain task-specific information that can be used by the handler;
-      see [here](https://cloud.google.com/appengine/docs/python/taskqueue/push
-      /creating-handlers#reading_request_headers).
+      see [here](/appengine/docs/python/taskqueue/push/creating-
+      handlers#reading_request_headers).
 
   Fields:
     appEngineRouting: Task-level setting for App Engine routing.  If set,
@@ -269,25 +267,25 @@ class AppEngineTaskTarget(_messages.Message):
       an error will be returned. * Content-Length: This will be computed and
       overwritten by Cloud Tasks. * X-Google-*: For Google internal use only.
       * X-AppEngine-*: For Google internal use only. See
-      [here](https://cloud.google.com/appengine/docs/python/taskqueue/push
-      /creating-handlers#reading_request_headers).  When a task is attempted,
+      [here](/appengine/docs/python/taskqueue/push/creating-
+      handlers#reading_request_headers).  When a task is attempted,
       AppEngineQueueConfig.headers will be merged with the task's
       AppEngineTaskTarget.headers and the merged headers will be sent with the
       task's HTTP request. In addition, some App Engine headers will be set
       which contain task-specific information that can be used by the handler;
-      see [here](https://cloud.google.com/appengine/docs/python/taskqueue/push
-      /creating-handlers#reading_request_headers).
+      see [here](/appengine/docs/python/taskqueue/push/creating-
+      handlers#reading_request_headers).
     httpMethod: The HTTP method to use for the request. The default is POST.
       The app's request handler for the task's target URL must be able to
       handle HTTP requests with this http_method, otherwise the task attempt
       will fail with error code 405 "Method Not Allowed" because "the method
       specified in the Request-Line is not allowed for the resource identified
       by the Request-URI". See [Writing a push task request
-      handler](https://cloud.google.com/appengine/docs/java/taskqueue/push
-      /creating-handlers#writing_a_push_task_request_handler) and the
-      documentation for the request handlers in the language your app is
-      written in e.g. [python RequestHandler](https://cloud.google.com/appengi
-      ne/docs/python/tools/webapp/requesthandlerclass).
+      handler](/appengine/docs/java/taskqueue/push/creating-
+      handlers#writing_a_push_task_request_handler) and the documentation for
+      the request handlers in the language your app is written in e.g. [python
+      RequestHandler](/appengine/docs/python/tools/webapp/requesthandlerclass)
+      .
     payload: Payload.  The payload will be sent as the HTTP message body. A
       message body, and thus a payload, is allowed only if the HTTP method is
       POST or PUT. It is an error to set a data payload on a task with an
@@ -310,11 +308,10 @@ class AppEngineTaskTarget(_messages.Message):
     error code 405 "Method Not Allowed" because "the method specified in the
     Request-Line is not allowed for the resource identified by the Request-
     URI". See [Writing a push task request
-    handler](https://cloud.google.com/appengine/docs/java/taskqueue/push
-    /creating-handlers#writing_a_push_task_request_handler) and the
-    documentation for the request handlers in the language your app is written
-    in e.g. [python RequestHandler](https://cloud.google.com/appengine/docs/py
-    thon/tools/webapp/requesthandlerclass).
+    handler](/appengine/docs/java/taskqueue/push/creating-
+    handlers#writing_a_push_task_request_handler) and the documentation for
+    the request handlers in the language your app is written in e.g. [python
+    RequestHandler](/appengine/docs/python/tools/webapp/requesthandlerclass).
 
     Values:
       HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
@@ -343,14 +340,14 @@ class AppEngineTaskTarget(_messages.Message):
     returned. * Content-Length: This will be computed and overwritten by Cloud
     Tasks. * X-Google-*: For Google internal use only. * X-AppEngine-*: For
     Google internal use only. See
-    [here](https://cloud.google.com/appengine/docs/python/taskqueue/push
-    /creating-handlers#reading_request_headers).  When a task is attempted,
+    [here](/appengine/docs/python/taskqueue/push/creating-
+    handlers#reading_request_headers).  When a task is attempted,
     AppEngineQueueConfig.headers will be merged with the task's
     AppEngineTaskTarget.headers and the merged headers will be sent with the
     task's HTTP request. In addition, some App Engine headers will be set
     which contain task-specific information that can be used by the handler;
-    see [here](https://cloud.google.com/appengine/docs/python/taskqueue/push
-    /creating-handlers#reading_request_headers).
+    see [here](/appengine/docs/python/taskqueue/push/creating-
+    handlers#reading_request_headers).
 
     Messages:
       AdditionalProperty: An additional property for a HeadersValue object.
@@ -434,8 +431,7 @@ class CancelLeaseRequest(_messages.Message):
       payloads, might be desirable to return only when needed because of its
       large size or because of the sensitivity of data that it contains.
       Authorization for Task.View.FULL requires `cloudtasks.tasks.fullView`
-      [Google IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      [Google IAM](/iam/) permission on the Task.name resource.
 
   Fields:
     responseView: The response_view specifies which subset of the Task will be
@@ -444,8 +440,7 @@ class CancelLeaseRequest(_messages.Message):
       might be desirable to return only when needed because of its large size
       or because of the sensitivity of data that it contains.  Authorization
       for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-      IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      IAM](/iam/) permission on the Task.name resource.
     scheduleTime: Required.  The task schedule time, available in the
       Task.schedule_time returned in PullTasksResponse.tasks or
       CloudTasks.RenewLease.  This restriction is to check that the caller is
@@ -458,8 +453,8 @@ class CancelLeaseRequest(_messages.Message):
     retrieved by default because some data, such as payloads, might be
     desirable to return only when needed because of its large size or because
     of the sensitivity of data that it contains.  Authorization for
-    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-    IAM](https://cloud.google.com/iam/) permission on the Task.name resource.
+    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google IAM](/iam/)
+    permission on the Task.name resource.
 
     Values:
       VIEW_UNSPECIFIED: Unspecified. Defaults to BASIC.
@@ -539,13 +534,14 @@ class CloudtasksProjectsLocationsQueuesListRequest(_messages.Message):
     filter: `filter` can be used to specify a subset of queues. Any Queue
       field can be used as a filter and several operators as supported. For
       example: `<=, <, >=, >, !=, =, :`. The filter syntax is the same as
-      described in
-      https://cloud.google.com/logging/docs/view/advanced_filters.  Sample
-      filter "app_engine_queue_config: *".  Note that using filters might
-      cause fewer queues than the requested_page size to be returned.
+      described in [Stackdriver's Advanced Logs
+      Filters](/logging/docs/view/advanced_filters).  Sample filter
+      "app_engine_queue_config: *".  Note that using filters might cause fewer
+      queues than the requested_page size to be returned.
     pageSize: Requested page size.  The maximum page size is 9800. If
-      unspecified, the max will be returned. Fewer queues than requested might
-      be returned.
+      unspecified, the page size will be the maximum. Fewer queues than
+      requested might be returned, even if more queues exist; use
+      ListQueuesResponse.next_page_token to determine if more queues exist.
     pageToken: A token identifying the page of results to return.  To request
       the first page results, page_token must be empty. To request the next
       page of results, page_token must be the value of
@@ -710,8 +706,7 @@ class CloudtasksProjectsLocationsQueuesTasksGetRequest(_messages.Message):
       payloads, might be desirable to return only when needed because of its
       large size or because of the sensitivity of data that it contains.
       Authorization for Task.View.FULL requires `cloudtasks.tasks.fullView`
-      [Google IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      [Google IAM](/iam/) permission on the Task.name resource.
 
   Fields:
     name: Required.  The task name. For example:
@@ -723,8 +718,7 @@ class CloudtasksProjectsLocationsQueuesTasksGetRequest(_messages.Message):
       might be desirable to return only when needed because of its large size
       or because of the sensitivity of data that it contains.  Authorization
       for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-      IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      IAM](/iam/) permission on the Task.name resource.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
@@ -733,8 +727,8 @@ class CloudtasksProjectsLocationsQueuesTasksGetRequest(_messages.Message):
     retrieved by default because some data, such as payloads, might be
     desirable to return only when needed because of its large size or because
     of the sensitivity of data that it contains.  Authorization for
-    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-    IAM](https://cloud.google.com/iam/) permission on the Task.name resource.
+    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google IAM](/iam/)
+    permission on the Task.name resource.
 
     Values:
       VIEW_UNSPECIFIED: <no description>
@@ -759,16 +753,18 @@ class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
       payloads, might be desirable to return only when needed because of its
       large size or because of the sensitivity of data that it contains.
       Authorization for Task.View.FULL requires `cloudtasks.tasks.fullView`
-      [Google IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      [Google IAM](/iam/) permission on the Task.name resource.
 
   Fields:
     orderBy:  Sort order used for the query. The fields supported for sorting
-      are Task.schedule_time, Task.name, and PullTaskTarget.tag. All results
-      will be returned in ascending order. The default ordering is by
+      are Task.schedule_time and PullTaskTarget.tag. All results will be
+      returned in ascending order. The default ordering is by
       Task.schedule_time.
     pageSize: Requested page size. Fewer tasks than requested might be
-      returned. If unspecified, 1000 tasks will be returned.
+      returned.  The maximum page size is 1000. If unspecified, the page size
+      will be the maximum. Fewer tasks than requested might be returned, even
+      if more tasks exist; use ListTasksResponse.next_page_token to determine
+      if more tasks exist.
     pageToken: A token identifying the page of results to return.  To request
       the first page results, page_token must be empty. To request the next
       page of results, page_token must be the value of
@@ -782,8 +778,7 @@ class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
       might be desirable to return only when needed because of its large size
       or because of the sensitivity of data that it contains.  Authorization
       for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-      IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      IAM](/iam/) permission on the Task.name resource.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
@@ -792,8 +787,8 @@ class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
     retrieved by default because some data, such as payloads, might be
     desirable to return only when needed because of its large size or because
     of the sensitivity of data that it contains.  Authorization for
-    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-    IAM](https://cloud.google.com/iam/) permission on the Task.name resource.
+    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google IAM](/iam/)
+    permission on the Task.name resource.
 
     Values:
       VIEW_UNSPECIFIED: <no description>
@@ -880,8 +875,7 @@ class CreateTaskRequest(_messages.Message):
       payloads, might be desirable to return only when needed because of its
       large size or because of the sensitivity of data that it contains.
       Authorization for Task.View.FULL requires `cloudtasks.tasks.fullView`
-      [Google IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      [Google IAM](/iam/) permission on the Task.name resource.
 
   Fields:
     responseView: The response_view specifies which subset of the Task will be
@@ -890,8 +884,7 @@ class CreateTaskRequest(_messages.Message):
       might be desirable to return only when needed because of its large size
       or because of the sensitivity of data that it contains.  Authorization
       for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-      IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      IAM](/iam/) permission on the Task.name resource.
     task: Required.  The task to add.  Task names have the following format:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID
       `. The user can optionally specify a name for the task in Task.name. If
@@ -900,15 +893,16 @@ class CreateTaskRequest(_messages.Message):
       specifying a Task.name enables task de-duplication. If a task's name is
       identical to the name of an existing task or a task that was deleted or
       completed within the last ~10 days then the call to
-      CloudTasks.CreateTask will fail. Because there is an extra lookup cost
-      to identify duplicate task names, these CloudTasks.CreateTask calls have
-      significantly increased latency. Using hashed strings for the task id or
-      for the prefix of the task id is recommended. Choosing task ids that are
-      sequential or have sequential prefixes, for example using a timestamp,
-      causes an increase in latency and error rates in all task commands. The
-      infrastructure relies on an approximately uniform distribution of task
-      ids to store and serve tasks efficiently.  If Task.schedule_time is not
-      set or is in the past then Cloud Tasks will set it to the current time.
+      CloudTasks.CreateTask will fail with google.rpc.Code.ALREADY_EXISTS.
+      Because there is an extra lookup cost to identify duplicate task names,
+      these CloudTasks.CreateTask calls have significantly increased latency.
+      Using hashed strings for the task id or for the prefix of the task id is
+      recommended. Choosing task ids that are sequential or have sequential
+      prefixes, for example using a timestamp, causes an increase in latency
+      and error rates in all task commands. The infrastructure relies on an
+      approximately uniform distribution of task ids to store and serve tasks
+      efficiently.  If Task.schedule_time is not set or is in the past then
+      Cloud Tasks will set it to the current time.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
@@ -917,8 +911,8 @@ class CreateTaskRequest(_messages.Message):
     retrieved by default because some data, such as payloads, might be
     desirable to return only when needed because of its large size or because
     of the sensitivity of data that it contains.  Authorization for
-    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-    IAM](https://cloud.google.com/iam/) permission on the Task.name resource.
+    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google IAM](/iam/)
+    permission on the Task.name resource.
 
     Values:
       VIEW_UNSPECIFIED: Unspecified. Defaults to BASIC.
@@ -1068,8 +1062,7 @@ class PullTasksRequest(_messages.Message):
       payloads, might be desirable to return only when needed because of its
       large size or because of the sensitivity of data that it contains.
       Authorization for Task.View.FULL requires `cloudtasks.tasks.fullView`
-      [Google IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      [Google IAM](/iam/) permission on the Task.name resource.
 
   Fields:
     filter: `filter` can be used to specify a subset of tasks to lease.  When
@@ -1105,8 +1098,7 @@ class PullTasksRequest(_messages.Message):
       might be desirable to return only when needed because of its large size
       or because of the sensitivity of data that it contains.  Authorization
       for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-      IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      IAM](/iam/) permission on the Task.name resource.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
@@ -1115,8 +1107,8 @@ class PullTasksRequest(_messages.Message):
     retrieved by default because some data, such as payloads, might be
     desirable to return only when needed because of its large size or because
     of the sensitivity of data that it contains.  Authorization for
-    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-    IAM](https://cloud.google.com/iam/) permission on the Task.name resource.
+    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google IAM](/iam/)
+    permission on the Task.name resource.
 
     Values:
       VIEW_UNSPECIFIED: Unspecified. Defaults to BASIC.
@@ -1242,8 +1234,7 @@ class RenewLeaseRequest(_messages.Message):
       payloads, might be desirable to return only when needed because of its
       large size or because of the sensitivity of data that it contains.
       Authorization for Task.View.FULL requires `cloudtasks.tasks.fullView`
-      [Google IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      [Google IAM](/iam/) permission on the Task.name resource.
 
   Fields:
     newLeaseDuration: Required.  The desired new lease duration, starting from
@@ -1254,8 +1245,7 @@ class RenewLeaseRequest(_messages.Message):
       might be desirable to return only when needed because of its large size
       or because of the sensitivity of data that it contains.  Authorization
       for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-      IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      IAM](/iam/) permission on the Task.name resource.
     scheduleTime: Required.  The task schedule time, available in the
       Task.schedule_time returned in PullTasksResponse.tasks or
       CloudTasks.RenewLease.  This restriction is to check that the caller is
@@ -1268,8 +1258,8 @@ class RenewLeaseRequest(_messages.Message):
     retrieved by default because some data, such as payloads, might be
     desirable to return only when needed because of its large size or because
     of the sensitivity of data that it contains.  Authorization for
-    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-    IAM](https://cloud.google.com/iam/) permission on the Task.name resource.
+    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google IAM](/iam/)
+    permission on the Task.name resource.
 
     Values:
       VIEW_UNSPECIFIED: Unspecified. Defaults to BASIC.
@@ -1298,9 +1288,10 @@ class ResumeQueueRequest(_messages.Message):
 class RetryConfig(_messages.Message):
   """Retry config.  These settings determine retry behavior.  If a task does
   not complete successfully, meaning that an acknowledgement is not received
-  from the handler before the [deadline](https://cloud.google.com/appengine/do
-  cs/python/taskqueue/push/#the_task_deadline), then it will be retried with
-  exponential backoff according to the settings in RetryConfig.
+  from the handler before the
+  [deadline](/appengine/docs/python/taskqueue/push/#the_task_deadline), then
+  it will be retried with exponential backoff according to the settings in
+  RetryConfig.
 
   Fields:
     maxAttempts: The maximum number of attempts for a task.  Cloud Tasks will
@@ -1345,8 +1336,7 @@ class RunTaskRequest(_messages.Message):
       payloads, might be desirable to return only when needed because of its
       large size or because of the sensitivity of data that it contains.
       Authorization for Task.View.FULL requires `cloudtasks.tasks.fullView`
-      [Google IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      [Google IAM](/iam/) permission on the Task.name resource.
 
   Fields:
     responseView: The response_view specifies which subset of the Task will be
@@ -1355,8 +1345,7 @@ class RunTaskRequest(_messages.Message):
       might be desirable to return only when needed because of its large size
       or because of the sensitivity of data that it contains.  Authorization
       for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-      IAM](https://cloud.google.com/iam/) permission on the Task.name
-      resource.
+      IAM](/iam/) permission on the Task.name resource.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
@@ -1365,8 +1354,8 @@ class RunTaskRequest(_messages.Message):
     retrieved by default because some data, such as payloads, might be
     desirable to return only when needed because of its large size or because
     of the sensitivity of data that it contains.  Authorization for
-    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-    IAM](https://cloud.google.com/iam/) permission on the Task.name resource.
+    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google IAM](/iam/)
+    permission on the Task.name resource.
 
     Values:
       VIEW_UNSPECIFIED: Unspecified. Defaults to BASIC.
@@ -1675,19 +1664,19 @@ class ThrottleConfig(_messages.Message):
       might not have the same settings as specified above;
       CloudTasks.UpdateQueue can be used to set `max_burst_size` only to the
       values specified above.  This field has the same meaning as [bucket_size
-      in queue.yaml](https://cloud.google.com/appengine/docs/standard/python/c
-      onfig/queueref#bucket_size).
+      in queue.yaml](/appengine/docs/standard/python/config/queueref#bucket_si
+      ze).
     maxOutstandingTasks: * For App Engine queues, this field is 10 by default.
       * For pull queues, this field is output only and always -1, which
       indicates no limit.  This field has the same meaning as
-      [max_concurrent_requests in queue.yaml](https://cloud.google.com/appengi
-      ne/docs/standard/python/config/queueref#max_concurrent_requests).
+      [max_concurrent_requests in queue.yaml](/appengine/docs/standard/python/
+      config/queueref#max_concurrent_requests).
     maxTasksDispatchedPerSecond: The maximum rate at which tasks are
       dispatched from this queue.  The maximum allowed value is 500.  * For
       App Engine queues, this field is 1 by default. * For pull queues, this
       field is output only and always 10,000.  This field has the same meaning
-      as [rate in queue.yaml](https://cloud.google.com/appengine/docs/standard
-      /python/config/queueref#rate).
+      as [rate in
+      queue.yaml](/appengine/docs/standard/python/config/queueref#rate).
   """
 
   maxBurstSize = _messages.FloatField(1)

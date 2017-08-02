@@ -1445,16 +1445,6 @@ class Empty(_messages.Message):
 
 
 
-class ExtraValue(_messages.Message):
-  """ExtraValue allows the extra field to be a mapstringstring
-
-  Fields:
-    items: items, if empty, will result in an empty slice
-  """
-
-  items = _messages.StringField(1, repeated=True)
-
-
 class HorizontalPodAutoscaling(_messages.Message):
   """Configuration options for the horizontal pod autoscaling feature, which
   increases or decreases the number of replica pods a replication controller
@@ -1516,7 +1506,7 @@ class IPAllocationPolicy(_messages.Message):
       networks (e.g. `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick
       a specific range to use.
     subnetworkName: A custom subnetwork name to be used if `create_subnetwork`
-      is true.  If this field is empty, then an automatic name will choosen
+      is true.  If this field is empty, then an automatic name will be chosen
       for the new subnetwork.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
   """
@@ -2518,12 +2508,16 @@ class SubjectAccessReviewSpec(_messages.Message):
   Messages:
     ExtraValue: Any "extra" data from the user being authorized. Note:
       normally this field would be called "extras", but we have to match the
-      struct in Kubernetes.
+      struct in Kubernetes. This value in Kubernetes is a map<string,
+      ExtraValue>, where ExtraValue is a typedef to []string. Proto3 doesn't
+      support that way, so we use ListValue here.
 
   Fields:
     extra: Any "extra" data from the user being authorized. Note: normally
       this field would be called "extras", but we have to match the struct in
-      Kubernetes.
+      Kubernetes. This value in Kubernetes is a map<string, ExtraValue>, where
+      ExtraValue is a typedef to []string. Proto3 doesn't support that way, so
+      we use ListValue here.
     group: Any groups this user may be a part of (this is not used for GKE
       IAM). Note: normally this field would be called "groups", but we have to
       match the struct in Kubernetes.
@@ -2540,7 +2534,9 @@ class SubjectAccessReviewSpec(_messages.Message):
   class ExtraValue(_messages.Message):
     """Any "extra" data from the user being authorized. Note: normally this
     field would be called "extras", but we have to match the struct in
-    Kubernetes.
+    Kubernetes. This value in Kubernetes is a map<string, ExtraValue>, where
+    ExtraValue is a typedef to []string. Proto3 doesn't support that way, so
+    we use ListValue here.
 
     Messages:
       AdditionalProperty: An additional property for a ExtraValue object.
@@ -2554,11 +2550,11 @@ class SubjectAccessReviewSpec(_messages.Message):
 
       Fields:
         key: Name of the additional property.
-        value: A ExtraValue attribute.
+        value: A extra_types.JsonValue attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('ExtraValue', 2)
+      value = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
@@ -2672,11 +2668,15 @@ class UserInfo(_messages.Message):
 
   Messages:
     ExtraValue: Any additional information provided by the authenticator to be
-      passed to the authorizer.
+      passed to the authorizer. This value in Kubernetes is a map<string,
+      ExtraValue>, where ExtraValue is a typedef to []string. Proto3 doesn't
+      support that way, so we use ListValue here.
 
   Fields:
     extra: Any additional information provided by the authenticator to be
-      passed to the authorizer.
+      passed to the authorizer. This value in Kubernetes is a map<string,
+      ExtraValue>, where ExtraValue is a typedef to []string. Proto3 doesn't
+      support that way, so we use ListValue here.
     groups: Groups that this user is a part of. This is not currently filled
       in for GKE.
     uid: A unique identifier (across time) for the user. This is not currently
@@ -2688,7 +2688,9 @@ class UserInfo(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ExtraValue(_messages.Message):
     """Any additional information provided by the authenticator to be passed
-    to the authorizer.
+    to the authorizer. This value in Kubernetes is a map<string, ExtraValue>,
+    where ExtraValue is a typedef to []string. Proto3 doesn't support that
+    way, so we use ListValue here.
 
     Messages:
       AdditionalProperty: An additional property for a ExtraValue object.
@@ -2702,11 +2704,11 @@ class UserInfo(_messages.Message):
 
       Fields:
         key: Name of the additional property.
-        value: A ExtraValue attribute.
+        value: A extra_types.JsonValue attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('ExtraValue', 2)
+      value = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 

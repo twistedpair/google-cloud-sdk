@@ -167,13 +167,6 @@
         }
       }
     },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance:\nservice Foo {\n  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n}\nThe JSON representation for Empty is empty JSON object {}.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "WriteLogEntriesRequest": {
       "id": "WriteLogEntriesRequest",
       "description": "The parameters to WriteLogEntries.",
@@ -385,6 +378,10 @@
           "description": "The number of HTTP response bytes inserted into cache. Set only when a cache fill was attempted.",
           "type": "string",
           "format": "int64"
+        },
+        "protocol": {
+          "description": "Protocol used for the request. Example: \"HTTP\/1.1\".",
+          "type": "string"
         }
       }
     },
@@ -539,7 +536,7 @@
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details. There will be a common set of message types for APIs to use.",
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -549,6 +546,13 @@
             }
           }
         }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance:\nservice Foo {\n  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n}\nThe JSON representation for Empty is empty JSON object {}.",
+      "type": "object",
+      "properties": {
       }
     },
     "ListLogServiceSinksResponse": {
@@ -862,38 +866,6 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
-            },
-            "delete": {
-              "id": "logging.projects.logs.delete",
-              "path": "v1beta3/projects/{projectsId}/logs/{logsId}",
-              "flatPath": "v1beta3/projects/{projectsId}/logs/{logsId}",
-              "httpMethod": "DELETE",
-              "description": "Deletes a log and all its log entries. The log will reappear if it receives new entries.",
-              "parameters": {
-                "projectsId": {
-                  "description": "Part of `logName`. The resource name of the log to be deleted.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "logsId": {
-                  "description": "Part of `logName`. See documentation of `projectsId`.",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "projectsId",
-                "logsId"
-              ],
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/logging.admin"
               ]
             }
           }

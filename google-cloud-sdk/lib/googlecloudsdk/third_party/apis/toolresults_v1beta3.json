@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20170623",
+ "revision": "20170724",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -90,6 +90,21 @@
      "type": "string",
      "description": "Must be a valid serialized protocol buffer of the above specified type.",
      "format": "byte"
+    }
+   }
+  },
+  "AppStartTime": {
+   "id": "AppStartTime",
+   "type": "object",
+   "externalTypeName": "google.devtools.toolresults.v1.AppStartTime",
+   "properties": {
+    "fullyDrawnTime": {
+     "$ref": "Duration",
+     "description": "Optional. The time from app start to reaching the developer-reported \"fully drawn\" time. This is only stored if the app includes a call to Activity.reportFullyDrawn(). See https://developer.android.com/topic/performance/launch-time.html#time-full"
+    },
+    "initialDisplayTime": {
+     "$ref": "Duration",
+     "description": "The time from app start to the first displayed activity being drawn, as reported in Logcat. See https://developer.android.com/topic/performance/launch-time.html#time-initial"
     }
    }
   },
@@ -277,7 +292,7 @@
     },
     "testExecutionMatrixId": {
      "type": "string",
-     "description": "TestExecution Matrix ID that the Test Service uses.\n\n- In response: present if set by create - In create: optional - In update: never set"
+     "description": "TestExecution Matrix ID that the TestExecutionService uses.\n\n- In response: present if set by create - In create: optional - In update: never set"
     }
    }
   },
@@ -566,6 +581,9 @@
    "description": "A summary of perf metrics collected and performance environment info",
    "externalTypeName": "google.devtools.toolresults.v1.PerfMetricsSummary",
    "properties": {
+    "appStartTime": {
+     "$ref": "AppStartTime"
+    },
     "executionId": {
      "type": "string",
      "description": "A tool results execution ID."
@@ -714,9 +732,17 @@
    "description": "A stacktrace.",
    "externalTypeName": "google.devtools.toolresults.v1.StackTrace",
    "properties": {
+    "clusterId": {
+     "type": "string",
+     "description": "Exception cluster ID"
+    },
     "exception": {
      "type": "string",
      "description": "The stack trace message.\n\nRequired"
+    },
+    "reportId": {
+     "type": "string",
+     "description": "Exception report ID"
     }
    }
   },
@@ -733,7 +759,7 @@
     },
     "details": {
      "type": "array",
-     "description": "A list of messages that carry the error details. There will be a common set of message types for APIs to use.",
+     "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
      "items": {
       "$ref": "Any"
      }

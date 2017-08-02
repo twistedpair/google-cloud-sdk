@@ -5,7 +5,7 @@
  "name": "clouduseraccounts",
  "canonicalName": "Cloud User Accounts",
  "version": "alpha",
- "revision": "20170707",
+ "revision": "20170724",
  "title": "Cloud User Accounts API",
  "description": "Creates and manages users and groups for accessing Google Compute Engine virtual machines.",
  "ownerDomain": "google.com",
@@ -132,6 +132,31 @@
       "LOG_TYPE_UNSPECIFIED"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "AuthorizationLoggingOptions": {
+   "id": "AuthorizationLoggingOptions",
+   "type": "object",
+   "description": "Authorization-related information used by Cloud Audit Logging.",
+   "properties": {
+    "permissionType": {
+     "type": "string",
+     "description": "The type of the permission that was checked.",
+     "enum": [
+      "ADMIN_READ",
+      "ADMIN_WRITE",
+      "DATA_READ",
+      "DATA_WRITE",
+      "PERMISSION_TYPE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -339,7 +364,7 @@
     },
     "items": {
      "type": "array",
-     "description": "[Output Only] A list of Group resources.",
+     "description": "A list of Group resources.",
      "items": {
       "$ref": "Group"
      }
@@ -351,7 +376,7 @@
     },
     "nextPageToken": {
      "type": "string",
-     "description": "[Output Only] A token used to continue a truncated list request."
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
     },
     "selfLink": {
      "type": "string",
@@ -507,9 +532,9 @@
    "type": "object",
    "description": "Write a Cloud Audit log",
    "properties": {
-    "isReadPermissionType": {
-     "type": "boolean",
-     "description": "True if the log is for a permission of type DATA_READ or ADMIN_READ."
+    "authorizationLoggingOptions": {
+     "$ref": "AuthorizationLoggingOptions",
+     "description": "Information used by the Cloud Audit Logging pipeline."
     },
     "logName": {
      "type": "string",
@@ -1011,7 +1036,7 @@
     },
     "items": {
      "type": "array",
-     "description": "[Output Only] A list of User resources.",
+     "description": "A list of User resources.",
      "items": {
       "$ref": "User"
      }
@@ -1023,7 +1048,7 @@
     },
     "nextPageToken": {
      "type": "string",
-     "description": "[Output Only] A token used to continue a truncated list request."
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
     },
     "selfLink": {
      "type": "string",

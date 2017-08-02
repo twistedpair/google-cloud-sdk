@@ -206,7 +206,7 @@
     },
     "Application": {
       "id": "Application",
-      "description": "An Application resource contains the top-level configuration of an App Engine application. Next tag: 19",
+      "description": "An Application resource contains the top-level configuration of an App Engine application. Next tag: 20",
       "type": "object",
       "properties": {
         "name": {
@@ -1184,6 +1184,11 @@
         },
         "timeout": {
           "description": "Time before the check is considered failed.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "appStartTimeout": {
+          "description": "A maximum time limit on application initialization, measured from moment the application successfully replies to a healthcheck until it is ready to serve traffic.",
           "type": "string",
           "format": "google-duration"
         }

@@ -710,7 +710,7 @@
           "type": "boolean"
         },
         "subnetworkName": {
-          "description": "A custom subnetwork name to be used if `create_subnetwork` is true.  If\nthis field is empty, then an automatic name will choosen for the new\nsubnetwork.",
+          "description": "A custom subnetwork name to be used if `create_subnetwork` is true.  If\nthis field is empty, then an automatic name will be chosen for the new\nsubnetwork.",
           "type": "string"
         },
         "clusterIpv4Cidr": {
@@ -1527,24 +1527,13 @@
           }
         },
         "extra": {
-          "description": "Any additional information provided by the authenticator to be passed\nto the authorizer.",
+          "description": "Any additional information provided by the authenticator to be passed\nto the authorizer.\nThis value in Kubernetes is a map<string, ExtraValue>, where ExtraValue is\na typedef to []string. Proto3 doesn't support that way, so we use ListValue\nhere.",
           "type": "object",
           "additionalProperties": {
-            "$ref": "ExtraValue"
-          }
-        }
-      }
-    },
-    "ExtraValue": {
-      "id": "ExtraValue",
-      "description": "ExtraValue allows the extra field to be a mapstringstring",
-      "type": "object",
-      "properties": {
-        "items": {
-          "description": "items, if empty, will result in an empty slice",
-          "type": "array",
-          "items": {
-            "type": "string"
+            "type": "array",
+            "items": {
+              "type": "any"
+            }
           }
         }
       }
@@ -1620,10 +1609,13 @@
           }
         },
         "extra": {
-          "description": "Any \"extra\" data from the user being authorized. Note: normally this field\nwould be called \"extras\", but we have to match the struct in Kubernetes.",
+          "description": "Any \"extra\" data from the user being authorized. Note: normally this field\nwould be called \"extras\", but we have to match the struct in Kubernetes.\nThis value in Kubernetes is a map<string, ExtraValue>, where ExtraValue is\na typedef to []string. Proto3 doesn't support that way, so we use ListValue\nhere.",
           "type": "object",
           "additionalProperties": {
-            "$ref": "ExtraValue"
+            "type": "array",
+            "items": {
+              "type": "any"
+            }
           }
         }
       }

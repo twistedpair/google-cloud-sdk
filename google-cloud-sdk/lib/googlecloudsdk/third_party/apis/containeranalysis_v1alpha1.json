@@ -241,6 +241,10 @@
         "fixedLocation": {
           "description": "The location of the available fix for vulnerability.",
           "$ref": "VulnerabilityLocation"
+        },
+        "severityName": {
+          "description": "The severity (eg: distro assigned severity) for this vulnerability.",
+          "type": "string"
         }
       }
     },

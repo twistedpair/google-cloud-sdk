@@ -38,6 +38,7 @@ class HttpRequest(_messages.Message):
       only meaningful if cache_hit is True.
     latency: The request processing latency on the server, from the time the
       request was received until the response was sent.
+    protocol: Protocol used for the request. Example: "HTTP/1.1".
     referer: The referer URL of the request, as defined in HTTP/1.1 Header
       Field Definitions
       (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
@@ -64,15 +65,16 @@ class HttpRequest(_messages.Message):
   cacheLookup = _messages.BooleanField(3)
   cacheValidatedWithOriginServer = _messages.BooleanField(4)
   latency = _messages.StringField(5)
-  referer = _messages.StringField(6)
-  remoteIp = _messages.StringField(7)
-  requestMethod = _messages.StringField(8)
-  requestSize = _messages.IntegerField(9)
-  requestUrl = _messages.StringField(10)
-  responseSize = _messages.IntegerField(11)
-  serverIp = _messages.StringField(12)
-  status = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  userAgent = _messages.StringField(14)
+  protocol = _messages.StringField(6)
+  referer = _messages.StringField(7)
+  remoteIp = _messages.StringField(8)
+  requestMethod = _messages.StringField(9)
+  requestSize = _messages.IntegerField(10)
+  requestUrl = _messages.StringField(11)
+  responseSize = _messages.IntegerField(12)
+  serverIp = _messages.StringField(13)
+  status = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  userAgent = _messages.StringField(15)
 
 
 class ListLogServiceSinksResponse(_messages.Message):
@@ -595,18 +597,6 @@ class LoggingProjectsLogServicesSinksUpdateRequest(_messages.Message):
   sinksId = _messages.StringField(4, required=True)
 
 
-class LoggingProjectsLogsDeleteRequest(_messages.Message):
-  """A LoggingProjectsLogsDeleteRequest object.
-
-  Fields:
-    logsId: Part of `logName`. See documentation of `projectsId`.
-    projectsId: Part of `logName`. The resource name of the log to be deleted.
-  """
-
-  logsId = _messages.StringField(1, required=True)
-  projectsId = _messages.StringField(2, required=True)
-
-
 class LoggingProjectsLogsEntriesWriteRequest(_messages.Message):
   """A LoggingProjectsLogsEntriesWriteRequest object.
 
@@ -1001,7 +991,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details. There will be a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

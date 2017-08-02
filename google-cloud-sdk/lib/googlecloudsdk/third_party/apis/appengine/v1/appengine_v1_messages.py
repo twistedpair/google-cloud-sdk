@@ -416,7 +416,7 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
 
 class Application(_messages.Message):
   """An Application resource contains the top-level configuration of an App
-  Engine application. Next tag: 19
+  Engine application. Next tag: 20
 
   Enums:
     ServingStatusValueValuesEnum: Serving status of this application.
@@ -1342,6 +1342,9 @@ class ReadinessCheck(_messages.Message):
   are removed from traffic rotation.
 
   Fields:
+    appStartTimeout: A maximum time limit on application initialization,
+      measured from moment the application successfully replies to a
+      healthcheck until it is ready to serve traffic.
     checkInterval: Interval between health checks.
     failureThreshold: Number of consecutive failed checks required before
       removing traffic.
@@ -1353,12 +1356,13 @@ class ReadinessCheck(_messages.Message):
     timeout: Time before the check is considered failed.
   """
 
-  checkInterval = _messages.StringField(1)
-  failureThreshold = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
-  host = _messages.StringField(3)
-  path = _messages.StringField(4)
-  successThreshold = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
-  timeout = _messages.StringField(6)
+  appStartTimeout = _messages.StringField(1)
+  checkInterval = _messages.StringField(2)
+  failureThreshold = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+  host = _messages.StringField(4)
+  path = _messages.StringField(5)
+  successThreshold = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
+  timeout = _messages.StringField(7)
 
 
 class RepairApplicationRequest(_messages.Message):

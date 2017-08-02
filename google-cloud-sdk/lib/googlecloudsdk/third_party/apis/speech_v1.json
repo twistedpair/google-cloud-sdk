@@ -187,7 +187,7 @@
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -281,6 +281,10 @@
           "items": {
             "$ref": "SpeechContext"
           }
+        },
+        "enableWordTimeOffsets": {
+          "description": "*Optional* If `true`, a list of `words` are returned in the top result,\ncontaining the start and end timestamps for those words. The default value,\n'false' does not return any word-level timing information.",
+          "type": "boolean"
         }
       }
     },
@@ -355,6 +359,34 @@
           "description": "*Output-only* The confidence estimate between 0.0 and 1.0. A higher number\nindicates an estimated greater likelihood that the recognized words are\ncorrect. This field is typically provided only for the top hypothesis, and\nonly for `is_final=true` results. Clients should not rely on the\n`confidence` field as it is not guaranteed to be accurate or consistent.\nThe default of 0.0 is a sentinel value indicating `confidence` was not set.",
           "type": "number",
           "format": "float"
+        },
+        "words": {
+          "description": "*Output-only* List of word-specific information for each recognized word.",
+          "type": "array",
+          "items": {
+            "$ref": "WordInfo"
+          }
+        }
+      }
+    },
+    "WordInfo": {
+      "id": "WordInfo",
+      "description": "Word-specific information detected along with speech recognition when certain\nrequest parameters are set.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "*Output-only* Time offset relative to the beginning of the audio,\nand corresponding to the start of the spoken word.\nThis field is only set if `enable_word_time_offsets=true` and only\nin the top hypothesis.\nThis is an experimental feature and the accuracy of the time offset can\nvary.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "endTime": {
+          "description": "*Output-only* Time offset relative to the beginning of the audio,\nand corresponding to the end of the spoken word.\nThis field is only set if `enable_word_time_offsets=true` and only\nin the top hypothesis.\nThis is an experimental feature and the accuracy of the time offset can\nvary.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "word": {
+          "description": "*Output-only* The word corresponding to this set of information.",
+          "type": "string"
         }
       }
     },

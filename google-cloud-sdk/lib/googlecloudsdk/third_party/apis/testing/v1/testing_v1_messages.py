@@ -816,6 +816,16 @@ class TestMatrix(_messages.Message):
       NO_PACKAGE_NAME: The APK manifest does not declare a package name.
       TEST_SAME_AS_APP: The test package and app package are the same.
       NO_INSTRUMENTATION: The test apk does not declare an instrumentation.
+      INSTRUMENTATION_ORCHESTRATOR_INCOMPATIBLE: The test runner class
+        specified by user or in the test APK's manifest file is not compatible
+        with Android Test Orchestrator. Orchestrator is only compatible with
+        AndroidJUnitRunner version 1.0 or higher. Orchestrator can be disabled
+        by using DO_NOT_USE_ORCHESTRATOR OrchestratorOption.
+      NO_TEST_RUNNER_CLASS: The test APK does not contain the test runner
+        class specified by user or in the manifest file. This can be caused by
+        either of the following reasons: - the user provided a runner class
+        name that's incorrect, or - the test runner isn't built into the test
+        APK (might be in the app APK instead).
       NO_LAUNCHER_ACTIVITY: A main launcher activity could not be found.
       FORBIDDEN_PERMISSIONS: The app declares one or more permissions that are
         not allowed.
@@ -840,14 +850,16 @@ class TestMatrix(_messages.Message):
     NO_PACKAGE_NAME = 5
     TEST_SAME_AS_APP = 6
     NO_INSTRUMENTATION = 7
-    NO_LAUNCHER_ACTIVITY = 8
-    FORBIDDEN_PERMISSIONS = 9
-    INVALID_ROBO_DIRECTIVES = 10
-    TEST_LOOP_INTENT_FILTER_NOT_FOUND = 11
-    SCENARIO_LABEL_NOT_DECLARED = 12
-    SCENARIO_LABEL_MALFORMED = 13
-    SCENARIO_NOT_DECLARED = 14
-    DEVICE_ADMIN_RECEIVER = 15
+    INSTRUMENTATION_ORCHESTRATOR_INCOMPATIBLE = 8
+    NO_TEST_RUNNER_CLASS = 9
+    NO_LAUNCHER_ACTIVITY = 10
+    FORBIDDEN_PERMISSIONS = 11
+    INVALID_ROBO_DIRECTIVES = 12
+    TEST_LOOP_INTENT_FILTER_NOT_FOUND = 13
+    SCENARIO_LABEL_NOT_DECLARED = 14
+    SCENARIO_LABEL_MALFORMED = 15
+    SCENARIO_NOT_DECLARED = 16
+    DEVICE_ADMIN_RECEIVER = 17
 
   class StateValueValuesEnum(_messages.Enum):
     """Indicates the current progress of the test matrix (e.g., FINISHED)

@@ -20,7 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://logging.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -352,6 +352,10 @@
           "description": "The number of HTTP response bytes inserted into cache. Set only when a cache fill was attempted.",
           "type": "string",
           "format": "int64"
+        },
+        "protocol": {
+          "description": "Protocol used for the request. Example: \"HTTP\/1.1\".",
+          "type": "string"
         }
       }
     },
@@ -592,7 +596,7 @@
           "type": "string"
         },
         "outputVersionFormat": {
-          "description": "Optional. The log entry format to use for this sink's exported log entries. The v2 format is used by default. The v1 format is deprecated and should be used only as part of a migration effort to v2. See Migration to the v2 API.",
+          "description": "Deprecated. The log entry format to use for this sink's exported log entries. The v2 format is used by default and cannot be changed.",
           "enumDescriptions": [
             "An unspecified format version that will default to V2.",
             "LogEntry version 2 format.",
@@ -1115,6 +1119,40 @@
                 "https://www.googleapis.com/auth/logging.admin"
               ]
             },
+            "patch": {
+              "id": "logging.projects.sinks.patch",
+              "path": "v2/{+sinkName}",
+              "flatPath": "v2/projects/{projectsId}/sinks/{sinksId}",
+              "httpMethod": "PATCH",
+              "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
+              "parameters": {
+                "sinkName": {
+                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/sinks\/[^\/]+$",
+                  "type": "string"
+                },
+                "uniqueWriterIdentity": {
+                  "description": "Optional. See sinks.create for a description of this field. When updating a sink, the effect of this field on the value of writer_identity in the updated sink depends on both the old and new values of this field:\nIf the old and new values of this field are both false or both true, then there is no change to the sink's writer_identity.\nIf the old value is false and the new value is true, then writer_identity is changed to a unique service account.\nIt is an error if the old value is true and the new value is set to false or defaulted to false.",
+                  "location": "query",
+                  "type": "boolean"
+                }
+              },
+              "parameterOrder": [
+                "sinkName"
+              ],
+              "request": {
+                "$ref": "LogSink"
+              },
+              "response": {
+                "$ref": "LogSink"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ]
+            },
             "delete": {
               "id": "logging.projects.sinks.delete",
               "path": "v2/{+sinkName}",
@@ -1511,6 +1549,40 @@
                 "https://www.googleapis.com/auth/logging.admin"
               ]
             },
+            "patch": {
+              "id": "logging.organizations.sinks.patch",
+              "path": "v2/{+sinkName}",
+              "flatPath": "v2/organizations/{organizationsId}/sinks/{sinksId}",
+              "httpMethod": "PATCH",
+              "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
+              "parameters": {
+                "sinkName": {
+                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/sinks\/[^\/]+$",
+                  "type": "string"
+                },
+                "uniqueWriterIdentity": {
+                  "description": "Optional. See sinks.create for a description of this field. When updating a sink, the effect of this field on the value of writer_identity in the updated sink depends on both the old and new values of this field:\nIf the old and new values of this field are both false or both true, then there is no change to the sink's writer_identity.\nIf the old value is false and the new value is true, then writer_identity is changed to a unique service account.\nIt is an error if the old value is true and the new value is set to false or defaulted to false.",
+                  "location": "query",
+                  "type": "boolean"
+                }
+              },
+              "parameterOrder": [
+                "sinkName"
+              ],
+              "request": {
+                "$ref": "LogSink"
+              },
+              "response": {
+                "$ref": "LogSink"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ]
+            },
             "delete": {
               "id": "logging.organizations.sinks.delete",
               "path": "v2/{+sinkName}",
@@ -1749,6 +1821,40 @@
                 "https://www.googleapis.com/auth/logging.admin"
               ]
             },
+            "patch": {
+              "id": "logging.folders.sinks.patch",
+              "path": "v2/{+sinkName}",
+              "flatPath": "v2/folders/{foldersId}/sinks/{sinksId}",
+              "httpMethod": "PATCH",
+              "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
+              "parameters": {
+                "sinkName": {
+                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^folders\/[^\/]+\/sinks\/[^\/]+$",
+                  "type": "string"
+                },
+                "uniqueWriterIdentity": {
+                  "description": "Optional. See sinks.create for a description of this field. When updating a sink, the effect of this field on the value of writer_identity in the updated sink depends on both the old and new values of this field:\nIf the old and new values of this field are both false or both true, then there is no change to the sink's writer_identity.\nIf the old value is false and the new value is true, then writer_identity is changed to a unique service account.\nIt is an error if the old value is true and the new value is set to false or defaulted to false.",
+                  "location": "query",
+                  "type": "boolean"
+                }
+              },
+              "parameterOrder": [
+                "sinkName"
+              ],
+              "request": {
+                "$ref": "LogSink"
+              },
+              "response": {
+                "$ref": "LogSink"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ]
+            },
             "delete": {
               "id": "logging.folders.sinks.delete",
               "path": "v2/{+sinkName}",
@@ -1958,6 +2064,40 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}",
               "httpMethod": "PUT",
+              "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
+              "parameters": {
+                "sinkName": {
+                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^billingAccounts\/[^\/]+\/sinks\/[^\/]+$",
+                  "type": "string"
+                },
+                "uniqueWriterIdentity": {
+                  "description": "Optional. See sinks.create for a description of this field. When updating a sink, the effect of this field on the value of writer_identity in the updated sink depends on both the old and new values of this field:\nIf the old and new values of this field are both false or both true, then there is no change to the sink's writer_identity.\nIf the old value is false and the new value is true, then writer_identity is changed to a unique service account.\nIt is an error if the old value is true and the new value is set to false or defaulted to false.",
+                  "location": "query",
+                  "type": "boolean"
+                }
+              },
+              "parameterOrder": [
+                "sinkName"
+              ],
+              "request": {
+                "$ref": "LogSink"
+              },
+              "response": {
+                "$ref": "LogSink"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ]
+            },
+            "patch": {
+              "id": "logging.billingAccounts.sinks.patch",
+              "path": "v2/{+sinkName}",
+              "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}",
+              "httpMethod": "PATCH",
               "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {

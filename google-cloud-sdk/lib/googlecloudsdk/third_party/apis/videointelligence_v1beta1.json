@@ -137,7 +137,8 @@
           "enumDescriptions": [
             "Unspecified.",
             "Label detection. Detect objects, such as dog or flower.",
-            "Shot change detection."
+            "Shot change detection.",
+            "Safe search detection."
           ],
           "type": "array",
           "items": {
@@ -145,7 +146,8 @@
             "enum": [
               "FEATURE_UNSPECIFIED",
               "LABEL_DETECTION",
-              "SHOT_CHANGE_DETECTION"
+              "SHOT_CHANGE_DETECTION",
+              "SAFE_SEARCH_DETECTION"
             ]
           }
         },
@@ -191,12 +193,20 @@
             "SHOT_AND_FRAME_MODE"
           ]
         },
+        "stationaryCamera": {
+          "description": "Whether the video has been shot from a stationary (i.e. non-moving) camera.\nWhen set to true, might improve detection accuracy for moving objects.",
+          "type": "boolean"
+        },
         "labelDetectionModel": {
           "description": "Model to use for label detection.\nSupported values: \"latest\" and \"stable\" (the default).",
           "type": "string"
         },
         "shotChangeDetectionModel": {
           "description": "Model to use for shot change detection.\nSupported values: \"latest\" and \"stable\" (the default).",
+          "type": "string"
+        },
+        "safeSearchDetectionModel": {
+          "description": "Model to use for safe search detection.\nSupported values: \"latest\" and \"stable\" (the default).",
           "type": "string"
         }
       }
@@ -268,7 +278,7 @@
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There will be a\ncommon set of message types for APIs to use.",
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -315,6 +325,13 @@
           "type": "array",
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1beta1_VideoSegment"
+          }
+        },
+        "safeSearchAnnotations": {
+          "description": "Safe search annotations.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1beta1_SafeSearchAnnotation"
           }
         },
         "error": {
@@ -376,6 +393,118 @@
             "SHOT_LEVEL",
             "FRAME_LEVEL"
           ]
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1beta1_SafeSearchAnnotation": {
+      "id": "GoogleCloudVideointelligenceV1beta1_SafeSearchAnnotation",
+      "description": "Safe search annotation (based on per-frame visual signals only).\nIf no unsafe content has been detected in a frame, no annotations\nare present for that frame. If only some types of unsafe content\nhave been detected in a frame, the likelihood is set to `UNKNOWN`\nfor all other types of unsafe content.",
+      "type": "object",
+      "properties": {
+        "adult": {
+          "description": "Likelihood of adult content.",
+          "enumDescriptions": [
+            "Unknown likelihood.",
+            "Very unlikely.",
+            "Unlikely.",
+            "Possible.",
+            "Likely.",
+            "Very likely."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "VERY_UNLIKELY",
+            "UNLIKELY",
+            "POSSIBLE",
+            "LIKELY",
+            "VERY_LIKELY"
+          ]
+        },
+        "spoof": {
+          "description": "Likelihood that an obvious modification was made to the original\nversion to make it appear funny or offensive.",
+          "enumDescriptions": [
+            "Unknown likelihood.",
+            "Very unlikely.",
+            "Unlikely.",
+            "Possible.",
+            "Likely.",
+            "Very likely."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "VERY_UNLIKELY",
+            "UNLIKELY",
+            "POSSIBLE",
+            "LIKELY",
+            "VERY_LIKELY"
+          ]
+        },
+        "medical": {
+          "description": "Likelihood of medical content.",
+          "enumDescriptions": [
+            "Unknown likelihood.",
+            "Very unlikely.",
+            "Unlikely.",
+            "Possible.",
+            "Likely.",
+            "Very likely."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "VERY_UNLIKELY",
+            "UNLIKELY",
+            "POSSIBLE",
+            "LIKELY",
+            "VERY_LIKELY"
+          ]
+        },
+        "violent": {
+          "description": "Likelihood of violent content.",
+          "enumDescriptions": [
+            "Unknown likelihood.",
+            "Very unlikely.",
+            "Unlikely.",
+            "Possible.",
+            "Likely.",
+            "Very likely."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "VERY_UNLIKELY",
+            "UNLIKELY",
+            "POSSIBLE",
+            "LIKELY",
+            "VERY_LIKELY"
+          ]
+        },
+        "racy": {
+          "description": "Likelihood of racy content.",
+          "enumDescriptions": [
+            "Unknown likelihood.",
+            "Very unlikely.",
+            "Unlikely.",
+            "Possible.",
+            "Likely.",
+            "Very likely."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "VERY_UNLIKELY",
+            "UNLIKELY",
+            "POSSIBLE",
+            "LIKELY",
+            "VERY_LIKELY"
+          ]
+        },
+        "timeOffset": {
+          "description": "Video time offset in microseconds.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

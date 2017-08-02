@@ -159,7 +159,7 @@
           "type": "boolean"
         },
         "agentVersion": {
-          "description": "Version ID of the agent release. The version ID is structured as\nfollowing: `domain\/type\/vmajor.minor` (for example\n`google.com\/gcp-java\/v1.1`).",
+          "description": "Version ID of the agent release. The version ID is structured as\nfollowing: `domain\/language-platform\/vmajor.minor` (for example\n`google.com\/java-gcp\/v1.1`).",
           "type": "string"
         },
         "isDisabled": {

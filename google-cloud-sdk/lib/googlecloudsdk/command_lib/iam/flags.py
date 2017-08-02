@@ -22,9 +22,19 @@ def GetRoleFlag(verb):
       metavar='ROLE_ID',
       help='The id of the role to {0}. '
       'Curated roles example: roles/viewer. '
-      'Custom roles example: viewer. '
-      'For custom roles, you must also specify the organization '
-      'or project'.format(verb))
+      'Custom roles example: CustomRole. '
+      'For custom roles, you must also specify the `--organization` '
+      'or `--project` flag.'.format(verb))
+
+
+def GetCustomRoleFlag(verb):
+  return base.Argument(
+      'role',
+      metavar='ROLE_ID',
+      help='The id of the custom role to {0}. '
+      'For example: CustomRole. '
+      'You must also specify the `--organization` or `--project` '
+      'flag.'.format(verb))
 
 
 def GetOrgFlag(verb):

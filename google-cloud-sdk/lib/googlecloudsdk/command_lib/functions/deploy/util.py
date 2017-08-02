@@ -27,6 +27,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import archive
+from googlecloudsdk.core.util import files as file_utils
 
 
 def GetLocalPath(args):
@@ -85,6 +86,20 @@ def UploadFile(source, function_name, stage_bucket):
         'Failed to upload the function source code to the bucket {0}'
         .format(stage_bucket))
   return gcs_url
+
+
+def AddSourceToFunction(function, source_arg, include_ignored_files,
+                        function_name, stage_bucket):
+  if source_arg.startswith('gs://'):
+    function.sourceArchiveUrl = source_arg
+    return
+  if source_arg.startswith('https://'):
+    function.sourceRepositoryUrl = source_arg
+    return
+  with file_utils.TemporaryDirectory() as tmp_dir:
+    zip_file = CreateSourcesZipFile(tmp_dir, source_arg, include_ignored_files)
+    function.sourceArchiveUrl = UploadFile(
+        zip_file, function_name, stage_bucket)
 
 
 def ConvertTriggerArgsToRelativeName(trigger_provider, trigger_event,

@@ -983,7 +983,7 @@ class IPAllocationPolicy(_messages.Message):
       networks (e.g. `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick
       a specific range to use.
     subnetworkName: A custom subnetwork name to be used if `create_subnetwork`
-      is true.  If this field is empty, then an automatic name will choosen
+      is true.  If this field is empty, then an automatic name will be chosen
       for the new subnetwork.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
   """

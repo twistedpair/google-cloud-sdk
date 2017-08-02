@@ -19,9 +19,13 @@ class AcceleratorConfig(_messages.Message):
   Fields:
     acceleratorCount: The number of the accelerator cards of this type exposed
       to this instance.
-    acceleratorTypeUri: Full or partial URI of the accelerator type resource
-      to expose to this instance. See Google Compute Engine AcceleratorTypes(
-      /compute/docs/reference/beta/acceleratorTypes)
+    acceleratorTypeUri: Full URL, partial URI, or short name of the
+      accelerator type resource to expose to this instance. See Google Compute
+      Engine AcceleratorTypes(
+      /compute/docs/reference/beta/acceleratorTypes)Examples *
+      https://www.googleapis.com/compute/beta/projects/[project_id]/zones/us-
+      east1-a/acceleratorTypes/nvidia-tesla-k80 * projects/[project_id]/zones
+      /us-east1-a/acceleratorTypes/nvidia-tesla-k80 * nvidia-tesla-k80
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -463,6 +467,14 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
   Fields:
     cluster: A Cluster resource to be passed as the request body.
     clusterName: Required. The cluster name.
+    gracefulDecommissionTimeout: Optional. Timeout for graceful YARN
+      decomissioning. Graceful decommissioning allows removing nodes from the
+      cluster without interrupting jobs in progress. Timeout specifies how
+      long to wait for jobs in progress to finish before forcefully removing
+      nodes (and potentially interrupting jobs). Default timeout is 0 (for
+      forceful decommission), and the maximum allowed timeout is 24 hours.
+      Timeouts greater than the maximum timeout will also be truncated to 24
+      hours.Only supported on Dataproc image versions 1.2 and higher.
     projectId: Required. The ID of the Google Cloud Platform project the
       cluster belongs to.
     region: Required. The Cloud Dataproc region in which to handle the
@@ -488,9 +500,10 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
 
   cluster = _messages.MessageField('Cluster', 1)
   clusterName = _messages.StringField(2, required=True)
-  projectId = _messages.StringField(3, required=True)
-  region = _messages.StringField(4, required=True)
-  updateMask = _messages.StringField(5)
+  gracefulDecommissionTimeout = _messages.StringField(3)
+  projectId = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
+  updateMask = _messages.StringField(6)
 
 
 class DataprocProjectsRegionsJobsCancelRequest(_messages.Message):
@@ -687,6 +700,18 @@ class DiagnoseClusterRequest(_messages.Message):
   """A request to collect cluster diagnostic information."""
 
 
+class DiagnoseClusterResults(_messages.Message):
+  """The location of diagnostic output.
+
+  Fields:
+    outputUri: Output-only. The Google Cloud Storage URI of the diagnostic
+      output. The output report is a plain text file with a summary of
+      collected diagnostics.
+  """
+
+  outputUri = _messages.StringField(1)
+
+
 class DiskConfig(_messages.Message):
   """Specifies the config of disk options for a group of VM instances.
 
@@ -741,9 +766,10 @@ class GceClusterConfig(_messages.Message):
       machine communications. Cannot be specified with subnetwork_uri. If
       neither network_uri nor subnetwork_uri is specified, the "default"
       network of the project is used, if it exists. Cannot be a "Custom Subnet
-      Network" (see Using Subnetworks for more information). Example: https://
-      www.googleapis.com/compute/v1beta2/projects/[project_id]/regions/global/
-      default.
+      Network" (see Using Subnetworks for more information).A full URL,
+      partial URI, or short name are valid. Examples: https://www.googleapis.c
+      om/compute/v1/projects/[project_id]/regions/global/default
+      projects/[project_id]/regions/global/default default
     serviceAccount: Optional. The service account of the instances. Defaults
       to the default Google Compute Engine service account. Custom service
       accounts need permissions equivalent to the folloing IAM roles:
@@ -763,15 +789,20 @@ class GceClusterConfig(_messages.Message):
       https://www.googleapis.com/auth/bigtable.data
       https://www.googleapis.com/auth/devstorage.full_control
     subnetworkUri: Optional. The Google Compute Engine subnetwork to be used
-      for machine communications. Cannot be specified with network_uri.
-      Example:
-      https://www.googleapis.com/compute/v1beta2/projects/[project_id]/regions
-      /us-east1/sub0.
+      for machine communications. Cannot be specified with network_uri.A full
+      URL, partial URI, or short name are valid. Examples:
+      https://www.googleapis.com/compute/v1/projects/[project_id]/regions/us-
+      east1/sub0 projects/[project_id]/regions/us-east1/sub0 sub0
     tags: The Google Compute Engine tags to add to all instances (see Tagging
       instances).
-    zoneUri: Required. The zone where the Google Compute Engine cluster will
-      be located. Example: https://www.googleapis.com/compute/v1beta2/projects
-      /[project_id]/zones/[zone].
+    zoneUri: Optional. The zone where the Google Compute Engine cluster will
+      be located. On a create request, it is required in the "global" region.
+      If omitted in a non-global Cloud Dataproc region, the service will pick
+      a zone in the corresponding Compute Engine region. On a get request,
+      zone will always be present.A full URL, partial URI, or short name are
+      valid. Examples:
+      https://www.googleapis.com/compute/v1/projects/[project_id]/zones/[zone]
+      projects/[project_id]/zones/[zone] us-central1-f
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -997,14 +1028,16 @@ class InstanceGroupConfig(_messages.Message):
       derive the name).
     isPreemptible: Optional. Specifies that this instance group contains
       preemptible instances.
-    machineTypeUri: Required. The Google Compute Engine machine type used for
-      cluster instances. Example:
-      https://www.googleapis.com/compute/v1beta2/projects/[project_id]/zones
-      /us-east1-a/machineTypes/n1-standard-2.
+    machineTypeUri: Optional. The Google Compute Engine machine type used for
+      cluster instances.A full URL, partial URI, or short name are valid.
+      Examples:
+      https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
+      east1-a/machineTypes/n1-standard-2 projects/[project_id]/zones/us-
+      east1-a/machineTypes/n1-standard-2 n1-standard-2
     managedGroupConfig: Output-only. The config for Google Compute Engine
       Instance Group Manager that manages this group. This is only used for
       preemptible instance groups.
-    numInstances: Required. The number of VM instances in the instance group.
+    numInstances: Optional. The number of VM instances in the instance group.
       For master instance groups, must be set to 1.
   """
 
@@ -1977,7 +2010,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details. There will be a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

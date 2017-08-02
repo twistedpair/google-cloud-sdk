@@ -19,8 +19,6 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core import log
 
-_INSTANCE_COMPLETION = 'beta bigtable instances list --uri'
-
 
 class ClusterCompleter(completers.ListCommandCompleter):
 
@@ -113,8 +111,7 @@ class ArgAdder(object):
     help_text = 'ID of the instance.'
     name = 'instance' if positional else '--instance'
     args = {
-        'completion_resource': 'bigtableadmin.projects.instances',
-        'list_command_path': _INSTANCE_COMPLETION,
+        'completer': InstanceCompleter,
         'help': help_text
     }
     if multiple:

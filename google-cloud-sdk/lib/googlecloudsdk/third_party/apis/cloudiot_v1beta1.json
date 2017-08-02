@@ -786,10 +786,6 @@
             "ADMIN_ACTIVITY",
             "DATA_ACCESS"
           ]
-        },
-        "isReadPermissionType": {
-          "description": "True if the log is for a permission of type DATA_READ or ADMIN_READ.",
-          "type": "boolean"
         }
       }
     },

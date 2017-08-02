@@ -39,9 +39,10 @@ class DatapolV1alpha1(base_api.BaseApiClient):
     self.data_taxonomyStores = self.DataTaxonomyStoresService(self)
     self.data = self.DataService(self)
     self.dataAssets = self.DataAssetsService(self)
-    self.projects = self.ProjectsService(self)
+    self.operations = self.OperationsService(self)
     self.taxonomyStores_dataTaxonomies_annotations = self.TaxonomyStoresDataTaxonomiesAnnotationsService(self)
     self.taxonomyStores_dataTaxonomies = self.TaxonomyStoresDataTaxonomiesService(self)
+    self.taxonomyStores_taxonomyReports = self.TaxonomyStoresTaxonomyReportsService(self)
     self.taxonomyStores = self.TaxonomyStoresService(self)
 
   class DataTaxonomyStoresAnnotationTagsService(base_api.BaseApiService):
@@ -202,40 +203,40 @@ a cloud data set.
         supports_download=False,
     )
 
-  class ProjectsService(base_api.BaseApiService):
-    """Service class for the projects resource."""
+  class OperationsService(base_api.BaseApiService):
+    """Service class for the operations resource."""
 
-    _NAME = u'projects'
+    _NAME = u'operations'
 
     def __init__(self, client):
-      super(DatapolV1alpha1.ProjectsService, self).__init__(client)
+      super(DatapolV1alpha1.OperationsService, self).__init__(client)
       self._upload_configs = {
           }
 
-    def GetDefaultTaxonomyStore(self, request, global_params=None):
-      """Search for the taxonomy store for the given project.
+    def Get(self, request, global_params=None):
+      """Gets the latest state of a long-running operation.
 
       Args:
-        request: (DatapolProjectsGetDefaultTaxonomyStoreRequest) input message
+        request: (DatapolOperationsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (TaxonomyStore) The response message.
+        (Operation) The response message.
       """
-      config = self.GetMethodConfig('GetDefaultTaxonomyStore')
+      config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    GetDefaultTaxonomyStore.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/defaultTaxonomyStore',
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/operations/{operationsId}',
         http_method=u'GET',
-        method_id=u'datapol.projects.getDefaultTaxonomyStore',
+        method_id=u'datapol.operations.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
-        request_type_name=u'DatapolProjectsGetDefaultTaxonomyStoreRequest',
-        response_type_name=u'TaxonomyStore',
+        request_type_name=u'DatapolOperationsGetRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -359,7 +360,7 @@ annotation is a group annotation.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates description of an annotation.
+      """Updates an annotation. Currently only support updating descriptions.
 
       Args:
         request: (DatapolTaxonomyStoresDataTaxonomiesAnnotationsPatchRequest) input message
@@ -377,9 +378,9 @@ annotation is a group annotation.
         method_id=u'datapol.taxonomyStores.dataTaxonomies.annotations.patch',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[],
+        query_params=[u'updateMask'],
         relative_path=u'v1alpha1/{+name}',
-        request_field=u'updateAnnotationRequest',
+        request_field=u'annotation',
         request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesAnnotationsPatchRequest',
         response_type_name=u'Annotation',
         supports_download=False,
@@ -394,6 +395,34 @@ annotation is a group annotation.
       super(DatapolV1alpha1.TaxonomyStoresDataTaxonomiesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Copy(self, request, global_params=None):
+      """Copy an annotation to a given taxonomy. Copy will fail if there is an.
+annotation with the same in the taxonomy.
+
+      Args:
+        request: (DatapolTaxonomyStoresDataTaxonomiesCopyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Annotation) The response message.
+      """
+      config = self.GetMethodConfig('Copy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Copy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}:copy',
+        http_method=u'POST',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.copy',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}:copy',
+        request_field=u'copyAnnotationRequest',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesCopyRequest',
+        response_type_name=u'Annotation',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       """Creates a new data taxonomy in a given taxonomy store.
@@ -531,6 +560,33 @@ all annotations in this taxonomy.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates a taxonomy. Currently only support updating descriptions.
+
+      Args:
+        request: (DatapolTaxonomyStoresDataTaxonomiesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DataTaxonomy) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}',
+        http_method=u'PATCH',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'dataTaxonomy',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesPatchRequest',
+        response_type_name=u'DataTaxonomy',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       """SetIamPolicy method for the taxonomyStores_dataTaxonomies service.
 
@@ -558,6 +614,151 @@ all annotations in this taxonomy.
         supports_download=False,
     )
 
+  class TaxonomyStoresTaxonomyReportsService(base_api.BaseApiService):
+    """Service class for the taxonomyStores_taxonomyReports resource."""
+
+    _NAME = u'taxonomyStores_taxonomyReports'
+
+    def __init__(self, client):
+      super(DatapolV1alpha1.TaxonomyStoresTaxonomyReportsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a taxonomy report.
+
+      Args:
+        request: (DatapolTaxonomyStoresTaxonomyReportsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TaxonomyReport) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomyReports',
+        http_method=u'POST',
+        method_id=u'datapol.taxonomyStores.taxonomyReports.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}/taxonomyReports',
+        request_field=u'taxonomyReport',
+        request_type_name=u'DatapolTaxonomyStoresTaxonomyReportsCreateRequest',
+        response_type_name=u'TaxonomyReport',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes a taxonomy report.
+
+      Args:
+        request: (DatapolTaxonomyStoresTaxonomyReportsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomyReports/{taxonomyReportsId}',
+        http_method=u'DELETE',
+        method_id=u'datapol.taxonomyStores.taxonomyReports.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'DatapolTaxonomyStoresTaxonomyReportsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets a taxonomy report.
+
+      Args:
+        request: (DatapolTaxonomyStoresTaxonomyReportsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TaxonomyReport) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomyReports/{taxonomyReportsId}',
+        http_method=u'GET',
+        method_id=u'datapol.taxonomyStores.taxonomyReports.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'DatapolTaxonomyStoresTaxonomyReportsGetRequest',
+        response_type_name=u'TaxonomyReport',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists all taxonomy reports for the taxonomy store.
+
+      Args:
+        request: (DatapolTaxonomyStoresTaxonomyReportsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTaxonomyReportsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomyReports',
+        http_method=u'GET',
+        method_id=u'datapol.taxonomyStores.taxonomyReports.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}/taxonomyReports',
+        request_field='',
+        request_type_name=u'DatapolTaxonomyStoresTaxonomyReportsListRequest',
+        response_type_name=u'ListTaxonomyReportsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates a taxonomy report.
+
+      Args:
+        request: (DatapolTaxonomyStoresTaxonomyReportsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TaxonomyReport) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomyReports/{taxonomyReportsId}',
+        http_method=u'PATCH',
+        method_id=u'datapol.taxonomyStores.taxonomyReports.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'taxonomyReport',
+        request_type_name=u'DatapolTaxonomyStoresTaxonomyReportsPatchRequest',
+        response_type_name=u'TaxonomyReport',
+        supports_download=False,
+    )
+
   class TaxonomyStoresService(base_api.BaseApiService):
     """Service class for the taxonomyStores resource."""
 
@@ -567,6 +768,88 @@ all annotations in this taxonomy.
       super(DatapolV1alpha1.TaxonomyStoresService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Copy(self, request, global_params=None):
+      """Copy a taxonomy to a given taxonomy store. Copy will fail if there is a.
+taxonomy with the same display name in the taxonomy store.
+
+      Args:
+        request: (DatapolTaxonomyStoresCopyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DataTaxonomy) The response message.
+      """
+      config = self.GetMethodConfig('Copy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Copy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}:copy',
+        http_method=u'POST',
+        method_id=u'datapol.taxonomyStores.copy',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}:copy',
+        request_field=u'copyDataTaxonomyRequest',
+        request_type_name=u'DatapolTaxonomyStoresCopyRequest',
+        response_type_name=u'DataTaxonomy',
+        supports_download=False,
+    )
+
+    def GetCommon(self, request, global_params=None):
+      """Get the read-only taxonomy store with predefined taxonomies. Taxonomies in.
+this store can only be read or copied out.
+
+      Args:
+        request: (DatapolTaxonomyStoresGetCommonRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TaxonomyStore) The response message.
+      """
+      config = self.GetMethodConfig('GetCommon')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetCommon.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'datapol.taxonomyStores.getCommon',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1alpha1/taxonomyStores:getCommon',
+        request_field='',
+        request_type_name=u'DatapolTaxonomyStoresGetCommonRequest',
+        response_type_name=u'TaxonomyStore',
+        supports_download=False,
+    )
+
+    def GetDefault(self, request, global_params=None):
+      """Get the taxonomy store that can be used in the given project to create,.
+modify, and use taxonomies.
+
+      Args:
+        request: (DatapolTaxonomyStoresGetDefaultRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TaxonomyStore) The response message.
+      """
+      config = self.GetMethodConfig('GetDefault')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetDefault.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'datapol.taxonomyStores.getDefault',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'projectId'],
+        relative_path=u'v1alpha1/taxonomyStores:getDefault',
+        request_field='',
+        request_type_name=u'DatapolTaxonomyStoresGetDefaultRequest',
+        response_type_name=u'TaxonomyStore',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       """GetIamPolicy method for the taxonomyStores service.

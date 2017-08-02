@@ -352,32 +352,6 @@ class LoggingV1beta3(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Delete(self, request, global_params=None):
-      """Deletes a log and all its log entries. The log will reappear if it receives new entries.
-
-      Args:
-        request: (LoggingProjectsLogsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'DELETE',
-        method_id=u'logging.projects.logs.delete',
-        ordered_params=[u'projectsId', u'logsId'],
-        path_params=[u'logsId', u'projectsId'],
-        query_params=[],
-        relative_path=u'v1beta3/projects/{projectsId}/logs/{logsId}',
-        request_field='',
-        request_type_name=u'LoggingProjectsLogsDeleteRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       """Lists the logs in the project. Only logs that have entries are listed.
 

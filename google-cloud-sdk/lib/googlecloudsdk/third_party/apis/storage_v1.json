@@ -4,7 +4,7 @@
  "id": "storage:v1",
  "name": "storage",
  "version": "v1",
- "revision": "20170623",
+ "revision": "20170724",
  "title": "Cloud Storage JSON API",
  "description": "Stores and retrieves potentially large, immutable data objects.",
  "ownerDomain": "google.com",
@@ -686,7 +686,7 @@
     },
     "contentType": {
      "type": "string",
-     "description": "Content-Type of the object data. If contentType is not specified, object downloads will be served as application/octet-stream."
+     "description": "Content-Type of the object data. If an object is stored without a Content-Type, it is served as application/octet-stream."
     },
     "crc32c": {
      "type": "string",

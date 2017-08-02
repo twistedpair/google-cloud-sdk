@@ -1497,10 +1497,13 @@ class PackageIssue(_messages.Message):
   Fields:
     affectedLocation: The location of the vulnerability.
     fixedLocation: The location of the available fix for vulnerability.
+    severityName: The severity (eg: distro assigned severity) for this
+      vulnerability.
   """
 
   affectedLocation = _messages.MessageField('VulnerabilityLocation', 1)
   fixedLocation = _messages.MessageField('VulnerabilityLocation', 2)
+  severityName = _messages.StringField(3)
 
 
 class Policy(_messages.Message):

@@ -210,6 +210,9 @@ class DatabaseInstance(_messages.Message):
     etag: HTTP 1.1 Entity tag for the resource.
     failoverReplica: The name and status of the failover replica. This
       property is applicable only to Second Generation instances.
+    gceZone: The GCE zone that the instance is serving from. In case when the
+      instance is failed over to standby zone, this value may be different
+      with what user specified in the settings.
     instanceType: The instance type. This can be one of the following.
       CLOUD_SQL_INSTANCE: A Cloud SQL instance that is not replicating from a
       master. ON_PREMISES_INSTANCE: An instance running on the customer's
@@ -275,24 +278,25 @@ class DatabaseInstance(_messages.Message):
   databaseVersion = _messages.StringField(4)
   etag = _messages.StringField(5)
   failoverReplica = _messages.MessageField('FailoverReplicaValue', 6)
-  instanceType = _messages.StringField(7)
-  ipAddresses = _messages.MessageField('IpMapping', 8, repeated=True)
-  ipv6Address = _messages.StringField(9)
-  kind = _messages.StringField(10, default=u'sql#instance')
-  masterInstanceName = _messages.StringField(11)
-  maxDiskSize = _messages.IntegerField(12)
-  name = _messages.StringField(13)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 14)
-  project = _messages.StringField(15)
-  region = _messages.StringField(16)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 17)
-  replicaNames = _messages.StringField(18, repeated=True)
-  selfLink = _messages.StringField(19)
-  serverCaCert = _messages.MessageField('SslCert', 20)
-  serviceAccountEmailAddress = _messages.StringField(21)
-  settings = _messages.MessageField('Settings', 22)
-  state = _messages.StringField(23)
-  suspensionReason = _messages.StringField(24, repeated=True)
+  gceZone = _messages.StringField(7)
+  instanceType = _messages.StringField(8)
+  ipAddresses = _messages.MessageField('IpMapping', 9, repeated=True)
+  ipv6Address = _messages.StringField(10)
+  kind = _messages.StringField(11, default=u'sql#instance')
+  masterInstanceName = _messages.StringField(12)
+  maxDiskSize = _messages.IntegerField(13)
+  name = _messages.StringField(14)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 15)
+  project = _messages.StringField(16)
+  region = _messages.StringField(17)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 18)
+  replicaNames = _messages.StringField(19, repeated=True)
+  selfLink = _messages.StringField(20)
+  serverCaCert = _messages.MessageField('SslCert', 21)
+  serviceAccountEmailAddress = _messages.StringField(22)
+  settings = _messages.MessageField('Settings', 23)
+  state = _messages.StringField(24)
+  suspensionReason = _messages.StringField(25, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -544,8 +548,7 @@ class IpConfiguration(_messages.Message):
       connect to the instance using the IP. In CIDR notation, also known as
       'slash' notation (e.g. 192.168.100.0/24).
     ipv4Enabled: Whether the instance should be assigned an IP address or not.
-    requireSsl: Whether the mysqld should default to 'REQUIRE X509' for users
-      connecting over IP.
+    requireSsl: Whether SSL connections over IP should be enforced or not.
   """
 
   authorizedNetworks = _messages.MessageField('AclEntry', 1, repeated=True)

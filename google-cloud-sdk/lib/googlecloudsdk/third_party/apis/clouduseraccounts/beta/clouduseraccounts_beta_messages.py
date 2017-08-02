@@ -439,11 +439,14 @@ class GroupList(_messages.Message):
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
-    items: [Output Only] A list of Group resources.
+    items: A list of Group resources.
     kind: [Output Only] Type of resource. Always clouduseraccounts#groupList
       for lists of groups.
-    nextPageToken: [Output Only] A token used to continue a truncated list
-      request.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server defined URL for this resource.
   """
 
@@ -887,11 +890,14 @@ class UserList(_messages.Message):
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
-    items: [Output Only] A list of User resources.
+    items: A list of User resources.
     kind: [Output Only] Type of resource. Always clouduseraccounts#userList
       for lists of users.
-    nextPageToken: [Output Only] A token used to continue a truncated list
-      request.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server defined URL for this resource.
   """
 

@@ -514,11 +514,14 @@ version [{1}].  To clear your fixed version setting, run:
       # Possibly print any notifications that should be triggered right now.
       last_update_check.Notify(command_path)
 
-  def List(self):
+  def List(self, show_hidden=False):
     """Lists all of the components and their current state.
 
     This pretty prints the list of components along with whether they are up
     to date, require an update, etc.
+
+    Args:
+      show_hidden: bool, include hidden components.
 
     Returns:
       The list of snapshots.ComponentDiffs for all components that are not
@@ -538,7 +541,8 @@ version [{1}].  To clear your fixed version setting, run:
 
     to_print = (diff.AvailableUpdates() + diff.Removed() +
                 diff.AvailableToInstall() + diff.UpToDate())
-    to_print = [c for c in to_print if not c.is_hidden]
+    if not show_hidden:
+      to_print = [c for c in to_print if not c.is_hidden]
 
     return (to_print, current_version, latest_version)
 

@@ -119,6 +119,14 @@ def _ErrorFromInvalidMatrix(matrix):
           'The test APK is the same as the app APK',
       enum_values.NO_INSTRUMENTATION:
           'The test APK declares no instrumentation tags in the manifest',
+      enum_values.INSTRUMENTATION_ORCHESTRATOR_INCOMPATIBLE: (
+          "The test runner class specified by the user or the test APK's "
+          'manifest file is not compatible with Android Test Orchestrator. '
+          'Please use AndroidJUnitRunner version 1.0 or higher'),
+      enum_values.NO_TEST_RUNNER_CLASS: (
+          'The test APK does not contain the test runner class specified by '
+          'the user or the manifest file. The test runner class name may be '
+          'incorrect, or the class may be mislocated in the app APK.'),
       enum_values.NO_LAUNCHER_ACTIVITY:
           'The app APK does not specify a main launcher activity',
       enum_values.FORBIDDEN_PERMISSIONS:

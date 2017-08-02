@@ -86,6 +86,36 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuthorizationLoggingOptions(_messages.Message):
+  """Authorization-related information used by Cloud Audit Logging.
+
+  Enums:
+    PermissionTypeValueValuesEnum: The type of the permission that was
+      checked.
+
+  Fields:
+    permissionType: The type of the permission that was checked.
+  """
+
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    """The type of the permission that was checked.
+
+    Values:
+      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
+      ADMIN_READ: A read of admin (meta) data.
+      ADMIN_WRITE: A write of admin (meta) data.
+      DATA_READ: A read of standard data.
+      DATA_WRITE: A write of standard data.
+    """
+    PERMISSION_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    ADMIN_WRITE = 2
+    DATA_READ = 3
+    DATA_WRITE = 4
+
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
+
+
 class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
@@ -146,6 +176,8 @@ class CloudAuditOptions(_messages.Message):
       Record.
 
   Fields:
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
     logName: The log_name to populate in the Cloud Audit Record.
   """
 
@@ -161,7 +193,8 @@ class CloudAuditOptions(_messages.Message):
     ADMIN_ACTIVITY = 1
     DATA_ACCESS = 2
 
-  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
 class Condition(_messages.Message):
@@ -1067,7 +1100,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details.  There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

@@ -81,7 +81,7 @@ class DeployOptions(object):
   No deployment details (e.g. sources for a specific deployment).
 
   Attributes:
-    promote: True if the deployed version should recieve all traffic.
+    promote: True if the deployed version should receive all traffic.
     stop_previous_version: Stop previous version
     enable_endpoints: Enable Cloud Endpoints for the deployed app.
     runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
@@ -159,8 +159,9 @@ class ServiceDeployer(object):
       gcr_domain: str, Cloud Registry domain, determines the physical location
         of the image. E.g. `us.gcr.io`.
     Returns:
-      str, The name of the pushed or given container image or None if the
-        service does not require an image.
+      BuildArtifact, a wrapper which contains either the build ID for
+        an in-progress build, or the name of the container image for a serial
+        build. Possibly None if the service does not require an image.
     """
     if service.RequiresImage():
       if not image:
@@ -173,8 +174,9 @@ class ServiceDeployer(object):
                     'field in the configuration file, because the image has '
                     'already been built.'.format(new_version.service))
     else:
-      image = None
-    return image
+      return None
+
+    return deploy_command_util.BuildArtifact.MakeImageArtifact(image)
 
   def _PossiblyPromote(self, all_services, new_version):
     """Promotes the new version to default (if specified by the user).
@@ -231,7 +233,7 @@ class ServiceDeployer(object):
     service_info = service.service_info
     endpoints_info = self._PossiblyConfigureEndpoints(
         service_info, source_dir, new_version)
-    image = self._PossiblyBuildAndPush(
+    build = self._PossiblyBuildAndPush(
         new_version, service_info, source_dir, image, code_bucket_ref,
         gcr_domain)
     manifest = None
@@ -243,7 +245,7 @@ class ServiceDeployer(object):
     # Actually create the new version of the service.
     metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)
     self.api_client.DeployService(new_version.service, new_version.id,
-                                  service_info, manifest, image,
+                                  service_info, manifest, build,
                                   endpoints_info)
     metrics.CustomTimedEvent(metric_names.DEPLOY_API)
     message = 'Updating service [{service}]'.format(
@@ -310,7 +312,7 @@ def ArgsDeploy(parser):
 def RunDeploy(
     args, api_client, enable_endpoints=False, use_beta_stager=False,
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
-    use_service_management=False, check_for_stopped=False):
+    use_service_management=False):
   """Perform a deployment based on the given args.
 
   Args:
@@ -326,8 +328,6 @@ def RunDeploy(
       externalized runtimes).
     use_service_management: bool, whether to use servicemanagement API to
       enable the Appengine Flexible API for a Flexible deployment.
-    check_for_stopped: bool, whether to check if the app is stopped before
-      deploying.
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -364,8 +364,7 @@ def RunDeploy(
         args.server, args.ignore_bad_certs)
 
     app = _PossiblyCreateApp(api_client, project)
-    if check_for_stopped:
-      _RaiseIfStopped(api_client, app)
+    _RaiseIfStopped(api_client, app)
     app = _PossiblyRepairApp(api_client, app)
 
     # Tell the user what is going to happen, and ask them to confirm.

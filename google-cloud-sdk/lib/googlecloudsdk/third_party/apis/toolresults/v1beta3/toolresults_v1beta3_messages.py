@@ -61,6 +61,25 @@ class Any(_messages.Message):
   value = _messages.BytesField(2)
 
 
+class AppStartTime(_messages.Message):
+  """A AppStartTime object.
+
+  Fields:
+    fullyDrawnTime: Optional. The time from app start to reaching the
+      developer-reported "fully drawn" time. This is only stored if the app
+      includes a call to Activity.reportFullyDrawn(). See
+      https://developer.android.com/topic/performance/launch-time.html#time-
+      full
+    initialDisplayTime: The time from app start to the first displayed
+      activity being drawn, as reported in Logcat. See
+      https://developer.android.com/topic/performance/launch-time.html#time-
+      initial
+  """
+
+  fullyDrawnTime = _messages.MessageField('Duration', 1)
+  initialDisplayTime = _messages.MessageField('Duration', 2)
+
+
 class BasicPerfSampleSeries(_messages.Message):
   """Encapsulates the metadata for basic sample series represented by a line
   chart
@@ -268,9 +287,9 @@ class Execution(_messages.Message):
       the outcome of the step is not set, the outcome will be set to
       INCONCLUSIVE.  - In response always set - In create/update request:
       optional
-    testExecutionMatrixId: TestExecution Matrix ID that the Test Service uses.
-      - In response: present if set by create - In create: optional - In
-      update: never set
+    testExecutionMatrixId: TestExecution Matrix ID that the
+      TestExecutionService uses.  - In response: present if set by create - In
+      create: optional - In update: never set
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -564,6 +583,7 @@ class PerfMetricsSummary(_messages.Message):
     PerfMetricsValueListEntryValuesEnum:
 
   Fields:
+    appStartTime: A AppStartTime attribute.
     executionId: A tool results execution ID.
     historyId: A tool results history ID.
     perfEnvironment: Describes the environment in which the performance
@@ -589,12 +609,13 @@ class PerfMetricsSummary(_messages.Message):
     network = 3
     perfMetricTypeUnspecified = 4
 
-  executionId = _messages.StringField(1)
-  historyId = _messages.StringField(2)
-  perfEnvironment = _messages.MessageField('PerfEnvironment', 3)
-  perfMetrics = _messages.EnumField('PerfMetricsValueListEntryValuesEnum', 4, repeated=True)
-  projectId = _messages.StringField(5)
-  stepId = _messages.StringField(6)
+  appStartTime = _messages.MessageField('AppStartTime', 1)
+  executionId = _messages.StringField(2)
+  historyId = _messages.StringField(3)
+  perfEnvironment = _messages.MessageField('PerfEnvironment', 4)
+  perfMetrics = _messages.EnumField('PerfMetricsValueListEntryValuesEnum', 5, repeated=True)
+  projectId = _messages.StringField(6)
+  stepId = _messages.StringField(7)
 
 
 class PerfSample(_messages.Message):
@@ -677,10 +698,14 @@ class StackTrace(_messages.Message):
   """A stacktrace.
 
   Fields:
+    clusterId: Exception cluster ID
     exception: The stack trace message.  Required
+    reportId: Exception report ID
   """
 
-  exception = _messages.StringField(1)
+  clusterId = _messages.StringField(1)
+  exception = _messages.StringField(2)
+  reportId = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -762,7 +787,7 @@ class Status(_messages.Message):
   Fields:
     code: The status code, which should be an enum value of
       [google.rpc.Code][].
-    details: A list of messages that carry the error details. There will be a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

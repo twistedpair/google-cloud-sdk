@@ -198,7 +198,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
         method_id=u'dataproc.projects.regions.clusters.patch',
         ordered_params=[u'projectId', u'region', u'clusterName'],
         path_params=[u'clusterName', u'projectId', u'region'],
-        query_params=[u'updateMask'],
+        query_params=[u'gracefulDecommissionTimeout', u'updateMask'],
         relative_path=u'v1beta2/projects/{projectId}/regions/{region}/clusters/{clusterName}',
         request_field=u'cluster',
         request_type_name=u'DataprocProjectsRegionsClustersPatchRequest',

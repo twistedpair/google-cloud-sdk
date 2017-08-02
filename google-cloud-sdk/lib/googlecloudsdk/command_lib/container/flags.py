@@ -152,6 +152,20 @@ def AddAcceleratorArgs(parser):
       """)
 
 
+def AddEnableAuditLoggingFlag(parser):
+  """Adds a --enable-audit-logging flag to parser."""
+  help_text = """\
+Enable audit logging for this cluster.
+
+Interactions with the Kubernetes API will be logged to Cloud Audit Logging."""
+  parser.add_argument(
+      '--enable-audit-logging',
+      action='store_true',
+      default=False,
+      help=help_text,
+      hidden=True)
+
+
 def AddZoneFlag(parser):
   # TODO(b/33343238): Remove the short form of the zone flag.
   # TODO(b/18105938): Add zone prompting

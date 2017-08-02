@@ -60,6 +60,9 @@ class BindingDelta(_messages.Message):
 
   Fields:
     action: The action that was performed on a Binding. Required
+    condition: The condition that is associated with this binding. This field
+      is GOOGLE_INTERNAL. This field is not logged in IAM side because it's
+      only for audit logging. Optional
     member: A single identity requesting access for a Cloud Platform resource.
       Follows the same format of Binding.members. Required
     role: Role that is assigned to `members`. For example, `roles/viewer`,
@@ -79,14 +82,13 @@ class BindingDelta(_messages.Message):
     REMOVE = 2
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
-  member = _messages.StringField(2)
-  role = _messages.StringField(3)
+  condition = _messages.MessageField('Expr', 2)
+  member = _messages.StringField(3)
+  role = _messages.StringField(4)
 
 
 class CreateRoleRequest(_messages.Message):
-  """The request to create a new role. The resource name of the parent
-  resource in one of the following formats: `organizations/{ORGANIZATION_ID}`
-  `projects/{PROJECT_ID}`
+  """The request to create a new role.
 
   Fields:
     role: The Role resource to create.
@@ -176,13 +178,38 @@ class Empty(_messages.Message):
 
 
 
+class Expr(_messages.Message):
+  """Represents an expression text. Example:      title: "User account
+  presence"     description: "Determines whether the request has a user
+  account"     expression: "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
 class IamOrganizationsRolesCreateRequest(_messages.Message):
   """A IamOrganizationsRolesCreateRequest object.
 
   Fields:
     createRoleRequest: A CreateRoleRequest resource to be passed as the
       request body.
-    parent: A string attribute.
+    parent: The resource name of the parent resource in one of the following
+      formats: `organizations/{ORGANIZATION_ID}` `projects/{PROJECT_ID}`
   """
 
   createRoleRequest = _messages.MessageField('CreateRoleRequest', 1)
@@ -287,7 +314,8 @@ class IamProjectsRolesCreateRequest(_messages.Message):
   Fields:
     createRoleRequest: A CreateRoleRequest resource to be passed as the
       request body.
-    parent: A string attribute.
+    parent: The resource name of the parent resource in one of the following
+      formats: `organizations/{ORGANIZATION_ID}` `projects/{PROJECT_ID}`
   """
 
   createRoleRequest = _messages.MessageField('CreateRoleRequest', 1)
@@ -711,12 +739,12 @@ class Permission(_messages.Message):
   """A permission which can be included by a role.
 
   Enums:
-    CustomRolesSupportLevelValueValuesEnum:
+    CustomRolesSupportLevelValueValuesEnum: The current custom role support
+      level.
     StageValueValuesEnum: The current launch stage of the permission.
 
   Fields:
-    customRolesSupportLevel: A CustomRolesSupportLevelValueValuesEnum
-      attribute.
+    customRolesSupportLevel: The current custom role support level.
     description: A brief description of what this Permission is used for.
     name: The name of this Permission.
     onlyInPredefinedRoles: This permission can ONLY be used in predefined
@@ -726,7 +754,7 @@ class Permission(_messages.Message):
   """
 
   class CustomRolesSupportLevelValueValuesEnum(_messages.Enum):
-    """CustomRolesSupportLevelValueValuesEnum enum type.
+    """The current custom role support level.
 
     Values:
       SUPPORTED: Permission is fully supported for custom role use.
@@ -889,25 +917,27 @@ class Role(_messages.Message):
   """A role in the Identity and Access Management API.
 
   Enums:
-    StageValueValuesEnum:
+    StageValueValuesEnum: The current launch stage of the role.
 
   Fields:
-    deleted: A boolean attribute.
+    deleted: The current deleted state of the role. This field is read only.
+      It will be ignored in calls to CreateRole and UpdateRole.
     description: Optional.  A human-readable description for the role.
-    etag: A byte attribute.
-    includedPermissions: A string attribute.
+    etag: Used to perform a consistent read-modify-write.
+    includedPermissions: The names of the permissions this role grants when
+      bound in an IAM policy.
     name: The name of the role.  When Role is used in CreateRole, the role
       name must not be set.  When Role is used in output and other input such
       as UpdateRole, the role name is the complete path, e.g.,
       roles/logging.viewer for curated roles and
       organizations/{ORGANIZATION_ID}/roles/logging.viewer for custom roles.
-    stage: A StageValueValuesEnum attribute.
+    stage: The current launch stage of the role.
     title: Optional.  A human-readable title for the role.  Typically this is
       limited to 100 UTF-8 bytes.
   """
 
   class StageValueValuesEnum(_messages.Enum):
-    """StageValueValuesEnum enum type.
+    """The current launch stage of the role.
 
     Values:
       ALPHA: The user has indicated this role is currently in an alpha phase.

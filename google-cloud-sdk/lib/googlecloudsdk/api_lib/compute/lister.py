@@ -357,10 +357,7 @@ def AddBaseListerArgs(parser):
   """Add arguments defined by base_classes.BaseLister."""
   parser.add_argument(
       'names',
-      action=actions.DeprecationAction(
-          'names',
-          warn='This argument is deprecated. '
-          'Use `--filter="name =( NAME ... )"` instead.'),
+      action=actions.DeprecationAction('names', show_message=bool),
       metavar='NAME',
       nargs='*',
       default=[],
@@ -369,12 +366,8 @@ def AddBaseListerArgs(parser):
             'resources.'))
 
   parser.add_argument(
-      '--regexp',
-      '-r',
-      action=actions.DeprecationAction(
-          'regexp',
-          warn='This flag is deprecated. '
-          'Use `--filter="name ~ REGEXP"` instead.'),
+      '--regexp', '-r',
+      action=actions.DeprecationAction('regexp'),
       help="""\
         A regular expression to filter the names of the results  on. Any names
         that do not match the entire regular expression will be filtered out.\
@@ -387,14 +380,35 @@ def AddZonalListerArgs(parser):
   AddBaseListerArgs(parser)
   parser.add_argument(
       '--zones',
-      action=actions.DeprecationAction(
-          'zones',
-          warn='This flag is deprecated. '
-          'Use ```--filter="zone :( *ZONE ... )"``` instead.'),
+      action=actions.DeprecationAction('zones'),
       metavar='ZONE',
       help='If provided, only resources from the given zones are queried.',
       type=arg_parsers.ArgList(min_length=1),
       completer=completers.ZonesCompleter,
+      default=[])
+
+
+def AddRegionsArg(parser):
+  """Add arguments used by regional list command.
+
+  These arguments are added by this function:
+  - names
+  - --regexp
+  - --regions
+
+  Args:
+    parser: argparse.Parser, The parser that this function will add arguments to
+  """
+  AddBaseListerArgs(parser)
+  parser.add_argument(
+      '--regions',
+      action=actions.DeprecationAction(
+          'regions',
+          warn='This flag is deprecated. '
+          'Use ```--filter="region :( *REGION ... )"``` instead.'),
+      metavar='REGION',
+      help='If provided, only resources from the given regions are queried.',
+      type=arg_parsers.ArgList(min_length=1),
       default=[])
 
 
@@ -523,6 +537,49 @@ def ParseZonalFlags(args, resources):
         ],
         zonal=True,
         regional=False)
+  return _Frontend(filter_expr, frontend.max_results, scope_set)
+
+
+def ParseRegionalFlags(args, resources):
+  """Make Frontend suitable for RegionalLister argument namespace.
+
+  Generated client-side filter is stored to args.filter.
+
+  Args:
+    args: The argument namespace of RegionalLister.
+    resources: resources.Registry, The resource registry
+
+  Returns:
+    Frontend initialized with information from RegionalLister argument
+    namespace.
+  """
+  frontend = _GetBaseListerFrontendPrototype(args)
+  filter_expr = frontend.filter
+  if args.regions:
+    scope_set = RegionSet([
+        resources.Parse(
+            region,
+            params={'project': properties.VALUES.core.project.GetOrFail},
+            collection='compute.regions') for region in args.regions
+    ])
+    # Refine args.filter specification to reuse gcloud filtering logic
+    # for filtering based on regions
+    filter_arg = '({}) AND '.format(args.filter) if args.filter else ''
+    # How to escape '*' in region and what are special characters for
+    # simple pattern?
+    region_regexp = ' '.join(['*'+ region for region in args.regions])
+    region_arg = '(region :({}))'.format(region_regexp)
+    args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(
+        filter_arg + region_arg)
+  else:
+    scope_set = AllScopes(
+        [
+            resources.Parse(
+                properties.VALUES.core.project.GetOrFail(),
+                collection='compute.projects')
+        ],
+        zonal=False,
+        regional=True)
   frontend = _Frontend(filter_expr, frontend.max_results, scope_set)
   return frontend
 
@@ -532,11 +589,14 @@ class ZonalLister(object):
 
   This implementation should be used only for porting from base_classes.
 
+  This class should not be inherited.
+
   Attributes:
     client: The compute client.
     service: Zonal service whose resources will be listed.
   """
-  # Quick and dirty implementation based on GetZonalResources defined above
+  # This implementation is designed to mimic precisely behavior (side-effects)
+  # of base_classes.ZonalLister
 
   def __init__(self, client, service):
     self.client = client
@@ -583,6 +643,74 @@ class ZonalLister(object):
             service=self.service,
             project=project_ref.project,
             requested_zones=[],
+            filter_expr=filter_expr,
+            http=self.client.apitools_client.http,
+            batch_url=self.client.batch_url,
+            errors=errors):
+          yield item
+    if errors:
+      utils.RaiseException(errors, ListException)
+
+
+class RegionalLister(object):
+  """Implementation replacing base_classes.RegionalLister base class.
+
+  This implementation should be used only for porting from base_classes.
+
+  Attributes:
+    client: base_api.BaseApiClient, The compute client.
+    service: base_api.BaseApiService, Regional service whose resources will be
+    listed.
+  """
+  # This implementation is designed to mimic precisely behavior (side-effects)
+  # of base_classes.RegionalLister
+
+  def __init__(self, client, service):
+    self.client = client
+    self.service = service
+
+  def __deepcopy__(self, memodict=None):
+    return self  # RegionalLister is immutable
+
+  def __eq__(self, other):
+    # RegionalLister is not suited for inheritance
+    return (isinstance(other, RegionalLister) and
+            self.client == other.client and self.service == other.service)
+
+  def __ne__(self, other):
+    return not self == other
+
+  def __hash__(self):
+    return hash((self.client, self.service))
+
+  def __repr__(self):
+    return 'RegionalLister({}, {})'.format(
+        repr(self.client), repr(self.service))
+
+  def __call__(self, frontend):
+    errors = []
+    scope_set = frontend.scope_set
+    filter_expr = frontend.filter
+    if isinstance(scope_set, RegionSet):
+      for project, regions in _GroupByProject(
+          sorted(list(scope_set))).iteritems():
+        for item in GetRegionalResourcesDicts(
+            service=self.service,
+            project=project,
+            requested_regions=[region_ref.region for region_ref in regions],
+            filter_expr=filter_expr,
+            http=self.client.apitools_client.http,
+            batch_url=self.client.batch_url,
+            errors=errors):
+          yield item
+    else:
+      # scopeSet is AllScopes
+      # generate AggregatedList
+      for project_ref in sorted(list(scope_set.projects)):
+        for item in GetRegionalResourcesDicts(
+            service=self.service,
+            project=project_ref.project,
+            requested_regions=[],
             filter_expr=filter_expr,
             http=self.client.apitools_client.http,
             batch_url=self.client.batch_url,

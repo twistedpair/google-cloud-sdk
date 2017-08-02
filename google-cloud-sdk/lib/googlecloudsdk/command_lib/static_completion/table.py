@@ -27,14 +27,12 @@ from googlecloudsdk.core.util import files
 _HYPHEN = '-'
 _UNDERSCORE = '_'
 _COMPLETER_ATTR = 'completer'
-_COMPLETION_RESOURCE_ATTR = 'completion_resource'
 
 
 def _CompletionValueType(arg):
   if arg.choices:
     return sorted(arg.choices)
-  elif (getattr(arg, _COMPLETER_ATTR, None) or
-        getattr(arg, _COMPLETION_RESOURCE_ATTR, None)):
+  elif getattr(arg, _COMPLETER_ATTR, None):
     return lookup.DYNAMIC
   elif arg.nargs == 0:
     return None

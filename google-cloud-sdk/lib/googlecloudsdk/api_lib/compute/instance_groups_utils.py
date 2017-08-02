@@ -427,20 +427,19 @@ class InstanceGroupFilteringMode(enum.Enum):
 
 
 def ComputeInstanceGroupManagerMembership(
-    compute, resources, http, batch_url, items,
-    filter_mode=(InstanceGroupFilteringMode.ALL_GROUPS)):
+    compute_holder, items, filter_mode=InstanceGroupFilteringMode.ALL_GROUPS):
   """Add information if instance group is managed.
 
   Args:
-    compute: GCE Compute API client,
-    resources: resource registry,
-    http: http client,
-    batch_url: str, batch url
+    compute_holder: ComputeApiHolder, The compute API holder
     items: list of instance group messages,
     filter_mode: InstanceGroupFilteringMode, managed/unmanaged filtering options
   Returns:
     list of instance groups with computed dynamic properties
   """
+  client = compute_holder.client
+  resources = compute_holder.resources
+
   errors = []
   items = list(items)
   zone_links = set([ig['zone'] for ig in items if 'zone' in ig])
@@ -460,16 +459,16 @@ def ComputeInstanceGroupManagerMembership(
   zonal_instance_group_managers = []
   for project, zones in project_to_zones.iteritems():
     zonal_instance_group_managers.extend(lister.GetZonalResources(
-        service=compute.instanceGroupManagers,
+        service=client.apitools_client.instanceGroupManagers,
         project=project,
         requested_zones=zones,
         filter_expr=None,
-        http=http,
-        batch_url=batch_url,
+        http=client.apitools_client.http,
+        batch_url=client.batch_url,
         errors=errors))
 
   regional_instance_group_managers = []
-  if hasattr(compute, 'regionInstanceGroups'):
+  if hasattr(client.apitools_client, 'regionInstanceGroups'):
     # regional instance groups are just in 'alpha' API
     region_links = set([ig['region'] for ig in items if 'region' in ig])
     project_to_regions = {}
@@ -480,12 +479,12 @@ def ComputeInstanceGroupManagerMembership(
       project_to_regions[region_ref.project].add(region_ref.region)
     for project, regions in project_to_regions.iteritems():
       regional_instance_group_managers.extend(lister.GetRegionalResources(
-          service=compute.regionInstanceGroupManagers,
+          service=client.apitools_client.regionInstanceGroupManagers,
           project=project,
           requested_regions=regions,
           filter_expr=None,
-          http=http,
-          batch_url=batch_url,
+          http=client.apitools_client.http,
+          batch_url=client.batch_url,
           errors=errors))
 
   instance_group_managers = (

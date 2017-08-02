@@ -38,6 +38,7 @@ class HttpRequest(_messages.Message):
       only meaningful if cache_hit is True.
     latency: The request processing latency on the server, from the time the
       request was received until the response was sent.
+    protocol: Protocol used for the request. Example: "HTTP/1.1".
     referer: The referer URL of the request, as defined in HTTP/1.1 Header
       Field Definitions
       (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
@@ -64,15 +65,16 @@ class HttpRequest(_messages.Message):
   cacheLookup = _messages.BooleanField(3)
   cacheValidatedWithOriginServer = _messages.BooleanField(4)
   latency = _messages.StringField(5)
-  referer = _messages.StringField(6)
-  remoteIp = _messages.StringField(7)
-  requestMethod = _messages.StringField(8)
-  requestSize = _messages.IntegerField(9)
-  requestUrl = _messages.StringField(10)
-  responseSize = _messages.IntegerField(11)
-  serverIp = _messages.StringField(12)
-  status = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  userAgent = _messages.StringField(14)
+  protocol = _messages.StringField(6)
+  referer = _messages.StringField(7)
+  remoteIp = _messages.StringField(8)
+  requestMethod = _messages.StringField(9)
+  requestSize = _messages.IntegerField(10)
+  requestUrl = _messages.StringField(11)
+  responseSize = _messages.IntegerField(12)
+  serverIp = _messages.StringField(13)
+  status = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  userAgent = _messages.StringField(15)
 
 
 class LabelDescriptor(_messages.Message):
@@ -568,10 +570,9 @@ class LogSink(_messages.Message):
   account, or folder.
 
   Enums:
-    OutputVersionFormatValueValuesEnum: Optional. The log entry format to use
-      for this sink's exported log entries. The v2 format is used by default.
-      The v1 format is deprecated and should be used only as part of a
-      migration effort to v2. See Migration to the v2 API.
+    OutputVersionFormatValueValuesEnum: Deprecated. The log entry format to
+      use for this sink's exported log entries. The v2 format is used by
+      default and cannot be changed.
 
   Fields:
     destination: Required. The export destination:
@@ -608,10 +609,9 @@ class LogSink(_messages.Message):
       limited to 100 characters and can include only the following characters:
       upper and lower-case alphanumeric characters, underscores, hyphens, and
       periods.
-    outputVersionFormat: Optional. The log entry format to use for this sink's
-      exported log entries. The v2 format is used by default. The v1 format is
-      deprecated and should be used only as part of a migration effort to v2.
-      See Migration to the v2 API.
+    outputVersionFormat: Deprecated. The log entry format to use for this
+      sink's exported log entries. The v2 format is used by default and cannot
+      be changed.
     startTime: Optional. The time at which this sink will begin exporting log
       entries. Log entries are exported only if their timestamp is not earlier
       than the start time. The default value of this field is the time the
@@ -628,10 +628,8 @@ class LogSink(_messages.Message):
   """
 
   class OutputVersionFormatValueValuesEnum(_messages.Enum):
-    """Optional. The log entry format to use for this sink's exported log
-    entries. The v2 format is used by default. The v1 format is deprecated and
-    should be used only as part of a migration effort to v2. See Migration to
-    the v2 API.
+    """Deprecated. The log entry format to use for this sink's exported log
+    entries. The v2 format is used by default and cannot be changed.
 
     Values:
       VERSION_FORMAT_UNSPECIFIED: An unspecified format version that will
@@ -767,6 +765,34 @@ class LoggingBillingAccountsSinksListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class LoggingBillingAccountsSinksPatchRequest(_messages.Message):
+  """A LoggingBillingAccountsSinksPatchRequest object.
+
+  Fields:
+    logSink: A LogSink resource to be passed as the request body.
+    sinkName: Required. The full resource name of the sink to update,
+      including the parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
+    uniqueWriterIdentity: Optional. See sinks.create for a description of this
+      field. When updating a sink, the effect of this field on the value of
+      writer_identity in the updated sink depends on both the old and new
+      values of this field: If the old and new values of this field are both
+      false or both true, then there is no change to the sink's
+      writer_identity. If the old value is false and the new value is true,
+      then writer_identity is changed to a unique service account. It is an
+      error if the old value is true and the new value is set to false or
+      defaulted to false.
+  """
+
+  logSink = _messages.MessageField('LogSink', 1)
+  sinkName = _messages.StringField(2, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(3)
 
 
 class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
@@ -911,6 +937,34 @@ class LoggingFoldersSinksListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class LoggingFoldersSinksPatchRequest(_messages.Message):
+  """A LoggingFoldersSinksPatchRequest object.
+
+  Fields:
+    logSink: A LogSink resource to be passed as the request body.
+    sinkName: Required. The full resource name of the sink to update,
+      including the parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
+    uniqueWriterIdentity: Optional. See sinks.create for a description of this
+      field. When updating a sink, the effect of this field on the value of
+      writer_identity in the updated sink depends on both the old and new
+      values of this field: If the old and new values of this field are both
+      false or both true, then there is no change to the sink's
+      writer_identity. If the old value is false and the new value is true,
+      then writer_identity is changed to a unique service account. It is an
+      error if the old value is true and the new value is set to false or
+      defaulted to false.
+  """
+
+  logSink = _messages.MessageField('LogSink', 1)
+  sinkName = _messages.StringField(2, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(3)
 
 
 class LoggingFoldersSinksUpdateRequest(_messages.Message):
@@ -1072,6 +1126,34 @@ class LoggingOrganizationsSinksListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class LoggingOrganizationsSinksPatchRequest(_messages.Message):
+  """A LoggingOrganizationsSinksPatchRequest object.
+
+  Fields:
+    logSink: A LogSink resource to be passed as the request body.
+    sinkName: Required. The full resource name of the sink to update,
+      including the parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
+    uniqueWriterIdentity: Optional. See sinks.create for a description of this
+      field. When updating a sink, the effect of this field on the value of
+      writer_identity in the updated sink depends on both the old and new
+      values of this field: If the old and new values of this field are both
+      false or both true, then there is no change to the sink's
+      writer_identity. If the old value is false and the new value is true,
+      then writer_identity is changed to a unique service account. It is an
+      error if the old value is true and the new value is set to false or
+      defaulted to false.
+  """
+
+  logSink = _messages.MessageField('LogSink', 1)
+  sinkName = _messages.StringField(2, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(3)
 
 
 class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
@@ -1287,6 +1369,34 @@ class LoggingProjectsSinksListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class LoggingProjectsSinksPatchRequest(_messages.Message):
+  """A LoggingProjectsSinksPatchRequest object.
+
+  Fields:
+    logSink: A LogSink resource to be passed as the request body.
+    sinkName: Required. The full resource name of the sink to update,
+      including the parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
+    uniqueWriterIdentity: Optional. See sinks.create for a description of this
+      field. When updating a sink, the effect of this field on the value of
+      writer_identity in the updated sink depends on both the old and new
+      values of this field: If the old and new values of this field are both
+      false or both true, then there is no change to the sink's
+      writer_identity. If the old value is false and the new value is true,
+      then writer_identity is changed to a unique service account. It is an
+      error if the old value is true and the new value is set to false or
+      defaulted to false.
+  """
+
+  logSink = _messages.MessageField('LogSink', 1)
+  sinkName = _messages.StringField(2, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(3)
 
 
 class LoggingProjectsSinksUpdateRequest(_messages.Message):

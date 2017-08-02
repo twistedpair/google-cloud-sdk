@@ -19,14 +19,13 @@ Not to be used by mortals.
 """
 
 import argparse
-import os
 import re
-import sys
 import textwrap
 
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import command_loading
 from googlecloudsdk.calliope import display
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope import parser_arguments
@@ -35,24 +34,7 @@ from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
-from googlecloudsdk.core.util import pkg_resources
 from googlecloudsdk.core.util import text
-
-
-class LayoutException(Exception):
-  """LayoutException is for problems with module directory structure."""
-  pass
-
-
-class CommandLoadFailure(Exception):
-  """An exception for when a command or group module cannot be imported."""
-
-  def __init__(self, command, root_exception):
-    self.command = command
-    self.root_exception = root_exception
-    super(CommandLoadFailure, self).__init__(
-        'Problem loading {command}: {issue}.'.format(
-            command=command, issue=str(root_exception)))
 
 
 class _Notes(object):
@@ -398,40 +380,6 @@ class CommandCommon(object):
   def GetSubGroupHelps(self):
     return {}
 
-  def _GetModuleFromPath(self, module_dir, module_path, path, construction_id):
-    """Import the module and dig into it to return the namespace we are after.
-
-    Import the module relative to the top level directory.  Then return the
-    actual module corresponding to the last bit of the path.
-
-    Args:
-      module_dir: str, The path to the tools directory that this command or
-        group lives within.
-      module_path: [str], The command group names that brought us down to this
-        command group or command from the top module directory.
-      path: [str], The same as module_path but with the groups named as they
-        will be in the CLI.
-      construction_id: str, A unique identifier for the CLILoader that is
-        being constructed.
-
-    Returns:
-      The imported module.
-    """
-    # Make sure this module name never collides with any real module name.
-    # Use the CLI naming path, so values are always unique.
-    name_to_give = '__calliope__command__.{construction_id}.{name}'.format(
-        construction_id=construction_id,
-        name='.'.join(path).replace('-', '_'))
-    try:
-      return pkg_resources.GetModuleFromPath(
-          name_to_give, os.path.join(module_dir, *module_path))
-    # pylint:disable=broad-except, We really do want to catch everything here,
-    # because if any exceptions make it through for any single command or group
-    # file, the whole CLI will not work. Instead, just log whatever it is.
-    except Exception as e:
-      _, _, exc_traceback = sys.exc_info()
-      raise CommandLoadFailure('.'.join(path), e), None, exc_traceback
-
   def _AcquireArgs(self):
     """Calls the functions to register the arguments for this module."""
     # A Command subclass can define a _Flags() method.
@@ -546,12 +494,8 @@ class CommandGroup(CommandCommon):
     Raises:
       LayoutException: if the module has no sub groups or commands
     """
-    # pylint:disable=protected-access, The base module is effectively an
-    # extension of calliope, and we want to leave _Common private so people
-    # don't extend it directly.
-    common_type = base._Common.FromModule(
-        self._GetModuleFromPath(module_dir, module_path, path, construction_id),
-        release_track,
+    common_type = command_loading.LoadCommonType(
+        module_dir, module_path, path, release_track, construction_id,
         is_command=False)
     super(CommandGroup, self).__init__(
         common_type,
@@ -572,76 +516,48 @@ class CommandGroup(CommandCommon):
     self._groups_to_load = {}
     self._commands_to_load = {}
     self._unloadable_elements = set()
-    self._FindSubElements()
+
+    group_infos, command_infos = command_loading.FindSubElements(
+        module_dir, module_path, release_track)
+    self.AddSubGroup(*group_infos)
+    self.AddSubCommand(*command_infos)
+
     if (not allow_empty and
         not self._groups_to_load and not self._commands_to_load):
-      raise LayoutException('Group %s has no subgroups or commands'
-                            % self.dotted_name)
+      raise command_loading.LayoutException(
+          'Group {0} has no subgroups or commands'.format(self.dotted_name))
     # Initialize the sub-parser so sub groups can be found.
     self.SubParser()
 
-  def _FindSubElements(self):
-    """Final all the sub groups and commands under this group.
-
-    Raises:
-      LayoutException: if there is a command or group with an illegal name.
-    """
-    location = os.path.join(self._module_dir, *self._module_path)
-    groups, commands = pkg_resources.ListPackage(location)
-
-    for collection in [groups, commands]:
-      for name in collection:
-        if re.search('[A-Z]', name):
-          raise LayoutException('Commands and groups cannot have capital '
-                                'letters: %s.' % name)
-
-    for group_info in self._GetSubPathForNames(groups):
-      self.AddSubGroup(group_info)
-    for command_info in self._GetSubPathForNames(commands):
-      self.AddSubCommand(command_info)
-
-  def _GetSubPathForNames(self, names):
-    """Gets a list of (module path, path) for the sub names.
-
-    Args:
-      names: [str], The names of the sub groups or commands the paths are for.
-
-    Returns:
-      A list of tuples of (module_dir, module_path, name, release_track) for the
-      given names. These terms are that as used by the constructor of
-      CommandGroup and Command.
-    """
-    return [(self._module_dir, self._module_path + [name], name,
-             self.ReleaseTrack())
-            for name in names]
-
-  def AddSubGroup(self, group_info):
+  def AddSubGroup(self, *group_infos):
     """Merges another command group under this one.
 
     If we load command groups for alternate locations, this method is used to
     make those extra sub groups fall under this main group in the CLI.
 
     Args:
-      group_info: A tuple of (module_dir, module_path, name, release_track).
+      *group_infos: A tuple of (module_dir, module_path, name, release_track).
         The arguments used by the LoadSubElement() method for lazy loading this
         group.
     """
-    name = group_info[2]
-    self._groups_to_load[name] = group_info
+    for g in group_infos:
+      name = g[2]
+      self._groups_to_load[name] = g
 
-  def AddSubCommand(self, command_info):
+  def AddSubCommand(self, *command_infos):
     """Merges another command group under this one.
 
     If we load commands for alternate locations, this method is used to
     make those extra sub commands fall under this main group in the CLI.
 
     Args:
-      command_info: A tuple of (module_dir, module_path, name, release_track).
+      *command_infos: A tuple of (module_dir, module_path, name, release_track).
         The arguments used by the LoadSubElement() method for lazy loading this
         command.
     """
-    name = command_info[2]
-    self._commands_to_load[name] = command_info
+    for c in command_infos:
+      name = c[2]
+      self._commands_to_load[name] = c
 
   def CopyAllSubElementsTo(self, other_group, ignore):
     """Copies all the sub groups and commands from this group to the other.
@@ -764,7 +680,7 @@ class CommandGroup(CommandCommon):
             self._construction_id, self._cli_generator, self.SubParser(),
             parent_group=self)
         self.commands[element.name] = element
-    except base.ReleaseTrackNotImplementedException as e:
+    except command_loading.ReleaseTrackNotImplementedException as e:
       self._unloadable_elements.add(name)
       log.debug(e)
     return element
@@ -822,12 +738,8 @@ class Command(CommandCommon):
       parser_group: argparse.Parser, The parser to be used for this command.
       parent_group: CommandGroup, The parent of this command.
     """
-    # pylint:disable=protected-access, The base module is effectively an
-    # extension of calliope, and we want to leave _Common private so people
-    # don't extend it directly.
-    common_type = base._Common.FromModule(
-        self._GetModuleFromPath(module_dir, module_path, path, construction_id),
-        release_track,
+    common_type = command_loading.LoadCommonType(
+        module_dir, module_path, path, release_track, construction_id,
         is_command=True)
     super(Command, self).__init__(
         common_type,

@@ -502,6 +502,64 @@ class DataDiskAssignment(_messages.Message):
   vmInstance = _messages.StringField(2)
 
 
+class DataflowProjectsJobsAggregatedRequest(_messages.Message):
+  """A DataflowProjectsJobsAggregatedRequest object.
+
+  Enums:
+    FilterValueValuesEnum: The kind of filter to use.
+    ViewValueValuesEnum: Level of information requested in response. Default
+      is `JOB_VIEW_SUMMARY`.
+
+  Fields:
+    filter: The kind of filter to use.
+    location: The location that contains this job.
+    pageSize: If there are many jobs, limit response to at most this many. The
+      actual number of jobs returned will be the lesser of max_responses and
+      an unspecified server-defined limit.
+    pageToken: Set this to the 'next_page_token' field of a previous response
+      to request additional results in a long list.
+    projectId: The project which owns the jobs.
+    view: Level of information requested in response. Default is
+      `JOB_VIEW_SUMMARY`.
+  """
+
+  class FilterValueValuesEnum(_messages.Enum):
+    """The kind of filter to use.
+
+    Values:
+      UNKNOWN: <no description>
+      ALL: <no description>
+      TERMINATED: <no description>
+      ACTIVE: <no description>
+    """
+    UNKNOWN = 0
+    ALL = 1
+    TERMINATED = 2
+    ACTIVE = 3
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Level of information requested in response. Default is
+    `JOB_VIEW_SUMMARY`.
+
+    Values:
+      JOB_VIEW_UNKNOWN: <no description>
+      JOB_VIEW_SUMMARY: <no description>
+      JOB_VIEW_ALL: <no description>
+      JOB_VIEW_DESCRIPTION: <no description>
+    """
+    JOB_VIEW_UNKNOWN = 0
+    JOB_VIEW_SUMMARY = 1
+    JOB_VIEW_ALL = 2
+    JOB_VIEW_DESCRIPTION = 3
+
+  filter = _messages.EnumField('FilterValueValuesEnum', 1)
+  location = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  projectId = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
+
+
 class DataflowProjectsJobsCreateRequest(_messages.Message):
   """A DataflowProjectsJobsCreateRequest object.
 
@@ -3712,7 +3770,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details.  There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

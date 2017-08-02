@@ -25,16 +25,16 @@ class Annotation(_messages.Message):
     description: Description of the annotation. Length of the description is
       limited to 1000 characters.
     displayName: Human readable name of this annotation. Max 100 characters.
-    id: Id of this annotation. Read-only.
+    id: Id of this annotation. Output only.
     name: Resource name of the annotation, which has the format of
       "taxonomyStores/{store_id}/dataTaxonomies/{taxonomy_id}/annotations/{id}
       ".
     parentAnnotation: Ids of the parent annotation to this annotation. If
       empty, it means this annotation is a top level annotation.
-    storeId: Id of the enclosing store. Read-only.
-    taxonomyDisplayName: Human readable name of the enclosing taxonomy. Read-
+    storeId: Id of the enclosing store. Output only.
+    taxonomyDisplayName: Human readable name of the enclosing taxonomy. Output
       only.
-    taxonomyId: Id of the enclosing taxonomy. Read-only.
+    taxonomyId: Id of the enclosing taxonomy. Output only.
   """
 
   childAnnotations = _messages.StringField(1, repeated=True)
@@ -56,8 +56,8 @@ class AnnotationTag(_messages.Message):
 
   Fields:
     annotationDisplayName: Human readable name of the annotation corresponding
-      to this tag. Read-only.
-    annotationId: Id of the annotation corresponding to this tag. Read-only.
+      to this tag. Output only.
+    annotationId: Id of the annotation corresponding to this tag. Output only.
     dataSubsetName: A finer grained subset of the data that this annotation
       tag is applied to. For Bigquery, provide the name of the column you want
       to annotate. If this field is empty, the given annotation tag is
@@ -66,11 +66,11 @@ class AnnotationTag(_messages.Message):
       resource_name_of_the_data}/taxonomyStores/{store_id}/dataTaxonomies/{tax
       onomy_id}/annotationTag" Resouce name of the data asset should be
       RFC3986 escaped.
-    storeId: Id of the enclosing taxonomy store. Read-only.
+    storeId: Id of the enclosing taxonomy store. Output only.
     taxonomyDisplayName: Human readable name of the taxonomy enclosing the
-      annotation corresponding to this tag. Read-only.
+      annotation corresponding to this tag. Output only.
     taxonomyId: Id of the taxonomy enclosing the annotation corresponding to
-      this tag. Read-only.
+      this tag. Output only.
   """
 
   annotationDisplayName = _messages.StringField(1)
@@ -107,12 +107,14 @@ class Asset(_messages.Message):
     TypeValueValuesEnum: Type of the data asset, if available.
 
   Fields:
+    creationTime: The creation time.
     dataSubsetName: A finer grained subset of the data that this annotation
       tag is applied to. For Bigquery, provide the name of the column you want
       to annotate. If this field is empty, the given annotation tag is
       associated with the entire data asset.
     description: Description of the data asset, if available.
     displayName: Display name of the data asset, if available.
+    modificationTime: The last modified time.
     name: Resource name of the data asset.
     projectId: Id of the project that owns the data asset, if available.
     type: Type of the data asset, if available.
@@ -130,12 +132,14 @@ class Asset(_messages.Message):
     BIGQUERY_TABLE = 1
     BIGQUERY_TABLE_COLUMN = 2
 
-  dataSubsetName = _messages.StringField(1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  projectId = _messages.StringField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  creationTime = _messages.StringField(1)
+  dataSubsetName = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  modificationTime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  projectId = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
 
 
 class AuditConfig(_messages.Message):
@@ -209,6 +213,36 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuthorizationLoggingOptions(_messages.Message):
+  """Authorization-related information used by Cloud Audit Logging.
+
+  Enums:
+    PermissionTypeValueValuesEnum: The type of the permission that was
+      checked.
+
+  Fields:
+    permissionType: The type of the permission that was checked.
+  """
+
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    """The type of the permission that was checked.
+
+    Values:
+      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
+      ADMIN_READ: A read of admin (meta) data.
+      ADMIN_WRITE: A write of admin (meta) data.
+      DATA_READ: A read of standard data.
+      DATA_WRITE: A write of standard data.
+    """
+    PERMISSION_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    ADMIN_WRITE = 2
+    DATA_READ = 3
+    DATA_WRITE = 4
+
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
+
+
 class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
@@ -247,6 +281,8 @@ class CloudAuditOptions(_messages.Message):
       Record.
 
   Fields:
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
     logName: The log_name to populate in the Cloud Audit Record.
   """
 
@@ -262,7 +298,8 @@ class CloudAuditOptions(_messages.Message):
     ADMIN_ACTIVITY = 1
     DATA_ACCESS = 2
 
-  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
 class Condition(_messages.Message):
@@ -366,6 +403,29 @@ class Condition(_messages.Message):
   values = _messages.StringField(6, repeated=True)
 
 
+class CopyAnnotationRequest(_messages.Message):
+  """Request message for "DataAnnotation.CopyAnnotation".
+
+  Fields:
+    parentAnnotationId: If provided, the copied annotation will be a child
+      annotation of the given annotation.
+    sourceAnnotationName: Resource name of the annotation to be copied from.
+  """
+
+  parentAnnotationId = _messages.StringField(1)
+  sourceAnnotationName = _messages.StringField(2)
+
+
+class CopyDataTaxonomyRequest(_messages.Message):
+  """Request message for "DataTaxonomyService.CopyDataTaxonomy".
+
+  Fields:
+    sourceTaxonomyName: Resource name of the taxonomy to be copied from.
+  """
+
+  sourceTaxonomyName = _messages.StringField(1)
+
+
 class CounterOptions(_messages.Message):
   """Options for counters
 
@@ -391,10 +451,10 @@ class DataTaxonomy(_messages.Message):
     description: Description of the datapol taxonomy. Length of the
       description is limited to 1000 characters.
     displayName: Name of the taxonomy. Should be no more than 100 characters.
-    id: Id of this taxonomy. Read-only.
+    id: Id of this taxonomy. Output only.
     name: Resource name of the datapol taxonomy, which has the format of
       "taxonomyStores/{store_id}/dataTaxonomies/{id}".
-    storeId: Id of the enclosing store. Read-only.
+    storeId: Id of the enclosing store. Output only.
   """
 
   description = _messages.StringField(1)
@@ -478,14 +538,28 @@ class DatapolDataTaxonomyStoresDataTaxonomiesDeleteAnnotationTagRequest(_message
   name = _messages.StringField(2, required=True)
 
 
-class DatapolProjectsGetDefaultTaxonomyStoreRequest(_messages.Message):
-  """A DatapolProjectsGetDefaultTaxonomyStoreRequest object.
+class DatapolOperationsGetRequest(_messages.Message):
+  """A DatapolOperationsGetRequest object.
 
   Fields:
-    name: [Required] Resource name of the taxonomy store.
+    name: The name of the operation resource.
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class DatapolTaxonomyStoresCopyRequest(_messages.Message):
+  """A DatapolTaxonomyStoresCopyRequest object.
+
+  Fields:
+    copyDataTaxonomyRequest: A CopyDataTaxonomyRequest resource to be passed
+      as the request body.
+    parent: [Required] Resource name of the taxonomy store that the taxonomy
+      is copied to.
+  """
+
+  copyDataTaxonomyRequest = _messages.MessageField('CopyDataTaxonomyRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class DatapolTaxonomyStoresDataTaxonomiesAnnotationsCreateRequest(_messages.Message):
@@ -540,13 +614,31 @@ class DatapolTaxonomyStoresDataTaxonomiesAnnotationsPatchRequest(_messages.Messa
   """A DatapolTaxonomyStoresDataTaxonomiesAnnotationsPatchRequest object.
 
   Fields:
+    annotation: A Annotation resource to be passed as the request body.
     name: [Required] Resource name of the annotation to be updated.
-    updateAnnotationRequest: A UpdateAnnotationRequest resource to be passed
-      as the request body.
+    updateMask: The update mask applies to the resource. For the `FieldMask`
+      definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask Will only update
+      description if update_mask is not provided.
   """
 
-  name = _messages.StringField(1, required=True)
-  updateAnnotationRequest = _messages.MessageField('UpdateAnnotationRequest', 2)
+  annotation = _messages.MessageField('Annotation', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DatapolTaxonomyStoresDataTaxonomiesCopyRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesCopyRequest object.
+
+  Fields:
+    copyAnnotationRequest: A CopyAnnotationRequest resource to be passed as
+      the request body.
+    parent: [Required] Resource name of the taxonomy that the annotation is
+      copied to.
+  """
+
+  copyAnnotationRequest = _messages.MessageField('CopyAnnotationRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class DatapolTaxonomyStoresDataTaxonomiesCreateRequest(_messages.Message):
@@ -612,6 +704,23 @@ class DatapolTaxonomyStoresDataTaxonomiesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class DatapolTaxonomyStoresDataTaxonomiesPatchRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesPatchRequest object.
+
+  Fields:
+    dataTaxonomy: A DataTaxonomy resource to be passed as the request body.
+    name: [Required] Resource name of the taxonomy to be updated.
+    updateMask: The update mask applies to the resource. For the `FieldMask`
+      definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask Will only update
+      description if update_mask is not provided.
+  """
+
+  dataTaxonomy = _messages.MessageField('DataTaxonomy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class DatapolTaxonomyStoresDataTaxonomiesSetIamPolicyRequest(_messages.Message):
   """A DatapolTaxonomyStoresDataTaxonomiesSetIamPolicyRequest object.
 
@@ -625,6 +734,20 @@ class DatapolTaxonomyStoresDataTaxonomiesSetIamPolicyRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DatapolTaxonomyStoresGetCommonRequest(_messages.Message):
+  """A DatapolTaxonomyStoresGetCommonRequest object."""
+
+
+class DatapolTaxonomyStoresGetDefaultRequest(_messages.Message):
+  """A DatapolTaxonomyStoresGetDefaultRequest object.
+
+  Fields:
+    projectId: [Required] project id for getting the taxonomy store.
+  """
+
+  projectId = _messages.StringField(1)
 
 
 class DatapolTaxonomyStoresGetIamPolicyRequest(_messages.Message):
@@ -655,6 +778,67 @@ class DatapolTaxonomyStoresSetIamPolicyRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DatapolTaxonomyStoresTaxonomyReportsCreateRequest(_messages.Message):
+  """A DatapolTaxonomyStoresTaxonomyReportsCreateRequest object.
+
+  Fields:
+    parent: The resource parent.
+    taxonomyReport: A TaxonomyReport resource to be passed as the request
+      body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  taxonomyReport = _messages.MessageField('TaxonomyReport', 2)
+
+
+class DatapolTaxonomyStoresTaxonomyReportsDeleteRequest(_messages.Message):
+  """A DatapolTaxonomyStoresTaxonomyReportsDeleteRequest object.
+
+  Fields:
+    name: The resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatapolTaxonomyStoresTaxonomyReportsGetRequest(_messages.Message):
+  """A DatapolTaxonomyStoresTaxonomyReportsGetRequest object.
+
+  Fields:
+    name: The resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatapolTaxonomyStoresTaxonomyReportsListRequest(_messages.Message):
+  """A DatapolTaxonomyStoresTaxonomyReportsListRequest object.
+
+  Fields:
+    parent: The resource parent.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class DatapolTaxonomyStoresTaxonomyReportsPatchRequest(_messages.Message):
+  """A DatapolTaxonomyStoresTaxonomyReportsPatchRequest object.
+
+  Fields:
+    name: The resource name.
+    taxonomyReport: A TaxonomyReport resource to be passed as the request
+      body.
+    updateMask: The update mask applies to the resource. For the `FieldMask`
+      definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask Will update query,
+      display name and description if update_mask is not provided.
+  """
+
+  name = _messages.StringField(1, required=True)
+  taxonomyReport = _messages.MessageField('TaxonomyReport', 2)
+  updateMask = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -721,6 +905,31 @@ class ListAnnotationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListAssetsRequest(_messages.Message):
+  """Request message for "DataAnnotationTagging.ListAssets". Reserve tag 1 for
+  future parent.
+
+  Fields:
+    annotatableOnly: If set to true, only returns data assets that are
+      annotatable by the caller.
+    annotations: Resource names of annotations to be looked up.
+    filter: A filter string that includes additional predicates for data
+      assets.
+    includeAnnotatedByGroup: If set to true, for any group annotation, also
+      list data assets that are annotated by annotation belongs to this group.
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+  """
+
+  annotatableOnly = _messages.BooleanField(1)
+  annotations = _messages.StringField(2, repeated=True)
+  filter = _messages.StringField(3)
+  includeAnnotatedByGroup = _messages.BooleanField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+
+
 class ListAssetsResponse(_messages.Message):
   """Response message for "DataAnnotationTagging.ListAssets". Next tag: 4
 
@@ -748,6 +957,16 @@ class ListDataTaxonomiesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   taxonomies = _messages.MessageField('DataTaxonomy', 2, repeated=True)
+
+
+class ListTaxonomyReportsResponse(_messages.Message):
+  """Response message for "TaxonomyReports.ListTaxonomyReports".
+
+  Fields:
+    reports: Taxonomy reports that the taxonomy store contains.
+  """
+
+  reports = _messages.MessageField('TaxonomyReport', 1, repeated=True)
 
 
 class LogConfig(_messages.Message):
@@ -1109,7 +1328,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details.  There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -1147,6 +1366,27 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TaxonomyReport(_messages.Message):
+  """A message that represents a taxonomy report.
+
+  Fields:
+    description: A human-readable description of the report.
+    displayName: A human-readable display name of the report.
+    id: The report id.
+    name: The resource name of the taxonomy report, e.g.
+      taxonomyStores/{store_id}/taxonomyReports/{id}
+    query: The saved search query for this report.
+    storeId: The taxonomy store id.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  id = _messages.StringField(3)
+  name = _messages.StringField(4)
+  query = _messages.MessageField('ListAssetsRequest', 5)
+  storeId = _messages.StringField(6)
+
+
 class TaxonomyStore(_messages.Message):
   """A taxonomy store keeps a collection of data taxonomies. Each organization
   or each project that does not belong to any organization can have at most
@@ -1158,16 +1398,6 @@ class TaxonomyStore(_messages.Message):
   """
 
   name = _messages.StringField(1)
-
-
-class UpdateAnnotationRequest(_messages.Message):
-  """Request message for "DataAnnotation.UpdateAnnotation".
-
-  Fields:
-    description: New description of the annotation.
-  """
-
-  description = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

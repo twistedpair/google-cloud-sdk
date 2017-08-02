@@ -36,6 +36,15 @@ class Collections(enum.Enum):
       {},
       ['data', 'taxonomyStoresId', 'dataTaxonomiesId']
   )
+  OPERATIONS = (
+      'operations',
+      '{+name}',
+      {
+          '':
+              'operations/{operationsId}',
+      },
+      [u'name']
+  )
   TAXONOMYSTORES = (
       'taxonomyStores',
       'taxonomyStores/{taxonomyStoresId}',
@@ -59,6 +68,16 @@ class Collections(enum.Enum):
           '':
               'taxonomyStores/{taxonomyStoresId}/dataTaxonomies/'
               '{dataTaxonomiesId}/annotations/{annotationsId}',
+      },
+      [u'name']
+  )
+  TAXONOMYSTORES_TAXONOMYREPORTS = (
+      'taxonomyStores.taxonomyReports',
+      '{+name}',
+      {
+          '':
+              'taxonomyStores/{taxonomyStoresId}/taxonomyReports/'
+              '{taxonomyReportsId}',
       },
       [u'name']
   )

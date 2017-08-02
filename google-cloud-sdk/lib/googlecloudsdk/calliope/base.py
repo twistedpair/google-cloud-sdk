@@ -35,17 +35,8 @@ MARKDOWN_ITALIC = '_'
 MARKDOWN_CODE = '`'
 
 
-class LayoutException(Exception):
-  """An exception for when a command or group .py file has the wrong types."""
-
-
 class DeprecationException(Exception):
   """An exception for when a command or group has been deprecated."""
-
-
-class ReleaseTrackNotImplementedException(Exception):
-  """An exception for when a command or group does not support a release track.
-  """
 
 
 class ReleaseTrack(object):
@@ -357,15 +348,7 @@ URI_FLAG = Argument(
 
 
 class _Common(object):
-  """Base class for Command and Group.
-
-  Attributes:
-    config: {str:object}, A set of key-value pairs that will persist (as long
-        as they are JSON-serializable) between command invocations. Can be used
-        for caching.
-    http_func: function that returns an http object that can be used during
-        service requests.
-  """
+  """Base class for Command and Group."""
 
   __metaclass__ = abc.ABCMeta
   _cli_generator = None
@@ -377,107 +360,6 @@ class _Common(object):
 
   def __init__(self):
     self.exit_code = 0
-
-  @staticmethod
-  def FromModule(module, release_track, is_command):
-    """Get the type implementing CommandBase from the module.
-
-    Args:
-      module: module, The module resulting from importing the file containing a
-        command.
-      release_track: ReleaseTrack, The release track that we should load from
-        this module.
-      is_command: bool, True if we are loading a command, False to load a group.
-
-    Returns:
-      type, The custom class that implements CommandBase.
-
-    Raises:
-      LayoutException: If there is not exactly one type inheriting
-          CommonBase.
-      ReleaseTrackNotImplementedException: If there is no command or group
-        implementation for the request release track.
-    """
-    return _Common._FromModule(
-        module.__file__, module.__dict__.values(), release_track, is_command)
-
-  @staticmethod
-  def _FromModule(mod_file, module_attributes, release_track, is_command):
-    """Implementation of FromModule() made easier to test."""
-    commands = []
-    groups = []
-
-    # Collect all the registered groups and commands.
-    for command_or_group in module_attributes:
-      if issubclass(type(command_or_group), type):
-        if issubclass(command_or_group, Command):
-          commands.append(command_or_group)
-        elif issubclass(command_or_group, Group):
-          groups.append(command_or_group)
-
-    if is_command:
-      if groups:
-        # Ensure that there are no groups if we are expecting a command.
-        raise LayoutException(
-            'You cannot define groups [{0}] in a command file: [{1}]'
-            .format(', '.join([g.__name__ for g in groups]), mod_file))
-      if not commands:
-        # Make sure we found a command.
-        raise LayoutException('No commands defined in file: [{0}]'.format(
-            mod_file))
-      commands_or_groups = commands
-    else:
-      # Ensure that there are no commands if we are expecting a group.
-      if commands:
-        raise LayoutException(
-            'You cannot define commands [{0}] in a command group file: [{1}]'
-            .format(', '.join([c.__name__ for c in commands]), mod_file))
-      if not groups:
-        # Make sure we found a group.
-        raise LayoutException('No command groups defined in file: [{0}]'.format(
-            mod_file))
-      commands_or_groups = groups
-
-    # We found a single thing, if it's valid for this track, return it.
-    if len(commands_or_groups) == 1:
-      command_or_group = commands_or_groups[0]
-      valid_tracks = command_or_group.ValidReleaseTracks()
-      # If there is a single thing defined, and it does not declare any valid
-      # tracks, just assume it is enabled for all tracks that it's parent is.
-      if not valid_tracks or release_track in valid_tracks:
-        return command_or_group
-      raise ReleaseTrackNotImplementedException(
-          'No implementation for release track [{0}] in file: [{1}]'
-          .format(release_track.id, mod_file))
-
-    # There was more than one thing found, make sure there are no conflicts.
-    implemented_release_tracks = set()
-    for command_or_group in commands_or_groups:
-      valid_tracks = command_or_group.ValidReleaseTracks()
-      # When there are multiple definitions, they need to explicitly register
-      # their track to keep things sane.
-      if not valid_tracks:
-        raise LayoutException(
-            'Multiple {0}s defined in file: [{1}].  Each must explicitly '
-            'declare valid release tracks.'
-            .format('command' if is_command else 'group', mod_file))
-      # Make sure no two classes define the same track.
-      duplicates = implemented_release_tracks & valid_tracks
-      if duplicates:
-        raise LayoutException(
-            'Multiple definitions for release tracks [{0}] in file: [{1}]'
-            .format(', '.join([str(d) for d in duplicates]), mod_file))
-      implemented_release_tracks |= valid_tracks
-
-    valid_commands_or_groups = [i for i in commands_or_groups
-                                if release_track in i.ValidReleaseTracks()]
-    # We know there is at most 1 because of the above check.
-    if len(valid_commands_or_groups) != 1:
-      raise ReleaseTrackNotImplementedException(
-          'No implementation for release track [{0}] in file: [{1}]'
-          .format(release_track.id, mod_file))
-
-    return valid_commands_or_groups[0]
 
   @staticmethod
   def Args(parser):
@@ -583,12 +465,7 @@ class _Common(object):
 
 
 class Group(_Common):
-  """Group is a base class for groups to implement.
-
-  Attributes:
-    http_func: function that returns an http object that can be used during
-        service requests.
-  """
+  """Group is a base class for groups to implement."""
 
   _command_suggestions = {}
 
@@ -615,13 +492,11 @@ class Command(_Common):
   """Command is a base class for commands to implement.
 
   Attributes:
-    _cli_power_users_only: calliope.cli.CLI, The CLI object representing this
+    _cli_do_not_use_directly: calliope.cli.CLI, The CLI object representing this
       command line tool. This should *only* be accessed via commands that
       absolutely *need* introspection of the entire CLI.
     context: {str:object}, A set of key-value pairs that can be used for
         common initialization among commands.
-    http_func: function that returns an http object that can be used during
-        service requests.
     _uri_cache_enabled: bool, The URI cache enabled state.
   """
 
