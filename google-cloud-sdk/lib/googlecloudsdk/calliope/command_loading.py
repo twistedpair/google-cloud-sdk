@@ -14,12 +14,14 @@
 
 """Helpers to load commands from the filesystem."""
 
+import abc
 import os
 import re
 import sys
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core.util import pkg_resources
+import yaml
 
 
 class CommandLoadFailure(Exception):
@@ -42,6 +44,27 @@ class ReleaseTrackNotImplementedException(Exception):
   """
 
 
+class YamlCommandTranslator(object):
+  """An interface to implement when registering a custom command loader."""
+  __metaclass__ = abc.ABCMeta
+
+  @abc.abstractmethod
+  def Translate(self, path, command_data):
+    """Translates a yaml command into a calliope command.
+
+    Args:
+     path: [str], The same as module_path but with the groups named as they
+       will be in the CLI.
+      command_data: dict, The parsed contents of the command spec from the
+        yaml file that corresponds to the release track being loaded.
+
+    Returns:
+      calliope.base.Command, A command class (not instance) that
+      implements the spec.
+    """
+    pass
+
+
 def FindSubElements(module_dir, module_path, release_track):
   """Find all the sub groups and commands under this group.
 
@@ -60,8 +83,8 @@ def FindSubElements(module_dir, module_path, release_track):
     and sub commands.
   """
   location = os.path.join(module_dir, *module_path)
-  groups, commands = pkg_resources.ListPackage(location)
-
+  groups, commands = pkg_resources.ListPackage(location,
+                                               extra_extensions=['.yaml'])
   for collection in [groups, commands]:
     for name in collection:
       if re.search('[A-Z]', name):
@@ -90,12 +113,15 @@ def _GenerateElementInfo(module_dir, module_path, release_track, names):
     given names. These terms are that as used by the constructor of
     CommandGroup and Command.
   """
-  return [(module_dir, module_path + [name], name, release_track)
+  return [(module_dir,
+           module_path + [name],
+           name[:-5] if name.endswith('.yaml') else name,
+           release_track)
           for name in names]
 
 
 def LoadCommonType(module_dir, module_path, path, release_track,
-                   construction_id, is_command):
+                   construction_id, is_command, yaml_command_translator=None):
   """Loads a calliope command or group from a file.
 
   Args:
@@ -109,15 +135,29 @@ def LoadCommonType(module_dir, module_path, path, release_track,
     construction_id: str, A unique identifier for the CLILoader that is
       being constructed.
     is_command: bool, True if we are loading a command, False to load a group.
+    yaml_command_translator: YamlCommandTranslator, An instance of a translator
+      to use to load the yaml data.
+
+  Raises:
+    CommandLoadFailure: If the command is invalid and cannot be loaded.
 
   Returns:
     The base._Common class for the command or group.
   """
   impl_file = os.path.join(module_dir, *module_path)
-  module = _GetModuleFromPath(impl_file, path, construction_id)
-  common_type = _FromModule(
-      module.__file__, module.__dict__.values(), release_track,
-      is_command=is_command)
+  if module_path[-1].endswith('.yaml'):
+    if not is_command:
+      raise CommandLoadFailure(
+          '.'.join(path),
+          Exception('Command groups cannot be implemented in yaml'))
+    data = yaml.load(pkg_resources.GetData(impl_file))
+    common_type = _FromYaml(
+        impl_file, path, data, release_track, yaml_command_translator)
+  else:
+    module = _GetModuleFromPath(impl_file, path, construction_id)
+    common_type = _FromModule(
+        module.__file__, module.__dict__.values(), release_track,
+        is_command=is_command)
 
   return common_type
 
@@ -213,6 +253,39 @@ def _FromModule(mod_file, module_attributes, release_track, is_command):
       [(c, c.ValidReleaseTracks()) for c in commands_or_groups])
 
 
+def _FromYaml(impl_file, path, data, release_track, yaml_command_translator):
+  """Get the type implementing CommandBase from the module.
+
+  Args:
+    impl_file: str, The path to the file this was loaded from (for error
+      reporting).
+    path: [str], The same as module_path but with the groups named as they
+      will be in the CLI.
+    data: dict, The loaded yaml data.
+    release_track: ReleaseTrack, The release track that we should load from
+      this module.
+    yaml_command_translator: YamlCommandTranslator, An instance of a translator
+      to use to load the yaml data.
+
+  Raises:
+    CommandLoadFailure: If the command is invalid and cannot be loaded.
+
+  Returns:
+    type, The custom class that implements CommandBase.
+  """
+  if not yaml_command_translator:
+    raise CommandLoadFailure(
+        '.'.join(path),
+        Exception('No yaml command translator has been registered'))
+
+  implementations = [
+      (i, {base.ReleaseTrack.FromId(t) for t in i.get('release_tracks', [])})
+      for i in data]
+  command_data = _ExtractReleaseTrackImplementation(
+      impl_file, release_track, implementations)
+  return yaml_command_translator.Translate(path, command_data)
+
+
 def _ExtractReleaseTrackImplementation(
     impl_file, expected_track, implementations):
   """Validates and extracts the correct implementation of the command or group.
@@ -221,7 +294,7 @@ def _ExtractReleaseTrackImplementation(
     impl_file: str, The path to the file this was loaded from (for error
       reporting).
     expected_track: base.ReleaseTrack, The release track we are trying to load.
-    implementations: [(object, [base.ReleaseTrack])], A list of implementations
+    implementations: [(object, {base.ReleaseTrack})], A list of implementations
       to search. Each item is a tuple of an arbitrary object and a list of
       release tracks it is valid for.
 

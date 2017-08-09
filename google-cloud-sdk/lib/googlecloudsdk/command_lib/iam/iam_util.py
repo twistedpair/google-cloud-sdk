@@ -182,7 +182,7 @@ def ConstructUpdateMaskFromPolicy(policy_file_path):
 
 
 def ParsePolicyFile(policy_file_path, policy_message_type):
-  """Construct an IAM Policy protorpc.Message from a JSON or YAML formated file.
+  """Construct an IAM Policy protorpc.Message from a JSON/YAML formatted file.
 
   Args:
     policy_file_path: Path to the JSON or YAML IAM policy file.
@@ -214,7 +214,7 @@ def ParsePolicyFile(policy_file_path, policy_message_type):
 
 
 def ParseJsonPolicyFile(policy_file_path, policy_message_type):
-  """Construct an IAM Policy protorpc.Message from a JSON formated file.
+  """Construct an IAM Policy protorpc.Message from a JSON formatted file.
 
   Args:
     policy_file_path: Path to the JSON IAM policy file.
@@ -292,7 +292,7 @@ def ParseYamlPolicyFile(policy_file_path, policy_message_type):
 
 
 def ParseYamlToRole(file_path, role_message_type):
-  """Construct an IAM Role protorpc.Message from a Yaml formated file.
+  """Construct an IAM Role protorpc.Message from a Yaml formatted file.
 
   Args:
     file_path: Path to the Yaml IAM Role file.
@@ -544,8 +544,8 @@ def AccountNameValidator():
   return arg_parsers.RegexpValidator(
       r'[a-z][a-z0-9\-]{4,28}[a-z0-9]',
       'Service account name must be between 6 and 30 characters (inclusive), '
-      'must begin with a lowercase letter, and consist of alphanumeric '
-      'characters that can be separated by hyphens.')
+      'must begin with a lowercase letter, and consist of lowercase '
+      'alphanumeric characters that can be separated by hyphens.')
 
 
 def ProjectToProjectResourceName(project):
@@ -704,7 +704,9 @@ def AddServiceAccountNameArg(parser, action='to act on'):
                       type=GetIamAccountFormatValidator(),
                       completer=completers.IamServiceAccountCompleter,
                       help=('The service account {}. The account should be '
-                            'formatted as an email, like this: '
+                            'formatted either as a numeric service account ID '
+                            'or as an email, like this: '
+                            '123456789876543212345 or '
                             'my-iam-account@somedomain.com.'.format(action)))
 
 
@@ -713,10 +715,12 @@ def LogSetIamPolicy(name, kind):
 
 
 def GetIamAccountFormatValidator():
-  """Checks that provided iam account identifier is a valid email address."""
+  """Checks that provided iam account identifier is valid."""
   return arg_parsers.RegexpValidator(
-      r'^.+@.+\..+$',  # Overly broad on purpose but catches most common issues.
-      'Not a valid email address. It should be of the form: '
+      # Overly broad on purpose but catches most common issues.
+      r'^(.+@.+\..+|[0-9]+)$',
+      'Not a valid service account identifier. It should be either a '
+      'numeric string representing the unique_id or an email of the form: '
       'my-iam-account@somedomain.com or '
       'my-iam-account@PROJECT_ID.iam.gserviceaccount.com')
 
@@ -729,4 +733,3 @@ def SetRoleStageIfAlpha(role):
   """
   if role.stage is None:
     role.stage = StageTypeFromString('alpha')
-

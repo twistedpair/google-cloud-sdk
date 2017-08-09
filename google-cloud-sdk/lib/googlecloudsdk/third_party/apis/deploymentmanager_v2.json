@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20170724",
+ "revision": "20170731",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -400,6 +400,10 @@
     "counter": {
      "$ref": "LogConfigCounterOptions",
      "description": "Counter options."
+    },
+    "dataAccess": {
+     "$ref": "LogConfigDataAccessOptions",
+     "description": "Data access options."
     }
    }
   },
@@ -421,7 +425,7 @@
   "LogConfigCounterOptions": {
    "id": "LogConfigCounterOptions",
    "type": "object",
-   "description": "Options for counters",
+   "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '/', generally be lowercase-only, and end in \"_count\". Field names should not contain an initial slash. The actual exported metric names will have \"/iam/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are their respective values.\n\nAt present the only supported field names are - \"iam_principal\", corresponding to IAMContext.principal; - \"\" (empty string), resulting in one aggretated counter with no field.\n\nExamples: counter { metric: \"/debug_access_count\" field: \"iam_principal\" } ==\u003e increment counter /iam/policy/backend_debug_access_count {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support: * multiple field names (though this may be supported in the future) * decrementing the counter * incrementing it by anything other than 1",
    "properties": {
     "field": {
      "type": "string",
@@ -430,6 +434,17 @@
     "metric": {
      "type": "string",
      "description": "The metric to update."
+    }
+   }
+  },
+  "LogConfigDataAccessOptions": {
+   "id": "LogConfigDataAccessOptions",
+   "type": "object",
+   "description": "Write a Data Access (Gin) log",
+   "properties": {
+    "logMode": {
+     "type": "string",
+     "description": "Whether Gin logging should happen in a fail-closed manner at the caller. This is relevant only in the LocalIAM implementation, for now."
     }
    }
   },

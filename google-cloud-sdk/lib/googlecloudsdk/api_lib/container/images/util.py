@@ -23,9 +23,7 @@ from containerregistry.client import docker_name
 # images addressed by digest must be accessed via the API version
 # corresponding to how they are stored.
 from containerregistry.client.v2 import docker_image as v2_image
-from containerregistry.client.v2 import util as v2_util
 from containerregistry.client.v2_2 import docker_image as v2_2_image
-from containerregistry.client.v2_2 import util as v2_2_util
 from googlecloudsdk.api_lib.container.images import container_analysis_data_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
@@ -369,7 +367,7 @@ def GetDigestFromName(image_name):
         basic_creds=CredentialProvider(), name=tag,
         transport=http.Http()) as v2_img:
       if v2_img.exists():
-        return v2_util.Digest(v2_img.manifest())
+        return v2_img.digest()
       return None
 
   def ResolveV22Tag(tag):
@@ -377,7 +375,7 @@ def GetDigestFromName(image_name):
         basic_creds=CredentialProvider(), name=tag,
         transport=http.Http()) as v2_2_img:
       if v2_2_img.exists():
-        return v2_2_util.Digest(v2_2_img.manifest())
+        return v2_2_img.digest()
       return None
 
   # Resolve v2.2 first because we will exist via a compatibility layer.

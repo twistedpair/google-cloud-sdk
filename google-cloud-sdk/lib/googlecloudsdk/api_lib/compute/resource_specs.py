@@ -976,26 +976,6 @@ _SPECS_BETA['commitments'] = _InternalSpec(
 
 
 _SPECS_ALPHA = _SPECS_BETA.copy()
-_SPECS_ALPHA['hosts'] = _InternalSpec(
-    message_class_name='Host',
-    table_cols=[
-        ('NAME', 'name'),
-        ('REQUEST_PATH', 'requestPath'),
-    ],
-    transformations=[],
-    editables=None)
-_SPECS_ALPHA['hostTypes'] = _InternalSpec(
-    message_class_name='HostType',
-    table_cols=[
-        ('NAME', 'name'),
-        ('ZONE', 'zone'),
-        ('DEPRECATED', 'deprecated'),
-        ('CPUs', 'guestCpus'),
-        ('MEMORY(MB)', 'memoryMb'),
-        ('LOCAL SSD(GB)', 'localSsdGb'),
-    ],
-    transformations=[],
-    editables=None)
 
 _SPECS_ALPHA['instanceGroups'] = _InternalSpec(
     message_class_name='InstanceGroup',

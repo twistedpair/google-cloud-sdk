@@ -1282,10 +1282,12 @@ class LogConfig(_messages.Message):
   Fields:
     cloudAudit: Cloud audit options.
     counter: Counter options.
+    dataAccess: Data access options.
   """
 
   cloudAudit = _messages.MessageField('LogConfigCloudAuditOptions', 1)
   counter = _messages.MessageField('LogConfigCounterOptions', 2)
+  dataAccess = _messages.MessageField('LogConfigDataAccessOptions', 3)
 
 
 class LogConfigCloudAuditOptions(_messages.Message):
@@ -1302,7 +1304,19 @@ class LogConfigCloudAuditOptions(_messages.Message):
 
 
 class LogConfigCounterOptions(_messages.Message):
-  """Options for counters
+  """Increment a streamz counter with the specified metric and field names.
+  Metric names should start with a '/', generally be lowercase-only, and end
+  in "_count". Field names should not contain an initial slash. The actual
+  exported metric names will have "/iam/policy" prepended.  Field names
+  correspond to IAM request parameters and field values are their respective
+  values.  At present the only supported field names are - "iam_principal",
+  corresponding to IAMContext.principal; - "" (empty string), resulting in one
+  aggretated counter with no field.  Examples: counter { metric:
+  "/debug_access_count" field: "iam_principal" } ==> increment counter
+  /iam/policy/backend_debug_access_count {iam_principal=[value of
+  IAMContext.principal]}  At this time we do not support: * multiple field
+  names (though this may be supported in the future) * decrementing the
+  counter * incrementing it by anything other than 1
 
   Fields:
     field: The field value to attribute.
@@ -1311,6 +1325,17 @@ class LogConfigCounterOptions(_messages.Message):
 
   field = _messages.StringField(1)
   metric = _messages.StringField(2)
+
+
+class LogConfigDataAccessOptions(_messages.Message):
+  """Write a Data Access (Gin) log
+
+  Fields:
+    logMode: Whether Gin logging should happen in a fail-closed manner at the
+      caller. This is relevant only in the LocalIAM implementation, for now.
+  """
+
+  logMode = _messages.StringField(1)
 
 
 class Manifest(_messages.Message):

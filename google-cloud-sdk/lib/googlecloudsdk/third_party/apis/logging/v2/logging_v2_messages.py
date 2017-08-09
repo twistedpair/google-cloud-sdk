@@ -518,9 +518,7 @@ class LogMetric(_messages.Message):
 
   Enums:
     VersionValueValuesEnum: Output only. The API version that created or
-      updated this metric. The version also dictates the syntax of the filter
-      expression. When a value for this field is missing, the default value of
-      V2 should be assumed.
+      updated this metric. This value is currently always set to V2.
 
   Fields:
     description: Optional. A description of this metric, which is used in
@@ -539,15 +537,12 @@ class LogMetric(_messages.Message):
       metric_name API parameter, then the metric identifier must be URL-
       encoded. Example: "projects/my-project/metrics/nginx%2Frequests".
     version: Output only. The API version that created or updated this metric.
-      The version also dictates the syntax of the filter expression. When a
-      value for this field is missing, the default value of V2 should be
-      assumed.
+      This value is currently always set to V2.
   """
 
   class VersionValueValuesEnum(_messages.Enum):
-    """Output only. The API version that created or updated this metric. The
-    version also dictates the syntax of the filter expression. When a value
-    for this field is missing, the default value of V2 should be assumed.
+    """Output only. The API version that created or updated this metric. This
+    value is currently always set to V2.
 
     Values:
       V2: Stackdriver Logging API v2.

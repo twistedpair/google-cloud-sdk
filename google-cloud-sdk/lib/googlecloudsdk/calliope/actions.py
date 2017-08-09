@@ -510,9 +510,9 @@ def _PreActionHook(action, func, additional_help=None):
 
     def __init__(self, *args, **kwargs):
       if additional_help:
-        kwargs['help'] = '{0} {1} \n\n{2}'.format(
+        kwargs['help'] = '{0} {1}\n+\n{2}'.format(
             additional_help.label,
-            kwargs.pop('detailed_help', '') or kwargs.get('help', ''),
+            kwargs.get('help', '').rstrip(),
             additional_help.message)
 
       self.wrapped_action = action_cls(*args, **kwargs)

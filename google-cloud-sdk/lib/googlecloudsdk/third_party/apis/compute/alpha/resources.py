@@ -174,6 +174,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'interconnect']
   )
+  LICENSECODES = (
+      'licenseCodes',
+      'projects/{project}/global/licenseCodes/{licenseCode}',
+      {},
+      [u'project', u'licenseCode']
+  )
   LICENSES = (
       'licenses',
       'projects/{project}/global/licenses/{license}',

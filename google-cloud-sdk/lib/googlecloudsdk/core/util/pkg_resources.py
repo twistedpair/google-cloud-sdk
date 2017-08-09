@@ -157,9 +157,11 @@ def _LoadModule(importer, module_path, module_name, name_to_give):
   return module
 
 
-def _IterModules(file_list, prefix=None):
+def _IterModules(file_list, extra_extensions, prefix=None):
   """Yields module names from given list of file paths with given prefix."""
   yielded = set()
+  if extra_extensions is None:
+    extra_extensions = []
   if prefix is None:
     prefix = ''
   for file_path in file_list:
@@ -179,52 +181,58 @@ def _IterModules(file_list, prefix=None):
 
     filename = os.path.basename(file_path_parts[0])
     modname, ext = os.path.splitext(filename)
-    if modname == '__init__' or ext != '.py':
+    if modname == '__init__' or (ext != '.py' and ext not in extra_extensions):
       continue
 
-    if modname and '.' not in modname and modname not in yielded:
-      yielded.add(modname)
-      yield modname, False
+    to_yield = modname if ext == '.py' else filename
+    if '.' not in modname and to_yield not in yielded:
+      yielded.add(to_yield)
+      yield to_yield, False
 
 
-def _ListImportables(path):
+def _ListPackagesAndFiles(path):
   """List packages or modules which can be imported at given path."""
   importables = []
   for filename in os.listdir(path):
-    if filename.endswith('.py'):
+    if os.path.isfile(os.path.join(path, filename)):
       importables.append(filename)
-      continue
-    pkg_init_filepath = os.path.join(path, filename, '__init__.py')
-    if os.path.isfile(pkg_init_filepath):
-      importables.append(os.path.join(filename, '__init__.py'))
+    else:
+      pkg_init_filepath = os.path.join(path, filename, '__init__.py')
+      if os.path.isfile(pkg_init_filepath):
+        importables.append(os.path.join(filename, '__init__.py'))
   return importables
 
 
-def ListPackage(path):
+def ListPackage(path, extra_extensions=None):
   """Returns list of packages and modules in given path.
 
   Args:
     path: str, filesystem path
+    extra_extensions: [str], The list of file extra extensions that should be
+      considered modules for the purposes of listing (in addition to .py).
 
   Returns:
     tuple([packages], [modules])
   """
   iter_modules = []
   if os.path.isdir(path):
-    iter_modules = _IterModules(_ListImportables(path))
+    iter_modules = _IterModules(_ListPackagesAndFiles(path), extra_extensions)
   else:
     importer = pkgutil.get_importer(path)
     if hasattr(importer, '_files'):
       # pylint:disable=protected-access
-      iter_modules = _IterModules(importer._files, importer.prefix)
+      iter_modules = _IterModules(
+          importer._files, extra_extensions, importer.prefix)
     elif hasattr(importer, '_par'):
       # pylint:disable=protected-access
       prefix = os.path.join(*importer._prefix.split('.'))
-      iter_modules = _IterModules(importer._par._filename_list, prefix)
+      iter_modules = _IterModules(
+          importer._par._filename_list, extra_extensions, prefix)
     elif hasattr(importer, 'ziparchive'):
       prefix = os.path.join(*importer.prefix.split('.'))
       # pylint:disable=protected-access
-      iter_modules = _IterModules(importer.ziparchive._files, prefix)
+      iter_modules = _IterModules(
+          importer.ziparchive._files, extra_extensions, prefix)
   packages, modules = [], []
   for name, ispkg in iter_modules:
     if ispkg:

@@ -692,8 +692,9 @@ def ValidateCreateDiskFlags(args):
           '[--create-disk].')
 
 
-def AddAddressArgs(parser, instances=True,
-                   multiple_network_interface_cards=False,
+def AddAddressArgs(parser,
+                   instances=True,
+                   multiple_network_interface_cards=True,
                    support_alias_ip_ranges=False,
                    support_network_tier=False):
   """Adds address arguments for instances and instance-templates."""
@@ -761,9 +762,8 @@ def AddAddressArgs(parser, instances=True,
         """
     if support_network_tier:
       network_interface_help += """
-        *network-tier*::: Specifies the network tier of the interface. The
-        default network tier is PREMIUM. NETWORK_TIER must be one of: PREMIUM,
-        SELECT, STANDARD.
+        *network-tier*::: Specifies the network tier of the interface.
+        ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`.
         """
     if instances:
       network_interface_help += """
@@ -1030,32 +1030,27 @@ def AddNetworkInterfaceArgs(parser):
 def AddNetworkTierArgs(parser, instance=True, for_update=False):
   """Adds network tier flag to the argparse."""
 
-  choices = constants.NETWORK_TIER_CHOICES_FOR_INSTANCE
   if for_update:
     parser.add_argument(
         '--network-tier',
-        choices=sorted(choices),
         type=lambda x: x.upper(),
         help=
-        'Update the network tier of the access configuration. Network tier can '
-        'only be changed from `PREMIUM` to `SELECT`, and visa versa. It does '
-        'not allow to change from `STANDARD` to `PREMIUM`/`SELECT` and visa '
-        'versa.')
+        'Update the network tier of the access configuration. It does not allow'
+        ' to change from `PREMIUM` to `STANDARD` and visa versa.')
     return
 
   if instance:
     network_tier_help = """\
         Specifies the network tier that will be used to configure the instance.
-        The default network tier is PREMIUM.
+        ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`.
         """
   else:
     network_tier_help = """\
-        Specifies the network tier of the access configuration. The default
-        network tier is PREMIUM.
+        Specifies the network tier of the access configuration. ``NETWORK_TIER''
+        must be one of: `PREMIUM`, `STANDARD`.
         """
   parser.add_argument(
       '--network-tier',
-      choices=sorted(choices),
       default=constants.DEFAULT_NETWORK_TIER,
       type=lambda x: x.upper(),
       help=network_tier_help)
@@ -1430,3 +1425,11 @@ def WarnForSourceInstanceTemplateLimitations(args):
                        'parameters other than --machine-type and --labels will '
                        'be ignored but provided by the source instance '
                        'template\n')
+
+
+def ValidateNetworkTierArgs(args, support_network_tier):
+  if support_network_tier and args.network_tier:
+    if args.network_tier not in constants.NETWORK_TIER_CHOICES_FOR_INSTANCE:
+      raise exceptions.InvalidArgumentException(
+          '--network-tier',
+          'Invalid network tier [{tier}]'.format(tier=args.network_tier))

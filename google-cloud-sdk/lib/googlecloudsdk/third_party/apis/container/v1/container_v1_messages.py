@@ -1867,6 +1867,13 @@ class NodeConfig(_messages.Message):
       interpreted by the image running in the instance. The only restriction
       placed on them is that each value's size must be less than or equal to
       32 KB.  The total size of all keys and values must be less than 512 KB.
+    minCpuPlatform: Minimum cpu/platform to be used by this instance. The
+      instance may be scheduled on the specified or newer cpu/platform.
+      Applicable values are the friendly names of CPU platforms, such as
+      <code>minCpuPlatform: &quot;Intel Haswell&quot;</code> or
+      <code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;</code>. For more
+      information, read <a href="/compute/docs/instances/specify-min-cpu-
+      platform">Specifying a Minimum CPU Platform</a>.
     oauthScopes: The set of Google API scopes to be made available on all of
       the node VMs under the "default" service account.  The following scopes
       are recommended, but not required, and by default are not included:  *
@@ -1960,10 +1967,11 @@ class NodeConfig(_messages.Message):
   localSsdCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   machineType = _messages.StringField(7)
   metadata = _messages.MessageField('MetadataValue', 8)
-  oauthScopes = _messages.StringField(9, repeated=True)
-  preemptible = _messages.BooleanField(10)
-  serviceAccount = _messages.StringField(11)
-  tags = _messages.StringField(12, repeated=True)
+  minCpuPlatform = _messages.StringField(9)
+  oauthScopes = _messages.StringField(10, repeated=True)
+  preemptible = _messages.BooleanField(11)
+  serviceAccount = _messages.StringField(12)
+  tags = _messages.StringField(13, repeated=True)
 
 
 class NodeManagement(_messages.Message):

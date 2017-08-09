@@ -184,6 +184,13 @@ apis:
       resources:
          projects.regions: "projects/{projectId}/regions/{regionId}"
          projects.regions.operations_list: "projects/{projectId}/regions/{regionId}/operations"
+  datastore:
+    v1beta1:
+      discovery_doc: datastore_v1beta1.json
+    v1:
+      discovery_doc: datastore_v1.json
+      default: true
+
   deploymentmanager:
     alpha:
       discovery_doc: deploymentmanager_alpha.json
@@ -285,6 +292,9 @@ apis:
   toolresults:
     v1beta3:
       discovery_doc: toolresults_v1beta3.json
+  tpu:
+    v1alpha1:
+      discovery_doc: tpu_v1alpha1.json
   videointelligence:
     v1beta1:
       discovery_doc: videointelligence_v1beta1.json
@@ -294,4 +304,5 @@ apis:
   vision:
     v1:
       discovery_doc: vision_v1.json
+
 

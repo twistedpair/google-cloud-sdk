@@ -2,6 +2,54 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 166.0.0 (2017-08-09)
+
+### Breaking Changes
+
+*   Demoted `gcloud container images describe` to the alpha track.
+*   **(DEPRECATED)** Deprecated the following flags from `gcloud beta functions
+    deploy`: `--local-path`, `--source-path`, `--source-url`, `--source-revision`,
+    `--source-branch`, `--source-tag`; these are replaced by the `--source`
+    flag.
+*   **(DEPRECATED)** Deprecated the `--region` flag from `gcloud beta functions
+    list`, replaced by the `--regions` flag.
+*   **(DEPRECATED)** Deprecated the `--regions` and `--regexp` flags from
+    `gcloud compute routers list names`, use `--filter` instead.
+
+### Google Compute Engine
+*   Added support for multiple network interface cards for `gcloud compute
+    instances create` and `gcloud compute instance-templates create`.
+
+### Google Cloud IAM
+*   Updated `gcloud iam surfaces` to also accept uniqueId as service account
+    names.
+
+### Google Container Engine
+*   Added `--node-locations` flag to `gcloud alpha container clusters create`
+    and `gcloud alpha container clusters update`.
+*   Modified `gcloud alpha container images list` to properly handle
+    domain-scoped project ids when `--project` is omitted.
+
+### Google Container Registry
+*   Fixed concurrent docker pull calls that used the same container name.
+
+### Google App Engine
+*   Modified `gcloud app deploy` to use the new PHP Runtime Builder pipeline to
+    deploy apps. You can set `app/use_runtime_builders` config to false if you
+    need the old behavior.
+*   Go's `aetest` package now reuses http connections, fixing a bug that exhausted
+    file descriptors when running tests.
+*   Go 1.8 uses the new standard library context package when calling
+    `appengine.NewContext()`.
+
+### Google Cloud SQL
+*   Modified Cloud SQL replica creation to no longer require specification of
+    database version, tier, or region.
+
+### Google Cloud Logging
+*   Modified `gcloud beta logging metrics list` to no longer display version
+    number.
+
 ## 165.0.0 (2017-08-02)
 
 ### Breaking Changes
@@ -47,6 +95,11 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 ### Google Container Engine
 
 *   Updated Google Container Engine's `kubectl` from version 1.7.0 to 1.7.2.
+
+### Google Cloud Logging
+
+* `gcloud beta logging sinks list` will stop working for gcloud versions 161
+  and earlier.
 
 ## 164.0.0 (2017-07-26)
 

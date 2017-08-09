@@ -474,13 +474,14 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     return versions
 
   def ListRegions(self):
-    """List all regions and support for standard and flexible.
+    """List all regions for the project, and support for standard and flexible.
 
     Returns:
-      List of region_util.Region instances.
+      List of region_util.Region instances for the project.
     """
     request = self.messages.AppengineAppsLocationsListRequest(
-        name='apps/-')
+        name='apps/{0}'.format(self.project))
+
     regions = list_pager.YieldFromList(
         self.client.apps_locations, request, field='locations',
         batch_size=100, batch_size_attribute='pageSize')
@@ -539,7 +540,24 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
 
   def _CreateVersionResource(
       self, service_config, manifest, version_id, build, endpoints_info):
-    """Constructs a Version resource for deployment."""
+    """Constructs a Version resource for deployment.
+
+    Args:
+      service_config: ServiceYamlInfo, Service info parsed from a service yaml
+        file.
+      manifest: Dictionary mapping source files to Google Cloud Storage
+        locations.
+      version_id: str, The version of the service.
+      build: BuildArtifact, The build ID or image path. Build ID only supported
+        in beta.
+      endpoints_info: EndpointsServiceInfo, Endpoints service info to be added
+        to the AppInfoExternal configuration. Only provided when Endpoints API
+        Management feature is enabled.
+
+    Returns:
+      A Version resource whose Deployment includes either a container pointing
+        to a completed image, or a build pointing to an in-progress build.
+    """
     appinfo = service_config.parsed
 
     # TODO(b/29453752): Remove when we want to stop supporting module
@@ -567,10 +585,12 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     if build:
       if build.IsImage():
         json_version_resource['deployment']['container'] = {
-            'image': build.identifier}
-      else:
-        # TODO(b/38135140): set cloudBuildId when parallel build is enabled.
-        pass
+            'image': build.identifier
+        }
+      elif build.IsBuildId():
+        json_version_resource['deployment']['build'] = {
+            'cloudBuildId': build.identifier
+        }
     version_resource = encoding.PyValueToMessage(self.messages.Version,
                                                  json_version_resource)
 

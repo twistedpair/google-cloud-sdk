@@ -388,6 +388,10 @@
         "diskType": {
           "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd')\n\nIf unspecified, the default disk type is 'pd-standard'\nCurrently restricted because of b\/36071127#comment27",
           "type": "string"
+        },
+        "minCpuPlatform": {
+          "description": "Minimum cpu\/platform to be used by this instance. The instance may be\nscheduled on the specified or newer cpu\/platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read <a href=\"\/compute\/docs\/instances\/specify-min-cpu-platform\">Specifying a Minimum CPU Platform<\/a>.",
+          "type": "string"
         }
       }
     },

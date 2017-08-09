@@ -1322,7 +1322,7 @@ class StorageV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Get the email address of this project's GCS service account.
+      """Get the email address of this project's Google Cloud Storage service account.
 
       Args:
         request: (StorageProjectsServiceAccountGetRequest) input message

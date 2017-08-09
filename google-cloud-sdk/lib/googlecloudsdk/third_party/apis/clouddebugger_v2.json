@@ -135,7 +135,7 @@
     },
     "Debuggee": {
       "id": "Debuggee",
-      "description": "Represents the application to debug. The application may include one or more\nreplicated processes executing the same code. Each of these processes is\nattached with a debugger agent, carrying out the debugging commands.\nThe agents attached to the same debuggee are identified by using exactly the\nsame field values when registering.",
+      "description": "Represents the debugged application. The application may include one or more\nreplicated processes executing the same code. Each of these processes is\nattached with a debugger agent, carrying out the debugging commands.\nAgents attached to the same debuggee identify themselves as such by using\nexactly the same Debuggee message value when registering.",
       "type": "object",
       "properties": {
         "id": {
@@ -143,11 +143,11 @@
           "type": "string"
         },
         "project": {
-          "description": "Project the debuggee is associated with.\nUse the project number when registering a Google Cloud Platform project.",
+          "description": "Project the debuggee is associated with.\nUse project number or id when registering a Google Cloud Platform project.",
           "type": "string"
         },
         "uniquifier": {
-          "description": "Debuggee uniquifier within the project.\nAny string that identifies the application within the project can be used.\nIncluding environment and version or build IDs is recommended.",
+          "description": "Uniquifier to further distiguish the application.\nIt is possible that different applications might have identical values in\nthe debuggee message, thus, incorrectly identified as a single application\nby the Controller service. This field adds salt to further distiguish the\napplication. Agents should consider seeding this field with value that\nidentifies the code, binary, configuration and environment.",
           "type": "string"
         },
         "description": {
@@ -155,11 +155,11 @@
           "type": "string"
         },
         "isInactive": {
-          "description": "If set to `true`, indicates that the debuggee is considered as inactive by\nthe Controller service.",
+          "description": "If set to `true`, indicates that Controller service does not detect any\nactivity from the debuggee agents and the application is possibly stopped.",
           "type": "boolean"
         },
         "agentVersion": {
-          "description": "Version ID of the agent release. The version ID is structured as\nfollowing: `domain\/language-platform\/vmajor.minor` (for example\n`google.com\/java-gcp\/v1.1`).",
+          "description": "Version ID of the agent.\nSchema: `domain\/language-platform\/vmajor.minor` (for example\n`google.com\/java-gcp\/v1.1`).",
           "type": "string"
         },
         "isDisabled": {
@@ -171,14 +171,14 @@
           "$ref": "StatusMessage"
         },
         "sourceContexts": {
-          "description": "References to the locations and revisions of the source code used in the\ndeployed application.\n\nNOTE: This field is deprecated. Consumers should use\n`ext_source_contexts` if it is not empty. Debug agents should populate\nboth this field and `ext_source_contexts`.",
+          "description": "References to the locations and revisions of the source code used in the\ndeployed application.",
           "type": "array",
           "items": {
             "$ref": "SourceContext"
           }
         },
         "extSourceContexts": {
-          "description": "References to the locations and revisions of the source code used in the\ndeployed application.\n\nContexts describing a remote repo related to the source code\nhave a `category` label of `remote_repo`. Source snapshot source\ncontexts have a `category` of `snapshot`.",
+          "description": "References to the locations and revisions of the source code used in the\ndeployed application.\n\nNOTE: this field is experimental and can be ignored.",
           "type": "array",
           "items": {
             "$ref": "ExtendedSourceContext"
@@ -447,7 +447,7 @@
       "type": "object",
       "properties": {
         "debuggee": {
-          "description": "Debuggee resource.\nThe field `id` is guranteed to be set (in addition to the echoed fields).",
+          "description": "Debuggee resource.\nThe field `id` is guranteed to be set (in addition to the echoed fields).\nIf the field `is_disabled` is set to `true`, the agent should disable\nitself by removing all breakpoints and detaching from the application.\nIt should however continue to poll `RegisterDebuggee` until reenabled.",
           "$ref": "Debuggee"
         }
       }
@@ -465,11 +465,11 @@
           }
         },
         "nextWaitToken": {
-          "description": "A wait token that can be used in the next method call to block until\nthe list of breakpoints changes.",
+          "description": "A token that can be used in the next method call to block until\nthe list of breakpoints changes.",
           "type": "string"
         },
         "waitExpired": {
-          "description": "The `wait_expired` field is set to true by the server when the\nrequest times out and the field `success_on_timeout` is set to true.",
+          "description": "If set to `true`, indicates that there is no change to the\nlist of active breakpoints and the server-selected timeout has expired.\nThe `breakpoints` field would be empty and should be ignored.",
           "type": "boolean"
         }
       }
@@ -666,7 +666,7 @@
       "type": "object",
       "properties": {
         "breakpoint": {
-          "description": "Updated breakpoint information.\nThe field `id` must be set.",
+          "description": "Updated breakpoint information.\nThe field `id` must be set.\nThe agent must echo all Breakpoint specification fields in the update.",
           "$ref": "Breakpoint"
         }
       }
@@ -731,7 +731,7 @@
       "type": "object",
       "properties": {
         "debuggees": {
-          "description": "List of debuggees accessible to the calling user.\nNote that the `description` field is the only human readable field\nthat should be displayed to the user.\nThe fields `debuggee.id` and  `description` fields are guaranteed to be\nset on each debuggee.",
+          "description": "List of debuggees accessible to the calling user.\nThe fields `debuggee.id` and `description` are guaranteed to be set.\nThe `description` field is a human readable field provided by agents and\ncan be displayed to users.",
           "type": "array",
           "items": {
             "$ref": "Debuggee"
@@ -750,7 +750,7 @@
               "path": "v2/controller/debuggees/register",
               "flatPath": "v2/controller/debuggees/register",
               "httpMethod": "POST",
-              "description": "Registers the debuggee with the controller service.\n\nAll agents attached to the same application should call this method with\nthe same request content to get back the same stable `debuggee_id`. Agents\nshould call this method again whenever `google.rpc.Code.NOT_FOUND` is\nreturned from any controller method.\n\nThis allows the controller service to disable the agent or recover from any\ndata loss. If the debuggee is disabled by the server, the response will\nhave `is_disabled` set to `true`.",
+              "description": "Registers the debuggee with the controller service.\n\nAll agents attached to the same application must call this method with\nexactly the same request content to get back the same stable `debuggee_id`.\nAgents should call this method again whenever `google.rpc.Code.NOT_FOUND`\nis returned from any controller method.\n\nThis protocol allows the controller service to disable debuggees, recover\nfrom data loss, or change the `debuggee_id` format. Agents must handle\n`debuggee_id` value changing upon re-registration.",
               "parameters": {
               },
               "parameterOrder": [
@@ -785,12 +785,12 @@
                       "type": "string"
                     },
                     "waitToken": {
-                      "description": "A wait token that, if specified, blocks the method call until the list\nof active breakpoints has changed, or a server selected timeout has\nexpired.  The value should be set from the last returned response.",
+                      "description": "A token that, if specified, blocks the method call until the list\nof active breakpoints has changed, or a server-selected timeout has\nexpired. The value should be set from the `next_wait_token` field in\nthe last response. The initial value should be set to `\"init\"`.",
                       "location": "query",
                       "type": "string"
                     },
                     "successOnTimeout": {
-                      "description": "If set to `true`, returns `google.rpc.Code.OK` status and sets the\n`wait_expired` response field to `true` when the server-selected timeout\nhas expired (recommended).\n\nIf set to `false`, returns `google.rpc.Code.ABORTED` status when the\nserver-selected timeout has expired (deprecated).",
+                      "description": "If set to `true` (recommended), returns `google.rpc.Code.OK` status and\nsets the `wait_expired` response field to `true` when the server-selected\ntimeout has expired.\n\nIf set to `false` (deprecated), returns `google.rpc.Code.ABORTED` status\nwhen the server-selected timeout has expired.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -811,7 +811,7 @@
                   "path": "v2/controller/debuggees/{debuggeeId}/breakpoints/{id}",
                   "flatPath": "v2/controller/debuggees/{debuggeeId}/breakpoints/{id}",
                   "httpMethod": "PUT",
-                  "description": "Updates the breakpoint state or mutable fields.\nThe entire Breakpoint message must be sent back to the controller\nservice.\n\nUpdates to active breakpoint fields are only allowed if the new value\ndoes not change the breakpoint specification. Updates to the `location`,\n`condition` and `expressions` fields should not alter the breakpoint\nsemantics. These may only make changes such as canonicalizing a value\nor snapping the location to the correct line of code.",
+                  "description": "Updates the breakpoint state or mutable fields.\nThe entire Breakpoint message must be sent back to the controller service.\n\nUpdates to active breakpoint fields are only allowed if the new value\ndoes not change the breakpoint specification. Updates to the `location`,\n`condition` and `expressions` fields should not alter the breakpoint\nsemantics. These may only make changes such as canonicalizing a value\nor snapping the location to the correct line of code.",
                   "parameters": {
                     "debuggeeId": {
                       "description": "Identifies the debuggee being debugged.",
@@ -856,7 +856,7 @@
               "path": "v2/debugger/debuggees",
               "flatPath": "v2/debugger/debuggees",
               "httpMethod": "GET",
-              "description": "Lists all the debuggees that the user can set breakpoints to.",
+              "description": "Lists all the debuggees that the user has access to.",
               "parameters": {
                 "project": {
                   "description": "Project number of a Google Cloud project whose debuggees to list.",
@@ -869,7 +869,7 @@
                   "type": "boolean"
                 },
                 "clientVersion": {
-                  "description": "The client version making the call.\nFollowing: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
+                  "description": "The client version making the call.\nSchema: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
                   "location": "query",
                   "type": "string"
                 }
@@ -903,7 +903,7 @@
                       "type": "string"
                     },
                     "clientVersion": {
-                      "description": "The client version making the call.\nFollowing: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
+                      "description": "The client version making the call.\nSchema: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
                       "location": "query",
                       "type": "string"
                     }
@@ -942,7 +942,7 @@
                       "type": "string"
                     },
                     "clientVersion": {
-                      "description": "The client version making the call.\nFollowing: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
+                      "description": "The client version making the call.\nSchema: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
                       "location": "query",
                       "type": "string"
                     }
@@ -979,7 +979,7 @@
                       "type": "string"
                     },
                     "clientVersion": {
-                      "description": "The client version making the call.\nFollowing: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
+                      "description": "The client version making the call.\nSchema: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
                       "location": "query",
                       "type": "string"
                     }
@@ -1039,7 +1039,7 @@
                       "type": "string"
                     },
                     "clientVersion": {
-                      "description": "The client version making the call.\nFollowing: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
+                      "description": "The client version making the call.\nSchema: `domain\/type\/version` (e.g., `google.com\/intellij\/v1`).",
                       "location": "query",
                       "type": "string"
                     }

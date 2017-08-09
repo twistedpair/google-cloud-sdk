@@ -138,7 +138,11 @@ def AddAdminEnabled(parser):
       action='store_true',
       default=None,
       help="""\
-      Administrative status of the interconnect. When this is provided, the
+      Administrative status of the interconnect. When this is enabled, the
       interconnect is functional and may carry traffic (assuming there are
       functional InterconnectAttachments and other requirements are satisfied).
+      Use --no-admin-enabled to disable it.
+      If the flag is not provided, the default value in create command would be
+      '--admin-enabled'; the default value in patch command would be the
+      existing one.
       """)

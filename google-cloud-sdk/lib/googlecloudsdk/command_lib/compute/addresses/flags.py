@@ -130,9 +130,13 @@ def AddDescription(parser):
 
 def AddNetworkTier(parser):
   """Adds network tier flag."""
+  # This arg is a string simulating enum NetworkTier because one of the
+  # option SELECT is hidden since it's not advertised to all customers.
   parser.add_argument(
       '--network-tier',
-      choices=['PREMIUM', 'SELECT', 'STANDARD'],
       default='PREMIUM',
       type=lambda x: x.upper(),
-      help='The network tier to assign to the reserved IP addresses.')
+      help="""\
+      The network tier to assign to the reserved IP addresses. ``NETWORK_TIER''
+      must be one of: `PREMIUM`, `STANDARD`.
+      """)

@@ -740,7 +740,8 @@ class Command(CommandCommon):
     """
     common_type = command_loading.LoadCommonType(
         module_dir, module_path, path, release_track, construction_id,
-        is_command=True)
+        is_command=True,
+        yaml_command_translator=cli_generator.yaml_command_translator)
     super(Command, self).__init__(
         common_type,
         path=path,

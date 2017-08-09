@@ -172,6 +172,7 @@ class CreateClusterOptions(object):
                enable_cloud_endpoints=None,
                num_nodes=None,
                additional_zones=None,
+               node_locations=None,
                user=None,
                password=None,
                cluster_version=None,
@@ -212,6 +213,7 @@ class CreateClusterOptions(object):
     self.enable_cloud_endpoints = enable_cloud_endpoints
     self.num_nodes = num_nodes
     self.additional_zones = additional_zones
+    self.node_locations = node_locations
     self.user = user
     self.password = password
     self.cluster_version = cluster_version
@@ -408,27 +410,10 @@ class APIAdapter(object):
                                collection='compute.instanceGroupManagers')
 
   def GetCluster(self, cluster_ref):
-    """Get a running cluster.
+    raise NotImplementedError('GetCluster is not overridden')
 
-    Args:
-      cluster_ref: cluster Resource to describe.
-    Returns:
-      Cluster message.
-    Raises:
-      Error: if cluster cannot be found.
-    """
-    try:
-      return self.client.projects_zones_clusters.Get(
-          self.messages.ContainerProjectsZonesClustersGetRequest(
-              projectId=cluster_ref.projectId,
-              zone=cluster_ref.zone,
-              clusterId=cluster_ref.clusterId))
-    except apitools_exceptions.HttpError as error:
-      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
-      if api_error.payload.status_code != 404:
-        raise api_error
-
-    # Cluster couldn't be found, maybe user got zone wrong?
+  def TryToGetCluster(self, cluster_ref, api_error):
+    """Try to get cluster in all zones to see if there is a match."""
     try:
       clusters = self.ListClusters(cluster_ref.projectId).clusters
     except apitools_exceptions.HttpError as error:
@@ -464,11 +449,7 @@ class APIAdapter(object):
     raise util.Error(msg)
 
   def GetOperation(self, operation_ref):
-    return self.client.projects_zones_operations.Get(
-        self.messages.ContainerProjectsZonesOperationsGetRequest(
-            projectId=operation_ref.projectId,
-            zone=operation_ref.zone,
-            operationId=operation_ref.operationId))
+    raise NotImplementedError('GetOperation is not overridden')
 
   def GetComputeOperation(self, project, zone, operation_id):
     req = self.compute_messages.ComputeZoneOperationsGetRequest(
@@ -671,6 +652,8 @@ class APIAdapter(object):
                                             password=options.password))
     if options.additional_zones:
       cluster.locations = sorted([cluster_ref.zone] + options.additional_zones)
+    if options.node_locations:
+      cluster.locations = sorted(options.node_locations)
     if options.cluster_version:
       cluster.initialClusterVersion = options.cluster_version
     if options.network:
@@ -882,19 +865,10 @@ class APIAdapter(object):
     raise NotImplementedError('CompleteIpRotation is not overridden')
 
   def DeleteCluster(self, cluster_ref):
-    operation = self.client.projects_zones_clusters.Delete(
-        self.messages.ContainerProjectsZonesClustersDeleteRequest(
-            clusterId=cluster_ref.clusterId,
-            zone=cluster_ref.zone,
-            projectId=cluster_ref.projectId))
-    return self.ParseOperation(operation.name, cluster_ref.zone)
+    raise NotImplementedError('DeleteCluster is not overridden')
 
   def ListClusters(self, project, zone=None):
-    if not zone:
-      zone = '-'
-    req = self.messages.ContainerProjectsZonesClustersListRequest(
-        projectId=project, zone=zone)
-    return self.client.projects_zones_clusters.List(req)
+    raise NotImplementedError('ListClusters is not overridden')
 
   def CreateNodePoolCommon(self, node_pool_ref, options):
     """Returns a CreateNodePool operation."""
@@ -951,18 +925,10 @@ class APIAdapter(object):
     raise NotImplementedError('CreateNodePool is not overridden')
 
   def ListNodePools(self, cluster_ref):
-    req = self.messages.ContainerProjectsZonesClustersNodePoolsListRequest(
-        projectId=cluster_ref.projectId, zone=cluster_ref.zone,
-        clusterId=cluster_ref.clusterId)
-    return self.client.projects_zones_clusters_nodePools.List(req)
+    raise NotImplementedError('ListNodePools is not overridden')
 
   def GetNodePool(self, node_pool_ref):
-    req = self.messages.ContainerProjectsZonesClustersNodePoolsGetRequest(
-        projectId=node_pool_ref.projectId,
-        zone=node_pool_ref.zone,
-        clusterId=node_pool_ref.clusterId,
-        nodePoolId=node_pool_ref.nodePoolId)
-    return self.client.projects_zones_clusters_nodePools.Get(req)
+    raise NotImplementedError('GetNodePool is not overridden')
 
   def UpdateNodePoolCommon(self, node_pool_ref, options):
     """Update a node pool.
@@ -987,13 +953,7 @@ class APIAdapter(object):
     raise NotImplementedError('UpdateNodePool is not overridden')
 
   def DeleteNodePool(self, node_pool_ref):
-    operation = self.client.projects_zones_clusters_nodePools.Delete(
-        self.messages.ContainerProjectsZonesClustersNodePoolsDeleteRequest(
-            clusterId=node_pool_ref.clusterId,
-            zone=node_pool_ref.zone,
-            projectId=node_pool_ref.projectId,
-            nodePoolId=node_pool_ref.nodePoolId))
-    return self.ParseOperation(operation.name, node_pool_ref.zone)
+    raise NotImplementedError('DeleteNodePool is not overridden')
 
   def RollbackUpgrade(self, node_pool_ref):
     raise NotImplementedError('RollbackUpgrade is not overridden')
@@ -1009,20 +969,14 @@ class APIAdapter(object):
     return operation.statusMessage
 
   def ListOperations(self, project, zone=None):
-    if not zone:
-      zone = '-'
-    req = self.messages.ContainerProjectsZonesOperationsListRequest(
-        projectId=project, zone=zone)
-    return self.client.projects_zones_operations.List(req)
+    raise NotImplementedError('ListOperations is not overridden')
 
   def IsOperationFinished(self, operation):
     return (operation.status ==
             self.messages.Operation.StatusValueValuesEnum.DONE)
 
   def GetServerConfig(self, project, zone):
-    req = self.messages.ContainerProjectsZonesGetServerconfigRequest(
-        projectId=project, zone=zone)
-    return self.client.projects_zones.GetServerconfig(req)
+    raise NotImplementedError('GetServerConfig is not overridden')
 
   def ResizeCluster(self, project, zone, group_name, size):
     req = self.compute_messages.ComputeInstanceGroupManagersResizeRequest(
@@ -1062,11 +1016,7 @@ class APIAdapter(object):
     """
     clus = None
     try:
-      clus = self.client.projects_zones_clusters.Get(
-          self.messages.ContainerProjectsZonesClustersGetRequest(
-              projectId=cluster_ref.projectId,
-              zone=cluster_ref.zone,
-              clusterId=cluster_ref.clusterId))
+      clus = self.GetCluster(cluster_ref)
     except apitools_exceptions.HttpError as error:
       api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
       if api_error.payload.status_code != 404:
@@ -1093,11 +1043,7 @@ class APIAdapter(object):
     """
     clus = None
     try:
-      clus = self.client.projects_zones_clusters.Get(
-          self.messages.ContainerProjectsZonesClustersGetRequest(
-              projectId=cluster_ref.projectId,
-              zone=cluster_ref.zone,
-              clusterId=cluster_ref.clusterId))
+      clus = self.GetCluster(cluster_ref)
     except apitools_exceptions.HttpError as error:
       api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
       if api_error.payload.status_code != 404:
@@ -1206,6 +1152,44 @@ class V1Adapter(APIAdapter):
             projectId=cluster_ref.projectId))
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
+  def GetCluster(self, cluster_ref):
+    """Get a running cluster.
+
+    Args:
+      cluster_ref: cluster Resource to describe.
+    Returns:
+      Cluster message.
+    Raises:
+      Error: if cluster cannot be found.
+    """
+    try:
+      return self.client.projects_zones_clusters.Get(
+          self.messages.ContainerProjectsZonesClustersGetRequest(
+              projectId=cluster_ref.projectId,
+              zone=cluster_ref.zone,
+              clusterId=cluster_ref.clusterId))
+    except apitools_exceptions.HttpError as error:
+      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      if api_error.payload.status_code != 404:
+        raise api_error
+    # Cluster couldn't be found, maybe user got zone wrong?
+    self.TryToGetCluster(cluster_ref, api_error)
+
+  def DeleteCluster(self, cluster_ref):
+    operation = self.client.projects_zones_clusters.Delete(
+        self.messages.ContainerProjectsZonesClustersDeleteRequest(
+            clusterId=cluster_ref.clusterId,
+            zone=cluster_ref.zone,
+            projectId=cluster_ref.projectId))
+    return self.ParseOperation(operation.name, cluster_ref.zone)
+
+  def ListClusters(self, project, zone=None):
+    if not zone:
+      zone = '-'
+    req = self.messages.ContainerProjectsZonesClustersListRequest(
+        projectId=project, zone=zone)
+    return self.client.projects_zones_clusters.List(req)
+
   def CreateNodePool(self, node_pool_ref, options):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
     create_node_pool_req = self.messages.CreateNodePoolRequest(nodePool=pool)
@@ -1216,6 +1200,30 @@ class V1Adapter(APIAdapter):
         clusterId=node_pool_ref.clusterId,
         createNodePoolRequest=create_node_pool_req)
     operation = self.client.projects_zones_clusters_nodePools.Create(req)
+    return self.ParseOperation(operation.name, node_pool_ref.zone)
+
+  def ListNodePools(self, cluster_ref):
+    req = self.messages.ContainerProjectsZonesClustersNodePoolsListRequest(
+        projectId=cluster_ref.projectId,
+        zone=cluster_ref.zone,
+        clusterId=cluster_ref.clusterId)
+    return self.client.projects_zones_clusters_nodePools.List(req)
+
+  def GetNodePool(self, node_pool_ref):
+    req = self.messages.ContainerProjectsZonesClustersNodePoolsGetRequest(
+        projectId=node_pool_ref.projectId,
+        zone=node_pool_ref.zone,
+        clusterId=node_pool_ref.clusterId,
+        nodePoolId=node_pool_ref.nodePoolId)
+    return self.client.projects_zones_clusters_nodePools.Get(req)
+
+  def DeleteNodePool(self, node_pool_ref):
+    operation = self.client.projects_zones_clusters_nodePools.Delete(
+        self.messages.ContainerProjectsZonesClustersNodePoolsDeleteRequest(
+            clusterId=node_pool_ref.clusterId,
+            zone=node_pool_ref.zone,
+            projectId=node_pool_ref.projectId,
+            nodePoolId=node_pool_ref.nodePoolId))
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
   def UpdateNodePool(self, node_pool_ref, options):
@@ -1247,6 +1255,25 @@ class V1Adapter(APIAdapter):
         projectId=op_ref.projectId,
         operationId=op_ref.operationId)
     return self.client.projects_zones_operations.Cancel(req)
+
+  def ListOperations(self, project, zone=None):
+    if not zone:
+      zone = '-'
+    req = self.messages.ContainerProjectsZonesOperationsListRequest(
+        projectId=project, zone=zone)
+    return self.client.projects_zones_operations.List(req)
+
+  def GetOperation(self, operation_ref):
+    return self.client.projects_zones_operations.Get(
+        self.messages.ContainerProjectsZonesOperationsGetRequest(
+            projectId=operation_ref.projectId,
+            zone=operation_ref.zone,
+            operationId=operation_ref.operationId))
+
+  def GetServerConfig(self, project, zone):
+    req = self.messages.ContainerProjectsZonesGetServerconfigRequest(
+        projectId=project, zone=zone)
+    return self.client.projects_zones.GetServerconfig(req)
 
   def UpdateLabels(self, cluster_ref, update_labels):
     labels, fingerprint = self.UpdateLabelsCommon(
@@ -1282,114 +1309,198 @@ class V1Alpha1Adapter(APIAdapter):
   def CreateCluster(self, cluster_ref, options):
     cluster = self.CreateClusterCommon(cluster_ref, options)
     req = self.messages.CreateClusterRequest(
-        cluster=cluster,
-        projectId=cluster_ref.projectId,
-        zone=cluster_ref.zone)
-    operation = self.client.projects_zones_clusters.Create(req)
+        parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
+        cluster=cluster)
+    operation = self.client.projects_locations_clusters.Create(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
   def UpdateCluster(self, cluster_ref, options):
     update = self.UpdateClusterCommon(options)
-    op = self.client.projects_zones_clusters.Update(
+    op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
-            clusterId=cluster_ref.clusterId,
-            zone=cluster_ref.zone,
-            projectId=cluster_ref.projectId,
+            name=ProjectLocationCluster(cluster_ref.projectId,
+                                        cluster_ref.zone,
+                                        cluster_ref.clusterId),
             update=update))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def SetNetworkPolicy(self, cluster_ref, options):
     netpol = self.SetNetworkPolicyCommon(options)
     req = self.messages.SetNetworkPolicyRequest(
-        clusterId=cluster_ref.clusterId,
-        zone=cluster_ref.zone,
-        projectId=cluster_ref.projectId,
+        name=ProjectLocationCluster(cluster_ref.projectId,
+                                    cluster_ref.zone,
+                                    cluster_ref.clusterId),
         networkPolicy=netpol)
     return self.ParseOperation(
-        self.client.projects_zones_clusters.SetNetworkPolicy(req).name,
+        self.client.projects_locations_clusters.SetNetworkPolicy(req).name,
         cluster_ref.zone)
 
   def SetLegacyAuthorization(self, cluster_ref, enable_legacy_authorization):
-    op = self.client.projects_zones_clusters.LegacyAbac(
+    op = self.client.projects_locations_clusters.SetLegacyAbac(
         self.messages.SetLegacyAbacRequest(
-            clusterId=cluster_ref.clusterId,
-            zone=cluster_ref.zone,
-            projectId=cluster_ref.projectId,
+            name=ProjectLocationCluster(cluster_ref.projectId,
+                                        cluster_ref.zone,
+                                        cluster_ref.clusterId),
             enabled=bool(enable_legacy_authorization)))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def SetMasterAuth(self, cluster_ref, options):
     update, action = self.SetMasterAuthCommon(options)
     req = self.messages.SetMasterAuthRequest(
-        clusterId=cluster_ref.clusterId,
-        zone=cluster_ref.zone,
-        projectId=cluster_ref.projectId,
+        name=ProjectLocationCluster(cluster_ref.projectId,
+                                    cluster_ref.zone,
+                                    cluster_ref.clusterId),
         action=action,
         update=update)
-    op = self.client.projects_zones_clusters.SetMasterAuth(req)
+    op = self.client.projects_locations_clusters.SetMasterAuth(req)
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def StartIpRotation(self, cluster_ref):
-    operation = self.client.projects_zones_clusters.StartIpRotation(
+    operation = self.client.projects_locations_clusters.StartIpRotation(
         self.messages.StartIPRotationRequest(
-            clusterId=cluster_ref.clusterId,
-            zone=cluster_ref.zone,
-            projectId=cluster_ref.projectId))
+            name=ProjectLocationCluster(cluster_ref.projectId,
+                                        cluster_ref.zone,
+                                        cluster_ref.clusterId)))
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
   def CompleteIpRotation(self, cluster_ref):
-    operation = self.client.projects_zones_clusters.CompleteIpRotation(
+    operation = self.client.projects_locations_clusters.CompleteIpRotation(
         self.messages.CompleteIPRotationRequest(
-            clusterId=cluster_ref.clusterId,
-            zone=cluster_ref.zone,
-            projectId=cluster_ref.projectId))
+            name=ProjectLocationCluster(cluster_ref.projectId,
+                                        cluster_ref.zone,
+                                        cluster_ref.clusterId)))
     return self.ParseOperation(operation.name, cluster_ref.zone)
+
+  def GetCluster(self, cluster_ref):
+    """Get a running cluster.
+
+    Args:
+      cluster_ref: cluster Resource to describe.
+    Returns:
+      Cluster message.
+    Raises:
+      Error: if cluster cannot be found.
+    """
+    try:
+      return self.client.projects_locations_clusters.Get(
+          self.messages.ContainerProjectsLocationsClustersGetRequest(
+              name=ProjectLocationCluster(cluster_ref.projectId,
+                                          cluster_ref.zone,
+                                          cluster_ref.clusterId)))
+    except apitools_exceptions.HttpError as error:
+      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      if api_error.payload.status_code != 404:
+        raise api_error
+    # Cluster couldn't be found, maybe user got zone wrong?
+    self.TryToGetCluster(cluster_ref, api_error)
+
+  def DeleteCluster(self, cluster_ref):
+    operation = self.client.projects_locations_clusters.Delete(
+        self.messages.ContainerProjectsLocationsClustersDeleteRequest(
+            name=ProjectLocationCluster(cluster_ref.projectId,
+                                        cluster_ref.zone,
+                                        cluster_ref.clusterId)))
+    return self.ParseOperation(operation.name, cluster_ref.zone)
+
+  def ListClusters(self, project, zone=None):
+    if not zone:
+      zone = '-'
+    req = self.messages.ContainerProjectsLocationsClustersListRequest(
+        parent=ProjectLocation(project, zone))
+    return self.client.projects_locations_clusters.List(req)
 
   def CreateNodePool(self, node_pool_ref, options):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
     req = self.messages.CreateNodePoolRequest(
         nodePool=pool,
-        projectId=node_pool_ref.projectId,
-        zone=node_pool_ref.zone,
-        clusterId=node_pool_ref.clusterId)
-    operation = self.client.projects_zones_clusters_nodePools.Create(req)
+        parent=ProjectLocationCluster(node_pool_ref.projectId,
+                                      node_pool_ref.zone,
+                                      node_pool_ref.clusterId))
+    operation = self.client.projects_locations_clusters_nodePools.Create(req)
+    return self.ParseOperation(operation.name, node_pool_ref.zone)
+
+  def ListNodePools(self, cluster_ref):
+    req = self.messages.ContainerProjectsLocationsClustersNodePoolsListRequest(
+        parent=ProjectLocationCluster(cluster_ref.projectId,
+                                      cluster_ref.zone,
+                                      cluster_ref.clusterId))
+    return self.client.projects_locations_clusters_nodePools.List(req)
+
+  def GetNodePool(self, node_pool_ref):
+    req = self.messages.ContainerProjectsLocationsClustersNodePoolsGetRequest(
+        name=ProjectLocationClusterNodePool(node_pool_ref.projectId,
+                                            node_pool_ref.zone,
+                                            node_pool_ref.clusterId,
+                                            node_pool_ref.nodePoolId))
+    return self.client.projects_locations_clusters_nodePools.Get(req)
+
+  def DeleteNodePool(self, node_pool_ref):
+    operation = self.client.projects_locations_clusters_nodePools.Delete(
+        self.messages.ContainerProjectsLocationsClustersNodePoolsDeleteRequest(
+            name=ProjectLocationClusterNodePool(
+                node_pool_ref.projectId,
+                node_pool_ref.zone,
+                node_pool_ref.clusterId,
+                node_pool_ref.nodePoolId)))
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
   def UpdateNodePool(self, node_pool_ref, options):
     node_management = self.UpdateNodePoolCommon(node_pool_ref, options)
     req = (self.messages.SetNodePoolManagementRequest(
-        projectId=node_pool_ref.projectId,
-        zone=node_pool_ref.zone,
-        clusterId=node_pool_ref.clusterId,
-        nodePoolId=node_pool_ref.nodePoolId,
+        name=ProjectLocationClusterNodePool(
+            node_pool_ref.projectId,
+            node_pool_ref.zone,
+            node_pool_ref.clusterId,
+            node_pool_ref.nodePoolId),
         management=node_management))
-    operation = self.client.projects_zones_clusters_nodePools.SetManagement(req)
+    operation = (
+        self.client.projects_locations_clusters_nodePools.SetManagement(req))
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
   def RollbackUpgrade(self, node_pool_ref):
-    operation = self.client.projects_zones_clusters_nodePools.Rollback(
+    operation = self.client.projects_locations_clusters_nodePools.Rollback(
         self.messages.RollbackNodePoolUpgradeRequest(
-            clusterId=node_pool_ref.clusterId,
-            zone=node_pool_ref.zone,
-            projectId=node_pool_ref.projectId,
-            nodePoolId=node_pool_ref.nodePoolId))
+            name=ProjectLocationClusterNodePool(
+                node_pool_ref.projectId,
+                node_pool_ref.zone,
+                node_pool_ref.clusterId,
+                node_pool_ref.nodePoolId)))
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
   def CancelOperation(self, op_ref):
     req = self.messages.CancelOperationRequest(
-        zone=op_ref.zone,
-        projectId=op_ref.projectId,
-        operationId=op_ref.operationId)
-    return self.client.projects_zones_operations.Cancel(req)
+        name=ProjectLocationOperation(op_ref.projectId,
+                                      op_ref.zone,
+                                      op_ref.operationId))
+    return self.client.projects_locations_operations.Cancel(req)
+
+  def ListOperations(self, project, zone=None):
+    if not zone:
+      zone = '-'
+    req = self.messages.ContainerProjectsLocationsOperationsListRequest(
+        parent=ProjectLocation(project, zone))
+    return self.client.projects_locations_operations.List(req)
+
+  def GetOperation(self, operation_ref):
+    return self.client.projects_locations_operations.Get(
+        self.messages.ContainerProjectsLocationsOperationsGetRequest(
+            name=ProjectLocationOperation(operation_ref.projectId,
+                                          operation_ref.zone,
+                                          operation_ref.operationId)))
+
+  def GetServerConfig(self, project, zone):
+    req = self.messages.ContainerProjectsLocationsGetServerconfigRequest(
+        name=ProjectLocation(project, zone))
+    return self.client.projects_locations.GetServerconfig(req)
 
   def UpdateLabels(self, cluster_ref, update_labels):
     labels, fingerprint = self.UpdateLabelsCommon(
         cluster_ref, update_labels)
-    operation = self.client.projects_zones_clusters.ResourceLabels(
+    operation = self.client.projects_locations_clusters.SetResourceLabels(
         self.messages.SetLabelsRequest(
-            clusterId=cluster_ref.clusterId,
-            zone=cluster_ref.zone,
-            projectId=cluster_ref.projectId,
+            name=ProjectLocationCluster(cluster_ref.projectId,
+                                        cluster_ref.zone,
+                                        cluster_ref.clusterId),
             resourceLabels=labels,
             labelFingerprint=fingerprint))
     return self.ParseOperation(operation.name, cluster_ref.zone)
@@ -1397,11 +1508,11 @@ class V1Alpha1Adapter(APIAdapter):
   def RemoveLabels(self, cluster_ref, remove_labels):
     labels, fingerprint = self.RemoveLabelsCommon(
         cluster_ref, remove_labels)
-    operation = self.client.projects_zones_clusters.ResourceLabels(
+    operation = self.client.projects_locations_clusters.SetResourceLabels(
         self.messages.SetLabelsRequest(
-            clusterId=cluster_ref.clusterId,
-            zone=cluster_ref.zone,
-            projectId=cluster_ref.projectId,
+            name=ProjectLocationCluster(cluster_ref.projectId,
+                                        cluster_ref.zone,
+                                        cluster_ref.clusterId),
             resourceLabels=labels,
             labelFingerprint=fingerprint))
     return self.ParseOperation(operation.name, cluster_ref.zone)
@@ -1416,3 +1527,20 @@ def _AddNodeLabelsToNodeConfig(node_config, options):
     props.append(labels.AdditionalProperty(key=key, value=value))
   labels.additionalProperties = props
   node_config.labels = labels
+
+
+def ProjectLocation(project, location):
+  return 'projects/' + project + '/locations/' + location
+
+
+def ProjectLocationCluster(project, location, cluster):
+  return ProjectLocation(project, location) + '/clusters/' + cluster
+
+
+def ProjectLocationClusterNodePool(project, location, cluster, nodepool):
+  return (ProjectLocationCluster(project, location, cluster) +
+          'nodePools/' + nodepool)
+
+
+def ProjectLocationOperation(project, location, operation):
+  return ProjectLocation(project, location) + '/operations/' + operation

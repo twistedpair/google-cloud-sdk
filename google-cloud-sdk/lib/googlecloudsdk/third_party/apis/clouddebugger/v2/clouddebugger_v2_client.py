@@ -91,8 +91,7 @@ setting those breakpoints again.
 
     def Update(self, request, global_params=None):
       """Updates the breakpoint state or mutable fields.
-The entire Breakpoint message must be sent back to the controller
-service.
+The entire Breakpoint message must be sent back to the controller service.
 
 Updates to active breakpoint fields are only allowed if the new value
 does not change the breakpoint specification. Updates to the `location`,
@@ -136,14 +135,14 @@ or snapping the location to the correct line of code.
     def Register(self, request, global_params=None):
       """Registers the debuggee with the controller service.
 
-All agents attached to the same application should call this method with
-the same request content to get back the same stable `debuggee_id`. Agents
-should call this method again whenever `google.rpc.Code.NOT_FOUND` is
-returned from any controller method.
+All agents attached to the same application must call this method with
+exactly the same request content to get back the same stable `debuggee_id`.
+Agents should call this method again whenever `google.rpc.Code.NOT_FOUND`
+is returned from any controller method.
 
-This allows the controller service to disable the agent or recover from any
-data loss. If the debuggee is disabled by the server, the response will
-have `is_disabled` set to `true`.
+This protocol allows the controller service to disable debuggees, recover
+from data loss, or change the `debuggee_id` format. Agents must handle
+`debuggee_id` value changing upon re-registration.
 
       Args:
         request: (RegisterDebuggeeRequest) input message
@@ -303,7 +302,7 @@ have `is_disabled` set to `true`.
           }
 
     def List(self, request, global_params=None):
-      """Lists all the debuggees that the user can set breakpoints to.
+      """Lists all the debuggees that the user has access to.
 
       Args:
         request: (ClouddebuggerDebuggerDebuggeesListRequest) input message

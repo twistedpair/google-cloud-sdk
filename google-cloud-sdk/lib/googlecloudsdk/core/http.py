@@ -61,7 +61,6 @@ def Http(timeout='unset'):
 
   # Wrap the request method to put in our own user-agent, and trace reporting.
   gcloud_ua = MakeUserAgentString(properties.VALUES.metrics.command_name.Get())
-  capture_session_file = properties.VALUES.core.capture_session_file.Get()
   http_client = _Wrap(
       http_client,
       properties.VALUES.core.trace_token.Get(),
@@ -69,8 +68,6 @@ def Http(timeout='unset'):
       properties.VALUES.core.trace_log.GetBool(),
       gcloud_ua,
       properties.VALUES.core.log_http.GetBool(),
-      None if capture_session_file is None else
-      session_capturer.SessionCapturer(open(capture_session_file, 'w'))
   )
 
   return http_client
@@ -110,8 +107,8 @@ def GetDefaultTimeout():
   return properties.VALUES.core.http_timeout.GetInt() or 300
 
 
-def _Wrap(http_client, trace_token, trace_email, trace_log, gcloud_ua,
-          log_http, capturer):
+def _Wrap(
+    http_client, trace_token, trace_email, trace_log, gcloud_ua, log_http):
   """Wrap request with user-agent, and trace reporting.
 
   Args:
@@ -121,7 +118,6 @@ def _Wrap(http_client, trace_token, trace_email, trace_log, gcloud_ua,
     trace_log: bool, Enable/disable server side logging of service requests.
     gcloud_ua: str, User agent string to be included in the request.
     log_http: bool, True to enable request/response logging.
-    capturer: SessionCapturer, instance to pass request and response to
 
   Returns:
     http, The same http object but with the request method wrapped.
@@ -153,10 +149,10 @@ def _Wrap(http_client, trace_token, trace_email, trace_log, gcloud_ua,
         Modifiers.LogRequest(),
         Modifiers.LogResponse()))
 
-  if capturer is not None:
+  if session_capturer.SessionCapturer.capturer is not None:
     handlers.append(Modifiers.Handler(
-        Modifiers.DumpRequest(capturer),
-        Modifiers.DumpResponse(capturer)))
+        Modifiers.DumpRequest(session_capturer.SessionCapturer.capturer),
+        Modifiers.DumpResponse(session_capturer.SessionCapturer.capturer)))
 
   return Modifiers.WrapRequest(http_client, handlers)
 
@@ -381,7 +377,7 @@ class Modifiers(object):
     def _DumpRequest(args, kwargs):
       """Replacement http.request() method."""
 
-      capturer.capture_http_request(*Modifiers._GetRequest(args, kwargs))
+      capturer.CaptureHttpRequest(*Modifiers._GetRequest(args, kwargs))
 
       return Modifiers.Result()
 
@@ -425,7 +421,7 @@ class Modifiers(object):
 
     def _DumpResponse(response, unused_args):
       """Response handler."""
-      capturer.capture_http_response(*response)
+      capturer.CaptureHttpResponse(*response)
 
     return _DumpResponse
 

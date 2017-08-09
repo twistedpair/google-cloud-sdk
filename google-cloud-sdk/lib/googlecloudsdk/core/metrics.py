@@ -15,6 +15,7 @@
 """Used to collect anonymous SDK metrics."""
 
 import atexit
+import json
 import os
 import pickle
 import platform
@@ -55,6 +56,10 @@ _CSI_TOTAL_EVENT = 'total'
 _CSI_REMOTE_EVENT = 'remote'
 _CSI_LOCAL_EVENT = 'local'
 _START_EVENT = 'start'
+
+_CLEARCUT_ENDPOINT = 'https://play.googleapis.com/log'
+_CLEARCUT_EVENT_METADATA_KEY = 'event_metadata'
+_CLEARCUT_ERROR_TYPE_KEY = 'error_type'
 
 
 class _GAEvent(object):
@@ -166,6 +171,23 @@ class _CommandTimer(object):
          ('utt', self.__total_local_duration)] + event_params)
 
     return ga_timings_params
+
+  def GetClearcutParams(self):
+    """Gets the clearcut params corresponding to all the timed events."""
+    event_latency_ms = self.__total_local_duration + self.__total_rpc_duration
+
+    sub_event_latency_ms = [
+        {'key': event.name, 'latency_ms': event.time_millis - self.__start}
+        for event in self.__events
+    ]
+    sub_event_latency_ms.append({
+        'key': _CSI_LOCAL_EVENT, 'latency_ms': self.__total_local_duration
+    })
+    sub_event_latency_ms.append({
+        'key': _CSI_REMOTE_EVENT, 'latency_ms': self.__total_rpc_duration
+    })
+
+    return event_latency_ms, sub_event_latency_ms
 
 
 class _MetricsCollector(object):
@@ -279,12 +301,31 @@ class _MetricsCollector(object):
     self._ga_timing_params.extend(
         [(param[0], param[2]) for param in common_params])
 
+    cloud_sdk_version = config.CLOUD_SDK_VERSION
     self._csi_params = [('s', _CSI_ID),
                         ('v', '2'),
-                        ('rls', config.CLOUD_SDK_VERSION),
+                        ('rls', cloud_sdk_version),
                         ('c', cid)]
     self._csi_params.extend([(param[1], param[2]) for param in common_params])
     self._timer = _CommandTimer()
+
+    self._clearcut_request_params = {
+        'client_info': {
+            'client_type': 'DESKTOP',
+            'desktop_client_info': {
+                'os': current_platform.operating_system.id
+            }
+        },
+        'log_source_name': 'CONCORD',
+        'zwieback_cookie': cid,
+    }
+    self._clearcut_concord_event_params = {
+        'release_version': cloud_sdk_version,
+        'console_type': 'CloudSDK',
+    }
+    self._clearcut_concord_event_metadata = [
+        {'key': param[1], 'value': str(param[2])} for param in common_params]
+    self._clearcut_concord_events = []
 
     self._metrics = []
 
@@ -418,6 +459,39 @@ class _MetricsCollector(object):
     headers = {'user-agent': self._user_agent}
     self.CollectHTTPBeacon(_GA_ENDPOINT, 'POST', data, headers)
 
+  def RecordClearcutEvent(self, event_type, event_name, event_metadata):
+    concord_event = dict(self._clearcut_concord_event_params)
+    concord_event['event_type'] = event_type
+    concord_event['event_name'] = event_name
+    concord_event[_CLEARCUT_EVENT_METADATA_KEY] = list(
+        self._clearcut_concord_event_metadata)
+    concord_event[_CLEARCUT_EVENT_METADATA_KEY].extend(event_metadata)
+    self._clearcut_concord_events.append(concord_event)
+
+  def CollectClearcutMetric(self):
+    """Collect the required clearcut HTTP beacon."""
+    clearcut_request = dict(self._clearcut_request_params)
+    clearcut_request['request_time_ms'] = _GetTimeMillis()
+
+    event_latency, sub_event_latencies = self._timer.GetClearcutParams()
+    command_latency_set = False
+    for concord_event in self._clearcut_concord_events:
+      if (concord_event['event_type'] is _GA_COMMANDS_CATEGORY and
+          command_latency_set):
+        continue
+      concord_event['latency_ms'] = event_latency
+      concord_event['sub_event_latency_ms'] = sub_event_latencies
+      command_latency_set = concord_event['event_type'] is _GA_COMMANDS_CATEGORY
+
+    clearcut_request['log_event'] = [
+        {'source_extension_json': json.dumps(concord_event, sort_keys=True)}
+        for concord_event in self._clearcut_concord_events
+    ]
+
+    data = json.dumps(clearcut_request, sort_keys=True)
+    headers = {'user-agent': self._user_agent}
+    self.CollectHTTPBeacon(_CLEARCUT_ENDPOINT, 'POST', data, headers)
+
   def CollectHTTPBeacon(self, url, method, body, headers):
     """Record a custom event to an arbitrary endpoint.
 
@@ -467,7 +541,7 @@ class _MetricsCollector(object):
       log.debug('Metrics reporting process finished.')
 
 
-def _RecordGAEventAndSetTimerContext(
+def _RecordEventAndSetTimerContext(
     category, action, label, value=0, flag_names=None,
     error=None, error_extra_info_json=None):
   """Common code for processing a GA event."""
@@ -479,18 +553,34 @@ def _RecordGAEventAndSetTimerContext(
       label = _MetricsCollector.test_group
 
     cds = {}
+    event_metadata = []
     if flag_names is not None:
       cds['cd6'] = flag_names
+      event_metadata.append({'key': 'flag_names', 'value': str(flag_names)})
     if error is not None:
       cds['cd8'] = error
+      event_metadata.append({'key': _CLEARCUT_ERROR_TYPE_KEY, 'value': error})
     if error_extra_info_json is not None:
-      cds['cd9'] = str(error_extra_info_json)
+      cds['cd9'] = error_extra_info_json
+      event_metadata.append({'key': 'extra_error_info',
+                             'value': error_extra_info_json})
 
     collector.RecordGAEvent(
         _GAEvent(category=category, action=action, label=label, value=value,
                  **cds))
 
-    # Dont include version. We already send it as the rls CSI parameter.
+    if category is _GA_EXECUTIONS_CATEGORY:
+      event_metadata.append({'key': 'binary_version', 'value': label})
+    elif category is _GA_HELP_CATEGORY:
+      event_metadata.append({'key': 'help_mode', 'value': label})
+    elif category is _GA_ERROR_CATEGORY:
+      event_metadata.append({'key': _CLEARCUT_ERROR_TYPE_KEY, 'value': label})
+    elif category is _GA_INSTALLS_CATEGORY:
+      event_metadata.append({'key': 'component_version', 'value': label})
+    collector.RecordClearcutEvent(
+        event_type=category, event_name=action, event_metadata=event_metadata)
+
+    # Don't include version. We already send it as the rls CSI parameter.
     if category in [_GA_COMMANDS_CATEGORY, _GA_EXECUTIONS_CATEGORY]:
       collector.SetTimerContext(category, action, flag_names=flag_names)
     elif category in [_GA_ERROR_CATEGORY, _GA_HELP_CATEGORY,
@@ -524,7 +614,7 @@ def CaptureAndLogException(func):
 def StartTestMetrics(test_group_id, test_method):
   _MetricsCollector.ResetCollectorInstance(False, _GA_TID_TESTING)
   _MetricsCollector.test_group = test_group_id
-  _RecordGAEventAndSetTimerContext(
+  _RecordEventAndSetTimerContext(
       _GA_TEST_EXECUTIONS_CATEGORY,
       test_method,
       test_group_id,
@@ -577,6 +667,7 @@ def Shutdown():
     collector.RecordTimedEvent(_CSI_TOTAL_EVENT)
     collector.CollectCSIMetric()
     collector.CollectGAMetric()
+    collector.CollectClearcutMetric()
     collector.ReportMetrics()
 
 
@@ -610,13 +701,7 @@ def _GetErrorExtraInfo(error_extra_info):
     str, The value to pass to GA or None.
   """
   if error_extra_info:
-    try:
-      # pylint:disable=g-import-not-at-top, Only import if we have an error.
-      import json
-      return json.dumps(error_extra_info, sort_keys=True)
-    # pylint:disable=bare-except, Never want to fail on metrics reporting.
-    except:
-      pass
+    return json.dumps(error_extra_info, sort_keys=True)
   return None
 
 
@@ -628,7 +713,7 @@ def Installs(component_id, version_string):
     component_id: str, The component id that was installed.
     version_string: str, The version of the component.
   """
-  _RecordGAEventAndSetTimerContext(
+  _RecordEventAndSetTimerContext(
       _GA_INSTALLS_CATEGORY, component_id, version_string)
 
 
@@ -648,7 +733,7 @@ def Commands(command_path, version_string='unknown', flag_names=None,
       extra info that we want to log with the error. This enables us to write
       queries that can understand the keys and values in this dict.
   """
-  _RecordGAEventAndSetTimerContext(
+  _RecordEventAndSetTimerContext(
       _GA_COMMANDS_CATEGORY, command_path, version_string,
       flag_names=_GetFlagNameString(flag_names),
       error=_GetExceptionName(error),
@@ -663,11 +748,11 @@ def Help(command_path, mode):
     command_path: str, The '.' separated name of the calliope command.
     mode: str, The way help was invoked (-h, --help, help).
   """
-  _RecordGAEventAndSetTimerContext(_GA_HELP_CATEGORY, command_path, mode)
+  _RecordEventAndSetTimerContext(_GA_HELP_CATEGORY, command_path, mode)
 
 
 @CaptureAndLogException
-def Error(command_path, error, flag_names, error_extra_info=None):
+def Error(command_path, error, flag_names=None, error_extra_info=None):
   """Logs that a top level Exception was caught for a gcloud command.
 
   Args:
@@ -680,7 +765,7 @@ def Error(command_path, error, flag_names, error_extra_info=None):
       extra info that we want to log with the error. This enables us to write
       queries that can understand the keys and values in this dict.
   """
-  _RecordGAEventAndSetTimerContext(
+  _RecordEventAndSetTimerContext(
       _GA_ERROR_CATEGORY, command_path, _GetExceptionName(error),
       flag_names=_GetFlagNameString(flag_names),
       error_extra_info_json=_GetErrorExtraInfo(error_extra_info))
@@ -694,7 +779,7 @@ def Executions(command_name, version_string='unknown'):
     command_name: str, The script name.
     version_string: str, The version of the command.
   """
-  _RecordGAEventAndSetTimerContext(
+  _RecordEventAndSetTimerContext(
       _GA_EXECUTIONS_CATEGORY, command_name, version_string)
 
 

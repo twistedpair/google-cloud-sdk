@@ -202,9 +202,9 @@ class DevshellCredentials(client.OAuth2Credentials):
     self.devshell_response = _SendRecv(request)
     self.access_token = self.devshell_response.access_token
     if self.devshell_response.expires_in is not None:
-      self.token_expiry = (datetime.datetime.now() +
-                           datetime.timedelta(
-                               seconds=self.devshell_response.expires_in))
+      # Use utcnow as Oauth2client uses utcnow to determine if token is expired.
+      self.token_expiry = (datetime.datetime.utcnow() + datetime.timedelta(
+          seconds=self.devshell_response.expires_in))
 
 
 def LoadDevshellCredentials():

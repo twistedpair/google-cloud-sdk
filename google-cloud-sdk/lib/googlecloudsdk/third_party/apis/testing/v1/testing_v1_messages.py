@@ -78,10 +78,30 @@ class AndroidInstrumentationTest(_messages.Message):
   <http://developer.android.com/tools/testing/testing_android.html> for more
   information on types of Android tests.
 
+  Enums:
+    OrchestratorOptionValueValuesEnum: The option of whether running each test
+      within its own invocation of instrumentation with Android Test
+      Orchestrator or not. ** Orchestrator is only compatible with
+      AndroidJUnitRunner version 1.0 or higher! ** Orchestrator offers the
+      following benefits:  - No shared state  - Crashes are isolated  - Logs
+      are scoped per test  See <https://developer.android.com/training/testing
+      /junit-runner.html#using-android-test-orchestrator> for more information
+      about Android Test Orchestrator.  Optional, if empty, test will be run
+      without orchestrator.
+
   Fields:
     appApk: The APK for the application under test. Required
     appPackageId: The java package for the application under test. Optional,
       default is determined by examining the application's manifest.
+    orchestratorOption: The option of whether running each test within its own
+      invocation of instrumentation with Android Test Orchestrator or not. **
+      Orchestrator is only compatible with AndroidJUnitRunner version 1.0 or
+      higher! ** Orchestrator offers the following benefits:  - No shared
+      state  - Crashes are isolated  - Logs are scoped per test  See
+      <https://developer.android.com/training/testing/junit-runner.html#using-
+      android-test-orchestrator> for more information about Android Test
+      Orchestrator.  Optional, if empty, test will be run without
+      orchestrator.
     testApk: The APK containing the test code to be executed. Required
     testPackageId: The java package for the test to be executed. Optional,
       default is determined by examining the application's manifest.
@@ -93,12 +113,37 @@ class AndroidInstrumentationTest(_messages.Message):
       Optional, if empty, all targets in the module will be run.
   """
 
+  class OrchestratorOptionValueValuesEnum(_messages.Enum):
+    """The option of whether running each test within its own invocation of
+    instrumentation with Android Test Orchestrator or not. ** Orchestrator is
+    only compatible with AndroidJUnitRunner version 1.0 or higher! **
+    Orchestrator offers the following benefits:  - No shared state  - Crashes
+    are isolated  - Logs are scoped per test  See
+    <https://developer.android.com/training/testing/junit-runner.html#using-
+    android-test-orchestrator> for more information about Android Test
+    Orchestrator.  Optional, if empty, test will be run without orchestrator.
+
+    Values:
+      ORCHESTRATOR_OPTION_UNSPECIFIED: This means that the server should
+        choose the mode. And test will be run without orchestrator. Using
+        orchestrator is highly encouraged because of all the benefits it
+        offers. And in the future, all instrumentation tests will be run with
+        orchestrator by default if preference unspecified.
+      USE_ORCHESTRATOR: Run test using orchestrator. ** Only compatible with
+        AndroidJUnitRunner version 1.0 or higher! ** Recommended.
+      DO_NOT_USE_ORCHESTRATOR: Run test without using orchestrator.
+    """
+    ORCHESTRATOR_OPTION_UNSPECIFIED = 0
+    USE_ORCHESTRATOR = 1
+    DO_NOT_USE_ORCHESTRATOR = 2
+
   appApk = _messages.MessageField('FileReference', 1)
   appPackageId = _messages.StringField(2)
-  testApk = _messages.MessageField('FileReference', 3)
-  testPackageId = _messages.StringField(4)
-  testRunnerClass = _messages.StringField(5)
-  testTargets = _messages.StringField(6, repeated=True)
+  orchestratorOption = _messages.EnumField('OrchestratorOptionValueValuesEnum', 3)
+  testApk = _messages.MessageField('FileReference', 4)
+  testPackageId = _messages.StringField(5)
+  testRunnerClass = _messages.StringField(6)
+  testTargets = _messages.StringField(7, repeated=True)
 
 
 class AndroidMatrix(_messages.Message):

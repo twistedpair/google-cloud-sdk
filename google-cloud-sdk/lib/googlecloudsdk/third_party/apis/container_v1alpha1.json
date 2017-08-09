@@ -246,6 +246,10 @@
           "description": "The configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
         },
+        "maintenancePolicy": {
+          "description": "Configure the maintenance policy for this cluster.",
+          "$ref": "MaintenancePolicy"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -401,6 +405,10 @@
         },
         "diskType": {
           "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd')\n\nIf unspecified, the default disk type is 'pd-standard'\nCurrently restricted because of b\/36071127#comment27",
+          "type": "string"
+        },
+        "minCpuPlatform": {
+          "description": "Minimum cpu\/platform to be used by this instance. The instance may be\nscheduled on the specified or newer cpu\/platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read <a href=\"\/compute\/docs\/instances\/specify-min-cpu-platform\">Specifying a Minimum CPU Platform<\/a>.",
           "type": "string"
         }
       }
@@ -785,6 +793,48 @@
         }
       }
     },
+    "MaintenancePolicy": {
+      "id": "MaintenancePolicy",
+      "description": "MaintenancePolicy defines the maintenance policy to be used for the cluster.",
+      "type": "object",
+      "properties": {
+        "window": {
+          "description": "Specifies the maintenance window in which maintenance may be performed.",
+          "$ref": "MaintenanceWindow"
+        }
+      }
+    },
+    "MaintenanceWindow": {
+      "id": "MaintenanceWindow",
+      "description": "MaintenanceWindow defines the maintenance window to be used for the cluster.",
+      "type": "object",
+      "properties": {
+        "dailyMaintenanceWindow": {
+          "description": "DailyMaintenanceWindow specifies a daily maintenance operation window.",
+          "$ref": "DailyMaintenanceWindow"
+        }
+      }
+    },
+    "DailyMaintenanceWindow": {
+      "id": "DailyMaintenanceWindow",
+      "description": "Time window specified for daily maintenance operations.",
+      "type": "object",
+      "properties": {
+        "daysInCycle": {
+          "description": "Allows to define schedule that runs every nth day of the month.\nNOTE: Unimplemented, reserved for future use.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "startTime": {
+          "description": "Time within the maintenance window to start the maintenance operations.\nIt must be in format \"HH:MM\u201D, where HH : [00-23] and MM : [00-59] GMT.",
+          "type": "string"
+        },
+        "duration": {
+          "description": "[Output only] Duration of the time window, automatically chosen to be\nsmallest possible in the given scenario.",
+          "type": "string"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -843,7 +893,8 @@
             "Set labels.",
             "Set\/generate master auth materials",
             "Set node pool size.",
-            "Updates network policy for a cluster."
+            "Updates network policy for a cluster.",
+            "Set the maintenance policy."
           ],
           "type": "string",
           "enum": [
@@ -862,7 +913,8 @@
             "SET_LABELS",
             "SET_MASTER_AUTH",
             "SET_NODE_POOL_SIZE",
-            "SET_NETWORK_POLICY"
+            "SET_NETWORK_POLICY",
+            "SET_MAINTENANCE_POLICY"
           ]
         },
         "status": {
@@ -1662,7 +1714,38 @@
           "$ref": "NetworkPolicy"
         },
         "name": {
-          "description": "The name (project, location, cluster id) of the cluster to set networking policy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster id) of the cluster to set networking\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "type": "string"
+        },
+        "version": {
+          "description": "API request version that initiates this operation.",
+          "type": "string"
+        }
+      }
+    },
+    "SetMaintenancePolicyRequest": {
+      "id": "SetMaintenancePolicyRequest",
+      "description": "SetMaintenancePolicyRequest sets the maintenance policy for a cluster.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+          "type": "string"
+        },
+        "zone": {
+          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+          "type": "string"
+        },
+        "clusterId": {
+          "description": "The name of the cluster to update.",
+          "type": "string"
+        },
+        "maintenancePolicy": {
+          "description": "The maintenance policy to be set for the cluster. An empty field\nclears the existing maintenance policy.",
+          "$ref": "MaintenancePolicy"
+        },
+        "name": {
+          "description": "The name (project, location, cluster id) of the cluster to set maintenance\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
         },
         "version": {
@@ -2196,7 +2279,7 @@
                   "description": "Enables\/Disables Network Policy for a cluster.",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster id) of the cluster to set networking policy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster id) of the cluster to set networking\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
@@ -2208,6 +2291,34 @@
                   ],
                   "request": {
                     "$ref": "SetNetworkPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "setMaintenancePolicy": {
+                  "id": "container.projects.locations.clusters.setMaintenancePolicy",
+                  "path": "v1alpha1/{+name}:setMaintenancePolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMaintenancePolicy",
+                  "httpMethod": "POST",
+                  "description": "Sets the maintenance policy for a cluster.",
+                  "parameters": {
+                    "name": {
+                      "description": "The name (project, location, cluster id) of the cluster to set maintenance\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "SetMaintenancePolicyRequest"
                   },
                   "response": {
                     "$ref": "Operation"
@@ -3360,6 +3471,47 @@
                   ],
                   "request": {
                     "$ref": "SetNetworkPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "setMaintenancePolicy": {
+                  "id": "container.projects.zones.clusters.setMaintenancePolicy",
+                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy",
+                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy",
+                  "httpMethod": "POST",
+                  "description": "Sets the maintenance policy for a cluster.",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "zone": {
+                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "The name of the cluster to update.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "zone",
+                    "clusterId"
+                  ],
+                  "request": {
+                    "$ref": "SetMaintenancePolicyRequest"
                   },
                   "response": {
                     "$ref": "Operation"

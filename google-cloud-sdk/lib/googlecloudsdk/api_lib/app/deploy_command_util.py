@@ -1,4 +1,3 @@
-
 # Copyright 2013 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -153,6 +152,9 @@ class BuildArtifact(object):
 
   def IsImage(self):
     return self.build_type == self.BuildType.IMAGE
+
+  def IsBuildId(self):
+    return self.build_type == self.BuildType.BUILD_ID
 
   @classmethod
   def MakeBuildIdArtifact(cls, build_id):
@@ -646,4 +648,3 @@ def CreateAppYamlForAppDirectory(directory):
         'Please prepare an app.yaml file for your application manually '
         'and deploy again.')
   return yaml_path
-

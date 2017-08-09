@@ -17,8 +17,8 @@
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as c_exc
 from googlecloudsdk.calliope import parser_extensions
-from googlecloudsdk.command_lib.meta.apis import marshalling
-from googlecloudsdk.command_lib.meta.apis import registry
+from googlecloudsdk.command_lib.util.apis import arg_marshalling
+from googlecloudsdk.command_lib.util.apis import registry
 
 
 def APICompleter(**_):
@@ -87,7 +87,7 @@ class MethodDynamicPositionalAction(parser_extensions.DynamicPositionalAction):
     method = registry.GetMethod(full_collection_name, method_name,
                                 api_version=api_version)
 
-    arg_generator = marshalling.ArgumentGenerator(method, raw=namespace.raw)
+    arg_generator = arg_marshalling.ArgumentGenerator(method, raw=namespace.raw)
     method_ref = MethodRef(namespace, method, arg_generator)
     setattr(namespace, self._dest, method_ref)
 

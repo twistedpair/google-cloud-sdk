@@ -60,6 +60,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.interconnectAttachments = self.InterconnectAttachmentsService(self)
     self.interconnectLocations = self.InterconnectLocationsService(self)
     self.interconnects = self.InterconnectsService(self)
+    self.licenseCodes = self.LicenseCodesService(self)
     self.licenses = self.LicensesService(self)
     self.machineTypes = self.MachineTypesService(self)
     self.networks = self.NetworksService(self)
@@ -5711,6 +5712,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnectAttachments.setIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{resource}/setIamPolicy',
+        request_field=u'policy',
+        request_type_name=u'ComputeInterconnectAttachmentsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
 
@@ -5887,6 +5914,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeInterconnectsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnects.getIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/interconnects/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeInterconnectsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       """Creates a Interconnect in the specified project using the data included in the request.
 
@@ -5965,6 +6018,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeInterconnectsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnects.setIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/interconnects/{resource}/setIamPolicy',
+        request_field=u'policy',
+        request_type_name=u'ComputeInterconnectsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
 
@@ -5988,6 +6067,42 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field=u'testPermissionsRequest',
         request_type_name=u'ComputeInterconnectsTestIamPermissionsRequest',
         response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class LicenseCodesService(base_api.BaseApiService):
+    """Service class for the licenseCodes resource."""
+
+    _NAME = u'licenseCodes'
+
+    def __init__(self, client):
+      super(ComputeAlpha.LicenseCodesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.
+
+      Args:
+        request: (ComputeLicenseCodesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LicenseCode) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.licenseCodes.get',
+        ordered_params=[u'project', u'licenseCode'],
+        path_params=[u'licenseCode', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/licenseCodes/{licenseCode}',
+        request_field='',
+        request_type_name=u'ComputeLicenseCodesGetRequest',
+        response_type_name=u'LicenseCode',
         supports_download=False,
     )
 

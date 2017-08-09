@@ -28,8 +28,8 @@ class InvalidVersionConfigFile(exceptions.Error):
 class VersionsClient(object):
   """Client for the versions service of Cloud ML Engine."""
 
-  _ALLOWED_YAML_FIELDS = set(['description', 'deploymentUri', 'runtimeVersion',
-                              'manualScaling'])
+  _ALLOWED_YAML_FIELDS = set(['autoScaling', 'description', 'deploymentUri',
+                              'runtimeVersion', 'manualScaling'])
 
   def __init__(self, client=None, messages=None):
     self.client = client or apis.GetClientInstance('ml', 'v1')

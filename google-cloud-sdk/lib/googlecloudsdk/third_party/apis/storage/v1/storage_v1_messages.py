@@ -1614,7 +1614,7 @@ class StorageNotificationsListRequest(_messages.Message):
   """A StorageNotificationsListRequest object.
 
   Fields:
-    bucket: Name of a GCS bucket.
+    bucket: Name of a Google Cloud Storage bucket.
     userProject: The project to be billed for this request, for Requester Pays
       buckets.
   """
@@ -1782,7 +1782,8 @@ class StorageObjectsComposeRequest(_messages.Message):
     destinationPredefinedAcl: Apply a predefined set of access controls to the
       destination object.
     ifGenerationMatch: Makes the operation conditional on whether the object's
-      current generation matches the given value.
+      current generation matches the given value. Setting to 0 makes the
+      operation succeed only if there are no live versions of the object.
     ifMetagenerationMatch: Makes the operation conditional on whether the
       object's current metageneration matches the given value.
     kmsKeyName: Resource name of the Cloud KMS key, of the form projects/my-
@@ -1847,18 +1848,22 @@ class StorageObjectsCopyRequest(_messages.Message):
     destinationPredefinedAcl: Apply a predefined set of access controls to the
       destination object.
     ifGenerationMatch: Makes the operation conditional on whether the
-      destination object's current generation matches the given value.
+      destination object's current generation matches the given value. Setting
+      to 0 makes the operation succeed only if there are no live versions of
+      the object.
     ifGenerationNotMatch: Makes the operation conditional on whether the
       destination object's current generation does not match the given value.
+      If no live object exists, the precondition fails. Setting to 0 makes the
+      operation succeed only if there is a live version of the object.
     ifMetagenerationMatch: Makes the operation conditional on whether the
       destination object's current metageneration matches the given value.
     ifMetagenerationNotMatch: Makes the operation conditional on whether the
       destination object's current metageneration does not match the given
       value.
     ifSourceGenerationMatch: Makes the operation conditional on whether the
-      source object's generation matches the given value.
+      source object's current generation matches the given value.
     ifSourceGenerationNotMatch: Makes the operation conditional on whether the
-      source object's generation does not match the given value.
+      source object's current generation does not match the given value.
     ifSourceMetagenerationMatch: Makes the operation conditional on whether
       the source object's current metageneration matches the given value.
     ifSourceMetagenerationNotMatch: Makes the operation conditional on whether
@@ -1937,9 +1942,12 @@ class StorageObjectsDeleteRequest(_messages.Message):
     generation: If present, permanently deletes a specific revision of this
       object (as opposed to the latest version, the default).
     ifGenerationMatch: Makes the operation conditional on whether the object's
-      current generation matches the given value.
+      current generation matches the given value. Setting to 0 makes the
+      operation succeed only if there are no live versions of the object.
     ifGenerationNotMatch: Makes the operation conditional on whether the
-      object's current generation does not match the given value.
+      object's current generation does not match the given value. If no live
+      object exists, the precondition fails. Setting to 0 makes the operation
+      succeed only if there is a live version of the object.
     ifMetagenerationMatch: Makes the operation conditional on whether the
       object's current metageneration matches the given value.
     ifMetagenerationNotMatch: Makes the operation conditional on whether the
@@ -1994,9 +2002,12 @@ class StorageObjectsGetRequest(_messages.Message):
     generation: If present, selects a specific revision of this object (as
       opposed to the latest version, the default).
     ifGenerationMatch: Makes the operation conditional on whether the object's
-      generation matches the given value.
+      current generation matches the given value. Setting to 0 makes the
+      operation succeed only if there are no live versions of the object.
     ifGenerationNotMatch: Makes the operation conditional on whether the
-      object's generation does not match the given value.
+      object's current generation does not match the given value. If no live
+      object exists, the precondition fails. Setting to 0 makes the operation
+      succeed only if there is a live version of the object.
     ifMetagenerationMatch: Makes the operation conditional on whether the
       object's current metageneration matches the given value.
     ifMetagenerationNotMatch: Makes the operation conditional on whether the
@@ -2048,9 +2059,12 @@ class StorageObjectsInsertRequest(_messages.Message):
       an object with uploadType=media to indicate the encoding of the content
       being uploaded.
     ifGenerationMatch: Makes the operation conditional on whether the object's
-      current generation matches the given value.
+      current generation matches the given value. Setting to 0 makes the
+      operation succeed only if there are no live versions of the object.
     ifGenerationNotMatch: Makes the operation conditional on whether the
-      object's current generation does not match the given value.
+      object's current generation does not match the given value. If no live
+      object exists, the precondition fails. Setting to 0 makes the operation
+      succeed only if there is a live version of the object.
     ifMetagenerationMatch: Makes the operation conditional on whether the
       object's current metageneration matches the given value.
     ifMetagenerationNotMatch: Makes the operation conditional on whether the
@@ -2179,9 +2193,12 @@ class StorageObjectsPatchRequest(_messages.Message):
     generation: If present, selects a specific revision of this object (as
       opposed to the latest version, the default).
     ifGenerationMatch: Makes the operation conditional on whether the object's
-      current generation matches the given value.
+      current generation matches the given value. Setting to 0 makes the
+      operation succeed only if there are no live versions of the object.
     ifGenerationNotMatch: Makes the operation conditional on whether the
-      object's current generation does not match the given value.
+      object's current generation does not match the given value. If no live
+      object exists, the precondition fails. Setting to 0 makes the operation
+      succeed only if there is a live version of the object.
     ifMetagenerationMatch: Makes the operation conditional on whether the
       object's current metageneration matches the given value.
     ifMetagenerationNotMatch: Makes the operation conditional on whether the
@@ -2264,19 +2281,22 @@ class StorageObjectsRewriteRequest(_messages.Message):
       be path safe, see Encoding URI Path Parts.
     destinationPredefinedAcl: Apply a predefined set of access controls to the
       destination object.
-    ifGenerationMatch: Makes the operation conditional on whether the
-      destination object's current generation matches the given value.
+    ifGenerationMatch: Makes the operation conditional on whether the object's
+      current generation matches the given value. Setting to 0 makes the
+      operation succeed only if there are no live versions of the object.
     ifGenerationNotMatch: Makes the operation conditional on whether the
-      destination object's current generation does not match the given value.
+      object's current generation does not match the given value. If no live
+      object exists, the precondition fails. Setting to 0 makes the operation
+      succeed only if there is a live version of the object.
     ifMetagenerationMatch: Makes the operation conditional on whether the
       destination object's current metageneration matches the given value.
     ifMetagenerationNotMatch: Makes the operation conditional on whether the
       destination object's current metageneration does not match the given
       value.
     ifSourceGenerationMatch: Makes the operation conditional on whether the
-      source object's generation matches the given value.
+      source object's current generation matches the given value.
     ifSourceGenerationNotMatch: Makes the operation conditional on whether the
-      source object's generation does not match the given value.
+      source object's current generation does not match the given value.
     ifSourceMetagenerationMatch: Makes the operation conditional on whether
       the source object's current metageneration matches the given value.
     ifSourceMetagenerationNotMatch: Makes the operation conditional on whether
@@ -2418,9 +2438,12 @@ class StorageObjectsUpdateRequest(_messages.Message):
     generation: If present, selects a specific revision of this object (as
       opposed to the latest version, the default).
     ifGenerationMatch: Makes the operation conditional on whether the object's
-      current generation matches the given value.
+      current generation matches the given value. Setting to 0 makes the
+      operation succeed only if there are no live versions of the object.
     ifGenerationNotMatch: Makes the operation conditional on whether the
-      object's current generation does not match the given value.
+      object's current generation does not match the given value. If no live
+      object exists, the precondition fails. Setting to 0 makes the operation
+      succeed only if there is a live version of the object.
     ifMetagenerationMatch: Makes the operation conditional on whether the
       object's current metageneration matches the given value.
     ifMetagenerationNotMatch: Makes the operation conditional on whether the

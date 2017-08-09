@@ -706,3 +706,25 @@ def AddImagePositional(parser, verb):
       help=('The fully qualified image name of the image to {verb}. The name '
             'format should be *.gcr.io/project_id/image_path. '.format(
                 verb=verb)))
+
+
+def AddNodeLocationsFlag(parser):
+  parser.add_argument(
+      '--node-locations',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='ZONE',
+      help="""\
+The set of zones in which the specified node footprint should be replicated.
+All zones must be in the same region as the cluster's primary zone, specified by
+the --zone flag. --node-locations must contain the primary zone.
+If node-locations is not specified, all nodes will be in the primary zone.
+
+Note that `NUM_NODES` nodes will be created in each zone, such that if you
+specify `--num-nodes=4` and choose two locations, 8 nodes will be created.
+
+Multiple locations can be specified, separated by commas. For example:
+
+  $ {command} example-cluster --zone us-central1-a --node-locations us-central1-a,us-central1-b
+""")
+
+

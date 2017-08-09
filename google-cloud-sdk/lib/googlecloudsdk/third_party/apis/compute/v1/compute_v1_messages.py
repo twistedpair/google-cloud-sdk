@@ -1288,7 +1288,10 @@ class BackendService(_messages.Message):
   virtual machines and their serving capacity.
 
   Enums:
-    LoadBalancingSchemeValueValuesEnum:
+    LoadBalancingSchemeValueValuesEnum: Indicates whether the backend service
+      will be used with internal or external load balancing. A backend service
+      created for one type of load balancing cannot be used with the other.
+      Possible values are INTERNAL and EXTERNAL.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, TCP, and
       SSL. The default is HTTP.  For internal load balancing, the possible
@@ -1320,16 +1323,19 @@ class BackendService(_messages.Message):
       fingerprint must be provided in order to update the BackendService.
     healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
       resource for health checking this BackendService. Currently at most one
-      health check can be specified, and a health check is required for GCE
-      backend services. A health check must not be specified for GAE app
-      backend and Cloud Function backend.  For internal load balancing, a URL
-      to a HealthCheck resource must be specified instead.
+      health check can be specified, and a health check is required for
+      Compute Engine backend services. A health check must not be specified
+      for App Engine backend and Cloud Function backend.  For internal load
+      balancing, a URL to a HealthCheck resource must be specified instead.
     iap: A BackendServiceIAP attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#backendService for
       backend services.
-    loadBalancingScheme: A LoadBalancingSchemeValueValuesEnum attribute.
+    loadBalancingScheme: Indicates whether the backend service will be used
+      with internal or external load balancing. A backend service created for
+      one type of load balancing cannot be used with the other. Possible
+      values are INTERNAL and EXTERNAL.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -1361,7 +1367,10 @@ class BackendService(_messages.Message):
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
-    """LoadBalancingSchemeValueValuesEnum enum type.
+    """Indicates whether the backend service will be used with internal or
+    external load balancing. A backend service created for one type of load
+    balancing cannot be used with the other. Possible values are INTERNAL and
+    EXTERNAL.
 
     Values:
       EXTERNAL: <no description>

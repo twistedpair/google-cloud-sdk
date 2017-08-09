@@ -283,7 +283,7 @@
           }
         },
         "enableWordTimeOffsets": {
-          "description": "*Optional* If `true`, a list of `words` are returned in the top result,\ncontaining the start and end timestamps for those words. The default value,\n'false' does not return any word-level timing information.",
+          "description": "*Optional* If `true`, the top result includes a list of words and\nthe start and end time offsets (timestamps) for those words. If\n`false`, no word-level time offset information is returned. The default is\n`false`.",
           "type": "boolean"
         }
       }
@@ -338,7 +338,7 @@
       "type": "object",
       "properties": {
         "alternatives": {
-          "description": "*Output-only* May contain one or more recognition hypotheses (up to the\nmaximum specified in `max_alternatives`).\nThese alternatives are ordered in terms of accuracy, with the first\/top\nalternative being the most probable, as ranked by the recognizer.",
+          "description": "*Output-only* May contain one or more recognition hypotheses (up to the\nmaximum specified in `max_alternatives`).\nThese alternatives are ordered in terms of accuracy, with the top (first)\nalternative being the most probable, as ranked by the recognizer.",
           "type": "array",
           "items": {
             "$ref": "SpeechRecognitionAlternative"
@@ -361,7 +361,7 @@
           "format": "float"
         },
         "words": {
-          "description": "*Output-only* List of word-specific information for each recognized word.",
+          "description": "*Output-only* A list of word-specific information for each recognized word.",
           "type": "array",
           "items": {
             "$ref": "WordInfo"
@@ -371,7 +371,7 @@
     },
     "WordInfo": {
       "id": "WordInfo",
-      "description": "Word-specific information detected along with speech recognition when certain\nrequest parameters are set.",
+      "description": "Word-specific information for recognized words. Word information is only\nincluded in the response when certain request parameters are set, such\nas `enable_word_time_offsets`.",
       "type": "object",
       "properties": {
         "startTime": {

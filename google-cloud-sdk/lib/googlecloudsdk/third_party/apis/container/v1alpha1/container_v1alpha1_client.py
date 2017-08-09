@@ -572,6 +572,33 @@ zones.
         supports_download=False,
     )
 
+    def SetMaintenancePolicy(self, request, global_params=None):
+      """Sets the maintenance policy for a cluster.
+
+      Args:
+        request: (SetMaintenancePolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMaintenancePolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMaintenancePolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMaintenancePolicy',
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.setMaintenancePolicy',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:setMaintenancePolicy',
+        request_field='<request>',
+        request_type_name=u'SetMaintenancePolicyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetMasterAuth(self, request, global_params=None):
       """Used to set master auth materials. Currently supports :-.
 Changing the admin password of a specific cluster.
@@ -1476,6 +1503,32 @@ zones.
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels',
         request_field='<request>',
         request_type_name=u'SetLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetMaintenancePolicy(self, request, global_params=None):
+      """Sets the maintenance policy for a cluster.
+
+      Args:
+        request: (SetMaintenancePolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMaintenancePolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMaintenancePolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.setMaintenancePolicy',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy',
+        request_field='<request>',
+        request_type_name=u'SetMaintenancePolicyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

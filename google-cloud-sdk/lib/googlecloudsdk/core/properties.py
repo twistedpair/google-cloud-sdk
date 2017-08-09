@@ -25,6 +25,7 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.configurations import properties_file as prop_files_lib
 from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import times
 
@@ -644,7 +645,10 @@ class _SectionApp(_Section):
     self.use_runtime_builders = self._Add(
         'use_runtime_builders',
         default=None,
-        hidden=True)
+        help_text=('If set, opt in/out to a new code path for building '
+                   'applications using pre-fabricated runtimes that can be '
+                   'updated independently of client tooling. (If not set, will '
+                   'use the default path for each runtime.)'))
     # The Cloud Storage path prefix for the Flex Runtime Builder configuration
     # files. The configuration files will live at
     # "<PREFIX>/<runtime>-<version>.yaml", with an additional
@@ -837,9 +841,20 @@ class _SectionCore(_Section):
         hidden=True,
         help_text='If true, will prompt to enable an API if a command fails due'
         ' to the API not being enabled.')
+
+    def CaptureSessionFileValidator(filename):
+      if filename is None:
+        return
+      if not isinstance(filename, basestring):
+        raise InvalidValueError('Filename is not string')
+      dirname = os.path.dirname(filename)
+      if not files.HasWriteAccessInDir(dirname):
+        raise InvalidValueError('Can\'t write to {}'.format(filename))
+
     self.capture_session_file = self._Add(
         'capture_session_file',
         hidden=True,
+        validator=CaptureSessionFileValidator,
         help_text='If provided, will capture session to the file')
 
     def ShowStructuredLogsValidator(show_structured_logs):
@@ -1177,6 +1192,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.testing = self._Add('testing')
     self.toolresults = self._Add('toolresults')
     self.vision = self._Add('vision')
+    self.tpu = self._Add('tpu')
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""

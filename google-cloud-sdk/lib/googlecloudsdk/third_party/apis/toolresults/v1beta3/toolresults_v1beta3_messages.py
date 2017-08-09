@@ -10,6 +10,86 @@ from apitools.base.protorpclite import messages as _messages
 package = 'toolresults'
 
 
+class AndroidAppInfo(_messages.Message):
+  """Android app information.
+
+  Fields:
+    name: The name of the app. Optional
+    packageName: The package name of the app. Required.
+    versionCode: The internal version code of the app. Optional.
+    versionName: The version name of the app. Optional.
+  """
+
+  name = _messages.StringField(1)
+  packageName = _messages.StringField(2)
+  versionCode = _messages.StringField(3)
+  versionName = _messages.StringField(4)
+
+
+class AndroidInstrumentationTest(_messages.Message):
+  """A test of an Android application that can control an Android component
+  independently of its normal lifecycle.  See  for more information on types
+  of Android tests.
+
+  Fields:
+    testPackageId: The java package for the test to be executed. Required
+    testRunnerClass: The InstrumentationTestRunner class. Required
+    testTargets: Each target must be fully qualified with the package name or
+      class name, in one of these formats: - "package package_name" - "class
+      package_name.class_name" - "class package_name.class_name#method_name"
+      If empty, all targets in the module will be run.
+    useOrchestrator: The flag indicates whether Android Test Orchestrator will
+      be used to run test or not. Test orchestrator is used if either: -
+      orchestrator_option field is USE_ORCHESTRATOR, and test runner is
+      compatible with orchestrator. Or - orchestrator_option field is
+      unspecified or ORCHESTRATOR_OPTION_UNSPECIFIED, and test runner is
+      compatible with orchestrator.
+  """
+
+  testPackageId = _messages.StringField(1)
+  testRunnerClass = _messages.StringField(2)
+  testTargets = _messages.StringField(3, repeated=True)
+  useOrchestrator = _messages.BooleanField(4)
+
+
+class AndroidRoboTest(_messages.Message):
+  """A test of an android application that explores the application on a
+  virtual or physical Android device, finding culprits and crashes as it goes.
+
+  Fields:
+    appInitialActivity: The initial activity that should be used to start the
+      app. Optional
+    bootstrapPackageId: The java package for the bootstrap. Optional
+    bootstrapRunnerClass: The runner class for the bootstrap. Optional
+    maxDepth: The max depth of the traversal stack Robo can explore. Optional
+    maxSteps: The max number of steps/actions Robo can execute. Default is no
+      limit (0). Optional
+  """
+
+  appInitialActivity = _messages.StringField(1)
+  bootstrapPackageId = _messages.StringField(2)
+  bootstrapRunnerClass = _messages.StringField(3)
+  maxDepth = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  maxSteps = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class AndroidTest(_messages.Message):
+  """An Android mobile test specification.
+
+  Fields:
+    androidAppInfo: Infomation about the application under test.
+    androidInstrumentationTest: An Android instrumentation test.
+    androidRoboTest: An Android robo test.
+    testTimeout: Max time a test is allowed to run before it is automatically
+      cancelled.
+  """
+
+  androidAppInfo = _messages.MessageField('AndroidAppInfo', 1)
+  androidInstrumentationTest = _messages.MessageField('AndroidInstrumentationTest', 2)
+  androidRoboTest = _messages.MessageField('AndroidRoboTest', 3)
+  testTimeout = _messages.MessageField('Duration', 4)
+
+
 class Any(_messages.Message):
   """`Any` contains an arbitrary serialized protocol buffer message along with
   a URL that describes the type of the serialized message.  Protobuf library
@@ -278,6 +358,9 @@ class Execution(_messages.Message):
     outcome: Classify the result, for example into SUCCESS or FAILURE  - In
       response: present if set by create/update request - In create/update
       request: optional
+    specification: Lightweight information about execution request.  - In
+      response: present if set by create - In create: optional - In update:
+      optional
     state: The initial state is IN_PROGRESS.  The only legal state transitions
       is from IN_PROGRESS to COMPLETE.  A PRECONDITION_FAILED will be returned
       if an invalid transition is requested.  The state can only be set to
@@ -317,8 +400,9 @@ class Execution(_messages.Message):
   creationTime = _messages.MessageField('Timestamp', 2)
   executionId = _messages.StringField(3)
   outcome = _messages.MessageField('Outcome', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  testExecutionMatrixId = _messages.StringField(6)
+  specification = _messages.MessageField('Specification', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  testExecutionMatrixId = _messages.StringField(7)
 
 
 class FailureDetail(_messages.Message):
@@ -692,6 +776,16 @@ class SkippedDetail(_messages.Message):
   incompatibleAppVersion = _messages.BooleanField(1)
   incompatibleArchitecture = _messages.BooleanField(2)
   incompatibleDevice = _messages.BooleanField(3)
+
+
+class Specification(_messages.Message):
+  """The details about how to run the execution.
+
+  Fields:
+    androidTest: An Android mobile test execution specification.
+  """
+
+  androidTest = _messages.MessageField('AndroidTest', 1)
 
 
 class StackTrace(_messages.Message):

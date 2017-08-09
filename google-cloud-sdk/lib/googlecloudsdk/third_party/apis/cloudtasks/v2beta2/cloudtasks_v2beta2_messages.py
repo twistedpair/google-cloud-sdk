@@ -57,10 +57,9 @@ class AppEngineQueueConfig(_messages.Message):
       handlers#reading_request_headers).
 
   Fields:
-    appEngineRoutingOverrides: Overrides for the task-level
-      app_engine_routing.  If set,
-      AppEngineQueueConfig.app_engine_routing_overrides is used for all tasks
-      in the queue, no matter what the setting is for the task-level
+    appEngineRoutingOverride: Overrides for the task-level app_engine_routing.
+      If set, AppEngineQueueConfig.app_engine_routing_override is used for all
+      tasks in the queue, no matter what the setting is for the task-level
       app_engine_routing.
     headers: HTTP request headers.  This map contains the header field names
       and values. Repeated headers are not supported but a header value can
@@ -128,7 +127,7 @@ class AppEngineQueueConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  appEngineRoutingOverrides = _messages.MessageField('AppEngineRouting', 1)
+  appEngineRoutingOverride = _messages.MessageField('AppEngineRouting', 1)
   headers = _messages.MessageField('HeadersValue', 2)
   retryConfig = _messages.MessageField('RetryConfig', 3)
 
@@ -137,16 +136,16 @@ class AppEngineRouting(_messages.Message):
   """App Engine Routing.  For more information about services, versions, and
   instances see [An Overview of App Engine](/appengine/docs/python/an-
   overview-of-app-engine), [Microservices Architecture on Google App
-  Engine](/appengine/docs/python/microservices-on-app-engine), and How
-  Requests are Routed.  Note: The routing for some queues or tasks which were
-  not created using the Cloud Tasks API may not be parsable into
-  AppEngineRouting. For example, if numeric version names are used, then urls
-  such as `123.my-service.appspot.com` are ambiguous because `123` can be
-  interpreted as a version or instance number. See
-  [here](/appengine/docs/python/how-requests-are-routed#soft_routing) for more
-  information. If the routing is unparsable, AppEngineRouting will be empty;
-  the routing information can be viewed in the HOST header in
-  AppEngineQueueConfig.headers and AppEngineTaskTarget.headers.
+  Engine](/appengine/docs/python/microservices-on-app-engine), and [How
+  Requests are Routed](/appengine/docs/standard/python/how-requests-are-
+  routed).  Note: The routing for some queues or tasks which were not created
+  using the Cloud Tasks API may not be parsable into AppEngineRouting. For
+  example, if numeric version names are used, then urls such as `123.my-
+  service.appspot.com` are ambiguous because `123` can be interpreted as a
+  version or instance number. See [here](/appengine/docs/python/how-requests-
+  are-routed#soft_routing) for more information. If the routing is unparsable,
+  AppEngineRouting will be empty; the routing information can be viewed in the
+  HOST header in AppEngineQueueConfig.headers and AppEngineTaskTarget.headers.
 
   Fields:
     instance: App instance.  By default, the task will be sent to an instance
@@ -180,7 +179,7 @@ class AppEngineTaskTarget(_messages.Message):
   how requests are routed in App Engine and how routing is affected by
   [dispatch files](/appengine/docs/python/config/dispatchref).  The
   AppEngineRouting used to construct the URL can be set at the queue-level or
-  task-level:  *  If set, AppEngineQueueConfig.app_engine_routing_overrides is
+  task-level:  *  If set, AppEngineQueueConfig.app_engine_routing_override is
   used for    all tasks in the queue, no matter what the setting is for the
   task-level app_engine_routing.   The `url` that the task will be sent to is:
   * `url = host +` AppEngineTaskTarget.relative_url  * `host =
@@ -254,7 +253,7 @@ class AppEngineTaskTarget(_messages.Message):
 
   Fields:
     appEngineRouting: Task-level setting for App Engine routing.  If set,
-      AppEngineQueueConfig.app_engine_routing_overrides is used for all tasks
+      AppEngineQueueConfig.app_engine_routing_override is used for all tasks
       in the queue, no matter what the setting is for the task-level
       app_engine_routing.
     headers: HTTP request headers.  This map contains the header field names

@@ -67,7 +67,10 @@ def MakeSubnetworkUpdateRequest(client,
         if r.rangeName not in remove_secondary_ranges[0]
     ]
 
-    with client.apitools_client.IncludeFields(['secondaryIpRanges']):
+    cleared_fields = []
+    if not subnetwork.secondaryIpRanges:
+      cleared_fields.append('secondaryIpRanges')
+    with client.apitools_client.IncludeFields(cleared_fields):
       return client.MakeRequests(
           [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
 

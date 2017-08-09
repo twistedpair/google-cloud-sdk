@@ -34,6 +34,7 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.resource import session_capturer
 from googlecloudsdk.core.util import pkg_resources
 
 
@@ -89,7 +90,7 @@ class CLILoader(object):
   def __init__(self, name, command_root_directory,
                allow_non_existing_modules=False,
                logs_dir=config.Paths().logs_dir, version_func=None,
-               known_error_handler=None):
+               known_error_handler=None, yaml_command_translator=None):
     """Initialize Calliope.
 
     Args:
@@ -105,6 +106,8 @@ class CLILoader(object):
         --version flag. If None, no flags will be available.
       known_error_handler: f(x)->None, A function to call when an known error is
         handled. It takes a single argument that is the exception.
+      yaml_command_translator: YamlCommandTranslator, An instance of a
+        translator that will be used to load commands written as a yaml spec.
 
     Raises:
       backend.LayoutException: If no command root directory is given.
@@ -120,6 +123,7 @@ class CLILoader(object):
     self.__logs_dir = logs_dir
     self.__version_func = version_func
     self.__known_errror_handler = known_error_handler
+    self.__yaml_command_translator = yaml_command_translator
 
     self.__pre_run_hooks = []
     self.__post_run_hooks = []
@@ -127,6 +131,10 @@ class CLILoader(object):
     self.__modules = []
     self.__missing_components = {}
     self.__release_tracks = {}
+
+  @property
+  def yaml_command_translator(self):
+    return self.__yaml_command_translator
 
   def AddReleaseTrack(self, release_track, path, component=None):
     """Adds a release track to this CLI tool.
@@ -792,6 +800,11 @@ class CLI(object):
       properties.VALUES.SetInvocationValue(
           properties.VALUES.metrics.command_name, command_path_string, None)
 
+      if properties.VALUES.core.capture_session_file.Get() is not None:
+        capturer = session_capturer.SessionCapturer()
+        capturer.CaptureProperties(properties.VALUES.AllValues())
+        session_capturer.SessionCapturer.capturer = capturer
+
       for hook in self.__pre_run_hooks:
         hook.Run(command_path_string)
 
@@ -824,6 +837,9 @@ class CLI(object):
       self._HandleAllErrors(exc, command_path_string, specified_arg_names)
 
     finally:
+      if session_capturer.SessionCapturer.capturer is not None:
+        with open(properties.VALUES.core.capture_session_file.Get(), 'w') as f:
+          session_capturer.SessionCapturer.capturer.Print(f)
       properties.VALUES.PopInvocationValues()
       named_configs.FLAG_OVERRIDE_STACK.Pop()
       # Reset these values to their previous state now that we popped the flag

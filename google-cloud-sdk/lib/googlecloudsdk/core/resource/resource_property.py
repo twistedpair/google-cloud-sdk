@@ -235,6 +235,12 @@ def Get(resource_obj, resource_key, default=None):
                 resource = r
                 index = key.pop(0)
                 continue
+            else:
+              # Handle leaf node [{'key': k, 'value': v}, ...] metadata to
+              # support r.k:v filter terms.
+              r = _GetMetaDataValue(resource, index)
+              if r is not None:
+                return r
             if index in resource[0]:
               # implicit inner slice
               # resource is a list. An explicit reference would be

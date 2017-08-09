@@ -555,6 +555,46 @@
           "format": "int64"
         }
       }
+    },
+    "OperationMetadataV1": {
+      "id": "OperationMetadataV1",
+      "description": "Metadata describing an Operation",
+      "type": "object",
+      "properties": {
+        "target": {
+          "description": "Target of the operation - for example\nprojects\/project-1\/locations\/region-1\/functions\/function-1",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of operation.",
+          "enumDescriptions": [
+            "Unknown operation type.",
+            "Triggered by CreateFunction call",
+            "Triggered by UpdateFunction call",
+            "Triggered by DeleteFunction call."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATION_UNSPECIFIED",
+            "CREATE_FUNCTION",
+            "UPDATE_FUNCTION",
+            "DELETE_FUNCTION"
+          ]
+        },
+        "request": {
+          "description": "The original request that started the operation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "versionId": {
+          "description": "Google internal optional id of the version created by the operation.\nFor every create and update action new version of function is created.\nFor other operations (currently - delete function and some internal\noperations) in which no new version is created this field is going\nto have default value - 0 - which means no version id.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
     }
   },
   "resources": {

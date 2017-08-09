@@ -100,7 +100,9 @@ import yaml
 
 
 # "test-{ga,beta}" runtimes are canaries for unit testing
-_WHITELISTED_RUNTIMES_GA = {'test-ga'}
+_WHITELISTED_RUNTIMES_GA = (
+    {'php'} |
+    {'test-ga'})
 _WHITELISTED_RUNTIMES_BETA = (
     _WHITELISTED_RUNTIMES_GA |
     {'aspnetcore', 'java', 'nodejs', 'php', 'python', 'ruby'} |

@@ -15,6 +15,7 @@
 
 import json
 
+
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -119,3 +120,25 @@ def ParseModelOrVersionRef(model_id, version_id):
         model_id,
         params={'projectsId': properties.VALUES.core.project.GetOrFail},
         collection='ml.projects.models')
+
+
+def GetDefaultFormat(predictions):
+  if not isinstance(predictions, list):
+    # This usually indicates some kind of error case, so surface the full API
+    # response
+    return 'json'
+  elif not predictions:
+    return None
+  # predictions is guaranteed by API contract to be a list of similarly shaped
+  # objects, but we don't know ahead of time what those objects look like.
+  elif isinstance(predictions[0], dict):
+    keys = ', '.join(sorted(predictions[0].keys()))
+    return """
+          table(
+              predictions:format="table(
+                  {}
+              )"
+          )""".format(keys)
+
+  else:
+    return 'table[no-heading](predictions)'

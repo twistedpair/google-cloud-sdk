@@ -51,3 +51,16 @@ def AddRegionFlag(parser):
       help='The region in which the function will run.',
       completer=LocationsCompleter,
       action=actions.StoreProperty(properties.VALUES.functions.region))
+
+
+def AddDeprecatedRegionFlag(parser):
+  parser.add_argument(
+      '--region',
+      help='The region from which functions will be listed.',
+      completer=LocationsCompleter,
+      action=actions.DeprecationAction(
+          '--region',
+          warn='The {flag_name} option is deprecated; use --regions instead.',
+          removed=False,
+          action=actions.StoreProperty(properties.VALUES.functions.region)),
+  )

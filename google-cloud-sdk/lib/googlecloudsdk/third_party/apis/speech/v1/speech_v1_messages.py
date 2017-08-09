@@ -191,10 +191,10 @@ class RecognitionConfig(_messages.Message):
       `RecognitionAudio` messages.
 
   Fields:
-    enableWordTimeOffsets: *Optional* If `true`, a list of `words` are
-      returned in the top result, containing the start and end timestamps for
-      those words. The default value, 'false' does not return any word-level
-      timing information.
+    enableWordTimeOffsets: *Optional* If `true`, the top result includes a
+      list of words and the start and end time offsets (timestamps) for those
+      words. If `false`, no word-level time offset information is returned.
+      The default is `false`.
     encoding: *Required* Encoding of audio data sent in all `RecognitionAudio`
       messages.
     languageCode: *Required* The language of the supplied audio as a
@@ -381,8 +381,8 @@ class SpeechRecognitionAlternative(_messages.Message):
       indicating `confidence` was not set.
     transcript: *Output-only* Transcript text representing the words that the
       user spoke.
-    words: *Output-only* List of word-specific information for each recognized
-      word.
+    words: *Output-only* A list of word-specific information for each
+      recognized word.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -396,7 +396,7 @@ class SpeechRecognitionResult(_messages.Message):
   Fields:
     alternatives: *Output-only* May contain one or more recognition hypotheses
       (up to the maximum specified in `max_alternatives`). These alternatives
-      are ordered in terms of accuracy, with the first/top alternative being
+      are ordered in terms of accuracy, with the top (first) alternative being
       the most probable, as ranked by the recognizer.
   """
 
@@ -549,8 +549,9 @@ class Status(_messages.Message):
 
 
 class WordInfo(_messages.Message):
-  """Word-specific information detected along with speech recognition when
-  certain request parameters are set.
+  """Word-specific information for recognized words. Word information is only
+  included in the response when certain request parameters are set, such as
+  `enable_word_time_offsets`.
 
   Fields:
     endTime: *Output-only* Time offset relative to the beginning of the audio,

@@ -308,6 +308,20 @@ MAP = {
             default_version=False
         ),
     },
+    'datastore': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.datastore.v1',
+            client_classpath='datastore_v1_client.DatastoreV1',
+            messages_modulepath='datastore_v1_messages',
+            default_version=True
+        ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.datastore.v1beta1',
+            client_classpath='datastore_v1beta1_client.DatastoreV1beta1',
+            messages_modulepath='datastore_v1beta1_messages',
+            default_version=False
+        ),
+    },
     'deploymentmanager': {
         'alpha': APIDef(
             class_path='googlecloudsdk.third_party.apis.deploymentmanager.alpha',
@@ -535,6 +549,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.toolresults.v1beta3',
             client_classpath='toolresults_v1beta3_client.ToolresultsV1beta3',
             messages_modulepath='toolresults_v1beta3_messages',
+            default_version=True
+        ),
+    },
+    'tpu': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.tpu.v1alpha1',
+            client_classpath='tpu_v1alpha1_client.TpuV1alpha1',
+            messages_modulepath='tpu_v1alpha1_messages',
             default_version=True
         ),
     },

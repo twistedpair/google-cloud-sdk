@@ -224,7 +224,7 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
 
 
 class GoogleCloudMlV1Job(_messages.Message):
-  """Represents a training or prediction job.
+  """Represents a training or prediction job.  Next ID: 16
 
   Enums:
     StateValueValuesEnum: Output only. The detailed state of a job.
@@ -334,7 +334,7 @@ class GoogleCloudMlV1ManualScaling(_messages.Message):
 class GoogleCloudMlV1Model(_messages.Message):
   """Represents a machine learning solution.  A model can have multiple
   versions, each of which is a deployed, trained model ready to receive
-  prediction requests. The model itself is just a container.
+  prediction requests. The model itself is just a container.  Next ID: 8
 
   Fields:
     defaultVersion: Output only. The default version of the model. This
@@ -365,7 +365,7 @@ class GoogleCloudMlV1Model(_messages.Message):
 
 
 class GoogleCloudMlV1OperationMetadata(_messages.Message):
-  """Represents the metadata of the long-running operation.
+  """Represents the metadata of the long-running operation.  Next ID: 9
 
   Enums:
     OperationTypeValueValuesEnum: The operation type.
@@ -554,6 +554,11 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
     DataFormatValueValuesEnum: Required. The format of the input data files.
 
   Fields:
+    batchSize: Optional. Number of records per batch, defaults to 64. The
+      service will buffer batch_size number of records in memory before
+      invoking one Tensorflow prediction call internally. So take the record
+      size and memory available into consideration when setting this
+      parameter.
     dataFormat: Required. The format of the input data files.
     inputPaths: Required. The Google Cloud Storage location of the input data
       files. May contain wildcards.
@@ -593,15 +598,16 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
     TF_RECORD = 2
     TF_RECORD_GZIP = 3
 
-  dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 1)
-  inputPaths = _messages.StringField(2, repeated=True)
-  maxWorkerCount = _messages.IntegerField(3)
-  modelName = _messages.StringField(4)
-  outputPath = _messages.StringField(5)
-  region = _messages.StringField(6)
-  runtimeVersion = _messages.StringField(7)
-  uri = _messages.StringField(8)
-  versionName = _messages.StringField(9)
+  batchSize = _messages.IntegerField(1)
+  dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 2)
+  inputPaths = _messages.StringField(3, repeated=True)
+  maxWorkerCount = _messages.IntegerField(4)
+  modelName = _messages.StringField(5)
+  outputPath = _messages.StringField(6)
+  region = _messages.StringField(7)
+  runtimeVersion = _messages.StringField(8)
+  uri = _messages.StringField(9)
+  versionName = _messages.StringField(10)
 
 
 class GoogleCloudMlV1PredictionOutput(_messages.Message):
@@ -771,7 +777,7 @@ class GoogleCloudMlV1Version(_messages.Message):
   deployed in the cloud, ready to handle prediction requests. A model can have
   multiple versions. You can get information about all of the versions of a
   given model by calling [projects.models.versions.list](/ml-
-  engine/reference/rest/v1/projects.models.versions/list).
+  engine/reference/rest/v1/projects.models.versions/list).  Next ID: 18
 
   Enums:
     StateValueValuesEnum: Output only. The state of a version.
@@ -880,7 +886,7 @@ class GoogleCloudMlV1beta1ManualScaling(_messages.Message):
 
 
 class GoogleCloudMlV1beta1OperationMetadata(_messages.Message):
-  """Represents the metadata of the long-running operation.
+  """Represents the metadata of the long-running operation.  Next ID: 9
 
   Enums:
     OperationTypeValueValuesEnum: The operation type.
@@ -924,7 +930,7 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
   deployed in the cloud, ready to handle prediction requests. A model can have
   multiple versions. You can get information about all of the versions of a
   given model by calling [projects.models.versions.list](/ml-
-  engine/reference/rest/v1beta1/projects.models.versions/list).
+  engine/reference/rest/v1beta1/projects.models.versions/list).  Next ID: 18
 
   Enums:
     StateValueValuesEnum: Output only. The state of a version.
@@ -1189,20 +1195,7 @@ class GoogleIamV1Condition(_messages.Message):
 
 
 class GoogleIamV1LogConfig(_messages.Message):
-  """Specifies what kind of log the caller must write Increment a streamz
-  counter with the specified metric and field names.  Metric names should
-  start with a '/', generally be lowercase-only, and end in "_count". Field
-  names should not contain an initial slash. The actual exported metric names
-  will have "/iam/policy" prepended.  Field names correspond to IAM request
-  parameters and field values are their respective values.  At present the
-  only supported field names are    - "iam_principal", corresponding to
-  IAMContext.principal;    - "" (empty string), resulting in one aggretated
-  counter with no field.  Examples:   counter { metric: "/debug_access_count"
-  field: "iam_principal" }   ==> increment counter
-  /iam/policy/backend_debug_access_count
-  {iam_principal=[value of IAMContext.principal]}  At this time we do not
-  support: * multiple field names (though this may be supported in the future)
-  * decrementing the counter * incrementing it by anything other than 1
+  """Specifies what kind of log the caller must write
 
   Fields:
     cloudAudit: Cloud audit options.
@@ -1242,7 +1235,19 @@ class GoogleIamV1LogConfigCloudAuditOptions(_messages.Message):
 
 
 class GoogleIamV1LogConfigCounterOptions(_messages.Message):
-  """Options for counters
+  """Increment a streamz counter with the specified metric and field names.
+  Metric names should start with a '/', generally be lowercase-only, and end
+  in "_count". Field names should not contain an initial slash. The actual
+  exported metric names will have "/iam/policy" prepended.  Field names
+  correspond to IAM request parameters and field values are their respective
+  values.  At present the only supported field names are    - "iam_principal",
+  corresponding to IAMContext.principal;    - "" (empty string), resulting in
+  one aggretated counter with no field.  Examples:   counter { metric:
+  "/debug_access_count"  field: "iam_principal" }   ==> increment counter
+  /iam/policy/backend_debug_access_count
+  {iam_principal=[value of IAMContext.principal]}  At this time we do not
+  support: * multiple field names (though this may be supported in the future)
+  * decrementing the counter * incrementing it by anything other than 1
 
   Fields:
     field: The field value to attribute.
@@ -1254,7 +1259,41 @@ class GoogleIamV1LogConfigCounterOptions(_messages.Message):
 
 
 class GoogleIamV1LogConfigDataAccessOptions(_messages.Message):
-  """Write a Data Access (Gin) log"""
+  """Write a Data Access (Gin) log
+
+  Enums:
+    LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
+      manner at the caller. This is relevant only in the LocalIAM
+      implementation, for now.
+
+  Fields:
+    logMode: Whether Gin logging should happen in a fail-closed manner at the
+      caller. This is relevant only in the LocalIAM implementation, for now.
+  """
+
+  class LogModeValueValuesEnum(_messages.Enum):
+    """Whether Gin logging should happen in a fail-closed manner at the
+    caller. This is relevant only in the LocalIAM implementation, for now.
+
+    Values:
+      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
+        immediately after the authorization check. If client chooses to write
+        one and it fails, client may either fail open (allow the operation to
+        continue) or fail closed (handle as a DENY outcome).
+      LOG_FAIL_CLOSED: The application's operation in the context of which
+        this authorization check is being made may only be performed if it is
+        successfully logged to Gin. For instance, the authorization library
+        may satisfy this obligation by emitting a partial log entry at
+        authorization check time and only returning ALLOW to the application
+        if it succeeds.  If a matching Rule has this directive, but the client
+        has not indicated that it will honor such requirements, then the IAM
+        check will result in authorization failure by setting
+        CheckPolicyResponse.success=false.
+    """
+    LOG_MODE_UNSPECIFIED = 0
+    LOG_FAIL_CLOSED = 1
+
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
 class GoogleIamV1Policy(_messages.Message):
@@ -1857,8 +1896,7 @@ class MlProjectsModelsVersionsSetDefaultRequest(_messages.Message):
     name: Required. The name of the version to make the default for the model.
       You can get the names of all the versions of a model by calling
       [projects.models.versions.list](/ml-
-      engine/reference/rest/v1/projects.models.versions/list).  Authorization:
-      `ml.models.update` permission is required on the parent model.
+      engine/reference/rest/v1/projects.models.versions/list).
   """
 
   googleCloudMlV1SetDefaultVersionRequest = _messages.MessageField('GoogleCloudMlV1SetDefaultVersionRequest', 1)

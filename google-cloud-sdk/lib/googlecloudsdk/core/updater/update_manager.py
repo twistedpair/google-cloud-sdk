@@ -40,6 +40,7 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
 
+import yaml
 
 # These are components that used to exist, but we removed.  In order to prevent
 # scripts and installers that use them from getting errors, we will just warn
@@ -102,7 +103,7 @@ class InvalidCWDError(Error):
   pass
 
 
-class UpdaterDisableError(Error):
+class UpdaterDisabledError(Error):
   """Error for when an update is attempted but it is disallowed."""
   pass
 
@@ -323,7 +324,7 @@ class UpdateManager(object):
     except OSError:
       log.debug('Could not determine CWD, assuming detached directory not '
                 'under SDK root.')
-    if not (cwd and cwd.startswith(self.__sdk_root)):
+    if not (cwd and file_utils.IsDirAncestorOf(self.__sdk_root, cwd)):
       # Outside of the root entirely, this is always fine.
       return force_fast
 
@@ -335,15 +336,15 @@ class UpdateManager(object):
       return True
 
     raise InvalidCWDError(
-        'Your current working directory is inside the Cloud SDK install root:'
-        ' {root}.  In order to perform this update, run the command from '
-        'outside of this directory.'.format(root=self.__sdk_root))
+        u'Your current working directory is inside the Cloud SDK install root:'
+        u' {root}.  In order to perform this update, run the command from '
+        u'outside of this directory.'.format(root=self.__sdk_root))
 
   def _GetDontCancelMessage(self, disable_backup):
     """Get the message to print before udpates.
 
     Args:
-      disable_backup: bool, True if we are doing an in place udpate.
+      disable_backup: bool, True if we are doing an in place update.
 
     Returns:
       str, The message to print, or None.
@@ -354,27 +355,110 @@ class UpdateManager(object):
     else:
       return None
 
-  def _EnsureNotDisabled(self):
-    """Prints an error and raises an Exception if the updater is disabled.
+  def _GetMappingFile(self, filename):
+    """Checks if mapping files are present and loads them for further use.
+
+    Args:
+      filename: str, The full filename (with .yaml extension) to be loaded.
+
+    Returns:
+      Loaded YAML if mapping files are present, None otherwise.
+    """
+    paths = config.Paths()
+    mapping_path = os.path.join(paths.sdk_root, paths.CLOUDSDK_STATE_DIR,
+                                'mapping', filename)
+    # Check if file exists.
+    if os.path.isfile(mapping_path):
+      return yaml.load(file_utils.GetFileContents(mapping_path))
+
+  def _CheckIfDisabledAndThrowError(self, components=None, command=None):
+    """Checks if updater is disabled. If so, raises UpdaterDisabledError.
 
     The updater is disabled for installations that come from other package
     managers like apt-get or if the current user does not have permission
-    to create or delete files in the SDK root directory.
+    to create or delete files in the SDK root directory. If disabled, checks the
+    user-provided command to see if it maps to one we support for their package
+    manager. If it does, raise an UpdaterDisabledError to let the user know why
+    their command did not work and provide them with an alternate, accurate
+    command to run. If we do not support the given command/component combination
+    for their package manager, raise an UpdaterDisabledError and provide user
+    with instructions to change their package manager.
+
+    Args:
+      components: str, Component from user input, to be mapped against
+        component_commands.yaml
+      command: str, Command from user input, to be mapped against
+        component_mapping.yaml
 
     Raises:
-      UpdaterDisableError: If the updater is disabled.
-      exceptions.RequiresAdminRightsError: If the caller has insufficient
-        privilege.
+      UpdaterDisabledError: If the updater is disabled.
     """
+    default_message = (
+        'You cannot perform this action because this Cloud SDK '
+        'installation is managed by an external package manager.\n'
+        'Please consider using a separate installation of the Cloud '
+        'SDK created through the default mechanism described at: '
+        '{doc_url}\n'.format(
+            doc_url=config.INSTALLATION_CONFIG.documentation_url))
+
     if config.INSTALLATION_CONFIG.disable_updater:
-      message = (
-          'You cannot perform this action because this Cloud SDK installation '
-          'is managed by an external package manager.  If you would like to get'
-          ' the latest version, please see our main download page at:\n  '
-          + config.INSTALLATION_CONFIG.documentation_url + '\n')
-      self.__Write(log.err, message, word_wrap=True)
-      raise UpdaterDisableError(
-          'The component manager is disabled for this installation')
+
+      if not command:
+        raise UpdaterDisabledError(default_message)
+
+      # Load YAML files to map commands (install, remove, etc) against.
+      commands_map = self._GetMappingFile(filename='command_mapping.yaml')
+      # Load YAML files to map components (cbt, bq, etc) against.
+      components_map = self._GetMappingFile(filename='component_mapping.yaml')
+
+      # If mapping YAMLs are not found.
+      if not (components_map and commands_map):
+        raise UpdaterDisabledError(default_message)
+
+      final_message = ''
+      missing_components = None
+      mapped_components = None
+      correct_command = commands_map[command]
+
+      # Provide correct error message based on whether a component was given.
+      if components:
+        mapped_components = [
+            components_map[component] for component in components
+            if component in components_map
+        ]
+        missing_components = [
+            component for component in components
+            if component not in components_map
+        ]
+
+      if mapped_components:
+        correct_command = correct_command.format(
+            package=' '.join(mapped_components))
+
+      # Both mapped_components and components are false in the case where
+      # a mapped command template has no components, for example,
+      # update-all: sudo apt-get update && sudo apt-get upgrade
+      if mapped_components or not components:
+        # Message presented when mapping is successful.
+        final_message += (
+            'You cannot perform this action because the Cloud SDK '
+            'component manager is disabled for this installation. You can '
+            'run the following command to achieve the same result for this '
+            'installation: {correct_command}\n'.format(
+                correct_command=correct_command))
+
+      if missing_components:
+        # Message presented when component mapping is unsuccessful.
+        final_message += (
+            'The {component} component(s) cannot be found through the '
+            'packaging system you are currently using. Please consider '
+            'using a separate installation of the Cloud SDK created '
+            'through the default mechanism described at: {doc_url} '
+            '\n'.format(
+                component=', '.join(missing_components),
+                doc_url=config.INSTALLATION_CONFIG.documentation_url))
+
+      raise UpdaterDisabledError(final_message)
 
   def _GetInstallState(self):
     return local_state.InstallationState(self.__sdk_root)
@@ -708,7 +792,11 @@ version [{1}].  To clear your fixed version setting, run:
       InvalidComponentError: If any of the given component ids do not exist.
     """
     md5dict1 = self._HashRcfiles(_SHELL_RCFILES)
-    self._EnsureNotDisabled()
+    if update_seed:
+      self._CheckIfDisabledAndThrowError(
+          components=update_seed, command='update')
+    else:
+      self._CheckIfDisabledAndThrowError(command='update-all')
 
     try:
       install_state, diff = self._GetStateAndDiff(
@@ -983,7 +1071,7 @@ To revert your SDK to the previously installed version, you may run:
       InvalidComponentError: If any of the given component ids are not
         installed or cannot be removed.
     """
-    self._EnsureNotDisabled()
+    self._CheckIfDisabledAndThrowError(components=ids, command='remove')
     if not ids:
       return
 
@@ -1058,7 +1146,7 @@ To revert your SDK to the previously installed version, you may run:
     Raises:
       NoBackupError: If there is no valid backup to restore.
     """
-    self._EnsureNotDisabled()
+    self._CheckIfDisabledAndThrowError()
     install_state = self._GetInstallState()
     if not install_state.HasBackup():
       raise NoBackupError('There is currently no backup to restore.')
@@ -1124,7 +1212,8 @@ To revert your SDK to the previously installed version, you may run:
     Returns:
       bool, True if the update succeeded, False if it was cancelled.
     """
-    self._EnsureNotDisabled()
+    self._CheckIfDisabledAndThrowError()
+
     if os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS'):
       # We are already reinstalling but got here somehow.  Something is very
       # wrong and we want to avoid the infinite loop.

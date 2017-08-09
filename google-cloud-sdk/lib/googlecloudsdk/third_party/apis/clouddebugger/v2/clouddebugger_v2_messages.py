@@ -234,14 +234,15 @@ class ClouddebuggerControllerDebuggeesBreakpointsListRequest(_messages.Message):
 
   Fields:
     debuggeeId: Identifies the debuggee.
-    successOnTimeout: If set to `true`, returns `google.rpc.Code.OK` status
-      and sets the `wait_expired` response field to `true` when the server-
-      selected timeout has expired (recommended).  If set to `false`, returns
-      `google.rpc.Code.ABORTED` status when the server-selected timeout has
-      expired (deprecated).
-    waitToken: A wait token that, if specified, blocks the method call until
-      the list of active breakpoints has changed, or a server selected timeout
-      has expired.  The value should be set from the last returned response.
+    successOnTimeout: If set to `true` (recommended), returns
+      `google.rpc.Code.OK` status and sets the `wait_expired` response field
+      to `true` when the server-selected timeout has expired.  If set to
+      `false` (deprecated), returns `google.rpc.Code.ABORTED` status when the
+      server-selected timeout has expired.
+    waitToken: A token that, if specified, blocks the method call until the
+      list of active breakpoints has changed, or a server-selected timeout has
+      expired. The value should be set from the `next_wait_token` field in the
+      last response. The initial value should be set to `"init"`.
   """
 
   debuggeeId = _messages.StringField(1, required=True)
@@ -269,7 +270,7 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsDeleteRequest(_messages.Message):
 
   Fields:
     breakpointId: ID of the breakpoint to delete.
-    clientVersion: The client version making the call. Following:
+    clientVersion: The client version making the call. Schema:
       `domain/type/version` (e.g., `google.com/intellij/v1`).
     debuggeeId: ID of the debuggee whose breakpoint to delete.
   """
@@ -284,7 +285,7 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsGetRequest(_messages.Message):
 
   Fields:
     breakpointId: ID of the breakpoint to get.
-    clientVersion: The client version making the call. Following:
+    clientVersion: The client version making the call. Schema:
       `domain/type/version` (e.g., `google.com/intellij/v1`).
     debuggeeId: ID of the debuggee whose breakpoint to get.
   """
@@ -304,7 +305,7 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsListRequest(_messages.Message):
   Fields:
     action_value: Only breakpoints with the specified action will pass the
       filter.
-    clientVersion: The client version making the call. Following:
+    clientVersion: The client version making the call. Schema:
       `domain/type/version` (e.g., `google.com/intellij/v1`).
     debuggeeId: ID of the debuggee whose breakpoints to list.
     includeAllUsers: When set to `true`, the response includes the list of
@@ -346,7 +347,7 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsSetRequest(_messages.Message):
 
   Fields:
     breakpoint: A Breakpoint resource to be passed as the request body.
-    clientVersion: The client version making the call. Following:
+    clientVersion: The client version making the call. Schema:
       `domain/type/version` (e.g., `google.com/intellij/v1`).
     debuggeeId: ID of the debuggee where the breakpoint is to be set.
   """
@@ -360,7 +361,7 @@ class ClouddebuggerDebuggerDebuggeesListRequest(_messages.Message):
   """A ClouddebuggerDebuggerDebuggeesListRequest object.
 
   Fields:
-    clientVersion: The client version making the call. Following:
+    clientVersion: The client version making the call. Schema:
       `domain/type/version` (e.g., `google.com/intellij/v1`).
     includeInactive: When set to `true`, the result includes all debuggees.
       Otherwise, the result includes only debuggees that are active.
@@ -373,48 +374,47 @@ class ClouddebuggerDebuggerDebuggeesListRequest(_messages.Message):
 
 
 class Debuggee(_messages.Message):
-  """Represents the application to debug. The application may include one or
+  """Represents the debugged application. The application may include one or
   more replicated processes executing the same code. Each of these processes
-  is attached with a debugger agent, carrying out the debugging commands. The
-  agents attached to the same debuggee are identified by using exactly the
-  same field values when registering.
+  is attached with a debugger agent, carrying out the debugging commands.
+  Agents attached to the same debuggee identify themselves as such by using
+  exactly the same Debuggee message value when registering.
 
   Messages:
     LabelsValue: A set of custom debuggee properties, populated by the agent,
       to be displayed to the user.
 
   Fields:
-    agentVersion: Version ID of the agent release. The version ID is
-      structured as following: `domain/language-platform/vmajor.minor` (for
-      example `google.com/java-gcp/v1.1`).
+    agentVersion: Version ID of the agent. Schema: `domain/language-
+      platform/vmajor.minor` (for example `google.com/java-gcp/v1.1`).
     description: Human readable description of the debuggee. Including a
       human-readable project name, environment name and version information is
       recommended.
     extSourceContexts: References to the locations and revisions of the source
-      code used in the deployed application.  Contexts describing a remote
-      repo related to the source code have a `category` label of
-      `remote_repo`. Source snapshot source contexts have a `category` of
-      `snapshot`.
+      code used in the deployed application.  NOTE: this field is experimental
+      and can be ignored.
     id: Unique identifier for the debuggee generated by the controller
       service.
     isDisabled: If set to `true`, indicates that the agent should disable
       itself and detach from the debuggee.
-    isInactive: If set to `true`, indicates that the debuggee is considered as
-      inactive by the Controller service.
+    isInactive: If set to `true`, indicates that Controller service does not
+      detect any activity from the debuggee agents and the application is
+      possibly stopped.
     labels: A set of custom debuggee properties, populated by the agent, to be
       displayed to the user.
-    project: Project the debuggee is associated with. Use the project number
+    project: Project the debuggee is associated with. Use project number or id
       when registering a Google Cloud Platform project.
     sourceContexts: References to the locations and revisions of the source
-      code used in the deployed application.  NOTE: This field is deprecated.
-      Consumers should use `ext_source_contexts` if it is not empty. Debug
-      agents should populate both this field and `ext_source_contexts`.
+      code used in the deployed application.
     status: Human readable message to be displayed to the user about this
       debuggee. Absence of this field indicates no status. The message can be
       either informational or an error status.
-    uniquifier: Debuggee uniquifier within the project. Any string that
-      identifies the application within the project can be used. Including
-      environment and version or build IDs is recommended.
+    uniquifier: Uniquifier to further distiguish the application. It is
+      possible that different applications might have identical values in the
+      debuggee message, thus, incorrectly identified as a single application
+      by the Controller service. This field adds salt to further distiguish
+      the application. Agents should consider seeding this field with value
+      that identifies the code, binary, configuration and environment.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -571,10 +571,11 @@ class ListActiveBreakpointsResponse(_messages.Message):
   Fields:
     breakpoints: List of all active breakpoints. The fields `id` and
       `location` are guaranteed to be set on each breakpoint.
-    nextWaitToken: A wait token that can be used in the next method call to
-      block until the list of breakpoints changes.
-    waitExpired: The `wait_expired` field is set to true by the server when
-      the request times out and the field `success_on_timeout` is set to true.
+    nextWaitToken: A token that can be used in the next method call to block
+      until the list of breakpoints changes.
+    waitExpired: If set to `true`, indicates that there is no change to the
+      list of active breakpoints and the server-selected timeout has expired.
+      The `breakpoints` field would be empty and should be ignored.
   """
 
   breakpoints = _messages.MessageField('Breakpoint', 1, repeated=True)
@@ -603,10 +604,10 @@ class ListDebuggeesResponse(_messages.Message):
   """Response for listing debuggees.
 
   Fields:
-    debuggees: List of debuggees accessible to the calling user. Note that the
-      `description` field is the only human readable field that should be
-      displayed to the user. The fields `debuggee.id` and  `description`
-      fields are guaranteed to be set on each debuggee.
+    debuggees: List of debuggees accessible to the calling user. The fields
+      `debuggee.id` and `description` are guaranteed to be set. The
+      `description` field is a human readable field provided by agents and can
+      be displayed to users.
   """
 
   debuggees = _messages.MessageField('Debuggee', 1, repeated=True)
@@ -642,7 +643,10 @@ class RegisterDebuggeeResponse(_messages.Message):
 
   Fields:
     debuggee: Debuggee resource. The field `id` is guranteed to be set (in
-      addition to the echoed fields).
+      addition to the echoed fields). If the field `is_disabled` is set to
+      `true`, the agent should disable itself by removing all breakpoints and
+      detaching from the application. It should however continue to poll
+      `RegisterDebuggee` until reenabled.
   """
 
   debuggee = _messages.MessageField('Debuggee', 1)
@@ -839,6 +843,7 @@ class UpdateActiveBreakpointRequest(_messages.Message):
 
   Fields:
     breakpoint: Updated breakpoint information. The field `id` must be set.
+      The agent must echo all Breakpoint specification fields in the update.
   """
 
   breakpoint = _messages.MessageField('Breakpoint', 1)
