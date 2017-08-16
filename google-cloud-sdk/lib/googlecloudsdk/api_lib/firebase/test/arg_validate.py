@@ -248,6 +248,7 @@ _FILE_ARG_VALIDATORS = {
     'scenario_numbers': _ValidatePositiveIntList,
     'environment_variables': _ValidateKeyValueStringPairs,
     'directories_to_pull': ValidateStringList,
+    'use_orchestrator': _ValidateBool,
 }
 
 

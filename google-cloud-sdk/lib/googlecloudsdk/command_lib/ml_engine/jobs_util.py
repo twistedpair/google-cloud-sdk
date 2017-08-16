@@ -207,7 +207,8 @@ def _ValidateSubmitPredictionArgs(model_dir, version):
 def SubmitPrediction(jobs_client, job,
                      model_dir=None, model=None, version=None,
                      input_paths=None, data_format=None, output_path=None,
-                     region=None, runtime_version=None, max_worker_count=None):
+                     region=None, runtime_version=None, max_worker_count=None,
+                     batch_size=None):
   """Submit a prediction job."""
   _ValidateSubmitPredictionArgs(model_dir, version)
 
@@ -224,6 +225,7 @@ def SubmitPrediction(jobs_client, job,
       output_path=output_path,
       region=region,
       runtime_version=runtime_version,
-      max_worker_count=max_worker_count)
+      max_worker_count=max_worker_count,
+      batch_size=batch_size)
   PrintSubmitFollowUp(job.jobId, print_follow_up_message=True)
   return jobs_client.Create(project_ref, job)

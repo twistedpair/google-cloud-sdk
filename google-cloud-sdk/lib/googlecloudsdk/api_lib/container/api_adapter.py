@@ -92,12 +92,18 @@ def CheckResponse(response):
 def NewAPIAdapter(api_version):
   if api_version is 'v1alpha1':
     return NewV1Alpha1APIAdapter()
+  elif api_version is 'v1beta1':
+    return NewV1Beta1APIAdapter()
   else:
     return NewV1APIAdapter()
 
 
 def NewV1APIAdapter():
   return InitAPIAdapter('v1', V1Adapter)
+
+
+def NewV1Beta1APIAdapter():
+  return InitAPIAdapter('v1beta1', V1Beta1Adapter)
 
 
 def NewV1Alpha1APIAdapter():
@@ -205,7 +211,8 @@ class CreateClusterOptions(object):
                enable_ip_alias=None,
                create_subnetwork=None,
                accelerators=None,
-               enable_audit_logging=None):
+               enable_audit_logging=None,
+               min_cpu_platform=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -247,6 +254,7 @@ class CreateClusterOptions(object):
     self.create_subnetwork = create_subnetwork
     self.accelerators = accelerators
     self.enable_audit_logging = enable_audit_logging
+    self.min_cpu_platform = min_cpu_platform
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -268,7 +276,8 @@ class UpdateClusterOptions(object):
                image_type=None,
                locations=None,
                enable_master_authorized_networks=None,
-               master_authorized_networks=None):
+               master_authorized_networks=None,
+               enable_audit_logging=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -282,6 +291,7 @@ class UpdateClusterOptions(object):
     self.locations = locations
     self.enable_master_authorized_networks = enable_master_authorized_networks
     self.master_authorized_networks = master_authorized_networks
+    self.enable_audit_logging = enable_audit_logging
 
 
 class SetMasterAuthOptions(object):
@@ -321,7 +331,8 @@ class CreateNodePoolOptions(object):
                enable_autoupgrade=None,
                service_account=None,
                disk_type=None,
-               accelerators=None):
+               accelerators=None,
+               min_cpu_platform=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -340,6 +351,7 @@ class CreateNodePoolOptions(object):
     self.service_account = service_account
     self.disk_type = disk_type
     self.accelerators = accelerators
+    self.min_cpu_platform = min_cpu_platform
 
 
 class UpdateNodePoolOptions(object):
@@ -618,6 +630,9 @@ class APIAdapter(object):
                                           acceleratorCount=count)
       ]
 
+    if options.min_cpu_platform is not None:
+      node_config.minCpuPlatform = options.min_cpu_platform
+
     max_nodes_per_pool = options.max_nodes_per_pool or MAX_NODES_PER_POOL
     pools = (options.num_nodes + max_nodes_per_pool - 1) / max_nodes_per_pool
     if pools == 1:
@@ -698,7 +713,7 @@ class APIAdapter(object):
           enabled=options.enable_network_policy,
           provider=self.messages.NetworkPolicy.ProviderValueValuesEnum.CALICO)
 
-    if options.enable_audit_logging:
+    if options.enable_audit_logging is not None:
       cluster.auditConfig = self.messages.AuditConfig(
           enabled=options.enable_audit_logging)
 
@@ -794,6 +809,11 @@ class APIAdapter(object):
               cidrBlock=network))
       update = self.messages.ClusterUpdate(
           desiredMasterAuthorizedNetworksConfig=authorized_networks)
+    elif options.enable_audit_logging is not None:
+      audit_config = self.messages.AuditConfig(
+          enabled=options.enable_audit_logging)
+      update = self.messages.ClusterUpdate(
+          desiredAuditConfig=audit_config)
     if (options.master_authorized_networks
         and not options.enable_master_authorized_networks):
       # Raise error if use --master-authorized-networks without
@@ -803,6 +823,9 @@ class APIAdapter(object):
 
   def UpdateCluster(self, cluster_ref, options):
     raise NotImplementedError('UpdateCluster is not overridden')
+
+  def SetLoggingService(self, cluster_ref, logging_service):
+    raise NotImplementedError('SetLoggingService is not overridden')
 
   def SetLegacyAuthorization(self, cluster_ref, enable_legacy_authorization):
     raise NotImplementedError('SetLegacyAuthorization is not overridden')
@@ -908,6 +931,9 @@ class APIAdapter(object):
     if options.preemptible:
       node_config.preemptible = options.preemptible
 
+    if options.min_cpu_platform is not None:
+      node_config.minCpuPlatform = options.min_cpu_platform
+
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,
         initialNodeCount=options.num_nodes,
@@ -985,6 +1011,9 @@ class APIAdapter(object):
         size=size,
         zone=zone)
     return self.compute_client.instanceGroupManagers.Resize(req)
+
+  def ResizeNodePool(self, cluster_ref, pool_name, size):
+    raise NotImplementedError('ResizeNodePool is not overridden')
 
   def _GetNodeManagement(self, options):
     """Gets a wrapper containing the options for how nodes are managed.
@@ -1099,6 +1128,16 @@ class V1Adapter(APIAdapter):
             projectId=cluster_ref.projectId,
             updateClusterRequest=self.messages.UpdateClusterRequest(
                 update=update)))
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def SetLoggingService(self, cluster_ref, logging_service):
+    op = self.client.projects_zones_clusters.Logging(
+        self.messages.ContainerProjectsZonesClustersLoggingRequest(
+            clusterId=cluster_ref.clusterId,
+            zone=cluster_ref.zone,
+            projectId=cluster_ref.projectId,
+            setLoggingServiceRequest=self.messages.SetLoggingServiceRequest(
+                loggingService=logging_service)))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def SetNetworkPolicy(self, cluster_ref, options):
@@ -1240,6 +1279,27 @@ class V1Adapter(APIAdapter):
     operation = self.client.projects_zones_clusters_nodePools.SetManagement(req)
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
+  def ResizeNodePool(self, cluster_ref, pool_name, size):
+    """Sets the size of the node pool.
+
+    Args:
+      cluster_ref: cluster to update.
+      pool_name: name of the node pool.
+      size: size to set.
+    Returns:
+      Operation ref for resize operation.
+    """
+    size_req = self.messages.SetNodePoolSizeRequest(nodeCount=size)
+    req = self.messages.ContainerProjectsZonesClustersNodePoolsSetSizeRequest(
+        clusterId=cluster_ref.clusterId,
+        nodePoolId=pool_name,
+        projectId=cluster_ref.projectId,
+        setNodePoolSizeRequest=size_req,
+        zone=cluster_ref.zone
+    )
+    operation = self.client.projects_zones_clusters_nodePools.SetSize(req)
+    return self.ParseOperation(operation.name, cluster_ref.zone)
+
   def RollbackUpgrade(self, node_pool_ref):
     operation = self.client.projects_zones_clusters_nodePools.Rollback(
         self.messages.ContainerProjectsZonesClustersNodePoolsRollbackRequest(
@@ -1303,8 +1363,8 @@ class V1Adapter(APIAdapter):
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
 
-class V1Alpha1Adapter(APIAdapter):
-  """APIAdapter for v1alpha1."""
+class V1Beta1Adapter(APIAdapter):
+  """APIAdapter for v1beta1."""
 
   def CreateCluster(self, cluster_ref, options):
     cluster = self.CreateClusterCommon(cluster_ref, options)
@@ -1322,6 +1382,15 @@ class V1Alpha1Adapter(APIAdapter):
                                         cluster_ref.zone,
                                         cluster_ref.clusterId),
             update=update))
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def SetLoggingService(self, cluster_ref, logging_service):
+    op = self.client.projects_zones_clusters.Logging(
+        self.messages.SetLoggingServiceRequest(
+            clusterId=cluster_ref.clusterId,
+            zone=cluster_ref.zone,
+            projectId=cluster_ref.projectId,
+            loggingService=logging_service))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def SetNetworkPolicy(self, cluster_ref, options):
@@ -1457,6 +1526,18 @@ class V1Alpha1Adapter(APIAdapter):
         self.client.projects_locations_clusters_nodePools.SetManagement(req))
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
+  def ResizeNodePool(self, cluster_ref, pool_name, size):
+    req = self.messages.SetNodePoolSizeRequest(
+        name=ProjectLocationClusterNodePool(
+            cluster_ref.projectId,
+            cluster_ref.zone,
+            cluster_ref.clusterId,
+            pool_name),
+        nodeCount=size
+    )
+    operation = self.client.projects_zones_clusters_nodePools.SetSize(req)
+    return self.ParseOperation(operation.name, cluster_ref.zone)
+
   def RollbackUpgrade(self, node_pool_ref):
     operation = self.client.projects_locations_clusters_nodePools.Rollback(
         self.messages.RollbackNodePoolUpgradeRequest(
@@ -1489,9 +1570,9 @@ class V1Alpha1Adapter(APIAdapter):
                                           operation_ref.operationId)))
 
   def GetServerConfig(self, project, zone):
-    req = self.messages.ContainerProjectsLocationsGetServerconfigRequest(
+    req = self.messages.ContainerProjectsLocationsGetServerConfigRequest(
         name=ProjectLocation(project, zone))
-    return self.client.projects_locations.GetServerconfig(req)
+    return self.client.projects_locations.GetServerConfig(req)
 
   def UpdateLabels(self, cluster_ref, update_labels):
     labels, fingerprint = self.UpdateLabelsCommon(
@@ -1516,6 +1597,10 @@ class V1Alpha1Adapter(APIAdapter):
             resourceLabels=labels,
             labelFingerprint=fingerprint))
     return self.ParseOperation(operation.name, cluster_ref.zone)
+
+
+class V1Alpha1Adapter(V1Beta1Adapter):
+  """APIAdapter for v1alpha1."""
 
 
 def _AddNodeLabelsToNodeConfig(node_config, options):

@@ -403,6 +403,14 @@ class ArgumentInterceptor(object):
       necessary to create a new argument.
     """
     action = original_kwargs.get('action')
+    wrapped_action = getattr(action, 'wrapped_action', None)
+    if wrapped_action is not None:
+      # If action is a wrapper, then we save the wrapper to subclass below and
+      # set action to the wrapped action so function can correctly interpret
+      # the what the intended action is.
+      action_wrapper = action
+      action = wrapped_action
+
     # There are a few legitimate explicit --no-foo flags.
     should_invert, prop = self._ShouldInvertBooleanFlag(name, action)
     if not should_invert:
@@ -422,10 +430,27 @@ class ArgumentInterceptor(object):
       inverted_synopsis = False
 
     kwargs = dict(original_kwargs)
-    if action == 'store_true':
+    if (action == 'store_true' or
+        action == argparse._StoreTrueAction):  # pylint: disable=protected-access
       action = 'store_false'
-    elif action == 'store_false':
+    elif (action == 'store_false' or
+          action == argparse._StoreFalseAction):  # pylint: disable=protected-access
       action = 'store_true'
+
+    # This is a hacky workaround to get actions.DeprecationAction to properly
+    # generate an inverted boolean flag. The Action returned from
+    # actions.DeprecationAction will have a wrapped_action attribute which it
+    # uses at initialization to create an argparse Action. We check if this
+    # attribute exists, and if it does we create a new Action that subclasses
+    # from the action wrapper and use SetWrappedAction to change wrapped_action.
+    if wrapped_action is not None:
+
+      class NewAction(action_wrapper):
+        pass
+
+      NewAction.SetWrappedAction(action)
+      action = NewAction
+
     kwargs['action'] = action
     if not kwargs.get('dest'):
       kwargs['dest'] = dest
@@ -459,7 +484,9 @@ class ArgumentInterceptor(object):
     if '--no-' + name[2:] in self.parser._option_string_actions:  # pylint: disable=protected-access
       # Don't override explicit --no-* inverted flag.
       return False, None
-    if action in ('store_true', 'store_false'):
+    if (action in ('store_true', 'store_false') or
+        action == argparse._StoreTrueAction or  # pylint: disable=protected-access
+        action == argparse._StoreFalseAction):  # pylint: disable=protected-access
       return True, None
     prop, kind, _ = getattr(action, 'store_property', (None, None, None))
     if prop:

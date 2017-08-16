@@ -269,6 +269,12 @@ MAP = {
             messages_modulepath='container_v1alpha1_messages',
             default_version=False
         ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.container.v1beta1',
+            client_classpath='container_v1beta1_client.ContainerV1beta1',
+            messages_modulepath='container_v1beta1_messages',
+            default_version=False
+        ),
     },
     'containeranalysis': {
         'v1alpha1': APIDef(

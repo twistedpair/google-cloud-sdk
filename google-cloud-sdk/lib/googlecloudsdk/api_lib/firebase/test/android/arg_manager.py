@@ -33,7 +33,10 @@ def TypedArgRules():
   return {
       'instrumentation': {
           'required': ['test'],
-          'optional': ['test_package', 'test_runner_class', 'test_targets'],
+          'optional': [
+              'test_package', 'test_runner_class', 'test_targets',
+              'use_orchestrator'
+          ],
           'defaults': {}
       },
       'robo': {

@@ -36,7 +36,7 @@ def SecurityPolicyArgument(required=True, plural=False):
       global_collection='compute.securityPolicies')
 
 
-def SecurityPolicyArgumentForTargetResource(resource, required=True):
+def SecurityPolicyArgumentForTargetResource(resource, required=False):
   return compute_flags.ResourceArgument(
       resource_name='security policy',
       name='--security-policy',

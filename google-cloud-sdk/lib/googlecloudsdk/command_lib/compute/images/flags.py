@@ -14,6 +14,7 @@
 
 """Flags and helpers for the compute backend-buckets commands."""
 
+from googlecloudsdk.calliope import actions as calliope_actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
@@ -74,6 +75,23 @@ def MakeDiskImageArg(plural=False):
 def MakeForceCreateArg():
   return base.Argument(
       '--force-create',
+      action=calliope_actions.DeprecationAction(
+          flag_name='force-create',
+          warn='Flag force-create is deprecated. Use --force instead.',
+          error='Flag force-create is removed. Use --force instead.',
+          action='store_true'),
+      default=False,
+      help="""\
+          DEPRECATED, use --force instead.
+          By default, image creation fails when it is created from a disk that
+          is attached to a running instance. When this flag is used, image
+          creation from disk will proceed even if the disk is in use.
+          """)
+
+
+def MakeForceArg():
+  return base.Argument(
+      '--force',
       action='store_true',
       default=False,
       help="""\
@@ -81,6 +99,7 @@ def MakeForceCreateArg():
           is attached to a running instance. When this flag is used, image
           creation from disk will proceed even if the disk is in use.
           """)
+
 
 REPLACEMENT_DISK_IMAGE_ARG = compute_flags.ResourceArgument(
     resource_name='disk image',
@@ -191,4 +210,3 @@ def ValidateSourceArgs(args, sources):
   if source_arg_count < 1:
     raise exceptions.MinimumArgumentException(source_arg_names,
                                               sources_error_message)
-

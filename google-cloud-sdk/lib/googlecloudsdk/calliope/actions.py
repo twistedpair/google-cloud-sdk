@@ -68,7 +68,7 @@ def GetArgparseBuiltInAction(action):
   action_cls = dummy_actions_container._registry_get('action', action)
 
   if action_cls is None:
-    raise ValueError('unknown action "{0}"'.format(action_cls))
+    raise ValueError('unknown action "{0}"'.format(action))
 
   return action_cls
  # pylint:disable=protected-access
@@ -497,35 +497,43 @@ def _PreActionHook(action, func, additional_help=None):
                      'or a string representing one of the default argparse '
                      'Action Types'))
 
-  if isinstance(action, basestring):
-    try:
-      action_cls = GetArgparseBuiltInAction(action)
-    except ValueError:
-      raise TypeError('Invalid action {0}'.format(action))
-  else:
-    action_cls = action
-
   class Action(argparse.Action):
     """Action Wrapper Class."""
+    wrapped_action = action
+
+    @classmethod
+    def SetWrappedAction(cls, action):
+      # This looks potentially scary, but is 'okay' becaues the Action class
+      # is enclosed within the _PreActionHook function.
+      cls.wrapped_action = action
+
+    def _GetActionClass(self):
+      if isinstance(self.wrapped_action, basestring):
+        action_cls = GetArgparseBuiltInAction(self.wrapped_action)
+      else:
+        action_cls = self.wrapped_action
+      return action_cls
 
     def __init__(self, *args, **kwargs):
       if additional_help:
-        kwargs['help'] = '{0} {1}\n+\n{2}'.format(
-            additional_help.label,
-            kwargs.get('help', '').rstrip(),
-            additional_help.message)
+        original_help = kwargs.get('help', '').rstrip()
+        if original_help != argparse.SUPPRESS:
+          kwargs['help'] = '{0} {1}\n+\n{2}'.format(
+              additional_help.label,
+              original_help,
+              additional_help.message)
 
-      self.wrapped_action = action_cls(*args, **kwargs)
+      self._wrapped_action = self._GetActionClass()(*args, **kwargs)
       self.func = func
       # These parameters are necessary to ensure that the wrapper action
       # behaves the same as the action it is wrapping. These based off of
       # analysis of the constructor params (and their defaults) or the built in
       # argparse Action classes. This could change if argparse internals are
       # updated, but that would probably also affect much more than this.
-      kwargs['nargs'] = self.wrapped_action.nargs
-      kwargs['const'] = self.wrapped_action.const
-      kwargs['choices'] = self.wrapped_action.choices
-      kwargs['option_strings'] = self.wrapped_action.option_strings
+      kwargs['nargs'] = self._wrapped_action.nargs
+      kwargs['const'] = self._wrapped_action.const
+      kwargs['choices'] = self._wrapped_action.choices
+      kwargs['option_strings'] = self._wrapped_action.option_strings
       super(Action, self).__init__(*args, **kwargs)
 
     def __call__(self, parser, namespace, value, option_string=None):
@@ -537,7 +545,7 @@ def _PreActionHook(action, func, additional_help=None):
       else:
         self.func(value)
 
-      self.wrapped_action(parser, namespace, value, option_string)
+      self._wrapped_action(parser, namespace, value, option_string)
 
   return Action
 

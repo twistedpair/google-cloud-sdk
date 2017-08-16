@@ -34,7 +34,8 @@ def AddTypeArg(parser):
   parser.add_argument(
       '--type',
       choices={
-          'opportunistic': 'Replace instances when needed.',
+          'opportunistic': 'Do not proactively replace instances. Create new '
+                           'instances and delete old on resizes of the group.',
           'proactive': 'Replace instances proactively.',
       },
       default='proactive',

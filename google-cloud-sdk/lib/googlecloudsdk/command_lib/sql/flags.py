@@ -48,8 +48,6 @@ class UserCompleter(completers.ListCommandCompleter):
         flags=['instance'],
         **kwargs)
 
-# TODO(b/63773705): Convert all flags into functions.
-
 
 def AddInstance(parser):
   parser.add_argument(
@@ -65,9 +63,9 @@ def AddInstanceResizeLimit(parser):
   parser.add_argument(
       '--storage-auto-increase-limit',
       type=arg_parsers.BoundedInt(10, 10230, unlimited=True),
-      help='Allows you to set a maximum storage capacity. Automatic increases '
-      'to your capacity will stop once this limit has been reached. Default '
-      'capacity is *unlimited*.')
+      help='Allows you to set a maximum storage capacity, in GB. Automatic '
+      'increases to your capacity will stop once this limit has been reached. '
+      'Default capacity is *unlimited*.')
 
 
 def AddDeprecatedInstanceRequired(parser):

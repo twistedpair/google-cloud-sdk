@@ -1336,6 +1336,153 @@ def ValidateDockerArgs(args):
           'argument --container-manifest')
 
 
+def AddKonletArgs(parser):
+  """Adds Konlet-related args."""
+  parser.add_argument(
+      '--container-image',
+      help="""\
+      Full container image name, which should be pulled onto VM instance,
+      eg. `docker.io/tomcat`.
+      """)
+
+  parser.add_argument(
+      '--container-command',
+      help="""\
+      Specifies what executable to run when the container starts (overrides
+      default entrypoint), eg. `nc`.
+
+      Default: None (default container entrypoint is used)
+      """)
+
+  parser.add_argument(
+      '--container-arg',
+      action='append',
+      help="""\
+      Argument to append to container entrypoint or to override container CMD.
+      Each argument must have a separate flag. Arguments are appended in the
+      order of flags. Example:
+
+      `--container-arg "c"`
+
+      `--container-arg "ls -l"`
+
+      Default: None. (no arguments appended)
+      """)
+
+  parser.add_argument(
+      '--container-privileged',
+      action='store_true',
+      help="""\
+      Specify whether to run container in privileged mode.
+
+      Default: `--no-container-privileged`.
+      """)
+
+  def ParseMountVolumeMode(mode):
+    if not mode or mode == 'rw':
+      return containers_utils.MountVolumeMode.READ_WRITE
+    elif mode == 'ro':
+      return containers_utils.MountVolumeMode.READ_ONLY
+    else:
+      raise exceptions.InvalidArgumentException(
+          '--run-mount-volume', 'Mode can only be "ro" or "rw".')
+
+  parser.add_argument(
+      '--container-mount-host-path',
+      metavar='host-path=HOSTPATH,mount-path=MOUNTPATH[,mode=MODE]',
+      type=arg_parsers.ArgDict(spec={'host-path': str,
+                                     'mount-path': str,
+                                     'mode': ParseMountVolumeMode}),
+      action='append',
+      help="""\
+      Mounts a volume by using host-path.
+
+      *host-path*::: Path on host to mount from.
+
+      *mount-path*::: Path on container to mount to.
+
+      *mode*::: Volume mount mode: rw (read/write) or ro (read-only).
+
+      Default: rw.
+      """)
+
+  parser.add_argument(
+      '--container-mount-tmpfs',
+      metavar='mount-path=MOUNTPATH',
+      type=arg_parsers.ArgDict(spec={'mount-path': str}),
+      action='append',
+      help="""\
+      Mounts empty tmpfs into container at MOUNTPATH.
+
+      *mount-path*::: Path on container to mount to.
+      """)
+
+  parser.add_argument(
+      '--container-env',
+      type=arg_parsers.ArgDict(),
+      action='append',
+      metavar='KEY=VALUE, ...',
+      help="""\
+      Declare environment variables KEY with value VALUE passed to container.
+      Only the last value of KEY is taken when KEY is repeated more than once.
+
+      Values, declared with --container-env flag override those with the same
+      KEY from file, provided in --container-env-file.
+      """)
+
+  parser.add_argument(
+      '--container-env-file',
+      help="""\
+      Declare environment variables in a file. Values, declared with
+      --container-env flag override those with the same KEY from file.
+
+      File with environment variables in format used by docker (almost).
+      This means:
+      - Lines are in format KEY=VALUE.
+      - Values must contain equality signs.
+      - Variables without values are not supported (this is different from
+      docker format).
+      - If # is first non-whitespace character in a line the line is ignored
+      as a comment.
+      - Lines with nothing but whitespace are ignored.
+      """,
+      hidden=True)
+
+  parser.add_argument(
+      '--container-stdin',
+      action='store_true',
+      help="""\
+      Keep container STDIN open even if not attached.
+
+      Default: `--no-container-stdin`.
+      """)
+
+  parser.add_argument(
+      '--container-tty',
+      action='store_true',
+      help="""\
+      Allocate a pseudo-TTY for the container.
+
+      Default: `--no-container-tty`.
+      """)
+
+  parser.add_argument(
+      '--container-restart-policy',
+      choices=['NEVER', 'ON-FAILURE', 'ALWAYS'],
+      default='ALWAYS',
+      metavar='POLICY',
+      help="""\
+      Specify whether to restart a container on exit.
+      """)
+
+
+def ValidateKonletArgs(args):
+  """Validates Konlet-related args."""
+  if not args.IsSpecified('container_image'):
+    raise exceptions.RequiredArgumentException(
+        '--container-image', 'You must provide container image')
+
+
 def ValidateLocalSsdFlags(args):
   for local_ssd in args.local_ssd or []:
     interface = local_ssd.get('interface')

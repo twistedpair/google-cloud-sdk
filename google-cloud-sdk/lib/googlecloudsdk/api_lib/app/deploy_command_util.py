@@ -244,6 +244,34 @@ def _NeedsDockerfile(info, source_dir):
     return True
 
 
+def ShouldUseRuntimeBuilders(service, strategy, needs_dockerfile):
+  """Returns whether we whould use runtime builders for this application build.
+
+  If there is no image that needs to be built (service.RequiresImage() ==
+  False), runtime builders are irrelevant, so they do not need to be built.
+
+  If there is an image that needs to be built, whether to use runtime builders
+  is determined by the RuntimeBuilderStrategy, based on the service runtime and
+  whether the service being deployed has a Dockerfile already made, or whether
+  it needs one built.
+
+  Args:
+    service: ServiceYamlInfo, The parsed service config.
+    strategy: runtime_builders.RuntimeBuilderStrategy, the strategy for
+      determining whether a runtime should use runtime builders.
+    needs_dockerfile: bool, whether the Dockerfile in the source directory is
+      absent.
+
+  Returns:
+    bool, whether to use the runtime builders.
+
+  Raises:
+    ValueError: if an unrecognized runtime_builder_strategy is given
+  """
+  return (service.RequiresImage() and
+          strategy.ShouldUseRuntimeBuilders(service.runtime, needs_dockerfile))
+
+
 def _GetDockerfiles(info, dockerfile_dir):
   """Returns map of in-memory Docker-related files to be packaged.
 
@@ -353,10 +381,12 @@ def BuildAndPushDockerImage(
       custom runtime.
     UnsatisfiedRequirementsError: Raised if the code in the directory doesn't
       satisfy the requirements of the specified runtime type.
+    ValueError: if an unrecognized runtime_builder_strategy is given
   """
   needs_dockerfile = _NeedsDockerfile(service, source_dir)
-  use_runtime_builders = runtime_builder_strategy.ShouldUseRuntimeBuilders(
-      service.runtime, needs_dockerfile)
+  use_runtime_builders = ShouldUseRuntimeBuilders(service,
+                                                  runtime_builder_strategy,
+                                                  needs_dockerfile)
 
   # Nothing to do if this is not an image-based deployment.
   if not service.RequiresImage():

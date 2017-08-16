@@ -156,6 +156,10 @@ apis:
     v1:
       discovery_doc: container_v1.json
       default: true
+    v1beta1:
+      discovery_doc: container_v1beta1.json
+      resources:
+        projects.zones: projects/{projectId}/zones/{zoneId}
     v1alpha1:
       discovery_doc: container_v1alpha1.json
       resources:
@@ -304,5 +308,3 @@ apis:
   vision:
     v1:
       discovery_doc: vision_v1.json
-
-

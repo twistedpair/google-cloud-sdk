@@ -15,9 +15,9 @@
 """composite-types command basics."""
 
 from googlecloudsdk.api_lib.deployment_manager import exceptions
-from googlecloudsdk.api_lib.deployment_manager import importer
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.deployment_manager import dm_v2beta_base
+from googlecloudsdk.command_lib.deployment_manager import importer
 from googlecloudsdk.core import properties
 
 
@@ -97,7 +97,7 @@ def TemplateContentsFor(template_path):
   Raises:
     Error if the provided file is not a template.
   """
-  config_obj = importer.BuildConfig(template_path, None)
+  config_obj = importer.BuildConfig(template=template_path)
 
   if not config_obj.IsTemplate():
     raise exceptions.Error(

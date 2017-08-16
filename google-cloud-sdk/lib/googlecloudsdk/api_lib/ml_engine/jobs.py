@@ -146,7 +146,8 @@ class JobsClient(object):
                               output_path=None,
                               region=None,
                               runtime_version=None,
-                              max_worker_count=None):
+                              max_worker_count=None,
+                              batch_size=None):
     """Builds a Cloud ML Engine Job for batch prediction from flag values.
 
     Args:
@@ -160,6 +161,7 @@ class JobsClient(object):
         region: compute region in which to run the job
         runtime_version: the runtime version in which to run the job
         max_worker_count: int, the maximum number of workers to use
+        batch_size: str, the number of records per batch sent to Tensorflow
     Returns:
         A constructed Job object.
     """
@@ -170,7 +172,8 @@ class JobsClient(object):
         outputPath=output_path,
         region=region,
         runtimeVersion=runtime_version,
-        maxWorkerCount=max_worker_count)
+        maxWorkerCount=max_worker_count,
+        batchSize=batch_size)
     prediction_input.dataFormat = prediction_input.DataFormatValueValuesEnum(
         data_format)
     if model_dir:

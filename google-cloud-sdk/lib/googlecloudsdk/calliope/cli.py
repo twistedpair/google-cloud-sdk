@@ -270,25 +270,28 @@ class CLILoader(object):
       CLI, The generated CLI tool.
     """
     # The root group of the CLI.
-    top_group = self.__LoadTopGroup(
-        self.__GetCommandOrGroupInfo(
-            module_dir_path=self.__command_root_directory, name=self.__name,
-            release_track=calliope_base.ReleaseTrack.GA,
-            allow_non_existing_modules=False, exception_if_present=None))
+    impl_path = self.__ValidateCommandOrGroupInfo(
+        self.__command_root_directory, allow_non_existing_modules=False)
+    top_group = backend.CommandGroup(
+        [impl_path], [self.__name], calliope_base.ReleaseTrack.GA,
+        uuid.uuid4().hex, self, None)
     self.__AddBuiltinGlobalFlags(top_group)
 
     # Sub groups for each alternate release track.
     loaded_release_tracks = dict([(calliope_base.ReleaseTrack.GA, top_group)])
     track_names = set(track.prefix for track in self.__release_tracks.keys())
     for track, (module_dir, component) in self.__release_tracks.iteritems():
-      group_info = self.__GetCommandOrGroupInfo(
-          module_dir_path=module_dir, name=track.prefix, release_track=track,
-          allow_non_existing_modules=self.__allow_non_existing_modules,
-          exception_if_present=None)
-      if group_info:
+      impl_path = self.__ValidateCommandOrGroupInfo(
+          module_dir,
+          allow_non_existing_modules=self.__allow_non_existing_modules)
+      if impl_path:
         # Add the release track sub group into the top group.
-        top_group.AddSubGroup(group_info)
-        track_group = top_group.LoadSubElement(track.prefix, allow_empty=True)
+        # pylint: disable=protected-access
+        top_group._groups_to_load[track.prefix] = [impl_path]
+        # Override the release track because this is specifically a top level
+        # release track group.
+        track_group = top_group.LoadSubElement(
+            track.prefix, allow_empty=True, release_track_override=track)
         # Copy all the root elements of the top group into the release group.
         top_group.CopyAllSubElementsTo(track_group, ignore=track_names)
         loaded_release_tracks[track] = track_group
@@ -320,19 +323,17 @@ class CLILoader(object):
                 .format(root=root, group=name))
 
           cmd_or_grp_name = module_dot_path.split('.')[-1]
-          cmd_or_grp_info = self.__GetCommandOrGroupInfo(
-              module_dir_path=module_dir_path,
-              name=cmd_or_grp_name,
-              release_track=(parent_group.ReleaseTrack()
-                             if parent_group else None),
+          impl_path = self.__ValidateCommandOrGroupInfo(
+              module_dir_path,
               allow_non_existing_modules=self.__allow_non_existing_modules,
               exception_if_present=exception_if_present)
 
-          if cmd_or_grp_info:
+          if impl_path:
+            # pylint: disable=protected-access
             if is_command:
-              parent_group.AddSubCommand(cmd_or_grp_info)
+              parent_group._commands_to_load[cmd_or_grp_name] = [impl_path]
             else:
-              parent_group.AddSubGroup(cmd_or_grp_info)
+              parent_group._groups_to_load[cmd_or_grp_name] = [impl_path]
           elif component:
             prefix = track.prefix + '.' if track.prefix else ''
             self.__missing_components[prefix + module_dot_path] = component
@@ -365,20 +366,17 @@ class CLILoader(object):
         return None
     return group
 
-  def __GetCommandOrGroupInfo(self, module_dir_path, name, release_track,
-                              allow_non_existing_modules=False,
-                              exception_if_present=None):
+  def __ValidateCommandOrGroupInfo(
+      self, impl_path, allow_non_existing_modules=False,
+      exception_if_present=None):
     """Generates the information necessary to be able to load a command group.
 
     The group might actually be loaded now if it is the root of the SDK, or the
     information might be saved for later if it is to be lazy loaded.
 
     Args:
-      module_dir_path: str, The path to the location of the module.
-      name: str, The name that this group will appear as in the CLI.
-      release_track: base.ReleaseTrack, The release track (ga, beta, alpha,
-        preview) that this command group is in.  This will apply to all commands
-        under it.
+      impl_path: str, The file path to the command implementation for this
+        command or group.
       allow_non_existing_modules: True to allow this module directory to not
         exist, False to raise an exception if this module does not exist.
       exception_if_present: Exception, An exception to throw if the module
@@ -389,43 +387,20 @@ class CLILoader(object):
       allow_non_existing is False.
 
     Returns:
-      A tuple of (module_dir, module_path, name, release_track) or None if the
-      module directory does not exist and allow_non_existing is True.  This
-      tuple can be passed to self.__LoadTopGroup() or
-      backend.CommandGroup.AddSubGroup().  The module_dir is the directory the
-      group is found under.  The module_path is the relative path of the root
-      of the command group from the module_dir. name is the user facing name
-      this group will appear under wherever this command group is mounted.  The
-      release_track is the release track (ga, beta, alpha, preview) that this
-      command group is in.
+      impl_path or None if the module directory does not exist and
+      allow_non_existing is True.
     """
-    module_root, module = os.path.split(module_dir_path)
+    module_root, module = os.path.split(impl_path)
     if not pkg_resources.IsImportable(module, module_root):
       if allow_non_existing_modules:
         return None
       raise command_loading.LayoutException(
           'The given module directory does not exist: {0}'.format(
-              module_dir_path))
+              impl_path))
     elif exception_if_present:
       # pylint: disable=raising-bad-type, This will be an actual exception.
       raise exception_if_present
-
-    return (module_root, [module], name, release_track)
-
-  def __LoadTopGroup(self, group_info):
-    """Actually loads the top group of the CLI based on the given group_info.
-
-    Args:
-      group_info: A tuple of (module_dir, module_path, name) generated by
-        self.__GetGroupInfo()
-
-    Returns:
-      The backend.CommandGroup object.
-    """
-    (module_root, module, name, release_track) = group_info
-    return backend.CommandGroup(
-        module_root, module, [name], release_track, uuid.uuid4().hex, self,
-        None)
+    return impl_path
 
   def __AddBuiltinGlobalFlags(self, top_element):
     """Adds in calliope builtin global flags.
@@ -802,6 +777,7 @@ class CLI(object):
 
       if properties.VALUES.core.capture_session_file.Get() is not None:
         capturer = session_capturer.SessionCapturer()
+        capturer.CaptureArgs(args)
         capturer.CaptureProperties(properties.VALUES.AllValues())
         session_capturer.SessionCapturer.capturer = capturer
 

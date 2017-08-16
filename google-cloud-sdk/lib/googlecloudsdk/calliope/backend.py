@@ -77,10 +77,10 @@ class CommandCommon(object):
     Args:
       common_type: base._Command, The actual loaded user written command or
         group class.
-      path: [str], Similar to module_path, but is the path to this command or
-        group with respect to the CLI itself.  This path should be used for
-        things like error reporting when a specific element in the tree needs
-        to be referenced.
+      path: [str], A list of group names that got us down to this command group
+        with respect to the CLI itself.  This path should be used for things
+        like error reporting when a specific element in the tree needs to be
+        referenced.
       release_track: base.ReleaseTrack, The release track (ga, beta, alpha,
         preview) that this command group is in.  This will apply to all commands
         under it.
@@ -337,13 +337,17 @@ class CommandCommon(object):
     """
     return 0
 
-  def LoadSubElement(self, name, allow_empty=False):
+  def LoadSubElement(self, name, allow_empty=False,
+                     release_track_override=None):
     """Load a specific sub group or command.
 
     Args:
       name: str, The name of the element to load.
       allow_empty: bool, True to allow creating this group as empty to start
         with.
+      release_track_override: base.ReleaseTrack, Load the given sub-element
+        under the given track instead of that of the parent. This should only
+        be used when specifically creating the top level release track groups.
 
     Returns:
       _CommandCommon, The loaded sub element, or None if it did not exist.
@@ -465,19 +469,18 @@ class CommandCommon(object):
 class CommandGroup(CommandCommon):
   """A class to encapsulate a group of commands."""
 
-  def __init__(self, module_dir, module_path, path, release_track,
-               construction_id, cli_generator, parser_group, parent_group=None,
+  def __init__(self, impl_paths, path, release_track, construction_id,
+               cli_generator, parser_group, parent_group=None,
                allow_empty=False):
     """Create a new command group.
 
     Args:
-      module_dir: always the root of the whole command tree
-      module_path: a list of command group names that brought us down to this
-        command group from the top module directory
-      path: similar to module_path, but is the path to this command group
+      impl_paths: [str], A list of file paths to the command implementation for
+        this group.
+      path: [str], A list of group names that got us down to this command group
         with respect to the CLI itself.  This path should be used for things
         like error reporting when a specific element in the tree needs to be
-        referenced
+        referenced.
       release_track: base.ReleaseTrack, The release track (ga, beta, alpha) that
         this command group is in.  This will apply to all commands under it.
       construction_id: str, A unique identifier for the CLILoader that is
@@ -495,8 +498,7 @@ class CommandGroup(CommandCommon):
       LayoutException: if the module has no sub groups or commands
     """
     common_type = command_loading.LoadCommonType(
-        module_dir, module_path, path, release_track, construction_id,
-        is_command=False)
+        impl_paths, path, release_track, construction_id, is_command=False)
     super(CommandGroup, self).__init__(
         common_type,
         path=path,
@@ -506,8 +508,6 @@ class CommandGroup(CommandCommon):
         parser_group=parser_group,
         parent_group=parent_group)
 
-    self._module_dir = module_dir
-    self._module_path = module_path
     self._construction_id = construction_id
 
     # find sub groups and commands
@@ -517,10 +517,10 @@ class CommandGroup(CommandCommon):
     self._commands_to_load = {}
     self._unloadable_elements = set()
 
-    group_infos, command_infos = command_loading.FindSubElements(
-        module_dir, module_path, release_track)
-    self.AddSubGroup(*group_infos)
-    self.AddSubCommand(*command_infos)
+    group_infos, command_infos = command_loading.FindSubElements(impl_paths,
+                                                                 path)
+    self._groups_to_load.update(group_infos)
+    self._commands_to_load.update(command_infos)
 
     if (not allow_empty and
         not self._groups_to_load and not self._commands_to_load):
@@ -529,36 +529,6 @@ class CommandGroup(CommandCommon):
     # Initialize the sub-parser so sub groups can be found.
     self.SubParser()
 
-  def AddSubGroup(self, *group_infos):
-    """Merges another command group under this one.
-
-    If we load command groups for alternate locations, this method is used to
-    make those extra sub groups fall under this main group in the CLI.
-
-    Args:
-      *group_infos: A tuple of (module_dir, module_path, name, release_track).
-        The arguments used by the LoadSubElement() method for lazy loading this
-        group.
-    """
-    for g in group_infos:
-      name = g[2]
-      self._groups_to_load[name] = g
-
-  def AddSubCommand(self, *command_infos):
-    """Merges another command group under this one.
-
-    If we load commands for alternate locations, this method is used to
-    make those extra sub commands fall under this main group in the CLI.
-
-    Args:
-      *command_infos: A tuple of (module_dir, module_path, name, release_track).
-        The arguments used by the LoadSubElement() method for lazy loading this
-        command.
-    """
-    for c in command_infos:
-      name = c[2]
-      self._commands_to_load[name] = c
-
   def CopyAllSubElementsTo(self, other_group, ignore):
     """Copies all the sub groups and commands from this group to the other.
 
@@ -566,18 +536,15 @@ class CommandGroup(CommandCommon):
       other_group: CommandGroup, The other group to populate.
       ignore: set(str), Names of elements not to copy.
     """
-    # pylint: disable=protected-access
-    collections_to_update = [
-        (self._groups_to_load, other_group._groups_to_load),
-        (self._commands_to_load, other_group._commands_to_load)]
-
-    for src, dst in collections_to_update:
-      for name, info in src.iteritems():
-        if name in ignore:
-          continue
-        (module_dir, module_path, name, unused_track) = info
-        dst[name] = (module_dir, module_path, name,
-                     other_group.ReleaseTrack())
+    # pylint: disable=protected-access, This is the same class.
+    other_group._groups_to_load.update(
+        {name: impl_paths
+         for name, impl_paths in self._groups_to_load.iteritems()
+         if name not in ignore})
+    other_group._commands_to_load.update(
+        {name: impl_paths
+         for name, impl_paths in self._commands_to_load.iteritems()
+         if name not in ignore})
 
   def SubParser(self):
     """Gets or creates the argparse sub parser for this group.
@@ -642,13 +609,17 @@ class CommandGroup(CommandCommon):
             recursive=recursive, ignore_load_errors=ignore_load_errors)
     return total
 
-  def LoadSubElement(self, name, allow_empty=False):
+  def LoadSubElement(self, name, allow_empty=False,
+                     release_track_override=None):
     """Load a specific sub group or command.
 
     Args:
       name: str, The name of the element to load.
       allow_empty: bool, True to allow creating this group as empty to start
         with.
+      release_track_override: base.ReleaseTrack, Load the given sub-element
+        under the given track instead of that of the parent. This should only
+        be used when specifically creating the top level release track groups.
 
     Returns:
       _CommandCommon, The loaded sub element, or None if it did not exist.
@@ -667,16 +638,16 @@ class CommandGroup(CommandCommon):
     element = None
     try:
       if name in self._groups_to_load:
-        (module_dir, module_path, name, track) = self._groups_to_load[name]
         element = CommandGroup(
-            module_dir, module_path, self._path + [name], track,
+            self._groups_to_load[name], self._path + [name],
+            release_track_override or self.ReleaseTrack(),
             self._construction_id, self._cli_generator, self.SubParser(),
             parent_group=self, allow_empty=allow_empty)
         self.groups[element.name] = element
       elif name in self._commands_to_load:
-        (module_dir, module_path, name, track) = self._commands_to_load[name]
         element = Command(
-            module_dir, module_path, self._path + [name], track,
+            self._commands_to_load[name], self._path + [name],
+            release_track_override or self.ReleaseTrack(),
             self._construction_id, self._cli_generator, self.SubParser(),
             parent_group=self)
         self.commands[element.name] = element
@@ -719,17 +690,17 @@ class CommandGroup(CommandCommon):
 class Command(CommandCommon):
   """A class that encapsulates the configuration for a single command."""
 
-  def __init__(self, module_dir, module_path, path, release_track,
-               construction_id, cli_generator, parser_group, parent_group=None):
+  def __init__(self, impl_paths, path, release_track, construction_id,
+               cli_generator, parser_group, parent_group=None):
     """Create a new command.
 
     Args:
-      module_dir: str, The root of the command tree.
-      module_path: a list of command group names that brought us down to this
-        command from the top module directory
-      path: similar to module_path, but is the path to this command with respect
-        to the CLI itself.  This path should be used for things like error
-        reporting when a specific element in the tree needs to be referenced.
+      impl_paths: [str], A list of file paths to the command implementation for
+        this command.
+      path: [str], A list of group names that got us down to this command
+        with respect to the CLI itself.  This path should be used for things
+        like error reporting when a specific element in the tree needs to be
+        referenced.
       release_track: base.ReleaseTrack, The release track (ga, beta, alpha) that
         this command group is in.  This will apply to all commands under it.
       construction_id: str, A unique identifier for the CLILoader that is
@@ -739,8 +710,7 @@ class Command(CommandCommon):
       parent_group: CommandGroup, The parent of this command.
     """
     common_type = command_loading.LoadCommonType(
-        module_dir, module_path, path, release_track, construction_id,
-        is_command=True,
+        impl_paths, path, release_track, construction_id, is_command=True,
         yaml_command_translator=cli_generator.yaml_command_translator)
     super(Command, self).__init__(
         common_type,

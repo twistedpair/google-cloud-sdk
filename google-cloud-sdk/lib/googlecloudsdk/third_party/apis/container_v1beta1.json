@@ -1,10 +1,10 @@
 {
   "kind": "discovery#restDescription",
   "discoveryVersion": "v1",
-  "id": "container:v1alpha1",
+  "id": "container:v1beta1",
   "name": "container",
   "canonicalName": "Container",
-  "version": "v1alpha1",
+  "version": "v1beta1",
   "revision": "0",
   "title": "Google Container Engine API",
   "description": "The Google Container Engine API is used for building and managing container based applications, powered by the open source Kubernetes technology.",
@@ -209,7 +209,7 @@
           }
         },
         "enableKubernetesAlpha": {
-          "description": "Kubernetes alpha features are enabled on this cluster. This includes alpha\nAPI groups (e.g. v1alpha1) and features that may not be production ready in\nthe kubernetes version of the master and nodes.\nThe cluster has no SLA for uptime and master\/node upgrades are disabled.\nAlpha enabled clusters are automatically deleted thirty days after\ncreation.",
+          "description": "Kubernetes alpha features are enabled on this cluster. This includes alpha\nAPI groups (e.g. v1beta1) and features that may not be production ready in\nthe kubernetes version of the master and nodes.\nThe cluster has no SLA for uptime and master\/node upgrades are disabled.\nAlpha enabled clusters are automatically deleted thirty days after\ncreation.",
           "type": "boolean"
         },
         "resourceLabels": {
@@ -246,10 +246,6 @@
         "masterAuthorizedNetworksConfig": {
           "description": "The configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
-        },
-        "maintenancePolicy": {
-          "description": "Configure the maintenance policy for this cluster.",
-          "$ref": "MaintenancePolicy"
         },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
@@ -794,48 +790,6 @@
         }
       }
     },
-    "MaintenancePolicy": {
-      "id": "MaintenancePolicy",
-      "description": "MaintenancePolicy defines the maintenance policy to be used for the cluster.",
-      "type": "object",
-      "properties": {
-        "window": {
-          "description": "Specifies the maintenance window in which maintenance may be performed.",
-          "$ref": "MaintenanceWindow"
-        }
-      }
-    },
-    "MaintenanceWindow": {
-      "id": "MaintenanceWindow",
-      "description": "MaintenanceWindow defines the maintenance window to be used for the cluster.",
-      "type": "object",
-      "properties": {
-        "dailyMaintenanceWindow": {
-          "description": "DailyMaintenanceWindow specifies a daily maintenance operation window.",
-          "$ref": "DailyMaintenanceWindow"
-        }
-      }
-    },
-    "DailyMaintenanceWindow": {
-      "id": "DailyMaintenanceWindow",
-      "description": "Time window specified for daily maintenance operations.",
-      "type": "object",
-      "properties": {
-        "daysInCycle": {
-          "description": "Allows to define schedule that runs every nth day of the month.\nNOTE: Unimplemented, reserved for future use.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "startTime": {
-          "description": "Time within the maintenance window to start the maintenance operations.\nIt must be in format \"HH:MM\u201D, where HH : [00-23] and MM : [00-59] GMT.",
-          "type": "string"
-        },
-        "duration": {
-          "description": "[Output only] Duration of the time window, automatically chosen to be\nsmallest possible in the given scenario.",
-          "type": "string"
-        }
-      }
-    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -850,7 +804,7 @@
           "type": "string"
         },
         "cluster": {
-          "description": "A [cluster\nresource](\/container-engine\/reference\/rest\/v1alpha1\/projects.zones.clusters)",
+          "description": "A [cluster\nresource](\/container-engine\/reference\/rest\/v1beta1\/projects.zones.clusters)",
           "$ref": "Cluster"
         },
         "parent": {
@@ -894,8 +848,7 @@
             "Set labels.",
             "Set\/generate master auth materials",
             "Set node pool size.",
-            "Updates network policy for a cluster.",
-            "Set the maintenance policy."
+            "Updates network policy for a cluster."
           ],
           "type": "string",
           "enum": [
@@ -914,8 +867,7 @@
             "SET_LABELS",
             "SET_MASTER_AUTH",
             "SET_NODE_POOL_SIZE",
-            "SET_NETWORK_POLICY",
-            "SET_MAINTENANCE_POLICY"
+            "SET_NETWORK_POLICY"
           ]
         },
         "status": {
@@ -1032,10 +984,6 @@
         "desiredMasterAuthorizedNetworksConfig": {
           "description": "The desired configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
-        },
-        "desiredAuditConfig": {
-          "description": "Whether to enable execve audit logging on the nodes.",
-          "$ref": "AuditConfig"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. The only valid value is the\nlatest supported version. Use \"-\" to have the server automatically select\nthe latest version.",
@@ -1719,38 +1667,7 @@
           "$ref": "NetworkPolicy"
         },
         "name": {
-          "description": "The name (project, location, cluster id) of the cluster to set networking\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
-          "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
-        }
-      }
-    },
-    "SetMaintenancePolicyRequest": {
-      "id": "SetMaintenancePolicyRequest",
-      "description": "SetMaintenancePolicyRequest sets the maintenance policy for a cluster.",
-      "type": "object",
-      "properties": {
-        "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
-          "type": "string"
-        },
-        "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
-          "type": "string"
-        },
-        "clusterId": {
-          "description": "The name of the cluster to update.",
-          "type": "string"
-        },
-        "maintenancePolicy": {
-          "description": "The maintenance policy to be set for the cluster. An empty field\nclears the existing maintenance policy.",
-          "$ref": "MaintenancePolicy"
-        },
-        "name": {
-          "description": "The name (project, location, cluster id) of the cluster to set maintenance\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster id) of the cluster to set networking policy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
         },
         "version": {
@@ -1767,8 +1684,8 @@
           "methods": {
             "getServerConfig": {
               "id": "container.projects.locations.getServerConfig",
-              "path": "v1alpha1/{+name}/serverConfig",
-              "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/serverConfig",
+              "path": "v1beta1/{+name}/serverConfig",
+              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/serverConfig",
               "httpMethod": "GET",
               "description": "Returns configuration info about the Container Engine service.",
               "parameters": {
@@ -1812,8 +1729,8 @@
               "methods": {
                 "list": {
                   "id": "container.projects.locations.clusters.list",
-                  "path": "v1alpha1/{+parent}/clusters",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters",
+                  "path": "v1beta1/{+parent}/clusters",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters",
                   "httpMethod": "GET",
                   "description": "Lists all clusters owned by a project in either the specified zone or all\nzones.",
                   "parameters": {
@@ -1852,8 +1769,8 @@
                 },
                 "get": {
                   "id": "container.projects.locations.clusters.get",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
                   "httpMethod": "GET",
                   "description": "Gets the details of a specific cluster.",
                   "parameters": {
@@ -1897,8 +1814,8 @@
                 },
                 "create": {
                   "id": "container.projects.locations.clusters.create",
-                  "path": "v1alpha1/{+parent}/clusters",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters",
+                  "path": "v1beta1/{+parent}/clusters",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters",
                   "httpMethod": "POST",
                   "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe cluster creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range is being used by the cluster.",
                   "parameters": {
@@ -1925,8 +1842,8 @@
                 },
                 "update": {
                   "id": "container.projects.locations.clusters.update",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
                   "httpMethod": "PUT",
                   "description": "Updates the settings of a specific cluster.",
                   "parameters": {
@@ -1953,8 +1870,8 @@
                 },
                 "setLogging": {
                   "id": "container.projects.locations.clusters.setLogging",
-                  "path": "v1alpha1/{+name}:setLogging",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLogging",
+                  "path": "v1beta1/{+name}:setLogging",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLogging",
                   "httpMethod": "POST",
                   "description": "Sets the logging service of a specific cluster.",
                   "parameters": {
@@ -1981,8 +1898,8 @@
                 },
                 "setMonitoring": {
                   "id": "container.projects.locations.clusters.setMonitoring",
-                  "path": "v1alpha1/{+name}:setMonitoring",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMonitoring",
+                  "path": "v1beta1/{+name}:setMonitoring",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMonitoring",
                   "httpMethod": "POST",
                   "description": "Sets the monitoring service of a specific cluster.",
                   "parameters": {
@@ -2009,8 +1926,8 @@
                 },
                 "setAddons": {
                   "id": "container.projects.locations.clusters.setAddons",
-                  "path": "v1alpha1/{+name}:setAddons",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setAddons",
+                  "path": "v1beta1/{+name}:setAddons",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setAddons",
                   "httpMethod": "POST",
                   "description": "Sets the addons of a specific cluster.",
                   "parameters": {
@@ -2037,8 +1954,8 @@
                 },
                 "setLocations": {
                   "id": "container.projects.locations.clusters.setLocations",
-                  "path": "v1alpha1/{+name}:setLocations",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLocations",
+                  "path": "v1beta1/{+name}:setLocations",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLocations",
                   "httpMethod": "POST",
                   "description": "Sets the locations of a specific cluster.",
                   "parameters": {
@@ -2065,8 +1982,8 @@
                 },
                 "updateMaster": {
                   "id": "container.projects.locations.clusters.updateMaster",
-                  "path": "v1alpha1/{+name}:updateMaster",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:updateMaster",
+                  "path": "v1beta1/{+name}:updateMaster",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:updateMaster",
                   "httpMethod": "POST",
                   "description": "Updates the master of a specific cluster.",
                   "parameters": {
@@ -2093,8 +2010,8 @@
                 },
                 "setMasterAuth": {
                   "id": "container.projects.locations.clusters.setMasterAuth",
-                  "path": "v1alpha1/{+name}:setMasterAuth",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMasterAuth",
+                  "path": "v1beta1/{+name}:setMasterAuth",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMasterAuth",
                   "httpMethod": "POST",
                   "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set.\nModify basic_auth.csv and reset the K8S API server.",
                   "parameters": {
@@ -2121,8 +2038,8 @@
                 },
                 "delete": {
                   "id": "container.projects.locations.clusters.delete",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
                   "httpMethod": "DELETE",
                   "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time.",
                   "parameters": {
@@ -2166,8 +2083,8 @@
                 },
                 "setResourceLabels": {
                   "id": "container.projects.locations.clusters.setResourceLabels",
-                  "path": "v1alpha1/{+name}:setResourceLabels",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setResourceLabels",
+                  "path": "v1beta1/{+name}:setResourceLabels",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setResourceLabels",
                   "httpMethod": "POST",
                   "description": "Sets labels on a cluster.",
                   "parameters": {
@@ -2194,8 +2111,8 @@
                 },
                 "setLegacyAbac": {
                   "id": "container.projects.locations.clusters.setLegacyAbac",
-                  "path": "v1alpha1/{+name}:setLegacyAbac",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLegacyAbac",
+                  "path": "v1beta1/{+name}:setLegacyAbac",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLegacyAbac",
                   "httpMethod": "POST",
                   "description": "Enables or disables the ABAC authorization mechanism on a cluster.",
                   "parameters": {
@@ -2222,8 +2139,8 @@
                 },
                 "startIpRotation": {
                   "id": "container.projects.locations.clusters.startIpRotation",
-                  "path": "v1alpha1/{+name}:startIpRotation",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:startIpRotation",
+                  "path": "v1beta1/{+name}:startIpRotation",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:startIpRotation",
                   "httpMethod": "POST",
                   "description": "Start master IP rotation.",
                   "parameters": {
@@ -2250,8 +2167,8 @@
                 },
                 "completeIpRotation": {
                   "id": "container.projects.locations.clusters.completeIpRotation",
-                  "path": "v1alpha1/{+name}:completeIpRotation",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:completeIpRotation",
+                  "path": "v1beta1/{+name}:completeIpRotation",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:completeIpRotation",
                   "httpMethod": "POST",
                   "description": "Completes master IP rotation.",
                   "parameters": {
@@ -2278,13 +2195,13 @@
                 },
                 "setNetworkPolicy": {
                   "id": "container.projects.locations.clusters.setNetworkPolicy",
-                  "path": "v1alpha1/{+name}:setNetworkPolicy",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setNetworkPolicy",
+                  "path": "v1beta1/{+name}:setNetworkPolicy",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setNetworkPolicy",
                   "httpMethod": "POST",
                   "description": "Enables\/Disables Network Policy for a cluster.",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster id) of the cluster to set networking\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster id) of the cluster to set networking policy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
@@ -2303,34 +2220,6 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ]
-                },
-                "setMaintenancePolicy": {
-                  "id": "container.projects.locations.clusters.setMaintenancePolicy",
-                  "path": "v1alpha1/{+name}:setMaintenancePolicy",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMaintenancePolicy",
-                  "httpMethod": "POST",
-                  "description": "Sets the maintenance policy for a cluster.",
-                  "parameters": {
-                    "name": {
-                      "description": "The name (project, location, cluster id) of the cluster to set maintenance\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "SetMaintenancePolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ]
                 }
               }
               ,
@@ -2339,8 +2228,8 @@
                   "methods": {
                     "update": {
                       "id": "container.projects.locations.clusters.nodePools.update",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
                       "httpMethod": "PUT",
                       "description": "Updates the version and\/or iamge type of a specific node pool.",
                       "parameters": {
@@ -2367,8 +2256,8 @@
                     },
                     "setAutoscaling": {
                       "id": "container.projects.locations.clusters.nodePools.setAutoscaling",
-                      "path": "v1alpha1/{+name}:setAutoscaling",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setAutoscaling",
+                      "path": "v1beta1/{+name}:setAutoscaling",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setAutoscaling",
                       "httpMethod": "POST",
                       "description": "Sets the autoscaling settings of a specific node pool.",
                       "parameters": {
@@ -2395,8 +2284,8 @@
                     },
                     "list": {
                       "id": "container.projects.locations.clusters.nodePools.list",
-                      "path": "v1alpha1/{+parent}/nodePools",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools",
+                      "path": "v1beta1/{+parent}/nodePools",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools",
                       "httpMethod": "GET",
                       "description": "Lists the node pools for a cluster.",
                       "parameters": {
@@ -2440,8 +2329,8 @@
                     },
                     "get": {
                       "id": "container.projects.locations.clusters.nodePools.get",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
                       "httpMethod": "GET",
                       "description": "Retrieves the node pool requested.",
                       "parameters": {
@@ -2490,8 +2379,8 @@
                     },
                     "create": {
                       "id": "container.projects.locations.clusters.nodePools.create",
-                      "path": "v1alpha1/{+parent}/nodePools",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools",
+                      "path": "v1beta1/{+parent}/nodePools",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools",
                       "httpMethod": "POST",
                       "description": "Creates a node pool for a cluster.",
                       "parameters": {
@@ -2518,8 +2407,8 @@
                     },
                     "delete": {
                       "id": "container.projects.locations.clusters.nodePools.delete",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
                       "httpMethod": "DELETE",
                       "description": "Deletes a node pool from a cluster.",
                       "parameters": {
@@ -2568,8 +2457,8 @@
                     },
                     "rollback": {
                       "id": "container.projects.locations.clusters.nodePools.rollback",
-                      "path": "v1alpha1/{+name}:rollback",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:rollback",
+                      "path": "v1beta1/{+name}:rollback",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:rollback",
                       "httpMethod": "POST",
                       "description": "Roll back the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed.",
                       "parameters": {
@@ -2596,8 +2485,8 @@
                     },
                     "setManagement": {
                       "id": "container.projects.locations.clusters.nodePools.setManagement",
-                      "path": "v1alpha1/{+name}:setManagement",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setManagement",
+                      "path": "v1beta1/{+name}:setManagement",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setManagement",
                       "httpMethod": "POST",
                       "description": "Sets the NodeManagement options for a node pool.",
                       "parameters": {
@@ -2624,8 +2513,8 @@
                     },
                     "setSize": {
                       "id": "container.projects.locations.clusters.nodePools.setSize",
-                      "path": "v1alpha1/{+name}:setSize",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setSize",
+                      "path": "v1beta1/{+name}:setSize",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setSize",
                       "httpMethod": "POST",
                       "description": "Sets the size of a specific node pool.",
                       "parameters": {
@@ -2658,8 +2547,8 @@
               "methods": {
                 "list": {
                   "id": "container.projects.locations.operations.list",
-                  "path": "v1alpha1/{+parent}/operations",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations",
+                  "path": "v1beta1/{+parent}/operations",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/operations",
                   "httpMethod": "GET",
                   "description": "Lists all operations in a project in a specific zone or all zones.",
                   "parameters": {
@@ -2698,8 +2587,8 @@
                 },
                 "get": {
                   "id": "container.projects.locations.operations.get",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
                   "httpMethod": "GET",
                   "description": "Gets the specified operation.",
                   "parameters": {
@@ -2743,8 +2632,8 @@
                 },
                 "cancel": {
                   "id": "container.projects.locations.operations.cancel",
-                  "path": "v1alpha1/{+name}:cancel",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "path": "v1beta1/{+name}:cancel",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
                   "httpMethod": "POST",
                   "description": "Cancels the specified operation.",
                   "parameters": {
@@ -2777,8 +2666,8 @@
           "methods": {
             "getServerconfig": {
               "id": "container.projects.zones.getServerconfig",
-              "path": "v1alpha1/projects/{projectId}/zones/{zone}/serverconfig",
-              "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/serverconfig",
+              "path": "v1beta1/projects/{projectId}/zones/{zone}/serverconfig",
+              "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/serverconfig",
               "httpMethod": "GET",
               "description": "Returns configuration info about the Container Engine service.",
               "parameters": {
@@ -2823,8 +2712,8 @@
               "methods": {
                 "list": {
                   "id": "container.projects.zones.clusters.list",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters",
                   "httpMethod": "GET",
                   "description": "Lists all clusters owned by a project in either the specified zone or all\nzones.",
                   "parameters": {
@@ -2864,8 +2753,8 @@
                 },
                 "get": {
                   "id": "container.projects.zones.clusters.get",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "httpMethod": "GET",
                   "description": "Gets the details of a specific cluster.",
                   "parameters": {
@@ -2912,8 +2801,8 @@
                 },
                 "create": {
                   "id": "container.projects.zones.clusters.create",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters",
                   "httpMethod": "POST",
                   "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe cluster creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range is being used by the cluster.",
                   "parameters": {
@@ -2946,8 +2835,8 @@
                 },
                 "update": {
                   "id": "container.projects.zones.clusters.update",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "httpMethod": "PUT",
                   "description": "Updates the settings of a specific cluster.",
                   "parameters": {
@@ -2987,8 +2876,8 @@
                 },
                 "logging": {
                   "id": "container.projects.zones.clusters.logging",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/logging",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/logging",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/logging",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/logging",
                   "httpMethod": "POST",
                   "description": "Sets the logging service of a specific cluster.",
                   "parameters": {
@@ -3028,8 +2917,8 @@
                 },
                 "monitoring": {
                   "id": "container.projects.zones.clusters.monitoring",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/monitoring",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/monitoring",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/monitoring",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/monitoring",
                   "httpMethod": "POST",
                   "description": "Sets the monitoring service of a specific cluster.",
                   "parameters": {
@@ -3069,8 +2958,8 @@
                 },
                 "addons": {
                   "id": "container.projects.zones.clusters.addons",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons",
                   "httpMethod": "POST",
                   "description": "Sets the addons of a specific cluster.",
                   "parameters": {
@@ -3110,8 +2999,8 @@
                 },
                 "locations": {
                   "id": "container.projects.zones.clusters.locations",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/locations",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/locations",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/locations",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/locations",
                   "httpMethod": "POST",
                   "description": "Sets the locations of a specific cluster.",
                   "parameters": {
@@ -3151,8 +3040,8 @@
                 },
                 "master": {
                   "id": "container.projects.zones.clusters.master",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/master",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/master",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/master",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/master",
                   "httpMethod": "POST",
                   "description": "Updates the master of a specific cluster.",
                   "parameters": {
@@ -3192,8 +3081,8 @@
                 },
                 "setMasterAuth": {
                   "id": "container.projects.zones.clusters.setMasterAuth",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth",
                   "httpMethod": "POST",
                   "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set.\nModify basic_auth.csv and reset the K8S API server.",
                   "parameters": {
@@ -3233,8 +3122,8 @@
                 },
                 "delete": {
                   "id": "container.projects.zones.clusters.delete",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "httpMethod": "DELETE",
                   "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time.",
                   "parameters": {
@@ -3281,8 +3170,8 @@
                 },
                 "resourceLabels": {
                   "id": "container.projects.zones.clusters.resourceLabels",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels",
                   "httpMethod": "POST",
                   "description": "Sets labels on a cluster.",
                   "parameters": {
@@ -3322,8 +3211,8 @@
                 },
                 "legacyAbac": {
                   "id": "container.projects.zones.clusters.legacyAbac",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac",
                   "httpMethod": "POST",
                   "description": "Enables or disables the ABAC authorization mechanism on a cluster.",
                   "parameters": {
@@ -3363,8 +3252,8 @@
                 },
                 "startIpRotation": {
                   "id": "container.projects.zones.clusters.startIpRotation",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation",
                   "httpMethod": "POST",
                   "description": "Start master IP rotation.",
                   "parameters": {
@@ -3404,8 +3293,8 @@
                 },
                 "completeIpRotation": {
                   "id": "container.projects.zones.clusters.completeIpRotation",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation",
                   "httpMethod": "POST",
                   "description": "Completes master IP rotation.",
                   "parameters": {
@@ -3445,8 +3334,8 @@
                 },
                 "setNetworkPolicy": {
                   "id": "container.projects.zones.clusters.setNetworkPolicy",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setNetworkPolicy",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setNetworkPolicy",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setNetworkPolicy",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setNetworkPolicy",
                   "httpMethod": "POST",
                   "description": "Enables\/Disables Network Policy for a cluster.",
                   "parameters": {
@@ -3483,47 +3372,6 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ]
-                },
-                "setMaintenancePolicy": {
-                  "id": "container.projects.zones.clusters.setMaintenancePolicy",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy",
-                  "httpMethod": "POST",
-                  "description": "Sets the maintenance policy for a cluster.",
-                  "parameters": {
-                    "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "clusterId": {
-                      "description": "The name of the cluster to update.",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "projectId",
-                    "zone",
-                    "clusterId"
-                  ],
-                  "request": {
-                    "$ref": "SetMaintenancePolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ]
                 }
               }
               ,
@@ -3532,8 +3380,8 @@
                   "methods": {
                     "update": {
                       "id": "container.projects.zones.clusters.nodePools.update",
-                      "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/update",
-                      "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/update",
+                      "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/update",
+                      "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/update",
                       "httpMethod": "POST",
                       "description": "Updates the version and\/or iamge type of a specific node pool.",
                       "parameters": {
@@ -3580,8 +3428,8 @@
                     },
                     "autoscaling": {
                       "id": "container.projects.zones.clusters.nodePools.autoscaling",
-                      "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling",
-                      "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling",
+                      "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling",
+                      "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling",
                       "httpMethod": "POST",
                       "description": "Sets the autoscaling settings of a specific node pool.",
                       "parameters": {
@@ -3628,8 +3476,8 @@
                     },
                     "list": {
                       "id": "container.projects.zones.clusters.nodePools.list",
-                      "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
-                      "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
+                      "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
+                      "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
                       "httpMethod": "GET",
                       "description": "Lists the node pools for a cluster.",
                       "parameters": {
@@ -3676,8 +3524,8 @@
                     },
                     "get": {
                       "id": "container.projects.zones.clusters.nodePools.get",
-                      "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
-                      "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
+                      "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
+                      "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
                       "httpMethod": "GET",
                       "description": "Retrieves the node pool requested.",
                       "parameters": {
@@ -3731,8 +3579,8 @@
                     },
                     "create": {
                       "id": "container.projects.zones.clusters.nodePools.create",
-                      "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
-                      "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
+                      "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
+                      "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
                       "httpMethod": "POST",
                       "description": "Creates a node pool for a cluster.",
                       "parameters": {
@@ -3772,8 +3620,8 @@
                     },
                     "delete": {
                       "id": "container.projects.zones.clusters.nodePools.delete",
-                      "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
-                      "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
+                      "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
+                      "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
                       "httpMethod": "DELETE",
                       "description": "Deletes a node pool from a cluster.",
                       "parameters": {
@@ -3827,8 +3675,8 @@
                     },
                     "rollback": {
                       "id": "container.projects.zones.clusters.nodePools.rollback",
-                      "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback",
-                      "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback",
+                      "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback",
+                      "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback",
                       "httpMethod": "POST",
                       "description": "Roll back the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed.",
                       "parameters": {
@@ -3875,8 +3723,8 @@
                     },
                     "setManagement": {
                       "id": "container.projects.zones.clusters.nodePools.setManagement",
-                      "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement",
-                      "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement",
+                      "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement",
+                      "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement",
                       "httpMethod": "POST",
                       "description": "Sets the NodeManagement options for a node pool.",
                       "parameters": {
@@ -3923,8 +3771,8 @@
                     },
                     "setSize": {
                       "id": "container.projects.zones.clusters.nodePools.setSize",
-                      "path": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize",
-                      "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize",
+                      "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize",
+                      "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize",
                       "httpMethod": "POST",
                       "description": "Sets the size of a specific node pool.",
                       "parameters": {
@@ -3977,8 +3825,8 @@
               "methods": {
                 "list": {
                   "id": "container.projects.zones.operations.list",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/operations",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/operations",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/operations",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/operations",
                   "httpMethod": "GET",
                   "description": "Lists all operations in a project in a specific zone or all zones.",
                   "parameters": {
@@ -4018,8 +3866,8 @@
                 },
                 "get": {
                   "id": "container.projects.zones.operations.get",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/operations/{operationId}",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/operations/{operationId}",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}",
                   "httpMethod": "GET",
                   "description": "Gets the specified operation.",
                   "parameters": {
@@ -4066,8 +3914,8 @@
                 },
                 "cancel": {
                   "id": "container.projects.zones.operations.cancel",
-                  "path": "v1alpha1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel",
-                  "flatPath": "v1alpha1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel",
+                  "path": "v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel",
+                  "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel",
                   "httpMethod": "POST",
                   "description": "Cancels the specified operation.",
                   "parameters": {

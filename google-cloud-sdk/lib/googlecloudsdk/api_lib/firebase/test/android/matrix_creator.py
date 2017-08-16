@@ -70,6 +70,20 @@ class MatrixCreator(object):
         gcsPath=os.path.join(self._gcs_results_root,
                              os.path.basename(filename)))
 
+  def _GetOrchestratorOption(self):
+    orchestrator_options = (self._messages.AndroidInstrumentationTest.
+                            OrchestratorOptionValueValuesEnum)
+    if not hasattr(self._args, u'use_orchestrator'):
+      # Do not use orchestrator if orchestrator flag is not registered in this
+      # release track.
+      return orchestrator_options.DO_NOT_USE_ORCHESTRATOR
+    if self._args.use_orchestrator is None:
+      return orchestrator_options.ORCHESTRATOR_OPTION_UNSPECIFIED
+    elif self._args.use_orchestrator:
+      return orchestrator_options.USE_ORCHESTRATOR
+    else:
+      return orchestrator_options.DO_NOT_USE_ORCHESTRATOR
+
   def _BuildRoboDirectives(self, robo_directives_dict):
     """Build a list of RoboDirectives from the dictionary input."""
     robo_directives = []
@@ -96,7 +110,8 @@ class MatrixCreator(object):
         appPackageId=self._args.app_package,
         testPackageId=self._args.test_package,
         testRunnerClass=self._args.test_runner_class,
-        testTargets=(self._args.test_targets or []))
+        testTargets=(self._args.test_targets or []),
+        orchestratorOption=self._GetOrchestratorOption())
     return spec
 
   def _BuildAndroidRoboTestSpec(self):

@@ -154,7 +154,7 @@ class BatchPoller(waiter.OperationPoller):
         requests, errors_to_collect)
     for response, operation_ref in zip(responses, not_done):
       operation_batch.SetResponse(operation_ref, response)
-      if response.error:
+      if response is not None and response.error:
         errors_to_collect.append(OperationErrors(response.error.errors))
 
     if errors_to_collect:

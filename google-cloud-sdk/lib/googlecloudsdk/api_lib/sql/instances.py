@@ -13,11 +13,9 @@
 # limitations under the License.
 """Common utility functions for sql instances."""
 
-import argparse
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.sql import api_util
-from googlecloudsdk.api_lib.sql import constants
-from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.api_lib.sql import instance_prop_reducers as reducers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util import labels_util
 from googlecloudsdk.core import properties
@@ -28,48 +26,6 @@ from googlecloudsdk.core.console import console_io
 # TODO(b/35930151): Make methods in api_lib command-agnostic
 class _BaseInstances(object):
   """Common utility functions for sql instances."""
-
-  @classmethod
-  def _SetBackupConfiguration(cls, sql_messages, settings, args, original):
-    """Sets the backup configuration for the instance."""
-    # create defines '--backup' while patch defines '--no-backup'
-    no_backup = getattr(args, 'no_backup',
-                        False) or (not getattr(args, 'backup', True))
-
-    if original and (any(
-        [args.backup_start_time, args.enable_bin_log is not None, no_backup])):
-      if original.settings.backupConfiguration:
-        if isinstance(original.settings.backupConfiguration, list):
-          # Only one backup configuration was ever allowed.
-          # Field switched from list to single object in v1beta4.
-          backup_config = original.settings.backupConfiguration[0]
-        else:
-          backup_config = original.settings.backupConfiguration
-      else:
-        backup_config = sql_messages.BackupConfiguration(
-            startTime='00:00', enabled=False),
-    elif not any(
-        [args.backup_start_time, args.enable_bin_log is not None, no_backup]):
-      return
-
-    if not original:
-      backup_config = sql_messages.BackupConfiguration(
-          startTime='00:00', enabled=False)
-
-    if args.backup_start_time:
-      backup_config.startTime = args.backup_start_time
-      backup_config.enabled = True
-    if no_backup:
-      if args.backup_start_time or args.enable_bin_log is not None:
-        raise exceptions.ToolException(
-            ('Argument --no-backup not allowed with'
-             ' --backup-start-time or --enable-bin-log'))
-      backup_config.enabled = False
-
-    if args.enable_bin_log is not None:
-      backup_config.binaryLogEnabled = args.enable_bin_log
-
-    cls.AddBackupConfigToSettings(settings, backup_config)
 
   @staticmethod
   def GetDatabaseInstances():
@@ -100,50 +56,6 @@ class _BaseInstances(object):
 
     return YieldInstancesWithAModifiedState()
 
-  @staticmethod
-  def _SetDatabaseFlags(sql_messages, settings, args):
-    if args.database_flags:
-      settings.databaseFlags = []
-      for (name, value) in args.database_flags.items():
-        settings.databaseFlags.append(
-            sql_messages.DatabaseFlags(name=name, value=value))
-    elif getattr(args, 'clear_database_flags', False):
-      settings.databaseFlags = []
-
-  @staticmethod
-  def _SetMaintenanceWindow(sql_messages, settings, args, original):
-    """Sets the maintenance window for the instance."""
-    channel = getattr(args, 'maintenance_release_channel', None)
-    day = getattr(args, 'maintenance_window_day', None)
-    hour = getattr(args, 'maintenance_window_hour', None)
-    if not any([channel, day, hour]):
-      return
-    maintenance_window = sql_messages.MaintenanceWindow()
-
-    # If there's no existing maintenance window,
-    # both or neither of day and hour must be set.
-    if (not original or not original.settings or
-        not original.settings.maintenanceWindow):
-      if ((day is None and hour is not None) or
-          (hour is None and day is not None)):
-        raise argparse.ArgumentError(
-            None, 'There is currently no maintenance window on the instance. '
-            'To add one, specify values for both day, and hour.')
-
-    if channel:
-      # Map UI name to API name.
-      names = {'production': 'stable', 'preview': 'canary'}
-      maintenance_window.updateTrack = names[channel]
-    if day:
-      # Map day name to number.
-      day_num = arg_parsers.DayOfWeek.DAYS.index(day)
-      if day_num == 0:
-        day_num = 7
-      maintenance_window.day = day_num
-    if hour is not None:  # must execute on hour = 0
-      maintenance_window.hour = hour
-    settings.maintenanceWindow = maintenance_window
-
   @classmethod
   def _ConstructSettingsFromArgs(cls, sql_messages, args, instance=None):
     """Constructs instance settings from the command line arguments.
@@ -163,12 +75,25 @@ class _BaseInstances(object):
           command.
     """
     settings = sql_messages.Settings(
-        tier=cls._MachineTypeFromArgs(args, instance),
+        tier=reducers.MachineType(instance, args.tier, args.memory, args.cpu),
         pricingPlan=args.pricing_plan,
         replicationType=args.replication,
         activationPolicy=args.activation_policy)
 
-    labels = cls._ConstructLabelsFromArgs(sql_messages, args, instance)
+    labels = None
+    if hasattr(args, 'labels'):
+      labels = reducers.UserLabels(sql_messages, instance, labels=args.labels)
+    elif (hasattr(args, 'update_labels') and args.update_labels or
+          hasattr(args, 'remove_labels') and args.remove_labels):
+      update_labels, remove_labels = labels_util.GetAndValidateOpsFromArgs(args)
+      labels = reducers.UserLabels(
+          sql_messages,
+          instance,
+          update_labels=update_labels,
+          remove_labels=remove_labels)
+    elif hasattr(args, 'clear_labels'):
+      labels = reducers.UserLabels(
+          sql_messages, instance, clear_labels=args.clear_labels)
     if labels:
       settings.userLabels = labels
 
@@ -245,10 +170,25 @@ class _BaseInstances(object):
       ToolException: An error other than http error occured while executing the
           command.
     """
+    original_settings = original.settings if original else None
     settings = cls._ConstructSettingsFromArgs(sql_messages, args, original)
-    cls._SetBackupConfiguration(sql_messages, settings, args, original)
-    cls._SetDatabaseFlags(sql_messages, settings, args)
-    cls._SetMaintenanceWindow(sql_messages, settings, args, original)
+    backup_configuration = (reducers.BackupConfiguration(
+        sql_messages, original,
+        getattr(args, 'backup', None),
+        getattr(args, 'no_backup', None),
+        getattr(args, 'backup_start_time', None),
+        getattr(args, 'enable_bin_log', None)))
+    if backup_configuration:
+      cls.AddBackupConfigToSettings(settings, backup_configuration)
+    settings.databaseFlags = (reducers.DatabaseFlags(
+        sql_messages, original_settings,
+        getattr(args, 'database_flags', None),
+        getattr(args, 'clear_database_flags', None)))
+    settings.maintenanceWindow = (reducers.MaintenanceWindow(
+        sql_messages, original,
+        getattr(args, 'maintenance_release_channel', None),
+        getattr(args, 'maintenance_window_day', None),
+        getattr(args, 'maintenance_window_hour', None)))
 
     on_premises_host_port = getattr(args, 'on_premises_host_port', None)
     if on_premises_host_port:
@@ -315,123 +255,6 @@ class _BaseInstances(object):
             'must be enabled.')
 
     return instance_resource
-
-  @staticmethod
-  def _ConstructCustomMachineType(cpu, memory_mib):
-    """Creates a custom machine type from the CPU and memory specs.
-
-    Args:
-      cpu: the number of cpu desired for the custom machine type
-      memory_mib: the amount of ram desired in MiB for the custom machine
-          type instance
-
-    Returns:
-      The custom machine type name for the 'instance create' call
-    """
-    machine_type = 'db-custom-{0}-{1}'.format(cpu, memory_mib)
-    return machine_type
-
-  @classmethod
-  def _MachineTypeFromArgs(cls, args, instance=None):
-    """Constructs the machine type for the instance.  Adapted from compute.
-
-    Args:
-      args: Flags specified on the gcloud command; looking for
-          args.tier, args.memory, and args.cpu.
-      instance: sql_messages.DatabaseInstance, The original instance, if
-          it might be needed to generate the machine type.
-
-    Returns:
-      A string representing the URL naming a machine-type.
-
-    Raises:
-      exceptions.RequiredArgumentException when only one of the two custom
-          machine type flags are used, or when none of the flags are used.
-      exceptions.InvalidArgumentException when both the tier and
-          custom machine type flags are used to generate a new instance.
-    """
-    # Retrieving relevant flags.
-    tier = getattr(args, 'tier', None)
-    memory = getattr(args, 'memory', None)
-    cpu = getattr(args, 'cpu', None)
-
-    # Setting the machine type.
-    machine_type = None
-    if tier:
-      machine_type = tier
-
-    # Setting the specs for the custom machine.
-    if cpu or memory:
-      if not cpu:
-        raise exceptions.RequiredArgumentException(
-            '--cpu', 'Both [--cpu] and [--memory] must be '
-            'set to create a custom machine type instance.')
-      if not memory:
-        raise exceptions.RequiredArgumentException(
-            '--memory', 'Both [--cpu] and [--memory] must '
-            'be set to create a custom machine type instance.')
-      if tier:
-        raise exceptions.InvalidArgumentException(
-            '--tier', 'Cannot set both [--tier] and '
-            '[--cpu]/[--memory] for the same instance.')
-      custom_type_string = cls._ConstructCustomMachineType(
-          cpu,
-          # Converting from B to MiB.
-          int(memory / (2**20)))
-
-      # Updating the machine type that is set for the URIs.
-      machine_type = custom_type_string
-
-    # Reverting to default if creating instance and no flags are set.
-    if not machine_type and not instance:
-      machine_type = constants.DEFAULT_MACHINE_TYPE
-
-    return machine_type
-
-  # TODO(b/62903092): Refactor to use kwargs; call from patch and create.
-  @classmethod
-  def _ConstructLabelsFromArgs(cls, sql_messages, args, instance=None):
-    """Constructs the labels message for the instance.
-
-    Args:
-      sql_messages: module, The messages module that should be used.
-      args: Flags specified on the gcloud command; looking for
-          args.labels, args.update_labels, args.remove_labels, ags.clear_labels.
-      instance: sql_messages.DatabaseInstance, The original instance, if
-          the original labels are needed.
-
-    Returns:
-      sql_messages.Settings.UserLabelsValue, the labels message for the patch.
-    """
-    # Parse labels args
-    update_labels, remove_labels = {}, []
-    if hasattr(args, 'labels'):
-      update_labels = args.labels
-    elif (hasattr(args, 'update_labels') and
-          args.update_labels) or (hasattr(args, 'remove_labels') and
-                                  args.remove_labels):
-      update_labels, remove_labels = labels_util.GetAndValidateOpsFromArgs(args)
-    elif hasattr(args, 'clear_labels') and args.clear_labels:
-      remove_labels = [
-          label.key
-          for label in instance.settings.userLabels.additionalProperties
-      ]
-
-    # Removing labels with a patch request requires explicitly setting values
-    # to null. If the user did not specify labels in this patch request, we
-    # keep their existing labels.
-    if remove_labels:
-      if not update_labels:
-        update_labels = {}
-      for key in remove_labels:
-        update_labels[key] = None
-
-    # Generate the actual UserLabelsValue message.
-    existing_labels = None
-    if instance:
-      existing_labels = instance.settings.userLabels
-    return labels_util.UpdateLabels(
-        existing_labels, sql_messages.Settings.UserLabelsValue, update_labels)
 
   @staticmethod
   def PrintAndConfirmAuthorizedNetworksOverwrite():

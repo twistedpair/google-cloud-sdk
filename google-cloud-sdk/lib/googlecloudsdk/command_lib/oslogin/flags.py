@@ -1,0 +1,58 @@
+# Copyright 2017 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Flags for OS Login subcommands."""
+
+from googlecloudsdk.calliope import arg_parsers
+
+
+def AddKeyFlags(parser, action, additional_help=''):
+  """Adds --key and --key-file flags to oslogin commands."""
+  key_arg = parser.add_mutually_exclusive_group(required=True)
+
+  key_arg.add_argument(
+      '--key',
+      help="""\
+          The SSH public key to {0} the OS Login Profile.{1}
+          """.format(action, additional_help))
+
+  key_arg.add_argument(
+      '--key-file',
+      help="""\
+          The path to a file containing an SSH public key to {0} the
+          OS Login Profile.{1}
+          """.format(action, additional_help))
+
+
+def AddTtlFlag(parser, required=False):
+  parser.add_argument(
+      '--ttl',
+      type=arg_parsers.Duration(),
+      required=required,
+      help="""\
+          The amount of time before the SSH key expires. For example,
+          specifying ``30m'' will set the expiration time on the SSH key for
+          30 minutes from the current time. Valid units for this flag are
+          ``s'' for seconds, ``m'' for minutes, ``h'' for hours, and ``d''
+          for days. A value of 0 will result in no expiration time.
+          """)
+
+
+def GetKeyFromArgs(args):
+  if args.key_file:
+    with open(args.key_file, 'r') as k:
+      key = k.read()
+  else:
+    key = args.key
+
+  return key

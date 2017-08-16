@@ -271,9 +271,23 @@ def AddBetaArgs(parser):
       'network-profiles list` command). This feature only works on physical '
       'devices.')
 
+  parser.add_argument(
+      '--use-orchestrator',
+      category=ANDROID_INSTRUMENTATION_TEST,
+      action='store_true',
+      default=None,
+      help='Whether each test runs in its own Instrumentation instance with '
+      'the Android Test Orchestrator (default: run with the Orchestrator if '
+      'runner is compatible, otherwise not. '
+      'Use --no-use-orchestrator to disable). Orchestrator is only compatible '
+      'with AndroidJUnitRunner v1.0 or higher. See '
+      'https://developer.android.com/training/testing/junit-runner.html'
+      '#using-android-test-orchestrator for more information about Android '
+      'Test Orchestrator.')
+
 
 def AddMatrixArgs(parser):
-  """Register the repeatable args which define the the axes for a test matrix.
+  """Register the repeatable args which define the axes for a test matrix.
 
   Args:
     parser: An argparse parser used to add arguments that follow a command

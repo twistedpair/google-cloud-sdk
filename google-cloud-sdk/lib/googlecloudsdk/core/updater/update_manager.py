@@ -366,29 +366,115 @@ class UpdateManager(object):
     """
     paths = config.Paths()
     mapping_path = os.path.join(paths.sdk_root, paths.CLOUDSDK_STATE_DIR,
-                                'mapping', filename)
+                                filename)
     # Check if file exists.
     if os.path.isfile(mapping_path):
       return yaml.load(file_utils.GetFileContents(mapping_path))
+
+  def _ComputeMappingMessage(self, command, commands_map, components_map,
+                             components=None):
+    """Returns error message containing correct command mapping.
+
+    Checks the user-provided command to see if it maps to one we support for
+    their package manager. If it does, compute error message to let the user
+    know why their command did not work and provide them with an alternate,
+    accurate command to run. If we do not support the given command/component
+    combination for their package manager, provide user with instructions to
+    change their package manager.
+
+    Args:
+      command: str, Command from user input, to be mapped against
+        commands_mapping.yaml
+      commands_map: dict, Contains mappings from commands_mapping.yaml
+      components_map: dict, Contains mappings from components_mapping.yaml
+      components: str list, Component from user input, to be mapped against
+        component_commands.yaml
+
+    Returns:
+      str, The compiled error message.
+    """
+    final_message = ''
+    unavailable = 'unavailable'
+    update_all = 'update-all'
+    unavailable_components = None
+    mapped_components = None
+    not_components = None
+    mapped_packages = None
+    correct_command = commands_map[command]
+
+    # Provide correct error message based on whether a component was given.
+    if components:
+      not_components = [
+          component for component in components
+          if component not in components_map
+      ]
+      unavailable_components = [
+          component for component in components
+          if components_map.get(component) == unavailable
+      ]
+
+    if command == update_all:
+      mapped_packages = [
+          component for component in set(components_map.values())
+          if component != unavailable
+      ]
+    else:
+      mapped_components = [
+          component for component in components
+          if (component not in unavailable_components) and
+          (component not in not_components)
+      ]
+      mapped_packages = [
+          components_map[component] for component in mapped_components
+      ]
+
+    if mapped_packages:
+      correct_command = correct_command.format(
+          package=' '.join(mapped_packages))
+
+    # Both mapped_components and components are false in the case where
+    # a mapped command template has no components.
+    if mapped_packages or not components:
+      # Message presented when mapping is successful.
+      final_message += (
+          '\nYou cannot perform this action because the Cloud SDK '
+          'component manager \nis disabled for this installation. You can '
+          'run the following command \nto achieve the same result for this '
+          'installation: \n\n{correct_command}\n\n'.format(
+              correct_command=correct_command))
+
+    if unavailable_components:
+      # Message presented when component mapping is unsuccessful.
+      final_message += (
+          '\nThe {component} component(s) is unavailable through the '
+          'packaging system \nyou are currently using. Please consider '
+          'using a separate installation \nof the Cloud SDK created '
+          'through the default mechanism described at: \n\n{doc_url} '
+          '\n\n'.format(
+              component=', '.join(unavailable_components),
+              doc_url=config.INSTALLATION_CONFIG.documentation_url))
+
+    if not_components:
+      # Message presented when component mapping is unsuccessful.
+      final_message += (
+          '"{component}" are not valid component name(s).\n'.format(
+              component=', '.join(not_components)))
+    return final_message
 
   def _CheckIfDisabledAndThrowError(self, components=None, command=None):
     """Checks if updater is disabled. If so, raises UpdaterDisabledError.
 
     The updater is disabled for installations that come from other package
     managers like apt-get or if the current user does not have permission
-    to create or delete files in the SDK root directory. If disabled, checks the
-    user-provided command to see if it maps to one we support for their package
-    manager. If it does, raise an UpdaterDisabledError to let the user know why
-    their command did not work and provide them with an alternate, accurate
-    command to run. If we do not support the given command/component combination
-    for their package manager, raise an UpdaterDisabledError and provide user
-    with instructions to change their package manager.
+    to create or delete files in the SDK root directory. If disabled, raises
+    UpdaterDisabledError either with the default message, or an error message
+    from _ComputeMappingMessage if a command was passed in.
 
     Args:
-      components: str, Component from user input, to be mapped against
+      components: str list, Component from user input, to be mapped against
         component_commands.yaml
       command: str, Command from user input, to be mapped against
-        component_mapping.yaml
+        command_mapping.yaml
 
     Raises:
       UpdaterDisabledError: If the updater is disabled.
@@ -415,50 +501,10 @@ class UpdateManager(object):
       if not (components_map and commands_map):
         raise UpdaterDisabledError(default_message)
 
-      final_message = ''
-      missing_components = None
-      mapped_components = None
-      correct_command = commands_map[command]
+      mapping_message = self._ComputeMappingMessage(command, commands_map,
+                                                    components_map, components)
 
-      # Provide correct error message based on whether a component was given.
-      if components:
-        mapped_components = [
-            components_map[component] for component in components
-            if component in components_map
-        ]
-        missing_components = [
-            component for component in components
-            if component not in components_map
-        ]
-
-      if mapped_components:
-        correct_command = correct_command.format(
-            package=' '.join(mapped_components))
-
-      # Both mapped_components and components are false in the case where
-      # a mapped command template has no components, for example,
-      # update-all: sudo apt-get update && sudo apt-get upgrade
-      if mapped_components or not components:
-        # Message presented when mapping is successful.
-        final_message += (
-            'You cannot perform this action because the Cloud SDK '
-            'component manager is disabled for this installation. You can '
-            'run the following command to achieve the same result for this '
-            'installation: {correct_command}\n'.format(
-                correct_command=correct_command))
-
-      if missing_components:
-        # Message presented when component mapping is unsuccessful.
-        final_message += (
-            'The {component} component(s) cannot be found through the '
-            'packaging system you are currently using. Please consider '
-            'using a separate installation of the Cloud SDK created '
-            'through the default mechanism described at: {doc_url} '
-            '\n'.format(
-                component=', '.join(missing_components),
-                doc_url=config.INSTALLATION_CONFIG.documentation_url))
-
-      raise UpdaterDisabledError(final_message)
+      raise UpdaterDisabledError(mapping_message)
 
   def _GetInstallState(self):
     return local_state.InstallationState(self.__sdk_root)

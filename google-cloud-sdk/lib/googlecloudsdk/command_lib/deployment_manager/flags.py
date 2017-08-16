@@ -56,13 +56,29 @@ def AddDeploymentNameFlag(parser):
   parser.add_argument('deployment_name', help='Deployment name.')
 
 
+def AddConfigFlags(parser):
+  """Add flags for different types of configs."""
+  parser.add_argument(
+      '--config',
+      help='Filename of a top-level yaml config that specifies '
+      'resources to deploy.')
+
+  parser.add_argument(
+      '--template',
+      help='Filename of a top-level jinja or python config template.')
+
+  parser.add_argument(
+      '--composite-type',
+      help='Name of a composite type to deploy.')
+
+
 def AddPropertiesFlag(parser):
   """Add properties flag."""
 
   parser.add_argument(
       '--properties',
       help='A comma separated, key:value, map '
-      'to be used when deploying a template file directly.',
+      'to be used when deploying a template file or composite type directly.',
       type=arg_parsers.ArgDict(operators=dm_api_util.NewParserDict()),
       dest='properties')
 

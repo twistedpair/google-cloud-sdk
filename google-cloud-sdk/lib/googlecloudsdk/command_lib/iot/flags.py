@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Shared flags for Cloud IoT commands."""
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
@@ -72,28 +73,41 @@ def GetIndexFlag(noun, action):
       help='The index (zero-based) of the {} {}.'.format(noun, action))
 
 
-def GetDeviceRegistrySettingsFlags(defaults=True):
+def AddDeviceRegistrySettingsFlagsToParser(parser, defaults=True):
   """Get flags for device registry commands.
 
   Args:
+    parser: argparse parser to which to add these flags.
     defaults: bool, whether to populate default values (for instance, should be
         false for Patch commands).
 
   Returns:
     list of base.Argument, the flags common to and specific to device commands.
   """
-  return [
-      base.Argument(
-          '--enable-mqtt-config',
-          help='Whether to allow MQTT connections to this device registry.',
-          default=True if defaults else None,
-          action='store_true'),
-      base.Argument(
-          '--pubsub-topic',
-          required=False,
-          help=('The Google Cloud Pub/Sub topic on which to forward messages, '
-                'such as telemetry events.')),
-  ]
+  base.Argument(
+      '--enable-mqtt-config',
+      help='Whether to allow MQTT connections to this device registry.',
+      default=True if defaults else None,
+      action='store_true'
+  ).AddToParser(parser)
+  pubsub_args = parser.add_mutually_exclusive_group()
+  base.Argument(
+      '--pubsub-topic',
+      required=False,
+      action=actions.DeprecationAction('--pubsub-topic',
+                                       warn=('Flag {flag_name} is deprecated. '
+                                             'Use --event-pubsub-topic '
+                                             'instead.')),
+      hidden=True,
+      help=('The Google Cloud Pub/Sub topic on which to forward messages, '
+            'such as telemetry events.')
+  ).AddToParser(pubsub_args)
+  base.Argument(
+      '--event-pubsub-topic',
+      required=False,
+      help=('The Google Cloud Pub/Sub topic on which to forward messages, '
+            'such as telemetry events.')
+  ).AddToParser(pubsub_args)
 
 
 def GetIamPolicyFileFlag():

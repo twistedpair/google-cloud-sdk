@@ -16,6 +16,7 @@
 
 import argparse
 
+from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
@@ -82,17 +83,6 @@ Enables autoscaling in the node pool specified by --node-pool or
 the default node pool if --node-pool is not provided.""",
       hidden=hidden,
       action='store_true')
-  # If we have an update group, add a custom inverted arg.
-  if update_group:
-    autoscaling_group.add_argument(
-        '--disable-autoscaling',
-        default=None,
-        help="""\
-Disables autoscaling for a node pool. This flag is deprecated and will be
-removed in a future release. Use --no-enable-autoscaling instead.""",
-        hidden=hidden,
-        action='store_false',
-        dest='enable_autoscaling')
   group.add_argument(
       '--max-nodes',
       help="""\
@@ -152,7 +142,7 @@ def AddAcceleratorArgs(parser):
       """)
 
 
-def AddEnableAuditLoggingFlag(parser):
+def AddEnableAuditLoggingFlag(parser, hidden=True):
   """Adds a --enable-audit-logging flag to parser."""
   help_text = """\
 Enable audit logging for this cluster.
@@ -161,9 +151,9 @@ Interactions with the Kubernetes API will be logged to Cloud Audit Logging."""
   parser.add_argument(
       '--enable-audit-logging',
       action='store_true',
-      default=False,
+      default=None,
       help=help_text,
-      hidden=True)
+      hidden=hidden)
 
 
 def AddZoneFlag(parser):
@@ -636,7 +626,7 @@ Set the IP range for the services IPs.
 
 Can be specified as a netmask size (e.g. '/20') or as in CIDR notion
 (e.g. '10.100.0.0/20'). If given as a netmask size, the IP range will
-be choosen automatically from the available space in the network.
+be chosen automatically from the available space in the network.
 
 If unspecified, the services CIDR range will use automatic defaults.
 
@@ -678,6 +668,48 @@ Create a new subnetwork with the name "my-subnet" with a default range.
 Can not be specified unless '--enable-ip-alias' is also specified. Can
 not be used in conjunction with the '--subnetwork' option.
 """)
+
+
+def AddMinCpuPlatformFlag(parser, for_node_pool=False, hidden=False):
+  """Adds the --min-cpu-platform flag to the parser.
+
+  Args:
+    parser: A given parser.
+    for_node_pool: True if it's applied a non-default node pool.
+    hidden: Whether or not to hide the help text.
+  """
+  if for_node_pool:
+    help_text = """\
+When specified, the nodes for the new node pool will be scheduled on host with
+specified CPU architecture or a newer one.
+
+Examples:
+  $ {command} node-pool-1 --cluster=example-cluster --min-cpu-platform=PLATFORM
+
+"""
+  else:
+    help_text = """\
+When specified, the nodes for the new cluster's default node pool will be
+scheduled on host with specified CPU architecture or a newer one.
+
+Examples:
+  $ {command} example-cluster --min-cpu-platform=PLATFORM
+
+"""
+
+  help_text += """\
+To list available CPU platforms in given zone, run:
+
+  $ gcloud beta compute zones describe ZONE --format="value(availableCpuPlatforms)"
+
+CPU platform selection is available only in selected zones.
+"""
+
+  parser.add_argument(
+      '--min-cpu-platform',
+      metavar='PLATFORM',
+      hidden=hidden,
+      help=help_text)
 
 
 def AddTagOrDigestPositional(parser, verb, repeated=True, tags_only=False,
@@ -728,3 +760,71 @@ Multiple locations can be specified, separated by commas. For example:
 """)
 
 
+def AddLoggingServiceFlag(parser, hidden=False):
+  """Adds a --logging-service flag to the parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Whether or not to hide the help text.
+  """
+
+  parser.add_argument(
+      '--logging-service',
+      hidden=hidden,
+      help='The logging service to use for the cluster. Options are: '
+      '"logging.googleapis.com" (the Google Cloud Logging service), '
+      '"none" (logs will not be exported from the cluster)')
+
+
+def AddScopesFlag(parser, example_target, is_deprecated):
+  min_args_length = 1 if is_deprecated else 0
+  default = [] if is_deprecated else ['logging-write', 'monitoring']
+  parser.add_argument(
+      '--scopes',
+      type=arg_parsers.ArgList(min_length=min_args_length),
+      metavar='SCOPE',
+      default=default,
+      help="""\
+Specifies scopes for the node instances. The project's default
+service account is used. Examples:
+
+  $ {{command}} {example_target} --scopes https://www.googleapis.com/auth/devstorage.read_only
+
+  $ {{command}} {example_target} --scopes bigquery,storage-rw,compute-ro
+
+Multiple SCOPEs can specified, separated by commas. The scopes
+necessary for the cluster to function properly (compute-rw, storage-ro),
+are always added, even if not explicitly specified.
+
+SCOPE can be either the full URI of the scope or an alias.
+Available aliases are:
+
+[format="csv",options="header"]
+|========
+Alias,URI
+{aliases}
+|========
+
+{scope_deprecation_msg}
+""".format(
+    aliases=compute_constants.ScopesForHelp(),
+    scope_deprecation_msg=compute_constants.DEPRECATED_SCOPES_MESSAGES,
+    example_target=example_target))
+
+
+def AddClusterScopesFlag(parser):
+  AddScopesFlag(parser, example_target='example-cluster', is_deprecated=False)
+
+
+def AddOldClusterScopesFlag(parser):
+  AddScopesFlag(parser, example_target='example-cluster', is_deprecated=True)
+
+
+def AddNodePoolScopesFlag(parser):
+  AddScopesFlag(parser, example_target='node-pool-1 --cluster=example-cluster',
+                is_deprecated=False)
+
+
+def AddOldNodePoolScopesFlag(parser):
+  AddScopesFlag(parser, example_target='node-pool-1 --cluster=example-cluster',
+                is_deprecated=True)

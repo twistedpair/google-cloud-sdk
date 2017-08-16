@@ -2,6 +2,83 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 167.0.0 (2017-08-16)
+
+### Breaking Changes
+
+*   **(DEPRECATED)** Deprecated the `names` and `--regexp` flags for the following
+    commands. Use the `--filter` flag instead:
+      * `gcloud compute snapshots list`
+      * `gcloud compute regions list`
+      * `gcloud compute target-https-proxies list`
+      * `gcloud compute ssl-certificates list`
+      * `gcloud compute zones list`
+*   **(DEPRECATED)** Deprecated the following flags from `gcloud compute
+    instance-groups list`: `names`, `--regexp`, `--zones`, `--region`; these are
+    replaced by the `--filter` flag.
+*   **(DEPRECATED)** Deprecated the `--pubsub-topic` flag from `gcloud beta/alpha iot
+    registries create/update`; this is replaced by the `--event-pubsub-topic` flag.
+*   **(DEPRECATED)** Deprecated `gcloud iot credentials` command group. This is
+    replaced by `gcloud iot devices credentials`.
+*   **(DEPRECATED)** Deprecated `gcloud iot configs` command group. This is
+    replaced by `gcloud iot devices configs`.
+*   **(DEPRECATED)** Deprecated the `--force-create` flag from `gcloud compute
+    images create`. This is replaced by the `--force` flag.
+
+### Google Cloud SDK
+
+*   Upgraded Windows bundled python version from 2.7.10 to 2.7.13.
+*   Cloud Tools for PowerShell:
+    * Added `New-GceNetwork` and `Remove-GceNetwork` to add and remove Google Compute
+      Engine Networks.
+    * Added `-MaxBadRecords` parameter to `Start-BqJob` cmdlet.
+    * Fixed a bug in `Fix-GkeCluster` cmdlet where `-NodeVersion` parameter is
+      not processed correctly.
+
+### Google Container Engine
+
+*   Added `--min-cpu-platform` flag to `gcloud alpha container` commands.
+*   Updated `gcloud alpha container clusters resize` and `gcloud beta container
+    clusters resize` commands to safely drain nodes before removal.
+*   Updated Google Container Engine's kubectl from version 1.7.2 to 1.7.3.
+*   Added `--logging-service` flag to `gcloud beta container clusters update`.
+    This flag controls the enabling and disabling of Stackdriver Logging integration.
+    Use `--logging-service=logging.googleapis.com` to enable and `--logging-service=none`
+    to disable.
+*   Modified the `--scopes` flag in `gcloud beta container clusters create` and
+    `gcloud beta container node-pools create` commands to default to
+    `logging.write,monitoring` and support passing an empty list.
+
+
+### Google Compute Engine
+
+*   Promoted `gcloud compute interconnects` commands to beta. These commands
+    allow you to provision an interconnection between your network and Google Cloud VPCs.
+    For more details see online documentation,
+     * https://cloud.google.com/interconnect/docs
+*   Fixed a bug in `gcloud compute update routers` where removing interfaces/peers was
+    failing.
+*   Added `--security-policy` flag to `gcloud beta compute backend-services update`.
+*   `gcloud compute security-policies` commands now in beta.
+*   Added `gcloud beta compute instance-groups managed rolling-action` command group.
+*   Updated `gcloud compute instance-templates create` to support labels
+
+### Google Cloud Deployment Manager
+
+*   Added `--composite-type` and `--template` flags to `gcloud deployment-manager
+    deployments create`. Also, added a warning when using `--config` with a template
+    instead of the new `--template` flag. This behavior will be deprecated 2017-11-08.
+
+### Google App Engine
+
+*   Updated `gcloud app services set-traffic` to support `--split-by=random` to
+    split traffic randomly between versions.
+
+### Firebase Test Lab
+
+*  Promoted Firebase Test Lab to beta for running instrumentation test with
+   Android Test Orchestrator. Use `--use-orchestrator` to run with Orchestrator.
+
 ## 166.0.0 (2017-08-09)
 
 ### Breaking Changes

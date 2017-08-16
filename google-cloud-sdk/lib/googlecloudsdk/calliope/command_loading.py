@@ -53,8 +53,10 @@ class YamlCommandTranslator(object):
     """Translates a yaml command into a calliope command.
 
     Args:
-     path: [str], The same as module_path but with the groups named as they
-       will be in the CLI.
+      path: [str], A list of group names that got us down to this command group
+        with respect to the CLI itself.  This path should be used for things
+        like error reporting when a specific element in the tree needs to be
+        referenced.
       command_data: dict, The parsed contents of the command spec from the
         yaml file that corresponds to the release track being loaded.
 
@@ -65,72 +67,77 @@ class YamlCommandTranslator(object):
     pass
 
 
-def FindSubElements(module_dir, module_path, release_track):
+def FindSubElements(impl_paths, path):
   """Find all the sub groups and commands under this group.
 
   Args:
-    module_dir: str, The path to the tools directory that this command or
-      group lives within.
-    module_path: [str], The command group names that brought us down to this
-      command group or command from the top module directory.
-    release_track: ReleaseTrack, The release track that we should load.
+    impl_paths: [str], A list of file paths to the command implementation for
+      this group.
+    path: [str], A list of group names that got us down to this command group
+      with respect to the CLI itself.  This path should be used for things
+      like error reporting when a specific element in the tree needs to be
+      referenced.
+
+  Raises:
+    CommandLoadFailure: If the command is invalid and cannot be loaded.
+    LayoutException: if there is a command or group with an illegal name.
+
+  Returns:
+    ({str: [str]}, {str: [str]), A tuple of groups and commands found where each
+    item is a mapping from name to a list of paths that implement that command
+    or group. There can be multiple paths because a command or group could be
+    implemented in both python and yaml (for different release tracks).
+  """
+  if len(impl_paths) > 1:
+    raise CommandLoadFailure(
+        '.'.join(path),
+        Exception('Command groups cannot be implemented in yaml'))
+  impl_path = impl_paths[0]
+  groups, commands = pkg_resources.ListPackage(
+      impl_path, extra_extensions=['.yaml'])
+  return (_GenerateElementInfo(impl_path, groups),
+          _GenerateElementInfo(impl_path, commands))
+
+
+def _GenerateElementInfo(impl_path, names):
+  """Generates the data a group needs to load sub elements.
+
+  Args:
+    impl_path: The file path to the command implementation for this group.
+    names: [str], The names of the sub groups or commands found in the group.
 
   Raises:
     LayoutException: if there is a command or group with an illegal name.
 
   Returns:
-    ([groups_info], [commands_info]), The info needed to construct sub groups
-    and sub commands.
+    {str: [str], A mapping from name to a list of paths that implement that
+    command or group. There can be multiple paths because a command or group
+    could be implemented in both python and yaml (for different release tracks).
   """
-  location = os.path.join(module_dir, *module_path)
-  groups, commands = pkg_resources.ListPackage(location,
-                                               extra_extensions=['.yaml'])
-  for collection in [groups, commands]:
-    for name in collection:
-      if re.search('[A-Z]', name):
-        raise LayoutException(
-            'Commands and groups cannot have capital letters: {0}.'
-            .format(name))
+  elements = {}
+  for name in names:
+    if re.search('[A-Z]', name):
+      raise LayoutException(
+          'Commands and groups cannot have capital letters: {0}.'.format(name))
+    cli_name = name[:-5] if name.endswith('.yaml') else name
+    sub_path = os.path.join(impl_path, name)
 
-  return (_GenerateElementInfo(module_dir, module_path, release_track, groups),
-          _GenerateElementInfo(module_dir, module_path, release_track, commands)
-         )
+    existing = elements.setdefault(cli_name, [])
+    existing.append(sub_path)
+  return elements
 
 
-def _GenerateElementInfo(module_dir, module_path, release_track, names):
-  """Generates the data a group needs to load sub elements.
-
-  Args:
-    module_dir: str, The path to the tools directory that this command or
-      group lives within.
-    module_path: [str], The command group names that brought us down to this
-      command group or command from the top module directory.
-    release_track: ReleaseTrack, The release track that we should load.
-    names: [str], The names of the sub groups or commands the paths are for.
-
-  Returns:
-    A list of tuples of (module_dir, module_path, name, release_track) for the
-    given names. These terms are that as used by the constructor of
-    CommandGroup and Command.
-  """
-  return [(module_dir,
-           module_path + [name],
-           name[:-5] if name.endswith('.yaml') else name,
-           release_track)
-          for name in names]
-
-
-def LoadCommonType(module_dir, module_path, path, release_track,
+def LoadCommonType(impl_paths, path, release_track,
                    construction_id, is_command, yaml_command_translator=None):
   """Loads a calliope command or group from a file.
 
   Args:
-    module_dir: str, The path to the tools directory that this command or
-      group lives within.
-    module_path: [str], The command group names that brought us down to this
-      command group or command from the top module directory.
-    path: [str], The same as module_path but with the groups named as they
-      will be in the CLI.
+    impl_paths: [str], A list of file paths to the command implementation for
+      this group or command.
+    path: [str], A list of group names that got us down to this command group
+      with respect to the CLI itself.  This path should be used for things
+      like error reporting when a specific element in the tree needs to be
+      referenced.
     release_track: ReleaseTrack, The release track that we should load.
     construction_id: str, A unique identifier for the CLILoader that is
       being constructed.
@@ -144,22 +151,23 @@ def LoadCommonType(module_dir, module_path, path, release_track,
   Returns:
     The base._Common class for the command or group.
   """
-  impl_file = os.path.join(module_dir, *module_path)
-  if module_path[-1].endswith('.yaml'):
-    if not is_command:
-      raise CommandLoadFailure(
-          '.'.join(path),
-          Exception('Command groups cannot be implemented in yaml'))
-    data = yaml.load(pkg_resources.GetData(impl_file))
-    common_type = _FromYaml(
-        impl_file, path, data, release_track, yaml_command_translator)
-  else:
-    module = _GetModuleFromPath(impl_file, path, construction_id)
-    common_type = _FromModule(
-        module.__file__, module.__dict__.values(), release_track,
-        is_command=is_command)
+  implementations = []
+  for impl_file in impl_paths:
+    if impl_file.endswith('.yaml'):
+      if not is_command:
+        raise CommandLoadFailure(
+            '.'.join(path),
+            Exception('Command groups cannot be implemented in yaml'))
+      data = yaml.load(pkg_resources.GetData(impl_file))
+      implementations.extend((_ImplementationsFromYaml(
+          path, data, yaml_command_translator)))
+    else:
+      module = _GetModuleFromPath(impl_file, path, construction_id)
+      implementations.extend(_ImplementationsFromModule(
+          module.__file__, module.__dict__.values(), is_command=is_command))
 
-  return common_type
+  return _ExtractReleaseTrackImplementation(
+      impl_paths[0], release_track, implementations)()
 
 
 def _GetModuleFromPath(impl_file, path, construction_id):
@@ -171,8 +179,10 @@ def _GetModuleFromPath(impl_file, path, construction_id):
   Args:
     impl_file: str, The path to the file this was loaded from (for error
       reporting).
-    path: [str], The same as module_path but with the groups named as they
-      will be in the CLI.
+    path: [str], A list of group names that got us down to this command group
+      with respect to the CLI itself.  This path should be used for things
+      like error reporting when a specific element in the tree needs to be
+      referenced.
     construction_id: str, A unique identifier for the CLILoader that is
       being constructed.
 
@@ -194,25 +204,24 @@ def _GetModuleFromPath(impl_file, path, construction_id):
     raise CommandLoadFailure('.'.join(path), e), None, exc_traceback
 
 
-def _FromModule(mod_file, module_attributes, release_track, is_command):
-  """Get the type implementing CommandBase from the module.
+def _ImplementationsFromModule(mod_file, module_attributes, is_command):
+  """Gets all the release track command implementations from the module.
 
   Args:
     mod_file: str, The __file__ attribute of the module resulting from
       importing the file containing a command.
     module_attributes: The __dict__.values() of the module.
-    release_track: ReleaseTrack, The release track that we should load from
-      this module.
     is_command: bool, True if we are loading a command, False to load a group.
 
-  Returns:
-    type, The custom class that implements CommandBase.
-
   Raises:
-    LayoutException: If there is not exactly one type inheriting
-        CommonBase.
-    ReleaseTrackNotImplementedException: If there is no command or group
-      implementation for the request release track.
+    LayoutException: If there is not exactly one type inheriting CommonBase.
+
+  Returns:
+    [(func->base._Common, [base.ReleaseTrack])], A list of tuples that can be
+    passed to _ExtractReleaseTrackImplementation. Each item in this list
+    represents a command implementation. The first element is a function that
+    returns the implementation, and the second element is a list of release
+    tracks it is valid for.
   """
   commands = []
   groups = []
@@ -248,22 +257,22 @@ def _FromModule(mod_file, module_attributes, release_track, is_command):
           mod_file))
     commands_or_groups = groups
 
-  return _ExtractReleaseTrackImplementation(
-      mod_file, release_track,
-      [(c, c.ValidReleaseTracks()) for c in commands_or_groups])
+  # pylint:disable=undefined-loop-variable, Linter is just wrong here.
+  # We need to use a default param on the lambda so that it captures the value
+  # of the variable at the time in the loop or else the closure will just have
+  # the last value that was iterated on.
+  return [(lambda c=c: c, c.ValidReleaseTracks()) for c in commands_or_groups]
 
 
-def _FromYaml(impl_file, path, data, release_track, yaml_command_translator):
-  """Get the type implementing CommandBase from the module.
+def _ImplementationsFromYaml(path, data, yaml_command_translator):
+  """Gets all the release track command implementations from the yaml file.
 
   Args:
-    impl_file: str, The path to the file this was loaded from (for error
-      reporting).
-    path: [str], The same as module_path but with the groups named as they
-      will be in the CLI.
+    path: [str], A list of group names that got us down to this command group
+      with respect to the CLI itself.  This path should be used for things
+      like error reporting when a specific element in the tree needs to be
+      referenced.
     data: dict, The loaded yaml data.
-    release_track: ReleaseTrack, The release track that we should load from
-      this module.
     yaml_command_translator: YamlCommandTranslator, An instance of a translator
       to use to load the yaml data.
 
@@ -271,19 +280,26 @@ def _FromYaml(impl_file, path, data, release_track, yaml_command_translator):
     CommandLoadFailure: If the command is invalid and cannot be loaded.
 
   Returns:
-    type, The custom class that implements CommandBase.
+    [(func->base._Common, [base.ReleaseTrack])], A list of tuples that can be
+    passed to _ExtractReleaseTrackImplementation. Each item in this list
+    represents a command implementation. The first element is a function that
+    returns the implementation, and the second element is a list of release
+    tracks it is valid for.
   """
   if not yaml_command_translator:
     raise CommandLoadFailure(
         '.'.join(path),
         Exception('No yaml command translator has been registered'))
 
+  # pylint:disable=undefined-loop-variable, Linter is just wrong here.
+  # We need to use a default param on the lambda so that it captures the value
+  # of the variable at the time in the loop or else the closure will just have
+  # the last value that was iterated on.
   implementations = [
-      (i, {base.ReleaseTrack.FromId(t) for t in i.get('release_tracks', [])})
+      (lambda i=i: yaml_command_translator.Translate(path, i),
+       {base.ReleaseTrack.FromId(t) for t in i.get('release_tracks', [])})
       for i in data]
-  command_data = _ExtractReleaseTrackImplementation(
-      impl_file, release_track, implementations)
-  return yaml_command_translator.Translate(path, command_data)
+  return implementations
 
 
 def _ExtractReleaseTrackImplementation(
@@ -294,9 +310,10 @@ def _ExtractReleaseTrackImplementation(
     impl_file: str, The path to the file this was loaded from (for error
       reporting).
     expected_track: base.ReleaseTrack, The release track we are trying to load.
-    implementations: [(object, {base.ReleaseTrack})], A list of implementations
-      to search. Each item is a tuple of an arbitrary object and a list of
-      release tracks it is valid for.
+    implementations: [(func->base._Common, [base.ReleaseTrack])], A list of
+    tuples where each item in this list represents a command implementation. The
+    first element is a function that returns the implementation, and the second
+    element is a list of release tracks it is valid for.
 
   Raises:
     LayoutException: If there is not exactly one type inheriting
@@ -315,7 +332,7 @@ def _ExtractReleaseTrackImplementation(
     if not valid_tracks or expected_track in valid_tracks:
       return impl
     raise ReleaseTrackNotImplementedException(
-        'No implementation for release track [{0}] in file: [{1}]'
+        'No implementation for release track [{0}] for element: [{1}]'
         .format(expected_track.id, impl_file))
 
   # There was more than one thing found, make sure there are no conflicts.
@@ -325,13 +342,13 @@ def _ExtractReleaseTrackImplementation(
     # their track to keep things sane.
     if not valid_tracks:
       raise LayoutException(
-          'Multiple implementations defined in file: [{0}]. Each must '
+          'Multiple implementations defined for element: [{0}]. Each must '
           'explicitly declare valid release tracks.'.format(impl_file))
     # Make sure no two classes define the same track.
     duplicates = implemented_release_tracks & valid_tracks
     if duplicates:
       raise LayoutException(
-          'Multiple definitions for release tracks [{0}] in file: [{1}]'
+          'Multiple definitions for release tracks [{0}] for element: [{1}]'
           .format(', '.join([str(d) for d in duplicates]), impl_file))
     implemented_release_tracks |= valid_tracks
 
@@ -340,7 +357,7 @@ def _ExtractReleaseTrackImplementation(
   # We know there is at most 1 because of the above check.
   if len(valid_commands_or_groups) != 1:
     raise ReleaseTrackNotImplementedException(
-        'No implementation for release track [{0}] in file: [{1}]'
+        'No implementation for release track [{0}] for element: [{1}]'
         .format(expected_track.id, impl_file))
 
   return valid_commands_or_groups[0]

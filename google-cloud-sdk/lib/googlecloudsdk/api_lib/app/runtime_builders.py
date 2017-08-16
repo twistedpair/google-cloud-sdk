@@ -150,6 +150,8 @@ class RuntimeBuilderStrategy(enum.Enum):
   def _GetWhitelist(self):
     """Return the whitelist of runtimes for this strategy.
 
+    The whitelist is kept as a constant within this module.
+
     Returns:
       list of str, the names of runtimes that are whitelisted for this strategy.
 

@@ -39,15 +39,39 @@ class _StreamCapturer(io.IOBase):
     self._capturing_stream.writelines(*args, **kwargs)
     self._real_stream.writelines(*args, **kwargs)
 
+  def isatty(self, *args, **kwargs):
+    return True
+
   def GetValue(self):
     return self._capturing_stream.getvalue()
-
-  def isatty(self):
-    return False
 
   def flush(self):
     self._capturing_stream.flush()
     self._real_stream.flush()
+
+
+class _InputStreamCapturer(io.IOBase):
+  """A file-like object that captures all the information read from stream."""
+
+  def __init__(self, real_stream):
+    self._real_stream = real_stream
+    self._capturing_stream = StringIO.StringIO()
+
+  def readline(self, *args, **kwargs):
+    result = self._real_stream.readline(*args, **kwargs)
+    self._capturing_stream.writelines([result])
+    return result
+
+  def readlines(self, *args, **kwargs):
+    result = self._real_stream.readline(*args, **kwargs)
+    self._capturing_stream.writelines(result)
+    return result
+
+  def isatty(self, *args, **kwargs):
+    return True
+
+  def GetValue(self):
+    return self._capturing_stream.getvalue()
 
 
 class SessionCapturer(object):
@@ -61,6 +85,8 @@ class SessionCapturer(object):
                        _StreamCapturer(sys.stderr),)
       sys.stdout, sys.stderr = self._streams  # pylint: disable=unpacking-non-sequence
       log.Reset(*self._streams)
+      self._stdin = _InputStreamCapturer(sys.stdin)
+      sys.stdin = self._stdin
     else:
       self._streams = None
 
@@ -79,6 +105,17 @@ class SessionCapturer(object):
             'response': self._FilterHeaders(response),
             'content': self._ToList(content)
         }})
+
+  def CaptureArgs(self, args):
+    specified_args = args.GetSpecifiedArgs()
+    if '--capture-session-file' in specified_args:
+      specified_args.pop('--capture-session-file')
+    self._records.append({
+        'args': {
+            'command': ' '.join(args.command_path[1:]),
+            'specified_args': specified_args
+        }
+    })
 
   def CaptureProperties(self, all_values):
     values = copy.deepcopy(all_values)
@@ -104,6 +141,9 @@ class SessionCapturer(object):
               'stdout': self._streams[0].GetValue(),
               'stderr': self._streams[1].GetValue()
           }
+      })
+      self._records.insert(2, {
+          'input': self._stdin.GetValue()
       })
 
   def _ToList(self, response):
