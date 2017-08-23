@@ -762,45 +762,66 @@ class ExplainQueryStage(_messages.Message):
   """A ExplainQueryStage object.
 
   Fields:
+    computeMsAvg: Milliseconds the average shard spent on CPU-bound tasks.
+    computeMsMax: Milliseconds the slowest shard spent on CPU-bound tasks.
     computeRatioAvg: Relative amount of time the average shard spent on CPU-
       bound tasks.
     computeRatioMax: Relative amount of time the slowest shard spent on CPU-
       bound tasks.
     id: Unique ID for stage within plan.
     name: Human-readable name for stage.
+    readMsAvg: Milliseconds the average shard spent reading input.
+    readMsMax: Milliseconds the slowest shard spent reading input.
     readRatioAvg: Relative amount of time the average shard spent reading
       input.
     readRatioMax: Relative amount of time the slowest shard spent reading
       input.
     recordsRead: Number of records read into the stage.
     recordsWritten: Number of records written by the stage.
+    shuffleOutputBytes: Total number of bytes written to shuffle.
+    shuffleOutputBytesSpilled: Total number of bytes written to shuffle and
+      spilled to disk.
     status: Current status for the stage.
     steps: List of operations within the stage in dependency order
       (approximately chronological).
+    waitMsAvg: Milliseconds the average shard spent waiting to be scheduled.
+    waitMsMax: Milliseconds the slowest shard spent waiting to be scheduled.
     waitRatioAvg: Relative amount of time the average shard spent waiting to
       be scheduled.
     waitRatioMax: Relative amount of time the slowest shard spent waiting to
       be scheduled.
+    writeMsAvg: Milliseconds the average shard spent on writing output.
+    writeMsMax: Milliseconds the slowest shard spent on writing output.
     writeRatioAvg: Relative amount of time the average shard spent on writing
       output.
     writeRatioMax: Relative amount of time the slowest shard spent on writing
       output.
   """
 
-  computeRatioAvg = _messages.FloatField(1)
-  computeRatioMax = _messages.FloatField(2)
-  id = _messages.IntegerField(3)
-  name = _messages.StringField(4)
-  readRatioAvg = _messages.FloatField(5)
-  readRatioMax = _messages.FloatField(6)
-  recordsRead = _messages.IntegerField(7)
-  recordsWritten = _messages.IntegerField(8)
-  status = _messages.StringField(9)
-  steps = _messages.MessageField('ExplainQueryStep', 10, repeated=True)
-  waitRatioAvg = _messages.FloatField(11)
-  waitRatioMax = _messages.FloatField(12)
-  writeRatioAvg = _messages.FloatField(13)
-  writeRatioMax = _messages.FloatField(14)
+  computeMsAvg = _messages.IntegerField(1)
+  computeMsMax = _messages.IntegerField(2)
+  computeRatioAvg = _messages.FloatField(3)
+  computeRatioMax = _messages.FloatField(4)
+  id = _messages.IntegerField(5)
+  name = _messages.StringField(6)
+  readMsAvg = _messages.IntegerField(7)
+  readMsMax = _messages.IntegerField(8)
+  readRatioAvg = _messages.FloatField(9)
+  readRatioMax = _messages.FloatField(10)
+  recordsRead = _messages.IntegerField(11)
+  recordsWritten = _messages.IntegerField(12)
+  shuffleOutputBytes = _messages.IntegerField(13)
+  shuffleOutputBytesSpilled = _messages.IntegerField(14)
+  status = _messages.StringField(15)
+  steps = _messages.MessageField('ExplainQueryStep', 16, repeated=True)
+  waitMsAvg = _messages.IntegerField(17)
+  waitMsMax = _messages.IntegerField(18)
+  waitRatioAvg = _messages.FloatField(19)
+  waitRatioMax = _messages.FloatField(20)
+  writeMsAvg = _messages.IntegerField(21)
+  writeMsMax = _messages.IntegerField(22)
+  writeRatioAvg = _messages.FloatField(23)
+  writeRatioMax = _messages.FloatField(24)
 
 
 class ExplainQueryStep(_messages.Message):
@@ -859,9 +880,8 @@ class ExternalDataConfiguration(_messages.Message):
       limits related to load jobs apply to external data sources. For Google
       Cloud Bigtable URIs: Exactly one URI can be specified and it has be a
       fully specified and valid HTTPS URL for a Google Cloud Bigtable table.
-      For Google Cloud Datastore backups, exactly one URI can be specified,
-      and it must end with '.backup_info'. Also, the '*' wildcard character is
-      not allowed.
+      For Google Cloud Datastore backups, exactly one URI can be specified.
+      Also, the '*' wildcard character is not allowed.
   """
 
   autodetect = _messages.BooleanField(1)
@@ -1179,9 +1199,10 @@ class JobConfigurationLoad(_messages.Message):
       limits related to load jobs apply to external data sources. For Google
       Cloud Bigtable URIs: Exactly one URI can be specified and it has be a
       fully specified and valid HTTPS URL for a Google Cloud Bigtable table.
-      For Google Cloud Datastore backups: Exactly one URI can be specified,
-      and it must end with '.backup_info'. Also, the '*' wildcard character is
-      not allowed.
+      For Google Cloud Datastore backups: Exactly one URI can be specified.
+      Also, the '*' wildcard character is not allowed.
+    timePartitioning: [Experimental] If specified, configures time-based
+      partitioning for the destination table.
     writeDisposition: [Optional] Specifies the action that occurs if the
       destination table already exists. The following values are supported:
       WRITE_TRUNCATE: If the table already exists, BigQuery overwrites the
@@ -1212,7 +1233,8 @@ class JobConfigurationLoad(_messages.Message):
   skipLeadingRows = _messages.IntegerField(17, variant=_messages.Variant.INT32)
   sourceFormat = _messages.StringField(18)
   sourceUris = _messages.StringField(19, repeated=True)
-  writeDisposition = _messages.StringField(20)
+  timePartitioning = _messages.MessageField('TimePartitioning', 20)
+  writeDisposition = _messages.StringField(21)
 
 
 class JobConfigurationQuery(_messages.Message):
@@ -1279,6 +1301,8 @@ class JobConfigurationQuery(_messages.Message):
       of BigQuery, describes the data format, location and other properties of
       the data source. By defining these properties, the data source can then
       be queried as if it were a standard BigQuery table.
+    timePartitioning: [Experimental] If specified, configures time-based
+      partitioning for the destination table.
     useLegacySql: Specifies whether to use BigQuery's legacy SQL dialect for
       this query. The default value is true. If set to false, the query will
       use BigQuery's standard SQL: https://cloud.google.com/bigquery/sql-
@@ -1347,10 +1371,11 @@ class JobConfigurationQuery(_messages.Message):
   queryParameters = _messages.MessageField('QueryParameter', 12, repeated=True)
   schemaUpdateOptions = _messages.StringField(13, repeated=True)
   tableDefinitions = _messages.MessageField('TableDefinitionsValue', 14)
-  useLegacySql = _messages.BooleanField(15)
-  useQueryCache = _messages.BooleanField(16, default=True)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 17, repeated=True)
-  writeDisposition = _messages.StringField(18)
+  timePartitioning = _messages.MessageField('TimePartitioning', 15)
+  useLegacySql = _messages.BooleanField(16)
+  useQueryCache = _messages.BooleanField(17, default=True)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 18, repeated=True)
+  writeDisposition = _messages.StringField(19)
 
 
 class JobConfigurationTableCopy(_messages.Message):

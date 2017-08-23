@@ -138,19 +138,6 @@ RESOURCE_REGISTRY = {
           table(
             name,
             network.basename(),
-            sourceRanges.list():label=SRC_RANGES,
-            allowed[].map().firewall_rule().list():label=RULES,
-            sourceTags.list():label=SRC_TAGS,
-            targetTags.list():label=TARGET_TAGS
-          )
-        """,),
-    'compute.firewalls.beta':
-        resource_info.ResourceInfo(
-            cache_command='compute firewall-rules list',
-            list_format="""
-          table(
-            name,
-            network.basename(),
             direction,
             priority,
             allowed[].map().firewall_rule().list():label=ALLOW,

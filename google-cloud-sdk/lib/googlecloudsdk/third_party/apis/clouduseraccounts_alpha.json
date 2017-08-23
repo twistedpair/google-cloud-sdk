@@ -5,7 +5,7 @@
  "name": "clouduseraccounts",
  "canonicalName": "Cloud User Accounts",
  "version": "alpha",
- "revision": "20170731",
+ "revision": "20170811",
  "title": "Cloud User Accounts API",
  "description": "Creates and manages users and groups for accessing Google Compute Engine virtual machines.",
  "ownerDomain": "google.com",
@@ -1392,7 +1392,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z0-9](?:[-a-z0-9_]{0,61}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -1541,7 +1541,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z0-9](?:[-a-z0-9_]{0,61}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -1579,7 +1579,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -1849,7 +1849,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z0-9](?:[-a-z0-9_]{0,61}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -2003,7 +2003,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z0-9](?:[-a-z0-9_]{0,61}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -2041,7 +2041,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },

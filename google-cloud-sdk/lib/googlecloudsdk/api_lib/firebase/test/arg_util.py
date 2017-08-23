@@ -277,9 +277,8 @@ def AddBetaArgs(parser):
       action='store_true',
       default=None,
       help='Whether each test runs in its own Instrumentation instance with '
-      'the Android Test Orchestrator (default: run with the Orchestrator if '
-      'runner is compatible, otherwise not. '
-      'Use --no-use-orchestrator to disable). Orchestrator is only compatible '
+      'the Android Test Orchestrator (default: Orchestrator is not used, same '
+      'as specifying --no-use-orchestrator). Orchestrator is only compatible '
       'with AndroidJUnitRunner v1.0 or higher. See '
       'https://developer.android.com/training/testing/junit-runner.html'
       '#using-android-test-orchestrator for more information about Android '

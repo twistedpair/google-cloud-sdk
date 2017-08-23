@@ -230,6 +230,8 @@ class GoogleCloudVideointelligenceV1VideoContext(_messages.Message):
       segment-level labels. If unspecified, defaults to `SHOT_MODE`.
 
   Fields:
+    extractBoundingBoxes: Whether bounding boxes be included in the face
+      annotation output. Should be used with `FACE_DETECTION` enabled.
     labelDetectionMode: If label detection has been requested, what labels
       should be detected in addition to video-level labels or segment-level
       labels. If unspecified, defaults to `SHOT_MODE`.
@@ -263,12 +265,13 @@ class GoogleCloudVideointelligenceV1VideoContext(_messages.Message):
     FRAME_MODE = 2
     SHOT_AND_FRAME_MODE = 3
 
-  labelDetectionMode = _messages.EnumField('LabelDetectionModeValueValuesEnum', 1)
-  labelDetectionModel = _messages.StringField(2)
-  safeSearchDetectionModel = _messages.StringField(3)
-  segments = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 4, repeated=True)
-  shotChangeDetectionModel = _messages.StringField(5)
-  stationaryCamera = _messages.BooleanField(6)
+  extractBoundingBoxes = _messages.BooleanField(1)
+  labelDetectionMode = _messages.EnumField('LabelDetectionModeValueValuesEnum', 2)
+  labelDetectionModel = _messages.StringField(3)
+  safeSearchDetectionModel = _messages.StringField(4)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 5, repeated=True)
+  shotChangeDetectionModel = _messages.StringField(6)
+  stationaryCamera = _messages.BooleanField(7)
 
 
 class GoogleCloudVideointelligenceV1VideoSegment(_messages.Message):
@@ -869,11 +872,8 @@ class VideointelligenceOperationsListRequest(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'videointelligence')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'videointelligence')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'videointelligence')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

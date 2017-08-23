@@ -33,6 +33,20 @@ table(
                     targetServiceAccounts.list():label=TARGET_SVC_ACCT
                 )"""
 
+LIST_WITH_ALL_FIELDS_FORMAT = """\
+table(
+                    name,
+                    network,
+                    direction,
+                    priority,
+                    sourceRanges.list():label=SRC_RANGES,
+                    destinationRanges.list():label=DEST_RANGES,
+                    allowed[].map().firewall_rule().list():label=ALLOW,
+                    denied[].map().firewall_rule().list():label=DENY,
+                    sourceTags.list():label=SRC_TAGS,
+                    targetTags.list():label=TARGET_TAGS
+                )"""
+
 DEFAULT_LIST_FORMAT = """\
     table(
       name,

@@ -25,8 +25,17 @@ from googlecloudsdk.command_lib.util import completers
 DEFAULT_LIST_FORMAT = """\
     table(
       name,
-      backends[].group.list():label=BACKENDS,
+      backends[].group.scoped_suffixes().list():label=BACKENDS,
       protocol
+    )"""
+
+DEFAULT_BETA_LIST_FORMAT = """\
+    table(
+      name,
+      backends[].group.scoped_suffixes().list():label=BACKENDS,
+      protocol,
+      loadBalancingScheme,
+      healthChecks.map().basename().list()
     )"""
 
 

@@ -20,7 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://ml.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -736,15 +736,17 @@
           "enumDescriptions": [
             "The version state is unspecified.",
             "The version is ready for prediction.",
-            "The version is still in the process of creation.",
-            "The version failed to be created, possibly cancelled.\n`error_message` should contain the details of the failure."
+            "The version is in the process of creation.",
+            "The version failed to be created, possibly cancelled.\n`error_message` should contain the details of the failure.",
+            "The version is in the process of deletion."
           ],
           "type": "string",
           "enum": [
             "UNKNOWN",
             "READY",
             "CREATING",
-            "FAILED"
+            "FAILED",
+            "DELETING"
           ]
         },
         "errorMessage": {
@@ -1308,14 +1310,18 @@
             "Unspecified operation type.",
             "An operation to create a new version.",
             "An operation to delete an existing version.",
-            "An operation to delete an existing model."
+            "An operation to delete an existing model.",
+            "An operation to update an existing model.",
+            "An operation to update an existing version."
           ],
           "type": "string",
           "enum": [
             "OPERATION_TYPE_UNSPECIFIED",
             "CREATE_VERSION",
             "DELETE_VERSION",
-            "DELETE_MODEL"
+            "DELETE_MODEL",
+            "UPDATE_MODEL",
+            "UPDATE_VERSION"
           ]
         },
         "modelName": {
@@ -1376,15 +1382,17 @@
           "enumDescriptions": [
             "The version state is unspecified.",
             "The version is ready for prediction.",
-            "The version is still in the process of creation.",
-            "The version failed to be created, possibly cancelled.\n`error_message` should contain the details of the failure."
+            "The version is in the process of creation.",
+            "The version failed to be created, possibly cancelled.\n`error_message` should contain the details of the failure.",
+            "The version is in the process of deletion."
           ],
           "type": "string",
           "enum": [
             "UNKNOWN",
             "READY",
             "CREATING",
-            "FAILED"
+            "FAILED",
+            "DELETING"
           ]
         },
         "errorMessage": {
@@ -1447,14 +1455,18 @@
             "Unspecified operation type.",
             "An operation to create a new version.",
             "An operation to delete an existing version.",
-            "An operation to delete an existing model."
+            "An operation to delete an existing model.",
+            "An operation to update an existing model.",
+            "An operation to update an existing version."
           ],
           "type": "string",
           "enum": [
             "OPERATION_TYPE_UNSPECIFIED",
             "CREATE_VERSION",
             "DELETE_VERSION",
-            "DELETE_MODEL"
+            "DELETE_MODEL",
+            "UPDATE_MODEL",
+            "UPDATE_VERSION"
           ]
         },
         "modelName": {
@@ -1646,6 +1658,87 @@
               },
               "response": {
                 "$ref": "GoogleProtobuf__Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "setIamPolicy": {
+              "id": "ml.projects.jobs.setIamPolicy",
+              "path": "v1/{+resource}:setIamPolicy",
+              "flatPath": "v1/projects/{projectsId}/jobs/{jobsId}:setIamPolicy",
+              "httpMethod": "POST",
+              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "GoogleIamV1__SetIamPolicyRequest"
+              },
+              "response": {
+                "$ref": "GoogleIamV1__Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "getIamPolicy": {
+              "id": "ml.projects.jobs.getIamPolicy",
+              "path": "v1/{+resource}:getIamPolicy",
+              "flatPath": "v1/projects/{projectsId}/jobs/{jobsId}:getIamPolicy",
+              "httpMethod": "GET",
+              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "response": {
+                "$ref": "GoogleIamV1__Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "testIamPermissions": {
+              "id": "ml.projects.jobs.testIamPermissions",
+              "path": "v1/{+resource}:testIamPermissions",
+              "flatPath": "v1/projects/{projectsId}/jobs/{jobsId}:testIamPermissions",
+              "httpMethod": "POST",
+              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/jobs\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "GoogleIamV1__TestIamPermissionsRequest"
+              },
+              "response": {
+                "$ref": "GoogleIamV1__TestIamPermissionsResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"

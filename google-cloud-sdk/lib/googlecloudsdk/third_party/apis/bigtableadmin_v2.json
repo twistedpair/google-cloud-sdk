@@ -20,7 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://bigtableadmin.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
   "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
@@ -1324,7 +1324,7 @@
                   "path": "v2/{+name}:modifyColumnFamilies",
                   "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:modifyColumnFamilies",
                   "httpMethod": "POST",
-                  "description": "Atomically performs a series of column family modifications\non the specified table.",
+                  "description": "Performs a series of column family modifications on the specified table.\nEither all or none of the modifications will occur before this method\nreturns, but data requests received prior to that point may see a table\nwhere only some modifications have taken effect.",
                   "parameters": {
                     "name": {
                       "description": "The unique name of the table whose families should be modified.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",

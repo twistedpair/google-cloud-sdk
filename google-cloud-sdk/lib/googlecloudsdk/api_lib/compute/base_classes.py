@@ -24,7 +24,6 @@ from googlecloudsdk.api_lib.compute import base_classes_resource_registry as res
 from googlecloudsdk.api_lib.compute import client_adapter
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import lister
-from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 from googlecloudsdk.api_lib.compute import property_selector
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import resource_specs
@@ -775,93 +774,6 @@ def GetMultiScopeDescriberHelp(resource, scopes):
                       if ScopeType.zonal_scope in scopes else ''))
                   .format(resource),
   }
-
-
-# TODO(b/37764090) - Remove this mixin with refactoring of instance-groups
-# managed list command away from base_classes.BaseLister.
-class InstanceGroupManagerDynamicProperiesMixin(object):
-  """Mixin class to compute dynamic information for instance groups."""
-
-  def ComputeDynamicProperties(self, args, items):
-    """Add Autoscaler information if Autoscaler is defined for the item."""
-    _ = args
-    # Items are expected to be IGMs.
-    items = list(items)
-    for mig in managed_instance_groups_utils.AddAutoscalersToMigs(
-        migs_iterator=self.ComputeInstanceGroupSize(items=items),
-        client=self.compute_client,
-        resources=self.resources,
-        fail_when_api_not_supported=False):
-      if 'autoscaler' in mig and mig['autoscaler'] is not None:
-        # status is present in autoscaler iff Autoscaler message has embedded
-        # StatusValueValuesEnum defined.
-        if (getattr(mig['autoscaler'], 'status', False) and mig['autoscaler']
-            .status == self.messages.Autoscaler.StatusValueValuesEnum.ERROR):
-          mig['autoscaled'] = 'yes (*)'
-          self._had_errors = True
-        else:
-          mig['autoscaled'] = 'yes'
-      else:
-        mig['autoscaled'] = 'no'
-      yield mig
-
-  def ComputeInstanceGroupSize(self, items):
-    """Add information about Instance Group size."""
-    errors = []
-    items = list(items)
-    zone_refs = [
-        self.resources.Parse(
-            mig['zone'],
-            params={'project': properties.VALUES.core.project.GetOrFail},
-            collection='compute.zones')
-        for mig in items if 'zone' in mig
-    ]
-    region_refs = [
-        self.resources.Parse(
-            mig['region'],
-            params={'project': properties.VALUES.core.project.GetOrFail},
-            collection='compute.regions')
-        for mig in items if 'region' in mig
-    ]
-    group_by_project = managed_instance_groups_utils.GroupByProject
-
-    zonal_instance_groups = []
-    for project, zone_refs in group_by_project(zone_refs).iteritems():
-      zonal_instance_groups.extend(lister.GetZonalResources(
-          service=self.compute.instanceGroups,
-          project=project,
-          requested_zones=set([zone.zone for zone in zone_refs]),
-          filter_expr=None,
-          http=self.http,
-          batch_url=self.batch_url,
-          errors=errors))
-
-    regional_instance_groups = []
-    if getattr(self.compute, 'regionInstanceGroups', None):
-      for project, region_refs in group_by_project(region_refs).iteritems():
-        regional_instance_groups.extend(lister.GetRegionalResources(
-            service=self.compute.regionInstanceGroups,
-            project=project,
-            requested_regions=set([region.region for region in region_refs]),
-            filter_expr=None,
-            http=self.http,
-            batch_url=self.batch_url,
-            errors=errors))
-
-    instance_groups = zonal_instance_groups + regional_instance_groups
-    instance_group_uri_to_size = {ig.selfLink: ig.size
-                                  for ig in instance_groups}
-
-    if errors:
-      utils.RaiseToolException(errors)
-
-    for item in items:
-      self_link = item['selfLink']
-      gm_self_link = self_link.replace(
-          '/instanceGroupManagers/', '/instanceGroups/')
-
-      item['size'] = str(instance_group_uri_to_size.get(gm_self_link, ''))
-      yield item
 
 
 HELP = textwrap.dedent("""\

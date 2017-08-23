@@ -4986,11 +4986,13 @@ class ComputeImagesDeprecateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   deprecationStatus = _messages.MessageField('DeprecationStatus', 1)
@@ -7446,6 +7448,31 @@ class ComputeNetworksListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeNetworksPatchRequest(_messages.Message):
+  """A ComputeNetworksPatchRequest object.
+
+  Fields:
+    network: Name of the network to update.
+    networkResource: A Network resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  network = _messages.StringField(1, required=True)
+  networkResource = _messages.MessageField('Network', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
 class ComputeNetworksRemovePeeringRequest(_messages.Message):
   """A ComputeNetworksRemovePeeringRequest object.
 
@@ -7881,10 +7908,10 @@ class ComputeRegionAutoscalersPatchRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
@@ -7926,11 +7953,13 @@ class ComputeRegionAutoscalersUpdateRequest(_messages.Message):
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and then the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
   """
 
   autoscaler = _messages.StringField(1)
@@ -12780,6 +12809,28 @@ class DisksScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class DistributionPolicy(_messages.Message):
+  """A DistributionPolicy object.
+
+  Fields:
+    zones: A DistributionPolicyZoneConfiguration attribute.
+  """
+
+  zones = _messages.MessageField('DistributionPolicyZoneConfiguration', 1, repeated=True)
+
+
+class DistributionPolicyZoneConfiguration(_messages.Message):
+  """A DistributionPolicyZoneConfiguration object.
+
+  Fields:
+    zone: URL of the zone where managed instance group is spawning instances
+      (for regional resources). Zone has to belong to the region where managed
+      instance group is located.
+  """
+
+  zone = _messages.StringField(1)
+
+
 class Expr(_messages.Message):
   """Represents an expression text. Example:  title: "User account presence"
   description: "Determines whether the request has a user account" expression:
@@ -14513,6 +14564,8 @@ class InstanceGroupManager(_messages.Message):
       of those actions.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    distributionPolicy: Policy valid only for regional managed instance
+      groups.
     failoverAction: The action to perform in case of zone failure. Only one
       value is supported, NO_FAILOVER. The default is NO_FAILOVER.
     fingerprint: [Output Only] The fingerprint of the resource data. You can
@@ -14578,23 +14631,24 @@ class InstanceGroupManager(_messages.Message):
   creationTimestamp = _messages.StringField(3)
   currentActions = _messages.MessageField('InstanceGroupManagerActionsSummary', 4)
   description = _messages.StringField(5)
-  failoverAction = _messages.EnumField('FailoverActionValueValuesEnum', 6)
-  fingerprint = _messages.BytesField(7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  instanceGroup = _messages.StringField(9)
-  instanceTemplate = _messages.StringField(10)
-  kind = _messages.StringField(11, default=u'compute#instanceGroupManager')
-  name = _messages.StringField(12)
-  namedPorts = _messages.MessageField('NamedPort', 13, repeated=True)
-  pendingActions = _messages.MessageField('InstanceGroupManagerPendingActionsSummary', 14)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  serviceAccount = _messages.StringField(17)
-  targetPools = _messages.StringField(18, repeated=True)
-  targetSize = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 20)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 21, repeated=True)
-  zone = _messages.StringField(22)
+  distributionPolicy = _messages.MessageField('DistributionPolicy', 6)
+  failoverAction = _messages.EnumField('FailoverActionValueValuesEnum', 7)
+  fingerprint = _messages.BytesField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  instanceGroup = _messages.StringField(10)
+  instanceTemplate = _messages.StringField(11)
+  kind = _messages.StringField(12, default=u'compute#instanceGroupManager')
+  name = _messages.StringField(13)
+  namedPorts = _messages.MessageField('NamedPort', 14, repeated=True)
+  pendingActions = _messages.MessageField('InstanceGroupManagerPendingActionsSummary', 15)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  serviceAccount = _messages.StringField(18)
+  targetPools = _messages.StringField(19, repeated=True)
+  targetSize = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 21)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 22, repeated=True)
+  zone = _messages.StringField(23)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -15844,7 +15898,7 @@ class Interconnect(_messages.Message):
 
 class InterconnectAttachment(_messages.Message):
   """Protocol definitions for Mixer API to support InterconnectAttachment.
-  Next available tag: 14
+  Next available tag: 18
 
   Enums:
     OperationalStatusValueValuesEnum: [Output Only] The current status of
@@ -16951,6 +17005,9 @@ class Network(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     peerings: [Output Only] List of network peerings for the resource.
+    routingConfig: The network-level routing configuration for this network.
+      Used by Cloud Router to determine what type of network-wide routing
+      behavior to enforce.
     selfLink: [Output Only] Server-defined URL for the resource.
     subnetworks: [Output Only] Server-defined fully-qualified URLs for all
       subnetworks in this network.
@@ -16965,8 +17022,9 @@ class Network(_messages.Message):
   kind = _messages.StringField(7, default=u'compute#network')
   name = _messages.StringField(8)
   peerings = _messages.MessageField('NetworkPeering', 9, repeated=True)
-  selfLink = _messages.StringField(10)
-  subnetworks = _messages.StringField(11, repeated=True)
+  routingConfig = _messages.MessageField('NetworkRoutingConfig', 10)
+  selfLink = _messages.StringField(11)
+  subnetworks = _messages.StringField(12, repeated=True)
 
 
 class NetworkInterface(_messages.Message):
@@ -17085,6 +17143,43 @@ class NetworkPeering(_messages.Message):
   network = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
   stateDetails = _messages.StringField(5)
+
+
+class NetworkRoutingConfig(_messages.Message):
+  """A routing configuration attached to a network resource. The message
+  includes the list of routers associated with the network, and a flag
+  indicating the type of routing behavior to enforce network-wide.
+
+  Enums:
+    RoutingModeValueValuesEnum: The network-wide routing mode to use. If set
+      to REGIONAL, this network's cloud routers will only advertise routes
+      with subnetworks of this network in the same region as the router. If
+      set to GLOBAL, this network's cloud routers will advertise routes with
+      all subnetworks of this network, across regions.
+
+  Fields:
+    routingMode: The network-wide routing mode to use. If set to REGIONAL,
+      this network's cloud routers will only advertise routes with subnetworks
+      of this network in the same region as the router. If set to GLOBAL, this
+      network's cloud routers will advertise routes with all subnetworks of
+      this network, across regions.
+  """
+
+  class RoutingModeValueValuesEnum(_messages.Enum):
+    """The network-wide routing mode to use. If set to REGIONAL, this
+    network's cloud routers will only advertise routes with subnetworks of
+    this network in the same region as the router. If set to GLOBAL, this
+    network's cloud routers will advertise routes with all subnetworks of this
+    network, across regions.
+
+    Values:
+      GLOBAL: <no description>
+      REGIONAL: <no description>
+    """
+    GLOBAL = 0
+    REGIONAL = 1
+
+  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 1)
 
 
 class NetworksAddPeeringRequest(_messages.Message):
@@ -17683,7 +17778,7 @@ class ProjectsGetXpnResources(_messages.Message):
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
-    resources: Serive resources (a.k.a service projects) attached to this
+    resources: Service resources (a.k.a service projects) attached to this
       project as their shared VPC host.
   """
 
@@ -17740,6 +17835,7 @@ class Quota(_messages.Message):
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
       NVIDIA_K80_GPUS: <no description>
+      NVIDIA_P100_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       REGIONAL_AUTOSCALERS: <no description>
@@ -17758,6 +17854,7 @@ class Quota(_messages.Message):
       TARGET_INSTANCES: <no description>
       TARGET_POOLS: <no description>
       TARGET_SSL_PROXIES: <no description>
+      TARGET_TCP_PROXIES: <no description>
       TARGET_VPN_GATEWAYS: <no description>
       URL_MAPS: <no description>
       VPN_TUNNELS: <no description>
@@ -17782,27 +17879,29 @@ class Quota(_messages.Message):
     LOCAL_SSD_TOTAL_GB = 17
     NETWORKS = 18
     NVIDIA_K80_GPUS = 19
-    PREEMPTIBLE_CPUS = 20
-    PREEMPTIBLE_LOCAL_SSD_GB = 21
-    REGIONAL_AUTOSCALERS = 22
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 23
-    ROUTERS = 24
-    ROUTES = 25
-    SECURITY_POLICIES = 26
-    SECURITY_POLICY_RULES = 27
-    SNAPSHOTS = 28
-    SSD_TOTAL_GB = 29
-    SSL_CERTIFICATES = 30
-    STATIC_ADDRESSES = 31
-    SUBNETWORKS = 32
-    TARGET_HTTPS_PROXIES = 33
-    TARGET_HTTP_PROXIES = 34
-    TARGET_INSTANCES = 35
-    TARGET_POOLS = 36
-    TARGET_SSL_PROXIES = 37
-    TARGET_VPN_GATEWAYS = 38
-    URL_MAPS = 39
-    VPN_TUNNELS = 40
+    NVIDIA_P100_GPUS = 20
+    PREEMPTIBLE_CPUS = 21
+    PREEMPTIBLE_LOCAL_SSD_GB = 22
+    REGIONAL_AUTOSCALERS = 23
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 24
+    ROUTERS = 25
+    ROUTES = 26
+    SECURITY_POLICIES = 27
+    SECURITY_POLICY_RULES = 28
+    SNAPSHOTS = 29
+    SSD_TOTAL_GB = 30
+    SSL_CERTIFICATES = 31
+    STATIC_ADDRESSES = 32
+    SUBNETWORKS = 33
+    TARGET_HTTPS_PROXIES = 34
+    TARGET_HTTP_PROXIES = 35
+    TARGET_INSTANCES = 36
+    TARGET_POOLS = 37
+    TARGET_SSL_PROXIES = 38
+    TARGET_TCP_PROXIES = 39
+    TARGET_VPN_GATEWAYS = 40
+    URL_MAPS = 41
+    VPN_TUNNELS = 42
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

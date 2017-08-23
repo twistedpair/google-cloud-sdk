@@ -472,9 +472,8 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
       cluster without interrupting jobs in progress. Timeout specifies how
       long to wait for jobs in progress to finish before forcefully removing
       nodes (and potentially interrupting jobs). Default timeout is 0 (for
-      forceful decommission), and the maximum allowed timeout is 24 hours.
-      Timeouts greater than the maximum timeout will also be truncated to 24
-      hours.Only supported on Dataproc image versions 1.2 and higher.
+      forceful decommission), and the maximum allowed timeout is 1 day.Only
+      supported on Dataproc image versions 1.2 and higher.
     projectId: Required. The ID of the Google Cloud Platform project the
       cluster belongs to.
     region: Required. The Cloud Dataproc region in which to handle the
@@ -2109,11 +2108,8 @@ class YarnApplication(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'dataproc')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'dataproc')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'dataproc')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

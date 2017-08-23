@@ -861,6 +861,7 @@ class TestMatrix(_messages.Message):
       NO_PACKAGE_NAME: The APK manifest does not declare a package name.
       TEST_SAME_AS_APP: The test package and app package are the same.
       NO_INSTRUMENTATION: The test apk does not declare an instrumentation.
+      NO_SIGNATURE: The input app apk does not have a signature.
       INSTRUMENTATION_ORCHESTRATOR_INCOMPATIBLE: The test runner class
         specified by user or in the test APK's manifest file is not compatible
         with Android Test Orchestrator. Orchestrator is only compatible with
@@ -895,16 +896,17 @@ class TestMatrix(_messages.Message):
     NO_PACKAGE_NAME = 5
     TEST_SAME_AS_APP = 6
     NO_INSTRUMENTATION = 7
-    INSTRUMENTATION_ORCHESTRATOR_INCOMPATIBLE = 8
-    NO_TEST_RUNNER_CLASS = 9
-    NO_LAUNCHER_ACTIVITY = 10
-    FORBIDDEN_PERMISSIONS = 11
-    INVALID_ROBO_DIRECTIVES = 12
-    TEST_LOOP_INTENT_FILTER_NOT_FOUND = 13
-    SCENARIO_LABEL_NOT_DECLARED = 14
-    SCENARIO_LABEL_MALFORMED = 15
-    SCENARIO_NOT_DECLARED = 16
-    DEVICE_ADMIN_RECEIVER = 17
+    NO_SIGNATURE = 8
+    INSTRUMENTATION_ORCHESTRATOR_INCOMPATIBLE = 9
+    NO_TEST_RUNNER_CLASS = 10
+    NO_LAUNCHER_ACTIVITY = 11
+    FORBIDDEN_PERMISSIONS = 12
+    INVALID_ROBO_DIRECTIVES = 13
+    TEST_LOOP_INTENT_FILTER_NOT_FOUND = 14
+    SCENARIO_LABEL_NOT_DECLARED = 15
+    SCENARIO_LABEL_MALFORMED = 16
+    SCENARIO_NOT_DECLARED = 17
+    DEVICE_ADMIN_RECEIVER = 18
 
   class StateValueValuesEnum(_messages.Enum):
     """Indicates the current progress of the test matrix (e.g., FINISHED)
@@ -1148,11 +1150,8 @@ class TrafficRule(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'testing')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'testing')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'testing')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

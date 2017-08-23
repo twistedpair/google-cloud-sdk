@@ -14,6 +14,8 @@
 
 """Session Dumper."""
 
+import __builtin__
+import abc
 import copy
 import io
 import json
@@ -21,15 +23,31 @@ import StringIO
 import sys
 
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import yaml_printer
+from googlecloudsdk.core.util import files
 
 
-class _StreamCapturer(io.IOBase):
-  """A file-like object that captures all the information wrote to stream."""
+class _StreamCapturerBase(io.IOBase):
+  """A base class for input/output stream capturers."""
 
   def __init__(self, real_stream):
     self._real_stream = real_stream
     self._capturing_stream = StringIO.StringIO()
+
+  def isatty(self, *args, **kwargs):
+    return True
+
+  def flush(self):
+    self._capturing_stream.flush()
+    self._real_stream.flush()
+
+  def GetValue(self):
+    return self._capturing_stream.getvalue()
+
+
+class OutputStreamCapturer(_StreamCapturerBase):
+  """A file-like object that captures all the information wrote to stream."""
 
   def write(self, *args, **kwargs):
     self._capturing_stream.write(*args, **kwargs)
@@ -39,23 +57,14 @@ class _StreamCapturer(io.IOBase):
     self._capturing_stream.writelines(*args, **kwargs)
     self._real_stream.writelines(*args, **kwargs)
 
-  def isatty(self, *args, **kwargs):
-    return True
 
-  def GetValue(self):
-    return self._capturing_stream.getvalue()
-
-  def flush(self):
-    self._capturing_stream.flush()
-    self._real_stream.flush()
-
-
-class _InputStreamCapturer(io.IOBase):
+class InputStreamCapturer(_StreamCapturerBase):
   """A file-like object that captures all the information read from stream."""
 
-  def __init__(self, real_stream):
-    self._real_stream = real_stream
-    self._capturing_stream = StringIO.StringIO()
+  def read(self, *args, **kwargs):
+    result = self._real_stream.read(*args, **kwargs)
+    self._capturing_stream.write(result)
+    return result
 
   def readline(self, *args, **kwargs):
     result = self._real_stream.readline(*args, **kwargs)
@@ -67,11 +76,91 @@ class _InputStreamCapturer(io.IOBase):
     self._capturing_stream.writelines(result)
     return result
 
-  def isatty(self, *args, **kwargs):
+
+class FileIoCapturerBase(object):
+  """A base class to capture fileIO."""
+  __metaclass__ = abc.ABCMeta
+
+  def __init__(self):
+    self._outputs = []
+    self._private_outputs = []
+    self._real_open = __builtin__.open
+    self._real_private = files.OpenForWritingPrivate
+
+  def Mock(self):
+    __builtin__.open = self.Open
+    files.OpenForWritingPrivate = self.OpenForWritingPrivate
+
+  @abc.abstractmethod
+  def Open(self, name, mode='r', buffering=-1):
+    pass
+
+  @abc.abstractmethod
+  def OpenForWritingPrivate(self, path, binary=False):
+    pass
+
+  def Unmock(self):
+    __builtin__.open = self._real_open
+    files.OpenForWritingPrivate = self._real_private
+
+  def GetOutputs(self):
+    return self._GetResult(self._outputs)
+
+  def GetPrivateOutputs(self):
+    return self._GetResult(self._private_outputs)
+
+  @staticmethod
+  def _GetResult(array):
+    result = []
+    for f in array:
+      f['capturer'].flush()
+      result.append({
+          'name': f['name'],
+          'content': f['capturer'].GetValue() if hasattr(
+              f['capturer'], 'GetValue') else f['capturer'].getvalue()
+      })
+    return result
+
+  @staticmethod
+  def _ShouldCaptureFile(name, frame):
+    if name == properties.VALUES.core.capture_session_file.Get():
+      return False
+    if name.endswith('.py'):
+      if frame.f_code.co_name in ('updatecache',):
+        return False
     return True
 
-  def GetValue(self):
-    return self._capturing_stream.getvalue()
+  @staticmethod
+  def _Save(array, name, capturer):
+    array.append({'name': name, 'capturer': capturer})
+
+
+class FileIoCapturer(FileIoCapturerBase):
+  """A class to capture all the fileIO of the session."""
+
+  def __init__(self):
+    super(FileIoCapturer, self).__init__()
+    self._inputs = []
+    self.Mock()
+
+  def Open(self, name, mode='r', buffering=-1):
+    if not self._ShouldCaptureFile(name, sys._getframe().f_back):  # pylint: disable=protected-access
+      return self._real_open(name, mode, buffering)
+    if 'w' in mode:
+      capturer = OutputStreamCapturer(self._real_open(name, mode, buffering))
+      self._Save(self._outputs, name, capturer)
+    else:
+      capturer = InputStreamCapturer(self._real_open(name, mode, buffering))
+      self._Save(self._inputs, name, capturer)
+    return capturer
+
+  def OpenForWritingPrivate(self, path, binary=False):
+    capturer = OutputStreamCapturer(self._real_private(path, binary))
+    self._Save(self._private_outputs, path, capturer)
+    return capturer
+
+  def GetInputs(self):
+    return self._GetResult(self._inputs)
 
 
 class SessionCapturer(object):
@@ -81,14 +170,17 @@ class SessionCapturer(object):
   def __init__(self, capture_streams=True):
     self._records = []
     if capture_streams:
-      self._streams = (_StreamCapturer(sys.stdout),
-                       _StreamCapturer(sys.stderr),)
+      self._streams = (OutputStreamCapturer(sys.stdout),
+                       OutputStreamCapturer(sys.stderr),)
       sys.stdout, sys.stderr = self._streams  # pylint: disable=unpacking-non-sequence
       log.Reset(*self._streams)
-      self._stdin = _InputStreamCapturer(sys.stdin)
+      self._stdin = InputStreamCapturer(sys.stdin)
       sys.stdin = self._stdin
+      self._fileio = FileIoCapturer()
     else:
       self._streams = None
+      self._stdin = None
+      self._fileio = None
 
   def CaptureHttpRequest(self, uri, method, body, headers):
     self._records.append({
@@ -107,12 +199,16 @@ class SessionCapturer(object):
         }})
 
   def CaptureArgs(self, args):
-    specified_args = args.GetSpecifiedArgs()
-    if '--capture-session-file' in specified_args:
-      specified_args.pop('--capture-session-file')
+    specified_args = {}
+    command = args.command_path[1:]
+    for k, v in args.GetSpecifiedArgs().iteritems():
+      if not k.startswith('--'):
+        command.append(v)
+      elif k != '--capture-session-file':
+        specified_args[k] = v
     self._records.append({
         'args': {
-            'command': ' '.join(args.command_path[1:]),
+            'command': ' '.join(command),
             'specified_args': specified_args
         }
     })
@@ -126,25 +222,70 @@ class SessionCapturer(object):
         'properties': values
     })
 
+  def CaptureException(self, exc):
+    self._records.append({
+        'exception': {
+            'type': str(type(exc)),
+            'message': exc.message
+        }
+    })
+
   def Print(self, stream, printer_class=yaml_printer.YamlPrinter):
     self._Finalize()
     printer = printer_class(stream)
-    for record in self._records:
+    for record in self._FinalizeRecords(self._records):
       printer.AddRecord(record)
 
   def _Finalize(self):
     if self._streams is not None:
-      for stream in self._streams:
+      for stream in self._streams + (self._stdin,):
         stream.flush()
+      self._fileio.Unmock()
+      output = {}
+      if self._streams[0].GetValue():
+        output['stdout'] = self._streams[0].GetValue()
+      if self._streams[1].GetValue():
+        output['stderr'] = self._streams[1].GetValue()
+      if self._fileio.GetOutputs():
+        output['files'] = self._fileio.GetOutputs()
+      if self._fileio.GetPrivateOutputs():
+        output['private_files'] = self._fileio.GetPrivateOutputs()
       self._records.append({
-          'output': {
-              'stdout': self._streams[0].GetValue(),
-              'stderr': self._streams[1].GetValue()
-          }
+          'output': output
       })
+      inputs = {}
+      if self._stdin.GetValue():
+        inputs['stdin'] = self._stdin.GetValue()
+      if self._fileio.GetInputs():
+        inputs['files'] = self._fileio.GetInputs()
       self._records.insert(2, {
-          'input': self._stdin.GetValue()
+          'input': inputs
       })
+
+  @staticmethod
+  def _FinalizePrimitive(primitive):
+    project = properties.VALUES.core.project.Get()
+    if not project:
+      return primitive
+    if isinstance(primitive, basestring):
+      return primitive.replace(project, 'fake-project')
+    elif isinstance(primitive, (int, float,)):
+      return primitive
+    else:
+      raise Exception('Unknown primitive type {}'.format(type(primitive)))
+
+  def _FinalizeRecords(self, records):
+    if isinstance(records, dict):
+      return {
+          self._FinalizePrimitive(k):
+              self._FinalizeRecords(v) for k, v in records.iteritems()
+      }
+    elif isinstance(records, list):
+      return [
+          self._FinalizeRecords(r) for r in records
+      ]
+    else:
+      return self._FinalizePrimitive(records)
 
   def _ToList(self, response):
     """Transforms a response to a batch request into a list.

@@ -19,7 +19,7 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 DEFAULT_LIST_FORMAT = """\
     table(
       name,
-      defaultService
+      defaultService.type_suffix()
     )"""
 
 

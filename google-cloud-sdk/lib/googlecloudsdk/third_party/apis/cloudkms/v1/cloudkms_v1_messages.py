@@ -622,8 +622,12 @@ class CryptoKey(_messages.Message):
     PurposeValueValuesEnum: The immutable purpose of this CryptoKey.
       Currently, the only acceptable purpose is ENCRYPT_DECRYPT.
 
+  Messages:
+    LabelsValue: Labels with user defined metadata.
+
   Fields:
     createTime: Output only. The time at which this CryptoKey was created.
+    labels: Labels with user defined metadata.
     name: Output only. The resource name for this CryptoKey in the format
       `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     nextRotationTime: At next_rotation_time, the Key Management Service will
@@ -654,12 +658,37 @@ class CryptoKey(_messages.Message):
     CRYPTO_KEY_PURPOSE_UNSPECIFIED = 0
     ENCRYPT_DECRYPT = 1
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels with user defined metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  nextRotationTime = _messages.StringField(3)
-  primary = _messages.MessageField('CryptoKeyVersion', 4)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 5)
-  rotationPeriod = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  nextRotationTime = _messages.StringField(4)
+  primary = _messages.MessageField('CryptoKeyVersion', 5)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 6)
+  rotationPeriod = _messages.StringField(7)
 
 
 class CryptoKeyVersion(_messages.Message):
@@ -1218,14 +1247,10 @@ class UpdateCryptoKeyPrimaryVersionRequest(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    Rule, 'in_', 'in',
-    package=u'cloudkms')
+    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'cloudkms')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'cloudkms')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'cloudkms')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

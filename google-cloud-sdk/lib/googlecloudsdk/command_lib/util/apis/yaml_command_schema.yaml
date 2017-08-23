@@ -1,0 +1,130 @@
+# Copyright 2017 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+title: command
+description: The specification for a full calliope command
+type: array
+items:
+  type: object
+  additionalProperties: false
+  required: [ request, help_text, resource_arg ]
+  properties:
+
+    # Corresponds to the Hidden decorator for command classes.
+    is_hidden: { type: boolean }
+
+    # Corresponds to the ReleaseTracks decorator for command classes.
+    release_tracks:
+      type: array
+      items: { enum: [ ALPHA, BETA, GA ] }
+
+    command_type: { type: enum: [ DESCRIBE, LIST ] }
+
+    # Corresponds to the detailed_help attribute on command classes.
+    help_text:
+      type: object
+      additionalProperties: false
+      required: [ brief, description ]
+      patternProperties:
+        brief: { type: string }
+        description: { type: string }
+        examples: { type: string }
+        .*: { type: string }
+
+    request:
+      description: Describes information about the API that this command calls
+      type: object
+      additionalProperties: false
+      required: [ collection ]
+      properties:
+        collection: { type: string }
+        api_version: { type: string }
+        # Method will default to reasonable values based on command type.
+        method: {type: string }
+
+    async:
+      description: Describes how to poll and report the result of the operation
+      type: object
+      additionalProperties: false
+      required: [ collection ]
+      properties:
+        collection: { type: string }
+        method: { type: string }
+        resource_get_method: { type: string }
+        state:
+          type: object
+          additionalProperties: false
+          required: [ field, success_values ]
+          properties:
+            # The field to check for status. If polling continues until it
+            # matches something in success_values or error_values.
+            field: { type: string }
+            success_values: { type: array, items: { type: [ boolean, string ] } }
+            error_values: { type: array, items: { type: [ boolean, string ] } }
+        error:
+          type: object
+          additionalProperties: false
+          required: [ field ]
+          properties:
+            # If this field is set, it will be used to generate an error message
+            # and polling stops.
+            field: { type: string }
+
+    resource_arg:
+      description: Describes how to generate the resource arg and its flags
+      type: object
+      additionalProperties: false
+      required: [ help_text ]
+      properties:
+        # The help text for the overall resource arg group.
+        help_text: { type: string }
+        # The field in the response that is the id of the resource. This is used
+        # to construct a URI for resources out of the result of a list command.
+        response_id_field: { type: string }
+
+        request_params:
+          type: object
+          patternProperties:
+            # The key is the API parameter name.
+            .*:
+              type: object
+              additionalProperties: false
+              required: [ help_text ]
+              properties:
+                # The help text for this individual flag.
+                help_text: { type: string }
+                # The name of the argument as it should appear in the CLI. If
+                # not given it will match the API field name.
+                arg_name: { type: string }
+                # The module path to an optional validation function to call on
+                #the value.
+                validation_func: { type: string }
+                # The module path to a class that implements remote completion
+                # for this argument.
+                completer: { type: string }
+
+    input:
+      type: object
+      additionalProperties: false
+      properties:
+        # An optional confirmation prompt to show before actually performing the
+        # operation.
+        confirmation_prompt: { type: string }
+
+    output:
+      type: object
+      additionalProperties: false
+      properties:
+        # Corresponds to the command settings the default output format.
+        format: { type: string }

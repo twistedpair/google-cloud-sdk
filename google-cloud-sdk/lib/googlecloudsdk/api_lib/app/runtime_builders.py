@@ -264,9 +264,7 @@ class BuilderReference(object):
       deprecation_message: str, A message to print when using this builder or
         None if not deprecated.
     """
-    # TODO(b/37542869): We need the Admin API to be able to accept arbitrary
-    # runtimes names. Until then, just mark them as 'custom'.
-    self.runtime = 'custom' if runtime.startswith('gs://') else runtime
+    self.runtime = runtime
     self.build_file_uri = build_file_uri
     self.deprecation_message = deprecation_message
 

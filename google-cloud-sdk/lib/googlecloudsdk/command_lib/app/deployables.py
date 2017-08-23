@@ -319,7 +319,7 @@ def GetDeployables(args, stager, path_matchers):
   """
   if not args:
     args = ['.']
-  paths = map(os.path.realpath, args)
+  paths = map(os.path.abspath, args)
   configs = Configs()
   services = Services()
   for path in paths:

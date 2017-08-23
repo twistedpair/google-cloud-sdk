@@ -155,6 +155,7 @@ class Node(_messages.Message):
       node, the CIDR block conflicts with any subnetworks in the user's
       provided network, or the provided network is peered with another network
       that is using that CIDR block.
+    createTime: The time when the node was created. Output only.
     description: User-supplied description of the TPU. Maximum of 512
       characters.
     healthDescription: Human readable description of why the service is
@@ -172,9 +173,9 @@ class Node(_messages.Message):
     port: The network port for the TPU as visible to other GCE instances.
       Output only.
     serviceAccount: The service account used to run the tensor flow services
-      within the node. To share resources, including GCS data, with the tensor
-      flow job running in the Node this account must have permissions to that
-      data. Output only.
+      within the node. To share resources, including Google Cloud Storage
+      data, with the Tensorflow job running in the Node, this account must
+      have permissions to that data. Output only.
     state: This contains a current state for the accelerator. Output only.
     tensorflowVersion: The version of Tensorflow running in the Node.
   """
@@ -202,16 +203,17 @@ class Node(_messages.Message):
 
   acceleratorType = _messages.StringField(1)
   cidrBlock = _messages.StringField(2)
-  description = _messages.StringField(3)
-  healthDescription = _messages.StringField(4)
-  ipAddress = _messages.StringField(5)
-  machineType = _messages.StringField(6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  port = _messages.StringField(9)
-  serviceAccount = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  tensorflowVersion = _messages.StringField(12)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  healthDescription = _messages.StringField(5)
+  ipAddress = _messages.StringField(6)
+  machineType = _messages.StringField(7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  port = _messages.StringField(10)
+  serviceAccount = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  tensorflowVersion = _messages.StringField(13)
 
 
 class Operation(_messages.Message):
@@ -455,7 +457,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details.  There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -526,11 +528,14 @@ class TpuProjectsLocationsNodesCreateRequest(_messages.Message):
     node: A Node resource to be passed as the request body.
     nodeId: The unqualified resource name.
     parent: The parent resource name.
+    serviceAccount: Allows user to set the service account running on the TPU
+      node's workers.
   """
 
   node = _messages.MessageField('Node', 1)
   nodeId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  serviceAccount = _messages.StringField(4)
 
 
 class TpuProjectsLocationsNodesDeleteRequest(_messages.Message):
@@ -573,9 +578,11 @@ class TpuProjectsLocationsNodesReimageRequest(_messages.Message):
 
   Fields:
     name: The resource name.
+    tensorflowVersion: The version for reimage to create.
   """
 
   name = _messages.StringField(1, required=True)
+  tensorflowVersion = _messages.StringField(2)
 
 
 class TpuProjectsLocationsNodesResetRequest(_messages.Message):
@@ -586,6 +593,41 @@ class TpuProjectsLocationsNodesResetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class TpuProjectsLocationsNodesUpdateStateRequest(_messages.Message):
+  """A TpuProjectsLocationsNodesUpdateStateRequest object.
+
+  Enums:
+    StateValueValuesEnum: The state the node should be in after update.
+
+  Fields:
+    name: The resource name.
+    state: The state the node should be in after update.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """The state the node should be in after update.
+
+    Values:
+      STATE_UNSPECIFIED: <no description>
+      CREATING: <no description>
+      READY: <no description>
+      RESTARTING: <no description>
+      REIMAGING: <no description>
+      DELETING: <no description>
+      REPAIRING: <no description>
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    RESTARTING = 3
+    REIMAGING = 4
+    DELETING = 5
+    REPAIRING = 6
+
+  name = _messages.StringField(1, required=True)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class TpuProjectsLocationsOperationsDeleteRequest(_messages.Message):
@@ -625,11 +667,8 @@ class TpuProjectsLocationsOperationsListRequest(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'tpu')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'tpu')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'tpu')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

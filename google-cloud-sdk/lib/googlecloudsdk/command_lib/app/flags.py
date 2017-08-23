@@ -47,6 +47,13 @@ IGNORE_CERTS_FLAG = base.Argument(
     default=False,
     help=argparse.SUPPRESS)
 
+FIREWALL_PRIORITY_FLAG = base.Argument(
+    'priority',
+    help=('An integer between 1 and 2^32-1 which indicates the evaluation order'
+          ' of rules. Lowest priority rules are evaluated first. The handle '
+          '`default` may also be used to refer to the final rule at priority'
+          ' 2^32-1 which is always present in a set of rules.'))
+
 LEVEL = base.Argument(
     '--level',
     help='Filter entries with severity equal to or higher than a given level.',
@@ -145,6 +152,22 @@ def AddSslCertificateFlags(parser, required):
       PEM encoded with header and footer and must be 2048 bits
       or fewer.
         """)
+
+
+def AddFirewallRulesFlags(parser, required):
+  """Add the common flags to a firewall-rules command."""
+
+  parser.add_argument('--source-range',
+                      required=required,
+                      help=('An IP address or range in CIDR notation or'
+                            ' the ```*``` wildcard to match all traffic.'))
+  parser.add_argument('--action',
+                      required=required,
+                      choices=['ALLOW', 'DENY'],
+                      type=lambda x: x.upper(),
+                      help='Allow or deny matched traffic.')
+  parser.add_argument(
+      '--description', help='A text description of the rule.')
 
 
 def ValidateDockerBuildFlag(unused_value):

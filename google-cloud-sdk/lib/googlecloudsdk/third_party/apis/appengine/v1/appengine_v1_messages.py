@@ -1042,13 +1042,16 @@ class ManualScaling(_messages.Message):
 
 
 class Network(_messages.Message):
-  """Extra network settings. Only applicable for VM runtimes.
+  """Extra network settings. Only applicable for App Engine flexible
+  environment versions
 
   Fields:
     forwardedPorts: List of ports, or port pairs, to forward from the virtual
-      machine to the application container.
-    instanceTag: Tag to apply to the VM instance during creation.
-    name: Google Cloud Platform network where the virtual machines are
+      machine to the application container. Only applicable for App Engine
+      flexible environment versions.
+    instanceTag: Tag to apply to the VM instance during creation. Only
+      applicable for for App Engine flexible environment versions.
+    name: Google Compute Engine network where the virtual machines are
       created. Specify the short name, not the resource path.Defaults to
       default.
     subnetworkName: Google Cloud Platform sub-network where the virtual
@@ -1063,7 +1066,8 @@ class Network(_messages.Message):
       network. If the network the VM instance is being created in is a custom
       Subnet Mode Network, then the subnetwork_name must be specified and the
       IP address is created from the IPCidrRange of the subnetwork.If
-      specified, the subnetwork must exist in the same region as the Flex app.
+      specified, the subnetwork must exist in the same region as the App
+      Engine flexible environment application.
   """
 
   forwardedPorts = _messages.StringField(1, repeated=True)
@@ -1941,7 +1945,8 @@ class Version(_messages.Message):
       memory over time.
     name: Full path to the Version resource in the API. Example:
       apps/myapp/services/default/versions/v1.@OutputOnly
-    network: Extra network settings. Only applicable for VM runtimes.
+    network: Extra network settings. Only applicable for App Engine flexible
+      environment versions.
     nobuildFilesRegex: Files that match this pattern will not be built into
       this version. Only applicable for Go runtimes.Only returned in GET
       requests if view=FULL is set.
@@ -2125,11 +2130,8 @@ class ZipInfo(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'appengine')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'appengine')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'appengine')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

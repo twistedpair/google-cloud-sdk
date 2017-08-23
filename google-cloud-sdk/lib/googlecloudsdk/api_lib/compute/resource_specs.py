@@ -861,27 +861,6 @@ _SPECS_V1 = {
         editables=None
     ),
 
-    'urlMaps': _InternalSpec(
-        message_class_name='UrlMap',
-        table_cols=[
-            ('NAME', 'name'),
-            ('DEFAULT_SERVICE', 'defaultService'),
-        ],
-        transformations=[
-            ('defaultService', path_simplifier.TypeSuffix),
-            ('pathMatchers[].defaultService', path_simplifier.TypeSuffix),
-            ('pathMatchers[].pathRules[].service', path_simplifier.TypeSuffix),
-            ('tests[].service', path_simplifier.TypeSuffix),
-        ],
-        editables=[
-            'defaultService',
-            'description',
-            'hostRules',
-            'pathMatchers',
-            'tests',
-        ],
-    ),
-
     'users': _InternalSpec(
         message_class_name='User',
         table_cols=[
@@ -1010,25 +989,6 @@ _SPECS_ALPHA['instanceGroupManagers'] = _InternalSpec(
     ],
     editables=None,
     )
-_SPECS_ALPHA['urlMaps'] = _InternalSpec(
-    message_class_name='UrlMap',
-    table_cols=[
-        ('NAME', 'name'),
-        ('DEFAULT_SERVICE', 'defaultService'),
-    ],
-    transformations=[
-        ('defaultService', path_simplifier.TypeSuffix),
-        ('pathMatchers[].defaultService', path_simplifier.TypeSuffix),
-        ('pathMatchers[].pathRules[].service', path_simplifier.TypeSuffix),
-        ('tests[].service', path_simplifier.TypeSuffix),
-    ],
-    editables=[
-        'defaultService',
-        'description',
-        'hostRules',
-        'pathMatchers',
-        'tests',
-    ])
 
 
 def _GetSpecsForVersion(api_version):

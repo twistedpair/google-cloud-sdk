@@ -34,6 +34,7 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.projects_histories_executions_clusters = self.ProjectsHistoriesExecutionsClustersService(self)
     self.projects_histories_executions_steps_perfMetricsSummary = self.ProjectsHistoriesExecutionsStepsPerfMetricsSummaryService(self)
     self.projects_histories_executions_steps_perfSampleSeries_samples = self.ProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesService(self)
     self.projects_histories_executions_steps_perfSampleSeries = self.ProjectsHistoriesExecutionsStepsPerfSampleSeriesService(self)
@@ -42,6 +43,44 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
     self.projects_histories_executions = self.ProjectsHistoriesExecutionsService(self)
     self.projects_histories = self.ProjectsHistoriesService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsHistoriesExecutionsClustersService(base_api.BaseApiService):
+    """Service class for the projects_histories_executions_clusters resource."""
+
+    _NAME = u'projects_histories_executions_clusters'
+
+    def __init__(self, client):
+      super(ToolresultsV1beta3.ProjectsHistoriesExecutionsClustersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists Screenshot Clusters.
+
+Returns the list of screenshot clusters corresponding to an execution. Screenshot clusters are created after the execution is finished. Clusters are created from a set of screenshots. Between any two screenshots, a matching score is calculated based off their metadata that determines how similar they are. Screenshots are placed in the cluster that has screens which have the highest matching scores.
+
+      Args:
+        request: (ToolresultsProjectsHistoriesExecutionsClustersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListScreenshotClustersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'toolresults.projects.histories.executions.clusters.list',
+        ordered_params=[u'projectId', u'historyId', u'executionId'],
+        path_params=[u'executionId', u'historyId', u'projectId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/clusters',
+        request_field='',
+        request_type_name=u'ToolresultsProjectsHistoriesExecutionsClustersListRequest',
+        response_type_name=u'ListScreenshotClustersResponse',
+        supports_download=False,
+    )
 
   class ProjectsHistoriesExecutionsStepsPerfMetricsSummaryService(base_api.BaseApiService):
     """Service class for the projects_histories_executions_steps_perfMetricsSummary resource."""

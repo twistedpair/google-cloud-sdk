@@ -544,9 +544,9 @@ class Device(_messages.Message):
   """The device resource.
 
   Enums:
-    EnabledStateValueValuesEnum: If disabled, connections from this device
-      will fail. Can be used to temporarily prevent the device from connecting
-      if, for example, the sensor is generating bad data and needs
+    EnabledStateValueValuesEnum: If a device is disabled, communication from
+      it will be blocked. Can be used to temporarily prevent the device from
+      connecting if, for example, the sensor is generating bad data and needs
       maintenance.
 
   Fields:
@@ -559,9 +559,10 @@ class Device(_messages.Message):
       credential rotation without interruption, multiple device credentials
       can be bound to this device. No more than 3 credentials can be bound to
       a single device at a time.
-    enabledState: If disabled, connections from this device will fail. Can be
-      used to temporarily prevent the device from connecting if, for example,
-      the sensor is generating bad data and needs maintenance.
+    enabledState: If a device is disabled, communication from it will be
+      blocked. Can be used to temporarily prevent the device from connecting
+      if, for example, the sensor is generating bad data and needs
+      maintenance.
     id: The user-defined device identifier. The device ID must be unique
       within a device registry.
     lastConfigAckTime: [Output only] The last time a cloud-to-device config
@@ -591,15 +592,19 @@ class Device(_messages.Message):
   """
 
   class EnabledStateValueValuesEnum(_messages.Enum):
-    """If disabled, connections from this device will fail. Can be used to
-    temporarily prevent the device from connecting if, for example, the sensor
-    is generating bad data and needs maintenance.
+    """If a device is disabled, communication from it will be blocked. Can be
+    used to temporarily prevent the device from connecting if, for example,
+    the sensor is generating bad data and needs maintenance.
 
     Values:
       UNSPECIFIED_ENABLED_STATE: No enabled state specified. If not specified,
-        defaults to enabled.
-      DEVICE_ENABLED: Enables a device. By default, devices will be enabled.
-      DEVICE_DISABLED: Disables a device.
+        defaults to enabled (communication to Cloud IoT Core allowed).
+      DEVICE_ENABLED: Enables a device. By default, devices are enabled,
+        allowing communication from the device to Cloud IoT Core. When a
+        device is disabled, it is blocked from communicating with Cloud IoT
+        Core.
+      DEVICE_DISABLED: Disables a device, blocking all communication from it
+        to Cloud IoT Core.
     """
     UNSPECIFIED_ENABLED_STATE = 0
     DEVICE_ENABLED = 1
@@ -1169,14 +1174,10 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    Rule, 'in_', 'in',
-    package=u'cloudiot')
+    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'cloudiot')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'cloudiot')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'cloudiot')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

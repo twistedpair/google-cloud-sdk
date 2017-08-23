@@ -370,6 +370,28 @@ def _GetDockerVersion():
   return distutils_version.LooseVersion(stdoutdata.strip("'"))
 
 
+def _IsExpectedErrorLine(line):
+  """Returns whether or not the given line was expected from the Docker client.
+
+  Args:
+    line: The line recieved in stderr from Docker
+  Returns:
+    True if the line was expected, False otherwise.
+  """
+  expected_line_substrs = [
+      # --email is deprecated
+      '--email',
+      # login success
+      'login credentials saved in',
+      # Use stdin for passwords
+      'WARNING! Using --password via the CLI is insecure. Use --password-stdin.'
+  ]
+  for expected_line_substr in expected_line_substrs:
+    if expected_line_substr in line:
+      return True
+  return False
+
+
 def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
   """Reads docker's output and surfaces unexpected lines.
 
@@ -392,9 +414,7 @@ def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
       log.out.Print(line)  # log.out => stdout
 
   for line in stderr:
-    # Swallow warnings about --email and 'saved in', surface any other error
-    # output.
-    if ('--email' not in line) and ('login credentials saved in' not in line):
+    if not _IsExpectedErrorLine(line):
       line = '%s%s' % (line, os.linesep)
       log.status.Print(line)  # log.status => stderr
 

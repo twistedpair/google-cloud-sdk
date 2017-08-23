@@ -20,7 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://datapol.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
   "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
@@ -545,6 +545,34 @@
           "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, the\nfollowing default mask is used:\npaths: \"bindings, etag\"\nThis field is only used by Cloud IAM.",
           "type": "string",
           "format": "google-fieldmask"
+        }
+      }
+    },
+    "TestIamPermissionsRequest": {
+      "id": "TestIamPermissionsRequest",
+      "description": "Request message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "The set of permissions to check for the `resource`. Permissions with\nwildcards (such as '*' or 'storage.*') are not allowed. For more\ninformation see\n[IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TestIamPermissionsResponse": {
+      "id": "TestIamPermissionsResponse",
+      "description": "Response message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is\nallowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1079,6 +1107,35 @@
             "https://www.googleapis.com/auth/xapi.zoo"
           ]
         },
+        "testIamPermissions": {
+          "id": "datapol.taxonomyStores.testIamPermissions",
+          "path": "v1alpha1/{+resource}:testIamPermissions",
+          "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}:testIamPermissions",
+          "httpMethod": "POST",
+          "description": "Return permissions that the caller has on the given taxonomy store\nresource.",
+          "parameters": {
+            "resource": {
+              "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+              "location": "path",
+              "required": true,
+              "pattern": "^taxonomyStores\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "resource"
+          ],
+          "request": {
+            "$ref": "TestIamPermissionsRequest"
+          },
+          "response": {
+            "$ref": "TestIamPermissionsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/xapi.zoo"
+          ]
+        },
         "copy": {
           "id": "datapol.taxonomyStores.copy",
           "path": "v1alpha1/{+parent}:copy",
@@ -1318,6 +1375,35 @@
               },
               "response": {
                 "$ref": "Policy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/xapi.zoo"
+              ]
+            },
+            "testIamPermissions": {
+              "id": "datapol.taxonomyStores.dataTaxonomies.testIamPermissions",
+              "path": "v1alpha1/{+resource}:testIamPermissions",
+              "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}:testIamPermissions",
+              "httpMethod": "POST",
+              "description": "Return permissions that the caller has on the given taxonomy resource.",
+              "parameters": {
+                "resource": {
+                  "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^taxonomyStores\/[^\/]+\/dataTaxonomies\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "resource"
+              ],
+              "request": {
+                "$ref": "TestIamPermissionsRequest"
+              },
+              "response": {
+                "$ref": "TestIamPermissionsResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",

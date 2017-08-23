@@ -32,18 +32,6 @@ RESOURCE_REGISTRY = {
             open
           )
         """,),
-
-    # cloud key management system
-    'cloudkms.projects.locations':
-        resource_info.ResourceInfo(
-            bypass_cache=True,
-            list_command='kms locations list --format=value(location_id)',
-            list_format="""
-          table(
-            locationId
-          )
-        """,),
-
     # Cloud SDK client side resources
 
     # compute

@@ -20,7 +20,8 @@
   "servicePath": "",
   "baseUrl": "https://cloudfunctions.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -282,14 +283,20 @@
             "Language not specified.",
             "Automatic language detection to be performed by Cloud Functions.",
             "Node.js.",
-            "Python."
+            "Python.",
+            "Go.",
+            "Java.",
+            "C#."
           ],
           "type": "string",
           "enum": [
             "LANGUAGE_UNSPECIFIED",
             "AUTO",
             "NODE_JS",
-            "PYTHON"
+            "PYTHON",
+            "GO",
+            "JAVA",
+            "C_SHARP"
           ]
         },
         "timeout": {
@@ -383,6 +390,10 @@
         "retryPolicy": {
           "description": "Specifies retry policy for failed executions.",
           "$ref": "RetryPolicy"
+        },
+        "failurePolicy": {
+          "description": "Specifies policy for failed executions.",
+          "$ref": "FailurePolicy"
         }
       }
     },
@@ -395,6 +406,24 @@
           "description": "If set to false (default), then a failed function execution will not be\nretried.\nIf set to true, then a function execution will be retried on any failure.\nA failed event will be retried up to 7 days with an exponential backoff\n(capped at 10 seconds).\nRetried execution is charged as any other execution.",
           "type": "boolean"
         }
+      }
+    },
+    "FailurePolicy": {
+      "id": "FailurePolicy",
+      "description": "Describes the policy in case of function's execution failure.\nIf empty, then defaults to ignoring failures (i.e. not retrying them).",
+      "type": "object",
+      "properties": {
+        "retry": {
+          "description": "If specified, then the function will be retried in case of a failure.",
+          "$ref": "Retry"
+        }
+      }
+    },
+    "Retry": {
+      "id": "Retry",
+      "description": "Describes the retry policy in case of function's execution failure.\nA function execution will be retried on any failure.\nA failed execution will be retried up to 7 days with an exponential backoff\n(capped at 10 seconds).\nRetried execution is charged as any other execution.",
+      "type": "object",
+      "properties": {
       }
     },
     "CallFunctionRequest": {
@@ -669,34 +698,6 @@
       "resources": {
         "locations": {
           "methods": {
-            "generateUploadUrl": {
-              "id": "cloudfunctions.projects.locations.generateUploadUrl",
-              "path": "v1beta2/{+location}:generateUploadUrl",
-              "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}:generateUploadUrl",
-              "httpMethod": "POST",
-              "description": "Returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control\/signed-urls\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.",
-              "parameters": {
-                "location": {
-                  "description": "The project and location in which the Google Cloud Storage signed URL\nshould be generated, specified in the format `projects\/*\/locations\/*",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "location"
-              ],
-              "request": {
-                "$ref": "GenerateUploadUrlRequest"
-              },
-              "response": {
-                "$ref": "GenerateUploadUrlResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ]
-            },
             "list": {
               "id": "cloudfunctions.projects.locations.list",
               "path": "v1beta2/{+name}/locations",
@@ -908,6 +909,34 @@
                   },
                   "response": {
                     "$ref": "CallFunctionResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "generateUploadUrl": {
+                  "id": "cloudfunctions.projects.locations.functions.generateUploadUrl",
+                  "path": "v1beta2/{+parent}/functions:generateUploadUrl",
+                  "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/functions:generateUploadUrl",
+                  "httpMethod": "POST",
+                  "description": "Returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control\/signed-urls\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.",
+                  "parameters": {
+                    "parent": {
+                      "description": "The project and location in which the Google Cloud Storage signed URL\nshould be generated, specified in the format `projects\/*\/locations\/*",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GenerateUploadUrlRequest"
+                  },
+                  "response": {
+                    "$ref": "GenerateUploadUrlResponse"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"

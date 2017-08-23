@@ -299,7 +299,9 @@ def _GroupByProject(locations):
   return result
 
 
+# This is designed as separate global function to simplify mocking in test lib.
 def Invoke(frontend, implementation):
+  """Applies implementation on frontend."""
   return implementation(frontend)
 
 
@@ -360,8 +362,8 @@ def AddBaseListerArgs(parser):
       action=actions.DeprecationAction(
           'names',
           show_message=bool,
-          warn='This argument is deprecated. '
-          'Use `--filter="name =(\'NAME\' ...)"` instead.'),
+          warn='Argument NAME is deprecated. '
+          'Use --filter="name=( \'NAME\' ... )" instead.'),
       metavar='NAME',
       nargs='*',
       default=[],
@@ -374,8 +376,8 @@ def AddBaseListerArgs(parser):
       '-r',
       action=actions.DeprecationAction(
           'regexp',
-          warn='This flag is deprecated. '
-          'Use `--filter="name ~ \'REGEXP\'"` instead.'),
+          warn='Flag --regexp is deprecated. '
+          'Use --filter="name~\'REGEXP\'" instead.'),
       help="""\
         A regular expression to filter the names of the results  on. Any names
         that do not match the entire regular expression will be filtered out.\
@@ -390,10 +392,10 @@ def AddZonalListerArgs(parser):
       '--zones',
       action=actions.DeprecationAction(
           'zones',
-          warn='This flag is deprecated. '
-          'Use ```--filter="zone :( *ZONE ... )"``` instead.\n\n'
+          warn='Flag --zones is deprecated. '
+          'Use --filter="zone:( ZONE ... )" instead.\n'
           'For example '
-          '```--filter="zone :(*europe-west1-b *europe-west1-c)"```.'),
+          '--filter="zone:( europe-west1-b europe-west1-c )".'),
       metavar='ZONE',
       help='If provided, only resources from the given zones are queried.',
       type=arg_parsers.ArgList(min_length=1),
@@ -417,8 +419,10 @@ def AddRegionsArg(parser):
       '--regions',
       action=actions.DeprecationAction(
           'regions',
-          warn='This flag is deprecated. '
-          'Use ```--filter="region :( *REGION ... )"``` instead.'),
+          warn='Flag --regions is deprecated. '
+               'Use --filter="region:( REGION ... )" instead.\n'
+               'For example '
+               '--filter="region:( europe-west1 europe-west2 )".'),
       metavar='REGION',
       help='If provided, only resources from the given regions are queried.',
       type=arg_parsers.ArgList(min_length=1),
@@ -437,10 +441,10 @@ def AddMultiScopeListerFlags(parser, zonal=False, regional=False,
         '--zones',
         action=actions.DeprecationAction(
             'zones',
-            warn='Flag `--zones` is deprecated. '
-            'Use ```--filter="zone :( *ZONE ... )"``` instead.\n\n'
+            warn='Flag --zones is deprecated. '
+            'Use --filter="zone:( ZONE ... )" instead.\n'
             'For example '
-            '```--filter="zone :(*europe-west1-b *europe-west1-c)"```.'),
+            '--filter="zone:( europe-west1-b europe-west1-c )".'),
         metavar='ZONE',
         help=('If provided, only zonal resources are shown. '
               'If arguments are provided, only resources from the given '
@@ -451,10 +455,10 @@ def AddMultiScopeListerFlags(parser, zonal=False, regional=False,
         '--regions',
         action=actions.DeprecationAction(
             'regions',
-            warn='Flag `--regions` is deprecated. '
-            'Use ```--filter="region :( *REGION ... )"``` instead.\n\n'
+            warn='Flag --regions is deprecated. '
+            'Use --filter="region:( REGION ... )" instead.\n'
             'For example '
-            '```--filter="region :(*europe-west1 *europe-west2)"```.'),
+            '--filter="region:( europe-west1 europe-west2 )".'),
         metavar='REGION',
         help=('If provided, only regional resources are shown. '
               'If arguments are provided, only resources from the given '
@@ -567,10 +571,9 @@ def _TranslateZonesFlag(args, resources):
   filter_arg = '({}) AND '.format(args.filter) if args.filter else ''
   # How to escape '*' in zone and what are special characters for
   # simple pattern?
-  zone_regexp = ' '.join(['*' + zone for zone in args.zones])
+  zone_regexp = ' '.join([zone for zone in args.zones])
   zone_arg = '(zone :({}))'.format(zone_regexp)
-  args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(
-      filter_arg + zone_arg)
+  args.filter, filter_expr = filter_arg + zone_arg, None
   return filter_expr, scope_set
 
 
@@ -616,10 +619,9 @@ def _TranslateRegionsFlag(args, resources):
   filter_arg = '({}) AND '.format(args.filter) if args.filter else ''
   # How to escape '*' in region and what are special characters for
   # simple pattern?
-  region_regexp = ' '.join(['*' + region for region in args.regions])
+  region_regexp = ' '.join([region for region in args.regions])
   region_arg = '(region :({}))'.format(region_regexp)
-  args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(
-      filter_arg + region_arg)
+  args.filter, filter_expr = filter_arg + region_arg, None
   return filter_expr, scope_set
 
 
@@ -677,7 +679,7 @@ def ParseMultiScopeFlags(args, resources):
             properties.VALUES.core.project.GetOrFail(),
             collection='compute.projects')
     ])
-    args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(args.filter)
+    args.filter, filter_expr = args.filter, None
   else:
     scope_set = AllScopes(
         [
@@ -708,7 +710,7 @@ def ParseNamesAndRegexpFlags(args, resources):
           properties.VALUES.core.project.GetOrFail(),
           collection='compute.projects')
   ])
-  args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(args.filter)
+  args.filter, filter_expr = args.filter, None
   return _Frontend(filter_expr, frontend.max_results, scope_set)
 
 

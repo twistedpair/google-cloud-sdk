@@ -61,7 +61,7 @@ def GetIamPolicy(models_client, model):
 
 def SetIamPolicy(models_client, model, policy_file):
   model_ref = ParseModel(model)
-  policy = iam_util.ParseJsonPolicyFile(
+  policy = iam_util.ParsePolicyFile(
       policy_file, models_client.messages.GoogleIamV1Policy)
   update_mask = iam_util.ConstructUpdateMaskFromPolicy(policy_file)
   iam_util.LogSetIamPolicy(model_ref.Name(), 'model')

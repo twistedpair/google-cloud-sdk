@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20170731",
+ "revision": "20170811",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1212,7 +1212,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z0-9](?:[-a-z0-9_]{0,61}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -1398,7 +1398,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z0-9](?:[-a-z0-9_]{0,61}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -1470,7 +1470,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },

@@ -63,6 +63,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.licenseCodes = self.LicenseCodesService(self)
     self.licenses = self.LicensesService(self)
     self.machineTypes = self.MachineTypesService(self)
+    self.networkEndpointGroups = self.NetworkEndpointGroupsService(self)
     self.networks = self.NetworksService(self)
     self.projects = self.ProjectsService(self)
     self.regionAutoscalers = self.RegionAutoscalersService(self)
@@ -79,6 +80,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.securityPolicies = self.SecurityPoliciesService(self)
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
+    self.sslPolicies = self.SslPoliciesService(self)
     self.subnetworks = self.SubnetworksService(self)
     self.targetHttpProxies = self.TargetHttpProxiesService(self)
     self.targetHttpsProxies = self.TargetHttpsProxiesService(self)
@@ -5078,6 +5080,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def SetDeletionProtection(self, request, global_params=None):
+      """Sets deletion protection on the instance.
+
+      Args:
+        request: (ComputeInstancesSetDeletionProtectionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetDeletionProtection')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetDeletionProtection.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.setDeletionProtection',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[u'deletionProtection', u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{resource}/setDeletionProtection',
+        request_field='',
+        request_type_name=u'ComputeInstancesSetDeletionProtectionRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetDiskAutoDelete(self, request, global_params=None):
       """Sets the auto-delete flag for a disk attached to an instance.
 
@@ -6134,7 +6162,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.licenses.delete',
         ordered_params=[u'project', u'license'],
         path_params=[u'license', u'project'],
-        query_params=[],
+        query_params=[u'requestId'],
         relative_path=u'projects/{project}/global/licenses/{license}',
         request_field='',
         request_type_name=u'ComputeLicensesDeleteRequest',
@@ -6383,6 +6411,250 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeMachineTypesListRequest',
         response_type_name=u'MachineTypeList',
+        supports_download=False,
+    )
+
+  class NetworkEndpointGroupsService(base_api.BaseApiService):
+    """Service class for the networkEndpointGroups resource."""
+
+    _NAME = u'networkEndpointGroups'
+
+    def __init__(self, client):
+      super(ComputeAlpha.NetworkEndpointGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves the list of network endpoint groups and sorts them by zone.
+
+      Args:
+        request: (ComputeNetworkEndpointGroupsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkEndpointGroupAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.networkEndpointGroups.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/networkEndpointGroups',
+        request_field='',
+        request_type_name=u'ComputeNetworkEndpointGroupsAggregatedListRequest',
+        response_type_name=u'NetworkEndpointGroupAggregatedList',
+        supports_download=False,
+    )
+
+    def AttachNetworkEndpoints(self, request, global_params=None):
+      """Attach a list of network endpoints to the specified network endpoint group.
+
+      Args:
+        request: (ComputeNetworkEndpointGroupsAttachNetworkEndpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AttachNetworkEndpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AttachNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.networkEndpointGroups.attachNetworkEndpoints',
+        ordered_params=[u'project', u'zone', u'networkEndpointGroup'],
+        path_params=[u'networkEndpointGroup', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}/attachNetworkEndpoints',
+        request_field=u'networkEndpointGroupsAttachEndpointsRequest',
+        request_type_name=u'ComputeNetworkEndpointGroupsAttachNetworkEndpointsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified network endpoint group. The network endpoints in the NEG and the VM instances they belong to are not terminated when the NEG is deleted. Note that the NEG cannot be deleted if there are backend services referencing it.
+
+      Args:
+        request: (ComputeNetworkEndpointGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.networkEndpointGroups.delete',
+        ordered_params=[u'project', u'zone', u'networkEndpointGroup'],
+        path_params=[u'networkEndpointGroup', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}',
+        request_field='',
+        request_type_name=u'ComputeNetworkEndpointGroupsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def DetachNetworkEndpoints(self, request, global_params=None):
+      """Detach a list of network endpoints from the specified network endpoint group.
+
+      Args:
+        request: (ComputeNetworkEndpointGroupsDetachNetworkEndpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DetachNetworkEndpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DetachNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.networkEndpointGroups.detachNetworkEndpoints',
+        ordered_params=[u'project', u'zone', u'networkEndpointGroup'],
+        path_params=[u'networkEndpointGroup', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}/detachNetworkEndpoints',
+        request_field=u'networkEndpointGroupsDetachEndpointsRequest',
+        request_type_name=u'ComputeNetworkEndpointGroupsDetachNetworkEndpointsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified network endpoint group. Get a list of available network endpoint groups by making a list() request.
+
+      Args:
+        request: (ComputeNetworkEndpointGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkEndpointGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.networkEndpointGroups.get',
+        ordered_params=[u'project', u'zone', u'networkEndpointGroup'],
+        path_params=[u'networkEndpointGroup', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}',
+        request_field='',
+        request_type_name=u'ComputeNetworkEndpointGroupsGetRequest',
+        response_type_name=u'NetworkEndpointGroup',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a network endpoint group in the specified project using the parameters that are included in the request.
+
+      Args:
+        request: (ComputeNetworkEndpointGroupsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.networkEndpointGroups.insert',
+        ordered_params=[u'project', u'zone'],
+        path_params=[u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups',
+        request_field=u'networkEndpointGroup',
+        request_type_name=u'ComputeNetworkEndpointGroupsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of network endpoint groups that are located in the specified project and zone.
+
+      Args:
+        request: (ComputeNetworkEndpointGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkEndpointGroupList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.networkEndpointGroups.list',
+        ordered_params=[u'project', u'zone'],
+        path_params=[u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups',
+        request_field='',
+        request_type_name=u'ComputeNetworkEndpointGroupsListRequest',
+        response_type_name=u'NetworkEndpointGroupList',
+        supports_download=False,
+    )
+
+    def ListNetworkEndpoints(self, request, global_params=None):
+      """List the network endpoints in the specified network endpoint group.
+
+      Args:
+        request: (ComputeNetworkEndpointGroupsListNetworkEndpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkEndpointGroupsListNetworkEndpoints) The response message.
+      """
+      config = self.GetMethodConfig('ListNetworkEndpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.networkEndpointGroups.listNetworkEndpoints',
+        ordered_params=[u'project', u'zone', u'networkEndpointGroup'],
+        path_params=[u'networkEndpointGroup', u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}/listNetworkEndpoints',
+        request_field=u'networkEndpointGroupsListEndpointsRequest',
+        request_type_name=u'ComputeNetworkEndpointGroupsListNetworkEndpointsRequest',
+        response_type_name=u'NetworkEndpointGroupsListNetworkEndpoints',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeNetworkEndpointGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.networkEndpointGroups.testIamPermissions',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/networkEndpointGroups/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeNetworkEndpointGroupsTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -9554,6 +9826,198 @@ For more information, see Deleting snaphots.
         supports_download=False,
     )
 
+  class SslPoliciesService(base_api.BaseApiService):
+    """Service class for the sslPolicies resource."""
+
+    _NAME = u'sslPolicies'
+
+    def __init__(self, client):
+      super(ComputeAlpha.SslPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
+
+      Args:
+        request: (ComputeSslPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.sslPolicies.delete',
+        ordered_params=[u'project', u'sslPolicy'],
+        path_params=[u'project', u'sslPolicy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/sslPolicies/{sslPolicy}',
+        request_field='',
+        request_type_name=u'ComputeSslPoliciesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """List all of the ordered rules present in a single specified policy.
+
+      Args:
+        request: (ComputeSslPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.sslPolicies.get',
+        ordered_params=[u'project', u'sslPolicy'],
+        path_params=[u'project', u'sslPolicy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/sslPolicies/{sslPolicy}',
+        request_field='',
+        request_type_name=u'ComputeSslPoliciesGetRequest',
+        response_type_name=u'SslPolicy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Returns the specified SSL policy resource. Get a list of available SSL policies by making a list() request.
+
+      Args:
+        request: (ComputeSslPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.sslPolicies.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/sslPolicies',
+        request_field=u'sslPolicy',
+        request_type_name=u'ComputeSslPoliciesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """List all the SSL policies that have been configured for the specified project.
+
+      Args:
+        request: (ComputeSslPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPoliciesList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.sslPolicies.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/sslPolicies',
+        request_field='',
+        request_type_name=u'ComputeSslPoliciesListRequest',
+        response_type_name=u'SslPoliciesList',
+        supports_download=False,
+    )
+
+    def ListAvailableFeatures(self, request, global_params=None):
+      """Lists all features that can be specified in the SSL policy when using custom profile.
+
+      Args:
+        request: (ComputeSslPoliciesListAvailableFeaturesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPoliciesListAvailableFeaturesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListAvailableFeatures')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListAvailableFeatures.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.sslPolicies.listAvailableFeatures',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/sslPolicies/listAvailableFeatures',
+        request_field='',
+        request_type_name=u'ComputeSslPoliciesListAvailableFeaturesRequest',
+        response_type_name=u'SslPoliciesListAvailableFeaturesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Patches the specified SSL policy with the data included in the request.
+
+      Args:
+        request: (ComputeSslPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.sslPolicies.patch',
+        ordered_params=[u'project', u'sslPolicy'],
+        path_params=[u'project', u'sslPolicy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/sslPolicies/{sslPolicy}',
+        request_field=u'sslPolicyResource',
+        request_type_name=u'ComputeSslPoliciesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeSslPoliciesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.sslPolicies.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/sslPolicies/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeSslPoliciesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class SubnetworksService(base_api.BaseApiService):
     """Service class for the subnetworks resource."""
 
@@ -9743,6 +10207,32 @@ For more information, see Deleting snaphots.
         request_field='',
         request_type_name=u'ComputeSubnetworksListRequest',
         response_type_name=u'SubnetworkList',
+        supports_download=False,
+    )
+
+    def ListUsable(self, request, global_params=None):
+      """Retrieves an aggregated list of usable subnetworks.
+
+      Args:
+        request: (ComputeSubnetworksListUsableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UsableSubnetworksAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('ListUsable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListUsable.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.subnetworks.listUsable',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/subnetworks/listUsable',
+        request_field='',
+        request_type_name=u'ComputeSubnetworksListUsableRequest',
+        response_type_name=u'UsableSubnetworksAggregatedList',
         supports_download=False,
     )
 
@@ -10148,7 +10638,7 @@ For more information, see Deleting snaphots.
         method_id=u'compute.targetHttpsProxies.setQuicOverride',
         ordered_params=[u'project', u'targetHttpsProxy'],
         path_params=[u'project', u'targetHttpsProxy'],
-        query_params=[],
+        query_params=[u'requestId'],
         relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setQuicOverride',
         request_field=u'targetHttpsProxiesSetQuicOverrideRequest',
         request_type_name=u'ComputeTargetHttpsProxiesSetQuicOverrideRequest',
@@ -10178,6 +10668,32 @@ For more information, see Deleting snaphots.
         relative_path=u'projects/{project}/targetHttpsProxies/{targetHttpsProxy}/setSslCertificates',
         request_field=u'targetHttpsProxiesSetSslCertificatesRequest',
         request_type_name=u'ComputeTargetHttpsProxiesSetSslCertificatesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetSslPolicy(self, request, global_params=None):
+      """Sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the HTTPS proxy load balancer. They do not affect the connection between the load balancer and the backends.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesSetSslPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSslPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSslPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetHttpsProxies.setSslPolicy',
+        ordered_params=[u'project', u'targetHttpsProxy'],
+        path_params=[u'project', u'targetHttpsProxy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setSslPolicy',
+        request_field=u'sslPolicyReference',
+        request_type_name=u'ComputeTargetHttpsProxiesSetSslPolicyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -10910,6 +11426,32 @@ For more information, see Deleting snaphots.
         relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setSslCertificates',
         request_field=u'targetSslProxiesSetSslCertificatesRequest',
         request_type_name=u'ComputeTargetSslProxiesSetSslCertificatesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetSslPolicy(self, request, global_params=None):
+      """Sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the SSL proxy load balancer. They do not affect the connection between the load balancer and the backends.
+
+      Args:
+        request: (ComputeTargetSslProxiesSetSslPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSslPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSslPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetSslProxies.setSslPolicy',
+        ordered_params=[u'project', u'targetSslProxy'],
+        path_params=[u'project', u'targetSslProxy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setSslPolicy',
+        request_field=u'sslPolicyReference',
+        request_type_name=u'ComputeTargetSslProxiesSetSslPolicyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

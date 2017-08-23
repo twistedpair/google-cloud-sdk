@@ -16,129 +16,150 @@
 
 import abc
 import re
+import unicodedata
 
+from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_exceptions
+from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_property
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import times
 
 
-def _Equals(value, operand):
-  """Applies string equality check to operand."""
-  # Downcase value for case insensitive match. operand is already downcased.
-  try:
-    value = value.lower()
-  except AttributeError:
-    pass
-  if value == operand:
-    return True
-  try:
-    if value == float(operand):
-      return True
-  except ValueError:
-    pass
-  try:
-    if value == int(operand):
-      return True
-  except ValueError:
-    pass
+def _Stringize(value):
+  """Returns the unicode string representation for value."""
   if value is None:
-    try:
-      return operand in ['nil', 'none', 'null']
-    except TypeError:
-      pass
-  return False
+    return u'null'
+  if not isinstance(value, basestring):
+    value = repr(value)
+  return unicode(encoding.Decode(value))
 
 
-def _StripTrailingDotZeroes(number):
-  """Returns the string representation of number with trailing .0* deleted."""
-  return re.sub(r'\.0*$', '', str(float(number)))
-
-
-def _Has(value, pattern):
-  """Returns True if value HAS matches pattern.
+def NormalizeForSearch(value, html=False):
+  """Returns lowercase unicode NFKD form with accents stripped.
 
   Args:
+    value: The value to be normalized.
+    html: If True the value is HTML text and HTML tags are converted to spaces.
+
+  Returns:
+    The normalized unicode representation of value suitable for cloud search
+    matching.
+  """
+  # Stringize and convert to lower case.
+  text = _Stringize(value).lower()
+  # Strip HTML tags if needed.
+  if html:
+    text = re.sub('<[^>]*>', '', text)
+  # Convert to NFKD normal form with accents stripped.
+  return u''.join([c for c in unicodedata.normalize('NFKD', text)
+                   if not unicodedata.combining(c)])
+
+
+def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
+  """Returns True if value word matches pattern.
+
+  Args:
+    backend: The parser backend object.
+    key: The parsed expression key.
+    op: The expression operator string.
+    warned_attribute: Deprecation warning Boolean attribute name.
     value: The value to be matched by pattern.
-    pattern: A list of strings of length 1 or 2. The length 1 list specifies a
-      string that must be contained by value. A length 2 list specifies a
-      [prefix, suffix] pair. prefix and/or suffix may be the empty string:
-        prefix,suffix   value must start with prefix and end with suffix
-        prefix,''       value must start with prefix
-        '',suffix       value must end with suffix
-        '',''           special case to match non-empty values
+    pattern: An (operand, standard_regex, deprecated_regex) tuple.
+
+  Raises:
+    ValueError: To catch codebase reliance on deprecated usage.
 
   Returns:
     True if pattern matches value.
 
   Examples:
-    EXPRESSION  PATTERN         VALUE       MATCHES
-    abc*xyz     ['abc', 'xyz']  abcpdqxyz   True
-    abc*        ['abc', '']     abcpdqxyz   True
-    abc         ['abc']         abcpdqxyz   True
-    *abc        ['', 'abc']     abcpdqxyz   False
-    pdq*        ['pdq', '']     abcpdqxyz   False
-    pdq         ['pdq']         abcpdqxyz   True
-    *pdq        ['', 'pdq']     abcpdqxyz   False
-    xyz*        ['xyz', '']     abcpdqxyz   False
-    xyz         ['xyz']         abcpdqxyz   True
-    *xyz        ['', 'xyz']     abcpdqxyz   True
-    *           ['', '']        abcpdqxyz   True
-    *           ['', '']        <''>        False
-    *           ['', '']        <None>      False
-    *           ['', '']        <non-empty> True
+    See surface/topic/filters.py for a table of example matches.
   """
-  # Downcase value for case insensitive match. pattern is already downcased.
-  try:
-    value = value.lower()
-  except AttributeError:
-    pass
-
-  prefix = pattern[0]
-  if len(pattern) == 1:
-    # Test if value contains prefix.
+  operand, standard_regex, deprecated_regex = pattern
+  if isinstance(value, float):
     try:
-      return prefix in value
-    except TypeError:
+      if value == float(operand):
+        return True
+    except ValueError:
       pass
-    try:
-      return _StripTrailingDotZeroes(prefix) in _StripTrailingDotZeroes(value)
-    except (TypeError, ValueError):
-      pass
-    return False
+    if value == 0 and operand.lower() == 'false':
+      return True
+    if value == 1 and operand.lower() == 'true':
+      return True
+    # Stringize float with trailing .0's stripped.
+    text = re.sub(r'\.0*$', '', _Stringize(value))
+  elif value == operand:
+    return True
+  elif value is None:
+    # if operand == '':  # pylint: disable=g-explicit-bool-comparison
+    if operand in ('', None):
+      return True
+    if operand == '*' and op == ':':
+      return False
+    text = 'null'
+  else:
+    text = NormalizeForSearch(value, html=True)
 
-  suffix = pattern[1]
-  if not prefix and not suffix:
-    # key:* (empty prefix and suffix) special-cased for non-empty string match.
-    return bool(value)
+  # TODO(b/64595527): OnePlatform : and = operator deprecation train.
+  # Phase 1: return deprecated_matched and warn if different from matched.
+  # Phase 2: return matched and warn if different from deprecated_matched.
+  # Phase 3: drop deprecated logic.
+  matched = bool(standard_regex.search(text))
+  if not deprecated_regex:
+    return matched
 
-  # prefix*suffix match
-  if prefix and not value.startswith(prefix):
-    return False
-  if suffix and not value.endswith(suffix):
-    return False
-  return True
+  deprecated_matched = bool(deprecated_regex.search(text))
+  if (matched != deprecated_matched and
+      not getattr(backend, warned_attribute, False)):
+    setattr(backend, warned_attribute, True)
+    old_match = 'matches' if deprecated_matched else 'does not match'
+    new_match = 'will match' if matched else 'will not match'
+    log.warn('--filter : operator evaluation is changing for '
+             'consistency across Google APIs.  {key}{op}{operand} currently '
+             '{old_match} but {new_match} in the near future.  Run '
+             '`gcloud topics filters` for details.'.format(
+                 key=resource_lex.GetKeyName(key),
+                 op=op,
+                 operand=operand,
+                 old_match=old_match,
+                 new_match=new_match))
+  return deprecated_matched
 
 
-def _IsIn(matcher, value, operand):
-  """Applies matcher to determine if value matches/contains operand.
+def _WordMatch(backend, key, op, warned_attribute, value, pattern):
+  """Applies _MatchOneWordInText to determine if value matches pattern.
 
   Both value and operand can be lists.
 
   Args:
-    matcher: Boolean match function that takes value as an argument and
-      returns True if the value matches/contains the expression operand.
+    backend: The parser backend object.
+    key: The parsed expression key.
+    op: The expression operator string.
+    warned_attribute: Deprecation warning Boolean attribute name.
     value: The key value or list of values.
-    operand: Operand value or list of values.
+    pattern: Pattern value or list of values.
 
   Returns:
-    True if the value (or any element in value if it is a list) matches/contains
-    operand (or any element in operand if it is a list).
+    True if the value (or any element in value if it is a list) matches pattern
+    (or any element in operand if it is a list).
   """
-  values = value if isinstance(value, (dict, list, tuple)) else [value]
-  operands = operand if isinstance(operand, (dict, list, tuple)) else [operand]
+  if isinstance(value, dict):
+    values = []
+    if value:
+      values.extend(value.keys())
+      values.extend(value.values())
+  elif isinstance(value, (list, tuple)):
+    values = value
+  else:
+    values = [value]
+  if isinstance(pattern, (list, tuple)):
+    patterns = pattern
+  else:
+    patterns = {pattern}
   for v in values:
-    for o in operands:
-      if matcher(v, o):
+    for p in patterns:
+      if _MatchOneWordInText(backend, key, op, warned_attribute, v, p):
         return True
   return False
 
@@ -353,6 +374,7 @@ class _ExprOperand(object):
   def __init__(self, backend, value, normalize=None):
     self.backend = backend
     self.list_value = None
+    self.numeric_constant = False
     self.numeric_value = None
     self.string_value = None
     self.Initialize(value, normalize=normalize)
@@ -375,6 +397,7 @@ class _ExprOperand(object):
       self.string_value = value
       try:
         self.numeric_value = self._NUMERIC_CONSTANTS[value.lower()]
+        self.numeric_constant = True
       except KeyError:
         try:
           self.numeric_value = int(value)
@@ -384,7 +407,7 @@ class _ExprOperand(object):
           except ValueError:
             pass
     else:
-      self.string_value = unicode(value)
+      self.string_value = _Stringize(value)
       self.numeric_value = value
 
 
@@ -462,7 +485,10 @@ class _ExprOperator(_Expr):
     if self._transform:
       value = self._transform.Evaluate(value)
     # Arbitrary choice: value == []  =>  values = [[]]
-    resource_values = value if value and isinstance(value, list) else [value]
+    if value and isinstance(value, (list, tuple)):
+      resource_values = value
+    else:
+      resource_values = [value]
     values = []
     for value in resource_values:
       if value:
@@ -487,8 +513,8 @@ class _ExprOperator(_Expr):
           try:
             if self.Apply(float(value), operand.numeric_value):
               return True
-            # Both value and operand are numbers - don't try as strings below.
-            continue
+            if not operand.numeric_constant:
+              continue
           except (TypeError, ValueError):
             pass
 
@@ -498,12 +524,9 @@ class _ExprOperator(_Expr):
         except (AttributeError, ValueError):
           pass
         except TypeError:
-          if not isinstance(value, (basestring, dict, list)):
-            try:
-              if self.Apply(unicode(value), operand.string_value):
-                return True
-            except TypeError:
-              pass
+          if (not isinstance(value, (basestring, dict, list)) and
+              self.Apply(_Stringize(value), operand.string_value)):
+            return True
 
     return False
 
@@ -535,46 +558,32 @@ class _ExprLE(_ExprOperator):
     return value <= operand
 
 
-class _ExprHAS(_ExprOperator):
-  """Membership HAS match node."""
+class _ExprWordMatchBase(_ExprOperator):
+  """{ HAS EQ NE } word match base class."""
 
-  def __init__(self, backend, key, operand, transform):
-    super(_ExprHAS, self).__init__(backend, key, operand, transform)
+  def __init__(self, backend, key, operand, transform, op=None,
+               warned_attribute=None):
+    super(_ExprWordMatchBase, self).__init__(backend, key, operand, transform)
+    self._op = op
+    # Should be private but it will go away soon and this avoids pylints.
+    self._warned_attribute = warned_attribute
     self._patterns = []
     if self._operand.list_value is not None:
       for operand in self._operand.list_value:
-        if operand.string_value:
-          operand.string_value = unicode(operand.string_value).lower()
+        if operand.string_value is not None:
+          operand.string_value = operand.string_value
           self._AddPattern(operand.string_value)
-    elif self._operand.string_value:
-      self._AddPattern(unicode(self._operand.string_value).lower())
+    elif self._operand.string_value is not None:
+      operand.string_value = operand.string_value
+      self._AddPattern(self._operand.string_value)
 
+  @abc.abstractmethod
   def _AddPattern(self, pattern):
-    """Adds a HAS match pattern to self._patterns.
-
-    The pattern is a list of strings of length 1 or 2:
-      [string]: The subject string must contain string ignoring case.
-      [prefix, suffix]: The subject string must start with prefix and end with
-        suffix ignoring case.
-
-    Args:
-      pattern: A string containing at most one * glob character.
-
-    Raises:
-      resource_exceptions.ExpressionSyntaxError if the pattern contains more
-        than one * glob character.
-    """
-    if '*' in pattern:
-      parts = unicode(pattern).lower().split('*')
-      if len(parts) > 2:
-        raise resource_exceptions.ExpressionSyntaxError(
-            'Zero or one * expected in : patterns.')
-      self._patterns.append(parts)
-    else:
-      self._patterns.append([pattern])
+    """Adds a word match pattern to self._patterns."""
+    pass
 
   def Apply(self, value, operand):
-    """Checks if value HAS matches operand ignoring case differences.
+    """Checks if value word matches operand ignoring case differences.
 
     Args:
       value: The number, string, dict or list object value.
@@ -588,66 +597,133 @@ class _ExprHAS(_ExprOperator):
       True if value HAS matches operand (or any value in operand if it is a
       list) ignoring case differences.
     """
-    return _IsIn(_Equals, value, operand) or _IsIn(_Has, value, self._patterns)
+    return _WordMatch(self.backend, self._key, self._op, self._warned_attribute,
+                      value, self._patterns)
 
 
-class _ExprEQ(_ExprOperator):
-  """Membership equality match node."""
+class _ExprHAS(_ExprWordMatchBase):
+  """HAS word match node."""
 
   def __init__(self, backend, key, operand, transform):
-    super(_ExprEQ, self).__init__(backend, key, operand, transform)
-    if self._operand.list_value is not None:
-      for operand in self._operand.list_value:
-        if operand.string_value:
-          operand.string_value = unicode(operand.string_value).lower()
-    elif self._operand.string_value:
-      self._operand.string_value = unicode(self._operand.string_value).lower()
+    super(_ExprHAS, self).__init__(backend, key, operand, transform, op=':',
+                                   warned_attribute='_deprecated_has_warned')
 
-  def Apply(self, value, operand):
-    """Checks if value is equal to operand.
+  # TODO(b/64595527): Drop the deprecation logic when the train stops.
+  def _AddPattern(self, pattern):
+    """Adds a HAS match pattern to self._patterns.
 
-    Args:
-      value: The number, string, dict or list object value.
-      operand: Number or string or list of Number or String.
+    A pattern is a word that optionally contains one trailing * that matches
+    0 or more characters.
 
-    Returns:
-      True if value is equal to operand (or any value in operand if it is a
-      list).
-    """
-    return _IsIn(_Equals, value, operand)
-
-
-class _ExprMatch(_ExprOperator):
-  """Anchored prefix*suffix match node."""
-
-  def __init__(self, backend, key, operand, transform, prefix, suffix):
-    """Initializes the anchored prefix and suffix patterns.
+    This method re-implements both the original and the OnePlatform : using REs.
+    It was tested against the original tests with no failures.  This cleaned up
+    the code (really!) and made it easier to reason about the two
+    implementations.
 
     Args:
-      backend: The parser backend object.
-      key: Resource object key (list of str, int and/or None values).
-      operand: The term ExprOperand operand.
-      transform: Optional key value transform calls.
-      prefix: The anchored prefix pattern string.
-      suffix: The anchored suffix pattern string.
+      pattern: A string containing at most one trailing *.
+
+    Raises:
+      resource_exceptions.ExpressionSyntaxError if the pattern contains more
+        than one leading or trailing * glob character.
     """
-    super(_ExprMatch, self).__init__(backend, key, operand, transform)
-    self._prefix = prefix
-    self._suffix = suffix
+    if pattern == '*':
+      standard_pattern = '.'
+      deprecated_pattern = None
+    else:
+      head = u'\\b'
+      glob = u''
+      tail = u'\\b'
+      normalized_pattern = NormalizeForSearch(pattern)
+      parts = normalized_pattern.split('*')
+      if len(parts) > 2:
+        raise resource_exceptions.ExpressionSyntaxError(
+            'At most one * expected in : patterns [{}].'.format(pattern))
 
-  def Apply(self, value, unused_operand):
-    return ((not self._prefix or value.startswith(self._prefix)) and
-            (not self._suffix or value.endswith(self._suffix)))
+      # Construct the standard RE pattern.
+      if normalized_pattern.endswith('*'):
+        normalized_pattern = normalized_pattern[:-1]
+        tail = u''
+      word = re.escape(normalized_pattern)
+      standard_pattern = head + word + tail
+
+      # Construct the deprecated RE pattern.
+      if len(parts) == 1:
+        parts.append('')
+      elif pattern.startswith('*'):
+        head = u''
+      elif pattern.endswith('*'):
+        tail = u''
+      else:
+        glob = u'.*'
+      left = re.escape(parts[0]) if parts[0] else u''
+      right = re.escape(parts[1]) if parts[1] else u''
+      if head and tail:
+        if glob:
+          deprecated_pattern = '^' + left + glob + right + '$'
+        else:
+          deprecated_pattern = left + glob + right
+      elif head:
+        deprecated_pattern = '^' +  left + glob + right
+      elif tail:
+        deprecated_pattern = left + glob + right + '$'
+      else:
+        deprecated_pattern = None
+
+    reflags = re.IGNORECASE|re.MULTILINE|re.UNICODE
+    standard_regex = re.compile(standard_pattern, reflags)
+    if deprecated_pattern:
+      deprecated_regex = re.compile(deprecated_pattern, reflags)
+    else:
+      deprecated_regex = None
+    self._patterns.append((pattern, standard_regex, deprecated_regex))
 
 
-class _ExprNE(_ExprOperator):
+class _ExprEQ(_ExprWordMatchBase):
+  """EQ word match node."""
+
+  def __init__(self, backend, key, operand, transform, op=None):
+    super(_ExprEQ, self).__init__(backend, key, operand, transform,
+                                  op=op or '=',
+                                  warned_attribute='_deprecated_eq_warned')
+
+  # TODO(b/64595527): Drop the deprecation logic when the train stops.
+  def _AddPattern(self, pattern):
+    """Adds an EQ match pattern to self._patterns.
+
+    A pattern is a word.
+
+    This method re-implements both the original and the OnePlatform = using REs.
+    It was tested against the original tests with no failures.  This cleaned up
+    the code (really!) and made it easier to reason about the two
+    implementations.
+
+    Args:
+      pattern: A string containing a word to match.
+    """
+    normalized_pattern = NormalizeForSearch(pattern)
+    word = re.escape(normalized_pattern)
+
+    # Construct the standard RE pattern.
+    standard_pattern = u'\\b' + word + u'\\b'
+
+    # Construct the deprecated RE pattern.
+    deprecated_pattern = u'^' + word + u'$'
+
+    reflags = re.IGNORECASE|re.MULTILINE|re.UNICODE
+    standard_regex = re.compile(standard_pattern, reflags)
+    deprecated_regex = re.compile(deprecated_pattern, reflags)
+    self._patterns.append((pattern, standard_regex, deprecated_regex))
+
+
+class _ExprNE(_ExprEQ):
   """NE node."""
 
+  def __init__(self, backend, key, operand, transform):
+    super(_ExprNE, self).__init__(backend, key, operand, transform, op='!=')
+
   def Apply(self, value, operand):
-    try:
-      return operand != value.lower()
-    except AttributeError:
-      return value != operand
+    return not super(_ExprNE, self).Apply(value, operand)
 
 
 class _ExprGE(_ExprOperator):

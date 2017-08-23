@@ -17,6 +17,8 @@ Mostly created to selectively enable Cloud Endpoints in the beta/preview release
 tracks.
 """
 import argparse
+import re
+import enum
 
 from googlecloudsdk.api_lib.app import appengine_client
 from googlecloudsdk.api_lib.app import cloud_endpoints
@@ -28,6 +30,7 @@ from googlecloudsdk.api_lib.app import runtime_builders
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app import yaml_parsing
+from googlecloudsdk.api_lib.app.appinfo import appinfo
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.calliope import actions
@@ -75,6 +78,22 @@ class StoppedApplicationError(Error):
         'to stopped apps is not allowed.'.format(app.id, app.servingStatus))
 
 
+class InvalidRuntimeNameError(Error):
+  """Error for runtime names that are not allowed in the given environment."""
+
+  def __init__(self, runtime, allowed_regex):
+    super(InvalidRuntimeNameError, self).__init__(
+        'Invalid runtime name: [{}]. '
+        'Must match regular expression [{}].'.format(runtime, allowed_regex))
+
+
+# TODO(b/27101941): Remove when commands all rely solely on the property.
+class ServiceManagementOption(enum.Enum):
+  """Enum declaring when to use Service Management for Flexible deployments."""
+  ALWAYS = 1
+  IF_PROPERTY_SET = 2
+
+
 class DeployOptions(object):
   """Values of options that affect deployment process in general.
 
@@ -87,22 +106,63 @@ class DeployOptions(object):
     runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
       use the new CloudBuild-based runtime builders (alternative is old
       externalized runtimes).
+    parallel_build: bool, whether to use parallel build and deployment path.
+      Only supported in v1beta and v1alpha App Engine Admin API.
+    use_service_management: bool, whether to prepare for Flexible deployments
+      using Service Management.
   """
 
-  def __init__(self, promote, stop_previous_version, enable_endpoints,
-               runtime_builder_strategy):
+  def __init__(self,
+               promote,
+               stop_previous_version,
+               enable_endpoints,
+               runtime_builder_strategy,
+               parallel_build=False,
+               use_service_management=True):
     self.promote = promote
     self.stop_previous_version = stop_previous_version
     self.enable_endpoints = enable_endpoints
     self.runtime_builder_strategy = runtime_builder_strategy
+    self.parallel_build = parallel_build
+    self.use_service_management = use_service_management
 
   @classmethod
-  def FromProperties(cls, enable_endpoints, runtime_builder_strategy):
+  def FromProperties(
+      cls,
+      enable_endpoints,
+      runtime_builder_strategy,
+      parallel_build=False):
+    """Initialize DeloyOptions using user properties where necessary.
+
+    Args:
+      enable_endpoints: Enable Cloud Endpoints for the deployed app.
+      runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
+        use the new CloudBuild-based runtime builders (alternative is old
+        externalized runtimes).
+      parallel_build: bool, whether to use parallel build and deployment path.
+        Only supported in v1beta and v1alpha App Engine Admin API.
+
+    Returns:
+      DeployOptions, the deploy options.
+    """
     promote = properties.VALUES.app.promote_by_default.GetBool()
     stop_previous_version = (
         properties.VALUES.app.stop_previous_version.GetBool())
+    service_management = (
+        not properties.VALUES.app.use_deprecated_preparation.GetBool())
     return cls(promote, stop_previous_version, enable_endpoints,
-               runtime_builder_strategy)
+               runtime_builder_strategy, parallel_build, service_management)
+
+
+def _ShouldRewriteRuntime(runtime, use_runtime_builders):
+  server_runtime_pattern = re.compile(appinfo.ORIGINAL_RUNTIME_RE_STRING +
+                                      r'\Z')
+  if server_runtime_pattern.match(runtime):
+    return False
+  elif use_runtime_builders:
+    return True
+  else:
+    raise InvalidRuntimeNameError(runtime, appinfo.ORIGINAL_RUNTIME_RE_STRING)
 
 
 class ServiceDeployer(object):
@@ -143,6 +203,43 @@ class ServiceDeployer(object):
                                                      new_version.project)
     return None
 
+  def _PossiblyRewriteRuntime(self, service_info):
+    """Rewrites the effective runtime of the service to 'custom' if necessary.
+
+    Some runtimes which are valid client-side are *not* valid in the server.
+    Namely, `gs://` URL runtimes (which are effectively `custom`) and runtimes
+    with `.` in the names (ex. `go-1.8`). For these, we need to rewrite the
+    runtime that we send up to the server to "custom" so that it passes
+    validation.
+
+    This *only* applies when we're using runtime builders to build the
+    application (that is, runtime builders are turned on *and* the environment
+    is Flexible), since neither of these runtime types are valid otherwise. If
+    not, it results in an error.
+
+    Args:
+      service_info: yaml_parsing.ServiceYamlInfo, service configuration to be
+        deployed
+
+    Raises:
+      InvalidRuntimeNameError: if the runtime name is invalid for the deployment
+        (see above).
+    """
+    # TODO(b/63040070) Remove this whole method (which is a hack) once the API
+    # can take the paths we need as a runtime name.
+    runtime = service_info.runtime
+    if runtime == 'custom':
+      return
+
+    # This may or may not be accurate, but it only matters for custom runtimes,
+    # which are handled above.
+    needs_dockerfile = True
+    strategy = self.deploy_options.runtime_builder_strategy
+    use_runtime_builders = deploy_command_util.ShouldUseRuntimeBuilders(
+        service_info, strategy, needs_dockerfile)
+    if _ShouldRewriteRuntime(runtime, use_runtime_builders):
+      service_info.parsed.SetEffectiveRuntime('custom')
+
   def _PossiblyBuildAndPush(self, new_version, service, source_dir, image,
                             code_bucket_ref, gcr_domain):
     """Builds and Pushes the Docker image if necessary for this service.
@@ -163,20 +260,22 @@ class ServiceDeployer(object):
         an in-progress build, or the name of the container image for a serial
         build. Possibly None if the service does not require an image.
     """
-    if service.RequiresImage():
-      if not image:
-        image = deploy_command_util.BuildAndPushDockerImage(
-            new_version.project, service, source_dir, new_version.id,
-            code_bucket_ref, gcr_domain,
-            self.deploy_options.runtime_builder_strategy)
-      elif service.parsed.skip_files.regex:
+
+    build = None
+    if image:
+      if service.RequiresImage() and service.parsed.skip_files.regex:
         log.warning('Deployment of service [{0}] will ignore the skip_files '
                     'field in the configuration file, because the image has '
                     'already been built.'.format(new_version.service))
-    else:
-      return None
+      return deploy_command_util.BuildArtifact.MakeImageArtifact(image)
+    elif service.RequiresImage():
+      build = deploy_command_util.BuildAndPushDockerImage(
+          new_version.project, service, source_dir, new_version.id,
+          code_bucket_ref, gcr_domain,
+          self.deploy_options.runtime_builder_strategy,
+          self.deploy_options.parallel_build)
 
-    return deploy_command_util.BuildArtifact.MakeImageArtifact(image)
+    return build
 
   def _PossiblyPromote(self, all_services, new_version):
     """Promotes the new version to default (if specified by the user).
@@ -233,12 +332,14 @@ class ServiceDeployer(object):
     service_info = service.service_info
     endpoints_info = self._PossiblyConfigureEndpoints(
         service_info, source_dir, new_version)
+    self._PossiblyRewriteRuntime(service_info)
     build = self._PossiblyBuildAndPush(
         new_version, service_info, source_dir, image, code_bucket_ref,
         gcr_domain)
     manifest = None
-    # "Non-hermetic" services require file upload outside the Docker image.
-    if not service_info.is_hermetic:
+    # "Non-hermetic" services require file upload outside the Docker image
+    # unless an image was already built.
+    if not image and not service_info.is_hermetic:
       manifest = deploy_app_command_util.CopyFilesToCodeBucket(
           service_info, source_dir, code_bucket_ref)
 
@@ -310,9 +411,12 @@ def ArgsDeploy(parser):
 
 
 def RunDeploy(
-    args, api_client, enable_endpoints=False, use_beta_stager=False,
+    args,
+    api_client,
+    enable_endpoints=False,
+    use_beta_stager=False,
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
-    use_service_management=False):
+    parallel_build=True):
   """Perform a deployment based on the given args.
 
   Args:
@@ -326,8 +430,8 @@ def RunDeploy(
     runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
       use the new CloudBuild-based runtime builders (alternative is old
       externalized runtimes).
-    use_service_management: bool, whether to use servicemanagement API to
-      enable the Appengine Flexible API for a Flexible deployment.
+    parallel_build: bool, whether to use parallel build and deployment path.
+      Only supported in v1beta and v1alpha App Engine Admin API.
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -336,7 +440,9 @@ def RunDeploy(
   """
   project = properties.VALUES.core.project.Get(required=True)
   deploy_options = DeployOptions.FromProperties(
-      enable_endpoints, runtime_builder_strategy=runtime_builder_strategy)
+      enable_endpoints,
+      runtime_builder_strategy=runtime_builder_strategy,
+      parallel_build=parallel_build)
 
   with files.TemporaryDirectory() as staging_area:
     if args.skip_staging:
@@ -382,7 +488,7 @@ def RunDeploy(
 
       # Prepare Flex if any service is going to deploy an image.
       if any([s.RequiresImage() for s in service_infos]):
-        if use_service_management:
+        if deploy_options.use_service_management:
           deploy_command_util.PossiblyEnableFlex(project)
         else:
           deploy_command_util.DoPrepareManagedVms(ac_client)
@@ -583,4 +689,3 @@ def GetRuntimeBuilderStrategy(release_track):
     return runtime_builders.RuntimeBuilderStrategy.WHITELIST_BETA
   else:
     raise ValueError('Unrecognized release track [{}]'.format(release_track))
-

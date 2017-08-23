@@ -38,7 +38,8 @@ class HttpRequest(_messages.Message):
       only meaningful if cache_hit is True.
     latency: The request processing latency on the server, from the time the
       request was received until the response was sent.
-    protocol: Protocol used for the request. Example: "HTTP/1.1".
+    protocol: Protocol used for the request. Examples: "HTTP/1.1", "HTTP/2",
+      "websocket"
     referer: The referer URL of the request, as defined in HTTP/1.1 Header
       Field Definitions
       (http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
@@ -1092,11 +1093,8 @@ class WriteLogEntriesResponse(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'logging')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'logging')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'logging')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

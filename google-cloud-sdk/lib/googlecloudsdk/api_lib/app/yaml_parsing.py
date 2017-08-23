@@ -216,13 +216,11 @@ class ServiceYamlInfo(_YamlInfo):
     else:
       self.env = util.Environment.STANDARD
 
-    # All env: 2 apps are hermetic. All vm: false apps are not hermetic except
-    # for those with (explicit) env: 1 and runtime: custom. vm: true apps are
-    # hermetic IFF they don't use static files.
+    # All `env: flex` apps are hermetic. All `env: standard` apps are not
+    # hermetic. All `vm: true` apps are hermetic IFF they don't use static
+    # files.
     if self.env is util.Environment.FLEX:
       self.is_hermetic = True
-    elif util.IsStandard(parsed.env):
-      self.is_hermetic = parsed.runtime == 'custom'
     elif parsed.vm:
       for urlmap in parsed.handlers:
         if urlmap.static_dir or urlmap.static_files:
@@ -235,9 +233,7 @@ class ServiceYamlInfo(_YamlInfo):
 
     self._UpdateSkipFiles(file_path, parsed)
 
-    if self.env is util.Environment.STANDARD and self.is_hermetic:
-      self.runtime = parsed.runtime
-    elif (self.env is util.Environment.MANAGED_VMS) or self.is_hermetic:
+    if (self.env is util.Environment.MANAGED_VMS) or self.is_hermetic:
       self.runtime = parsed.GetEffectiveRuntime()
       self._UpdateVMSettings()
     else:
@@ -378,4 +374,3 @@ def _CheckIllegalAttribute(name, yaml_info, extractor_func, file_path, msg=''):
     raise YamlValidationError(
         'The [{0}] field is specified in file [{1}]. This field is not used '
         'by gcloud and must be removed. '.format(name, file_path) + msg)
-

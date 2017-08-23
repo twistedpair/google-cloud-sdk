@@ -85,7 +85,50 @@ class CloudBuildClient(object):
     self.client = client or cloudbuild_util.GetClientInstance()
     self.messages = messages or cloudbuild_util.GetMessagesModule()
 
-  # TODO(b/33173476): Convert `container builds submit` code to use this too
+  def _GetBuildProp(self, build_op, prop_key):
+    """Extract the value of a build's prop_key from a build operation."""
+    if build_op.metadata is not None:
+      for prop in build_op.metadata.additionalProperties:
+        if prop.key == 'build':
+          for build_prop in prop.value.object_value.properties:
+            if build_prop.key == prop_key:
+              return build_prop.value.string_value
+
+  def _StartBuild(self, build, project):
+    """Constructs and submits the CloudbuildProjectsBuildsCreateRequest."""
+
+    if project is None:
+      project = properties.VALUES.core.project.Get(required=True)
+
+    build_op = self.client.projects_builds.Create(
+        self.messages.CloudbuildProjectsBuildsCreateRequest(
+            projectId=project,
+            build=build,))
+    return build_op
+
+  def ExecuteCloudBuildAsync(self, build, project=None):
+    """Execute a call to CloudBuild service and return the in-progress build ID.
+
+
+    Args:
+      build: Build object. The Build to execute.
+      project: The project to execute, or None to use the current project
+          property.
+
+    Raises:
+      BuildFailedError: when the build fails.
+
+    Returns:
+      build_id, str: The ID for an in-progress build.
+    """
+    build_op = self._StartBuild(build, project)
+    build_id = self._GetBuildProp(build_op, 'id')
+
+    if build_id is None:
+      raise BuildFailedError('Could not determine build ID')
+
+    return build_id
+
   def ExecuteCloudBuild(self, build, project=None):
     """Execute a call to CloudBuild service and wait for it to finish.
 
@@ -98,31 +141,10 @@ class CloudBuildClient(object):
     Raises:
       BuildFailedError: when the build fails.
     """
-    if project is None:
-      project = properties.VALUES.core.project.Get(required=True)
 
-    build_op = self.client.projects_builds.Create(
-        self.messages.CloudbuildProjectsBuildsCreateRequest(
-            projectId=project,
-            build=build,
-        )
-    )
-    # Find build ID from operation metadata and print the logs URL.
-    build_id = None
-    logs_uri = None
-    if build_op.metadata is not None:
-      for prop in build_op.metadata.additionalProperties:
-        if prop.key == 'build':
-          for build_prop in prop.value.object_value.properties:
-            if build_prop.key == 'id':
-              build_id = build_prop.value.string_value
-              if logs_uri is not None:
-                break
-            if build_prop.key == 'logUrl':
-              logs_uri = build_prop.value.string_value
-              if build_id is not None:
-                break
-          break
+    build_op = self._StartBuild(build, project)
+    build_id = self._GetBuildProp(build_op, 'id')
+    logs_uri = self._GetBuildProp(build_op, 'logUrl')
 
     if build_id is None:
       raise BuildFailedError('Could not determine build ID')
@@ -133,32 +155,42 @@ class CloudBuildClient(object):
     """Wait for a Cloud Build to finish, optionally streaming logs."""
     log.status.Print(
         'Started cloud build [{build_id}].'.format(build_id=build_id))
+    log_loc = 'in the Cloud Console.'
+    log_tailer = None
     if logs_bucket:
       log_object = self.CLOUDBUILD_LOGFILE_FMT_STRING.format(build_id=build_id)
       log_tailer = cloudbuild_logs.LogTailer(
           bucket=logs_bucket,
           obj=log_object)
-      log_loc = None
       if logs_uri:
         log.status.Print('To see logs in the Cloud Console: ' + logs_uri)
         log_loc = 'at ' + logs_uri
       else:
         log.status.Print('Logs can be found in the Cloud Console.')
-        log_loc = 'in the Cloud Console.'
-      op = self.WaitForOperation(operation=build_op,
-                                 retry_callback=log_tailer.Poll)
-      # Poll the logs one final time to ensure we have everything. We know this
-      # final poll will get the full log contents because GCS is strongly
-      # consistent and Container Builder waits for logs to finish pushing before
-      # marking the build complete.
+
+    callback = None
+    if log_tailer:
+      callback = log_tailer.Poll
+
+    try:
+      op = self.WaitForOperation(operation=build_op, retry_callback=callback)
+    except OperationTimeoutError:
+      log.debug('', exc_info=True)
+      raise BuildFailedError('Cloud build timed out. Check logs ' + log_loc)
+
+    # Poll the logs one final time to ensure we have everything. We know this
+    # final poll will get the full log contents because GCS is strongly
+    # consistent and Container Builder waits for logs to finish pushing before
+    # marking the build complete.
+    if log_tailer:
       log_tailer.Poll(is_last=True)
-    else:
-      op = self.WaitForOperation(operation=build_op)
 
     final_status = _GetStatusFromOp(op)
     if final_status != self.CLOUDBUILD_SUCCESS:
-      raise BuildFailedError('Cloud build failed with status '
-                             + final_status + '. Check logs ' + log_loc)
+      message = _ExtractErrorMessage(encoding.MessageToPyValue(op.error))
+      raise BuildFailedError('Cloud build failed. Check logs ' + log_loc
+                             + ' Failure status: ' + final_status + ': '
+                             + message)
 
   def WaitForOperation(self, operation, retry_callback=None):
     """Wait until the operation is complete or times out.
@@ -173,7 +205,6 @@ class CloudBuildClient(object):
       The operation resource when it has completed
     Raises:
       OperationTimeoutError: when the operation polling times out
-      OperationError: when the operation completed with an error
     """
 
     completed_operation = self._PollUntilDone(operation, retry_callback)
@@ -181,12 +212,6 @@ class CloudBuildClient(object):
       raise OperationTimeoutError(('Operation [{0}] timed out. This operation '
                                    'may still be underway.').format(
                                        operation.name))
-
-    if completed_operation.error:
-      message = _ExtractErrorMessage(
-          encoding.MessageToPyValue(completed_operation.error))
-
-      raise OperationError(message)
 
     return completed_operation
 
@@ -228,7 +253,8 @@ def _GetStatusFromOp(op):
   Returns:
     string status, likely "SUCCESS" or "ERROR".
   """
-  for prop in op.response.additionalProperties:
-    if prop.key == 'status':
-      return prop.value.string_value
+  if op.response and op.response.additionalProperties:
+    for prop in op.response.additionalProperties:
+      if prop.key == 'status':
+        return prop.value.string_value
   return 'UNKNOWN'

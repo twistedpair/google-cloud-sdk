@@ -74,6 +74,7 @@ def GetProxyProperties():
   if not proxy_prop_set:
     return {}
 
+  proxy_rdns = properties.VALUES.proxy.rdns.GetBool()
   proxy_user = properties.VALUES.proxy.username.Get()
   proxy_pass = properties.VALUES.proxy.password.Get()
 
@@ -81,6 +82,7 @@ def GetProxyProperties():
       'proxy_type': proxy_type_map[proxy_type],
       'proxy_address': proxy_address,
       'proxy_port': proxy_port,
+      'proxy_rdns': proxy_rdns,
       'proxy_user': proxy_user,
       'proxy_pass': proxy_pass,
   }
@@ -108,6 +110,7 @@ def GetHttpProxyInfo():
         proxy_settings['proxy_type'],
         proxy_settings['proxy_address'],
         proxy_settings['proxy_port'],
+        proxy_rdns=proxy_settings['proxy_rdns'],
         proxy_user=proxy_settings['proxy_user'],
         proxy_pass=proxy_settings['proxy_pass'])
 

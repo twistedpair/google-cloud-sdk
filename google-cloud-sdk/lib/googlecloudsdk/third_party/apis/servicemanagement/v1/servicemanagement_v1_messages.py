@@ -3873,11 +3873,13 @@ class ServicemanagementServicesListRequest(_messages.Message):
       project:<project_id>
     consumerProjectId: Include services consumed by the specified project.  If
       project_settings is expanded, then this field controls which project
-      project_settings is populated for.
+      project_settings is populated for. This field is deprecated. See details
+      go/deprecate-listservices-expand.
     expand: Fields to expand in any results. By default, the following fields
       are not fully included in list results, but they will if you specify
       them in this field: - `project_settings` - `quota_usage` (It requires
-      `project_settings`)
+      `project_settings`) This field is deprecated. See details go/deprecate-
+      listservices-expand.
     pageSize: Requested size of the next page of data.
     pageToken: Token identifying which result to start with; returned by a
       previous list call.
@@ -4711,14 +4713,10 @@ class VisibilitySettings(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    Rule, 'in_', 'in',
-    package=u'servicemanagement')
+    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'servicemanagement')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'servicemanagement')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'servicemanagement')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

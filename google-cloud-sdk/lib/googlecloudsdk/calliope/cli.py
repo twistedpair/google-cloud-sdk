@@ -836,6 +836,8 @@ class CLI(object):
     Raises:
       exc or a core.exceptions variant that does not produce a stack trace.
     """
+    if session_capturer.SessionCapturer.capturer:
+      session_capturer.SessionCapturer.capturer.CaptureException(exc)
     known_exc, print_error = exceptions.ConvertKnownError(exc)
     error_extra_info = {'error_code': getattr(exc, 'exit_code', 1)}
     if isinstance(exc, exceptions.HttpException):

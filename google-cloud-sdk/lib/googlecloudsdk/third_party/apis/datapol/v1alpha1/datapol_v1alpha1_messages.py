@@ -782,6 +782,21 @@ class DatapolTaxonomyStoresDataTaxonomiesSetIamPolicyRequest(_messages.Message):
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
+class DatapolTaxonomyStoresDataTaxonomiesTestIamPermissionsRequest(_messages.Message):
+  """A DatapolTaxonomyStoresDataTaxonomiesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class DatapolTaxonomyStoresGetCommonRequest(_messages.Message):
   """A DatapolTaxonomyStoresGetCommonRequest object."""
 
@@ -885,6 +900,21 @@ class DatapolTaxonomyStoresTaxonomyReportsPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   taxonomyReport = _messages.MessageField('TaxonomyReport', 2)
   updateMask = _messages.StringField(3)
+
+
+class DatapolTaxonomyStoresTestIamPermissionsRequest(_messages.Message):
+  """A DatapolTaxonomyStoresTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class Empty(_messages.Message):
@@ -1433,15 +1463,35 @@ class TaxonomyStore(_messages.Message):
   name = _messages.StringField(1)
 
 
+class TestIamPermissionsRequest(_messages.Message):
+  """Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestIamPermissionsResponse(_messages.Message):
+  """Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
 encoding.AddCustomJsonFieldMapping(
-    Rule, 'in_', 'in',
-    package=u'datapol')
+    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'datapol')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'datapol')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'datapol')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

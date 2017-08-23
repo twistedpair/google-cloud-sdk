@@ -20,7 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://cloudkms.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -220,6 +220,13 @@
           "description": "next_rotation_time will be advanced by this period when the service\nautomatically rotates a key. Must be at least one day.\n\nIf rotation_period is set, next_rotation_time must also be set.",
           "type": "string",
           "format": "google-duration"
+        },
+        "labels": {
+          "description": "Labels with user defined metadata.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

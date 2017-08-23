@@ -16,6 +16,8 @@ import atexit
 import json
 import os
 import subprocess
+import sys
+
 
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
@@ -47,11 +49,14 @@ def MakeProcess(module_name,
     a subprocess.Popen object corresponding to the subprocesses or an int
     corresponding to the return value of the subprocess
     (if task_type is 'master')
+  Raises:
+    RuntimeError: if there is no python executable on the user system
   """
   if args is None:
     args = []
-  python = execution_utils.GetPythonExecutable()
-  cmd = [python, '-m', module_name] + args
+  if not sys.executable:
+    raise RuntimeError('No python interpreter found on local machine')
+  cmd = [sys.executable, '-m', module_name] + args
   config = {
       'job': {'job_name': module_name, 'args': args},
       'task': {'type': task_type, 'index': index} if cluster else {},

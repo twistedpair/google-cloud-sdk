@@ -20,7 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://videointelligence.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
   "parameters": {
     "access_token": {
       "type": "string",

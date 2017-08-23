@@ -13,11 +13,8 @@
 # limitations under the License.
 """Module for wrangling bigtable command arguments."""
 
-import itertools
-
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.util import completers
-from googlecloudsdk.core import log
 
 
 class ClusterCompleter(completers.ListCommandCompleter):
@@ -36,18 +33,6 @@ class InstanceCompleter(completers.ListCommandCompleter):
         collection='bigtableadmin.projects.instances',
         list_command='beta bigtable instances list --uri',
         **kwargs)
-
-
-# TODO(b/33272823): Remove after deprecation period
-def ProcessInstances(args):
-  """Flatten --instances flag and warn if multiple arguments were used."""
-  if args.instances is not None:
-    if len(args.instances) > 1:
-      log.warn('Use of --instances with space-separated values is '
-               'deprecated and will not work in the future. Use comma '
-               'instead.')
-    # flatten into list
-    args.instances = list(itertools.chain.from_iterable(args.instances))
 
 
 class ArgAdder(object):
@@ -120,7 +105,6 @@ class ArgAdder(object):
       else:
         name = '--instances'
         args['type'] = arg_parsers.ArgList()
-        args['nargs'] = '+'  # TODO(b/33272823): remove after deprecation period
         args['metavar'] = 'INSTANCE'
     if not positional:
       args['required'] = required

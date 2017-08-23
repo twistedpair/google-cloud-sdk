@@ -279,6 +279,12 @@ def GetCredentialStore(store_file=None, access_token_file=None):
       _MigrateMultistore2Sqlite()
       return _GetSqliteStore(store_file, access_token_file)
 
+    log.warn('Your setup has the auth/use_sqlite_store property set to False. '
+             'This use case has been deprecated and will no longer be '
+             'supported. To silence this warning, unset the property by '
+             'running "gcloud config unset auth/use_sqlite_store". '
+             'If you have problems unsetting this property, use the '
+             '"gcloud feedback" command to report the issue.')
   _MigrateSqlite2Multistore()
   return Oauth2ClientCredentialStore(
       store_file or config.Paths().credentials_path)

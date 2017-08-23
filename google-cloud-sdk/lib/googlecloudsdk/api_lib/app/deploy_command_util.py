@@ -40,6 +40,7 @@ from googlecloudsdk.command_lib.app import exceptions as app_exc
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.credentials import creds
@@ -58,6 +59,10 @@ MAX_DNS_LABEL_LENGTH = 63  # http://tools.ietf.org/html/rfc2181#section-11
 # terminator, but any time we're getting close we're in dangerous territory.
 _WINDOWS_MAX_PATH = 256
 
+# The admin API has a timeout for individual tasks; if the build is greater
+# than 10 minutes, it might trigger that timeout, so it's not a candidate for
+# parallelized builds.
+MAX_PARALLEL_BUILD_TIME = 600
 
 FLEXIBLE_SERVICE_VERIFY_WARNING = (
     'Unable to verify that the Appengine Flexible API is enabled for project '
@@ -354,8 +359,14 @@ def _GetImageName(project, service, version, gcr_domain):
 
 
 def BuildAndPushDockerImage(
-    project, service, source_dir, version_id, code_bucket_ref, gcr_domain,
-    runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER):
+    project,
+    service,
+    source_dir,
+    version_id,
+    code_bucket_ref,
+    gcr_domain,
+    runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
+    parallel_build=False):
   """Builds and pushes a set of docker images.
 
   Args:
@@ -370,9 +381,10 @@ def BuildAndPushDockerImage(
     runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, whether
       to use the new CloudBuild-based runtime builders (alternative is old
       externalized runtimes).
+    parallel_build: bool, if True, enable parallel build and deploy.
 
   Returns:
-    str, The name of the pushed container image.
+    BuildArtifact, Representing the pushed container image or in-progress build.
 
   Raises:
     DockerfileError: if a Dockerfile is present, but the runtime is not
@@ -437,19 +449,44 @@ def BuildAndPushDockerImage(
     build = builder_reference.LoadCloudBuild(
         {'_OUTPUT_IMAGE': image.tagged_repo,
          '_GAE_APPLICATION_YAML_PATH': yaml_path})
-    # TODO(b/37542869) Remove this hack once the API can take the gs:// path
-    # as a runtime name.
-    service.runtime = builder_reference.runtime
-    service.parsed.SetEffectiveRuntime(builder_reference.runtime)
   else:
     build = cloud_build.GetDefaultBuild(image.tagged_repo)
 
-  metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE_START)
-  cloudbuild_build.CloudBuildClient().ExecuteCloudBuild(
-      cloud_build.FixUpBuild(build, object_ref), project=project)
-  metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
+  build = cloud_build.FixUpBuild(build, object_ref)
+  return _SubmitBuild(build, image, project, parallel_build)
 
-  return image.tagged_repo
+
+def _SubmitBuild(build, image, project, parallel_build):
+  """Builds and pushes a set of docker images.
+
+  Args:
+    build: A fixed up Build object.
+    image: docker_image.Image, A docker image.
+    project: str, The project being deployed to.
+    parallel_build: bool, if True, enable parallel build and deploy.
+
+  Returns:
+    BuildArtifact, Representing the pushed container image or in-progress build.
+  """
+  build_timeout = properties.VALUES.app.cloud_build_timeout.Get()
+  if build_timeout and build_timeout > MAX_PARALLEL_BUILD_TIME:
+    parallel_build = False
+    log.info(
+        'Property cloud_build_timeout configured to [{0}], which exceeds '
+        'the maximum build time for parallelized beta deployments of [{1}] '
+        'seconds. Performing serial deployment.'.format(
+            build_timeout, MAX_PARALLEL_BUILD_TIME))
+
+  if parallel_build:
+    build_id = cloudbuild_build.CloudBuildClient().ExecuteCloudBuildAsync(
+        build, project=project)
+    return BuildArtifact.MakeBuildIdArtifact(build_id)
+  else:
+    metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE_START)
+    cloudbuild_build.CloudBuildClient().ExecuteCloudBuild(
+        build, project=project)
+    metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
+    return BuildArtifact.MakeImageArtifact(image.tagged_repo)
 
 
 def DoPrepareManagedVms(gae_client):
@@ -495,8 +532,6 @@ def PossiblyEnableFlex(project):
         returned by server.
   """
   try:
-    log.warn('Checking the status of the Appengine Flexible Environment API '
-             'during Appengine Flexible deployments is currently in beta.')
     enable_api.EnableServiceIfDisabled(project,
                                        'appengineflex.googleapis.com')
   except sm_exceptions.ListServicesPermissionDeniedException:

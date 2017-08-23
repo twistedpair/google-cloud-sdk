@@ -52,6 +52,7 @@ import re
 
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.util import times
 
 
@@ -271,6 +272,37 @@ def RegexpValidator(pattern, description):
     if not re.match(pattern + '$', value):
       raise ArgumentTypeError('Bad value [{0}]: {1}'.format(value, description))
     return value
+  return Parse
+
+
+def CustomFunctionValidator(fn, description):
+  """Returns a function that validates the input by running it through fn.
+
+  For example:
+
+  >>> def isEven(val):
+  ...   return int(val) % 2 == 0
+  >>> even_number_parser = CustomFunctionValidator(isEven, 'This is not even!')
+  >>> parser.add_argument('--foo', type=even_number_parser)
+  >>> parser.parse_args(['--foo', '3'])
+  >>> # SystemExit raised and the error "error: argument foo: Bad value [3]:
+  >>> # This is not even!" is displayed
+
+  Args:
+    fn: str -> boolean
+    description: an error message to show if boolean function returns False
+
+  Returns:
+    function: str -> str, usable as an argparse type
+  """
+
+  def Parse(value):
+    if fn(value):
+      return value
+    encoded_value = console_attr.EncodeForConsole(value)
+    formatted_err = u'Bad value [{0}]: {1}'.format(encoded_value, description)
+    raise ArgumentTypeError(formatted_err)
+
   return Parse
 
 

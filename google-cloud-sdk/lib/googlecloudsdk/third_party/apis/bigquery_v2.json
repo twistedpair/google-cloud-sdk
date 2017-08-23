@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20170731",
+ "revision": "20170811",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -402,6 +402,16 @@
    "id": "ExplainQueryStage",
    "type": "object",
    "properties": {
+    "computeMsAvg": {
+     "type": "string",
+     "description": "Milliseconds the average shard spent on CPU-bound tasks.",
+     "format": "int64"
+    },
+    "computeMsMax": {
+     "type": "string",
+     "description": "Milliseconds the slowest shard spent on CPU-bound tasks.",
+     "format": "int64"
+    },
     "computeRatioAvg": {
      "type": "number",
      "description": "Relative amount of time the average shard spent on CPU-bound tasks.",
@@ -420,6 +430,16 @@
     "name": {
      "type": "string",
      "description": "Human-readable name for stage."
+    },
+    "readMsAvg": {
+     "type": "string",
+     "description": "Milliseconds the average shard spent reading input.",
+     "format": "int64"
+    },
+    "readMsMax": {
+     "type": "string",
+     "description": "Milliseconds the slowest shard spent reading input.",
+     "format": "int64"
     },
     "readRatioAvg": {
      "type": "number",
@@ -441,6 +461,16 @@
      "description": "Number of records written by the stage.",
      "format": "int64"
     },
+    "shuffleOutputBytes": {
+     "type": "string",
+     "description": "Total number of bytes written to shuffle.",
+     "format": "int64"
+    },
+    "shuffleOutputBytesSpilled": {
+     "type": "string",
+     "description": "Total number of bytes written to shuffle and spilled to disk.",
+     "format": "int64"
+    },
     "status": {
      "type": "string",
      "description": "Current status for the stage."
@@ -452,6 +482,16 @@
       "$ref": "ExplainQueryStep"
      }
     },
+    "waitMsAvg": {
+     "type": "string",
+     "description": "Milliseconds the average shard spent waiting to be scheduled.",
+     "format": "int64"
+    },
+    "waitMsMax": {
+     "type": "string",
+     "description": "Milliseconds the slowest shard spent waiting to be scheduled.",
+     "format": "int64"
+    },
     "waitRatioAvg": {
      "type": "number",
      "description": "Relative amount of time the average shard spent waiting to be scheduled.",
@@ -461,6 +501,16 @@
      "type": "number",
      "description": "Relative amount of time the slowest shard spent waiting to be scheduled.",
      "format": "double"
+    },
+    "writeMsAvg": {
+     "type": "string",
+     "description": "Milliseconds the average shard spent on writing output.",
+     "format": "int64"
+    },
+    "writeMsMax": {
+     "type": "string",
+     "description": "Milliseconds the slowest shard spent on writing output.",
+     "format": "int64"
     },
     "writeRatioAvg": {
      "type": "number",
@@ -534,7 +584,7 @@
     },
     "sourceUris": {
      "type": "array",
-     "description": "[Required] The fully-qualified URIs that point to your data in Google Cloud. For Google Cloud Storage URIs: Each URI can contain one '*' wildcard character and it must come after the 'bucket' name. Size limits related to load jobs apply to external data sources. For Google Cloud Bigtable URIs: Exactly one URI can be specified and it has be a fully specified and valid HTTPS URL for a Google Cloud Bigtable table. For Google Cloud Datastore backups, exactly one URI can be specified, and it must end with '.backup_info'. Also, the '*' wildcard character is not allowed.",
+     "description": "[Required] The fully-qualified URIs that point to your data in Google Cloud. For Google Cloud Storage URIs: Each URI can contain one '*' wildcard character and it must come after the 'bucket' name. Size limits related to load jobs apply to external data sources. For Google Cloud Bigtable URIs: Exactly one URI can be specified and it has be a fully specified and valid HTTPS URL for a Google Cloud Bigtable table. For Google Cloud Datastore backups, exactly one URI can be specified. Also, the '*' wildcard character is not allowed.",
      "items": {
       "type": "string"
      }
@@ -833,10 +883,14 @@
     },
     "sourceUris": {
      "type": "array",
-     "description": "[Required] The fully-qualified URIs that point to your data in Google Cloud. For Google Cloud Storage URIs: Each URI can contain one '*' wildcard character and it must come after the 'bucket' name. Size limits related to load jobs apply to external data sources. For Google Cloud Bigtable URIs: Exactly one URI can be specified and it has be a fully specified and valid HTTPS URL for a Google Cloud Bigtable table. For Google Cloud Datastore backups: Exactly one URI can be specified, and it must end with '.backup_info'. Also, the '*' wildcard character is not allowed.",
+     "description": "[Required] The fully-qualified URIs that point to your data in Google Cloud. For Google Cloud Storage URIs: Each URI can contain one '*' wildcard character and it must come after the 'bucket' name. Size limits related to load jobs apply to external data sources. For Google Cloud Bigtable URIs: Exactly one URI can be specified and it has be a fully specified and valid HTTPS URL for a Google Cloud Bigtable table. For Google Cloud Datastore backups: Exactly one URI can be specified. Also, the '*' wildcard character is not allowed.",
      "items": {
       "type": "string"
      }
+    },
+    "timePartitioning": {
+     "$ref": "TimePartitioning",
+     "description": "[Experimental] If specified, configures time-based partitioning for the destination table."
     },
     "writeDisposition": {
      "type": "string",
@@ -917,6 +971,10 @@
      "additionalProperties": {
       "$ref": "ExternalDataConfiguration"
      }
+    },
+    "timePartitioning": {
+     "$ref": "TimePartitioning",
+     "description": "[Experimental] If specified, configures time-based partitioning for the destination table."
     },
     "useLegacySql": {
      "type": "boolean",

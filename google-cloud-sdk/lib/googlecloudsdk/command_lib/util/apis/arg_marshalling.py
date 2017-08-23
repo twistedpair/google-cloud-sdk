@@ -1,4 +1,4 @@
-# Copyright 2016 Google Inc. All Rights Reserved.
+# Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -142,8 +142,31 @@ class ArgumentGenerator(object):
           {f: getattr(ref, f, relative_name) for f in self.method.params})
     return request_type(**fields)
 
+  def GetRequestResourceRef(self, namespace):
+    """Gets a resource reference for the resource being operated on.
+
+    Args:
+      namespace: The argparse namespace.
+
+    Returns:
+      resources.Resource, The parsed resource reference.
+    """
+    return self._ParseResourceArg(namespace)
+
   def GetResponseResourceRef(self, id_value, namespace):
-    parent_ref = self._ParseResourceArg(namespace)
+    """Gets a resource reference for a resource returned by a list call.
+
+    It parses the namespace to find a reference to the parent collection and
+    then creates a reference to the child resource with the given id_value.
+
+    Args:
+      id_value: str, The id of the child resource that was returned.
+      namespace: The argparse namespace.
+
+    Returns:
+      resources.Resource, The parsed resource reference.
+    """
+    parent_ref = self.GetRequestResourceRef(namespace)
     return resources.REGISTRY.Parse(
         id_value,
         collection=self.method.collection.full_name,

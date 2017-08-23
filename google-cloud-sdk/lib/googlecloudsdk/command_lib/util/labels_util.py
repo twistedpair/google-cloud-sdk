@@ -19,17 +19,77 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 
 
+def _IsLower(c):
+  """Returns True if c is lower case or a caseless ideograph."""
+  return c.isalpha() and (c.islower() or not c.isupper())
+
+
+def _IsValueOrSubsequent(c):
+  """Returns True if c is a valid value or subsequent (not first) character."""
+  return c in ('_', '-') or c.isdigit() or _IsLower(c)
+
+
+def IsValidLabelValue(value):
+  r"""Implements the PCRE r'[\p{Ll}\p{Lo}\p{N}_-]{0,63}'.
+
+  Only hyphens (-), underscores (_), lowercase characters, and numbers are
+  allowed. International characters are allowed.
+
+  Args:
+    value: The label value, a string.
+
+  Returns:
+    True is the value is valid; False if not.
+  """
+  if value is None or len(value) > 63:
+    return False
+  return all(_IsValueOrSubsequent(c) for c in value)
+
+
+def IsValidLabelKey(key):
+  r"""Implements the PCRE r'[\p{Ll}\p{Lo}][\p{Ll}\p{Lo}\p{N}_-]{0,62}'.
+
+  The key must start with a lowercase character and must be a valid label value.
+
+  Args:
+    key: The label key, a string.
+
+  Returns:
+    True if the key is valid; False if not.
+  """
+  if not key or not _IsLower(key[0]):
+    return False
+  return IsValidLabelValue(key)
+
+
+KEY_FORMAT_ERROR = (
+    'Only hyphens (-), underscores (_), lowercase characters, and numbers are '
+    'allowed. Keys must start with a lowercase character. International '
+    'characters are allowed.')
+
+VALUE_FORMAT_ERROR = (
+    'Only hyphens (-), underscores (_), lowercase characters, and numbers are '
+    'allowed. International characters are allowed.')
+
+KEY_FORMAT_VALIDATOR = arg_parsers.CustomFunctionValidator(
+    IsValidLabelKey, KEY_FORMAT_ERROR)
+
+VALUE_FORMAT_VALIDATOR = arg_parsers.CustomFunctionValidator(
+    IsValidLabelValue, VALUE_FORMAT_ERROR)
+
 CREATE_LABELS_FLAG = base.Argument(
     '--labels',
     metavar='KEY=VALUE',
-    type=arg_parsers.ArgDict(),
+    type=arg_parsers.ArgDict(
+        key_type=KEY_FORMAT_VALIDATOR, value_type=VALUE_FORMAT_VALIDATOR),
     action=arg_parsers.UpdateAction,
     help='A list of label KEY=VALUE pairs to add.')
 
 UPDATE_LABELS_FLAG = base.Argument(
     '--update-labels',
     metavar='KEY=VALUE',
-    type=arg_parsers.ArgDict(),
+    type=arg_parsers.ArgDict(
+        key_type=KEY_FORMAT_VALIDATOR, value_type=VALUE_FORMAT_VALIDATOR),
     action=arg_parsers.UpdateAction,
     help="""\
     A list of label KEY=VALUE pairs to update. If a label exists its value

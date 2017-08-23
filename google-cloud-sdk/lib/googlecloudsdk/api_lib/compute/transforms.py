@@ -43,6 +43,7 @@ Pythonicness of the Transform*() methods:
 import httplib
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import instance_utils
+from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.core.resource import resource_transform
 
 
@@ -227,6 +228,14 @@ def TransformQuota(r, undefined=''):
     return undefined
 
 
+def TransformScopedSuffixes(uris, undefined=''):
+  """Get just the scoped part of the object the uri refers to."""
+
+  if uris:
+    return [path_simplifier.ScopedSuffix(uri) for uri in uris]
+  return undefined
+
+
 def TransformStatus(r, undefined=''):
   """Returns the machine status with deprecation information if applicable.
 
@@ -259,6 +268,13 @@ def TransformZone(r, undefined=''):
   return project or undefined
 
 
+def TransformTypeSuffix(uri, undefined=''):
+  """Get the type and the name of the object the uri refers to."""
+
+  # Since the path is assumed valid, we can just take the last two pieces.
+  return '/'.join(uri.split('/')[-2:]) or undefined
+
+
 _TRANSFORMS = {
 
     'firewall_rule': TransformFirewallRule,
@@ -270,7 +286,9 @@ _TRANSFORMS = {
     'operation_http_status': TransformOperationHttpStatus,
     'project': TransformProject,
     'quota': TransformQuota,
+    'scoped_suffixes': TransformScopedSuffixes,
     'status': TransformStatus,
+    'type_suffix': TransformTypeSuffix,
     'zone': TransformZone,
 }
 

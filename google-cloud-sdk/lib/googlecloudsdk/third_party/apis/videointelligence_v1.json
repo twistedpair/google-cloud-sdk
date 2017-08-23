@@ -20,7 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://videointelligence.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -302,6 +302,10 @@
         "safeSearchDetectionModel": {
           "description": "Model to use for safe search detection.\nSupported values: \"latest\" and \"stable\" (the default).",
           "type": "string"
+        },
+        "extractBoundingBoxes": {
+          "description": "Whether bounding boxes be included in the face annotation output.\nShould be used with `FACE_DETECTION` enabled.",
+          "type": "boolean"
         }
       }
     },

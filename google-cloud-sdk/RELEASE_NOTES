@@ -2,6 +2,104 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 168.0.0 (2017-08-23)
+
+### Breaking Changes
+
+*   Removed support for the deprecated `--instance` flag from
+    `gcloud sql operations describe` and `gcloud sql operations wait`;
+    removed support for the deprecated `DUE_TIME` argument from
+    `gcloud sql backups describe` and the equivalent `--due-time` flag of
+    `gcloud sql instance restore_backup`.
+*   The `--mode` flag in `gcloud beta compute networks create` and
+    `gcloud beta compute networks update` has been renamed to `--subnet-mode`.
+
+### Google Compute Engine
+
+*   The `--ip-version` flag is now available in
+    `gcloud compute addresses create` and
+    `gcloud compute forwarding_rules create`.
+*   IP aliases are now supported in `gcloud compute instances create` and
+    `gcloud compute instance-templates create` commands.
+*   Subnetwork secondary ranges are now supported in
+    `gcloud compute networks subnets create`.
+*   Added `--action`, `--rules`, `--direction`, `--destinationRanges`,
+    and `--priority` flags to
+    `gcloud compute firewall-rules {describe, list, create, update}` commands.
+*   **(DEPRECATED)**  Deprecated
+    `gcloud alpha compute instances create-from-container`. Use
+    `gcloud alpha compute instances create-with-container` instead.
+*   **(DEPRECATED)**  Deprecated
+    `gcloud alpha compute instance-templates create-from-container`. Use
+    `gcloud alpha compute instance-templates create-with-container` instead.
+*   **(DEPRECATED)**  Deprecated the `names` and `--regexp` flags from the
+    following compute commands. Use `--filter` instead.
+      *   `gcloud compute backend-buckets list`
+      *   `gcloud compute firewalls list`
+      *   `gcloud compute groups list`
+      *   `gcloud compute http-health-checks list`
+      *   `gcloud compute https-health-checks list`
+      *   `gcloud compute images list`
+      *   `gcloud compute instance-templates list`
+      *   `gcloud compute networks list`
+      *   `gcloud compute operations list`
+      *   `gcloud compute routes list`
+      *   `gcloud compute target-http-proxies list`
+      *   `gcloud compute url-maps list`
+      *   `gcloud compute users list`
+*   **(DEPRECATED)**  Deprecated the `names`, `--regexp`, and `--regions` flags
+    from the following compute commands. Use `--filter` instead.
+      *   `gcloud compute addresses list`
+      *   `gcloud compute backend-services list`
+      *   `gcloud compute forwarding-rules list`
+*   **(DEPRECATED)**  Deprecated the `names`, `--regexp`, `--zones`, and
+    `--regions` flags from the following compute commands. Use `--filter`
+    instead.
+      *   `gcloud alpha compute disks list`
+      *   `gcloud compute instance-groups managed list`
+
+### Google Cloud Logging
+
+*   The `gcloud logging` command group is now available in GA.
+    `gcloud beta logging` will be removed in three months' time.
+
+### Google App Engine
+
+*   Added the following commands:
+      *   `gcloud beta app firewall-rules create`
+      *   `gcloud beta app firewall-rules delete`
+      *   `gcloud beta app firewall-rules describe`
+      *   `gcloud beta app firewall-rules list`
+      *   `gcloud beta app firewall-rules test-ip`
+      *   `gcloud beta app firewall-rules update`
+
+### Google Cloud KMS
+
+*   Added user-defined labels (key/value pairs) to Cloud KMS. Users will be
+    able to attach labels to their CryptoKey resources.
+
+### Google ML Engine
+
+*   Fixed a bug where `gcloud ml-engine local train` did not work on Windows.
+
+### Google Container Registry
+
+*   Fixed a warning that users of Docker 17.07 were seeing.
+
+### Google Cloud Deployment Manager
+
+*   Fixed the `deployment manager create` output format.
+
+### Google Cloud Container Builder
+
+*   The local builder was upgraded to version 0.2.1. Release notes:
+    *   `Volumes` feature added.
+    *   `Secrets` feature added.
+    *   Integration test for $PROJECT_ID substitution.
+    *   Stop channel to terminate the goroutines that refresh the auth tokens.
+    *   Clean some unnecessary stdout.
+
+
 ## 167.0.0 (2017-08-16)
 
 ### Breaking Changes

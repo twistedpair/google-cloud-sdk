@@ -3,6 +3,7 @@
   "discoveryVersion": "v1",
   "id": "container:v1",
   "name": "container",
+  "canonicalName": "Container",
   "version": "v1",
   "revision": "0",
   "title": "Google Container Engine API",

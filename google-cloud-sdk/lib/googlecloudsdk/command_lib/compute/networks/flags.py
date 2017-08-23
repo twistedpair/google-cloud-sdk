@@ -26,7 +26,7 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
-ALPHA_LIST_FORMAT = """\
+ALPHA_BETA_LIST_FORMAT = """\
     table(
       name,
       x_gcloud_subnet_mode:label=SUBNET_MODE,

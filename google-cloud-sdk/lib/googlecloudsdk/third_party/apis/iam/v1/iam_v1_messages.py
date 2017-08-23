@@ -110,7 +110,6 @@ class CreateServiceAccountKeyRequest(_messages.Message):
       `GOOGLE_CREDENTIALS_FILE` is the default output format.
 
   Fields:
-    includePublicKeyData: A boolean attribute.
     keyAlgorithm: Which type of key and algorithm to use for the key. The
       default is currently a 2K RSA key.  However this may change in the
       future.
@@ -147,9 +146,8 @@ class CreateServiceAccountKeyRequest(_messages.Message):
     TYPE_PKCS12_FILE = 1
     TYPE_GOOGLE_CREDENTIALS_FILE = 2
 
-  includePublicKeyData = _messages.BooleanField(1)
-  keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 2)
-  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 3)
+  keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 1)
+  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 2)
 
 
 class CreateServiceAccountRequest(_messages.Message):
@@ -1248,11 +1246,8 @@ class UndeleteRoleRequest(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'iam')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'iam')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'iam')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

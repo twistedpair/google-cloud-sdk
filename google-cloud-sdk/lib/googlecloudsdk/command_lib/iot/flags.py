@@ -91,6 +91,7 @@ def AddDeviceRegistrySettingsFlagsToParser(parser, defaults=True):
       action='store_true'
   ).AddToParser(parser)
   pubsub_args = parser.add_mutually_exclusive_group()
+  # TODO(b/64597199): Remove this flag when usage is low.
   base.Argument(
       '--pubsub-topic',
       required=False,

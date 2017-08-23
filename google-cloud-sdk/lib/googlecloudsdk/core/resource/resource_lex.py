@@ -692,7 +692,7 @@ class Lexer(object):
   def _ParseTransform(self, func_name, active=0, map_transform=None):
     """Parses a transform function call.
 
-    The cursor is positioned at the '(' after func_name.
+    The initial '(' has already been consumed by the caller.
 
     Args:
       func_name: The transform function name.
@@ -708,11 +708,11 @@ class Lexer(object):
       ExpressionSyntaxError: The expression has a syntax error.
     """
     here = self.GetPosition()
-    if func_name not in self._defaults.symbols:
+    func = self._defaults.symbols.get(func_name)
+    if not func:
       raise resource_exceptions.ExpressionSyntaxError(
           'Unknown transform function {0} [{1}].'.format(
               func_name, self.Annotate(here)))
-    func = self._defaults.symbols[func_name]
     args = []
     kwargs = {}
     doc = getattr(func, 'func_doc', None)
@@ -736,7 +736,7 @@ class Lexer(object):
   def Transform(self, func_name, active=0):
     """Parses one or more transform calls and returns a _Transform call object.
 
-    The cursor is positioned at the '(' just after the transform name.
+    The initial '(' has already been consumed by the caller.
 
     Args:
       func_name: The name of the first transform function.

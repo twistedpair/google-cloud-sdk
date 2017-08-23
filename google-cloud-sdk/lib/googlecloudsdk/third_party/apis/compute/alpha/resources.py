@@ -192,6 +192,13 @@ class Collections(enum.Enum):
       {},
       [u'project', u'zone', u'machineType']
   )
+  NETWORKENDPOINTGROUPS = (
+      'networkEndpointGroups',
+      'projects/{project}/zones/{zone}/networkEndpointGroups/'
+      '{networkEndpointGroup}',
+      {},
+      [u'project', u'zone', u'networkEndpointGroup']
+  )
   NETWORKS = (
       'networks',
       'projects/{project}/global/networks/{network}',
@@ -294,6 +301,12 @@ class Collections(enum.Enum):
       'projects/{project}/global/sslCertificates/{sslCertificate}',
       {},
       [u'project', u'sslCertificate']
+  )
+  SSLPOLICIES = (
+      'sslPolicies',
+      'projects/{project}/global/sslPolicies/{sslPolicy}',
+      {},
+      [u'project', u'sslPolicy']
   )
   SUBNETWORKS = (
       'subnetworks',

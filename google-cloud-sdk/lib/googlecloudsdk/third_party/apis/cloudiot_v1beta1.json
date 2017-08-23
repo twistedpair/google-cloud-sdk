@@ -20,7 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://cloudiot.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -243,11 +243,11 @@
           "format": "google-datetime"
         },
         "enabledState": {
-          "description": "If disabled, connections from this device will fail. Can be used to\ntemporarily prevent the device from connecting if, for example, the\nsensor is generating bad data and needs maintenance.",
+          "description": "If a device is disabled, communication from it will be blocked. Can be used\nto temporarily prevent the device from connecting if, for example, the\nsensor is generating bad data and needs maintenance.",
           "enumDescriptions": [
-            "No enabled state specified. If not specified, defaults to enabled.",
-            "Enables a device. By default, devices will be enabled.",
-            "Disables a device."
+            "No enabled state specified. If not specified, defaults to enabled\n(communication to Cloud IoT Core allowed).",
+            "Enables a device. By default, devices are enabled, allowing communication\nfrom the device to Cloud IoT Core. When a device is disabled, it is blocked\nfrom communicating with Cloud IoT Core.",
+            "Disables a device, blocking all communication from it to Cloud IoT Core."
           ],
           "type": "string",
           "enum": [

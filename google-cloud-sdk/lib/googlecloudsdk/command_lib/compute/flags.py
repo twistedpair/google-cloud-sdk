@@ -17,6 +17,7 @@
 import argparse
 import functools
 
+from googlecloudsdk.api_lib.compute import filter_rewrite
 from googlecloudsdk.api_lib.compute.regions import service as regions_service
 from googlecloudsdk.api_lib.compute.zones import service as zones_service
 from googlecloudsdk.calliope import actions
@@ -28,6 +29,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.util import text
 
 ZONE_PROPERTY_EXPLANATION = """\
@@ -763,3 +765,26 @@ def AddRegexArg(parser):
       A regular expression to filter the names of the results on. Any names
       that do not match the entire regular expression will be filtered out.
       """)
+
+
+def RewriteFilter(args):
+  """Rewrites args.filter into client and server filter expression strings.
+
+  Usage:
+
+    args.filter, request_filter = flags.RewriteFilter(args)
+
+  Args:
+    args: The parsed args namespace containing the filter expression args.filter
+      and display_info.
+
+  Returns:
+    A (client_expression, server_expression) tuple of expression strings. None
+    means the expression does not need to applied on the respective
+    client/server side.
+  """
+  display_info = args.GetDisplayInfo()
+  defaults = resource_projection_spec.ProjectionSpec(
+      symbols=display_info.transforms,
+      aliases=display_info.aliases)
+  return filter_rewrite.Rewriter().Rewrite(args.filter, defaults=defaults)

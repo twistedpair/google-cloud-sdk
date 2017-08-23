@@ -3377,12 +3377,12 @@
               "type": "string"
             },
             "consumerProjectId": {
-              "description": "Include services consumed by the specified project.\n\nIf project_settings is expanded, then this field controls which project\nproject_settings is populated for.",
+              "description": "Include services consumed by the specified project.\n\nIf project_settings is expanded, then this field controls which project\nproject_settings is populated for.\nThis field is deprecated.\nSee details go\/deprecate-listservices-expand.",
               "location": "query",
               "type": "string"
             },
             "expand": {
-              "description": "Fields to expand in any results. By default, the following fields\nare not fully included in list results, but they will if you specify them\nin this field:\n- `project_settings`\n- `quota_usage` (It requires `project_settings`)",
+              "description": "Fields to expand in any results. By default, the following fields\nare not fully included in list results, but they will if you specify them\nin this field:\n- `project_settings`\n- `quota_usage` (It requires `project_settings`)\nThis field is deprecated.\nSee details go\/deprecate-listservices-expand.",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"

@@ -7,7 +7,7 @@
   "version": "v2beta2",
   "revision": "0",
   "title": "Cloud Tasks API",
-  "description": "Cloud Tasks enables developers to manage the execution of large numbers of distributed requests.",
+  "description": "Cloud Tasks enables developers to manage the execution of large numbers of distributed requests. Cloud Tasks is in Alpha.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -20,7 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://cloudtasks.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
   "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
@@ -202,10 +202,6 @@
           "additionalProperties": {
             "type": "string"
           }
-        },
-        "retryConfig": {
-          "description": "Deprecated. Queue.retry_config replaces this field. If both this field\nand Queue.retry_config are specified, Queue.retry_config takes\nprecedence.\n\nSettings that determine the retry behavior.\n\nThe task's retry configuration (AppEngineTaskTarget.retry_config)\noverrides the queue's retry configuration\n(AppEngineQueueConfig.retry_config).",
-          "$ref": "RetryConfig"
         }
       }
     },
@@ -225,6 +221,35 @@
         "instance": {
           "description": "App instance.\n\nBy default, the task will be sent to an instance which is available when\nthe task is attempted.\n\nRequests can only be sent to a specific instance if basic or manual scaling\nis used. For more information see\n[here](\/appengine\/docs\/python\/an-overview-of-app-engine?hl=en_US#scaling_types_and_instance_classes).",
           "type": "string"
+        }
+      }
+    },
+    "PullQueueConfig": {
+      "id": "PullQueueConfig",
+      "description": "Pull queue config.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ThrottleConfig": {
+      "id": "ThrottleConfig",
+      "description": "Throttle config.\n\nThese settings determine the throttling behavior.",
+      "type": "object",
+      "properties": {
+        "maxTasksDispatchedPerSecond": {
+          "description": "The maximum rate at which tasks are dispatched from this\nqueue.\n\nThe maximum allowed value is 500.\n\n* For App Engine queues, this field is 1 by default.\n* For pull queues, this field is output only and always 10,000.\n\nThis field has the same meaning as\n[rate in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#rate).",
+          "type": "number",
+          "format": "double"
+        },
+        "maxBurstSize": {
+          "description": "Output only.\n\nThe max burst size limits how fast the queue is processed when\nmany tasks are in the queue and the rate is high. This field\nallows the queue to have a high rate so processing starts shortly\nafter a task is enqueued, but still limits resource usage when\nmany tasks are enqueued in a short period of time.\n\n* For App Engine queues, if\n  ThrottleConfig.max_tasks_dispatched_per_second is 1, this\n  field is 10; otherwise this field is\n  ThrottleConfig.max_tasks_dispatched_per_second \/ 5.\n* For pull queues, this field is output only and always 10,000.\n\nNote: For App Engine queues that were created through\n`queue.yaml\/xml`, `max_burst_size` might not have the same\nsettings as specified above; CloudTasks.UpdateQueue can be\nused to set `max_burst_size` only to the values specified above.\n\nThis field has the same meaning as\n[bucket_size in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#bucket_size).",
+          "type": "number",
+          "format": "double"
+        },
+        "maxOutstandingTasks": {
+          "description": "* For App Engine queues, this field is 10 by default.\n* For pull queues, this field is output only and always -1, which\n  indicates no limit.\n\nThis field has the same meaning as\n[max_concurrent_requests in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#max_concurrent_requests).",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -259,44 +284,6 @@
         },
         "maxDoublings": {
           "description": "The maximum number of times that the interval between failed task\nretries will be doubled before the increase becomes constant. The\nconstant is: 2**(max_doublings - 1) *\nRetryConfig.min_backoff.\n\n* For App Engine queues and tasks, this field is 16 by default.\n* For pull queues and tasks, this field is output only and always 0.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "PullQueueConfig": {
-      "id": "PullQueueConfig",
-      "description": "Pull queue config.",
-      "type": "object",
-      "properties": {
-        "maxAttempts": {
-          "description": "The maximum number of attempts for a task.\n\nCloud Tasks will attempt the task `max_attempts` times. If the first\nattempt fails, then there will be `max_attempts - 1` retries.\nMust be > 0.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "unlimitedAttempts": {
-          "description": "If true, then the number of attempts is unlimited.",
-          "type": "boolean"
-        }
-      }
-    },
-    "ThrottleConfig": {
-      "id": "ThrottleConfig",
-      "description": "Throttle config.\n\nThese settings determine the throttling behavior.",
-      "type": "object",
-      "properties": {
-        "maxTasksDispatchedPerSecond": {
-          "description": "The maximum rate at which tasks are dispatched from this\nqueue.\n\nThe maximum allowed value is 500.\n\n* For App Engine queues, this field is 1 by default.\n* For pull queues, this field is output only and always 10,000.\n\nThis field has the same meaning as\n[rate in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#rate).",
-          "type": "number",
-          "format": "double"
-        },
-        "maxBurstSize": {
-          "description": "Output only.\n\nThe max burst size limits how fast the queue is processed when\nmany tasks are in the queue and the rate is high. This field\nallows the queue to have a high rate so processing starts shortly\nafter a task is enqueued, but still limits resource usage when\nmany tasks are enqueued in a short period of time.\n\n* For App Engine queues, if\n  ThrottleConfig.max_tasks_dispatched_per_second is 1, this\n  field is 10; otherwise this field is\n  ThrottleConfig.max_tasks_dispatched_per_second \/ 5.\n* For pull queues, this field is output only and always 10,000.\n\nNote: For App Engine queues that were created through\n`queue.yaml\/xml`, `max_burst_size` might not have the same\nsettings as specified above; CloudTasks.UpdateQueue can be\nused to set `max_burst_size` only to the values specified above.\n\nThis field has the same meaning as\n[bucket_size in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#bucket_size).",
-          "type": "number",
-          "format": "double"
-        },
-        "maxOutstandingTasks": {
-          "description": "* For App Engine queues, this field is 10 by default.\n* For pull queues, this field is output only and always -1, which\n  indicates no limit.\n\nThis field has the same meaning as\n[max_concurrent_requests in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#max_concurrent_requests).",
           "type": "integer",
           "format": "int32"
         }
@@ -532,10 +519,6 @@
           "description": "Payload.\n\nThe payload will be sent as the HTTP message body. A message\nbody, and thus a payload, is allowed only if the HTTP method is\nPOST or PUT. It is an error to set a data payload on a task with\nan incompatible HttpMethod.",
           "type": "string",
           "format": "byte"
-        },
-        "retryConfig": {
-          "description": "Deprecated. Task.retry_config replaces this field. If both this field\nand Task.retry_config are specified, Task.retry_config takes\nprecedence.\n\nSettings that determine the retry behavior.\n\nThe task's retry configuration\noverrides the\nqueue's retry configuration.",
-          "$ref": "RetryConfig"
         }
       }
     },
@@ -553,15 +536,6 @@
           "description": "A meta-data tag for this task.\n\nThis value is used by CloudTasks.PullTasks calls when\nPullTasksRequest.filter is `tag=<tag>`.\n\nThe tag must be less than 500 bytes.",
           "type": "string",
           "format": "byte"
-        },
-        "maxAttempts": {
-          "description": "The maximum number of attempts for a task.\n\nCloud Tasks will attempt the task `max_attempts` times. If the first\nattempt fails, then there will be `max_attempts - 1` retries).\nMust be > 0.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "unlimitedAttempts": {
-          "description": "If true, then the number of attempts is unlimited.\nIf false, then by default Cloud Tasks will retry the task 100 times.",
-          "type": "boolean"
         }
       }
     },

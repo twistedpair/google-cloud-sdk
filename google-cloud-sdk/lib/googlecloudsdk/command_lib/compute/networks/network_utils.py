@@ -17,6 +17,20 @@ from googlecloudsdk.calliope import exceptions as exceptions
 from googlecloudsdk.calliope import parser_errors
 
 
+RANGE_HELP_TEXT = """\
+    Specifies the IPv4 address range of legacy mode networks. The range
+    must be specified in CIDR format:
+    [](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+
+    This flag only works if mode is
+    [legacy](https://cloud.google.com/compute/docs/vpc/legacy).
+
+    Using legacy networks is **not recommended**, given that many newer Google
+    Cloud Platform features are not supported on legacy networks. Please be
+    advised that legacy networks may not be supported in the future.
+    """
+
+
 class CancelledException(exceptions.ToolException):
   """Exception raised when a networks command is cancelled by the user."""
 
@@ -72,20 +86,34 @@ def AddCreateArgs(parser):
       required=False,
       help='The network type.')
 
+  parser.add_argument('--range', help=RANGE_HELP_TEXT)
+
+
+def AddCreateBetaArgs(parser):
+  """Adds common arguments for creating a network."""
+
   parser.add_argument(
-      '--range',
-      help="""\
-      Specifies the IPv4 address range of legacy mode networks. The range
-      must be specified in CIDR format:
-      [](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      '--description', help='An optional, textual description for the network.')
 
-      This flag only works if mode is
-      [legacy](https://cloud.google.com/compute/docs/vpc/legacy).
+  parser.add_argument(
+      '--subnet-mode',
+      choices=_CREATE_SUBNET_MODE_CHOICES,
+      default='AUTO',
+      type=lambda mode: mode.upper(),
+      metavar='MODE',
+      help="""The subnet mode of the network. If not specified, defaults to
+              AUTO.""")
 
-      Using legacy networks is **not recommended**, given that many newer Google
-      Cloud Platform features are not supported on legacy networks. Please be
-      advised that legacy networks may not be supported in the future.
-      """)
+  parser.add_argument(
+      '--bgp-routing-mode',
+      choices=_BGP_ROUTING_MODE_CHOICES,
+      hidden=True,
+      type=lambda mode: mode.upper(),
+      metavar='MODE',
+      help="""The BGP routing mode for this network. If not specified, defaults
+              to REGIONAL.""")
+
+  parser.add_argument('--range', help=RANGE_HELP_TEXT)
 
 
 def AddCreateAlphaArgs(parser):
@@ -112,15 +140,7 @@ def AddCreateAlphaArgs(parser):
       help="""The BGP routing mode for this network. If not specified, defaults
               to REGIONAL.""")
 
-  parser.add_argument(
-      '--range',
-      help="""\
-      Specifies the IPv4 address range of legacy mode networks. The range
-      must be specified in CIDR format:
-      [](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
-
-      This flag only works if subnet-mode is LEGACY.
-      """)
+  parser.add_argument('--range', help=RANGE_HELP_TEXT)
 
 
 def AddUpdateAlphaArgs(parser):
@@ -136,6 +156,25 @@ def AddUpdateAlphaArgs(parser):
   mode_args.add_argument(
       '--bgp-routing-mode',
       choices=_BGP_ROUTING_MODE_CHOICES,
+      type=lambda mode: mode.upper(),
+      metavar='MODE',
+      help="""The target BGP routing mode for this network.""")
+
+
+def AddUpdateBetaArgs(parser):
+  """Adds alpha-specific arguments for updating a network."""
+
+  mode_args = parser.add_mutually_exclusive_group(required=False)
+
+  mode_args.add_argument(
+      '--switch-to-custom-subnet-mode',
+      action='store_true',
+      help="""Switch to custom subnet mode. This action cannot be undone.""")
+
+  mode_args.add_argument(
+      '--bgp-routing-mode',
+      choices=_BGP_ROUTING_MODE_CHOICES,
+      hidden=True,
       type=lambda mode: mode.upper(),
       metavar='MODE',
       help="""The target BGP routing mode for this network.""")

@@ -203,6 +203,31 @@ class AuthorizationConfig(_messages.Message):
   provider = _messages.StringField(1)
 
 
+class AuthorizationRule(_messages.Message):
+  """Authorization rule for API services.  It specifies the permission(s)
+  required for an API element for the overall API request to succeed. It is
+  typically used to mark request message fields that contain the name of the
+  resource and indicates the permissions that will be checked on that
+  resource.  For example:      package google.storage.v1;      message
+  CopyObjectRequest {       string source = 1 [
+  (google.api.authz).permissions = "storage.objects.get"];        string
+  destination = 2 [         (google.api.authz).permissions =
+  "storage.objects.create,storage.objects.update"];     }
+
+  Fields:
+    permissions: The required permissions. The acceptable values vary depend
+      on the authorization system used. For Google APIs, it should be a comma-
+      separated Google IAM permission values. When multiple permissions are
+      listed, the semantics is not defined by the system. Additional
+      documentation must be provided manually.
+    selector: Selects the API elements to which this rule applies.  Refer to
+      selector for syntax details.
+  """
+
+  permissions = _messages.StringField(1)
+  selector = _messages.StringField(2)
+
+
 class Backend(_messages.Message):
   """`Backend` defines the backend configuration for a service.
 
@@ -748,6 +773,10 @@ class HttpRule(_messages.Message):
     additionalBindings: Additional HTTP bindings for the selector. Nested
       bindings must not contain an `additional_bindings` field themselves
       (that is, the nesting may only be one level deep).
+    authorizations: Specifies the permission(s) required for an API element
+      for the overall API request to succeed. It is typically used to mark
+      request message fields that contain the name of the resource and
+      indicates the permissions that will be checked on that resource.
     body: The name of the request field whose value is mapped to the HTTP
       body, or `*` for mapping all fields not captured by the path pattern to
       the HTTP body. NOTE: the referred field must not be a repeated field and
@@ -799,19 +828,20 @@ class HttpRule(_messages.Message):
   """
 
   additionalBindings = _messages.MessageField('HttpRule', 1, repeated=True)
-  body = _messages.StringField(2)
-  custom = _messages.MessageField('CustomHttpPattern', 3)
-  delete = _messages.StringField(4)
-  get = _messages.StringField(5)
-  mediaDownload = _messages.MessageField('MediaDownload', 6)
-  mediaUpload = _messages.MessageField('MediaUpload', 7)
-  patch = _messages.StringField(8)
-  post = _messages.StringField(9)
-  put = _messages.StringField(10)
-  responseBody = _messages.StringField(11)
-  restCollection = _messages.StringField(12)
-  restMethodName = _messages.StringField(13)
-  selector = _messages.StringField(14)
+  authorizations = _messages.MessageField('AuthorizationRule', 2, repeated=True)
+  body = _messages.StringField(3)
+  custom = _messages.MessageField('CustomHttpPattern', 4)
+  delete = _messages.StringField(5)
+  get = _messages.StringField(6)
+  mediaDownload = _messages.MessageField('MediaDownload', 7)
+  mediaUpload = _messages.MessageField('MediaUpload', 8)
+  patch = _messages.StringField(9)
+  post = _messages.StringField(10)
+  put = _messages.StringField(11)
+  responseBody = _messages.StringField(12)
+  restCollection = _messages.StringField(13)
+  restMethodName = _messages.StringField(14)
+  selector = _messages.StringField(15)
 
 
 class LabelDescriptor(_messages.Message):
@@ -2333,11 +2363,8 @@ class VisibilityRule(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'serviceuser')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'serviceuser')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'serviceuser')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

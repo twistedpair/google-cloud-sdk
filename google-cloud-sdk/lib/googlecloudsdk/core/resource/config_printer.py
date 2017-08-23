@@ -97,24 +97,58 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
     """
     self._PrintCategory(self._out, [], items)
 
-  def _PrintEnvExport(self, items):
+  @staticmethod
+  def _Prefix(prefix, name):
+    """Returns a new prefix based on prefix and name."""
+    if isinstance(name, int):
+      name = 'I' + str(name)
+    return prefix + name + '_'
+
+  def _PrintEnvExport(self, items, prefix=''):
     """Prints the environment export commands for items.
+
+    Environment variable names have '_' instead of '.'.  Array values have
+    subscripts expanded as names *_I0, *_I1, ...
 
     Args:
       items: The current record dict iteritems from _AddRecord().
+      prefix: Parent name prefix, prepended to each item name.
     """
     for name, value in sorted(items):
-      self._out.write(self._env_command_format.format(
-          name=name, value=pipes.quote(value)))
+      name = unicode(name)
+      if isinstance(value, dict):
+        self._PrintEnvExport(value.iteritems(),
+                             prefix=self._Prefix(prefix, name))
+      elif value is None:
+        self._out.write(u'{name} (unset)\n'.format(name=prefix + name))
+      elif isinstance(value, list):
+        for i, v in enumerate(value):
+          if not isinstance(v, dict):
+            v = {'I' + str(i): v}
+          self._PrintEnvExport(v.iteritems(), prefix=self._Prefix(prefix, name))
+      else:
+        self._out.write(self._env_command_format.format(
+            name=prefix + name, value=pipes.quote(unicode(value))))
 
-  def _PrintEnvUnset(self, items):
+  def _PrintEnvUnset(self, items, prefix=''):
     """Prints the environment unset commands for items.
 
     Args:
       items: The current record dict iteritems from _AddRecord().
+      prefix: Parent name prefix, prepended to each item name.
     """
-    for name, _ in sorted(items):
-      self._out.write(self._env_command_format.format(name=name))
+    for name, value in sorted(items):
+      name = unicode(name)
+      if isinstance(value, dict):
+        self._PrintEnvUnset(value.iteritems(),
+                            prefix=self._Prefix(prefix, name))
+      elif isinstance(value, list):
+        for i, v in enumerate(value):
+          if not isinstance(v, dict):
+            v = {'I' + str(i): v}
+          self._PrintEnvUnset(v.iteritems(), prefix=self._Prefix(prefix, name))
+      else:
+        self._out.write(self._env_command_format.format(name=prefix + name))
 
   def _AddRecord(self, record, delimit=False):
     """Dispatches to the specific config printer.

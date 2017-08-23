@@ -20,7 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://serviceuser.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -886,6 +886,13 @@
         "restMethodName": {
           "description": "DO NOT USE. This is an experimental field.\n\nOptional. The rest method name is by default derived from the URL\npattern. If specified, this field overrides the default method name.\nExample:\n\n    rpc CreateResource(CreateResourceRequest)\n        returns (CreateResourceResponse) {\n      option (google.api.http) = {\n        post: \"\/v1\/resources\",\n        body: \"resource\",\n        rest_method_name: \"insert\"\n      };\n    }\n\nThis method has the automatically derived rest method name\n\"create\", but for backwards compatibility with apiary, it is specified as\ninsert.",
           "type": "string"
+        },
+        "authorizations": {
+          "description": "Specifies the permission(s) required for an API element for the overall\nAPI request to succeed. It is typically used to mark request message fields\nthat contain the name of the resource and indicates the permissions that\nwill be checked on that resource.",
+          "type": "array",
+          "items": {
+            "$ref": "AuthorizationRule"
+          }
         }
       }
     },
@@ -976,6 +983,21 @@
           "description": "Optional maximum acceptable size for direct download.\nThe size is specified in bytes.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "AuthorizationRule": {
+      "id": "AuthorizationRule",
+      "description": "Authorization rule for API services.\n\nIt specifies the permission(s) required for an API element for the overall\nAPI request to succeed. It is typically used to mark request message fields\nthat contain the name of the resource and indicates the permissions that\nwill be checked on that resource.\n\nFor example:\n\n    package google.storage.v1;\n\n    message CopyObjectRequest {\n      string source = 1 [\n        (google.api.authz).permissions = \"storage.objects.get\"];\n\n      string destination = 2 [\n        (google.api.authz).permissions =\n            \"storage.objects.create,storage.objects.update\"];\n    }",
+      "type": "object",
+      "properties": {
+        "selector": {
+          "description": "Selects the API elements to which this rule applies.\n\nRefer to selector for syntax details.",
+          "type": "string"
+        },
+        "permissions": {
+          "description": "The required permissions. The acceptable values vary depend on the\nauthorization system used. For Google APIs, it should be a comma-separated\nGoogle IAM permission values. When multiple permissions are listed, the\nsemantics is not defined by the system. Additional documentation must\nbe provided manually.",
+          "type": "string"
         }
       }
     },

@@ -695,7 +695,6 @@ def ValidateCreateDiskFlags(args):
 def AddAddressArgs(parser,
                    instances=True,
                    multiple_network_interface_cards=True,
-                   support_alias_ip_ranges=False,
                    support_network_tier=False):
   """Adds address arguments for instances and instance-templates."""
   addresses = parser.add_mutually_exclusive_group()
@@ -739,8 +738,7 @@ def AddAddressArgs(parser,
     multiple_network_interface_cards_spec['network-tier'] = ValidateNetworkTier
 
   if multiple_network_interface_cards:
-    if support_alias_ip_ranges:
-      multiple_network_interface_cards_spec['aliases'] = str
+    multiple_network_interface_cards_spec['aliases'] = str
     network_interface_help = """\
         Adds a network interface to the instance. Mutually exclusive with
         --address, --network, --network-tier, --subnet, and --private-network-ip
@@ -775,8 +773,7 @@ def AddAddressArgs(parser,
         If network key is also specified this must be a subnetwork of the
         specified network.
         """
-    if support_alias_ip_ranges:
-      network_interface_help += """
+    network_interface_help += """
         *aliases*::: Specifies the IP alias ranges to allocate for this
         interface.  If there are multiple IP alias ranges, they are separated
         by semicolons.
@@ -786,8 +783,8 @@ def AddAddressArgs(parser,
             --aliases="10.128.1.0/24;range1:/32"
 
         """
-      if instances:
-        network_interface_help += """
+    if instances:
+      network_interface_help += """
           Each IP alias range consists of a range name and an IP range
           separated by a colon, or just the IP range.
           The range name is the name of the range within the network
@@ -800,8 +797,8 @@ def AddAddressArgs(parser,
           name on the subnet. If the IP range is specified by netmask, the
           IP allocator will pick an available range with the specified netmask
           and allocate it to this network interface."""
-      else:
-        network_interface_help += """
+    else:
+      network_interface_help += """
           Each IP alias range consists of a range name and an CIDR netmask
           (e.g. `/24`) separated by a colon, or just the netmask.
           The range name is the name of the range within the network

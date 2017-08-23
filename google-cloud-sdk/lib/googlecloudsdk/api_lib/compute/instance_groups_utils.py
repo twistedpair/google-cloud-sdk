@@ -12,16 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Convenience functions and classes for dealing with instances groups."""
-import abc
 from apitools.base.py import encoding
 import enum
 
-from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 
@@ -76,92 +73,16 @@ def ValidateInstanceInZone(instances, zone):
         % ', '.join(invalid_instances))
 
 
-def _UnwrapResponse(responses, attr_name):
+def UnwrapResponse(responses, attr_name):
   """Extracts items stored in given attribute of instance group response."""
   for response in responses:
     for item in getattr(response, attr_name):
       yield item
 
 
-class InstanceGroupListInstancesBase(base_classes.BaseLister):
-  """Base class for listing instances present in instance group."""
-
-  # TODO(b/36057058): add support for --names parameter as in all List verbs
-
-  @staticmethod
-  def ListInstancesArgs(parser, multizonal=False):
-    parser.add_argument(
-        'name',
-        help='The name of the instance group.')
-
-    if multizonal:
-      scope_parser = parser.add_mutually_exclusive_group()
-      flags.AddRegionFlag(
-          scope_parser,
-          resource_type='instance group',
-          operation_type='list instances in',
-          explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
-      flags.AddZoneFlag(
-          scope_parser,
-          resource_type='instance group',
-          operation_type='list instances in',
-          explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT)
-    else:
-      flags.AddZoneFlag(
-          parser,
-          resource_type='instance group',
-          operation_type='list instances in')
-
-  @property
-  def service(self):
-    return self.compute.instanceGroups
-
-  @property
-  def resource_type(self):
-    return 'instanceGroups'
-
-  @property
-  def method(self):
-    return 'ListInstances'
-
-  @property
-  def list_field(self):
-    return 'items'
-
-  def Run(self, args):
-    errors = []
-
-    responses, errors = self.GetResources(args)
-    if errors:
-      utils.RaiseToolException(errors)
-    items = lister.ProcessResults(
-        resources=list(_UnwrapResponse(responses, self.list_field)),
-        field_selector=None)
-
-    for item in items:
-      yield item
-
-  @abc.abstractmethod
-  def GetResources(self, args):
-    """Retrieves response with instance in the instance group."""
-    pass
-
-  def GetUriFunc(self):
-
-    def _GetUri(resource):
-      return resource['instance']
-
-    return _GetUri
-
-  def DeprecatedFormat(self, unused_args):
-    return 'table(instance.basename():label=NAME, status)'
-
-  detailed_help = {
-      'brief': 'List instances present in the instance group',
-      'DESCRIPTION': """\
-          *{command}* list instances in an instance group.
-          """,
-  }
+def UriFuncForListInstances(resource):
+  """UriFunc for list-instances commands."""
+  return resource.instance
 
 
 def OutputNamedPortsForGroup(group_ref, compute_client):
@@ -180,7 +101,7 @@ def OutputNamedPortsForGroup(group_ref, compute_client):
         region=group_ref.region,
         project=group_ref.project)
   results = compute_client.MakeRequests(requests=[(service, 'Get', request)])
-  return list(_UnwrapResponse(results, 'namedPorts'))
+  return list(UnwrapResponse(results, 'namedPorts'))
 
 
 class FingerprintFetchException(core_exceptions.Error):

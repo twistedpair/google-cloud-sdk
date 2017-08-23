@@ -658,6 +658,15 @@ class _SectionApp(_Section):
         default='gs://runtime-builders/',
         hidden=True)
 
+    # TODO(b/27101941): This property is a temporary fallback in case issues
+    # are caused by changing the GA command to enable the Flexible Environment
+    # API with Service Management before deploying Flexible apps. Remove if
+    # change is successful.
+    self.use_deprecated_preparation = self._AddBool(
+        'use_deprecated_preparation',
+        default=False,
+        hidden=True)
+
 
 class _SectionContainer(_Section):
   """Contains the properties for the 'container' section."""
@@ -700,6 +709,12 @@ class _SectionContainer(_Section):
         validator=BuildTimeoutValidator,
         help_text='The timeout, in seconds, to wait for container builds to '
         'complete.')
+    self.build_check_tag = self._AddBool(
+        'build_check_tag',
+        default=True,
+        hidden=True,
+        help_text='If True, validate that the --tag value to container builds '
+        'submit is in the gcr.io or *.gcr.io namespace.')
 
 
 class _SectionCore(_Section):
@@ -843,12 +858,17 @@ class _SectionCore(_Section):
         ' to the API not being enabled.')
 
     def CaptureSessionFileValidator(filename):
+      """Validates if session could be captured to given file."""
       if filename is None:
         return
       if not isinstance(filename, basestring):
         raise InvalidValueError('Filename is not string')
       dirname = os.path.dirname(filename)
-      if not files.HasWriteAccessInDir(dirname):
+      try:
+        has_write_access = files.HasWriteAccessInDir(dirname)
+      except ValueError as e:  # dirname is not a directory
+        raise InvalidValueError(e.message)
+      if not has_write_access:
         raise InvalidValueError('Can\'t write to {}'.format(filename))
 
     self.capture_session_file = self._Add(
@@ -1099,6 +1119,11 @@ class _SectionProxy(_Section):
     self.port = self._Add(
         'port',
         help_text='The port to use when connected to your proxy server.')
+    self.rdns = self._Add(
+        'rdns',
+        default=True,
+        help_text='If True (default), DNS queries will not be performed '
+        'locally, and instead, handed to the proxy to resolve.')
     self.username = self._Add(
         'username',
         help_text='If your proxy requires authentication, the username to use '

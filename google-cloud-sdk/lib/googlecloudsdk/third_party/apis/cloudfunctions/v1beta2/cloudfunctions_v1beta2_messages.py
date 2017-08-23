@@ -103,11 +103,17 @@ class CloudFunction(_messages.Message):
       AUTO: Automatic language detection to be performed by Cloud Functions.
       NODE_JS: Node.js.
       PYTHON: Python.
+      GO: Go.
+      JAVA: Java.
+      C_SHARP: C#.
     """
     LANGUAGE_UNSPECIFIED = 0
     AUTO = 1
     NODE_JS = 2
     PYTHON = 3
+    GO = 4
+    JAVA = 5
+    C_SHARP = 6
 
   class StatusValueValuesEnum(_messages.Enum):
     """Output only. Status of the function deployment.
@@ -246,6 +252,21 @@ class CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest(_messag
   name = _messages.StringField(2, required=True)
 
 
+class CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest(_messages.Message):
+  """A CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest
+  object.
+
+  Fields:
+    generateUploadUrlRequest: A GenerateUploadUrlRequest resource to be passed
+      as the request body.
+    parent: The project and location in which the Google Cloud Storage signed
+      URL should be generated, specified in the format `projects/*/locations/*
+  """
+
+  generateUploadUrlRequest = _messages.MessageField('GenerateUploadUrlRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class CloudfunctionsProjectsLocationsFunctionsGetRequest(_messages.Message):
   """A CloudfunctionsProjectsLocationsFunctionsGetRequest object.
 
@@ -272,21 +293,6 @@ class CloudfunctionsProjectsLocationsFunctionsListRequest(_messages.Message):
   location = _messages.StringField(1, required=True)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
-
-
-class CloudfunctionsProjectsLocationsGenerateUploadUrlRequest(_messages.Message):
-  """A CloudfunctionsProjectsLocationsGenerateUploadUrlRequest object.
-
-  Fields:
-    generateUploadUrlRequest: A GenerateUploadUrlRequest resource to be passed
-      as the request body.
-    location: The project and location in which the Google Cloud Storage
-      signed URL should be generated, specified in the format
-      `projects/*/locations/*
-  """
-
-  generateUploadUrlRequest = _messages.MessageField('GenerateUploadUrlRequest', 1)
-  location = _messages.StringField(2, required=True)
 
 
 class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
@@ -318,6 +324,7 @@ class EventTrigger(_messages.Message):
       `providers/cloud.storage/eventTypes/object.change`       Handle a write
       to the Firebase Realtime Database
       `providers/firebase.database/eventTypes/data.write`
+    failurePolicy: Specifies policy for failed executions.
     resource: Which instance of the source's service should send events. E.g.
       for Pub/Sub this would be a Pub/Sub topic at `projects/*/topics/*`. For
       Google Cloud Storage this would be a bucket at `projects/*/buckets/*`.
@@ -327,8 +334,21 @@ class EventTrigger(_messages.Message):
   """
 
   eventType = _messages.StringField(1)
-  resource = _messages.StringField(2)
-  retryPolicy = _messages.MessageField('RetryPolicy', 3)
+  failurePolicy = _messages.MessageField('FailurePolicy', 2)
+  resource = _messages.StringField(3)
+  retryPolicy = _messages.MessageField('RetryPolicy', 4)
+
+
+class FailurePolicy(_messages.Message):
+  """Describes the policy in case of function's execution failure. If empty,
+  then defaults to ignoring failures (i.e. not retrying them).
+
+  Fields:
+    retry: If specified, then the function will be retried in case of a
+      failure.
+  """
+
+  retry = _messages.MessageField('Retry', 1)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):
@@ -735,6 +755,15 @@ class OperationMetadataV1Beta2(_messages.Message):
   versionId = _messages.IntegerField(4)
 
 
+class Retry(_messages.Message):
+  """Describes the retry policy in case of function's execution failure. A
+  function execution will be retried on any failure. A failed execution will
+  be retried up to 7 days with an exponential backoff (capped at 10 seconds).
+  Retried execution is charged as any other execution.
+  """
+
+
+
 class RetryPolicy(_messages.Message):
   """Described the retry policy in case of function's execution failure.
 
@@ -926,11 +955,8 @@ class Status(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'cloudfunctions')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'cloudfunctions')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'cloudfunctions')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

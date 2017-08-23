@@ -33,6 +33,10 @@ class Error(exceptions.Error):
   """Exceptions for the appcfg module."""
 
 
+class NoFieldsSpecifiedError(Error):
+  """The user specified no fields to a command which requires at least one."""
+
+
 class NoCloudSDKError(Error):
   """The module was unable to find Cloud SDK."""
 

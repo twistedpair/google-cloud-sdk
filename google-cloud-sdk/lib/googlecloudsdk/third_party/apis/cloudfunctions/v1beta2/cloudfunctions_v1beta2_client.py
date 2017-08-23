@@ -240,6 +240,38 @@ https://cloud.google.com/storage/docs/access-control/signed-urls
         supports_download=False,
     )
 
+    def GenerateUploadUrl(self, request, global_params=None):
+      """Returns a signed URL for uploading a function source code.
+For more information about the signed URL usage see:
+https://cloud.google.com/storage/docs/access-control/signed-urls
+Once the function source code upload is complete, the used signed
+URL should be provided in CreateFunction or UpdateFunction request
+as a reference to the function source code.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateUploadUrlResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateUploadUrl')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateUploadUrl.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/functions:generateUploadUrl',
+        http_method=u'POST',
+        method_id=u'cloudfunctions.projects.locations.functions.generateUploadUrl',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta2/{+parent}/functions:generateUploadUrl',
+        request_field=u'generateUploadUrlRequest',
+        request_type_name=u'CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest',
+        response_type_name=u'GenerateUploadUrlResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       """Returns a function with the given name from the requested project.
 
@@ -330,38 +362,6 @@ https://cloud.google.com/storage/docs/access-control/signed-urls
       super(CloudfunctionsV1beta2.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def GenerateUploadUrl(self, request, global_params=None):
-      """Returns a signed URL for uploading a function source code.
-For more information about the signed URL usage see:
-https://cloud.google.com/storage/docs/access-control/signed-urls
-Once the function source code upload is complete, the used signed
-URL should be provided in CreateFunction or UpdateFunction request
-as a reference to the function source code.
-
-      Args:
-        request: (CloudfunctionsProjectsLocationsGenerateUploadUrlRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GenerateUploadUrlResponse) The response message.
-      """
-      config = self.GetMethodConfig('GenerateUploadUrl')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GenerateUploadUrl.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}:generateUploadUrl',
-        http_method=u'POST',
-        method_id=u'cloudfunctions.projects.locations.generateUploadUrl',
-        ordered_params=[u'location'],
-        path_params=[u'location'],
-        query_params=[],
-        relative_path=u'v1beta2/{+location}:generateUploadUrl',
-        request_field=u'generateUploadUrlRequest',
-        request_type_name=u'CloudfunctionsProjectsLocationsGenerateUploadUrlRequest',
-        response_type_name=u'GenerateUploadUrlResponse',
-        supports_download=False,
-    )
 
     def List(self, request, global_params=None):
       """Lists information about the supported locations for this service.

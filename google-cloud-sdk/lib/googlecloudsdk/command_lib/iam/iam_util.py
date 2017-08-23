@@ -193,15 +193,7 @@ def ParsePolicyFile(policy_file_path, policy_message_type):
   Raises:
     BadFileException if the JSON or YAML file is malformed.
   """
-  try:
-    policy = ParseJsonPolicyFile(policy_file_path, policy_message_type)
-  except gcloud_exceptions.BadFileException:
-    try:
-      policy = ParseYamlPolicyFile(policy_file_path, policy_message_type)
-    except gcloud_exceptions.BadFileException:
-      raise gcloud_exceptions.BadFileException(
-          'Policy file {0} is not a properly formatted JSON or YAML policy file'
-          '.'.format(policy_file_path))
+  policy = ParseYamlorJsonPolicyFile(policy_file_path, policy_message_type)
 
   if not policy.etag:
     msg = ('The specified policy does not contain an "etag" field '
@@ -213,54 +205,17 @@ def ParsePolicyFile(policy_file_path, policy_message_type):
   return policy
 
 
-def ParseJsonPolicyFile(policy_file_path, policy_message_type):
-  """Construct an IAM Policy protorpc.Message from a JSON formatted file.
+def ParseYamlorJsonPolicyFile(policy_file_path, policy_message_type):
+  """Create an IAM Policy protorpc.Message from a YAML or JSON formatted file.
 
   Args:
-    policy_file_path: Path to the JSON IAM policy file.
-    policy_message_type: Policy message type to convert JSON to.
-  Returns:
-    a protorpc.Message of type policy_message_type filled in from the JSON
-    policy file.
-  Raises:
-    BadFileException if the JSON file is malformed.
-    IamEtagReadError if the etag is badly formatted.
-  """
-  try:
-    with open(policy_file_path) as policy_file:
-      policy_json = policy_file.read()
-  except EnvironmentError:
-    # EnvironmnetError is parent of IOError, OSError and WindowsError.
-    # Raised when file does not exist or can't be opened/read.
-    raise core_exceptions.Error(
-        'Unable to read policy file {0}'.format(policy_file_path))
-
-  try:
-    policy = encoding.JsonToMessage(policy_message_type, policy_json)
-  except (ValueError) as e:
-    # ValueError is raised when JSON is badly formatted
-    raise gcloud_exceptions.BadFileException(
-        'Policy file {0} is not a properly formatted JSON policy file. {1}'
-        .format(policy_file_path, str(e)))
-  except (apitools_messages.DecodeError) as e:
-    # DecodeError is raised when etag is badly formatted (not proper Base64)
-    raise IamEtagReadError(
-        'The etag of policy file {0} is not properly formatted. {1}'
-        .format(policy_file_path, str(e)))
-  return policy
-
-
-def ParseYamlPolicyFile(policy_file_path, policy_message_type):
-  """Construct an IAM Policy protorpc.Message from a YAML formatted file.
-
-  Args:
-    policy_file_path: Path to the YAML IAM policy file.
+    policy_file_path: Path to the YAML or JSON IAM policy file.
     policy_message_type: Policy message type to convert YAML to.
   Returns:
-    a protorpc.Message of type policy_message_type filled in from the YAML
+    a protorpc.Message of type policy_message_type filled in from the input
     policy file.
   Raises:
-    BadFileException if the YAML file is malformed.
+    BadFileException if the YAML or JSON file is malformed.
     IamEtagReadError if the etag is badly formatted.
   """
   try:
@@ -273,20 +228,23 @@ def ParseYamlPolicyFile(policy_file_path, policy_message_type):
         policy_file_path))
   except (yaml.scanner.ScannerError, yaml.parser.ParserError) as e:
     # Raised when the YAML file is not properly formatted.
+    # Also works for JSON format validation since JSON is a subset of YAML.
     raise gcloud_exceptions.BadFileException(
-        'Policy file {0} is not a properly formatted YAML policy file. {1}'
+        'Policy file [{0}] is not a properly formatted YAML or '
+        'JSON policy file. {1}'
         .format(policy_file_path, str(e)))
   try:
     policy = encoding.PyValueToMessage(policy_message_type, policy_to_parse)
   except (AttributeError) as e:
-    # Raised when the YAML file is not properly formatted YAML policy file.
+    # Raised when the input file is not properly formatted YAML policy file.
     raise gcloud_exceptions.BadFileException(
-        'Policy file {0} is not a properly formatted YAML policy file. {1}'
+        'Policy file [{0}] is not a properly formatted YAML or JSON '
+        'policy file. {1}'
         .format(policy_file_path, str(e)))
   except (apitools_messages.DecodeError) as e:
     # DecodeError is raised when etag is badly formatted (not proper Base64)
     raise IamEtagReadError(
-        'The etag of policy file {0} is not properly formatted. {1}'
+        'The etag of policy file [{0}] is not properly formatted. {1}'
         .format(policy_file_path, str(e)))
   return policy
 

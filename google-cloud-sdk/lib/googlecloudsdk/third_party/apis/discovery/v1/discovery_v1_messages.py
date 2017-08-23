@@ -706,11 +706,8 @@ class StandardQueryParameters(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    JsonSchema, '_ref', '$ref',
-    package=u'discovery')
+    JsonSchema, '_ref', '$ref')
 encoding.AddCustomJsonFieldMapping(
-    RestMethod.RequestValue, '_ref', '$ref',
-    package=u'discovery')
+    RestMethod.RequestValue, '_ref', '$ref')
 encoding.AddCustomJsonFieldMapping(
-    RestMethod.ResponseValue, '_ref', '$ref',
-    package=u'discovery')
+    RestMethod.ResponseValue, '_ref', '$ref')

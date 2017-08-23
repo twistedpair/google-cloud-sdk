@@ -556,6 +556,16 @@ class ListPerfSamplesResponse(_messages.Message):
   perfSamples = _messages.MessageField('PerfSample', 2, repeated=True)
 
 
+class ListScreenshotClustersResponse(_messages.Message):
+  """A ListScreenshotClustersResponse object.
+
+  Fields:
+    clusters: The set of clustres associated with an execution Always set
+  """
+
+  clusters = _messages.MessageField('ScreenshotCluster', 1, repeated=True)
+
+
 class ListStepThumbnailsResponse(_messages.Message):
   """A response containing the thumbnails in a step.
 
@@ -760,6 +770,43 @@ class PublishXunitXmlFilesRequest(_messages.Message):
   """
 
   xunitXmlFiles = _messages.MessageField('FileReference', 1, repeated=True)
+
+
+class Screen(_messages.Message):
+  """A Screen object.
+
+  Fields:
+    fileReference: File reference of the png file. Required.
+    locale: Locale of the device that the screenshot was taken on. Required.
+    model: Model of the device that the screenshot was taken on. Required.
+    version: OS version of the device that the screenshot was taken on.
+      Required.
+  """
+
+  fileReference = _messages.StringField(1)
+  locale = _messages.StringField(2)
+  model = _messages.StringField(3)
+  version = _messages.StringField(4)
+
+
+class ScreenshotCluster(_messages.Message):
+  """A ScreenshotCluster object.
+
+  Fields:
+    activity: A string that describes the activity of every screen in the
+      cluster.
+    clusterId: A unique identifier for the cluster.
+    keyScreen: A singular screen that represents the cluster as a whole. This
+      screen will act as the "cover" of the entire cluster. When users look at
+      the clusters, only the key screen from each cluster will be shown. Which
+      screen is the key screen is determined by the ClusteringAlgorithm
+    screens: Full list of screens.
+  """
+
+  activity = _messages.StringField(1)
+  clusterId = _messages.StringField(2)
+  keyScreen = _messages.MessageField('Screen', 3)
+  screens = _messages.MessageField('Screen', 4, repeated=True)
 
 
 class SkippedDetail(_messages.Message):
@@ -1122,16 +1169,57 @@ class TestExecutionStep(_messages.Message):
 
 
 class TestIssue(_messages.Message):
-  """An abnormal event observed during the test execution.
+  """An issue detected occurring during a test execution.
+
+  Enums:
+    SeverityValueValuesEnum: Severity of issue. Required.
+    TypeValueValuesEnum: Type of issue. Required.
 
   Fields:
-    errorMessage: A brief human-readable message describing the abnormal
-      event.  Required.
-    stackTrace: Optional.
+    errorMessage: A brief human-readable message describing the issue.
+      Required.
+    severity: Severity of issue. Required.
+    stackTrace: Deprecated in favor of stack trace fields inside specific
+      warnings.
+    type: Type of issue. Required.
+    warning: Warning message with additional details of the issue. Should
+      always be a message from com.google.devtools.toolresults.v1.warnings
+      Required.
   """
 
+  class SeverityValueValuesEnum(_messages.Enum):
+    """Severity of issue. Required.
+
+    Values:
+      info: <no description>
+      severe: <no description>
+      unspecifiedSeverity: <no description>
+      warning: <no description>
+    """
+    info = 0
+    severe = 1
+    unspecifiedSeverity = 2
+    warning = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Type of issue. Required.
+
+    Values:
+      anr: <no description>
+      fatalException: <no description>
+      nativeCrash: <no description>
+      unspecifiedType: <no description>
+    """
+    anr = 0
+    fatalException = 1
+    nativeCrash = 2
+    unspecifiedType = 3
+
   errorMessage = _messages.StringField(1)
-  stackTrace = _messages.MessageField('StackTrace', 2)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 2)
+  stackTrace = _messages.MessageField('StackTrace', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  warning = _messages.MessageField('Any', 5)
 
 
 class TestSuiteOverview(_messages.Message):
@@ -1359,6 +1447,20 @@ class ToolresultsProjectsHistoriesCreateRequest(_messages.Message):
   history = _messages.MessageField('History', 1)
   projectId = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class ToolresultsProjectsHistoriesExecutionsClustersListRequest(_messages.Message):
+  """A ToolresultsProjectsHistoriesExecutionsClustersListRequest object.
+
+  Fields:
+    executionId: An Execution id.  Required.
+    historyId: A History id.  Required.
+    projectId: A Project id.  Required.
+  """
+
+  executionId = _messages.StringField(1, required=True)
+  historyId = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
 
 
 class ToolresultsProjectsHistoriesExecutionsCreateRequest(_messages.Message):

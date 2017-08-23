@@ -389,11 +389,15 @@ class GoogleCloudMlV1OperationMetadata(_messages.Message):
       CREATE_VERSION: An operation to create a new version.
       DELETE_VERSION: An operation to delete an existing version.
       DELETE_MODEL: An operation to delete an existing model.
+      UPDATE_MODEL: An operation to update an existing model.
+      UPDATE_VERSION: An operation to update an existing version.
     """
     OPERATION_TYPE_UNSPECIFIED = 0
     CREATE_VERSION = 1
     DELETE_VERSION = 2
     DELETE_MODEL = 3
+    UPDATE_MODEL = 4
+    UPDATE_VERSION = 5
 
   createTime = _messages.StringField(1)
   endTime = _messages.StringField(2)
@@ -825,14 +829,16 @@ class GoogleCloudMlV1Version(_messages.Message):
     Values:
       UNKNOWN: The version state is unspecified.
       READY: The version is ready for prediction.
-      CREATING: The version is still in the process of creation.
+      CREATING: The version is in the process of creation.
       FAILED: The version failed to be created, possibly cancelled.
         `error_message` should contain the details of the failure.
+      DELETING: The version is in the process of deletion.
     """
     UNKNOWN = 0
     READY = 1
     CREATING = 2
     FAILED = 3
+    DELETING = 4
 
   autoScaling = _messages.MessageField('GoogleCloudMlV1AutoScaling', 1)
   createTime = _messages.StringField(2)
@@ -910,11 +916,15 @@ class GoogleCloudMlV1beta1OperationMetadata(_messages.Message):
       CREATE_VERSION: An operation to create a new version.
       DELETE_VERSION: An operation to delete an existing version.
       DELETE_MODEL: An operation to delete an existing model.
+      UPDATE_MODEL: An operation to update an existing model.
+      UPDATE_VERSION: An operation to update an existing version.
     """
     OPERATION_TYPE_UNSPECIFIED = 0
     CREATE_VERSION = 1
     DELETE_VERSION = 2
     DELETE_MODEL = 3
+    UPDATE_MODEL = 4
+    UPDATE_VERSION = 5
 
   createTime = _messages.StringField(1)
   endTime = _messages.StringField(2)
@@ -978,14 +988,16 @@ class GoogleCloudMlV1beta1Version(_messages.Message):
     Values:
       UNKNOWN: The version state is unspecified.
       READY: The version is ready for prediction.
-      CREATING: The version is still in the process of creation.
+      CREATING: The version is in the process of creation.
       FAILED: The version failed to be created, possibly cancelled.
         `error_message` should contain the details of the failure.
+      DELETING: The version is in the process of deletion.
     """
     UNKNOWN = 0
     READY = 1
     CREATING = 2
     FAILED = 3
+    DELETING = 4
 
   autoScaling = _messages.MessageField('GoogleCloudMlV1beta1AutoScaling', 1)
   createTime = _messages.StringField(2)
@@ -1706,6 +1718,18 @@ class MlProjectsJobsCreateRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class MlProjectsJobsGetIamPolicyRequest(_messages.Message):
+  """A MlProjectsJobsGetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  resource = _messages.StringField(1, required=True)
+
+
 class MlProjectsJobsGetRequest(_messages.Message):
   """A MlProjectsJobsGetRequest object.
 
@@ -1735,6 +1759,37 @@ class MlProjectsJobsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class MlProjectsJobsSetIamPolicyRequest(_messages.Message):
+  """A MlProjectsJobsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class MlProjectsJobsTestIamPermissionsRequest(_messages.Message):
+  """A MlProjectsJobsTestIamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class MlProjectsModelsCreateRequest(_messages.Message):
@@ -2031,14 +2086,10 @@ class StandardQueryParameters(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    GoogleIamV1Rule, 'in_', 'in',
-    package=u'ml')
+    GoogleIamV1Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
-    StandardQueryParameters, 'f__xgafv', '$.xgafv',
-    package=u'ml')
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1',
-    package=u'ml')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
-    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2',
-    package=u'ml')
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

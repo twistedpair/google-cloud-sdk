@@ -614,6 +614,33 @@ all annotations in this taxonomy.
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      """Return permissions that the caller has on the given taxonomy resource.
+
+      Args:
+        request: (DatapolTaxonomyStoresDataTaxonomiesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'datapol.taxonomyStores.dataTaxonomies.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'DatapolTaxonomyStoresDataTaxonomiesTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class TaxonomyStoresTaxonomyReportsService(base_api.BaseApiService):
     """Service class for the taxonomyStores_taxonomyReports resource."""
 
@@ -902,5 +929,33 @@ modify, and use taxonomies.
         request_field=u'setIamPolicyRequest',
         request_type_name=u'DatapolTaxonomyStoresSetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Return permissions that the caller has on the given taxonomy store.
+resource.
+
+      Args:
+        request: (DatapolTaxonomyStoresTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/taxonomyStores/{taxonomyStoresId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'datapol.taxonomyStores.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'DatapolTaxonomyStoresTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )

@@ -13,7 +13,6 @@
 # limitations under the License.
 """Common flags for some of the SQL commands."""
 
-from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.util import completers
 
@@ -66,34 +65,6 @@ def AddInstanceResizeLimit(parser):
       help='Allows you to set a maximum storage capacity, in GB. Automatic '
       'increases to your capacity will stop once this limit has been reached. '
       'Default capacity is *unlimited*.')
-
-
-def AddDeprecatedInstanceRequired(parser):
-  parser.add_argument(
-      '--instance',
-      '-i',
-      action=actions.DeprecationAction(
-          '--instance',
-          removed=False,
-          warn=('Starting on 2017-06-30, --instance will no longer be a valid '
-                'flag: Run the same command but omit this flag.'),),
-      required=True,
-      completer=InstanceCompleter,
-      help='Cloud SQL instance ID.')
-
-
-def AddDeprecatedInstance(parser):
-  parser.add_argument(
-      '--instance',
-      '-i',
-      action=actions.DeprecationAction(
-          '--instance',
-          removed=False,
-          warn=('Starting on 2017-06-30, --instance will no longer be a valid '
-                'flag: Run the same command but omit this flag.'),),
-      required=False,
-      completer=InstanceCompleter,
-      help='Cloud SQL instance ID.')
 
 
 def AddUsername(parser):

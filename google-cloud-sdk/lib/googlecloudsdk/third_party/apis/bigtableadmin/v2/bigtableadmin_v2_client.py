@@ -476,8 +476,10 @@ particular prefix.
     )
 
     def ModifyColumnFamilies(self, request, global_params=None):
-      """Atomically performs a series of column family modifications.
-on the specified table.
+      """Performs a series of column family modifications on the specified table.
+Either all or none of the modifications will occur before this method
+returns, but data requests received prior to that point may see a table
+where only some modifications have taken effect.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest) input message

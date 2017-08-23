@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20170731",
+ "revision": "20170817",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2611,6 +2611,34 @@
     }
    }
   },
+  "DistributionPolicy": {
+   "id": "DistributionPolicy",
+   "type": "object",
+   "properties": {
+    "zones": {
+     "type": "array",
+     "items": {
+      "$ref": "DistributionPolicyZoneConfiguration"
+     }
+    }
+   }
+  },
+  "DistributionPolicyZoneConfiguration": {
+   "id": "DistributionPolicyZoneConfiguration",
+   "type": "object",
+   "properties": {
+    "zone": {
+     "type": "string",
+     "description": "URL of the zone where managed instance group is spawning instances (for regional resources). Zone has to belong to the region where managed instance group is located.",
+     "annotations": {
+      "required": [
+       "compute.regionInstanceGroupManagers.insert",
+       "compute.regionInstanceGroupManagers.update"
+      ]
+     }
+    }
+   }
+  },
   "Expr": {
    "id": "Expr",
    "type": "object",
@@ -4145,6 +4173,10 @@
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
     },
+    "distributionPolicy": {
+     "$ref": "DistributionPolicy",
+     "description": "Policy valid only for regional managed instance groups."
+    },
     "failoverAction": {
      "type": "string",
      "description": "The action to perform in case of zone failure. Only one value is supported, NO_FAILOVER. The default is NO_FAILOVER.",
@@ -5402,7 +5434,7 @@
   "InterconnectAttachment": {
    "id": "InterconnectAttachment",
    "type": "object",
-   "description": "Protocol definitions for Mixer API to support InterconnectAttachment. Next available tag: 14",
+   "description": "Protocol definitions for Mixer API to support InterconnectAttachment. Next available tag: 18",
    "properties": {
     "cloudRouterIpAddress": {
      "type": "string",
@@ -6441,6 +6473,10 @@
       "$ref": "NetworkPeering"
      }
     },
+    "routingConfig": {
+     "$ref": "NetworkRoutingConfig",
+     "description": "The network-level routing configuration for this network. Used by Cloud Router to determine what type of network-wide routing behavior to enforce."
+    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
@@ -6559,6 +6595,25 @@
     "stateDetails": {
      "type": "string",
      "description": "[Output Only] Details about the current state of the peering."
+    }
+   }
+  },
+  "NetworkRoutingConfig": {
+   "id": "NetworkRoutingConfig",
+   "type": "object",
+   "description": "A routing configuration attached to a network resource. The message includes the list of routers associated with the network, and a flag indicating the type of routing behavior to enforce network-wide.",
+   "properties": {
+    "routingMode": {
+     "type": "string",
+     "description": "The network-wide routing mode to use. If set to REGIONAL, this network's cloud routers will only advertise routes with subnetworks of this network in the same region as the router. If set to GLOBAL, this network's cloud routers will advertise routes with all subnetworks of this network, across regions.",
+     "enum": [
+      "GLOBAL",
+      "REGIONAL"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     }
    }
   },
@@ -7131,7 +7186,7 @@
     },
     "resources": {
      "type": "array",
-     "description": "Serive resources (a.k.a service projects) attached to this project as their shared VPC host.",
+     "description": "Service resources (a.k.a service projects) attached to this project as their shared VPC host.",
      "items": {
       "$ref": "XpnResourceId"
      }
@@ -7182,6 +7237,7 @@
       "LOCAL_SSD_TOTAL_GB",
       "NETWORKS",
       "NVIDIA_K80_GPUS",
+      "NVIDIA_P100_GPUS",
       "PREEMPTIBLE_CPUS",
       "PREEMPTIBLE_LOCAL_SSD_GB",
       "REGIONAL_AUTOSCALERS",
@@ -7200,11 +7256,14 @@
       "TARGET_INSTANCES",
       "TARGET_POOLS",
       "TARGET_SSL_PROXIES",
+      "TARGET_TCP_PROXIES",
       "TARGET_VPN_GATEWAYS",
       "URL_MAPS",
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -12345,7 +12404,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -13213,7 +13272,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -13867,7 +13926,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -14139,7 +14198,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -14541,7 +14600,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -14818,7 +14877,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -15095,7 +15154,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -15220,7 +15279,7 @@
       },
       "requestId": {
        "type": "string",
-       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and then the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
        "location": "query"
       }
      },
@@ -15450,7 +15509,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -16942,7 +17001,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -18813,7 +18872,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -19222,6 +19281,47 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "patch": {
+     "id": "compute.networks.patch",
+     "path": "{project}/global/networks/{network}",
+     "httpMethod": "PATCH",
+     "description": "Patches the specified network with the data included in the request.",
+     "parameters": {
+      "network": {
+       "type": "string",
+       "description": "Name of the network to update.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "network"
+     ],
+     "request": {
+      "$ref": "Network"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "removePeering": {
      "id": "compute.networks.removePeering",
      "path": "{project}/global/networks/{network}/removePeering",
@@ -19318,7 +19418,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -19963,7 +20063,7 @@
       },
       "requestId": {
        "type": "string",
-       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and then the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
        "location": "query"
       }
      },
@@ -20055,7 +20155,7 @@
       },
       "requestId": {
        "type": "string",
-       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and then the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
        "location": "query"
       }
      },
@@ -22491,7 +22591,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -22727,7 +22827,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -22925,7 +23025,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -23120,7 +23220,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -23824,7 +23924,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -24101,7 +24201,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -25283,7 +25383,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },
@@ -26084,7 +26184,7 @@
        "type": "string",
        "description": "Name of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
        "location": "path"
       }
      },

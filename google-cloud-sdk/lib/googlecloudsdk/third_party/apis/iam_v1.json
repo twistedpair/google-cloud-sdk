@@ -20,7 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://iam.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
   "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
@@ -301,10 +301,6 @@
             "KEY_ALG_RSA_1024",
             "KEY_ALG_RSA_2048"
           ]
-        },
-        "includePublicKeyData": {
-
-          "type": "boolean"
         }
       }
     },
