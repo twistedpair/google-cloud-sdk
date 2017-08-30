@@ -85,6 +85,7 @@ Or (even easier) use a 'custom' runtime:
 """
 import contextlib
 import os
+import re
 import urllib2
 
 import enum
@@ -101,11 +102,11 @@ import yaml
 
 # "test-{ga,beta}" runtimes are canaries for unit testing
 _WHITELISTED_RUNTIMES_GA = (
-    {'php'} |
-    {'test-ga'})
+    {'php', 'nodejs', 'ruby'} |
+    {'test-ga', re.compile('test-re-[ab]')})
 _WHITELISTED_RUNTIMES_BETA = (
     _WHITELISTED_RUNTIMES_GA |
-    {'aspnetcore', 'java', 'nodejs', 'php', 'python', 'ruby'} |
+    {'aspnetcore', 'java', 'php', 'python', re.compile(r'(go|go1\..+)$')} |
     {'test-beta'})
 
 
@@ -165,6 +166,16 @@ class RuntimeBuilderStrategy(enum.Enum):
     raise ValueError(
         'RuntimeBuilderStrategy {} is not a whitelist strategy.'.format(self))
 
+  def _IsWhitelisted(self, runtime):
+    for whitelisted_runtime in self._GetWhitelist():
+      try:
+        if whitelisted_runtime.match(runtime):
+          return True
+      except AttributeError:
+        if runtime == whitelisted_runtime:
+          return True
+    return False
+
   def ShouldUseRuntimeBuilders(self, runtime, needs_dockerfile):
     """Returns True if runtime should use runtime builders under this strategy.
 
@@ -200,7 +211,7 @@ class RuntimeBuilderStrategy(enum.Enum):
     if self is self.ALWAYS:
       return True
     elif self is self.WHITELIST_BETA or self is self.WHITELIST_GA:
-      return runtime in self._GetWhitelist()
+      return self._IsWhitelisted(runtime)
     elif self is self.NEVER:
       return False
     else:

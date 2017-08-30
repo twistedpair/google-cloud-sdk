@@ -78,16 +78,3 @@ def GetRangeFlag():
        in the user's provided network, or the provided network is peered with
        another network that is using that CIDR range.
       """)
-
-
-def GetMachineTypeFlag():
-  """Set the number of TPU cores allocated for TPU."""
-  return base.Argument(
-      '--machine-type',
-      required=False,
-      help="""\
-      One of the predefined machine types (e.g. `n1-standard-32`,
-      `n1-highcpu-32`, etc.) or a predefined custom machine type
-      (e.g. `zones/$ZONE/machineTypes/custom-$CPUS-$MEMORY`).
-      If not supplied, will use API default (currently `n1-highcpu-32`)
-      """)

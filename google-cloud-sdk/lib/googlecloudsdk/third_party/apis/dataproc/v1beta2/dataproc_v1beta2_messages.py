@@ -130,6 +130,8 @@ class ClusterConfig(_messages.Message):
       http://metadata/computeMetadata/v1beta2/instance/attributes/dataproc-
       role) if [[ "${ROLE}" == 'Master' ]]; then   ... master specific actions
       ... else   ... worker specific actions ... fi
+    lifecycleConfig: Optional. The config setting for auto delete cluster
+      schedule.
     masterConfig: Optional. The Google Compute Engine config settings for the
       master instance in a cluster.
     secondaryWorkerConfig: Optional. The Google Compute Engine config settings
@@ -143,10 +145,11 @@ class ClusterConfig(_messages.Message):
   configBucket = _messages.StringField(1)
   gceClusterConfig = _messages.MessageField('GceClusterConfig', 2)
   initializationActions = _messages.MessageField('NodeInitializationAction', 3, repeated=True)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 4)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 5)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 6)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 7)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 4)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 5)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 6)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 7)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 8)
 
 
 class ClusterMetrics(_messages.Message):
@@ -1262,6 +1265,23 @@ class JobStatus(_messages.Message):
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
+class LifecycleConfig(_messages.Message):
+  """Specifies the cluster auto delete related schedule configuration.
+
+  Fields:
+    autoDeleteTime: Optional. The time when cluster will be auto-deleted.
+    autoDeleteTtl: Optional. The life duration of cluster, the cluster will be
+      auto-deleted at the end of this duration.
+    idleDeleteTtl: Optional. The longest duration that cluster would keep
+      alive while staying  idle; passing this threshold will cause cluster to
+      be auto-deleted.
+  """
+
+  autoDeleteTime = _messages.StringField(1)
+  autoDeleteTtl = _messages.StringField(2)
+  idleDeleteTtl = _messages.StringField(3)
+
+
 class ListClustersResponse(_messages.Message):
   """The list of all clusters in a project.
 
@@ -1701,7 +1721,7 @@ class SoftwareConfig(_messages.Message):
       mappings: capacity-scheduler: capacity-scheduler.xml core: core-site.xml
       distcp: distcp-default.xml hdfs: hdfs-site.xml hive: hive-site.xml
       mapred: mapred-site.xml pig: pig.properties spark: spark-defaults.conf
-      yarn: yarn-site.xml
+      yarn: yarn-site.xmlFor more information, see Cluster properties.
 
   Fields:
     imageVersion: Optional. The version of software inside the cluster. It
@@ -1713,7 +1733,7 @@ class SoftwareConfig(_messages.Message):
       mappings: capacity-scheduler: capacity-scheduler.xml core: core-site.xml
       distcp: distcp-default.xml hdfs: hdfs-site.xml hive: hive-site.xml
       mapred: mapred-site.xml pig: pig.properties spark: spark-defaults.conf
-      yarn: yarn-site.xml
+      yarn: yarn-site.xmlFor more information, see Cluster properties.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1723,7 +1743,8 @@ class SoftwareConfig(_messages.Message):
     following are supported prefixes and their mappings: capacity-scheduler:
     capacity-scheduler.xml core: core-site.xml distcp: distcp-default.xml
     hdfs: hdfs-site.xml hive: hive-site.xml mapred: mapred-site.xml pig:
-    pig.properties spark: spark-defaults.conf yarn: yarn-site.xml
+    pig.properties spark: spark-defaults.conf yarn: yarn-site.xmlFor more
+    information, see Cluster properties.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.

@@ -17,6 +17,7 @@
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.calliope import parser_completer
 from googlecloudsdk.calliope import walker
+from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import module_util
 from googlecloudsdk.core import resources
@@ -85,12 +86,29 @@ def AddCacheFlag(parser):
             'specified then the default cache name for that prefix is used.'))
 
 
+def _GetCompleterType(completer_class):
+  """Returns the completer type name given its class."""
+  completer_type = None
+  try:
+    for t in completer_class.mro():
+      if t == completers.ResourceCompleter:
+        break
+      if t.__name__.endswith('Completer'):
+        completer_type = t.__name__
+  except AttributeError:
+    pass
+  if not completer_type and callable(completer_class):
+    completer_type = 'function'
+  return completer_type
+
+
 class _CompleterModule(object):
 
-  def __init__(self, module_path, collection, api_version):
+  def __init__(self, module_path, collection, api_version, completer_type):
     self.module_path = module_path
     self.collection = collection
     self.api_version = api_version
+    self.type = completer_type
     self.attachments = []
     self._attachments_dict = {}
 
@@ -152,11 +170,12 @@ class _CompleterModuleGenerator(walker.Walker):
       module = self._modules_dict.get(module_path)
       if not module:
         module = _CompleterModule(
+            module_path=module_path,
             collection=collection,
             api_version=api_version,
-            module_path=module_path,
+            completer_type=_GetCompleterType(completer_class),
         )
-      self._modules_dict[module_path] = module
+        self._modules_dict[module_path] = module
       command_path = ' '.join(command.GetPath())
       # pylint: disable=protected-access
       attachment = module._attachments_dict.get(command_path)

@@ -18,6 +18,22 @@
 from enum import Enum
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import module_util
+
+
+class Error(Exception):
+  """Base class for module errors."""
+  pass
+
+
+class InvalidSchemaError(Error):
+  """Error for when a yaml command is malformed."""
+  pass
+
+
+NAME_FORMAT_KEY = '__name__'
+REL_NAME_FORMAT_KEY = '__relative_name__'
+RESOURCE_TYPE_FORMAT_KEY = '__resource_type__'
 
 
 class CommandData(object):
@@ -26,24 +42,42 @@ class CommandData(object):
     self.is_hidden = data.get('is_hidden', False)
     self.release_tracks = [
         base.ReleaseTrack.FromId(i) for i in data.get('release_tracks', [])]
-    self.command_type = CommandType[data.get('command_type', name).upper()]
+    self.command_type = CommandType.ForName(data.get('command_type', name))
     self.help_text = data['help_text']
     self.request = Request(self.command_type, data['request'])
     async_data = data.get('async', None)
     self.async = Async(async_data) if async_data else None
     self.resource_arg = ResourceArg(data['resource_arg'])
-    self.input = Input(data.get('input', {}))
+    self.message_params = {
+        param: Argument.FromData(param, param_data)
+        for param, param_data in data.get('message_params', {}).iteritems()}
+    self.input = Input(self.command_type, data.get('input', {}))
     self.output = Output(data.get('output', {}))
 
 
 class CommandType(Enum):
-  DESCRIBE = ('get', True)
-  LIST = ('list', False)
-  DELETE = ('delete', True)
+  """An enum for the types of commands the generator supports.
 
-  def __init__(self, default_method, resource_arg_is_positional):
+  Attributes:
+    default_method: str, The name of the API method to use by default for this
+      type of command.
+  """
+  DESCRIBE = ('get')
+  LIST = ('list')
+  DELETE = ('delete')
+  # Generic commands are those that don't extend a specific calliope command
+  # base class.
+  GENERIC = (None)
+
+  def __init__(self, default_method):
     self.default_method = default_method
-    self.resource_arg_is_positional = resource_arg_is_positional
+
+  @classmethod
+  def ForName(cls, name):
+    try:
+      return CommandType[name.upper()]
+    except KeyError:
+      return CommandType.GENERIC
 
 
 class Request(object):
@@ -52,11 +86,12 @@ class Request(object):
     self.collection = data['collection']
     self.api_version = data.get('api_version', None)
     self.method = data.get('method', command_type.default_method)
-    # TODO(b/64147277) There will eventually be a 'generic' command that doesn't
-    # have a default method. Add a test for this then.
     if not self.method:
-      raise ValueError('request.method was not specified and there is no '
-                       'default for this command type.')
+      raise InvalidSchemaError(
+          'request.method was not specified and there is no default for this '
+          'command type.')
+    self.create_request_hook = Hook.FromData(data, 'create_request_hook')
+    self.issue_request_hook = Hook.FromData(data, 'issue_request_hook')
 
 
 class Async(object):
@@ -90,25 +125,133 @@ class ResourceArg(object):
     self.help_text = data['help_text']
     self.response_id_field = data.get('response_id_field', None)
     self.request_params = {
-        param: Argument(param, param_data)
+        param: Argument.FromData(param, param_data)
         for param, param_data in data.get('request_params', {}).iteritems()}
 
 
 class Argument(object):
+  """Encapsulates data used to generate arguments."""
 
-  def __init__(self, param, data):
-    self.help_text = data['help_text']
-    self.arg_name = data.get('arg_name', param)
-    self.completer = data.get('completer', None)
+  @classmethod
+  def FromData(cls, param, data):
+    return Argument(
+        data.get('arg_name', param),
+        data['help_text'],
+        Hook.FromData(data, 'completer'),
+        data.get('is_positional', False),
+        Hook.FromData(data, 'type'),
+        Hook.FromData(data, 'processor')
+    )
+
+  # pylint:disable=redefined-builtin, type param needs to match the schema.
+  def __init__(self, arg_name, help_text, completer=None, is_positional=False,
+               type=None, processor=None):
+    self.arg_name = arg_name
+    self.help_text = help_text
+    self.completer = completer
+    self.is_positional = is_positional
+    self.type = type
+    self.processor = processor
 
 
 class Input(object):
 
-  def __init__(self, data):
+  def __init__(self, command_type, data):
     self.confirmation_prompt = data.get('confirmation_prompt', None)
+    if not self.confirmation_prompt and command_type is CommandType.DELETE:
+      self.confirmation_prompt = (
+          'You are about to delete {{{}}} [{{{}}}]'.format(
+              RESOURCE_TYPE_FORMAT_KEY, NAME_FORMAT_KEY))
 
 
 class Output(object):
 
   def __init__(self, data):
     self.format = data.get('format')
+
+
+class Hook(object):
+  """Represents a Python code hook declared in the yaml spec.
+
+  A code hook points to some python element with a module path, and attribute
+  path like: package.module:class.attribute.
+
+  If arguments are provided, first the function is called with the arguments
+  and the return value of that is the hook that is used. For example:
+
+  googlecloudsdk.calliope.arg_parsers:Duration:lower_bound=1s,upper_bound=1m
+  """
+
+  @classmethod
+  def FromData(cls, data, key):
+    """Gets the hook from the spec data.
+
+    Args:
+      data: The yaml spec
+      key: The key to extract the hook path from.
+
+    Returns:
+      The Python element to call.
+    """
+    path = data.get(key, None)
+    if path:
+      return _ImportPythonHook(path).GetHook()
+    return None
+
+  def __init__(self, attribute, kwargs=None):
+    self.attribute = attribute
+    self.kwargs = kwargs
+
+  def GetHook(self):
+    """Gets the Python element that corresponds to this hook.
+
+    Returns:
+      A Python element.
+    """
+    if self.kwargs:
+      return  self.attribute(**self.kwargs)
+    return self.attribute
+
+
+def _ImportPythonHook(path):
+  """Imports the given python hook.
+
+  Depending on what it is used for, a hook is a reference to a class, function,
+  or attribute in Python code.
+
+  Args:
+    path: str, The path of the hook to import. It must be in the form of:
+      package.module:attribute.attribute where the module path is separated from
+      the class name and sub attributes by a ':'. Additionally, ":arg=value,..."
+      can be appended to call the function with the given args and use the
+      return value as the hook.
+
+  Raises:
+    InvalidSchemaError: If the given module or attribute cannot be loaded.
+
+  Returns:
+    Hook, the hook configuration.
+  """
+  parts = path.split(':')
+  if len(parts) != 2 and len(parts) != 3:
+    raise InvalidSchemaError(
+        'Invalid Python hook: [{}]. Hooks must be in the format: '
+        'package(.module)+:attribute(.attribute)*(:arg=value(,arg=value)*)?'
+        .format(path))
+  try:
+    attr = module_util.ImportModule(parts[0] + ':' + parts[1])
+  except module_util.ImportModuleError as e:
+    raise InvalidSchemaError(
+        'Could not import Python hook: [{}]. {}'.format(path, e))
+
+  kwargs = {}
+  if len(parts) == 3:
+    for arg in parts[2].split(','):
+      arg_parts = arg.split('=')
+      if len(arg_parts) != 2:
+        raise InvalidSchemaError(
+            'Invalid Python hook: [{}]. Args must be in the form arg=value,'
+            'arg=value,...'.format(path))
+      kwargs[arg_parts[0]] = arg_parts[1]
+
+  return Hook(attr, kwargs)

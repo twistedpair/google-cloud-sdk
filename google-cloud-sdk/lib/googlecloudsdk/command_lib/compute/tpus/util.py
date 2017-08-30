@@ -25,7 +25,6 @@ LIST_FORMAT = """
      table(
             name.basename(),
             name.segment(-3):label=ZONE,
-            machineType.basename():label=MACHINE_TYPE,
             acceleratorType.basename():label=ACCELERATOR_TYPE,
             format('{0}:{1}',ipAddress,port):label=NETWORK_ENDPOINT,
             network.basename():label=NETWORK,
@@ -131,7 +130,6 @@ def Create(name,
            description=None,
            network='default',
            accelerator_type=None,
-           machine_type=None,
            version=None,
            zone=None):
   """Invoke TPU Create API and return created resource."""
@@ -141,7 +139,6 @@ def Create(name,
                                           cidrBlock=cidr_range,
                                           network=network,
                                           acceleratorType=accelerator_type,
-                                          machineType=machine_type,
                                           tensorflowVersion=version,
                                           description=description)
 

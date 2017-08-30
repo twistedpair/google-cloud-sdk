@@ -14,6 +14,8 @@
 
 """Utilities for accessing modules by installation independent paths."""
 
+import importlib
+
 from googlecloudsdk.core import exceptions
 
 
@@ -26,39 +28,45 @@ class ImportModuleError(Error):
 
 
 def ImportModule(module_path):
-  """Imports a module given its ModulePath and returns it.
+  """Imports a module object given its ModulePath and returns it.
 
   A module_path from GetModulePath() from any valid installation is importable
   by ImportModule() in another installation of same release.
 
   Args:
-    module_path: The googlecloudsdk relative module path to import.
+    module_path: The module path to import.
 
   Raises:
-    ImportModuleError: Any failure to import.
+    ImportModuleError: Malformed module path or any failure to import.
 
   Returns:
-    The Cloud SDK module named by module_path.
+    The Cloud SDK object named by module_path.
   """
-  module_parts = module_path.split('.')
-  module_name = module_parts.pop()
-  module_parts.insert(0, 'googlecloudsdk')
+
+  # First get the module.
+  parts = module_path.split(':')
+  if len(parts) > 2:
+    raise ImportModuleError(
+        'Module path [{}] must be in the form: '
+        'package(.module)+(:attribute(.attribute)*)?'.format(module_path))
   try:
-    module_package = __import__('.'.join(module_parts), fromlist=[module_name])
-    module_parts.pop(0)  # googlecloudsdk is implied in module paths
-  except ImportError:
-    module_parts.pop(0)
+    module = importlib.import_module(parts[0])
+  except ImportError as e:
+    raise ImportModuleError(
+        'Module path [{}] not found: {}.'.format(module_path, e))
+  if len(parts) == 1:
+    return module
+
+  # March down the attributes to get the object within the module.
+  obj = module
+  attributes = parts[1].split('.')
+  for attr in attributes:
     try:
-      module_package = __import__('.'.join(module_parts),
-                                  fromlist=[module_name])
-    except ImportError:
-      raise ImportModuleError('Package [{}] not found.'.format(
-          '.'.join(module_parts)))
-  try:
-    return getattr(module_package, module_name)
-  except AttributeError:
-    raise ImportModuleError('Module [{}] not found in package [{}].'.format(
-        module_name, '.'.join(module_parts)))
+      obj = getattr(obj, attr)
+    except AttributeError as e:
+      raise ImportModuleError(
+          'Module path [{}] not found: {}.'.format(module_path, e))
+  return obj
 
 
 def GetModulePath(obj):
@@ -82,14 +90,10 @@ def GetModulePath(obj):
     module = obj.__module__
   if module.startswith('__builtin__'):
     return None
-  path = '.' + module
-  part = '.googlecloudsdk.'  # This factors out the current installation dir.
-  i = path.find(part)
-  path = path[i + len(part):] if i >= 0 else module
   try:
-    return path + '.' + obj.__name__
+    return module + ':' + obj.__name__
   except AttributeError:
     try:
-      return path + '.' + obj.__class__.__name__
+      return module + ':' + obj.__class__.__name__
     except AttributeError:
       return None

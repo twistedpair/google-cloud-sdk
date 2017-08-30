@@ -1385,7 +1385,7 @@ class V1Beta1Adapter(APIAdapter):
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def SetLoggingService(self, cluster_ref, logging_service):
-    op = self.client.projects_zones_clusters.Logging(
+    op = self.client.projects_locations_clusters.SetLogging(
         self.messages.SetLoggingServiceRequest(
             clusterId=cluster_ref.clusterId,
             zone=cluster_ref.zone,
@@ -1535,7 +1535,7 @@ class V1Beta1Adapter(APIAdapter):
             pool_name),
         nodeCount=size
     )
-    operation = self.client.projects_zones_clusters_nodePools.SetSize(req)
+    operation = self.client.projects_locations_clusters_nodePools.SetSize(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
   def RollbackUpgrade(self, node_pool_ref):
@@ -1624,7 +1624,7 @@ def ProjectLocationCluster(project, location, cluster):
 
 def ProjectLocationClusterNodePool(project, location, cluster, nodepool):
   return (ProjectLocationCluster(project, location, cluster) +
-          'nodePools/' + nodepool)
+          '/nodePools/' + nodepool)
 
 
 def ProjectLocationOperation(project, location, operation):

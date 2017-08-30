@@ -162,9 +162,7 @@ class Node(_messages.Message):
       unhealthy. Output only.
     ipAddress: The network address for the TPU as visible to other GCE
       instances. Output only.
-    machineType: The user can specify one of the predefined machine types
-      (e.g. n1-standard-32, n1-highcpu-32, etc.) or a custom machine type
-      (e.g. zones/$ZONE/machineTypes/custom-$CPUS-$MEMORY).
+    machineType: A string attribute.
     name: Immutable name of the TPU
     network: The user specifies the name of a network they wish to peer the
       TPU node to. It must be a preexisting GCE network inside of the project
@@ -236,7 +234,7 @@ class Operation(_messages.Message):
 
   Fields:
     done: If the value is `false`, it means the operation is still in
-      progress. If true, the operation is completed, and either `error` or
+      progress. If `true`, the operation is completed, and either `error` or
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.

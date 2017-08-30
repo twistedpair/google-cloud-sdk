@@ -437,6 +437,8 @@ class Application(_messages.Message):
     dispatchRules: HTTP path dispatch rules for requests to the application
       that do not explicitly target a service or version. Rules are order-
       dependent. Up to 20 dispatch rules can be supported.@OutputOnly
+    featureSettings: The feature specific settings to be used in the
+      application.
     gcrDomain: The Google Container Registry domain used for storing managed
       build docker images for this application.
     iap: A IdentityAwareProxy attribute.
@@ -473,12 +475,13 @@ class Application(_messages.Message):
   defaultCookieExpiration = _messages.StringField(4)
   defaultHostname = _messages.StringField(5)
   dispatchRules = _messages.MessageField('UrlDispatchRule', 6, repeated=True)
-  gcrDomain = _messages.StringField(7)
-  iap = _messages.MessageField('IdentityAwareProxy', 8)
-  id = _messages.StringField(9)
-  locationId = _messages.StringField(10)
-  name = _messages.StringField(11)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 12)
+  featureSettings = _messages.MessageField('FeatureSettings', 7)
+  gcrDomain = _messages.StringField(8)
+  iap = _messages.MessageField('IdentityAwareProxy', 9)
+  id = _messages.StringField(10)
+  locationId = _messages.StringField(11)
+  name = _messages.StringField(12)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 13)
 
 
 class AutomaticScaling(_messages.Message):
@@ -700,6 +703,22 @@ class ErrorHandler(_messages.Message):
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   mimeType = _messages.StringField(2)
   staticFile = _messages.StringField(3)
+
+
+class FeatureSettings(_messages.Message):
+  """The feature specific settings to be used in the application. These define
+  behaviors that are user configurable.
+
+  Fields:
+    splitHealthChecks: Boolean value indicating if split health checks should
+      be used instead of the legacy health checks. At an app.yaml level, this
+      means defaulting to 'readiness_check' and 'liveness_check' values
+      instead of 'health_check' ones. Once the legacy 'health_check' behavior
+      is deprecated, and this value is always true, this setting can be
+      removed.
+  """
+
+  splitHealthChecks = _messages.BooleanField(1)
 
 
 class FileInfo(_messages.Message):

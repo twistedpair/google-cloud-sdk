@@ -1026,3 +1026,70 @@ class MultiScopeLister(object):
 
     if errors:
       utils.RaiseException(errors, ListException)
+
+
+class ZonalParallelLister(object):
+  """List zonal resources from all zones in parallel (in one batch).
+
+  This class can be used to list only zonal resources.
+
+  This class should not be inherited.
+
+  Attributes:
+    client: The compute client.
+    service: Zonal service whose resources will be listed.
+    resources: The compute resource registry.
+  """
+
+  def __init__(self, client, service, resources):
+    self.client = client
+    self.service = service
+    self.resources = resources
+
+  def __deepcopy__(self, memodict=None):
+    return self  # ZonalParallelLister is immutable
+
+  def __eq__(self, other):
+    if not isinstance(other, ZonalParallelLister):
+      return False  # ZonalParallelLister is not suited for inheritance
+    # Registry type should either be value type or mocked by ComputeApiMock
+    # for self.resources to participate in __eq__ check here.
+    return self.client == other.client and self.service == other.service
+
+  def __ne__(self, other):
+    return not self == other
+
+  def __hash__(self):
+    return hash((self.client, self.service))
+
+  def __repr__(self):
+    return 'ZonalParallelLister({}, {}, {})'.format(
+        repr(self.client), repr(self.service), repr(self.resources))
+
+  def __call__(self, frontend):
+    scope_set = frontend.scope_set
+    filter_expr = frontend.filter
+    if isinstance(scope_set, ZoneSet):
+      # Set of zones was specified explicitly by frontend - use that setting
+      zones = scope_set
+    else:
+      # Set of zones was not specified explicitly - fetch all of them
+      # TODO(b/65008598) Use cached zone set instead of fetching it always
+
+      zones_list_data = _Frontend(scopeSet=GlobalScope(scope_set.projects))
+      zones_list_implementation = MultiScopeLister(
+          self.client, global_service=self.client.apitools_client.zones)
+
+      zones = ZoneSet([
+          self.resources.Parse(z['selfLink'])
+          for z in Invoke(zones_list_data, zones_list_implementation)
+      ])
+
+    service_list_data = _Frontend(
+        filter_expr=filter_expr,
+        maxResults=frontend.max_results,
+        scopeSet=zones)
+    service_list_implementation = MultiScopeLister(
+        self.client, zonal_service=self.service)
+
+    return Invoke(service_list_data, service_list_implementation)

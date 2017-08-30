@@ -579,6 +579,12 @@ MAP = {
             messages_modulepath='videointelligence_v1beta1_messages',
             default_version=False
         ),
+        'v1beta2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.videointelligence.v1beta2',
+            client_classpath='videointelligence_v1beta2_client.VideointelligenceV1beta2',
+            messages_modulepath='videointelligence_v1beta2_messages',
+            default_version=False
+        ),
     },
     'vision': {
         'v1': APIDef(

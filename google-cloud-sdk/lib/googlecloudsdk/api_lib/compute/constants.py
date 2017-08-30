@@ -129,11 +129,11 @@ PUBLIC_IMAGE_PROJECTS = [
 PREVIEW_IMAGE_PROJECTS = []
 
 # SSH-related constants.
-SSH_KEYS_METADATA_KEY = 'sshKeys'
-SSH_KEYS_INSTANCE_RESTRICTED_METADATA_KEY = 'ssh-keys'
+SSH_KEYS_METADATA_KEY = 'ssh-keys'
+SSH_KEYS_LEGACY_METADATA_KEY = 'sshKeys'
 SSH_KEYS_BLOCK_METADATA_KEY = 'block-project-ssh-keys'
 OSLOGIN_ENABLE_METADATA_KEY = 'enable-oslogin'
-MAX_METADATA_VALUE_SIZE_IN_BYTES = 32768
+MAX_METADATA_VALUE_SIZE_IN_BYTES = 262144
 
 _STORAGE_RO = 'https://www.googleapis.com/auth/devstorage.read_only'
 _USERACCOUNTS_RO = 'https://www.googleapis.com/auth/cloud.useraccounts.readonly'

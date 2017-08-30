@@ -123,7 +123,7 @@ def _GetClientClassFromDef(api_def):
 
 
 def _GetClientInstance(api_name, api_version, no_http=False,
-                       check_response_func=None, disable_resource_quota=False):
+                       check_response_func=None, enable_resource_quota=True):
   """Returns an instance of the API client specified in the args.
 
   Args:
@@ -131,10 +131,10 @@ def _GetClientInstance(api_name, api_version, no_http=False,
     api_version: str, The version of the API.
     no_http: bool, True to not create an http object for this client.
     check_response_func: error handling callback to give to apitools.
-    disable_resource_quota: bool, By default, we are going to tell APIs to use
+    enable_resource_quota: bool, By default, we are going to tell APIs to use
       the quota of the project being operated on. For some APIs we want to use
       gcloud's quota, so you can explicitly disable that behavior by passing
-      True here.
+      False here.
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
@@ -146,7 +146,7 @@ def _GetClientInstance(api_name, api_version, no_http=False,
     # Import http only when needed, as it depends on credential infrastructure
     # which is not needed in all cases.
     from googlecloudsdk.core.credentials import http
-    http_client = http.Http(disable_resource_quota=disable_resource_quota)
+    http_client = http.Http(enable_resource_quota=enable_resource_quota)
 
   client_class = _GetClientClass(api_name, api_version)
   client_instance = client_class(

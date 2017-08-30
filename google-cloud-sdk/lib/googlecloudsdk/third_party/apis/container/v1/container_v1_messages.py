@@ -714,6 +714,21 @@ class ClusterUpdate(_messages.Message):
   desiredNodeVersion = _messages.StringField(11)
 
 
+class ClusterUpdateOptions(_messages.Message):
+  """ClusterUpdateOptions specifies extra options or settings that affect how
+  a cluster update operation runs. It is an optional object passed in to
+  ClusterUpdate calls.
+
+  Fields:
+    useMaintenancePolicy: Whether the update call should respect the
+      maintenance policy in the cluster, if one is set. This flag is used to
+      determine whether the update should be stopped if it finds itself
+      running outside of a configured maintenance policy (if present).
+  """
+
+  useMaintenancePolicy = _messages.BooleanField(1)
+
+
 class CompleteIPRotationRequest(_messages.Message):
   """CompleteIPRotationRequest moves the cluster master back into single-IP
   mode.
@@ -1476,35 +1491,48 @@ class IPAllocationPolicy(_messages.Message):
   """Configuration for controlling how IPs are allocated in the cluster.
 
   Fields:
-    clusterIpv4Cidr: The IP address range for the cluster pod IPs. If this
-      field is set, then `cluster.cluster_ipv4_cidr` must be left blank.  This
-      field is only applicable when `use_ip_aliases` is true.  Set to blank to
-      have a range will be chosen with the default size.  Set to /netmask
-      (e.g. `/14`) to have a range be chosen with a specific netmask.  Set to
-      a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+    clusterIpv4Cidr: This field is deprecated, use cluster_ipv4_cidr_block.
+    clusterIpv4CidrBlock: The IP address range for the cluster pod IPs. If
+      this field is set, then `cluster.cluster_ipv4_cidr` must be left blank.
+      This field is only applicable when `use_ip_aliases` is true.  Set to
+      blank to have a range chosen with the default size.  Set to /netmask
+      (e.g. `/14`) to have a range chosen with a specific netmask.  Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
+    clusterSecondaryRangeName: The name of the secondary range to be used for
+      the cluster CIDR block.  The secondary range will be used for pod IP
+      addresses. This must be an existing secondary range associated with the
+      cluster subnetwork.  This field is only applicable with use_ip_aliases
+      is true and create_subnetwork is false.
     createSubnetwork: Whether a new subnetwork will be created automatically
       for the cluster.  This field is only applicable when `use_ip_aliases` is
       true.
-    nodeIpv4Cidr: The IP address range of the instance IPs in this cluster.
-      This is applicable only if `create_subnetwork` is true.  Set to blank to
-      have a range will be chosen with the default size.  Set to /netmask
-      (e.g. `/14`) to have a range be chosen with a specific netmask.  Set to
-      a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+    nodeIpv4Cidr: This field is deprecated, use node_ipv4_cidr_block.
+    nodeIpv4CidrBlock: The IP address range of the instance IPs in this
+      cluster.  This is applicable only if `create_subnetwork` is true.  Set
+      to blank to have a range chosen with the default size.  Set to /netmask
+      (e.g. `/14`) to have a range chosen with a specific netmask.  Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
-    servicesIpv4Cidr: The IP address range of the services IPs in this
+    servicesIpv4Cidr: This field is deprecated, use services_ipv4_cidr_block.
+    servicesIpv4CidrBlock: The IP address range of the services IPs in this
       cluster. If blank, a range will be automatically chosen with the default
       size.  This field is only applicable when `use_ip_aliases` is true.  Set
-      to blank to have a range will be chosen with the default size.  Set to
-      /netmask (e.g. `/14`) to have a range be chosen with a specific netmask.
-      Set to a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
-      Domain_Routing) notation (e.g. `10.96.0.0/14`) from the RFC-1918 private
-      networks (e.g. `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick
-      a specific range to use.
+      to blank to have a range chosen with the default size.  Set to /netmask
+      (e.g. `/14`) to have a range chosen with a specific netmask.  Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
+      `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
+      range to use.
+    servicesSecondaryRangeName: The name of the secondary range to be used as
+      for the services CIDR block.  The secondary range will be used for
+      service ClusterIPs. This must be an existing secondary range associated
+      with the cluster subnetwork.  This field is only applicable with
+      use_ip_aliases is true and create_subnetwork is false.
     subnetworkName: A custom subnetwork name to be used if `create_subnetwork`
       is true.  If this field is empty, then an automatic name will be chosen
       for the new subnetwork.
@@ -1512,11 +1540,16 @@ class IPAllocationPolicy(_messages.Message):
   """
 
   clusterIpv4Cidr = _messages.StringField(1)
-  createSubnetwork = _messages.BooleanField(2)
-  nodeIpv4Cidr = _messages.StringField(3)
-  servicesIpv4Cidr = _messages.StringField(4)
-  subnetworkName = _messages.StringField(5)
-  useIpAliases = _messages.BooleanField(6)
+  clusterIpv4CidrBlock = _messages.StringField(2)
+  clusterSecondaryRangeName = _messages.StringField(3)
+  createSubnetwork = _messages.BooleanField(4)
+  nodeIpv4Cidr = _messages.StringField(5)
+  nodeIpv4CidrBlock = _messages.StringField(6)
+  servicesIpv4Cidr = _messages.StringField(7)
+  servicesIpv4CidrBlock = _messages.StringField(8)
+  servicesSecondaryRangeName = _messages.StringField(9)
+  subnetworkName = _messages.StringField(10)
+  useIpAliases = _messages.BooleanField(11)
 
 
 class ImageReviewContainerSpec(_messages.Message):
@@ -1818,7 +1851,8 @@ class NodeConfig(_messages.Message):
       applied set may differ depending on the Kubernetes version -- it's best
       to assume the behavior is undefined and conflicts should be avoided. For
       more information, including usage and the valid values, see:
-      http://kubernetes.io/v1.1/docs/user-guide/labels.html
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/labels/
     MetadataValue: The metadata key/value pairs assigned to instances in the
       cluster.  Keys must conform to the regexp [a-zA-Z0-9-_]+ and be less
       than 128 bytes in length. These are reflected as part of a URL in the
@@ -1848,7 +1882,8 @@ class NodeConfig(_messages.Message):
       applied set may differ depending on the Kubernetes version -- it's best
       to assume the behavior is undefined and conflicts should be avoided. For
       more information, including usage and the valid values, see:
-      http://kubernetes.io/v1.1/docs/user-guide/labels.html
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/labels/
     localSsdCount: The number of local SSD disks to be attached to the node.
       The limit for this value is dependant upon the maximum number of disks
       available on a machine per zone. See:
@@ -1894,6 +1929,10 @@ class NodeConfig(_messages.Message):
       identify valid sources or targets for network firewalls and are
       specified by the client during cluster or node pool creation. Each tag
       within the list must comply with RFC1035.
+    taints: List of kubernetes taints to be applied to each node.  For more
+      information, including usage and the valid values, see:
+      https://kubernetes.io/docs/concepts/configuration/assign-pod-node
+      /#taints-and-tolerations-beta-feature
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1904,7 +1943,7 @@ class NodeConfig(_messages.Message):
     may differ depending on the Kubernetes version -- it's best to assume the
     behavior is undefined and conflicts should be avoided. For more
     information, including usage and the valid values, see:
-    http://kubernetes.io/v1.1/docs/user-guide/labels.html
+    https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1972,6 +2011,7 @@ class NodeConfig(_messages.Message):
   preemptible = _messages.BooleanField(11)
   serviceAccount = _messages.StringField(12)
   tags = _messages.StringField(13, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 14, repeated=True)
 
 
 class NodeManagement(_messages.Message):
@@ -2082,6 +2122,39 @@ class NodePoolAutoscaling(_messages.Message):
   minNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class NodeTaint(_messages.Message):
+  """Kubernetes taint is comprised of three fields: key, value, and effect.
+  Effect can only be one of three types:  NoSchedule, PreferNoSchedule or
+  NoExecute.  For more information, including usage and the valid values, see:
+  https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-
+  and-tolerations-beta-feature
+
+  Enums:
+    EffectValueValuesEnum: Effect for taint.
+
+  Fields:
+    effect: Effect for taint.
+    key: Key for taint.
+    value: Value for taint.
+  """
+
+  class EffectValueValuesEnum(_messages.Enum):
+    """Effect for taint.
+
+    Values:
+      NO_SCHEDULE: NoSchedule
+      PREFER_NO_SCHEDULE: PreferNoSchedule
+      NO_EXECUTE: NoExecute
+    """
+    NO_SCHEDULE = 0
+    PREFER_NO_SCHEDULE = 1
+    NO_EXECUTE = 2
+
+  effect = _messages.EnumField('EffectValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  value = _messages.StringField(3)
+
+
 class NonResourceAttributes(_messages.Message):
   """The authorization attributes of a non-resource request. This should match
   the NonResourceAttributes struct in pkg/apis/authorization/v1beta1/types.go.
@@ -2105,9 +2178,13 @@ class Operation(_messages.Message):
 
   Fields:
     detail: Detailed operation progress, if available.
+    endTime: [Output only] The time the operation completed, in
+      [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     name: The server-assigned ID for the operation.
     operationType: The operation type.
     selfLink: Server-defined URL for the resource.
+    startTime: [Output only] The time the operation started, in
+      [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     status: The current status of the operation.
     statusMessage: If an error has occurred, a textual description of the
       error.
@@ -2172,13 +2249,15 @@ class Operation(_messages.Message):
     ABORTING = 4
 
   detail = _messages.StringField(1)
-  name = _messages.StringField(2)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 3)
-  selfLink = _messages.StringField(4)
-  status = _messages.EnumField('StatusValueValuesEnum', 5)
-  statusMessage = _messages.StringField(6)
-  targetLink = _messages.StringField(7)
-  zone = _messages.StringField(8)
+  endTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 4)
+  selfLink = _messages.StringField(5)
+  startTime = _messages.StringField(6)
+  status = _messages.EnumField('StatusValueValuesEnum', 7)
+  statusMessage = _messages.StringField(8)
+  targetLink = _messages.StringField(9)
+  zone = _messages.StringField(10)
 
 
 class ResourceAttributes(_messages.Message):
@@ -2629,10 +2708,12 @@ class UpdateClusterRequest(_messages.Message):
   """UpdateClusterRequest updates the settings of a cluster.
 
   Fields:
+    options: Additional options that affects how the update is done.
     update: A description of the update.
   """
 
-  update = _messages.MessageField('ClusterUpdate', 1)
+  options = _messages.MessageField('ClusterUpdateOptions', 1)
+  update = _messages.MessageField('ClusterUpdate', 2)
 
 
 class UpdateMasterRequest(_messages.Message):

@@ -356,11 +356,6 @@ def _GetViolationsFromError(error_info):
 
 
 def CatchHTTPErrorRaiseHTTPException(func):
-  # TODO(b/36052526): merge this function with HandleHttpError defined
-  # elsewhere:
-  # * shared/projects/util.py
-  # * shared/dns/util.py
-  # (obstacle: GetHttpErrorMessage function may be project-specific)
   """Decorator that catches HttpError and raises corresponding exception."""
 
   @functools.wraps(func)

@@ -24,15 +24,18 @@ class JavaError(exceptions.Error):
   pass
 
 
-def CheckIfJavaIsInstalled(for_text, min_version=7):
-  """Checks if Java is installed.
+def RequireJavaInstalled(for_text, min_version=7):
+  """Require that a certain version of Java is installed.
 
   Args:
     for_text: str, the text explaining what Java is necessary for.
     min_version: int, the minimum major version to check for.
 
   Raises:
-    JavaError: if Java is not found on the path or is not executable.
+    JavaError: if a Java executable is not found or has the wrong version.
+
+  Returns:
+    str, Path to the Java executable.
   """
   java_path = files.FindExecutableOnPath('java')
   if not java_path:
@@ -52,3 +55,4 @@ def CheckIfJavaIsInstalled(for_text, min_version=7):
     raise JavaError('The java executable on your PATH is not a Java {v}+ JRE.'
                     ' The {for_text} requires a Java {v}+ JRE installed and on '
                     'your system PATH'.format(v=min_version, for_text=for_text))
+  return java_path

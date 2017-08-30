@@ -2,6 +2,68 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 169.0.0 (2017-08-30)
+
+### Breaking Changes
+
+*   *(DEPRECATION)* `gcloud compute networks subnets list` `NAMES`, `--regions`
+    and `--regexp` arguments. Use `--filter` instead.
+
+### Google Cloud Functions
+
+*   When deploying an update to a existing function
+    `gcloud beta functions deploy` will keep the old trigger by default.
+    Specifying trigger is now required only when deploying a new function.
+
+*   Added the `--retry` flag to `gcloud beta functions deploy`.
+
+*   `gcloud beta function deploy` now keeps old field values unless they're
+    explicitly overridden.
+
+### Google App Engine
+
+*   `gcloud app deploy` now uses a new runtime build pipeline to deploy apps for
+    `runtime: nodejs` and `runtime: ruby`. This enables more robust and flexible
+    deployments in some cases. Consult the runtime release notes for your
+    language on https://cloud.google.com/appengine/docs/flexible/ for more
+    details. To revert to the legacy builder, you can set the
+    `app/use_runtime_builders` config to false.
+
+### Google Compute Engine
+
+*   The max metadata value size has been increased to 256 KiB.
+
+### Google Compute Engine (Networking)
+
+*   The `--bgp-routing-mode` flag in `gcloud beta compute networks create` and
+    `gcloud beta compute networks update` is now available.
+
+### Google Cloud Datastore
+
+*   Import and export Cloud Datastore data using `gcloud beta datastore import`
+    and `gcloud beta datastore export`. For more information see
+    https://cloud.google.com/datastore/docs/export-import-entities
+
+*   Manage active imports and exports using `gcloud beta datastore operations`
+    commands.
+
+### Google Machine Learning Engine
+
+*   `gcloud alpha ml *` commands now work with user account authentication (in
+    addition to service accounts). For this to work, you must have a current
+    project set in gcloud's config and you must be a writer or an editor on that
+    project.
+
+### Google Container Engine
+
+*   Updated Google Container Engine's kubectl from version 1.7.3 to 1.7.4.
+
+### Google Cloud Datalab
+
+*   Updated the `datalab` component to the 20170818 release. Changes in that
+    release are documented in its tracking issue
+    [here](https://github.com/googledatalab/datalab/issues/1593).
+
 ## 168.0.0 (2017-08-23)
 
 ### Breaking Changes

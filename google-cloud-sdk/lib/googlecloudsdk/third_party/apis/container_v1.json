@@ -357,7 +357,7 @@
           "type": "string"
         },
         "labels": {
-          "description": "The map of Kubernetes labels (key\/value pairs) to be applied to each node.\nThese will added in addition to any default label(s) that\nKubernetes may apply to the node.\nIn case of conflict in label keys, the applied set may differ depending on\nthe Kubernetes version -- it's best to assume the behavior is undefined\nand conflicts should be avoided.\nFor more information, including usage and the valid values, see:\nhttp:\/\/kubernetes.io\/v1.1\/docs\/user-guide\/labels.html",
+          "description": "The map of Kubernetes labels (key\/value pairs) to be applied to each node.\nThese will added in addition to any default label(s) that\nKubernetes may apply to the node.\nIn case of conflict in label keys, the applied set may differ depending on\nthe Kubernetes version -- it's best to assume the behavior is undefined\nand conflicts should be avoided.\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/overview\/working-with-objects\/labels\/",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -393,6 +393,13 @@
         "minCpuPlatform": {
           "description": "Minimum cpu\/platform to be used by this instance. The instance may be\nscheduled on the specified or newer cpu\/platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read <a href=\"\/compute\/docs\/instances\/specify-min-cpu-platform\">Specifying a Minimum CPU Platform<\/a>.",
           "type": "string"
+        },
+        "taints": {
+          "description": "List of kubernetes taints to be applied to each node.\n\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/configuration\/assign-pod-node\/#taints-and-tolerations-beta-feature",
+          "type": "array",
+          "items": {
+            "$ref": "NodeTaint"
+          }
         }
       }
     },
@@ -409,6 +416,35 @@
         "acceleratorType": {
           "description": "The accelerator type resource name. List of supported accelerators\n[here](\/compute\/docs\/gpus\/#Introduction)",
           "type": "string"
+        }
+      }
+    },
+    "NodeTaint": {
+      "id": "NodeTaint",
+      "description": "Kubernetes taint is comprised of three fields: key, value, and effect. Effect\ncan only be one of three types:  NoSchedule, PreferNoSchedule or NoExecute.\n\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/configuration\/assign-pod-node\/#taints-and-tolerations-beta-feature",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "Key for taint.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value for taint.",
+          "type": "string"
+        },
+        "effect": {
+          "description": "Effect for taint.",
+          "enumDescriptions": [
+            "NoSchedule",
+            "PreferNoSchedule",
+            "NoExecute"
+          ],
+          "type": "string",
+          "enum": [
+            "NO_SCHEDULE",
+            "PREFER_NO_SCHEDULE",
+            "NO_EXECUTE"
+          ]
         }
       }
     },
@@ -719,15 +755,35 @@
           "type": "string"
         },
         "clusterIpv4Cidr": {
-          "description": "The IP address range for the cluster pod IPs. If this field is set, then\n`cluster.cluster_ipv4_cidr` must be left blank.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nSet to blank to have a range will be chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range be chosen with a specific\nnetmask.\n\nSet to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "description": "This field is deprecated, use cluster_ipv4_cidr_block.",
           "type": "string"
         },
         "nodeIpv4Cidr": {
-          "description": "The IP address range of the instance IPs in this cluster.\n\nThis is applicable only if `create_subnetwork` is true.\n\nSet to blank to have a range will be chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range be chosen with a specific\nnetmask.\n\nSet to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "description": "This field is deprecated, use node_ipv4_cidr_block.",
           "type": "string"
         },
         "servicesIpv4Cidr": {
-          "description": "The IP address range of the services IPs in this cluster. If blank, a range\nwill be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nSet to blank to have a range will be chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range be chosen with a specific\nnetmask.\n\nSet to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "description": "This field is deprecated, use services_ipv4_cidr_block.",
+          "type": "string"
+        },
+        "clusterSecondaryRangeName": {
+          "description": "The name of the secondary range to be used for the cluster CIDR\nblock.  The secondary range will be used for pod IP\naddresses. This must be an existing secondary range associated\nwith the cluster subnetwork.\n\nThis field is only applicable with use_ip_aliases is true and\ncreate_subnetwork is false.",
+          "type": "string"
+        },
+        "servicesSecondaryRangeName": {
+          "description": "The name of the secondary range to be used as for the services\nCIDR block.  The secondary range will be used for service\nClusterIPs. This must be an existing secondary range associated\nwith the cluster subnetwork.\n\nThis field is only applicable with use_ip_aliases is true and\ncreate_subnetwork is false.",
+          "type": "string"
+        },
+        "clusterIpv4CidrBlock": {
+          "description": "The IP address range for the cluster pod IPs. If this field is set, then\n`cluster.cluster_ipv4_cidr` must be left blank.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nSet to blank to have a range chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "type": "string"
+        },
+        "nodeIpv4CidrBlock": {
+          "description": "The IP address range of the instance IPs in this cluster.\n\nThis is applicable only if `create_subnetwork` is true.\n\nSet to blank to have a range chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "type": "string"
+        },
+        "servicesIpv4CidrBlock": {
+          "description": "The IP address range of the services IPs in this cluster. If blank, a range\nwill be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nSet to blank to have a range chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
           "type": "string"
         }
       }
@@ -862,6 +918,14 @@
         "targetLink": {
           "description": "Server-defined URL for the target of the operation.",
           "type": "string"
+        },
+        "startTime": {
+          "description": "[Output only] The time the operation started, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "type": "string"
+        },
+        "endTime": {
+          "description": "[Output only] The time the operation completed, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "type": "string"
         }
       }
     },
@@ -873,6 +937,10 @@
         "update": {
           "description": "A description of the update.",
           "$ref": "ClusterUpdate"
+        },
+        "options": {
+          "description": "Additional options that affects how the update is done.",
+          "$ref": "ClusterUpdateOptions"
         }
       }
     },
@@ -927,6 +995,17 @@
         "desiredMasterMachineType": {
           "description": "The name of a Google Compute Engine [machine\ntype](\/compute\/docs\/machine-types)\n(e.g. `n1-standard-8`) to change the master to.",
           "type": "string"
+        }
+      }
+    },
+    "ClusterUpdateOptions": {
+      "id": "ClusterUpdateOptions",
+      "description": "ClusterUpdateOptions specifies extra options or settings that affect\nhow a cluster update operation runs. It is an optional object passed\nin to ClusterUpdate calls.",
+      "type": "object",
+      "properties": {
+        "useMaintenancePolicy": {
+          "description": "Whether the update call should respect the maintenance policy in the\ncluster, if one is set. This flag is used to determine whether the update\nshould be stopped if it finds itself running outside of a configured\nmaintenance policy (if present).",
+          "type": "boolean"
         }
       }
     },

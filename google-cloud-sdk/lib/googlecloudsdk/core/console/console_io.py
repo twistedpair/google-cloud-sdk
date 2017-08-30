@@ -27,6 +27,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_pager
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import platforms
 
 FLOAT_COMPARE_EPSILON = 1e-6
 
@@ -124,6 +125,9 @@ def IsInteractive(output=False, error=False, heuristic=False):
     return False
   if error and not sys.stderr.isatty():
     return False
+  if platforms.OperatingSystem.Current() != platforms.OperatingSystem.WINDOWS:
+    if os.getppid() != os.getpgrp():
+      return False
   if heuristic:
     # Check the home path. Most startup scripts for example are executed by
     # users that don't have a home path set. Home is OS dependent though, so

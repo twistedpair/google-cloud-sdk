@@ -15,6 +15,7 @@
 """Progress Tracker for Cloud SDK."""
 
 import os
+import signal
 import sys
 import threading
 import time
@@ -179,96 +180,89 @@ class ProgressTracker(object):
       self._Print('done.\n')
 
 
+def _SleepSecs(seconds):
+  """Sleep int or float seconds. For mocking sleeps in this module."""
+  time.sleep(seconds)
+
+
 class CompletionProgressTracker(object):
-  """A context manager for telling the user about long-running completions."""
+  """A context manager for visual feedback during long-running completions.
+
+  A completion that exceeds the timeout is assumed to be refreshing the cache.
+  At that point the progress tracker displays '?', forks the cache operation
+  into the background, and exits.  This gives the background cache update a
+  chance finish.  After background_ttl more seconds the update is forcibly
+  exited (forced to call exit rather than killed by signal) to prevent hung
+  updates from proliferating in the background.
+  """
 
   _COMPLETION_FD = 9
 
-  def __init__(self, ofile=None, timeout=3.0, tick_delay=0.1, autotick=True):
-    if ofile:
-      self._ofile = ofile
-      self._close_ofile = False
-    else:
-      self._ofile = self.GetStream()
-      self._close_ofile = True
+  def __init__(self, ofile=None, timeout=4.0, tick_delay=0.1,
+               background_ttl=60.0, autotick=True):
+    self._ofile = ofile or self.GetStream()
     self._timeout = timeout
     self._tick_delay = tick_delay
     self.__autotick = autotick
-
-    self._child_pid = None
-    self._done = False
-    self._lock = threading.Lock()
-    self._thread = None
-    self._ticks = 0
+    self._background_ttl = background_ttl
 
   def __enter__(self):
-
     if self._autotick:
-      self._thread = threading.Thread(target=self._Spinner)
-      self._thread.start()
+      self._ticks = 0
+      self._old_handler = signal.signal(signal.SIGVTALRM, self._Spin)
+      self._old_itimer = signal.setitimer(
+          signal.ITIMER_VIRTUAL, self._tick_delay, self._tick_delay)
     return self
 
   def __exit__(self, unused_type=None, unused_value=True,
                unused_traceback=None):
-    with self._lock:
-      if not self.timed_out:
-        # normal exit -- clear the mark and restore the original cursor position
-        self._WriteMark(' ')
-      if self._close_ofile:
-        self._ofile.close()
-      self._done = True
-      if self.timed_out and os.getpid() == self._child_pid:
-        # exit child process
-        sys.exit(0)
-    if self._thread:
-      self._thread.join()
+    if self._autotick:
+      signal.setitimer(signal.ITIMER_VIRTUAL, *self._old_itimer)
+      signal.signal(signal.SIGVTALRM, self._old_handler)
+    if not self.TimedOut():
+      self._WriteMark(' ')
+
+  def TimedOut(self):
+    """True if the tracker has timed out."""
+    return self._timeout < 0
+
+  def _Spin(self, unused_sig=None, unused_frame=None):
+    """Rotates the spinner one tick and checks for timeout."""
+    self._ticks += 1
+    self._WriteMark(_SPIN_MARKS[self._ticks % len(_SPIN_MARKS)])
+    self._timeout -= self._tick_delay
+    if not self.TimedOut():
+      return
+    # Timed out.
+    self._WriteMark('?')
+    # Exit the parent process.
+    if os.fork():
+      os._exit(1)  # pylint: disable=protected-access
+    # Allow the child to run in the background for up to self._background_ttl
+    # more seconds before being forcefully exited.
+    signal.signal(signal.SIGVTALRM, self._ExitBackground)
+    signal.setitimer(
+        signal.ITIMER_VIRTUAL, self._background_ttl, self._background_ttl)
+    # Suppress the explicit completion status channel.  stdout and stderr have
+    # already been suppressed.
+    self._ofile = None
 
   def _WriteMark(self, mark):
     """Writes one mark to self._ofile."""
-    self._ofile.write(mark + '\b')
-    self._ofile.flush()
+    if self._ofile:
+      self._ofile.write(mark + '\b')
+      self._ofile.flush()
 
-  def _Sleep(self):
-    """Sleep for one tick and return True if not timed out."""
-    if self._timeout < 0:
-      return False
-    _SleepSecs(self._tick_delay)
-    self._timeout -= self._tick_delay
-    return self._timeout >= 0
-
-  def _Spinner(self):
-    """Spinner thread."""
-    self._Sleep()
-    while self._Sleep():
-      if self.Tick():
-        # done
-        return
-    # timed out -- write ? and restore the original cursor position (over the ?)
-    self._WriteMark('?')
-    self._child_pid = os.fork()
+  @staticmethod
+  def _ExitBackground():
+    """Unconditionally exits the background completer process after timeout."""
+    os._exit(1)  # pylint: disable=protected-access
 
   @property
   def _autotick(self):
     return self.__autotick
 
-  @property
-  def timed_out(self):
-    """True if the tracker has timed out."""
-    return self._child_pid is not None
-
   @staticmethod
   def GetStream():
+    """Returns the completer output stream."""
     return os.fdopen(os.dup(CompletionProgressTracker._COMPLETION_FD), 'w')
-
-  def Tick(self):
-    """Give a visual indication to the user that some progress has been made."""
-    with self._lock:
-      if not self._done:
-        self._ticks += 1
-        self._WriteMark(_SPIN_MARKS[self._ticks % len(_SPIN_MARKS)])
-      return self._done
-
-
-def _SleepSecs(seconds):
-  """Sleep int or float seconds. For mocking sleeps in this module."""
-  time.sleep(seconds)

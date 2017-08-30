@@ -213,6 +213,21 @@ class SessionCapturer(object):
         }
     })
 
+  DEFAULT_STATE = {
+      'interactive_console': False
+  }
+
+  def CaptureState(self, **kwargs):
+    state = {}
+    for k, v in kwargs.iteritems():
+      if k not in SessionCapturer.DEFAULT_STATE:
+        raise Exception('Unknown state arg {} to capture'.format(k))
+      if v != SessionCapturer.DEFAULT_STATE[k]:
+        state[k] = v
+    self._records.append({
+        'state': state
+    })
+
   def CaptureProperties(self, all_values):
     values = copy.deepcopy(all_values)
     for k in ('capture_session_file', 'account'):

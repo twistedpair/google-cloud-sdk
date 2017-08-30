@@ -1480,6 +1480,32 @@ zones.
         supports_download=False,
     )
 
+    def SetMaintenancePolicy(self, request, global_params=None):
+      """Sets the maintenance policy for a cluster.
+
+      Args:
+        request: (ContainerProjectsZonesClustersSetMaintenancePolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMaintenancePolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMaintenancePolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.projects.zones.clusters.setMaintenancePolicy',
+        ordered_params=[u'projectId', u'zone', u'clusterId'],
+        path_params=[u'clusterId', u'projectId', u'zone'],
+        query_params=[],
+        relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy',
+        request_field=u'setMaintenancePolicyRequest',
+        request_type_name=u'ContainerProjectsZonesClustersSetMaintenancePolicyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetMasterAuth(self, request, global_params=None):
       """Used to set master auth materials. Currently supports :-.
 Changing the admin password of a specific cluster.

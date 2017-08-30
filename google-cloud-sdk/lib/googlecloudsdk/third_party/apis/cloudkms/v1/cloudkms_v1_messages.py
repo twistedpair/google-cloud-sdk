@@ -622,12 +622,8 @@ class CryptoKey(_messages.Message):
     PurposeValueValuesEnum: The immutable purpose of this CryptoKey.
       Currently, the only acceptable purpose is ENCRYPT_DECRYPT.
 
-  Messages:
-    LabelsValue: Labels with user defined metadata.
-
   Fields:
     createTime: Output only. The time at which this CryptoKey was created.
-    labels: Labels with user defined metadata.
     name: Output only. The resource name for this CryptoKey in the format
       `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     nextRotationTime: At next_rotation_time, the Key Management Service will
@@ -658,44 +654,22 @@ class CryptoKey(_messages.Message):
     CRYPTO_KEY_PURPOSE_UNSPECIFIED = 0
     ENCRYPT_DECRYPT = 1
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    """Labels with user defined metadata.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  nextRotationTime = _messages.StringField(4)
-  primary = _messages.MessageField('CryptoKeyVersion', 5)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 6)
-  rotationPeriod = _messages.StringField(7)
+  name = _messages.StringField(2)
+  nextRotationTime = _messages.StringField(3)
+  primary = _messages.MessageField('CryptoKeyVersion', 4)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 5)
+  rotationPeriod = _messages.StringField(6)
 
 
 class CryptoKeyVersion(_messages.Message):
   """A CryptoKeyVersion represents an individual cryptographic key, and the
   associated key material.  It can be used for cryptographic operations either
   directly, or via its parent CryptoKey, in which case the server will choose
-  the appropriate version for the operation.
+  the appropriate version for the operation.  For security reasons, the raw
+  cryptographic key material represented by a CryptoKeyVersion can never be
+  viewed or exported. It can only be used to encrypt or decrypt data when an
+  authorized user or application invokes Cloud KMS.
 
   Enums:
     StateValueValuesEnum: The current state of the CryptoKeyVersion.

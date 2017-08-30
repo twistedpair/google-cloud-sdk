@@ -251,6 +251,10 @@
           "description": "Configure the maintenance policy for this cluster.",
           "$ref": "MaintenancePolicy"
         },
+        "binaryAuthorization": {
+          "description": "Configuration for Binary Authorization.",
+          "$ref": "BinaryAuthorization"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -371,7 +375,7 @@
           "type": "string"
         },
         "labels": {
-          "description": "The map of Kubernetes labels (key\/value pairs) to be applied to each node.\nThese will added in addition to any default label(s) that\nKubernetes may apply to the node.\nIn case of conflict in label keys, the applied set may differ depending on\nthe Kubernetes version -- it's best to assume the behavior is undefined\nand conflicts should be avoided.\nFor more information, including usage and the valid values, see:\nhttp:\/\/kubernetes.io\/v1.1\/docs\/user-guide\/labels.html",
+          "description": "The map of Kubernetes labels (key\/value pairs) to be applied to each node.\nThese will added in addition to any default label(s) that\nKubernetes may apply to the node.\nIn case of conflict in label keys, the applied set may differ depending on\nthe Kubernetes version -- it's best to assume the behavior is undefined\nand conflicts should be avoided.\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/overview\/working-with-objects\/labels\/",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -400,10 +404,6 @@
             "$ref": "AcceleratorConfig"
           }
         },
-        "enableAuditLogging": {
-          "description": "Whether to enable execve audit logging on the nodes.",
-          "type": "boolean"
-        },
         "diskType": {
           "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd')\n\nIf unspecified, the default disk type is 'pd-standard'\nCurrently restricted because of b\/36071127#comment27",
           "type": "string"
@@ -411,6 +411,21 @@
         "minCpuPlatform": {
           "description": "Minimum cpu\/platform to be used by this instance. The instance may be\nscheduled on the specified or newer cpu\/platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read <a href=\"\/compute\/docs\/instances\/specify-min-cpu-platform\">Specifying a Minimum CPU Platform<\/a>.",
           "type": "string"
+        },
+        "workloadMetadataConfig": {
+          "description": "The workload metadata configuration for this node.",
+          "$ref": "WorkloadMetadataConfig"
+        },
+        "taints": {
+          "description": "List of kubernetes taints to be applied to each node.\n\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/configuration\/assign-pod-node\/#taints-and-tolerations-beta-feature",
+          "type": "array",
+          "items": {
+            "$ref": "NodeTaint"
+          }
+        },
+        "enableAuditLogging": {
+          "description": "Whether to enable execve audit logging on the nodes.",
+          "type": "boolean"
         }
       }
     },
@@ -427,6 +442,56 @@
         "acceleratorType": {
           "description": "The accelerator type resource name. List of supported accelerators\n[here](\/compute\/docs\/gpus\/#Introduction)",
           "type": "string"
+        }
+      }
+    },
+    "WorkloadMetadataConfig": {
+      "id": "WorkloadMetadataConfig",
+      "description": "WorkloadMetadataConfig defines the metadata configuration to expose to\nworkloads on the node pool.",
+      "type": "object",
+      "properties": {
+        "nodeMetadata": {
+          "description": "NodeMetadata is the configuration for if and how to expose the node\nmetadata to the workload running on the node.",
+          "enumDescriptions": [
+            "Not set.",
+            "Expose only a secure subset of metadata to pods.  Currently, this blocks\nkube-env, but exposes all other metadata.",
+            "Expose all GCE metadata to pods."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "SECURE",
+            "EXPOSE"
+          ]
+        }
+      }
+    },
+    "NodeTaint": {
+      "id": "NodeTaint",
+      "description": "Kubernetes taint is comprised of three fields: key, value, and effect. Effect\ncan only be one of three types:  NoSchedule, PreferNoSchedule or NoExecute.\n\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/configuration\/assign-pod-node\/#taints-and-tolerations-beta-feature",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "Key for taint.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value for taint.",
+          "type": "string"
+        },
+        "effect": {
+          "description": "Effect for taint.",
+          "enumDescriptions": [
+            "NoSchedule",
+            "PreferNoSchedule",
+            "NoExecute"
+          ],
+          "type": "string",
+          "enum": [
+            "NO_SCHEDULE",
+            "PREFER_NO_SCHEDULE",
+            "NO_EXECUTE"
+          ]
         }
       }
     },
@@ -542,6 +607,14 @@
           "type": "integer",
           "format": "int32"
         },
+        "autoscaling": {
+          "description": "Autoscaler configuration for this NodePool. Autoscaler is enabled\nonly if a valid configuration is present.",
+          "$ref": "NodePoolAutoscaling"
+        },
+        "management": {
+          "description": "NodeManagement configuration for this NodePool.",
+          "$ref": "NodeManagement"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -582,14 +655,6 @@
         "statusMessage": {
           "description": "[Output only] Additional information about the current status of this\nnode pool instance, if available.",
           "type": "string"
-        },
-        "autoscaling": {
-          "description": "Autoscaler configuration for this NodePool. Autoscaler is enabled\nonly if a valid configuration is present.",
-          "$ref": "NodePoolAutoscaling"
-        },
-        "management": {
-          "description": "NodeManagement configuration for this NodePool.",
-          "$ref": "NodeManagement"
         }
       }
     },
@@ -737,15 +802,35 @@
           "type": "string"
         },
         "clusterIpv4Cidr": {
-          "description": "The IP address range for the cluster pod IPs. If this field is set, then\n`cluster.cluster_ipv4_cidr` must be left blank.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nSet to blank to have a range will be chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range be chosen with a specific\nnetmask.\n\nSet to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "description": "This field is deprecated, use cluster_ipv4_cidr_block.",
           "type": "string"
         },
         "nodeIpv4Cidr": {
-          "description": "The IP address range of the instance IPs in this cluster.\n\nThis is applicable only if `create_subnetwork` is true.\n\nSet to blank to have a range will be chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range be chosen with a specific\nnetmask.\n\nSet to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "description": "This field is deprecated, use node_ipv4_cidr_block.",
           "type": "string"
         },
         "servicesIpv4Cidr": {
-          "description": "The IP address range of the services IPs in this cluster. If blank, a range\nwill be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nSet to blank to have a range will be chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range be chosen with a specific\nnetmask.\n\nSet to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "description": "This field is deprecated, use services_ipv4_cidr_block.",
+          "type": "string"
+        },
+        "clusterSecondaryRangeName": {
+          "description": "The name of the secondary range to be used for the cluster CIDR\nblock.  The secondary range will be used for pod IP\naddresses. This must be an existing secondary range associated\nwith the cluster subnetwork.\n\nThis field is only applicable if use_ip_aliases is true and\ncreate_subnetwork is false.",
+          "type": "string"
+        },
+        "servicesSecondaryRangeName": {
+          "description": "The name of the secondary range to be used as for the services\nCIDR block.  The secondary range will be used for service\nClusterIPs. This must be an existing secondary range associated\nwith the cluster subnetwork.\n\nThis field is only applicable with use_ip_aliases is true and\ncreate_subnetwork is false.",
+          "type": "string"
+        },
+        "clusterIpv4CidrBlock": {
+          "description": "The IP address range for the cluster pod IPs. If this field is set, then\n`cluster.cluster_ipv4_cidr` must be left blank.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nSet to blank to have a range chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "type": "string"
+        },
+        "nodeIpv4CidrBlock": {
+          "description": "The IP address range of the instance IPs in this cluster.\n\nThis is applicable only if `create_subnetwork` is true.\n\nSet to blank to have a range chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "type": "string"
+        },
+        "servicesIpv4CidrBlock": {
+          "description": "The IP address range of the services IPs in this cluster. If blank, a range\nwill be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nSet to blank to have a range chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
           "type": "string"
         }
       }
@@ -833,6 +918,17 @@
         "duration": {
           "description": "[Output only] Duration of the time window, automatically chosen to be\nsmallest possible in the given scenario.",
           "type": "string"
+        }
+      }
+    },
+    "BinaryAuthorization": {
+      "id": "BinaryAuthorization",
+      "description": "Configuration for Binary Authorization.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable Binary Authorization for this cluster. If enabled, all container\nimages will be validated by Google Binauthz.",
+          "type": "boolean"
         }
       }
     },
@@ -955,6 +1051,14 @@
         "location": {
           "description": "[Output only] The name of the Google Compute Engine\n[zone](\/compute\/docs\/regions-zones\/regions-zones#available) or\n[region](\/compute\/docs\/regions-zones\/regions-zones#available) in which\nthe cluster resides.",
           "type": "string"
+        },
+        "startTime": {
+          "description": "[Output only] The time the operation started, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "type": "string"
+        },
+        "endTime": {
+          "description": "[Output only] The time the operation completed, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "type": "string"
         }
       }
     },
@@ -982,6 +1086,10 @@
         "name": {
           "description": "The name (project, location, cluster) of the cluster to update.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
+        },
+        "options": {
+          "description": "Additional options that affects how the update is done.",
+          "$ref": "ClusterUpdateOptions"
         },
         "version": {
           "description": "API request version that initiates this operation.",
@@ -1044,6 +1152,17 @@
         "desiredMasterMachineType": {
           "description": "The name of a Google Compute Engine [machine\ntype](\/compute\/docs\/machine-types)\n(e.g. `n1-standard-8`) to change the master to.",
           "type": "string"
+        }
+      }
+    },
+    "ClusterUpdateOptions": {
+      "id": "ClusterUpdateOptions",
+      "description": "ClusterUpdateOptions specifies extra options or settings that affect\nhow a cluster update operation runs. It is an optional object passed\nin to ClusterUpdate calls.",
+      "type": "object",
+      "properties": {
+        "useMaintenancePolicy": {
+          "description": "Whether the update call should respect the maintenance policy in the\ncluster, if one is set. This flag is used to determine whether the update\nshould be stopped if it finds itself running outside of a configured\nmaintenance policy (if present).",
+          "type": "boolean"
         }
       }
     },

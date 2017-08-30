@@ -205,6 +205,7 @@ class Cluster(_messages.Message):
       Cloud Logging service. * `none` - no logs will be exported from the
       cluster. * if left as an empty string,`logging.googleapis.com` will be
       used.
+    maintenancePolicy: Configure the maintenance policy for this cluster.
     masterAuth: The authentication information for accessing the master
       endpoint.
     masterAuthorizedNetworks: Deprecated. The configuration options for master
@@ -324,23 +325,24 @@ class Cluster(_messages.Message):
   location = _messages.StringField(18)
   locations = _messages.StringField(19, repeated=True)
   loggingService = _messages.StringField(20)
-  masterAuth = _messages.MessageField('MasterAuth', 21)
-  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 22)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 23)
-  monitoringService = _messages.StringField(24)
-  name = _messages.StringField(25)
-  network = _messages.StringField(26)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 27)
-  nodeConfig = _messages.MessageField('NodeConfig', 28)
-  nodeIpv4CidrSize = _messages.IntegerField(29, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 30, repeated=True)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 31)
-  selfLink = _messages.StringField(32)
-  servicesIpv4Cidr = _messages.StringField(33)
-  status = _messages.EnumField('StatusValueValuesEnum', 34)
-  statusMessage = _messages.StringField(35)
-  subnetwork = _messages.StringField(36)
-  zone = _messages.StringField(37)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 21)
+  masterAuth = _messages.MessageField('MasterAuth', 22)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 23)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 24)
+  monitoringService = _messages.StringField(25)
+  name = _messages.StringField(26)
+  network = _messages.StringField(27)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 28)
+  nodeConfig = _messages.MessageField('NodeConfig', 29)
+  nodeIpv4CidrSize = _messages.IntegerField(30, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 31, repeated=True)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 32)
+  selfLink = _messages.StringField(33)
+  servicesIpv4Cidr = _messages.StringField(34)
+  status = _messages.EnumField('StatusValueValuesEnum', 35)
+  statusMessage = _messages.StringField(36)
+  subnetwork = _messages.StringField(37)
+  zone = _messages.StringField(38)
 
 
 class ClusterUpdate(_messages.Message):
@@ -397,6 +399,21 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 9)
   desiredNodePoolId = _messages.StringField(10)
   desiredNodeVersion = _messages.StringField(11)
+
+
+class ClusterUpdateOptions(_messages.Message):
+  """ClusterUpdateOptions specifies extra options or settings that affect how
+  a cluster update operation runs. It is an optional object passed in to
+  ClusterUpdate calls.
+
+  Fields:
+    useMaintenancePolicy: Whether the update call should respect the
+      maintenance policy in the cluster, if one is set. This flag is used to
+      determine whether the update should be stopped if it finds itself
+      running outside of a configured maintenance policy (if present).
+  """
+
+  useMaintenancePolicy = _messages.BooleanField(1)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -794,6 +811,25 @@ class ContainerProjectsZonesClustersNodePoolsListRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ContainerProjectsZonesClustersSetMaintenancePolicyRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersSetMaintenancePolicyRequest object.
+
+  Fields:
+    clusterId: The name of the cluster to update.
+    projectId: The Google Developers Console [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    setMaintenancePolicyRequest: A SetMaintenancePolicyRequest resource to be
+      passed as the request body.
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  setMaintenancePolicyRequest = _messages.MessageField('SetMaintenancePolicyRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ContainerProjectsZonesGetServerconfigRequest(_messages.Message):
   """A ContainerProjectsZonesGetServerconfigRequest object.
 
@@ -912,6 +948,24 @@ class CreateNodePoolRequest(_messages.Message):
   zone = _messages.StringField(6)
 
 
+class DailyMaintenanceWindow(_messages.Message):
+  """Time window specified for daily maintenance operations.
+
+  Fields:
+    daysInCycle: Allows to define schedule that runs every nth day of the
+      month. NOTE: Unimplemented, reserved for future use.
+    duration: [Output only] Duration of the time window, automatically chosen
+      to be smallest possible in the given scenario.
+    startTime: Time within the maintenance window to start the maintenance
+      operations. It must be in format "HH:MM\u201d, where HH : [00-23] and MM :
+      [00-59] GMT.
+  """
+
+  daysInCycle = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  duration = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+
+
 class Empty(_messages.Message):
   """A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -953,35 +1007,48 @@ class IPAllocationPolicy(_messages.Message):
   """Configuration for controlling how IPs are allocated in the cluster.
 
   Fields:
-    clusterIpv4Cidr: The IP address range for the cluster pod IPs. If this
-      field is set, then `cluster.cluster_ipv4_cidr` must be left blank.  This
-      field is only applicable when `use_ip_aliases` is true.  Set to blank to
-      have a range will be chosen with the default size.  Set to /netmask
-      (e.g. `/14`) to have a range be chosen with a specific netmask.  Set to
-      a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+    clusterIpv4Cidr: This field is deprecated, use cluster_ipv4_cidr_block.
+    clusterIpv4CidrBlock: The IP address range for the cluster pod IPs. If
+      this field is set, then `cluster.cluster_ipv4_cidr` must be left blank.
+      This field is only applicable when `use_ip_aliases` is true.  Set to
+      blank to have a range chosen with the default size.  Set to /netmask
+      (e.g. `/14`) to have a range chosen with a specific netmask.  Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
+    clusterSecondaryRangeName: The name of the secondary range to be used for
+      the cluster CIDR block.  The secondary range will be used for pod IP
+      addresses. This must be an existing secondary range associated with the
+      cluster subnetwork.  This field is only applicable with use_ip_aliases
+      and create_subnetwork is false.
     createSubnetwork: Whether a new subnetwork will be created automatically
       for the cluster.  This field is only applicable when `use_ip_aliases` is
       true.
-    nodeIpv4Cidr: The IP address range of the instance IPs in this cluster.
-      This is applicable only if `create_subnetwork` is true.  Set to blank to
-      have a range will be chosen with the default size.  Set to /netmask
-      (e.g. `/14`) to have a range be chosen with a specific netmask.  Set to
-      a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+    nodeIpv4Cidr: This field is deprecated, use node_ipv4_cidr_block.
+    nodeIpv4CidrBlock: The IP address range of the instance IPs in this
+      cluster.  This is applicable only if `create_subnetwork` is true.  Set
+      to blank to have a range chosen with the default size.  Set to /netmask
+      (e.g. `/14`) to have a range chosen with a specific netmask.  Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
-    servicesIpv4Cidr: The IP address range of the services IPs in this
+    servicesIpv4Cidr: This field is deprecated, use services_ipv4_cidr_block.
+    servicesIpv4CidrBlock: The IP address range of the services IPs in this
       cluster. If blank, a range will be automatically chosen with the default
       size.  This field is only applicable when `use_ip_aliases` is true.  Set
-      to blank to have a range will be chosen with the default size.  Set to
-      /netmask (e.g. `/14`) to have a range be chosen with a specific netmask.
-      Set to a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
-      Domain_Routing) notation (e.g. `10.96.0.0/14`) from the RFC-1918 private
-      networks (e.g. `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick
-      a specific range to use.
+      to blank to have a range chosen with the default size.  Set to /netmask
+      (e.g. `/14`) to have a range chosen with a specific netmask.  Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
+      `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
+      range to use.
+    servicesSecondaryRangeName: The name of the secondary range to be used as
+      for the services CIDR block.  The secondary range will be used for
+      service ClusterIPs. This must be an existing secondary range associated
+      with the cluster subnetwork.  This field is only applicable with
+      use_ip_aliases and create_subnetwork is false.
     subnetworkName: A custom subnetwork name to be used if `create_subnetwork`
       is true.  If this field is empty, then an automatic name will be chosen
       for the new subnetwork.
@@ -989,11 +1056,16 @@ class IPAllocationPolicy(_messages.Message):
   """
 
   clusterIpv4Cidr = _messages.StringField(1)
-  createSubnetwork = _messages.BooleanField(2)
-  nodeIpv4Cidr = _messages.StringField(3)
-  servicesIpv4Cidr = _messages.StringField(4)
-  subnetworkName = _messages.StringField(5)
-  useIpAliases = _messages.BooleanField(6)
+  clusterIpv4CidrBlock = _messages.StringField(2)
+  clusterSecondaryRangeName = _messages.StringField(3)
+  createSubnetwork = _messages.BooleanField(4)
+  nodeIpv4Cidr = _messages.StringField(5)
+  nodeIpv4CidrBlock = _messages.StringField(6)
+  servicesIpv4Cidr = _messages.StringField(7)
+  servicesIpv4CidrBlock = _messages.StringField(8)
+  servicesSecondaryRangeName = _messages.StringField(9)
+  subnetworkName = _messages.StringField(10)
+  useIpAliases = _messages.BooleanField(11)
 
 
 class KubernetesDashboard(_messages.Message):
@@ -1059,6 +1131,30 @@ class ListOperationsResponse(_messages.Message):
   missingZones = _messages.StringField(1, repeated=True)
   operations = _messages.MessageField('Operation', 2, repeated=True)
   version = _messages.StringField(3)
+
+
+class MaintenancePolicy(_messages.Message):
+  """MaintenancePolicy defines the maintenance policy to be used for the
+  cluster.
+
+  Fields:
+    window: Specifies the maintenance window in which maintenance may be
+      performed.
+  """
+
+  window = _messages.MessageField('MaintenanceWindow', 1)
+
+
+class MaintenanceWindow(_messages.Message):
+  """MaintenanceWindow defines the maintenance window to be used for the
+  cluster.
+
+  Fields:
+    dailyMaintenanceWindow: DailyMaintenanceWindow specifies a daily
+      maintenance operation window.
+  """
+
+  dailyMaintenanceWindow = _messages.MessageField('DailyMaintenanceWindow', 1)
 
 
 class MasterAuth(_messages.Message):
@@ -1161,7 +1257,8 @@ class NodeConfig(_messages.Message):
       applied set may differ depending on the Kubernetes version -- it's best
       to assume the behavior is undefined and conflicts should be avoided. For
       more information, including usage and the valid values, see:
-      http://kubernetes.io/v1.1/docs/user-guide/labels.html
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/labels/
     MetadataValue: The metadata key/value pairs assigned to instances in the
       cluster.  Keys must conform to the regexp [a-zA-Z0-9-_]+ and be less
       than 128 bytes in length. These are reflected as part of a URL in the
@@ -1192,7 +1289,8 @@ class NodeConfig(_messages.Message):
       applied set may differ depending on the Kubernetes version -- it's best
       to assume the behavior is undefined and conflicts should be avoided. For
       more information, including usage and the valid values, see:
-      http://kubernetes.io/v1.1/docs/user-guide/labels.html
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/labels/
     localSsdCount: The number of local SSD disks to be attached to the node.
       The limit for this value is dependant upon the maximum number of disks
       available on a machine per zone. See:
@@ -1238,6 +1336,10 @@ class NodeConfig(_messages.Message):
       identify valid sources or targets for network firewalls and are
       specified by the client during cluster or node pool creation. Each tag
       within the list must comply with RFC1035.
+    taints: List of kubernetes taints to be applied to each node.  For more
+      information, including usage and the valid values, see:
+      https://kubernetes.io/docs/concepts/configuration/assign-pod-node
+      /#taints-and-tolerations-beta-feature
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1248,7 +1350,7 @@ class NodeConfig(_messages.Message):
     may differ depending on the Kubernetes version -- it's best to assume the
     behavior is undefined and conflicts should be avoided. For more
     information, including usage and the valid values, see:
-    http://kubernetes.io/v1.1/docs/user-guide/labels.html
+    https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1317,6 +1419,7 @@ class NodeConfig(_messages.Message):
   preemptible = _messages.BooleanField(12)
   serviceAccount = _messages.StringField(13)
   tags = _messages.StringField(14, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 15, repeated=True)
 
 
 class NodeManagement(_messages.Message):
@@ -1422,6 +1525,39 @@ class NodePoolAutoscaling(_messages.Message):
   minNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class NodeTaint(_messages.Message):
+  """Kubernetes taint is comprised of three fields: key, value, and effect.
+  Effect can only be one of three types:  NoSchedule, PreferNoSchedule or
+  NoExecute.  For more information, including usage and the valid values, see:
+  https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-
+  and-tolerations-beta-feature
+
+  Enums:
+    EffectValueValuesEnum: Effect for taint.
+
+  Fields:
+    effect: Effect for taint.
+    key: Key for taint.
+    value: Value for taint.
+  """
+
+  class EffectValueValuesEnum(_messages.Enum):
+    """Effect for taint.
+
+    Values:
+      NO_SCHEDULE: NoSchedule
+      PREFER_NO_SCHEDULE: PreferNoSchedule
+      NO_EXECUTE: NoExecute
+    """
+    NO_SCHEDULE = 0
+    PREFER_NO_SCHEDULE = 1
+    NO_EXECUTE = 2
+
+  effect = _messages.EnumField('EffectValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  value = _messages.StringField(3)
+
+
 class Operation(_messages.Message):
   """This operation resource represents operations that may have happened or
   are happening on the cluster. All fields are output only.
@@ -1432,6 +1568,8 @@ class Operation(_messages.Message):
 
   Fields:
     detail: Detailed operation progress, if available.
+    endTime: [Output only] The time the operation completed, in
+      [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     location: [Output only] The name of the Google Compute Engine
       [zone](/compute/docs/regions-zones/regions-zones#available) or
       [region](/compute/docs/regions-zones/regions-zones#available) in which
@@ -1439,6 +1577,8 @@ class Operation(_messages.Message):
     name: The server-assigned ID for the operation.
     operationType: The operation type.
     selfLink: Server-defined URL for the resource.
+    startTime: [Output only] The time the operation started, in
+      [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     status: The current status of the operation.
     statusMessage: If an error has occurred, a textual description of the
       error.
@@ -1468,6 +1608,7 @@ class Operation(_messages.Message):
       SET_MASTER_AUTH: Set/generate master auth materials
       SET_NODE_POOL_SIZE: Set node pool size.
       SET_NETWORK_POLICY: Updates network policy for a cluster.
+      SET_MAINTENANCE_POLICY: Set the maintenance policy.
     """
     TYPE_UNSPECIFIED = 0
     CREATE_CLUSTER = 1
@@ -1485,6 +1626,7 @@ class Operation(_messages.Message):
     SET_MASTER_AUTH = 13
     SET_NODE_POOL_SIZE = 14
     SET_NETWORK_POLICY = 15
+    SET_MAINTENANCE_POLICY = 16
 
   class StatusValueValuesEnum(_messages.Enum):
     """The current status of the operation.
@@ -1503,14 +1645,16 @@ class Operation(_messages.Message):
     ABORTING = 4
 
   detail = _messages.StringField(1)
-  location = _messages.StringField(2)
-  name = _messages.StringField(3)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 4)
-  selfLink = _messages.StringField(5)
-  status = _messages.EnumField('StatusValueValuesEnum', 6)
-  statusMessage = _messages.StringField(7)
-  targetLink = _messages.StringField(8)
-  zone = _messages.StringField(9)
+  endTime = _messages.StringField(2)
+  location = _messages.StringField(3)
+  name = _messages.StringField(4)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
+  selfLink = _messages.StringField(6)
+  startTime = _messages.StringField(7)
+  status = _messages.EnumField('StatusValueValuesEnum', 8)
+  statusMessage = _messages.StringField(9)
+  targetLink = _messages.StringField(10)
+  zone = _messages.StringField(11)
 
 
 class RollbackNodePoolUpgradeRequest(_messages.Message):
@@ -1739,6 +1883,19 @@ class SetLoggingServiceRequest(_messages.Message):
   projectId = _messages.StringField(4)
   version = _messages.StringField(5)
   zone = _messages.StringField(6)
+
+
+class SetMaintenancePolicyRequest(_messages.Message):
+  """SetMaintenancePolicyRequest sets the maintenance policy for a cluster.
+
+  Fields:
+    maintenancePolicy: The maintenance policy to be set for the cluster. An
+      empty field clears the existing maintenance policy.
+    version: API request version that initiates this operation.
+  """
+
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 1)
+  version = _messages.StringField(2)
 
 
 class SetMasterAuthRequest(_messages.Message):
@@ -2032,6 +2189,7 @@ class UpdateClusterRequest(_messages.Message):
       use name instead.
     name: The name (project, location, cluster) of the cluster to update.
       Specified in the format 'projects/*/locations/*/clusters/*'.
+    options: Additional options that affects how the update is done.
     projectId: The Google Developers Console [project ID or project
       number](https://support.google.com/cloud/answer/6158840). This field is
       deprecated, use name instead.
@@ -2044,10 +2202,11 @@ class UpdateClusterRequest(_messages.Message):
 
   clusterId = _messages.StringField(1)
   name = _messages.StringField(2)
-  projectId = _messages.StringField(3)
-  update = _messages.MessageField('ClusterUpdate', 4)
-  version = _messages.StringField(5)
-  zone = _messages.StringField(6)
+  options = _messages.MessageField('ClusterUpdateOptions', 3)
+  projectId = _messages.StringField(4)
+  update = _messages.MessageField('ClusterUpdate', 5)
+  version = _messages.StringField(6)
+  zone = _messages.StringField(7)
 
 
 class UpdateMasterRequest(_messages.Message):

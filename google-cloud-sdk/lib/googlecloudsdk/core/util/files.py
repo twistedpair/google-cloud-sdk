@@ -355,6 +355,11 @@ def IsDirAncestorOf(ancestor_directory, path):
   return not rel.startswith(u'..' + os.path.sep) and rel != '..'
 
 
+def _GetSystemPath():
+  """Returns properly encoded system PATH variable string."""
+  return encoding.GetEncodedValue(os.environ, 'PATH')
+
+
 def SearchForExecutableOnPath(executable, path=None):
   """Tries to find all 'executable' in the directories listed in the PATH.
 
@@ -374,7 +379,7 @@ def SearchForExecutableOnPath(executable, path=None):
     are found.
   """
   if not path:
-    path = encoding.GetEncodedValue(os.environ, 'PATH')
+    path = _GetSystemPath()
   paths = path.split(os.pathsep)
 
   matching = []
@@ -455,7 +460,7 @@ def FindExecutableOnPath(executable, path=None, pathext=None):
                      u'argument must not have a path.'.format(executable))
 
   if path is None:
-    effective_path = encoding.GetEncodedValue(os.environ, 'PATH')
+    effective_path = _GetSystemPath()
   else:
     effective_path = path
   effective_pathext = (pathext if pathext is not None
@@ -964,6 +969,44 @@ def GetFileOrStdinContents(path, binary=False):
       return sys.stdin.read()
 
   return GetFileContents(path, binary=binary)
+
+
+def WriteFileAtomically(file_name, contents):
+  """Writes a text file to disk safely cross platform.
+
+  Writes a text file to disk safely cross platform. Note that on Windows, there
+  is no good way to atomically write a file to disk.
+
+  Args:
+    file_name: The actual file to write to.
+    contents:  The file contents to write.
+
+  Raises:
+    ValueError: file_name or contents is empty.
+    TypeError: contents is not a valid string.
+  """
+  if not file_name or contents is None:
+    raise ValueError('Empty file_name [{}] or contents [{}].'.format(
+        file_name, contents))
+
+  if not isinstance(contents, basestring):
+    raise TypeError('Invalid contents [{}].'.format(contents))
+
+  if platforms.OperatingSystem.IsWindows():
+    # On Windows, there is no good way to atomically write this file.
+    with OpenForWritingPrivate(file_name) as writer:
+      writer.write(contents)
+  else:
+    # This opens files with 0600, which are the correct permissions.
+    with tempfile.NamedTemporaryFile(
+        dir=os.path.dirname(file_name), delete=False) as temp_file:
+      temp_file.write(contents)
+      # This was a user-submitted patch to fix a race condition that we couldn't
+      # reproduce. It may be due to the file being renamed before the OS's
+      # buffer flushes to disk.
+      temp_file.flush()
+      # This pattern atomically writes the file on non-Windows systems.
+      os.rename(temp_file.name, file_name)
 
 
 def WriteFileContents(path, content, overwrite=True, binary=False):

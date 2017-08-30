@@ -453,7 +453,7 @@
       "type": "object",
       "properties": {
         "entries": {
-          "description": "A list of log entries.",
+          "description": "A list of log entries. If entries is empty, nextPageToken may still be returned, indicating that more entries may exist. See nextPageToken for more information.",
           "type": "array",
           "items": {
             "$ref": "LogEntry"
@@ -665,7 +665,7 @@
           "type": "string"
         },
         "version": {
-          "description": "Output only. The API version that created or updated this metric. This value is currently always set to V2.",
+          "description": "Deprecated. The API version that created or updated this metric. The v2 format is used by default and cannot be changed.",
           "enumDescriptions": [
             "Stackdriver Logging API v2.",
             "Stackdriver Logging API v1."
@@ -1090,7 +1090,7 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/projects/{projectsId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -1124,7 +1124,7 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/projects/{projectsId}/sinks/{sinksId}",
               "httpMethod": "PATCH",
-              "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -1520,7 +1520,7 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/organizations/{organizationsId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -1554,7 +1554,7 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/organizations/{organizationsId}/sinks/{sinksId}",
               "httpMethod": "PATCH",
-              "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -1792,7 +1792,7 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/folders/{foldersId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -1826,7 +1826,7 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/folders/{foldersId}/sinks/{sinksId}",
               "httpMethod": "PATCH",
-              "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2064,7 +2064,7 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2098,7 +2098,7 @@
               "path": "v2/{+sinkName}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}",
               "httpMethod": "PATCH",
-              "description": "Updates a sink. If the named sink doesn't exist, then this method is identical to sinks.create. If the named sink does exist, then this method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated filter might also have a new writer_identity; see the unique_writer_identity field.",
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, filter, output_version_format, start_time, and end_time. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",

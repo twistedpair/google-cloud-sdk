@@ -95,8 +95,10 @@ def AddArgsForRemoveIamPolicyBinding(parser, completer=None):
   parser.add_argument(
       '--member', required=True,
       help='The member to add to the binding. '
-      'Should be of the form `user:user_email` '
-      '(e.g. `user:test-user@gmail.com.`)')
+      'Should be of the form `user:user_email` or '
+      '`serviceAccount:service_account_identifier` '
+      '(e.g. `user:test-user@gmail.com` or '
+      '`serviceAccount:my-iam-account@PROJECT_ID.iam.gserviceaccount.com`.)')
 
 
 def AddBindingToIamPolicy(binding_message_type, policy, member, role):
@@ -350,6 +352,12 @@ def GetDetailedHelpForAddIamPolicyBinding(collection, example_id,
           identifier '{example_id}'
 
             $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}'
+
+          For a service account 'my-sa' linked to project 'test-123', the
+          following command will add an IAM policy binding for the role of
+          '{role}' to the given service account:
+
+            $ {{command}} test-123 --member='serviceAccount:my-sa@test-123.iam.gserviceaccount.com' --role='{role}'
 
           See https://cloud.google.com/iam/docs/managing-policies for details
           of policy role and member types.

@@ -166,7 +166,6 @@ def AddZonesFlag(parser):
       default=[])
 
 
-# TODO(b/62898965): Use ResourcceResolver instead of resources.Parse().
 def ValidateManagedInstanceGroupScopeArgs(args, resources):
   """Validate arguments specifying scope of the managed instance group."""
   ignored_required_params = {'project': 'fake'}

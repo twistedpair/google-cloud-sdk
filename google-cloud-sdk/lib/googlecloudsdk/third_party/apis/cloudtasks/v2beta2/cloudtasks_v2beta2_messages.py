@@ -18,9 +18,9 @@ class AcknowledgeTaskRequest(_messages.Message):
   CloudTasks.AcknowledgeTask.
 
   Fields:
-    scheduleTime: Required.  The task schedule time, available in the
-      Task.schedule_time returned in PullTasksResponse.tasks or
-      CloudTasks.RenewLease.  This restriction is to check that the caller is
+    scheduleTime: Required.  The task's current schedule time, available in
+      the Task.schedule_time returned in PullTasksResponse.tasks or
+      CloudTasks.RenewLease. This restriction is to check that the caller is
       acknowledging the correct task.
   """
 
@@ -28,7 +28,8 @@ class AcknowledgeTaskRequest(_messages.Message):
 
 
 class AppEngineQueueConfig(_messages.Message):
-  """App Engine queue config.  The task will be delivered to the App Engine
+  """App Engine queue config.  An App Engine queue is a queue that has
+  AppEngineQueueConfig set.  The task will be delivered to the App Engine
   application URL specified by its AppEngineQueueConfig and
   AppEngineTaskTarget. The documentation for AppEngineTaskTarget explains how
   the task's host URL is constructed.  Using this type of queue configuration
@@ -37,70 +38,19 @@ class AppEngineQueueConfig(_messages.Message):
   `https://www.googleapis.com/auth/cloud-platform`
 
   Messages:
-    HeadersValue: HTTP request headers.  This map contains the header field
-      names and values. Repeated headers are not supported but a header value
-      can contain commas.  Some headers, such as the ones below, will be
-      automatically set by Cloud Tasks:  * Host: The host is constructed from
-      many settings in   AppEngineQueueConfig and AppEngineTaskTarget. See the
-      documentation for AppEngineTaskTarget for more   information. If set,
-      the host header has to exactly match the   resolved hostname, otherwise
-      an error will be returned. * Content-Length: This will be computed and
-      overwritten by Cloud Tasks. * X-Google-*: For Google internal use only.
-      * X-AppEngine-*: For Google internal use only. See
-      [here](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).  When a task is attempted,
-      AppEngineQueueConfig.headers will be merged with the task's
-      AppEngineTaskTarget.headers and the merged headers will be sent with the
-      task's overrides. In addition, some App Engine headers, which contain
-      task-specific information, will also be sent to the task handler; see
-      [here](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).
+    HeadersValue: DEPRECATED
 
   Fields:
     appEngineRoutingOverride: Overrides for the task-level app_engine_routing.
       If set, AppEngineQueueConfig.app_engine_routing_override is used for all
       tasks in the queue, no matter what the setting is for the task-level
       app_engine_routing.
-    headers: HTTP request headers.  This map contains the header field names
-      and values. Repeated headers are not supported but a header value can
-      contain commas.  Some headers, such as the ones below, will be
-      automatically set by Cloud Tasks:  * Host: The host is constructed from
-      many settings in   AppEngineQueueConfig and AppEngineTaskTarget. See the
-      documentation for AppEngineTaskTarget for more   information. If set,
-      the host header has to exactly match the   resolved hostname, otherwise
-      an error will be returned. * Content-Length: This will be computed and
-      overwritten by Cloud Tasks. * X-Google-*: For Google internal use only.
-      * X-AppEngine-*: For Google internal use only. See
-      [here](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).  When a task is attempted,
-      AppEngineQueueConfig.headers will be merged with the task's
-      AppEngineTaskTarget.headers and the merged headers will be sent with the
-      task's overrides. In addition, some App Engine headers, which contain
-      task-specific information, will also be sent to the task handler; see
-      [here](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).
+    headers: DEPRECATED
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HeadersValue(_messages.Message):
-    """HTTP request headers.  This map contains the header field names and
-    values. Repeated headers are not supported but a header value can contain
-    commas.  Some headers, such as the ones below, will be automatically set
-    by Cloud Tasks:  * Host: The host is constructed from many settings in
-    AppEngineQueueConfig and AppEngineTaskTarget. See the   documentation for
-    AppEngineTaskTarget for more   information. If set, the host header has to
-    exactly match the   resolved hostname, otherwise an error will be
-    returned. * Content-Length: This will be computed and overwritten by Cloud
-    Tasks. * X-Google-*: For Google internal use only. * X-AppEngine-*: For
-    Google internal use only. See
-    [here](/appengine/docs/python/taskqueue/push/creating-
-    handlers#reading_request_headers).  When a task is attempted,
-    AppEngineQueueConfig.headers will be merged with the task's
-    AppEngineTaskTarget.headers and the merged headers will be sent with the
-    task's overrides. In addition, some App Engine headers, which contain
-    task-specific information, will also be sent to the task handler; see
-    [here](/appengine/docs/python/taskqueue/push/creating-
-    handlers#reading_request_headers).
+    """DEPRECATED
 
     Messages:
       AdditionalProperty: An additional property for a HeadersValue object.
@@ -130,39 +80,86 @@ class AppEngineRouting(_messages.Message):
   """App Engine Routing.  For more information about services, versions, and
   instances see [An Overview of App Engine](/appengine/docs/python/an-
   overview-of-app-engine), [Microservices Architecture on Google App
-  Engine](/appengine/docs/python/microservices-on-app-engine), and [How
-  Requests are Routed](/appengine/docs/standard/python/how-requests-are-
-  routed).  Note: The routing for some queues or tasks which were not created
-  using the Cloud Tasks API may not be parsable into AppEngineRouting. For
-  example, if numeric version names are used, then urls such as `123.my-
-  service.appspot.com` are ambiguous because `123` can be interpreted as a
-  version or instance number. See [here](/appengine/docs/python/how-requests-
-  are-routed#soft_routing) for more information. If the routing is unparsable,
-  AppEngineRouting will be empty; the routing information can be viewed in the
-  HOST header in AppEngineQueueConfig.headers and AppEngineTaskTarget.headers.
+  Engine](/appengine/docs/python/microservices-on-app-engine), [App Engine
+  Standard request routing](/appengine/docs/standard/python/how-requests-are-
+  routed), and [App Engine Flex request
+  routing](/appengine/docs/flexible/python/how-requests-are-routed).
 
   Fields:
-    instance: App instance.  By default, the task will be sent to an instance
-      which is available when the task is attempted.  Requests can only be
-      sent to a specific instance if basic or manual scaling is used. For more
-      information see [here](/appengine/docs/python/an-overview-of-app-
-      engine?hl=en_US#scaling_types_and_instance_classes).
-    service: App service.  By default, the task will be sent to the service
-      which is the default service when the task is attempted ("default").
-    version: App version.  Version names should begin with a letter, to
-      distinguish them from numeric instances in the app URL; for more
-      information see [here](/appengine/docs/python/how-requests-are-
-      routed#soft_routing).  By default, the task will be sent to the version
-      which is the default version when the task is attempted ("default").
+    host: Output only.  The host that the task is sent to. For more
+      information about how App Engine requests are routed, see
+      [here](/appengine/docs/standard/python/how-requests-are-routed).  The
+      host is constructed as:   * `host = [application_domain_name]`</br>   `|
+      [service] + '.' + [application_domain_name]`</br>   `| [version] + '.' +
+      [application_domain_name]`</br>   `| [version_dot_service]+ '.' +
+      [application_domain_name]`</br>   `| [instance] + '.' +
+      [application_domain_name]`</br>   `| [instance_dot_service] + '.' +
+      [application_domain_name]`</br>   `| [instance_dot_version] + '.' +
+      [application_domain_name]`</br>   `| [instance_dot_version_dot_service]
+      + '.' + [application_domain_name]`  * `application_domain_name` = The
+      domain name of the app, for   example <app-id>.appspot.com, which is
+      associated with the   queue's project ID. Some tasks which were created
+      using the App Engine   SDK use a custom domain name.  * `service =`
+      AppEngineRouting.service  * `version =` AppEngineRouting.version  *
+      `version_dot_service =`   AppEngineRouting.version `+ '.' +`
+      AppEngineRouting.service  * `instance =` AppEngineRouting.instance  *
+      `instance_dot_service =`   AppEngineRouting.instance `+ '.' +`
+      AppEngineRouting.service  * `instance_dot_version =`
+      AppEngineRouting.instance `+ '.' +` AppEngineRouting.version  *
+      `instance_dot_version_dot_service =`   AppEngineRouting.instance `+ '.'
+      +`   AppEngineRouting.version `+ '.' +` AppEngineRouting.service  If
+      AppEngineRouting.service is empty, then the task will be sent to the
+      service which is the default service when the task is attempted.  If
+      AppEngineRouting.version is empty, then the task will be sent to the
+      version which is the default version when the task is attempted.  If
+      AppEngineRouting.instance is empty, then the task will be sent to an
+      instance which is available when the task is attempted.  When
+      AppEngineRouting.service is "default", AppEngineRouting.version is
+      "default", and AppEngineRouting.instance is empty, AppEngineRouting.host
+      is shortened to just the `application_domain_name`.  If
+      AppEngineRouting.service, AppEngineRouting.version, or
+      AppEngineRouting.instance is invalid, then the task will be sent to the
+      default version of the default service when the task is attempted.
+    instance: App instance.  By default, the task is sent to an instance which
+      is available when the task is attempted.  Requests can only be sent to a
+      specific instance if [manual scaling is used in App Engine
+      Standard](/appengine/docs/python/an-overview-of-app-
+      engine?hl=en_US#scaling_types_and_instance_classes). App Engine Flex
+      does not support instances. For more information, see [App Engine
+      Standard request routing](/appengine/docs/standard/python/how-requests-
+      are-routed) and [App Engine Flex request
+      routing](/appengine/docs/flexible/python/how-requests-are-routed).
+    service: App service.  By default, the task is sent to the service which
+      is the default service when the task is attempted ("default").
+      AppEngineRouting.host, for some queues or tasks which were created using
+      the App Engine Task Queue API, is not parsable into
+      AppEngineRouting.service, AppEngineRouting.version, and
+      AppEngineRouting.instance. For example, some tasks which were created
+      using the App Engine SDK use a custom domain name; custom domains are
+      not parsed by Cloud Tasks. If AppEngineRouting.host is not parsable,
+      then AppEngineRouting.service, AppEngineRouting.version, and
+      AppEngineRouting.instance are the empty string.
+    version: App version.  By default, the task is sent to the version which
+      is the default version when the task is attempted ("default").
+      AppEngineRouting.host, for some queues or tasks which were created using
+      the App Engine Task Queue API, is not parsable into
+      AppEngineRouting.service, AppEngineRouting.version, and
+      AppEngineRouting.instance. For example, some tasks which were created
+      using the App Engine SDK use a custom domain name; custom domains are
+      not parsed by Cloud Tasks. If AppEngineRouting.host is not parsable,
+      then AppEngineRouting.service, AppEngineRouting.version, and
+      AppEngineRouting.instance are the empty string.
   """
 
-  instance = _messages.StringField(1)
-  service = _messages.StringField(2)
-  version = _messages.StringField(3)
+  host = _messages.StringField(1)
+  instance = _messages.StringField(2)
+  service = _messages.StringField(3)
+  version = _messages.StringField(4)
 
 
 class AppEngineTaskTarget(_messages.Message):
-  """App Engine task target.  This proto can only be used for tasks in a queue
+  """App Engine task target.  An App Engine task is a task that has
+  AppEngineTaskTarget set.  This proto can only be used for tasks in a queue
   which has Queue.app_engine_queue_config set.  Using this type of task target
   requires [`appengine.applications.get`](/appengine/docs/admin-api/access-
   control) Google IAM permission for the project and the following scope:
@@ -176,34 +173,8 @@ class AppEngineTaskTarget(_messages.Message):
   task-level:  *  If set, AppEngineQueueConfig.app_engine_routing_override is
   used for    all tasks in the queue, no matter what the setting is for the
   task-level app_engine_routing.   The `url` that the task will be sent to is:
-  * `url = host +` AppEngineTaskTarget.relative_url  * `host =
-  [application_domain_name]`</br>   `| [service] + '.' +
-  [application_domain_name]`</br>   `| [version] + '.' +
-  [application_domain_name]`</br>   `| [version_dot_service]+ '.' +
-  [application_domain_name]`</br>   `| [instance] + '.' +
-  [application_domain_name]`</br>   `| [instance_dot_service] + '.' +
-  [application_domain_name]`</br>   `| [instance_dot_version] + '.' +
-  [application_domain_name]`</br>   `| [instance_dot_version_dot_service] +
-  '.' + [application_domain_name]`  * `application_domain_name` = The domain
-  name of the app, for   example <app-id>.appspot.com, which is associated
-  with the   queue's project ID.  * `service =` AppEngineRouting.service  *
-  `version =` AppEngineRouting.version  * `version_dot_service =`
-  AppEngineRouting.version `+ '.' +` AppEngineRouting.service  * `instance =`
-  AppEngineRouting.instance  * `instance_dot_service =`
-  AppEngineRouting.instance `+ '.' +` AppEngineRouting.service  *
-  `instance_dot_version =`   AppEngineRouting.instance `+ '.' +`
-  AppEngineRouting.version  * `instance_dot_version_dot_service =`
-  AppEngineRouting.instance `+ '.' +`   AppEngineRouting.version `+ '.' +`
-  AppEngineRouting.service  If AppEngineRouting.service is empty, then the
-  task will be sent to the service which is the default service when the task
-  is attempted.  If AppEngineRouting.version is empty, then the task will be
-  sent to the version which is the default version when the task is attempted.
-  If AppEngineRouting.instance is empty, then the task will be sent to an
-  instance which is available when the task is attempted.  If
-  AppEngineRouting.service, AppEngineRouting.version, or
-  AppEngineRouting.instance is invalid, then the task will be sent to the
-  default version of the default service when the task is attempted.  The task
-  will be sent to a task handler by an HTTP request using the specified
+  * `url =` AppEngineRouting.host `+` AppEngineTaskTarget.relative_url  The
+  task will be sent to a task handler by an HTTP request using the specified
   AppEngineTaskTarget.http_method (for example POST, HTTP GET, etc). The task
   attempt has succeeded if the task handler returns an HTTP response code in
   the range [200 - 299]. Error 503 is considered an App Engine system error
@@ -227,23 +198,31 @@ class AppEngineTaskTarget(_messages.Message):
 
   Messages:
     HeadersValue: HTTP request headers.  This map contains the header field
-      names and values. Repeated headers are not supported but a header value
-      can contain commas.  Some headers, such as the ones below, will be
-      automatically set by Cloud Tasks:  * Host: The host is constructed from
-      many settings in   AppEngineQueueConfig and AppEngineTaskTarget. See the
-      documentation for AppEngineTaskTarget for more   information. If set,
-      the host header has to exactly match the   resolved hostname, otherwise
-      an error will be returned. * Content-Length: This will be computed and
-      overwritten by Cloud Tasks. * X-Google-*: For Google internal use only.
-      * X-AppEngine-*: For Google internal use only. See
-      [here](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).  When a task is attempted,
-      AppEngineQueueConfig.headers will be merged with the task's
-      AppEngineTaskTarget.headers and the merged headers will be sent with the
-      task's HTTP request. In addition, some App Engine headers will be set
-      which contain task-specific information that can be used by the handler;
-      see [here](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).
+      names and values. Headers can be set when the [task is
+      created](google.cloud.tasks.v2beta2.CloudTasks.CreateTask). Repeated
+      headers are not supported but a header value can contain commas.  Cloud
+      Tasks sets some headers to default values: * `User-Agent`: By default,
+      this header is   `"AppEngine-Google;
+      (+http://code.google.com/appengine)"`.   This header can be modified,
+      but Cloud Tasks will append   `"AppEngine-Google;
+      (+http://code.google.com/appengine)"` to the   modified `User-Agent`.
+      api-linter: output-only-format=disabled If the task has an
+      AppEngineTaskTarget.payload, Cloud Tasks sets the following headers: *
+      `Content-Type`: By default, the `Content-Type` header is set to
+      `"application/octet-stream"`. The default can be overridden by explictly
+      setting `Content-Type` to a particular media type when the   [task is
+      created](google.cloud.tasks.v2beta2.CloudTasks.CreateTask).   For
+      example, `Content-Type` can be set to `"application/json"`. * `Content-
+      Length`: This is computed by Cloud Tasks. This value is   output only.
+      It cannot be changed.  api-linter: output-only-format=disabled The
+      headers below are output only. They cannot be set or overridden: *
+      `X-Google-*`: For Google internal use only. * `X-AppEngine-*`: For
+      Google internal use only. See   [Reading request
+      headers](/appengine/docs/python/taskqueue/push/creating-
+      handlers#reading_request_headers).  In addition, some App Engine
+      headers, which contain task-specific information, are also be sent to
+      the task handler; see [here](/appengine/docs/python/taskqueue/push
+      /creating-handlers#reading_request_headers).
 
   Fields:
     appEngineRouting: Task-level setting for App Engine routing.  If set,
@@ -251,23 +230,31 @@ class AppEngineTaskTarget(_messages.Message):
       in the queue, no matter what the setting is for the task-level
       app_engine_routing.
     headers: HTTP request headers.  This map contains the header field names
-      and values. Repeated headers are not supported but a header value can
-      contain commas.  Some headers, such as the ones below, will be
-      automatically set by Cloud Tasks:  * Host: The host is constructed from
-      many settings in   AppEngineQueueConfig and AppEngineTaskTarget. See the
-      documentation for AppEngineTaskTarget for more   information. If set,
-      the host header has to exactly match the   resolved hostname, otherwise
-      an error will be returned. * Content-Length: This will be computed and
-      overwritten by Cloud Tasks. * X-Google-*: For Google internal use only.
-      * X-AppEngine-*: For Google internal use only. See
-      [here](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).  When a task is attempted,
-      AppEngineQueueConfig.headers will be merged with the task's
-      AppEngineTaskTarget.headers and the merged headers will be sent with the
-      task's HTTP request. In addition, some App Engine headers will be set
-      which contain task-specific information that can be used by the handler;
-      see [here](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).
+      and values. Headers can be set when the [task is
+      created](google.cloud.tasks.v2beta2.CloudTasks.CreateTask). Repeated
+      headers are not supported but a header value can contain commas.  Cloud
+      Tasks sets some headers to default values: * `User-Agent`: By default,
+      this header is   `"AppEngine-Google;
+      (+http://code.google.com/appengine)"`.   This header can be modified,
+      but Cloud Tasks will append   `"AppEngine-Google;
+      (+http://code.google.com/appengine)"` to the   modified `User-Agent`.
+      api-linter: output-only-format=disabled If the task has an
+      AppEngineTaskTarget.payload, Cloud Tasks sets the following headers: *
+      `Content-Type`: By default, the `Content-Type` header is set to
+      `"application/octet-stream"`. The default can be overridden by explictly
+      setting `Content-Type` to a particular media type when the   [task is
+      created](google.cloud.tasks.v2beta2.CloudTasks.CreateTask).   For
+      example, `Content-Type` can be set to `"application/json"`. * `Content-
+      Length`: This is computed by Cloud Tasks. This value is   output only.
+      It cannot be changed.  api-linter: output-only-format=disabled The
+      headers below are output only. They cannot be set or overridden: *
+      `X-Google-*`: For Google internal use only. * `X-AppEngine-*`: For
+      Google internal use only. See   [Reading request
+      headers](/appengine/docs/python/taskqueue/push/creating-
+      handlers#reading_request_headers).  In addition, some App Engine
+      headers, which contain task-specific information, are also be sent to
+      the task handler; see [here](/appengine/docs/python/taskqueue/push
+      /creating-handlers#reading_request_headers).
     httpMethod: The HTTP method to use for the request. The default is POST.
       The app's request handler for the task's target URL must be able to
       handle HTTP requests with this http_method, otherwise the task attempt
@@ -320,22 +307,29 @@ class AppEngineTaskTarget(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HeadersValue(_messages.Message):
     """HTTP request headers.  This map contains the header field names and
-    values. Repeated headers are not supported but a header value can contain
-    commas.  Some headers, such as the ones below, will be automatically set
-    by Cloud Tasks:  * Host: The host is constructed from many settings in
-    AppEngineQueueConfig and AppEngineTaskTarget. See the   documentation for
-    AppEngineTaskTarget for more   information. If set, the host header has to
-    exactly match the   resolved hostname, otherwise an error will be
-    returned. * Content-Length: This will be computed and overwritten by Cloud
-    Tasks. * X-Google-*: For Google internal use only. * X-AppEngine-*: For
-    Google internal use only. See
-    [here](/appengine/docs/python/taskqueue/push/creating-
-    handlers#reading_request_headers).  When a task is attempted,
-    AppEngineQueueConfig.headers will be merged with the task's
-    AppEngineTaskTarget.headers and the merged headers will be sent with the
-    task's HTTP request. In addition, some App Engine headers will be set
-    which contain task-specific information that can be used by the handler;
-    see [here](/appengine/docs/python/taskqueue/push/creating-
+    values. Headers can be set when the [task is
+    created](google.cloud.tasks.v2beta2.CloudTasks.CreateTask). Repeated
+    headers are not supported but a header value can contain commas.  Cloud
+    Tasks sets some headers to default values: * `User-Agent`: By default,
+    this header is   `"AppEngine-Google;
+    (+http://code.google.com/appengine)"`.   This header can be modified, but
+    Cloud Tasks will append   `"AppEngine-Google;
+    (+http://code.google.com/appengine)"` to the   modified `User-Agent`.
+    api-linter: output-only-format=disabled If the task has an
+    AppEngineTaskTarget.payload, Cloud Tasks sets the following headers: *
+    `Content-Type`: By default, the `Content-Type` header is set to
+    `"application/octet-stream"`. The default can be overridden by explictly
+    setting `Content-Type` to a particular media type when the   [task is
+    created](google.cloud.tasks.v2beta2.CloudTasks.CreateTask).   For example,
+    `Content-Type` can be set to `"application/json"`. * `Content-Length`:
+    This is computed by Cloud Tasks. This value is   output only. It cannot be
+    changed.  api-linter: output-only-format=disabled The headers below are
+    output only. They cannot be set or overridden: * `X-Google-*`: For Google
+    internal use only. * `X-AppEngine-*`: For Google internal use only. See
+    [Reading request headers](/appengine/docs/python/taskqueue/push/creating-
+    handlers#reading_request_headers).  In addition, some App Engine headers,
+    which contain task-specific information, are also be sent to the task
+    handler; see [here](/appengine/docs/python/taskqueue/push/creating-
     handlers#reading_request_headers).
 
     Messages:
@@ -370,12 +364,14 @@ class AttemptStatus(_messages.Message):
 
   Fields:
     dispatchTime: Output only.  The time that this attempt was dispatched.
+      `dispatch_time` will be truncated to the nearest microsecond.
     responseStatus: Output only.  The response from the target for this
       attempt.  If the task has not been attempted or the task is currently
       running then the response status will be google.rpc.Code.UNKNOWN.
     responseTime: Output only.  The time that this attempt response was
-      received.
+      received.  `response_time` will be truncated to the nearest microsecond.
     scheduleTime: Output only.  The time that this attempt was scheduled.
+      `schedule_time` will be truncated to the nearest microsecond.
   """
 
   dispatchTime = _messages.StringField(1)
@@ -429,9 +425,9 @@ class CancelLeaseRequest(_messages.Message):
       or because of the sensitivity of data that it contains.  Authorization
       for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
       IAM](/iam/) permission on the Task.name resource.
-    scheduleTime: Required.  The task schedule time, available in the
-      Task.schedule_time returned in PullTasksResponse.tasks or
-      CloudTasks.RenewLease.  This restriction is to check that the caller is
+    scheduleTime: Required.  The task's current schedule time, available in
+      the Task.schedule_time returned in PullTasksResponse.tasks or
+      CloudTasks.RenewLease. This restriction is to check that the caller is
       canceling the correct task.
   """
 
@@ -557,8 +553,8 @@ class CloudtasksProjectsLocationsQueuesPatchRequest(_messages.Message):
       expression: `[a-zA-Z\\d-:\\.]+`. * `QUEUE_ID` can contain uppercase and
       lowercase letters,   numbers, and hyphens; that is, it must match the
       regular   expression: `[a-zA-Z\\d-]+`. The maximum length is 100
-      characters.  Caller-specified and required in CreateQueueRequest, after
-      which it becomes output only.
+      characters.  api-linter: output-only-format=disabled Caller-specified
+      and required in CreateQueueRequest, after which it becomes output only.
     queue: A Queue resource to be passed as the request body.
     updateMask: A  mask used to specify which fields of the queue are being
       updated.  Queue.name cannot be changed and cannot be specified in the
@@ -1005,12 +1001,15 @@ class Policy(_messages.Message):
 
 
 class PullQueueConfig(_messages.Message):
-  """Pull queue config."""
+  """Pull queue config.  A pull queue is a queue that has PullQueueConfig set.
+  """
+
 
 
 class PullTaskTarget(_messages.Message):
-  """Pull task target.  This proto can only be used for tasks in a queue which
-  has Queue.pull_queue_config set.
+  """Pull task target.  A pull task is a task that has PullTaskTarget set.
+  This proto can only be used for tasks in a queue which has
+  Queue.pull_queue_config set.
 
   Fields:
     payload: A data payload consumed by the task worker to execute the task.
@@ -1060,7 +1059,7 @@ class PullTasksRequest(_messages.Message):
       is not acknowledged via CloudTasks.AcknowledgeTask before the
       Task.schedule_time then it will be returned in a later PullTasksResponse
       so that another lease holder can process it.  The maximum lease duration
-      is 1 week.
+      is 1 week. `lease_duration` will be truncated to the nearest second.
     maxTasks: The maximum number of tasks to lease. The maximum that can be
       requested is 1000.
     responseView: The response_view specifies which subset of the Task will be
@@ -1137,8 +1136,8 @@ class Queue(_messages.Message):
       expression: `[a-zA-Z\\d-:\\.]+`. * `QUEUE_ID` can contain uppercase and
       lowercase letters,   numbers, and hyphens; that is, it must match the
       regular   expression: `[a-zA-Z\\d-]+`. The maximum length is 100
-      characters.  Caller-specified and required in CreateQueueRequest, after
-      which it becomes output only.
+      characters.  api-linter: output-only-format=disabled Caller-specified
+      and required in CreateQueueRequest, after which it becomes output only.
     pullQueueConfig: Pull queue config.
     purgeTime: Output only.  The last time this queue was purged. All tasks
       that were created before this time were purged.  A queue can be purged
@@ -1209,7 +1208,8 @@ class RenewLeaseRequest(_messages.Message):
 
   Fields:
     newLeaseDuration: Required.  The desired new lease duration, starting from
-      now.   The maximum lease duration is 1 week.
+      now.   The maximum lease duration is 1 week. `new_lease_duration` will
+      be truncated to the nearest second.
     responseView: The response_view specifies which subset of the Task will be
       returned.  By default response_view is Task.View.BASIC; not all
       information is retrieved by default because some data, such as payloads,
@@ -1217,9 +1217,9 @@ class RenewLeaseRequest(_messages.Message):
       or because of the sensitivity of data that it contains.  Authorization
       for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
       IAM](/iam/) permission on the Task.name resource.
-    scheduleTime: Required.  The task schedule time, available in the
-      Task.schedule_time returned in PullTasksResponse.tasks or
-      CloudTasks.RenewLease.  This restriction is to check that the caller is
+    scheduleTime: Required.  The task's current schedule time, available in
+      the Task.schedule_time returned in PullTasksResponse.tasks or
+      CloudTasks.RenewLease. This restriction is to check that the caller is
       renewing the correct task.
   """
 
@@ -1269,23 +1269,40 @@ class RetryConfig(_messages.Message):
       attempt the task `max_attempts` times (that is, if the first attempt
       fails, then there will be `max_attempts - 1` retries).  Must be > 0.
     maxBackoff: The maximum amount of time to wait before retrying a task
-      after it fails. The default is 1 hour.  * For App Engine queues and
-      tasks, this field is 1 hour by default. * For pull queues and tasks,
-      this field is output only and always 0.
+      after it fails. The default is 1 hour.  api-linter: output-only-
+      format=disabled * For [App Engine
+      queues](google.cloud.tasks.v2beta2.AppEngineQueueConfig)   and [App
+      Engine tasks](google.cloud.tasks.v2beta2.AppEngineTaskTarget),   this
+      field is 1 hour by default. * For [pull
+      queues](google.cloud.tasks.v2beta2.PullQueueConfig) and   [pull
+      tasks](google.cloud.tasks.v2beta2.PullTaskTarget), this field is
+      output only and always 0.  `max_backoff` will be truncated to the
+      nearest second.
     maxDoublings: The maximum number of times that the interval between failed
       task retries will be doubled before the increase becomes constant. The
-      constant is: 2**(max_doublings - 1) * RetryConfig.min_backoff.  * For
-      App Engine queues and tasks, this field is 16 by default. * For pull
-      queues and tasks, this field is output only and always 0.
+      constant is: 2**(max_doublings - 1) * RetryConfig.min_backoff.  api-
+      linter: output-only-format=disabled * For [App Engine
+      queues](google.cloud.tasks.v2beta2.AppEngineQueueConfig)   and [App
+      Engine tasks](google.cloud.tasks.v2beta2.AppEngineTaskTarget),   this
+      field is 16 by default. * For [pull
+      queues](google.cloud.tasks.v2beta2.PullQueueConfig) and   [pull
+      tasks](google.cloud.tasks.v2beta2.PullTaskTarget), this field is
+      output only and always 0.
     minBackoff: The minimum amount of time to wait before retrying a task
-      after it fails.  * For App Engine queues and tasks, this field is 0.1
-      seconds by default. * For pull queues and tasks, this field is output
-      only and always 0.
+      after it fails.  api-linter: output-only-format=disabled * For [App
+      Engine queues](google.cloud.tasks.v2beta2.AppEngineQueueConfig)   and
+      [App Engine tasks](google.cloud.tasks.v2beta2.AppEngineTaskTarget),
+      this field is 0.1 seconds by default. * For [pull
+      queues](google.cloud.tasks.v2beta2.PullQueueConfig) and   [pull
+      tasks](google.cloud.tasks.v2beta2.PullTaskTarget), this field is
+      output only and always 0.  `min_backoff` will be truncated to the
+      nearest second.
     taskAgeLimit: If positive, task_age_limit specifies the time limit for
       retrying a failed task, measured from when the task was first run. If
       specified with RetryConfig.max_attempts, the task will be retried until
       both limits are reached.  If zero, then the task age is unlimited. This
-      field is zero by default.
+      field is zero by default.  `task_age_limit` will be truncated to the
+      nearest second.
     unlimitedAttempts: If true, then the number of attempts is unlimited.
   """
 
@@ -1514,8 +1531,8 @@ class Task(_messages.Message):
   Fields:
     appEngineTaskTarget: App Engine task target. Can be used only if
       Queue.app_engine_queue_config is set.
-    createTime: Output only.  The time that the task was created.  create_time
-      will be truncated to the nearest second.
+    createTime: Output only.  The time that the task was created.
+      `create_time` will be truncated to the nearest second.
     name: The task name.  The task name must have the following format:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID
       `  * `PROJECT_ID` can contain uppercase and lowercase letters,
@@ -1526,19 +1543,16 @@ class Task(_messages.Message):
       is 100   characters. * `TASK_ID` contain uppercase and lowercase
       letters, numbers,   underscores, and hyphens; that is, it must match the
       regular   expression: `[a-zA-Z\\d_-]+`. The maximum length is 500
-      characters.  Optionally caller-specified in CreateTaskRequest, after
-      which it becomes output only.
+      characters.  Optionally caller-specified in CreateTaskRequest.
     pullTaskTarget: Pull task target. Can be used only if
       Queue.pull_queue_config is set.
-    retryConfig: Settings that determine the retry behavior.  The task's retry
-      configuration overrides the queue's retry configuration.
     scheduleTime: The time when the task is scheduled to be attempted.  For
       pull queues, this is the time when the task is available to be leased;
       if a task is currently leased, this is the time when the current lease
       expires, that is, the time that the task was leased plus the
       PullTasksRequest.lease_duration.  For App Engine queues, this is when
-      the task will be attempted or retried.  schedule_time will be truncated
-      to the nearest microsecond.
+      the task will be attempted or retried.  `schedule_time` will be
+      truncated to the nearest microsecond.
     taskStatus: Output only.  Task status.
     view: Output only.  The view specifies which subset of the Task has been
       returned.
@@ -1567,10 +1581,9 @@ class Task(_messages.Message):
   createTime = _messages.StringField(2)
   name = _messages.StringField(3)
   pullTaskTarget = _messages.MessageField('PullTaskTarget', 4)
-  retryConfig = _messages.MessageField('RetryConfig', 5)
-  scheduleTime = _messages.StringField(6)
-  taskStatus = _messages.MessageField('TaskStatus', 7)
-  view = _messages.EnumField('ViewValueValuesEnum', 8)
+  scheduleTime = _messages.StringField(5)
+  taskStatus = _messages.MessageField('TaskStatus', 6)
+  view = _messages.EnumField('ViewValueValuesEnum', 7)
 
 
 class TaskStatus(_messages.Message):
@@ -1581,11 +1594,15 @@ class TaskStatus(_messages.Message):
       This count includes tasks which have been dispatched but haven't
       received a response.
     attemptResponseCount: Output only.  The number of attempts which have
-      received a response.
+      received a response.  This field is not calculated for [pull
+      tasks](google.cloud.tasks.v2beta2.PullTaskTarget).
     firstAttemptStatus: Output only.  The status of the task's first attempt.
       Only AttemptStatus.dispatch_time will be set. The other AttemptStatus
-      information is not retained by Cloud Tasks.
+      information is not retained by Cloud Tasks.  This field is not
+      calculated for [pull tasks](google.cloud.tasks.v2beta2.PullTaskTarget).
     lastAttemptStatus: Output only.  The status of the task's last attempt.
+      This field is not calculated for [pull
+      tasks](google.cloud.tasks.v2beta2.PullTaskTarget).
   """
 
   attemptDispatchCount = _messages.IntegerField(1)
@@ -1626,27 +1643,31 @@ class ThrottleConfig(_messages.Message):
       is processed when many tasks are in the queue and the rate is high. This
       field allows the queue to have a high rate so processing starts shortly
       after a task is enqueued, but still limits resource usage when many
-      tasks are enqueued in a short period of time.  * For App Engine queues,
-      if   ThrottleConfig.max_tasks_dispatched_per_second is 1, this   field
-      is 10; otherwise this field is
-      ThrottleConfig.max_tasks_dispatched_per_second / 5. * For pull queues,
-      this field is output only and always 10,000.  Note: For App Engine
-      queues that were created through `queue.yaml/xml`, `max_burst_size`
-      might not have the same settings as specified above;
+      tasks are enqueued in a short period of time.  api-linter: output-only-
+      format=disabled * For App Engine queues, if
+      ThrottleConfig.max_tasks_dispatched_per_second is 1, this   field is 10;
+      otherwise this field is   ThrottleConfig.max_tasks_dispatched_per_second
+      / 5. * For pull queues, this field is output only and always 10,000.
+      Note: For App Engine queues that were created through `queue.yaml/xml`,
+      `max_burst_size` might not have the same settings as specified above;
       CloudTasks.UpdateQueue can be used to set `max_burst_size` only to the
       values specified above.  This field has the same meaning as [bucket_size
       in queue.yaml](/appengine/docs/standard/python/config/queueref#bucket_si
       ze).
-    maxOutstandingTasks: * For App Engine queues, this field is 10 by default.
-      * For pull queues, this field is output only and always -1, which
-      indicates no limit.  This field has the same meaning as
-      [max_concurrent_requests in queue.yaml](/appengine/docs/standard/python/
-      config/queueref#max_concurrent_requests).
+    maxOutstandingTasks: The maximum number of outstanding tasks that Cloud
+      Tasks allows to be dispatched for this queue. After this threshold has
+      been reached, Cloud Tasks stops dispatching tasks until the number of
+      outstanding requests decreases.  The maximum allowed value is 5,000.
+      api-linter: output-only-format=disabled * For App Engine queues, this
+      field is 10 by default. * For pull queues, this field is output only and
+      always -1, which   indicates no limit.  This field has the same meaning
+      as [max_concurrent_requests in queue.yaml](/appengine/docs/standard/pyth
+      on/config/queueref#max_concurrent_requests).
     maxTasksDispatchedPerSecond: The maximum rate at which tasks are
-      dispatched from this queue.  The maximum allowed value is 500.  * For
-      App Engine queues, this field is 1 by default. * For pull queues, this
-      field is output only and always 10,000.  This field has the same meaning
-      as [rate in
+      dispatched from this queue.  The maximum allowed value is 500.  api-
+      linter: output-only-format=disabled * For App Engine queues, this field
+      is 1 by default. * For pull queues, this field is output only and always
+      10,000.  This field has the same meaning as [rate in
       queue.yaml](/appengine/docs/standard/python/config/queueref#rate).
   """
 

@@ -18,56 +18,27 @@ active gcloud credential.
 """
 
 import base64
-import errno
 import json
 import os
 import subprocess
 import sys
-import tempfile
-import urlparse
 
 from distutils import version as distutils_version
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import store
+from googlecloudsdk.core.docker import client_lib
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.util import files
-from googlecloudsdk.core.util import platforms
+
 
 _USERNAME = 'oauth2accesstoken'
 _EMAIL = 'not@val.id'
-_EMAIL_FLAG_DEPRECATED_VERSION = distutils_version.LooseVersion('1.11.0')
-_DOCKER_NOT_FOUND_ERROR = 'Docker is not installed.'
 _CREDENTIAL_STORE_KEY = 'credsStore'
+_EMAIL_FLAG_DEPRECATED_VERSION = distutils_version.LooseVersion('1.11.0')
 
 
-def _GetUserHomeDir():
-  if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
-    # %HOME% has precedence over %USERPROFILE% for os.path.expanduser('~')
-    # The Docker config resides under %USERPROFILE% on Windows
-    return os.path.expandvars('%USERPROFILE%')
-  else:
-    return platforms.GetHomePath()
-
-
-def _GetNewConfigDirectory():
-  # Return the value of $DOCKER_CONFIG, if it exists, otherwise ~/.docker
-  # see https://github.com/docker/docker/blob/master/cliconfig/config.go
-  if os.environ.get('DOCKER_CONFIG') is not None:
-    return os.environ.get('DOCKER_CONFIG')
-  else:
-    return os.path.join(_GetUserHomeDir(), '.docker')
-
-
-class DockerError(exceptions.Error):
-  """Base class for docker errors."""
-
-
-class InvalidDockerConfigError(DockerError):
-  """The docker configuration file could not be read."""
-
-
-class UnsupportedRegistryError(DockerError):
+class UnsupportedRegistryError(client_lib.DockerError):
   """Indicates an attempt to use an unsupported registry."""
 
   def __init__(self, image_url):
@@ -78,74 +49,103 @@ class UnsupportedRegistryError(DockerError):
             '{1}'.format(self.image_url, constants.ALL_SUPPORTED_REGISTRIES))
 
 
-# Other tools like the python docker library (used by gcloud app)
-# also rely on Docker's authorization configuration (in addition
-# to the docker CLI client)
-# NOTE: Lazy for manipulation of HOME / mocking.
-def GetDockerConfig(force_new=False):
-  """Retrieve the path to Docker's configuration file, noting its format.
+def DockerLogin(server, email, username, access_token):
+  """Register the username / token for the given server on Docker's keyring."""
+
+  # Sanitize and normalize the server input.
+  parsed_url = client_lib.GetNormalizedURL(server)
+
+  server = parsed_url.geturl()
+
+  # 'docker login' must be used due to the change introduced in
+  # https://github.com/docker/docker/pull/20107 .
+  docker_args = ['login']
+  if not _EmailFlagDeprecatedForDockerVersion():
+    docker_args.append('--email=' + email)
+  docker_args.append('--username=' + username)
+  docker_args.append('--password=' + access_token)
+  docker_args.append(server)  # The auth endpoint must be the last argument.
+
+  docker_p = client_lib.GetDockerProcess(
+      docker_args,
+      stdin_file=sys.stdin,
+      stdout_file=subprocess.PIPE,
+      stderr_file=subprocess.PIPE)
+
+  # Wait for docker to finished executing and retrieve its stdout/stderr.
+  stdoutdata, stderrdata = docker_p.communicate()
+
+  if docker_p.returncode == 0:
+    # If the login was successful, print only unexpected info.
+    _SurfaceUnexpectedInfo(stdoutdata, stderrdata)
+  else:
+    # If the login failed, print everything.
+    log.error('Docker CLI operation failed:')
+    log.out.Print(stdoutdata)
+    log.status.Print(stderrdata)
+    raise client_lib.DockerError('Docker login failed.')
+
+
+def _EmailFlagDeprecatedForDockerVersion():
+  """Checks to see if --email flag is deprecated.
+
+  Returns:
+    True if the installed Docker client version has deprecated the
+    --email flag during 'docker login,' False otherwise.
+  """
+  try:
+    version = client_lib.GetDockerVersion()
+
+  except exceptions.Error:
+    # Docker doesn't exist or doesn't like the modern version query format.
+    # Assume that --email is not deprecated, return False.
+    return False
+
+  return version >= _EMAIL_FLAG_DEPRECATED_VERSION
+
+
+def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
+  """Reads docker's output and surfaces unexpected lines.
+
+  Docker's CLI has a certain amount of chattiness, even on successes.
 
   Args:
-    force_new: bool, whether to force usage of the new config file regardless
-               of whether it exists (for testing).
-
-  Returns:
-    The path to Docker's configuration file, and whether it is in the
-    new configuration format.
+    stdoutdata: The raw data output from the pipe given to Popen as stdout.
+    stderrdata: The raw data output from the pipe given to Popen as stderr.
   """
-  # Starting in Docker 1.7.0, the Docker client moved where it writes
-  # credentials to ~/.docker/config.json.  It is half backwards-compatible,
-  # if the new file doesn't exist, it falls back on the old file.
-  # if the new file exists, it IGNORES the old file.
-  # This is a problem when a user has logged into another registry on 1.7.0
-  # and then uses 'gcloud docker'.
-  # This must remain compatible with: https://github.com/docker/docker-py
-  new_path = os.path.join(_GetNewConfigDirectory(), 'config.json')
-  if os.path.exists(new_path) or force_new:
-    return new_path, True
 
-  # Only one location will be probed to locate the new config.
-  # This is consistent with the Docker client's behavior:
-  # https://github.com/docker/docker/blob/master/cliconfig/config.go#L83
-  old_path = os.path.join(_GetUserHomeDir(), '.dockercfg')
-  return old_path, False
+  # Split the outputs by lines.
+  stdout = [s.strip() for s in stdoutdata.splitlines()]
+  stderr = [s.strip() for s in stderrdata.splitlines()]
 
+  for line in stdout:
+    # Swallow 'Login Succeeded' and 'saved in,' surface any other std output.
+    if (line != 'Login Succeeded') and (
+        'login credentials saved in' not in line):
+      line = '%s%s' % (line, os.linesep)
+      log.out.Print(line)  # log.out => stdout
 
-def _ReadFullDockerConfiguration():
-  """Retrieve the full contents of the Docker configuration file.
-
-  Returns:
-    The full contents of the configuration file, and whether it
-    is in the new configuration format.
-  """
-  path, new_format = GetDockerConfig()
-  with open(path, 'r') as reader:
-    contents = reader.read()
-    # If the file is empty, return empty JSON.
-    # This helps if someone 'touched' the file or manually deleted the contents.
-    if not contents or contents.isspace():
-      return {}, new_format
-
-    try:
-      return json.loads(contents), new_format
-    except ValueError as err:
-      raise InvalidDockerConfigError(
-          ('Docker configuration file [{}] could not be read as JSON: '
-           '{}').format(path, str(err)))
+  for line in stderr:
+    if not _IsExpectedErrorLine(line):
+      line = '%s%s' % (line, os.linesep)
+      log.status.Print(line)  # log.status => stderr
 
 
 def _CredentialHelperConfigured():
-  """Returns True if a credential helper is specified in the docker config.
+  """Returns True if a credential store is specified in the docker config.
 
   Returns:
-    True if a credential helper is specified in the docker config.
+    True if a credential store is specified in the docker config.
     False if the config file does not exist or does not contain a
     'credsStore' key.
   """
   try:
-    new_config_1_7_0_plus, new_format = _ReadFullDockerConfiguration()
-    if new_format:
-      return _CREDENTIAL_STORE_KEY in new_config_1_7_0_plus
+    # Not Using DockerConfigInfo here to be backward compatiable with
+    # UpdateDockerCredentials which should still work if Docker is not installed
+    path, is_new_format = client_lib.GetDockerConfigPath()
+    contents = client_lib.ReadConfigurationFile(path)
+    if is_new_format:
+      return _CREDENTIAL_STORE_KEY in contents
     else:
       # The old format is for Docker <1.7.0.
       # Older Docker clients (<1.11.0) don't support credential helpers.
@@ -164,9 +164,13 @@ def _GCRCredHelperConfigured():
     'credsStore' key, or if the credstore is not docker-credential-gcr.
   """
   try:
-    new_config_1_7_0_plus, new_format = _ReadFullDockerConfiguration()
-    if new_format and _CREDENTIAL_STORE_KEY in new_config_1_7_0_plus:
-      return new_config_1_7_0_plus[_CREDENTIAL_STORE_KEY] == 'gcr'
+    # Not using DockerConfigInfo here to be backward compatible with
+    # UpdateDockerCredentials which should still work if Docker is not installed
+    path, is_new_format = client_lib.GetDockerConfigPath()
+    contents = client_lib.ReadConfigurationFile(path)
+    if is_new_format and (
+        _CREDENTIAL_STORE_KEY in contents):
+      return contents[_CREDENTIAL_STORE_KEY] == 'gcr'
     else:
       # Docker <1.7.0 (no credential store support) or credsStore == null
       return False
@@ -175,7 +179,7 @@ def _GCRCredHelperConfigured():
     return False
 
 
-def ReadDockerConfig():
+def ReadDockerAuthConfig():
   """Retrieve the contents of the Docker authorization entry.
 
   NOTE: This is public only to facilitate testing.
@@ -183,14 +187,17 @@ def ReadDockerConfig():
   Returns:
     The map of authorizations used by docker.
   """
-  structure, new_format = _ReadFullDockerConfiguration()
+  # Not using DockerConfigInfo here to be backward compatible with
+  # UpdateDockerCredentials which should still work if Docker is not installed
+  path, new_format = client_lib.GetDockerConfigPath()
+  structure = client_lib.ReadConfigurationFile(path)
   if new_format:
     return structure['auths'] if 'auths' in structure else {}
   else:
     return structure
 
 
-def WriteDockerConfig(structure):
+def WriteDockerAuthConfig(structure):
   """Write out a complete set of Docker authorization entries.
 
   This is public only to facilitate testing.
@@ -199,30 +206,17 @@ def WriteDockerConfig(structure):
     structure: The dict of authorization mappings to write to the
                Docker configuration file.
   """
-  cfg, new_format = GetDockerConfig()
-  if new_format:
-    full_cfg, _ = _ReadFullDockerConfiguration()
+  # Not using DockerConfigInfo here to be backward compatible with
+  # UpdateDockerCredentials which should still work if Docker is not installed
+  path, is_new_format = client_lib.GetDockerConfigPath()
+  contents = client_lib.ReadConfigurationFile(path)
+  if is_new_format:
+    full_cfg = contents
     full_cfg['auths'] = structure
-    contents = json.dumps(full_cfg, indent=2)
+    file_contents = json.dumps(full_cfg, indent=2)
   else:
-    contents = json.dumps(structure, indent=2)
-
-  if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
-    # On windows, there is no good way to atomically write this file.
-    with files.OpenForWritingPrivate(cfg) as writer:
-      writer.write(contents)
-    return
-
-  # This opens files with 0600, which are the correct permissions.
-  with tempfile.NamedTemporaryFile(
-      dir=os.path.dirname(cfg), delete=False) as tf:
-    tf.write(contents)
-    # This was a user-submitted patch to fix a race condition that we couldn't
-    # reproduce. It may be due to the file being renamed before the OS's buffer
-    # flushes to disk.
-    tf.flush()
-    # This pattern atomically writes the file on non-Windows systems.
-    os.rename(tf.name, cfg)
+    file_contents = json.dumps(structure, indent=2)
+  files.WriteFileAtomically(path, file_contents)
 
 
 def UpdateDockerCredentials(server, refresh=True):
@@ -255,7 +249,7 @@ def UpdateDockerCredentials(server, refresh=True):
     raise exceptions.Error(
         'No access token could be obtained from the current credentials.')
 
-  url = _GetNormalizedURL(server)
+  url = client_lib.GetNormalizedURL(server)
   # Strip the port, if it exists. It's OK to butcher IPv6, this is only an
   # optimization for hostnames in constants.ALL_SUPPORTED_REGISTRIES.
   hostname = url.hostname.split(':')[0]
@@ -268,10 +262,10 @@ def UpdateDockerCredentials(server, refresh=True):
     try:
       # Update the credentials stored by docker, passing the access token
       # as a password, and benign values as the email and username.
-      _DockerLogin(server, _EMAIL, _USERNAME, cred.access_token)
-    except DockerError as e:
+      DockerLogin(server, _EMAIL, _USERNAME, cred.access_token)
+    except client_lib.DockerError as e:
       # Only catch docker-not-found error
-      if str(e) != _DOCKER_NOT_FOUND_ERROR:
+      if str(e) != client_lib.DOCKER_NOT_FOUND_ERROR:
         raise
 
       # Fall back to the previous manual .dockercfg manipulation
@@ -287,87 +281,33 @@ def UpdateDockerCredentials(server, refresh=True):
   # If this is a default registry and docker-credential-gcr is configured, no-op
 
 
-def _DockerLogin(server, email, username, access_token):
+def _UpdateDockerConfig(server, username, access_token):
   """Register the username / token for the given server on Docker's keyring."""
 
+  # NOTE: using "docker login" doesn't work as they're quite strict on what
+  # is allowed in username/password.
+  try:
+    dockercfg_contents = ReadDockerAuthConfig()
+  except (IOError, client_lib.InvalidDockerConfigError):
+    # If the file doesn't exist, start with an empty map.
+    dockercfg_contents = {}
+
+  # Add the entry for our server.
+  auth = base64.b64encode(username + ':' + access_token)
+
   # Sanitize and normalize the server input.
-  parsed_url = _GetNormalizedURL(server)
+  parsed_url = client_lib.GetNormalizedURL(server)
 
   server = parsed_url.geturl()
+  server_unqualified = parsed_url.hostname
 
-  # 'docker login' must be used due to the change introduced in
-  # https://github.com/docker/docker/pull/20107 .
-  docker_args = ['login']
-  if not _EmailFlagDeprecatedForDockerVersion():
-    docker_args.append('--email=' + email)
-  docker_args.append('--username=' + username)
-  docker_args.append('--password=' + access_token)
-  docker_args.append(server)  # The auth endpoint must be the last argument.
+  # Clear out any unqualified stale entry for this server
+  if server_unqualified in dockercfg_contents:
+    del dockercfg_contents[server_unqualified]
 
-  docker_p = _GetProcess(
-      docker_args,
-      stdin_file=sys.stdin,
-      stdout_file=subprocess.PIPE,
-      stderr_file=subprocess.PIPE)
+  dockercfg_contents[server] = {'auth': auth, 'email': _EMAIL}
 
-  # Wait for docker to finished executing and retrieve its stdout/stderr.
-  stdoutdata, stderrdata = docker_p.communicate()
-
-  if docker_p.returncode == 0:
-    # If the login was successful, print only unexpected info.
-    _SurfaceUnexpectedInfo(stdoutdata, stderrdata)
-  else:
-    # If the login failed, print everything.
-    log.error('Docker CLI operation failed:')
-    log.out.Print(stdoutdata)
-    log.status.Print(stderrdata)
-    raise DockerError('Docker login failed.')
-
-
-def _EmailFlagDeprecatedForDockerVersion():
-  """Checks to see if --email flag is deprecated.
-
-  Returns:
-    True if the installed Docker client version has deprecated the
-    --email flag during 'docker login,' False otherwise.
-  """
-  try:
-    version = _GetDockerVersion()
-
-  except exceptions.Error:
-    # Docker doesn't exist or doesn't like the modern version query format.
-    # Assume that --email is not deprecated, return False.
-    return False
-
-  return version >= _EMAIL_FLAG_DEPRECATED_VERSION
-
-
-def _GetDockerVersion():
-  """Returns the installed Docker client version.
-
-  Returns:
-    The installed Docker client version.
-
-  Raises:
-    DockerError: Docker cannot be run or does not accept 'docker version
-    --format '{{.Client.Version}}''.
-  """
-  docker_args = "version --format '{{.Client.Version}}'".split()
-
-  docker_p = _GetProcess(
-      docker_args,
-      stdin_file=sys.stdin,
-      stdout_file=subprocess.PIPE,
-      stderr_file=subprocess.PIPE)
-
-  # Wait for docker to finished executing and retrieve its stdout/stderr.
-  stdoutdata, _ = docker_p.communicate()
-
-  if docker_p.returncode != 0 or not stdoutdata:
-    raise DockerError('could not retrieve Docker client version')
-
-  # Remove ' from beginning and end of line.
-  return distutils_version.LooseVersion(stdoutdata.strip("'"))
+  WriteDockerAuthConfig(dockercfg_contents)
 
 
 def _IsExpectedErrorLine(line):
@@ -390,127 +330,3 @@ def _IsExpectedErrorLine(line):
     if expected_line_substr in line:
       return True
   return False
-
-
-def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
-  """Reads docker's output and surfaces unexpected lines.
-
-  Docker's CLI has a certain amount of chattiness, even on successes.
-
-  Args:
-    stdoutdata: The raw data output from the pipe given to Popen as stdout.
-    stderrdata: The raw data output from the pipe given to Popen as stderr.
-  """
-
-  # Split the outputs by lines.
-  stdout = [s.strip() for s in stdoutdata.splitlines()]
-  stderr = [s.strip() for s in stderrdata.splitlines()]
-
-  for line in stdout:
-    # Swallow 'Login Succeeded' and 'saved in,' surface any other std output.
-    if (line != 'Login Succeeded') and (
-        'login credentials saved in' not in line):
-      line = '%s%s' % (line, os.linesep)
-      log.out.Print(line)  # log.out => stdout
-
-  for line in stderr:
-    if not _IsExpectedErrorLine(line):
-      line = '%s%s' % (line, os.linesep)
-      log.status.Print(line)  # log.status => stderr
-
-
-def _UpdateDockerConfig(server, username, access_token):
-  """Register the username / token for the given server on Docker's keyring."""
-
-  # NOTE: using "docker login" doesn't work as they're quite strict on what
-  # is allowed in username/password.
-  try:
-    dockercfg_contents = ReadDockerConfig()
-  except IOError:
-    # If the file doesn't exist, start with an empty map.
-    dockercfg_contents = {}
-
-  # Add the entry for our server.
-  auth = base64.b64encode(username + ':' + access_token)
-
-  # Sanitize and normalize the server input.
-  parsed_url = _GetNormalizedURL(server)
-
-  server = parsed_url.geturl()
-  server_unqualified = parsed_url.hostname
-
-  # Clear out any unqualified stale entry for this server
-  if server_unqualified in dockercfg_contents:
-    del dockercfg_contents[server_unqualified]
-
-  dockercfg_contents[server] = {'auth': auth, 'email': _EMAIL}
-
-  WriteDockerConfig(dockercfg_contents)
-
-
-def _GetNormalizedURL(server):
-  """Sanitize and normalize the server input."""
-  parsed_url = urlparse.urlparse(server)
-  # Work around the fact that Python 2.6 does not properly
-  # look for :// and simply splits on colon, so something
-  # like 'gcr.io:1234' returns the scheme 'gcr.io'.
-  if '://' not in server:
-    # Server doesn't have a scheme, set it to HTTPS.
-    parsed_url = urlparse.urlparse('https://' + server)
-    if parsed_url.hostname == 'localhost':
-      # Now that it parses, if the hostname is localhost switch to HTTP.
-      parsed_url = urlparse.urlparse('http://' + server)
-
-  return parsed_url
-
-
-def EnsureDocker(func):
-  """Wraps a function that uses subprocess to invoke docker.
-
-  Rewrites OS Exceptions when not installed.
-
-  Args:
-    func: A function that uses subprocess to invoke docker.
-
-  Returns:
-    The decorated function.
-
-  Raises:
-    Error: Docker cannot be run.
-  """
-
-  def DockerFunc(*args, **kwargs):
-    try:
-      return func(*args, **kwargs)
-    except OSError as e:
-      if e.errno == errno.ENOENT:
-        raise DockerError(_DOCKER_NOT_FOUND_ERROR)
-      else:
-        raise
-
-  return DockerFunc
-
-
-@EnsureDocker
-def Execute(args):
-  """Wraps an invocation of the docker client with the specified CLI arguments.
-
-  Args:
-    args: The list of command-line arguments to docker.
-
-  Returns:
-    The exit code from Docker.
-  """
-  return subprocess.call(
-      ['docker'] + args, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr)
-
-
-@EnsureDocker
-def _GetProcess(docker_args, stdin_file, stdout_file, stderr_file):
-  # Wraps the construction of a docker subprocess object with the specified
-  # arguments and I/O files.
-  return subprocess.Popen(
-      ['docker'] + docker_args,
-      stdin=stdin_file,
-      stdout=stdout_file,
-      stderr=stderr_file)

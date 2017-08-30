@@ -203,7 +203,7 @@
           }
         },
         "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf true, the operation is completed, and either `error` or `response` is\navailable.",
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
           "type": "boolean"
         },
         "error": {
@@ -290,7 +290,7 @@
           "type": "string"
         },
         "machineType": {
-          "description": "The user can specify one of the predefined machine types (e.g.\nn1-standard-32, n1-highcpu-32, etc.) or a custom machine type (e.g.\nzones\/$ZONE\/machineTypes\/custom-$CPUS-$MEMORY).",
+
           "type": "string"
         },
         "ipAddress": {

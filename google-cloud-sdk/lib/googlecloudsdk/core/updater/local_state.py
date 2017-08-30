@@ -640,7 +640,7 @@ class InstallationManifest(object):
       files: list of str, The files that were created by the installation.
     """
     with open(self.manifest_file, 'w') as fp:
-      for f in files:
+      for f in sorted(files):
         fp.write(f + '\n')
     snapshot.WriteToFile(self.snapshot_file)
 

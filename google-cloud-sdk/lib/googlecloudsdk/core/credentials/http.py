@@ -28,17 +28,17 @@ class Error(exceptions.Error):
   """Exceptions for the http module."""
 
 
-def Http(timeout='unset', disable_resource_quota=False):
+def Http(timeout='unset', enable_resource_quota=True):
   """Get an httplib2.Http client for working with the Google API.
 
   Args:
     timeout: double, The timeout in seconds to pass to httplib2.  This is the
         socket level timeout.  If timeout is None, timeout is infinite.  If
         default argument 'unset' is given, a sensible default is selected.
-    disable_resource_quota: bool, By default, we are going to tell APIs to use
+    enable_resource_quota: bool, By default, we are going to tell APIs to use
         the quota of the project being operated on. For some APIs we want to use
         gcloud's quota, so you can explicitly disable that behavior by passing
-        True here.
+        False here.
 
   Returns:
     An authorized httplib2.Http client object, or a regular httplib2.Http object
@@ -56,12 +56,16 @@ def Http(timeout='unset', disable_resource_quota=False):
   handlers = _GetIAMAuthHandlers(authority_selector, authorization_token_file)
 
   # Inject the resource project header for quota unless explicitly disabled.
-  if not (disable_resource_quota or
-          properties.VALUES.billing.disable_resource_project_quota.GetBool()):
-    quota_project = (properties.VALUES.billing.quota_project.Get() or
-                     properties.VALUES.core.project.Get())
-    handlers.append(http.Modifiers.Handler(
-        http.Modifiers.SetHeader('X-Goog-User-Project', quota_project)))
+  if enable_resource_quota:
+    quota_project = properties.VALUES.billing.quota_project.Get()
+    if quota_project == properties.VALUES.billing.LEGACY:
+      quota_project = None
+    elif quota_project == properties.VALUES.billing.CURRENT_PROJECT:
+      quota_project = properties.VALUES.core.project.Get()
+
+    if quota_project:
+      handlers.append(http.Modifiers.Handler(
+          http.Modifiers.SetHeader('X-Goog-User-Project', quota_project)))
 
   creds = store.LoadIfEnabled()
   if creds:

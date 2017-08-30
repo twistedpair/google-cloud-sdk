@@ -339,6 +339,17 @@ class RequiredArgumentException(ToolException):
     self.parameter_name = parameter_name
 
 
+class OneOfArgumentsRequiredException(ToolException):
+  """An exception for when one of usually optional arguments is required.
+  """
+
+  def __init__(self, parameters, message):
+    super(OneOfArgumentsRequiredException, self).__init__(
+        'One of aguments [{0}] is required: {1}'.format(
+            ', '.join(parameters), message))
+    self.parameters = parameters
+
+
 class MinimumArgumentException(ToolException):
   """An exception for when one of several arguments is required."""
 

@@ -48,7 +48,8 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
           'Error parsing JSON: {0}'.format(str(e)))
 
   security_policy = messages.SecurityPolicy()
-  security_policy.description = parsed_security_policy['description']
+  if 'description' in parsed_security_policy:
+    security_policy.description = parsed_security_policy['description']
   security_policy.fingerprint = base64.urlsafe_b64decode(
       parsed_security_policy['fingerprint'].encode('ascii'))
 
@@ -56,7 +57,8 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
   for rule in parsed_security_policy['rules']:
     security_policy_rule = messages.SecurityPolicyRule()
     security_policy_rule.action = rule['action']
-    security_policy_rule.description = rule['description']
+    if 'description' in rule:
+      security_policy_rule.description = rule['description']
     match = messages.SecurityPolicyRuleMatcher()
     match.srcIpRanges = rule['match']['srcIpRanges']
     security_policy_rule.match = match

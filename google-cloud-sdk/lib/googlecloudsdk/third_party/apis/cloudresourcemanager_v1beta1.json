@@ -180,7 +180,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "Required field representing the resource type this id is for.\nAt present, the valid types are \"project\" and \"organization\".",
+          "description": "Required field representing the resource type this id is for.\nAt present, the valid types are \"project\", \"folder\", and \"organization\".",
           "type": "string"
         },
         "id": {

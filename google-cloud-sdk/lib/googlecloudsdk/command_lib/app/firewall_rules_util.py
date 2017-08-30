@@ -50,14 +50,14 @@ def ParseFirewallRule(registry, project, priority):
 def ParsePriority(priority):
   """Converts a priority to an integer."""
   if priority == 'default':
-    return DEFAULT_RULE_PRIORITY
+    priority = DEFAULT_RULE_PRIORITY
 
   try:
     priority_int = int(priority)
-    if priority_int <= 0 or priority_int >= DEFAULT_RULE_PRIORITY:
+    if priority_int <= 0 or priority_int > DEFAULT_RULE_PRIORITY:
       raise exceptions.InvalidArgumentException(
-          'priority',
-          'Priority must be between 1 and {0}'.format(DEFAULT_RULE_PRIORITY))
+          'priority', 'Priority must be between 1 and {0} inclusive.'.format(
+              DEFAULT_RULE_PRIORITY))
     return priority_int
   except ValueError:
     raise exceptions.InvalidArgumentException(

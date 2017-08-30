@@ -30,8 +30,10 @@ The interface is defined as follows:
   STDOUT and STDERR of the staging command (which are surfaced to the user as an
   ERROR message).
 """
+import abc
 import cStringIO
 import os
+import re
 import tempfile
 
 from googlecloudsdk.api_lib.app import util
@@ -60,7 +62,11 @@ _STAGING_COMMAND_OUTPUT_TEMPLATE = """\
 """
 
 
-class NoSdkRootError(exceptions.Error):
+class StagingCommandNotFoundError(exceptions.Error):
+  """Base error indicating that a staging command could not be found."""
+
+
+class NoSdkRootError(StagingCommandNotFoundError):
 
   def __init__(self):
     super(NoSdkRootError, self).__init__(
@@ -75,10 +81,7 @@ class StagingCommandFailedError(exceptions.Error):
             ' '.join(args), return_code, output_message))
 
 
-def _StagingProtocolMapper(command_path, descriptor, app_dir, staging_dir):
-  return [command_path, descriptor, app_dir, staging_dir]
-
-
+# TODO(b/65026284): eliminate "mappers" entirely by making a shim command
 def _JavaStagingMapper(command_path, descriptor, app_dir, staging_dir):
   """Map a java staging request to the right args.
 
@@ -95,38 +98,134 @@ def _JavaStagingMapper(command_path, descriptor, app_dir, staging_dir):
     [str], args for executable invocation.
   """
   del descriptor  # Unused, app_dir is sufficient
-  java.CheckIfJavaIsInstalled('local staging for java')
-  java_bin = files.FindExecutableOnPath('java')
+  java_bin = java.RequireJavaInstalled('local staging for java')
   args = ([java_bin, '-classpath', command_path, _JAVA_APPCFG_ENTRY_POINT] +
           _JAVA_APPCFG_STAGE_FLAGS + ['stage', app_dir, staging_dir])
   return args
 
 
 class _Command(object):
+  """Interface for a staging command to be invoked on the user source.
+
+  This abstract class facilitates running an executable command that conforms to
+  the "staging command" interface outlined in the module docstring.
+
+  It implements the parts that are common to any such command while allowing
+  interface implementors to swap out how the command is created.
+  """
+
+  __metaclass__ = abc.ABCMeta
+
+  @abc.abstractmethod
+  def EnsureInstalled(self):
+    """Ensure that the command is installed and available.
+
+    May result in a command restart if installation is required.
+    """
+    raise NotImplementedError()
+
+  @abc.abstractmethod
+  def GetPath(self):
+    """Returns the path to the command.
+
+    Returns:
+      str, the path to the command
+
+    Raises:
+      StagingCommandNotFoundError: if the staging command could not be found.
+    """
+    raise NotImplementedError()
+
+  def GetArgs(self, descriptor, app_dir, staging_dir):
+    """Get the args for the command to execute.
+
+    Args:
+      descriptor: str, path to the unstaged <service>.yaml or appengine-web.xml
+      app_dir: str, path to the unstaged app directory
+      staging_dir: str, path to the directory to stage in.
+
+    Returns:
+      list of str, the args for the command to run
+    """
+    return [self.GetPath(), descriptor, app_dir, staging_dir]
+
+  def Run(self, staging_area, descriptor, app_dir):
+    """Invokes a staging command with a given <service>.yaml and temp dir.
+
+    Args:
+      staging_area: str, path to the staging area.
+      descriptor: str, path to the unstaged <service>.yaml or appengine-web.xml
+      app_dir: str, path to the unstaged app directory
+
+    Returns:
+      str, the path to the staged directory or None if staging was not required.
+
+    Raises:
+      StagingCommandFailedError: if the staging command process exited non-zero.
+    """
+    staging_dir = tempfile.mkdtemp(dir=staging_area)
+    args = self.GetArgs(descriptor, app_dir, staging_dir)
+    log.info('Executing staging command: [{0}]\n\n'.format(' '.join(args)))
+    out = cStringIO.StringIO()
+    err = cStringIO.StringIO()
+    return_code = execution_utils.Exec(args, no_exit=True, out_func=out.write,
+                                       err_func=err.write)
+    message = _STAGING_COMMAND_OUTPUT_TEMPLATE.format(out=out.getvalue(),
+                                                      err=err.getvalue())
+    log.info(message)
+    if return_code:
+      raise StagingCommandFailedError(args, return_code, message)
+    return staging_dir
+
+
+class NoopCommand(_Command):
+  """A command that does nothing.
+
+  Many runtimes do not require a staging step; this isn't a problem.
+  """
+
+  def EnsureInstalled(self):
+    pass
+
+  def GetPath(self):
+    return None
+
+  def GetArgs(self, descriptor, app_dir, staging_dir):
+    return None
+
+  def Run(self, staging_area, descriptor, app_dir):
+    """Does nothing."""
+    pass
+
+  def __eq__(self, other):
+    return isinstance(other, NoopCommand)
+
+
+class _BundledCommand(_Command):
   """Represents a cross-platform command.
 
   Paths are relative to the Cloud SDK Root directory.
 
   Attributes:
-    nix_path: str, the path to the executable on Linux and OS X
-    windows_path: str, the path to the executable on Windows
-    component: str or None, the name of the Cloud SDK component which contains
+    _nix_path: str, the path to the executable on Linux and OS X
+    _windows_path: str, the path to the executable on Windows
+    _component: str or None, the name of the Cloud SDK component which contains
       the executable
-    mapper: fn or None, function that maps a staging invocation to a command.
+    _mapper: fn or None, function that maps a staging invocation to a command.
   """
 
   def __init__(self, nix_path, windows_path, component=None, mapper=None):
-    self.nix_path = nix_path
-    self.windows_path = windows_path
-    self.component = component
-    self.mapper = mapper or _StagingProtocolMapper
+    self._nix_path = nix_path
+    self._windows_path = windows_path
+    self._component = component
+    self._mapper = mapper or None
 
   @property
   def name(self):
     if platforms.OperatingSystem.Current() is platforms.OperatingSystem.WINDOWS:
-      return self.windows_path
+      return self._windows_path
     else:
-      return self.nix_path
+      return self._nix_path
 
   def GetPath(self):
     """Returns the path to the command.
@@ -143,41 +242,76 @@ class _Command(object):
       raise NoSdkRootError()
     return os.path.join(sdk_root, self.name)
 
+  def GetArgs(self, descriptor, app_dir, staging_dir):
+    if self._mapper:
+      return self._mapper(self.GetPath(), descriptor, app_dir, staging_dir)
+    else:
+      return super(_BundledCommand, self).GetArgs(descriptor, app_dir,
+                                                  staging_dir)
+
   def EnsureInstalled(self):
-    if self.component is None:
+    if self._component is None:
       return
     msg = ('The component [{component}] is required for staging this '
-           'application.').format(component=self.component)
-    update_manager.UpdateManager.EnsureInstalledAndRestart([self.component],
+           'application.').format(component=self._component)
+    update_manager.UpdateManager.EnsureInstalledAndRestart([self._component],
                                                            msg=msg)
 
-  def Run(self, staging_area, descriptor, app_dir):
-    """Invokes a staging command with a given <service>.yaml and temp dir.
+
+class ExecutableCommand(_Command):
+  """Represents a command that the user supplies.
+
+  Attributes:
+    _path: str, full path to the executable.
+  """
+
+  def __init__(self, path):
+    self._path = path
+
+  @property
+  def name(self):
+    os.path.basename(self._path)
+
+  def GetPath(self):
+    return self._path
+
+  def EnsureInstalled(self):
+    pass
+
+  def GetArgs(self, descriptor, app_dir, staging_dir):
+    return [self.GetPath(), descriptor, app_dir, staging_dir]
+
+  @classmethod
+  def FromInput(cls, executable):
+    """Returns the command corresponding to the user input.
+
+    Could be either of:
+    - command on the $PATH or %PATH%
+    - full path to executable (absolute or relative)
 
     Args:
-      staging_area: str, path to the staging area.
-      descriptor: str, path to the unstaged <service>.yaml or appengine-web.xml
-      app_dir: str, path to the unstaged app directory
+      executable: str, the user-specified staging exectuable to use
 
     Returns:
-      str, the path to the staged directory.
+      _Command corresponding to the executable
 
     Raises:
-      StagingCommandFailedError: if the staging command process exited non-zero.
+      StagingCommandNotFoundError: if the executable couldn't be found
     """
-    staging_dir = tempfile.mkdtemp(dir=staging_area)
-    args = self.mapper(self.GetPath(), descriptor, app_dir, staging_dir)
-    log.info('Executing staging command: [{0}]\n\n'.format(' '.join(args)))
-    out = cStringIO.StringIO()
-    err = cStringIO.StringIO()
-    return_code = execution_utils.Exec(args, no_exit=True, out_func=out.write,
-                                       err_func=err.write)
-    message = _STAGING_COMMAND_OUTPUT_TEMPLATE.format(out=out.getvalue(),
-                                                      err=err.getvalue())
-    log.info(message)
-    if return_code:
-      raise StagingCommandFailedError(args, return_code, message)
-    return staging_dir
+    try:
+      path = files.FindExecutableOnPath(executable)
+    except ValueError:
+      # If this is a path (e.g. with os.path.sep in the string),
+      # FindExecutableOnPath throws an exception
+      path = None
+    if path:
+      return cls(path)
+
+    if os.path.exists(executable):
+      return cls(executable)
+
+    raise StagingCommandNotFoundError('The provided staging command [{}] could '
+                                      'not be found.'.format(executable))
 
 
 # Path to the go-app-stager binary
@@ -188,35 +322,112 @@ _APPENGINE_TOOLS_JAR = os.path.join(
     'platform', 'google_appengine', 'google', 'appengine', 'tools', 'java',
     'lib', 'appengine-tools-api.jar')
 
-# STAGING_REGISTRY is a map of (runtime, app-engine-environment) to executable
-# path relative to Cloud SDK Root; it should look something like the following:
-#
-#     from googlecloudsdk.api_lib.app import util
-#     STAGING_REGISTRY = {
-#       ('intercal', util.Environment.FLEX):
-#           _Command(
-#               os.path.join('command_dir', 'stage-intercal-flex.sh'),
-#               os.path.join('command_dir', 'stage-intercal-flex.exe'),
-#               component='app-engine-intercal'),
-#       ('x86-asm', util.Environment.STANDARD):
-#           _Command(
-#               os.path.join('command_dir', 'stage-x86-asm-standard'),
-#               os.path.join('command_dir', 'stage-x86-asm-standard.exe'),
-#               component='app-engine-intercal'),
-#     }
+
+class RegistryEntry(object):
+  """An entry in the Registry.
+
+  Attributes:
+    runtime: str or re.RegexObject, the runtime to be staged
+    envs: set(util.Environment), the environments to be staged
+  """
+
+  def __init__(self, runtime, envs):
+    self.runtime = runtime
+    self.envs = envs
+
+  def _RuntimeMatches(self, runtime):
+    try:
+      return self.runtime.match(runtime)
+    except AttributeError:
+      return self.runtime == runtime
+
+  def _EnvMatches(self, env):
+    return env in self.envs
+
+  def Matches(self, runtime, env):
+    """Returns True iff the given runtime and environmt match this entry.
+
+    The runtime matches if it is an exact string match.
+
+    The environment matches if it is an exact Enum match or if this entry has a
+    "wildcard" (that is, None) for the environment.
+
+    Args:
+      runtime: str, the runtime to match
+      env: util.Environment, the environment to match
+
+    Returns:
+      bool, whether the given runtime and environment match.
+    """
+    return self._RuntimeMatches(runtime) and self._EnvMatches(env)
+
+  def __hash__(self):
+    # Sets are unhashable; Environments are unorderable
+    return hash((self.runtime, sum(sorted(map(hash, self.envs)))))
+
+  def __eq__(self, other):
+    return self.runtime == other.runtime and self.envs == other.envs
+
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
+
+class Registry(object):
+  """A registry of stagers for various runtimes.
+
+  The registry is a map of (runtime, app-engine-environment) to _Command object;
+  it should look something like the following:
+
+  STAGING_REGISTRY = {
+    RegistryEntry('intercal', {util.Environment.FLEX}):
+        _BundledCommand(
+            os.path.join('command_dir', 'stage-intercal-flex.sh'),
+            os.path.join('command_dir', 'stage-intercal-flex.exe'),
+            component='app-engine-intercal'),
+    RegistryEntry('x86-asm', {util.Environment.STANDARD}):
+        _BundledCommand(
+            os.path.join('command_dir', 'stage-x86-asm-standard'),
+            os.path.join('command_dir', 'stage-x86-asm-standard.exe'),
+            component='app-engine-intercal'),
+  }
+
+  Attributes:
+    mappings: dict of {RegistryEntry: _Command}, the stagers to use
+      per runtime/environment.
+    override: _Command or None, if given the registry *always* uses this command
+      rather than checking the registry.
+  """
+
+  def __init__(self, mappings=None, override=None):
+    self.mappings = mappings or {}
+    self.override = override
+
+  def Get(self, runtime, env):
+    """Return the command to use for the given runtime/environment.
+
+    Args:
+      runtime: str, the runtime to get a stager for
+      env: util.Environment, the environment to get a stager for
+
+    Returns:
+      _Command, the command to use. May be a NoopCommand if no command is
+        registered.
+    """
+    if self.override:
+      return self.override
+
+    for entry, command in self.mappings.items():
+      if entry.Matches(runtime, env):
+        return command
+    log.debug(('No staging command found for runtime [%s] and environment '
+               '[%s].'), runtime, env.name)
+    return NoopCommand()
+
 _STAGING_REGISTRY = {
-    ('go', util.Environment.STANDARD):
-        _Command(
-            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
-            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
-            component='app-engine-go'),
-    ('go', util.Environment.MANAGED_VMS):
-        _Command(
-            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
-            os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
-            component='app-engine-go'),
-    ('go', util.Environment.FLEX):
-        _Command(
+    RegistryEntry(re.compile(r'(go|go1\..+)$'),
+                  {util.Environment.FLEX, util.Environment.STANDARD,
+                   util.Environment.MANAGED_VMS}):
+        _BundledCommand(
             os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
             os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
@@ -225,8 +436,8 @@ _STAGING_REGISTRY = {
 # _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
 # same key is used.
 _STAGING_REGISTRY_BETA = {
-    ('java-xml', util.Environment.STANDARD):
-        _Command(
+    RegistryEntry('java-xml', {util.Environment.STANDARD}):
+        _BundledCommand(
             _APPENGINE_TOOLS_JAR,
             _APPENGINE_TOOLS_JAR,
             component='app-engine-java',
@@ -258,30 +469,36 @@ class Stager(object):
       NoSdkRootError: if no Cloud SDK installation root could be found.
       StagingCommandFailedError: if the staging command process exited non-zero.
     """
-    command = self.registry.get((runtime, environment))
-
-    if not command:
-      # Many runtimes do not require a staging step; this isn't a problem.
-      log.debug(('No staging command found for runtime [%s] and environment '
-                 '[%s].'), runtime, environment.name)
-      return
-
+    command = self.registry.Get(runtime, environment)
     command.EnsureInstalled()
     return command.Run(self.staging_area, descriptor, app_dir)
 
 
+def GetRegistry():
+  return Registry(_STAGING_REGISTRY)
+
+
+def GetBetaRegistry():
+  mappings = _STAGING_REGISTRY.copy()
+  mappings.update(_STAGING_REGISTRY_BETA)
+  return Registry(mappings)
+
+
 def GetStager(staging_area):
   """Get the default stager."""
-  return Stager(_STAGING_REGISTRY, staging_area)
+  return Stager(GetRegistry(), staging_area)
 
 
 def GetBetaStager(staging_area):
   """Get the beta stager, used for `gcloud beta *` commands."""
-  registry = _STAGING_REGISTRY.copy()
-  registry.update(_STAGING_REGISTRY_BETA)
-  return Stager(registry, staging_area)
+  return Stager(GetBetaRegistry(), staging_area)
 
 
 def GetNoopStager(staging_area):
   """Get a stager with an empty registry."""
-  return Stager({}, staging_area)
+  return Stager(Registry({}), staging_area)
+
+
+def GetOverrideStager(command, staging_area):
+  """Get a stager with a registry that always calls the given command."""
+  return Stager(Registry(None, command), staging_area)

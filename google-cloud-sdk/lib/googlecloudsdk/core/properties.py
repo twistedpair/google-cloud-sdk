@@ -530,7 +530,7 @@ class _SectionSpanner(_Section):
         help_text='The default instance to use when working with Cloud Spanner '
         'resources. When an `instance` is required but not provided by a flag, '
         'the command will fall back to this value, if set.',
-        completer='command_lib.spanner.flags.InstanceCompleter')
+        completer='googlecloudsdk.command_lib.spanner.flags:InstanceCompleter')
 
 
 class _SectionCompute(_Section):
@@ -544,14 +544,16 @@ class _SectionCompute(_Section):
         'Engine resources. When a `--zone` flag is required but not provided, '
         'the command will fall back to this value, if set. To see valid '
         'choices, run `gcloud compute zones list`.',
-        completer='command_lib.compute.completers.ZonesCompleter')
+        completer=('googlecloudsdk.command_lib.compute.completers:'
+                   'ZonesCompleter'))
     self.region = self._Add(
         'region',
         help_text='The default region to use when working with regional Compute'
         ' Engine resources. When a `--region` flag is required but not '
         'provided, the command will fall back to this value, if set. To see '
         'valid choices, run `gcloud compute regions list`.',
-        completer='command_lib.compute.completers.RegionsCompleter')
+        completer=('googlecloudsdk.command_lib.compute.completers:'
+                   'RegionsCompleter'))
     self.gce_metadata_read_timeout_sec = self._Add(
         'gce_metadata_read_timeout_sec',
         default=1,
@@ -570,7 +572,8 @@ class _SectionFunctions(_Section):
         'functions resources. When a `--region` flag is required but not '
         'provided, the command will fall back to this value, if set. To see '
         'valid choices, run `gcloud functions regions list`.',
-        completer='command_lib.functions.flags.LocationsCompleter')
+        completer=('googlecloudsdk.command_lib.functions.flags:'
+                   'LocationsCompleter'))
 
 
 class _SectionApp(_Section):
@@ -963,7 +966,8 @@ class _SectionCore(_Section):
         'by default.  This can be overridden by using the global `--project` '
         'flag.',
         validator=ProjectValidator,
-        completer='command_lib.resource_manager.completers.ProjectCompleter')
+        completer=('googlecloudsdk.command_lib.resource_manager.completers:'
+                   'ProjectCompleter'))
     self.credentialed_hosted_repo_domains = self._Add(
         'credentialed_hosted_repo_domains',
         hidden=True)
@@ -1008,22 +1012,22 @@ class _SectionAuth(_Section):
 class _SectionBilling(_Section):
   """Contains the properties for the 'auth' section."""
 
+  LEGACY = 'LEGACY'
+  CURRENT_PROJECT = 'CURRENT_PROJECT'
+
   def __init__(self):
     super(_SectionBilling, self).__init__('billing')
 
-    self.disable_resource_project_quota = self._AddBool(
-        'disable_resource_project_quota', hidden=True, default=True,
-        help_text='Disables charging quota against your currently set project '
-        'for operations performed on it. Instead, quota will be drawn from '
-        'a shared pool of gcloud quota. The ability to use gcloud shared quota '
-        'will be removed in the future.')
     self.quota_project = self._Add(
-        'quota_project', hidden=True,
-        help_text='When resource quota is enabled, quota will automatically be '
-        'charged against your currently set project for the operations you '
-        'perform on it. If you need to operate on one project, but want to '
-        'charge quota against a different project, you can use this property '
-        'to specify the alternate project.')
+        'quota_project', hidden=True, default=_SectionBilling.LEGACY,
+        help_text='This is the project that will be charged quota for the '
+        'operations performed in gcloud. By default, a shared project will be '
+        'used, but this may not work for all APIs (in which case your current '
+        'project will be used if this is unset). Setting the value to '
+        'CURRENT_PROJECT will change quota against your currently set project '
+        'for the operations you perform on it. If you need to operate on one '
+        'project, but charge quota against a different project, you can use '
+        'this property to specify the alternate project.')
 
 
 class _SectionMetrics(_Section):
@@ -1399,6 +1403,18 @@ class _Property(object):
     if validate:
       self.Validate(value)
     return value
+
+  def IsExplicitlySet(self):
+    """Determines if this property has been explicitly set by the user.
+
+    Properties with defaults or callbacks don't count as explicitly set.
+
+    Returns:
+      True, if the value was explicitly set, False otherwise.
+    """
+    value = _GetPropertyWithoutCallback(
+        self, named_configs.ActivePropertiesFile.Load())
+    return value is not None
 
   def Validate(self, value):
     """Test to see if the value is valid for this property.

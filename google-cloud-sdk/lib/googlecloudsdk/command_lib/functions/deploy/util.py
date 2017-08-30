@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.functions import cloud_storage as storage
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.api_lib.functions import util
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -73,9 +74,9 @@ def CreateSourcesZipFile(zip_dir, source_path, include_ignored_files):
 
 
 def _GenerateRemoteZipFileName(function_name):
-  sufix = ''.join(random.choice(string.ascii_lowercase) for _ in range(12))
+  suffix = ''.join(random.choice(string.ascii_lowercase) for _ in range(12))
   return '{0}-{1}-{2}.zip'.format(
-      properties.VALUES.functions.region.Get(), function_name, sufix)
+      properties.VALUES.functions.region.Get(), function_name, suffix)
 
 
 def UploadFile(source, function_name, stage_bucket):
@@ -189,11 +190,6 @@ def _ValidateSourceArgs(args):
       raise exceptions.FunctionsError(
           'argument --source-tag: can be given only if argument '
           '--source-url is provided')
-    if args.stage_bucket is None:
-      raise exceptions.FunctionsError(
-          'argument --stage-bucket: required when the function is deployed '
-          'from a local directory (when argument --source-url is not '
-          'provided)')
     util.ValidateDirectoryExistsOrRaiseFunctionError(GetLocalPath(args))
   else:
     if args.source_path is None:
@@ -210,12 +206,39 @@ def _ValidateTriggerArgs(args):
   Raises:
     FunctionsError.
   """
+  trigger_event = args.trigger_event
+  trigger_provider = args.trigger_provider
+  trigger_resource = args. trigger_resource
 
-  if args.trigger_provider is None and (args.trigger_event is not None or
-                                        args.trigger_resource is not None):
-    raise exceptions.FunctionsError(
-        '--trigger-event, --trigger-resource, and --trigger-path may only '
-        'be used with --trigger-provider')
+  if trigger_provider is None:
+    if args.trigger_event is not None or args.trigger_resource is not None:
+      raise exceptions.FunctionsError(
+          '--trigger-event, --trigger-resource, and --trigger-path may only '
+          'be used with --trigger-provider')
+  else:
+    if trigger_event is None:
+      trigger_event = util.input_trigger_provider_registry.Provider(
+          trigger_provider).default_event.label
+    event_labels = list(util.input_trigger_provider_registry.EventsLabels(
+        trigger_provider))
+    if trigger_event not in event_labels:
+      raise exceptions.FunctionsError(
+          'You can use only one of [{}] with --trigger-provider={}'.format(
+              ','.join(event_labels), trigger_provider))
+    # checked that Event Type is correct
+
+    resource_type = util.input_trigger_provider_registry.Event(
+        trigger_provider, trigger_event).resource_type
+    if trigger_resource is None and resource_type != util.Resources.PROJECT:
+      raise exceptions.FunctionsError(
+          'You must provide --trigger-resource when using '
+          '--trigger-provider={} and --trigger-event={}'.format(
+              trigger_provider, trigger_event))
+    # checked if Resource Type and Path were provided or not as required
+
+  if args.IsSpecified('retry') and args.IsSpecified('trigger_http'):
+    raise calliope_exceptions.ConflictingArgumentsException(
+        '--trigger-http', '--retry')
 
 
 def _BucketTrigger(trigger_bucket):
@@ -260,8 +283,9 @@ def _CheckTriggerProviderArgs(args):
     return _BucketTrigger(args.trigger_bucket)
   if args.trigger_topic:
     return _TopicTrigger(args.trigger_topic)
+  if args.trigger_provider is None:
+    return None
 
-  # TODO(b/36020181): move validation to a separate function.
   trigger_provider = args.trigger_provider
   trigger_event = args.trigger_event
   trigger_resource = args.trigger_resource
@@ -269,20 +293,6 @@ def _CheckTriggerProviderArgs(args):
   if trigger_event is None:
     trigger_event = util.input_trigger_provider_registry.Provider(
         trigger_provider).default_event.label
-  elif trigger_event not in util.input_trigger_provider_registry.EventsLabels(
-      trigger_provider):
-    raise exceptions.FunctionsError('You can use only one of [' + ','.join(
-        util.input_trigger_provider_registry.EventsLabels(trigger_provider)
-    ) + '] with --trigger-provider=' + trigger_provider)
-  # checked if Event Type is correct
-
-  if trigger_resource is None and util.input_trigger_provider_registry.Event(
-      trigger_provider, trigger_event).resource_type != util.Resources.PROJECT:
-    raise exceptions.FunctionsError(
-        'You must provide --trigger-resource when using '
-        '--trigger-provider={0} and --trigger-event={1}'.format(
-            trigger_provider, trigger_event))
-  # checked if Resource Type and Path were provided or not as required
 
   resource_type = util.input_trigger_provider_registry.Event(
       trigger_provider, trigger_event).resource_type

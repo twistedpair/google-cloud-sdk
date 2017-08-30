@@ -18,7 +18,9 @@ import re
 
 from apitools.base.protorpclite import messages
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.util.apis import yaml_command_schema
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_property
@@ -54,6 +56,20 @@ DEFAULT_PARAMS = {
 }
 
 
+class Error(Exception):
+  """Base class for this module's exceptions."""
+  pass
+
+
+class MissingArgInformation(Error):
+  """Exception for when there is no arg information for an API field."""
+
+  def __init__(self, field):
+    super(MissingArgInformation, self).__init__(
+        'You must provide argument information for API field: [{}]'
+        .format(field))
+
+
 class ArgumentGenerator(object):
   """Class to generate and parse argparse flags from apitools message fields."""
   FLAT_RESOURCE_ARG_NAME = 'resource'
@@ -62,7 +78,7 @@ class ArgumentGenerator(object):
   IGNORABLE_LIST_FIELDS = {'filter', 'pageToken', 'orderBy'}
 
   def __init__(self, method, arg_info=None, raw=False, clean_surface=False,
-               is_positional=True):
+               builtin_args=None):
     """Creates a new Argument Generator.
 
     Args:
@@ -78,16 +94,15 @@ class ArgumentGenerator(object):
         the actual request field it represents instead of adding an additional
         'resource' argument. It also does not generate flags for atomic name
         fields for resources using that model. This only works if raw = False.
-      is_positional: bool, True to make the resource argument positional, false
-        if everything should be a flag. This only works if clean_surface = True.
+      builtin_args: {str}, A set of argument names that are already registered
+        as builtin flags (like --project) and should not be generated. When
+        parsing, the value of the builtin flag will be used.
     """
     self.method = method
-    self.arg_info = arg_info or {}
+    self.arg_info = arg_info
+    self.builtin_args = builtin_args or set()
     self.raw = raw
     self.clean_surface = not raw and clean_surface
-    # You can't make a field into a positional if we are not flattening the
-    # resource because there will be an extra 'resource' arg created.
-    self.is_positional = self.clean_surface and is_positional
     self.is_atomic = self.method.detailed_params != self.method.params
 
     self.auto_rename_fields = dict()
@@ -119,7 +134,22 @@ class ArgumentGenerator(object):
     args.update(self._GenerateMessageFieldsFlags(
         '', self.method.GetRequestType()))
     args.update(self._GenerateResourceArg())
-    return args
+    return {k: v for k, v in args.iteritems() if k not in self.builtin_args}
+
+  @property
+  def resource_arg_name(self):
+    """Gets the type of the resource being operated on.
+
+    This is based off the name of the final positional parameter in the API
+    request.
+
+
+    Returns:
+      The type of resource being operated on (i.e. instance, registry, disk,
+      etc).
+    """
+    field_names = self.method.ResourceFieldNames()
+    return self._GetArgAttributes(field_names[-1], required=True).arg_name
 
   def CreateRequest(self, namespace):
     """Generates the request object for the method call from the parsed args.
@@ -205,12 +235,6 @@ class ArgumentGenerator(object):
         self.method.BatchPageSizeField()):
       return getattr(namespace, 'page_size')
 
-  def _GetRenamedField(self, field):
-    i = self.arg_info.get(field)
-    # Try to return an explicit override if it exists. If not, return an auto
-    # rename or just the field itself.
-    return i.arg_name if i else self.auto_rename_fields.get(field, field)
-
   def _GenerateResourceArg(self):
     """Gets the flags to add to the parser that appear in the method path.
 
@@ -234,13 +258,19 @@ class ArgumentGenerator(object):
           nargs='?',
           help='The GRI for the resource being operated on.')
 
-    anchor_arg_name = self._GetRenamedField(field_names[-1])
+    anchor_arg_name = self._GetArgAttributes(
+        field_names[-1], required=True).arg_name
 
-    for param in field_names:
-      data = self.arg_info.get(param)
-      param = self._GetRenamedField(param)
+    for field in field_names:
+      attributes = self._GetArgAttributes(field, field_helps, default_help,
+                                          required=True)
+      param = attributes.arg_name
+      # If the request params match, this means this method takes the same
+      # params as the get method and so the last item should be positional.
+      # If it doesn't (like for a list command) then we are omitting the last
+      # arg so all other should be flags and none should be made positional.
       is_positional = (self.clean_surface and param == anchor_arg_name
-                       and self.is_positional)
+                       and self.method.request_params_match_resource)
       args[param] = base.Argument(
           param if is_positional else '--' + param,
           metavar=resource_property.ConvertToAngrySnakeCase(param),
@@ -248,9 +278,9 @@ class ArgumentGenerator(object):
           # and flags for the resource argument show up together.
           # category=(None if param == self.anchor_arg_name and
           # self.is_positional else 'RESOURCE'),
-          type=str,
-          completer=data.completer if data else None,
-          help=data.help_text if data else field_helps.get(param, default_help))
+          type=attributes.type or str,
+          completer=attributes.completer,
+          help=attributes.help_text)
       if (self.clean_surface and param == anchor_arg_name and
           not is_positional):
         args[param].kwargs['required'] = True
@@ -270,15 +300,19 @@ class ArgumentGenerator(object):
     if not field_names:
       return
 
-    anchor_arg_name = self._GetRenamedField(field_names[-1])
-    r = (getattr(namespace, anchor_arg_name) if self.clean_surface else
+    anchor_attr = self._GetArgAttributes(field_names[-1], required=True)
+    r = (getattr(namespace, anchor_attr.arg_name) if self.clean_surface else
          getattr(namespace, ArgumentGenerator.FLAT_RESOURCE_ARG_NAME))
+    if anchor_attr.processor:
+      r = anchor_attr.processor(r)
 
     params = {}
     for f in field_names:
-      renamed = self._GetRenamedField(f)
-      value = getattr(namespace, renamed)
-      params[f] = value or DEFAULT_PARAMS.get(renamed, lambda: None)()
+      attr = self._GetArgAttributes(f, required=True)
+      value = getattr(namespace, attr.arg_name)
+      if attr.processor:
+        value = attr.processor(value)
+      params[f] = value or DEFAULT_PARAMS.get(attr.arg_name, lambda: None)()
 
     return resources.REGISTRY.Parse(
         r,
@@ -301,19 +335,22 @@ class ArgumentGenerator(object):
     args = {}
     field_helps = _FieldHelpDocs(message)
     for field in message.all_fields():
-      name = self._FlagNameForField(prefix, field, is_root)
-      if not name:
+      attributes = self._FlagAttributesForField(prefix, field, is_root)
+      if not attributes:
         continue
+      name = attributes.arg_name
       if field.variant == messages.Variant.MESSAGE:
         field_help = field_helps.get(field.name, None)
         group = base.ArgumentGroup(
             name, description=(name + ': ' + field_help) if field_help else '')
-        for arg in self._GenerateMessageFieldsFlags(
-            name + '.', field.type, is_root=False).values():
-          group.AddArgument(arg)
-        args[name] = group
+        sub_args = self._GenerateMessageFieldsFlags(
+            name + '.', field.type, is_root=False)
+        if sub_args:
+          for arg in sub_args.values():
+            group.AddArgument(arg)
+          args[name] = group
       else:
-        args[name] = self._GenerateMessageFieldFlag(name, field, field_helps)
+        args[name] = self._GenerateMessageFieldFlag(attributes, prefix, field)
     return {k: v for k, v in args.iteritems() if v is not None}
 
   def _ParseMessageFieldsFlags(self, namespace, prefix, message, is_root=True):
@@ -331,9 +368,10 @@ class ArgumentGenerator(object):
     """
     kwargs = {}
     for field in message.all_fields():
-      name = self._FlagNameForField(prefix, field, is_root)
-      if not name:
+      attributes = self._FlagAttributesForField(prefix, field, is_root)
+      if not attributes:
         continue
+      name = attributes.arg_name
       # Field is a sub-message, recursively generate it.
       if field.variant == messages.Variant.MESSAGE:
         sub_kwargs = self._ParseMessageFieldsFlags(
@@ -347,11 +385,11 @@ class ArgumentGenerator(object):
       else:
         value = getattr(namespace, name, None)
         if value is not None:
-          # TODO(b/38000796): Handle repeated fields correctly.
-          kwargs[field.name] = value if not field.repeated else [value]
+          kwargs[field.name] = (attributes.processor(value)
+                                if attributes.processor else value)
     return kwargs
 
-  def _FlagNameForField(self, prefix, field, is_root):
+  def _FlagAttributesForField(self, prefix, field, is_root):
     """Compute the flag name to generate for the given message field.
 
     Args:
@@ -362,52 +400,115 @@ class ArgumentGenerator(object):
         sub-field).
 
     Returns:
-      str, The name of the flag to generate.
+      yaml_command_schema.Argument, The attributes to use to generate the arg,
+      or None if it should not be generated.
     """
     if self._ShouldSkipAtomicField(field, is_root):
       return None
-    name = prefix + field.name
-    name = self._GetRenamedField(name)
-    if name in self.ignored_fields:
+    attributes = self._GetArgAttributes(prefix + field.name)
+    if not attributes:
+      if field.variant == messages.Variant.MESSAGE:
+        # If we are not generating this field, but it is a message, we might
+        # want to generate flags for specific parts of the sub message.
+        return yaml_command_schema.Argument(prefix + field.name, None)
+      # Only stop processing if this is a scalar.
+      return None
+    if attributes.arg_name in self.ignored_fields:
       return None
     if field.variant == messages.Variant.MESSAGE:
-      if (name == self.method.request_field and
-          name.lower().endswith('request')):
-        name = 'request'
-    return name
+      if (attributes.arg_name == self.method.request_field and
+          attributes.arg_name.lower().endswith('request')):
+        attributes.arg_name = 'request'
+    return attributes
 
   def _ShouldSkipAtomicField(self, field, is_root):
     return (is_root and self.clean_surface and self.is_atomic
             and field.name in self.method.params)
 
-  def _GenerateMessageFieldFlag(self, name, field, field_helps):
+  def _GetArgAttributes(self, field, field_helps=None, default_help=None,
+                        required=False):
+    """Gets attributes of the argument that should be generated.
+
+    Args:
+      field: str, The name of the field.
+      field_helps: {str: str}, A mapping of field name to help strings.
+      default_help: str, The help string to use if there is no specific help
+        for this flag.
+      required: bool, True if we must generate an arg for this field (if it is
+        part of the resource arg) or false if it is ok to not generate a flag
+        for it (and it will just be None in the request).
+
+    Raises:
+      MissingArgInformation: If arg info is provided but the given field was
+      not registered, and it has been marked as required=True.
+
+    Returns:
+      yaml_command_schema.Argument, The attributes to use to generate the arg,
+      or None if it should not be generated.
+    """
+    if not field_helps:
+      field_helps = {}
+    if self.arg_info is None:
+      # No info was given, we are just auto generating everything.
+      return yaml_command_schema.Argument(
+          arg_name=self.auto_rename_fields.get(field, field),
+          help_text=field_helps.get(field.split('.')[-1], default_help)
+      )
+
+    # Arg information was explicitly provided, so only generate fields that
+    # are registered.
+    data = self.arg_info.get(field)
+    if data:
+      return data
+    if required:
+      renamed = self.auto_rename_fields.get(field, field)
+      if renamed not in self.builtin_args:
+        # This is a resource arg and it must be registered.
+        raise MissingArgInformation(field)
+      # A required arg that is not registered, but is a builtin, so we don't
+      # care because it won't be used. We do need to return a name here so
+      # that it will end up being parsed though.
+      return yaml_command_schema.Argument(
+          arg_name=renamed,
+          help_text=None,
+      )
+
+    # No info was provided for this arg and it is not required, don't generate.
+    return None
+
+  def _GenerateMessageFieldFlag(self, attributes, prefix, field):
     """Gets a flag for a single field in a message.
 
     Args:
-      name: The name of the field.
+      attributes: yaml_command_schema.Argument, The attributes to use to
+        generate the arg.
+      prefix: str, The flag prefix for the sub-message being generated.
       field: The apitools field object.
-      field_helps: {str: str}, A mapping of field name to help text.
 
     Returns:
-      {str: str}, A mapping of field name to help text.
+      calliope.base.Argument, The generated argument.
     """
-    help_text = field_helps.get(field.name, None)
-    if _IsOutputField(help_text):
+    if _IsOutputField(attributes.help_text):
       return None
     variant = field.variant
-    t = _TYPES.get(variant, None)
     choices = None
     if variant == messages.Variant.ENUM:
       choices = field.type.names()
+    t = attributes.type or _TYPES.get(variant, None)
+    # Note that a field will never be a message at this point, always a scalar.
+    if field.repeated:
+      t = arg_parsers.ArgList(element_type=t, choices=choices)
+    name = attributes.arg_name
     return base.Argument(
         # TODO(b/38000796): Consider not using camel case for flags.
-        '--' + name,
-        metavar=resource_property.ConvertToAngrySnakeCase(field.name),
-        category='MESSAGE',
+        name if attributes.is_positional else '--' + name,
+        metavar=resource_property.ConvertToAngrySnakeCase(name[len(prefix):]),
+        category=None if attributes.is_positional else 'MESSAGE',
         action='store',
         type=t,
         choices=choices,
-        help=help_text,
+        completer=attributes.completer,
+        help=attributes.help_text,
     )
 
 

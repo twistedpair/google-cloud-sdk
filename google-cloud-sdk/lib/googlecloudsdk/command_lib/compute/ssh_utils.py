@@ -11,7 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utilities for subcommands that need to SSH into virtual machine guests."""
+"""Utilities for subcommands that need to SSH into virtual machine guests.
+
+This module provides the following things:
+  Errors used by various SSH-based commands.
+  Various helper functions.
+  BaseSSHHelper: The primary purpose of the BaseSSHHelper class is to
+      get the instance and project information, determine whether the user's
+      SSH public key is in the metadata, determine if the SSH public key
+      needs to be added to the instance/project metadata, and then add the
+      key if necessary.
+  BaseSSHCLIHelper: An additional wrapper around BaseSSHHelper that adds
+      common flags needed by the various SSH-based commands.
+"""
 
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import metadata_utils
@@ -129,44 +141,42 @@ def GetInternalIPAddress(instance_resource):
           path_simplifier.Name(instance_resource.zone)))
 
 
-def _GetMetadataKey(iam_ssh_keys):
-  """Get the metadata key name for the desired SSH key metadata.
+def _GetSSHKeyListFromMetadataEntry(metadata_entry):
+  """Returns a list of SSH keys (without whitespace) from a metadata entry."""
+  keys = []
+  for line in metadata_entry.split('\n'):
+    line_strip = line.strip()
+    if line_strip:
+      keys.append(line_strip)
+  return keys
 
-  There are four SSH key related metadata pairs:
-  * Per-project 'sshKeys': this grants SSH access to VMs project-wide.
-  * Per-instance 'sshKeys': this is used to grant access to an individual
-    instance. For historical reasons, it acts as an override to the
-    project-global value.
-  * Per-instance 'block-project-ssh-keys': this determines whether 'ssh-keys'
-    overrides or adds to the per-project 'sshKeys'
-  * Per-instance 'ssh-keys': this also grants access to an individual
-     instance, but acts in addition or as an override to the per-project
-     'sshKeys' depending on 'block-project-ssh-keys'
+
+def _GetSSHKeysFromMetadata(metadata):
+  """Returns the ssh-keys and legacy sshKeys metadata values.
+
+  This function will return all of the SSH keys in metadata, stored in
+  the default metadata entry ('ssh-keys') and the legacy entry ('sshKeys').
 
   Args:
-    iam_ssh_keys: bool. If False, give the name of the original SSH metadata key
-        (that overrides the project-global SSH metadata key). If True, give the
-        name of the IAM SSH metadata key (that works in conjunction with the
-        project-global SSH key metadata).
+    metadata: An instance or project metadata object.
 
   Returns:
-    str, the corresponding metadata key name.
+    A pair of lists containing the SSH public keys in the default and
+    legacy metadata entries.
   """
-  if iam_ssh_keys:
-    metadata_key = constants.SSH_KEYS_INSTANCE_RESTRICTED_METADATA_KEY
-  else:
-    metadata_key = constants.SSH_KEYS_METADATA_KEY
-  return metadata_key
+  ssh_keys = []
+  ssh_legacy_keys = []
 
-
-def _GetSSHKeysFromMetadata(metadata, iam_keys=False):
-  """Returns the value of the "sshKeys" metadata as a list."""
   if not metadata:
-    return []
+    return ssh_keys, ssh_legacy_keys
+
   for item in metadata.items:
-    if item.key == _GetMetadataKey(iam_keys):
-      return [key.strip() for key in item.value.split('\n') if key]
-  return []
+    if item.key == constants.SSH_KEYS_METADATA_KEY:
+      ssh_keys = _GetSSHKeyListFromMetadataEntry(item.value)
+    elif item.key == constants.SSH_KEYS_LEGACY_METADATA_KEY:
+      ssh_legacy_keys = _GetSSHKeyListFromMetadataEntry(item.value)
+
+  return ssh_keys, ssh_legacy_keys
 
 
 def _PrepareSSHKeysValue(ssh_keys):
@@ -190,7 +200,7 @@ def _PrepareSSHKeysValue(ssh_keys):
     num_bytes = len(key + '\n')
     if bytes_consumed + num_bytes > constants.MAX_METADATA_VALUE_SIZE_IN_BYTES:
       prompt_message = ('The following SSH key will be removed from your '
-                        'project because your sshKeys metadata value has '
+                        'project because your SSH keys metadata value has '
                         'reached its maximum allowed size of {0} bytes: {1}')
       prompt_message = prompt_message.format(
           constants.MAX_METADATA_VALUE_SIZE_IN_BYTES, key)
@@ -204,23 +214,40 @@ def _PrepareSSHKeysValue(ssh_keys):
 
 
 def _AddSSHKeyToMetadataMessage(message_classes, user, public_key, metadata,
-                                iam_keys=False):
-  """Adds the public key material to the metadata if it's not already there."""
+                                legacy=False):
+  """Adds the public key material to the metadata if it's not already there.
+
+  Args:
+    message_classes: An object containing API message classes.
+    user: The username for the SSH key.
+    public_key: The SSH public key to add to the metadata.
+    metadata: The existing metadata.
+    legacy: If true, store the key in the legacy "sshKeys" metadata entry.
+
+  Returns:
+    An updated metadata API message.
+  """
   entry = u'{user}:{public_key}'.format(
       user=user, public_key=public_key)
 
-  ssh_keys = _GetSSHKeysFromMetadata(metadata, iam_keys=iam_keys)
-  log.debug('Current SSH keys in project: {0}'.format(ssh_keys))
+  ssh_keys, ssh_legacy_keys = _GetSSHKeysFromMetadata(metadata)
+  all_ssh_keys = ssh_keys + ssh_legacy_keys
+  log.debug('Current SSH keys in project: {0}'.format(all_ssh_keys))
 
-  if entry in ssh_keys:
+  if entry in all_ssh_keys:
     return metadata
+
+  if legacy:
+    metadata_key = constants.SSH_KEYS_LEGACY_METADATA_KEY
+    updated_ssh_keys = ssh_legacy_keys
   else:
-    ssh_keys.append(entry)
-    return metadata_utils.ConstructMetadataMessage(
-        message_classes=message_classes,
-        metadata={
-            _GetMetadataKey(iam_keys): _PrepareSSHKeysValue(ssh_keys)},
-        existing_metadata=metadata)
+    metadata_key = constants.SSH_KEYS_METADATA_KEY
+    updated_ssh_keys = ssh_keys
+  updated_ssh_keys.append(entry)
+  return metadata_utils.ConstructMetadataMessage(
+      message_classes=message_classes,
+      metadata={metadata_key: _PrepareSSHKeysValue(updated_ssh_keys)},
+      existing_metadata=metadata)
 
 
 def _MetadataHasBlockProjectSshKeys(metadata):
@@ -391,7 +418,7 @@ class BaseSSHHelper(object):
     with progress_tracker.ProgressTracker('Updating instance ssh metadata'):
       self._SetInstanceMetadata(client, instance, new_metadata)
 
-  def EnsureSSHKeyIsInInstance(self, client, user, instance, iam_keys=False):
+  def EnsureSSHKeyIsInInstance(self, client, user, instance, legacy=False):
     """Ensures that the user's public SSH key is in the instance metadata.
 
     Args:
@@ -399,10 +426,8 @@ class BaseSSHHelper(object):
       user: str, the name of the user associated with the SSH key in the
           metadata
       instance: Instance, ensure the SSH key is in the metadata of this instance
-      iam_keys: bool. If False, write to the original SSH metadata key (that
-          overrides the project-global SSH metadata key). If true, write to the
-          new SSH metadata key (that works in union with the project-global SSH
-          key metadata).
+      legacy: If the key is not present in metadata, add it to the legacy
+          metadata entry instead of the default entry.
 
     Returns:
       bool, True if the key was newly added, False if it was in the metadata
@@ -410,7 +435,7 @@ class BaseSSHHelper(object):
     """
     public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
     new_metadata = _AddSSHKeyToMetadataMessage(
-        client.messages, user, public_key, instance.metadata, iam_keys=iam_keys)
+        client.messages, user, public_key, instance.metadata, legacy=legacy)
     has_new_metadata = new_metadata != instance.metadata
     if has_new_metadata:
       self.SetInstanceMetadata(client, instance, new_metadata)
@@ -503,16 +528,17 @@ class BaseSSHHelper(object):
         use_account_service = False
     if not use_account_service:
       # There are two kinds of metadata: project-wide metadata and per-instance
-      # metadata. There are four SSH-key related metadata keys:
+      # metadata. There are five SSH-key related metadata keys:
       #
-      # * project['sshKeys']: shared project-wide
-      # * instance['sshKeys']: legacy. Acts as an override to project['sshKeys']
-      # * instance['block-project-ssh-keys']: If true, instance['ssh-keys']
-      #     overrides project['sshKeys']. Otherwise, keys from both metadata
-      #     pairs are valid.
-      # * instance['ssh-keys']: Acts either in conjunction with or as an
-      #     override to project['sshKeys'], depending on
-      #     instance['block-project-ssh-keys']
+      # * project['ssh-keys']: shared project-wide list of keys.
+      # * project['sshKeys']: legacy, shared project-wide list of keys.
+      # * instance['block-project-ssh-keys']: bool, when true indicates that
+      #     instance keys should replace project keys rather than being added
+      #     to them.
+      # * instance['ssh-keys']: instance specific list of keys.
+      # * instance['sshKeys']: legacy, instance specific list of keys. When
+      #     present, instance keys override project keys as if
+      #     instance['block-project-ssh-keys'] was true.
       #
       # SSH-like commands work by copying a relevant SSH key to
       # the appropriate metadata value. The VM grabs keys from the metadata as
@@ -526,20 +552,22 @@ class BaseSSHHelper(object):
       #           return instance.metadata['ssh-keys']
       #       else:
       #           return (instance.metadata['ssh-keys'] +
-      #                   project.metadata['sshKeys'])
+      #                   project.metadata['ssh-keys'] +
+      #                   project.metadata['sshKeys']) # Legacy Project Keys
       #
-      if _GetSSHKeysFromMetadata(instance.metadata):
+      _, ssh_legacy_keys = _GetSSHKeysFromMetadata(instance.metadata)
+      if ssh_legacy_keys:
         # If we add a key to project-wide metadata but the per-instance
         # 'sshKeys' metadata exists, we won't be able to ssh in because the VM
         # won't check the project-wide metadata. To avoid this, if the instance
         # has per-instance SSH key metadata, we add the key there instead.
         keys_newly_added = self.EnsureSSHKeyIsInInstance(
-            compute_client, user, instance)
+            compute_client, user, instance, legacy=True)
       elif _MetadataHasBlockProjectSshKeys(instance.metadata):
         # If the instance 'ssh-keys' metadata overrides the project-wide
-        # 'sshKeys' metadata, we should put our key there.
+        # 'ssh-keys' metadata, we should put our key there.
         keys_newly_added = self.EnsureSSHKeyIsInInstance(
-            compute_client, user, instance, iam_keys=True)
+            compute_client, user, instance)
       else:
         # Otherwise, try to add to the project-wide metadata. If we don't have
         # permissions to do that, add to the instance 'ssh-keys' metadata.
@@ -551,13 +579,12 @@ class BaseSSHHelper(object):
           # If we can't write to the project metadata, it may be because of a
           # permissions problem (we could inspect this exception object further
           # to make sure, but because we only get a string back this would be
-          # fragile). If that's the case, we want to try the writing to the
-          # iam_keys metadata (we may have permissions to write to instance
-          # metadata). We prefer this to the per-instance override of the
+          # fragile). If that's the case, we want to try the writing to instance
+          # metadata. We prefer this to the per-instance override of the
           # project metadata.
           log.info('Attempting to set instance metadata.')
           keys_newly_added = self.EnsureSSHKeyIsInInstance(
-              compute_client, user, instance, iam_keys=True)
+              compute_client, user, instance)
     return keys_newly_added
 
   def CheckForOsloginAndGetUser(self, instance,

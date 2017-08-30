@@ -131,6 +131,9 @@ class APIMethod(object):
       self.detailed_path = self.path
       self.detailed_params = self.params
 
+    self.request_params_match_resource = (
+        self.detailed_params == self.collection.detailed_params)
+
     self.http_method = method_config.http_method
     self.request_field = method_config.request_field
     self.request_type = method_config.request_type_name
@@ -195,7 +198,7 @@ class APIMethod(object):
       APICollection, The collection to use or None if no parent collection could
       be found.
     """
-    if self.detailed_params == self.collection.detailed_params:
+    if self.request_params_match_resource:
       return self.collection
     collections = GetAPICollections(
         self.collection.api_name, self.collection.api_version)

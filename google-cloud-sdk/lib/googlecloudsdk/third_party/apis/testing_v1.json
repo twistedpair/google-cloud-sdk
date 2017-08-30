@@ -541,7 +541,8 @@
             "The request contains a scenario label that was not declared in the\nmanifest.",
             "There was an error when parsing a label's value.",
             "The request contains a scenario number that was not declared in the\nmanifest.",
-            "Device administrator applications are not allowed."
+            "Device administrator applications are not allowed.",
+            "The APK is marked as \"testOnly\"."
           ],
           "type": "string",
           "enum": [
@@ -563,7 +564,8 @@
             "SCENARIO_LABEL_NOT_DECLARED",
             "SCENARIO_LABEL_MALFORMED",
             "SCENARIO_NOT_DECLARED",
-            "DEVICE_ADMIN_RECEIVER"
+            "DEVICE_ADMIN_RECEIVER",
+            "TEST_ONLY_APK"
           ]
         }
       }

@@ -21,6 +21,7 @@
   "baseUrl": "https://runtimeconfig.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -1124,7 +1125,7 @@
                   "description": "Lists variables within given a configuration, matching any provided filters.\nThis only lists variable names, not the values, unless `return_values` is\ntrue, in which case only variables that user has IAM permission to GetVariable\nwill be returned.",
                   "parameters": {
                     "parent": {
-                      "description": "The path to the RuntimeConfig resource for which you want to list variables.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                      "description": "The path to the RuntimeConfig resource for which you want to list variables.\nThe configuration must exist beforehand; the path must be in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
@@ -1226,7 +1227,7 @@
                   "description": "Creates a variable within the given configuration. You cannot create\na variable with a name that is a prefix of an existing variable name, or a\nname that has an existing variable name as a prefix.\n\nTo learn more about creating a variable, read the\n[Setting and Getting Data](\/deployment-manager\/runtime-configurator\/set-and-get-variables)\ndocumentation.",
                   "parameters": {
                     "parent": {
-                      "description": "The path to the RutimeConfig resource that this variable should belong to.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                      "description": "The path to the RutimeConfig resource that this variable should belong to.\nThe configuration must exist beforehand; the path must be in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
@@ -1353,7 +1354,7 @@
                   "description": "List waiters within the given configuration.",
                   "parameters": {
                     "parent": {
-                      "description": "The path to the configuration for which you want to get a list of waiters.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                      "description": "The path to the configuration for which you want to get a list of waiters.\nThe configuration must exist beforehand; the path must be in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
@@ -1416,7 +1417,7 @@
                   "description": "Creates a Waiter resource. This operation returns a long-running Operation\nresource which can be polled for completion. However, a waiter with the\ngiven name will exist (and can be retrieved) prior to the operation\ncompleting. If the operation fails, the failed Waiter resource will\nstill exist and must be deleted prior to subsequent creation attempts.",
                   "parameters": {
                     "parent": {
-                      "description": "The path to the configuration that will own the waiter.\nThe configuration must exist beforehand; the path must by in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`.",
+                      "description": "The path to the configuration that will own the waiter.\nThe configuration must exist beforehand; the path must be in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",

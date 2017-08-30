@@ -279,6 +279,10 @@
           "description": "Optional. The config settings for software inside the cluster.",
           "$ref": "SoftwareConfig"
         },
+        "lifecycleConfig": {
+          "description": "Optional. The config setting for auto delete cluster schedule.",
+          "$ref": "LifecycleConfig"
+        },
         "initializationActions": {
           "description": "Optional. Commands to execute on each node after config is completed. By default, executables are run on master and all worker nodes. You can test a node's <code>role<\/code> metadata to run an executable on a master or worker node, as shown below using curl (you can also use wget):\nROLE=$(curl -H Metadata-Flavor:Google http:\/\/metadata\/computeMetadata\/v1beta2\/instance\/attributes\/dataproc-role)\nif [[ \"${ROLE}\" == 'Master' ]]; then\n  ... master specific actions ...\nelse\n  ... worker specific actions ...\nfi\n",
           "type": "array",
@@ -440,11 +444,33 @@
           "type": "string"
         },
         "properties": {
-          "description": "Optional. The properties to set on daemon config files.Property keys are specified in prefix:property format, such as core:fs.defaultFS. The following are supported prefixes and their mappings:\ncapacity-scheduler: capacity-scheduler.xml\ncore: core-site.xml\ndistcp: distcp-default.xml\nhdfs: hdfs-site.xml\nhive: hive-site.xml\nmapred: mapred-site.xml\npig: pig.properties\nspark: spark-defaults.conf\nyarn: yarn-site.xml",
+          "description": "Optional. The properties to set on daemon config files.Property keys are specified in prefix:property format, such as core:fs.defaultFS. The following are supported prefixes and their mappings:\ncapacity-scheduler: capacity-scheduler.xml\ncore: core-site.xml\ndistcp: distcp-default.xml\nhdfs: hdfs-site.xml\nhive: hive-site.xml\nmapred: mapred-site.xml\npig: pig.properties\nspark: spark-defaults.conf\nyarn: yarn-site.xmlFor more information, see Cluster properties.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "LifecycleConfig": {
+      "id": "LifecycleConfig",
+      "description": "Specifies the cluster auto delete related schedule configuration.",
+      "type": "object",
+      "properties": {
+        "idleDeleteTtl": {
+          "description": "Optional. The longest duration that cluster would keep alive while staying  idle; passing this threshold will cause cluster to be auto-deleted.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "autoDeleteTime": {
+          "description": "Optional. The time when cluster will be auto-deleted.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "autoDeleteTtl": {
+          "description": "Optional. The life duration of cluster, the cluster will be auto-deleted at the end of this duration.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },

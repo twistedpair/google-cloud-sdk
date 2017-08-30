@@ -335,9 +335,14 @@ class CounterStructuredName(_messages.Message):
     origin: One of the standard Origins defined above.
     originNamespace: A string containing a more specific namespace of the
       counter's origin.
+    originalShuffleStepName: The GroupByKey step name from the original graph.
     originalStepName: System generated name of the original step in the user's
       graph, before optimization.
     portion: Portion of this counter, either key or value.
+    sideInput: ID of a side input being read from/written to. Side inputs are
+      identified by a pair of (reader, input_index). The reader is usually
+      equal to the original name, but it may be different, if a ParDo emits
+      it's Iterator / Map side input object.
     workerId: ID of a particular worker.
   """
 
@@ -368,9 +373,11 @@ class CounterStructuredName(_messages.Message):
   name = _messages.StringField(3)
   origin = _messages.EnumField('OriginValueValuesEnum', 4)
   originNamespace = _messages.StringField(5)
-  originalStepName = _messages.StringField(6)
-  portion = _messages.EnumField('PortionValueValuesEnum', 7)
-  workerId = _messages.StringField(8)
+  originalShuffleStepName = _messages.StringField(6)
+  originalStepName = _messages.StringField(7)
+  portion = _messages.EnumField('PortionValueValuesEnum', 8)
+  sideInput = _messages.MessageField('SideInputId', 9)
+  workerId = _messages.StringField(10)
 
 
 class CounterStructuredNameAndMetadata(_messages.Message):
@@ -3196,6 +3203,20 @@ class ShellTask(_messages.Message):
   exitCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class SideInputId(_messages.Message):
+  """Uniquely identifies a side input.
+
+  Fields:
+    declaringStepName: The step that receives and usually consumes this side
+      input.
+    inputIndex: The index of the side input, from the list of
+      non_parallel_inputs.
+  """
+
+  declaringStepName = _messages.StringField(1)
+  inputIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class SideInputInfo(_messages.Message):
   """Information about a side input of a DoFn or an input of a SeqDoFn.
 
@@ -4516,6 +4537,7 @@ class WorkerMessage(_messages.Message):
     workerHealthReport: The health of a worker.
     workerMessageCode: A worker message code.
     workerMetrics: Resource metrics reported by workers.
+    workerShutdownNotice: Shutdown notice by workers.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4552,6 +4574,7 @@ class WorkerMessage(_messages.Message):
   workerHealthReport = _messages.MessageField('WorkerHealthReport', 3)
   workerMessageCode = _messages.MessageField('WorkerMessageCode', 4)
   workerMetrics = _messages.MessageField('ResourceUtilizationReport', 5)
+  workerShutdownNotice = _messages.MessageField('WorkerShutdownNotice', 6)
 
 
 class WorkerMessageCode(_messages.Message):
@@ -4648,10 +4671,13 @@ class WorkerMessageResponse(_messages.Message):
       report.
     workerMetricsResponse: Service's response to reporting worker metrics
       (currently empty).
+    workerShutdownNoticeResponse: Service's response to shutdown notice
+      (currently empty).
   """
 
   workerHealthReportResponse = _messages.MessageField('WorkerHealthReportResponse', 1)
   workerMetricsResponse = _messages.MessageField('ResourceUtilizationReportResponse', 2)
+  workerShutdownNoticeResponse = _messages.MessageField('WorkerShutdownNoticeResponse', 3)
 
 
 class WorkerPool(_messages.Message):
@@ -4895,6 +4921,24 @@ class WorkerSettings(_messages.Message):
   shuffleServicePath = _messages.StringField(4)
   tempStoragePrefix = _messages.StringField(5)
   workerId = _messages.StringField(6)
+
+
+class WorkerShutdownNotice(_messages.Message):
+  """Shutdown notification from workers. This is to be sent by the shutdown
+  script of the worker VM so that the backend knows that the VM is being shut
+  down.
+
+  Fields:
+    reason: Optional reason to be attached for the shutdown notice. For
+      example: "PREEMPTION" would indicate the VM is being shut down because
+      of preemption. Other possible reasons may be added in the future.
+  """
+
+  reason = _messages.StringField(1)
+
+
+class WorkerShutdownNoticeResponse(_messages.Message):
+  """Service-side response to WorkerMessage issuing shutdown notice."""
 
 
 class WriteInstruction(_messages.Message):

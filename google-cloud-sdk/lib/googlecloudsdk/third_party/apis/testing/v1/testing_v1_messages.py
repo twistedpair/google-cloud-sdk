@@ -887,6 +887,7 @@ class TestMatrix(_messages.Message):
         not declared in the manifest.
       DEVICE_ADMIN_RECEIVER: Device administrator applications are not
         allowed.
+      TEST_ONLY_APK: The APK is marked as "testOnly".
     """
     INVALID_MATRIX_DETAILS_UNSPECIFIED = 0
     DETAILS_UNAVAILABLE = 1
@@ -907,6 +908,7 @@ class TestMatrix(_messages.Message):
     SCENARIO_LABEL_MALFORMED = 16
     SCENARIO_NOT_DECLARED = 17
     DEVICE_ADMIN_RECEIVER = 18
+    TEST_ONLY_APK = 19
 
   class StateValueValuesEnum(_messages.Enum):
     """Indicates the current progress of the test matrix (e.g., FINISHED)

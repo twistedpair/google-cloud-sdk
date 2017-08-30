@@ -427,6 +427,167 @@ class CreateInstanceRequest(_messages.Message):
   instanceId = _messages.StringField(2)
 
 
+class CreatePartitionsResponse(_messages.Message):
+  """The response for CreateQueryPartitions or CreateQueryPartitions
+
+  Fields:
+    partitions: Partitions created by this request.
+    transaction: Transaction created by this request.
+  """
+
+  partitions = _messages.MessageField('Partition', 1, repeated=True)
+  transaction = _messages.MessageField('Transaction', 2)
+
+
+class CreateQueryPartitionsRequest(_messages.Message):
+  """The request for CreateQueryPartitions
+
+  Messages:
+    ParamTypesValue: It is not always possible for Cloud Spanner to infer the
+      right SQL type from a JSON value.  For example, values of type `BYTES`
+      and values of type `STRING` both appear in params as JSON strings.  In
+      these cases, `param_types` can be used to specify the exact SQL type for
+      some or all of the SQL query parameters. See the definition of Type for
+      more information about SQL types.
+    ParamsValue: The SQL query string can contain parameter placeholders. A
+      parameter placeholder consists of `'@'` followed by the parameter name.
+      Parameter names consist of any combination of letters, numbers, and
+      underscores.  Parameters can appear anywhere that a literal value is
+      expected.  The same parameter name can be used more than once, for
+      example:   `"WHERE id > @msg_id AND id < @msg_id + 100"`  It is an error
+      to execute an SQL query with unbound parameters.  Parameter values are
+      specified using `params`, which is a JSON object whose keys are
+      parameter names, and whose values are the corresponding parameter
+      values.
+
+  Fields:
+    paramTypes: It is not always possible for Cloud Spanner to infer the right
+      SQL type from a JSON value.  For example, values of type `BYTES` and
+      values of type `STRING` both appear in params as JSON strings.  In these
+      cases, `param_types` can be used to specify the exact SQL type for some
+      or all of the SQL query parameters. See the definition of Type for more
+      information about SQL types.
+    params: The SQL query string can contain parameter placeholders. A
+      parameter placeholder consists of `'@'` followed by the parameter name.
+      Parameter names consist of any combination of letters, numbers, and
+      underscores.  Parameters can appear anywhere that a literal value is
+      expected.  The same parameter name can be used more than once, for
+      example:   `"WHERE id > @msg_id AND id < @msg_id + 100"`  It is an error
+      to execute an SQL query with unbound parameters.  Parameter values are
+      specified using `params`, which is a JSON object whose keys are
+      parameter names, and whose values are the corresponding parameter
+      values.
+    partitionOptions: Additional options that affect how many partitions are
+      created.
+    sql: The query request to generate partitions for. The request will fail
+      if the query is not root partitionable. The query plan of a root
+      partitionable query has a single distributed union operator. A
+      distributed union operator conceptually divides one or more tables into
+      multiple splits, remotely evaluates a subquery independently on each
+      split, and then unions all results.
+    transaction: Read only snapshot transactions are supported, read/write and
+      single use transactions are not.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParamTypesValue(_messages.Message):
+    """It is not always possible for Cloud Spanner to infer the right SQL type
+    from a JSON value.  For example, values of type `BYTES` and values of type
+    `STRING` both appear in params as JSON strings.  In these cases,
+    `param_types` can be used to specify the exact SQL type for some or all of
+    the SQL query parameters. See the definition of Type for more information
+    about SQL types.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParamTypesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParamTypesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ParamTypesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Type attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Type', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParamsValue(_messages.Message):
+    """The SQL query string can contain parameter placeholders. A parameter
+    placeholder consists of `'@'` followed by the parameter name. Parameter
+    names consist of any combination of letters, numbers, and underscores.
+    Parameters can appear anywhere that a literal value is expected.  The same
+    parameter name can be used more than once, for example:   `"WHERE id >
+    @msg_id AND id < @msg_id + 100"`  It is an error to execute an SQL query
+    with unbound parameters.  Parameter values are specified using `params`,
+    which is a JSON object whose keys are parameter names, and whose values
+    are the corresponding parameter values.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParamsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ParamsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  paramTypes = _messages.MessageField('ParamTypesValue', 1)
+  params = _messages.MessageField('ParamsValue', 2)
+  partitionOptions = _messages.MessageField('PartitionOptions', 3)
+  sql = _messages.StringField(4)
+  transaction = _messages.MessageField('TransactionSelector', 5)
+
+
+class CreateReadPartitionsRequest(_messages.Message):
+  """The request for CreateReadPartitions
+
+  Fields:
+    columns: The columns of table to be returned for each row matching this
+      request.
+    index: If non-empty, the name of an index on table. This index is used
+      instead of the table primary key when interpreting key_set and sorting
+      result rows. See key_set for further information.
+    keySet: Required. `key_set` identifies the rows to be yielded. `key_set`
+      names the primary keys of the rows in table to be yielded, unless index
+      is present. If index is present, then key_set instead names index keys
+      in index.  Rows are yielded in table primary key order (if index is
+      empty) or index key order (if index is non-empty).  It is not an error
+      for the `key_set` to name rows that do not exist in the database. Read
+      yields nothing for nonexistent rows.
+    partitionOptions: Additional options that affect how many partitions are
+      created.
+    table: Required. The name of the table in the database to be read.
+    transaction: Read only snapshot transactions are supported, read/write and
+      single use transactions are not.
+  """
+
+  columns = _messages.StringField(1, repeated=True)
+  index = _messages.StringField(2)
+  keySet = _messages.MessageField('KeySet', 3)
+  partitionOptions = _messages.MessageField('PartitionOptions', 4)
+  table = _messages.StringField(5)
+  transaction = _messages.MessageField('TransactionSelector', 6)
+
+
 class DataAccessOptions(_messages.Message):
   """Write a Data Access (Gin) log
 
@@ -560,6 +721,11 @@ class ExecuteSqlRequest(_messages.Message):
       specified using `params`, which is a JSON object whose keys are
       parameter names, and whose values are the corresponding parameter
       values.
+    partitionToken: If present, results will be restricted to the specified
+      partition previously created using CreateQueryPartitions().  There must
+      be an exact match for the values of fields common to this message and
+      the CreateQueryPartitionsRequest message used to create this
+      partition_token.
     queryMode: Used to control the amount of debugging information returned in
       ResultSetStats.
     resumeToken: If this request is resuming a previously interrupted SQL
@@ -652,10 +818,11 @@ class ExecuteSqlRequest(_messages.Message):
 
   paramTypes = _messages.MessageField('ParamTypesValue', 1)
   params = _messages.MessageField('ParamsValue', 2)
-  queryMode = _messages.EnumField('QueryModeValueValuesEnum', 3)
-  resumeToken = _messages.BytesField(4)
-  sql = _messages.StringField(5)
-  transaction = _messages.MessageField('TransactionSelector', 6)
+  partitionToken = _messages.BytesField(3)
+  queryMode = _messages.EnumField('QueryModeValueValuesEnum', 4)
+  resumeToken = _messages.BytesField(5)
+  sql = _messages.StringField(6)
+  transaction = _messages.MessageField('TransactionSelector', 7)
 
 
 class Expr(_messages.Message):
@@ -1227,6 +1394,39 @@ class PartialResultSet(_messages.Message):
   values = _messages.MessageField('extra_types.JsonValue', 5, repeated=True)
 
 
+class Partition(_messages.Message):
+  """Information returned for each partition returned in a
+  CreatePartitionsResponse.
+
+  Fields:
+    partitionToken: This token can be passed to Read, StreamingRead,
+      ExecuteSql, or ExecuteStreamingSql requests to restrict the results to
+      those identified by this partition token.
+  """
+
+  partitionToken = _messages.BytesField(1)
+
+
+class PartitionOptions(_messages.Message):
+  """Options for a CreateQueryPartitionsRequest and
+  CreateReadPartitionsRequest.
+
+  Fields:
+    maxPartitions: The desired maximum number of partitions to return.  For
+      example, this may be set to the number of workers available.  The
+      default for this option is currently 10,000. The maximum value is
+      currently 200,000.  This is only a hint.  The actual number of
+      partitions returned may be smaller than this maximum count request.
+    partitionSizeBytes: The desired data size for each partition generated.
+      The default for this option is currently 1 GiB.  This is only a hint.
+      The actual size of each partition may be smaller or larger than this
+      size request.
+  """
+
+  maxPartitions = _messages.IntegerField(1)
+  partitionSizeBytes = _messages.IntegerField(2)
+
+
 class PlanNode(_messages.Message):
   """Node information for nodes appearing in a QueryPlan.plan_nodes.
 
@@ -1473,7 +1673,13 @@ class ReadRequest(_messages.Message):
       for the `key_set` to name rows that do not exist in the database. Read
       yields nothing for nonexistent rows.
     limit: If greater than zero, only the first `limit` rows are yielded. If
-      `limit` is zero, the default is no limit.
+      `limit` is zero, the default is no limit. A limit cannot be specified if
+      partition_token is set.
+    partitionToken: If present, results will be restricted to the specified
+      partition previously created using CreateReadPartitions().    There must
+      be an exact match for the values of fields common to this message and
+      the CreateReadPartitionsRequest message used to create this
+      partition_token.
     resumeToken: If this request is resuming a previously interrupted read,
       `resume_token` should be copied from the last PartialResultSet yielded
       before the interruption. Doing this enables the new read to resume where
@@ -1488,9 +1694,10 @@ class ReadRequest(_messages.Message):
   index = _messages.StringField(2)
   keySet = _messages.MessageField('KeySet', 3)
   limit = _messages.IntegerField(4)
-  resumeToken = _messages.BytesField(5)
-  table = _messages.StringField(6)
-  transaction = _messages.MessageField('TransactionSelector', 7)
+  partitionToken = _messages.BytesField(5)
+  resumeToken = _messages.BytesField(6)
+  table = _messages.StringField(7)
+  transaction = _messages.MessageField('TransactionSelector', 8)
 
 
 class ReadWrite(_messages.Message):
@@ -1932,6 +2139,34 @@ class SpannerProjectsInstancesDatabasesSessionsCommitRequest(_messages.Message):
   """
 
   commitRequest = _messages.MessageField('CommitRequest', 1)
+  session = _messages.StringField(2, required=True)
+
+
+class SpannerProjectsInstancesDatabasesSessionsCreateQueryPartitionsRequest(_messages.Message):
+  """A SpannerProjectsInstancesDatabasesSessionsCreateQueryPartitionsRequest
+  object.
+
+  Fields:
+    createQueryPartitionsRequest: A CreateQueryPartitionsRequest resource to
+      be passed as the request body.
+    session: Required. The session used to create the partitions.
+  """
+
+  createQueryPartitionsRequest = _messages.MessageField('CreateQueryPartitionsRequest', 1)
+  session = _messages.StringField(2, required=True)
+
+
+class SpannerProjectsInstancesDatabasesSessionsCreateReadPartitionsRequest(_messages.Message):
+  """A SpannerProjectsInstancesDatabasesSessionsCreateReadPartitionsRequest
+  object.
+
+  Fields:
+    createReadPartitionsRequest: A CreateReadPartitionsRequest resource to be
+      passed as the request body.
+    session: Required. The session used to create the partitions.
+  """
+
+  createReadPartitionsRequest = _messages.MessageField('CreateReadPartitionsRequest', 1)
   session = _messages.StringField(2, required=True)
 
 

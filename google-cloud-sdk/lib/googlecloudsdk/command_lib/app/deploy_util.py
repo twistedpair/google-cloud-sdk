@@ -94,6 +94,12 @@ class ServiceManagementOption(enum.Enum):
   IF_PROPERTY_SET = 2
 
 
+class FlexImageBuildOptions(enum.Enum):
+  """Enum declaring different options for building image for flex deploys."""
+  ON_CLIENT = 1
+  ON_SERVER = 2
+
+
 class DeployOptions(object):
   """Values of options that affect deployment process in general.
 
@@ -110,6 +116,9 @@ class DeployOptions(object):
       Only supported in v1beta and v1alpha App Engine Admin API.
     use_service_management: bool, whether to prepare for Flexible deployments
       using Service Management.
+    flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
+      should upload files so that the server can build the image, or build the
+      image on client.
   """
 
   def __init__(self,
@@ -118,20 +127,23 @@ class DeployOptions(object):
                enable_endpoints,
                runtime_builder_strategy,
                parallel_build=False,
-               use_service_management=True):
+               use_service_management=True,
+               flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
     self.promote = promote
     self.stop_previous_version = stop_previous_version
     self.enable_endpoints = enable_endpoints
     self.runtime_builder_strategy = runtime_builder_strategy
     self.parallel_build = parallel_build
     self.use_service_management = use_service_management
+    self.flex_image_build_option = flex_image_build_option
 
   @classmethod
   def FromProperties(
       cls,
       enable_endpoints,
       runtime_builder_strategy,
-      parallel_build=False):
+      parallel_build=False,
+      flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
     """Initialize DeloyOptions using user properties where necessary.
 
     Args:
@@ -141,6 +153,9 @@ class DeployOptions(object):
         externalized runtimes).
       parallel_build: bool, whether to use parallel build and deployment path.
         Only supported in v1beta and v1alpha App Engine Admin API.
+      flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
+        should upload files so that the server can build the image or build the
+        image on client.
 
     Returns:
       DeployOptions, the deploy options.
@@ -151,7 +166,8 @@ class DeployOptions(object):
     service_management = (
         not properties.VALUES.app.use_deprecated_preparation.GetBool())
     return cls(promote, stop_previous_version, enable_endpoints,
-               runtime_builder_strategy, parallel_build, service_management)
+               runtime_builder_strategy, parallel_build, service_management,
+               flex_image_build_option)
 
 
 def _ShouldRewriteRuntime(runtime, use_runtime_builders):
@@ -241,7 +257,8 @@ class ServiceDeployer(object):
       service_info.parsed.SetEffectiveRuntime('custom')
 
   def _PossiblyBuildAndPush(self, new_version, service, source_dir, image,
-                            code_bucket_ref, gcr_domain):
+                            code_bucket_ref, gcr_domain,
+                            flex_image_build_option):
     """Builds and Pushes the Docker image if necessary for this service.
 
     Args:
@@ -255,11 +272,16 @@ class ServiceDeployer(object):
         have been uploaded
       gcr_domain: str, Cloud Registry domain, determines the physical location
         of the image. E.g. `us.gcr.io`.
+      flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
+        should upload files so that the server can build the image or build the
+        image on client.
     Returns:
       BuildArtifact, a wrapper which contains either the build ID for
         an in-progress build, or the name of the container image for a serial
         build. Possibly None if the service does not require an image.
     """
+    if flex_image_build_option == FlexImageBuildOptions.ON_SERVER:
+      return None
 
     build = None
     if image:
@@ -300,14 +322,52 @@ class ServiceDeployer(object):
       log.info('Not stopping previous version because new version was '
                'not promoted.')
 
-  def Deploy(self, service, new_version, code_bucket_ref, image,
-             all_services, gcr_domain):
+  def _PossiblyUploadFiles(self, image, service_info, source_dir,
+                           code_bucket_ref, flex_image_build_option):
+    """Uploads files for this deployment is required for this service.
+
+    Uploads if flex_image_build_option is FlexImageBuildOptions.ON_SERVER,
+    or if the deployment is non-hermetic and the image is not provided.
+
+    Args:
+      image: str or None, the URL for the Docker image to be deployed (if image
+        already exists).
+      service_info: yaml_parsing.ServiceYamlInfo, service configuration to be
+        deployed
+      source_dir: str, path to the service's source directory
+      code_bucket_ref: cloud_storage.BucketReference where the service's files
+        have been uploaded
+      flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
+        should upload files so that the server can build the image or build the
+        image on client.
+
+    Returns:
+      Dictionary mapping source files to Google Cloud Storage locations.
+    """
+    manifest = None
+    # "Non-hermetic" services require file upload outside the Docker image
+    # unless an image was already built.
+    if flex_image_build_option == FlexImageBuildOptions.ON_SERVER or (
+        not image and not service_info.is_hermetic):
+      manifest = deploy_app_command_util.CopyFilesToCodeBucket(
+          service_info, source_dir, code_bucket_ref)
+    return manifest
+
+  def Deploy(self,
+             service,
+             new_version,
+             code_bucket_ref,
+             image,
+             all_services,
+             gcr_domain,
+             flex_image_build_option=False):
     """Deploy the given service.
 
     Performs all deployment steps for the given service (if applicable):
     * Enable endpoints (for beta deployments)
     * Build and push the Docker image (Flex only, if image_url not provided)
-    * Upload files (non-hermetic deployments)
+    * Upload files (non-hermetic deployments and flex deployments with
+      flex_image_build_option=FlexImageBuildOptions.ON_SERVER)
     * Create the new version
     * Promote the version to receieve all traffic (if --promote given (default))
     * Stop the previous version (if new version promoted and
@@ -325,6 +385,9 @@ class ServiceDeployer(object):
         promote this version to receive all traffic, if applicable).
       gcr_domain: str, Cloud Registry domain, determines the physical location
         of the image. E.g. `us.gcr.io`.
+      flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
+        should upload files so that the server can build the image or build the
+        image on client.
     """
     log.status.Print('Beginning deployment of service [{service}]...'
                      .format(service=new_version.service))
@@ -333,15 +396,12 @@ class ServiceDeployer(object):
     endpoints_info = self._PossiblyConfigureEndpoints(
         service_info, source_dir, new_version)
     self._PossiblyRewriteRuntime(service_info)
-    build = self._PossiblyBuildAndPush(
-        new_version, service_info, source_dir, image, code_bucket_ref,
-        gcr_domain)
-    manifest = None
-    # "Non-hermetic" services require file upload outside the Docker image
-    # unless an image was already built.
-    if not image and not service_info.is_hermetic:
-      manifest = deploy_app_command_util.CopyFilesToCodeBucket(
-          service_info, source_dir, code_bucket_ref)
+    build = self._PossiblyBuildAndPush(new_version, service_info, source_dir,
+                                       image, code_bucket_ref, gcr_domain,
+                                       flex_image_build_option)
+    manifest = self._PossiblyUploadFiles(image, service_info, source_dir,
+                                         code_bucket_ref,
+                                         flex_image_build_option)
 
     # Actually create the new version of the service.
     metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)
@@ -403,11 +463,44 @@ def ArgsDeploy(parser):
       environment, run:
 
           $ gcloud config set app/promote_by_default false""")
-  parser.add_argument(
+  staging_group = parser.add_mutually_exclusive_group()
+  staging_group.add_argument(
       '--skip-staging',
       action='store_true',
       default=False,
       help=argparse.SUPPRESS)
+  staging_group.add_argument(
+      '--staging-command',
+      help=argparse.SUPPRESS)
+
+
+def _MakeStager(skip_staging, use_beta_stager, staging_command, staging_area):
+  """Creates the appropriate stager for the given arguments/release track.
+
+  The stager is responsible for invoking the right local staging depending on
+  env and runtime.
+
+  Args:
+    skip_staging: bool, if True use a no-op Stager. Takes precedence over other
+      arguments.
+    use_beta_stager: bool, if True, use a stager that includes beta staging
+      commands.
+    staging_command: str, path to an executable on disk. If given, use this
+      command explicitly for staging. Takes precedence over later arguments.
+    staging_area: str, the path to the staging area
+
+  Returns:
+    staging.Stager, the appropriate stager for the command
+  """
+  if skip_staging:
+    return staging.GetNoopStager(staging_area)
+  elif staging_command:
+    command = staging.ExecutableCommand.FromInput(staging_command)
+    return staging.GetOverrideStager(command, staging_area)
+  elif use_beta_stager:
+    return staging.GetBetaStager(staging_area)
+  else:
+    return staging.GetStager(staging_area)
 
 
 def RunDeploy(
@@ -416,7 +509,8 @@ def RunDeploy(
     enable_endpoints=False,
     use_beta_stager=False,
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
-    parallel_build=True):
+    parallel_build=True,
+    flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
   """Perform a deployment based on the given args.
 
   Args:
@@ -432,6 +526,9 @@ def RunDeploy(
       externalized runtimes).
     parallel_build: bool, whether to use parallel build and deployment path.
       Only supported in v1beta and v1alpha App Engine Admin API.
+    flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
+      should upload files so that the server can build the image or build the
+      image on client.
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -442,15 +539,12 @@ def RunDeploy(
   deploy_options = DeployOptions.FromProperties(
       enable_endpoints,
       runtime_builder_strategy=runtime_builder_strategy,
-      parallel_build=parallel_build)
+      parallel_build=parallel_build,
+      flex_image_build_option=flex_image_build_option)
 
   with files.TemporaryDirectory() as staging_area:
-    if args.skip_staging:
-      stager = staging.GetNoopStager(staging_area)
-    elif use_beta_stager:
-      stager = staging.GetBetaStager(staging_area)
-    else:
-      stager = staging.GetStager(staging_area)
+    stager = _MakeStager(args.skip_staging, use_beta_stager,
+                         args.staging_command, staging_area)
     services, configs = deployables.GetDeployables(
         args.deployables, stager, deployables.GetPathMatchers())
     service_infos = [d.service_info for d in services]
@@ -507,8 +601,14 @@ def RunDeploy(
         metrics.CustomTimedEvent(metric_names.FIRST_SERVICE_DEPLOY_START)
       new_version = version_util.Version(project, service.service_id,
                                          version_id)
-      deployer.Deploy(service, new_version, code_bucket_ref,
-                      args.image_url, all_services, app.gcrDomain)
+      deployer.Deploy(
+          service,
+          new_version,
+          code_bucket_ref,
+          args.image_url,
+          all_services,
+          app.gcrDomain,
+          flex_image_build_option=flex_image_build_option)
       new_versions.append(new_version)
       log.status.Print('Deployed service [{0}] to [{1}]'.format(
           service.service_id, deployed_urls[service.service_id]))
