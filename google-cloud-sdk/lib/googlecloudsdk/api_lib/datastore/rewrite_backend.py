@@ -23,10 +23,13 @@ class OperationsRewriteBackend(resource_expr_rewrite.Backend):
   """Rewrites for Cloud Datastore server side filter expressions."""
 
   _KEY_MAPPING = {
-      r'label\.(.*)': r'metadata.common.labels.\1',
-      'namespace': 'metadata.entity_filter.namespace_id',
-      'type': 'metadata.common.operation_type',
-      'kind': 'metadata.entity_filter.kind',
+      r'^label\.(.*)': r'metadata.common.labels.\1',
+      r'^labels\.(.*)': r'metadata.common.labels.\1',
+      '^namespace$': 'metadata.entity_filter.namespace_id',
+      '^namespaceId$': 'metadata.entity_filter.namespace_id',
+      '^type$': 'metadata.common.operation_type',
+      '^operationType$': 'metadata.common.operation_type',
+      '^kind$': 'metadata.entity_filter.kind',
   }
 
   _OPERATOR_MAPPING = {

@@ -31,6 +31,25 @@ class Collections(enum.Enum):
       },
       [u'name']
   )
+  APPS_AUTHORIZEDCERTIFICATES = (
+      'apps.authorizedCertificates',
+      '{+name}',
+      {
+          '':
+              'apps/{appsId}/authorizedCertificates/'
+              '{authorizedCertificatesId}',
+      },
+      [u'name']
+  )
+  APPS_DOMAINMAPPINGS = (
+      'apps.domainMappings',
+      '{+name}',
+      {
+          '':
+              'apps/{appsId}/domainMappings/{domainMappingsId}',
+      },
+      [u'name']
+  )
   APPS_LOCATIONS = (
       'apps.locations',
       '{+name}',

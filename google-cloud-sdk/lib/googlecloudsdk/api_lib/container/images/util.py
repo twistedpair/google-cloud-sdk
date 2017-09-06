@@ -107,11 +107,16 @@ class CredentialProvider(docker_creds.Basic):
     return cred.access_token if cred else None
 
 
-def _TimeCreatedToDateTime(time_created):
-  timestamp = float(time_created) / 1000
-  # Drop the microsecond portion.
-  timestamp = round(timestamp, 0)
-  return times.GetDateTimeFromTimeStamp(timestamp)
+def _TimeCreatedToDateTime(time_created_ms):
+  # Convert to float.
+  timestamp = float(time_created_ms)
+  # Round the timestamp to whole seconds.
+  timestamp = round(timestamp / 1000)
+  try:
+    return times.GetDateTimeFromTimeStamp(timestamp)
+  except (ArithmeticError, times.DateTimeValueError):
+    # Values like -62135596800000 have been observed, causing underflows.
+    return None
 
 
 def RecoverProjectId(repository):

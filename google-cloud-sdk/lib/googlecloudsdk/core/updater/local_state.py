@@ -23,6 +23,7 @@ import compileall
 import errno
 import logging
 import os
+import posixpath
 import re
 import shutil
 import sys
@@ -552,9 +553,10 @@ class InstallationState(object):
           pyc_path = path + 'c'
           if os.path.isfile(pyc_path):
             os.remove(pyc_path)
-        dir_path = os.path.dirname(path)
-        if dir_path:
-          dirs_to_remove.add(os.path.normpath(dir_path))
+        dir_path = os.path.dirname(os.path.normpath(p))
+        while dir_path:
+          dirs_to_remove.add(os.path.join(root, dir_path))
+          dir_path = os.path.dirname(dir_path)
       elif os.path.isdir(path):
         dirs_to_remove.add(os.path.normpath(path))
       if progress_callback:
@@ -640,7 +642,7 @@ class InstallationManifest(object):
       files: list of str, The files that were created by the installation.
     """
     with open(self.manifest_file, 'w') as fp:
-      for f in sorted(files):
+      for f in _NormalizeFileList(files):
         fp.write(f + '\n')
     snapshot.WriteToFile(self.snapshot_file)
 
@@ -697,7 +699,31 @@ class InstallationManifest(object):
     with open(self.manifest_file) as f:
       dirs = set()
       for line in f:
-        fixed = line.rstrip()
-        if fixed.endswith('/'):
-          dirs.add(fixed)
+        norm_file_path = os.path.dirname(line.rstrip())
+        prev_file = norm_file_path + '/'
+        while len(prev_file) > len(norm_file_path) and norm_file_path:
+          dirs.add(norm_file_path)
+          prev_file = norm_file_path
+          norm_file_path = os.path.dirname(norm_file_path)
+
     return dirs
+
+
+def _NormalizeFileList(file_list):
+  """Removes non-empty directory entries and sorts resulting list."""
+  parent_directories = set([])
+  directories = set([])
+  files = set([])
+  for f in file_list:
+    # Drops any trailing /.
+    norm_file_path = posixpath.normpath(f)
+    if f.endswith('/'):
+      directories.add(norm_file_path + '/')
+    else:
+      files.add(norm_file_path)
+    norm_file_path = os.path.dirname(norm_file_path)
+    while norm_file_path:
+      parent_directories.add(norm_file_path + '/')
+      norm_file_path = os.path.dirname(norm_file_path)
+
+  return sorted((directories - parent_directories) | files)

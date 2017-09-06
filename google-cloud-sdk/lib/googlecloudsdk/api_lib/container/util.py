@@ -49,7 +49,9 @@ OPERATIONS_FORMAT = """
         zone,
         targetLink.basename():label=TARGET,
         statusMessage,
-        status
+        status,
+        startTime,
+        endTime
     )
 """
 

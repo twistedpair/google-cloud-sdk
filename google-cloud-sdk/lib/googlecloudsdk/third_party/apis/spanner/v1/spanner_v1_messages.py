@@ -588,6 +588,16 @@ class CreateReadPartitionsRequest(_messages.Message):
   transaction = _messages.MessageField('TransactionSelector', 6)
 
 
+class CreateSessionRequest(_messages.Message):
+  """The request for CreateSession.
+
+  Fields:
+    session: The session to create.
+  """
+
+  session = _messages.MessageField('Session', 1)
+
+
 class DataAccessOptions(_messages.Message):
   """Write a Data Access (Gin) log
 
@@ -1180,6 +1190,19 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListSessionsResponse(_messages.Message):
+  """The response for ListSessions.
+
+  Fields:
+    nextPageToken: `next_page_token` can be sent in a subsequent ListSessions
+      call to fetch more of the matching sessions.
+    sessions: The list of requested sessions.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sessions = _messages.MessageField('Session', 2, repeated=True)
+
+
 class LogConfig(_messages.Message):
   """Specifies what kind of log the caller must write
 
@@ -1241,7 +1264,7 @@ class Operation(_messages.Message):
 
   Fields:
     done: If the value is `false`, it means the operation is still in
-      progress. If true, the operation is completed, and either `error` or
+      progress. If `true`, the operation is completed, and either `error` or
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
@@ -1868,11 +1891,61 @@ class Rule(_messages.Message):
 class Session(_messages.Message):
   """A session in the Cloud Spanner API.
 
+  Messages:
+    LabelsValue: The labels for the session.   * Label keys must be between 1
+      and 63 characters long and must conform to    the following regular
+      expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be
+      between 0 and 63 characters long and must conform    to the regular
+      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 20 labels
+      can be associated with a given session.
+
   Fields:
-    name: Required. The name of the session.
+    approximateLastUseTime: Output only. The approximate timestamp when the
+      session is last used. It is typically earlier than the actual last use
+      time.
+    createTime: Output only. The timestamp when the session is created.
+    labels: The labels for the session.   * Label keys must be between 1 and
+      63 characters long and must conform to    the following regular
+      expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be
+      between 0 and 63 characters long and must conform    to the regular
+      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 20 labels
+      can be associated with a given session.
+    name: The name of the session.
   """
 
-  name = _messages.StringField(1)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """The labels for the session.   * Label keys must be between 1 and 63
+    characters long and must conform to    the following regular expression:
+    `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be between 0 and 63
+    characters long and must conform    to the regular expression
+    `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 20 labels can be
+    associated with a given session.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  approximateLastUseTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2174,10 +2247,13 @@ class SpannerProjectsInstancesDatabasesSessionsCreateRequest(_messages.Message):
   """A SpannerProjectsInstancesDatabasesSessionsCreateRequest object.
 
   Fields:
+    createSessionRequest: A CreateSessionRequest resource to be passed as the
+      request body.
     database: Required. The database in which the new session is created.
   """
 
-  database = _messages.StringField(1, required=True)
+  createSessionRequest = _messages.MessageField('CreateSessionRequest', 1)
+  database = _messages.StringField(2, required=True)
 
 
 class SpannerProjectsInstancesDatabasesSessionsDeleteRequest(_messages.Message):
@@ -2225,6 +2301,29 @@ class SpannerProjectsInstancesDatabasesSessionsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesDatabasesSessionsListRequest(_messages.Message):
+  """A SpannerProjectsInstancesDatabasesSessionsListRequest object.
+
+  Fields:
+    database: Required. The database in which to list sessions.
+    filter: An expression for filtering the results of the request. Filter
+      rules are case insensitive. The fields eligible for filtering are:    *
+      labels.key where key is the name of a label  Some examples of using
+      filters are:    * labels.env:* --> The session has the label "env".   *
+      labels.env:dev --> The session has the label "env" and the value of
+      the label contains the string "dev".
+    pageSize: Number of sessions to be returned in the response. If 0 or less,
+      defaults to the server's maximum allowed page size.
+    pageToken: If non-empty, `page_token` should contain a next_page_token
+      from a previous ListSessionsResponse.
+  """
+
+  database = _messages.StringField(1, required=True)
+  filter = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class SpannerProjectsInstancesDatabasesSessionsReadRequest(_messages.Message):

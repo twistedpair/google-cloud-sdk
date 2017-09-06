@@ -161,7 +161,7 @@
           }
         },
         "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf true, the operation is completed, and either `error` or `response` is\navailable.",
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
           "type": "boolean"
         },
         "error": {
@@ -874,13 +874,59 @@
         }
       }
     },
+    "CreateSessionRequest": {
+      "id": "CreateSessionRequest",
+      "description": "The request for CreateSession.",
+      "type": "object",
+      "properties": {
+        "session": {
+          "description": "The session to create.",
+          "$ref": "Session"
+        }
+      }
+    },
     "Session": {
       "id": "Session",
       "description": "A session in the Cloud Spanner API.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The name of the session.",
+          "description": "The name of the session.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "The labels for the session.\n\n * Label keys must be between 1 and 63 characters long and must conform to\n   the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.\n * Label values must be between 0 and 63 characters long and must conform\n   to the regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.\n * No more than 20 labels can be associated with a given session.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the session is created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "approximateLastUseTime": {
+          "description": "Output only. The approximate timestamp when the session is last used. It is\ntypically earlier than the actual last use time.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListSessionsResponse": {
+      "id": "ListSessionsResponse",
+      "description": "The response for ListSessions.",
+      "type": "object",
+      "properties": {
+        "sessions": {
+          "description": "The list of requested sessions.",
+          "type": "array",
+          "items": {
+            "$ref": "Session"
+          }
+        },
+        "nextPageToken": {
+          "description": "`next_page_token` can be sent in a subsequent\nListSessions call to fetch more of the matching\nsessions.",
           "type": "string"
         }
       }
@@ -2593,6 +2639,9 @@
                       "parameterOrder": [
                         "database"
                       ],
+                      "request": {
+                        "$ref": "CreateSessionRequest"
+                      },
                       "response": {
                         "$ref": "Session"
                       },
@@ -2621,6 +2670,48 @@
                       ],
                       "response": {
                         "$ref": "Session"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/spanner.data"
+                      ]
+                    },
+                    "list": {
+                      "id": "spanner.projects.instances.databases.sessions.list",
+                      "path": "v1/{+database}/sessions",
+                      "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions",
+                      "httpMethod": "GET",
+                      "description": "Lists all sessions in a given database.",
+                      "parameters": {
+                        "database": {
+                          "description": "Required. The database in which to list sessions.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Number of sessions to be returned in the response. If 0 or less, defaults\nto the server's maximum allowed page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "If non-empty, `page_token` should contain a\nnext_page_token from a previous\nListSessionsResponse.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "An expression for filtering the results of the request. Filter rules are\ncase insensitive. The fields eligible for filtering are:\n\n  * labels.key where key is the name of a label\n\nSome examples of using filters are:\n\n  * labels.env:* --> The session has the label \"env\".\n  * labels.env:dev --> The session has the label \"env\" and the value of\n                       the label contains the string \"dev\".",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "database"
+                      ],
+                      "response": {
+                        "$ref": "ListSessionsResponse"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",

@@ -55,24 +55,33 @@ No label named '{name}' found on cluster '{cluster}'."""
 NO_LABELS_ON_CLUSTER_ERROR_MSG = """\
 Cluster '{cluster}' has no labels to remove."""
 
-SERVICES_IPV4_CIDR_ALPHA_ONLY_ERROR_MSG = """\
-Cannot use --services-ipv4-cidr without --enable-ip-alias and --enable_kubernetes_alpha.
-"""
-
-CREATE_SUBNETWORK_ALPHA_ONLY_ERROR_MSG = """\
-Cannot use --create-subnetwork without --enable-ip-alias and --enable_kubernetes_alpha.
-"""
-
-ENABLE_IP_ALIAS_ALPHA_ONLY_ERROR_MSG = """\
-Only alpha clusters (--enable_kubernetes_alpha) can use --enable-ip-alias.
-"""
-
 CREATE_SUBNETWORK_INVALID_KEY_ERROR_MSG = """\
 Invalid key '{key}' for --create-subnetwork (must be one of 'name', 'range').
 """
 
 CREATE_SUBNETWORK_WITH_SUBNETWORK_ERROR_MSG = """\
-Cannot specify both '--subnetwork' and '--create-subnetwork' at the same time.
+Cannot specify both --subnetwork and --create-subnetwork at the same time.
+"""
+
+IP_ALIAS_ONLY_OPTION_ERROR_MSG = """\
+Cannot specify --{opt} without --enable-ip-alias.
+"""
+
+CREATE_SUBNETWORK_WITH_EXPLICIT_SECONDARY_RANGES_ERROR_MSG = """\
+Cannot use --create-subnetwork with explicit secondary range options
+(--cluster-secondary-range-name, --services-secondary-range-name).
+"""
+
+MISSING_EXPLICIT_SECONDARY_RANGE_ERROR_MSG = """\
+Must specify both --cluster-secondary-range-name and --services-secondary-range-name.
+"""
+
+NODE_TAINT_INCORRECT_FORMAT_ERROR_MSG = """\
+Invalid value [{key}={value}] for argument --node-taints. Node taint is of format key=value:effect
+"""
+
+NODE_TAINT_INCORRECT_EFFECT_ERROR_MSG = """\
+Invalid taint effect [{effect}] for argument --node-taints. Valid effect values are NoSchedule, PreferNoSchedule, NoExecute'
 """
 
 MAX_NODES_PER_POOL = 1000
@@ -191,6 +200,7 @@ class CreateClusterOptions(object):
                local_ssd_count=None,
                tags=None,
                node_labels=None,
+               node_taints=None,
                enable_autoscaling=None,
                min_nodes=None,
                max_nodes=None,
@@ -210,9 +220,12 @@ class CreateClusterOptions(object):
                services_ipv4_cidr=None,
                enable_ip_alias=None,
                create_subnetwork=None,
+               cluster_secondary_range_name=None,
+               services_secondary_range_name=None,
                accelerators=None,
                enable_audit_logging=None,
-               min_cpu_platform=None):
+               min_cpu_platform=None,
+               maintenance_window=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -233,6 +246,7 @@ class CreateClusterOptions(object):
     self.local_ssd_count = local_ssd_count
     self.tags = tags
     self.node_labels = node_labels
+    self.node_taints = node_taints
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
@@ -252,9 +266,12 @@ class CreateClusterOptions(object):
     self.services_ipv4_cidr = services_ipv4_cidr
     self.enable_ip_alias = enable_ip_alias
     self.create_subnetwork = create_subnetwork
+    self.cluster_secondary_range_name = cluster_secondary_range_name
+    self.services_secondary_range_name = services_secondary_range_name
     self.accelerators = accelerators
     self.enable_audit_logging = enable_audit_logging
     self.min_cpu_platform = min_cpu_platform
+    self.maintenance_window = maintenance_window
 
 
 INGRESS = 'HttpLoadBalancing'
@@ -322,6 +339,7 @@ class CreateNodePoolOptions(object):
                local_ssd_count=None,
                tags=None,
                node_labels=None,
+               node_taints=None,
                enable_autoscaling=None,
                max_nodes=None,
                min_nodes=None,
@@ -341,6 +359,7 @@ class CreateNodePoolOptions(object):
     self.local_ssd_count = local_ssd_count
     self.tags = tags
     self.node_labels = node_labels
+    self.node_taints = node_taints
     self.enable_autoscaling = enable_autoscaling
     self.max_nodes = max_nodes
     self.min_nodes = min_nodes
@@ -614,6 +633,7 @@ class APIAdapter(object):
       node_config.imageType = options.image_type
 
     _AddNodeLabelsToNodeConfig(node_config, options)
+    self._AddNodeTaintsToNodeConfig(node_config, options)
 
     if options.preemptible:
       node_config.preemptible = options.preemptible
@@ -652,12 +672,13 @@ class APIAdapter(object):
             enabled=options.enable_autoscaling,
             minNodeCount=options.min_nodes,
             maxNodeCount=options.max_nodes)
-      pools.append(self.messages.NodePool(
-          name=name,
-          initialNodeCount=nodes,
-          config=node_config,
-          autoscaling=autoscaling,
-          management=self._GetNodeManagement(options)))
+      pools.append(
+          self.messages.NodePool(
+              name=name,
+              initialNodeCount=nodes,
+              config=node_config,
+              autoscaling=autoscaling,
+              management=self._GetNodeManagement(options)))
       to_add -= nodes
 
     cluster = self.messages.Cluster(
@@ -717,6 +738,13 @@ class APIAdapter(object):
       cluster.auditConfig = self.messages.AuditConfig(
           enabled=options.enable_audit_logging)
 
+    if options.maintenance_window is not None:
+      policy = self.messages.MaintenancePolicy(
+          window=self.messages.MaintenanceWindow(
+              dailyMaintenanceWindow=self.messages.DailyMaintenanceWindow(
+                  startTime=options.maintenance_window)))
+      cluster.maintenancePolicy = policy
+
     if options.labels is not None:
       labels = self.messages.Cluster.ResourceLabelsValue()
       props = []
@@ -725,42 +753,58 @@ class APIAdapter(object):
       labels.additionalProperties = props
       cluster.resourceLabels = labels
 
-    if options.enable_kubernetes_alpha:
-      if not options.enable_ip_alias and options.services_ipv4_cidr:
-        raise util.Error(SERVICES_IPV4_CIDR_ALPHA_ONLY_ERROR_MSG)
-      if not options.enable_ip_alias and options.create_subnetwork:
-        raise util.Error(CREATE_SUBNETWORK_ALPHA_ONLY_ERROR_MSG)
-      if options.create_subnetwork and options.subnetwork:
-        raise util.Error(CREATE_SUBNETWORK_WITH_SUBNETWORK_ERROR_MSG)
+    self.ParseIPAliasOptions(options, cluster)
+    return cluster
 
-      if options.enable_ip_alias:
-        subnetwork_name = None
-        node_ipv4_cidr = None
+  def ParseIPAliasOptions(self, options, cluster):
+    """Parses the options for IP Alias."""
+    ip_alias_only_options = [('services-ipv4-cidr', options.services_ipv4_cidr),
+                             ('create-subnetwork', options.create_subnetwork),
+                             ('cluster-secondary-range-name',
+                              options.cluster_secondary_range_name),
+                             ('services-secondary-range-name',
+                              options.services_secondary_range_name)]
+    if not options.enable_ip_alias:
+      for name, opt in ip_alias_only_options:
+        if opt:
+          raise util.Error(IP_ALIAS_ONLY_OPTION_ERROR_MSG.format(opt=name))
 
-        if options.create_subnetwork:
-          for key in options.create_subnetwork:
-            if key not in ['name', 'range']:
-              raise util.Error(
-                  CREATE_SUBNETWORK_INVALID_KEY_ERROR_MSG.format(key=key))
-          subnetwork_name = options.create_subnetwork.get('name', None)
-          node_ipv4_cidr = options.create_subnetwork.get('range', None)
-        policy = self.messages.IPAllocationPolicy(
-            useIpAliases=options.enable_ip_alias,
-            # For V1, create_subnetwork is always true.
-            createSubnetwork=True,
-            subnetworkName=subnetwork_name,
-            clusterIpv4Cidr=options.cluster_ipv4_cidr,
-            nodeIpv4Cidr=node_ipv4_cidr,
-            servicesIpv4Cidr=options.services_ipv4_cidr)
-        cluster.clusterIpv4Cidr = None
-        cluster.ipAllocationPolicy = policy
-    else:
-      if options.enable_ip_alias:
-        raise util.Error(ENABLE_IP_ALIAS_ALPHA_ONLY_ERROR_MSG)
-      if options.services_ipv4_cidr:
-        raise util.Error(SERVICES_IPV4_CIDR_ALPHA_ONLY_ERROR_MSG)
-      if options.create_subnetwork:
-        raise util.Error(CREATE_SUBNETWORK_ALPHA_ONLY_ERROR_MSG)
+    if options.subnetwork and options.create_subnetwork is not None:
+      raise util.Error(CREATE_SUBNETWORK_WITH_SUBNETWORK_ERROR_MSG)
+    if options.create_subnetwork is not None and (
+        options.cluster_secondary_range_name or
+        options.services_secondary_range_name):
+      raise util.Error(
+          CREATE_SUBNETWORK_WITH_EXPLICIT_SECONDARY_RANGES_ERROR_MSG)
+    if ((options.cluster_secondary_range_name and
+         not options.services_secondary_range_name) or
+        (not options.cluster_secondary_range_name and
+         options.services_secondary_range_name)):
+      raise util.Error(MISSING_EXPLICIT_SECONDARY_RANGE_ERROR_MSG)
+
+    if options.enable_ip_alias:
+      subnetwork_name = None
+      node_ipv4_cidr = None
+
+      if options.create_subnetwork is not None:
+        for key in options.create_subnetwork:
+          if key not in ['name', 'range']:
+            raise util.Error(
+                CREATE_SUBNETWORK_INVALID_KEY_ERROR_MSG.format(key=key))
+        subnetwork_name = options.create_subnetwork.get('name', None)
+        node_ipv4_cidr = options.create_subnetwork.get('range', None)
+
+      policy = self.messages.IPAllocationPolicy(
+          useIpAliases=options.enable_ip_alias,
+          createSubnetwork=options.create_subnetwork is not None,
+          subnetworkName=subnetwork_name,
+          clusterIpv4CidrBlock=options.cluster_ipv4_cidr,
+          nodeIpv4CidrBlock=node_ipv4_cidr,
+          servicesIpv4CidrBlock=options.services_ipv4_cidr,
+          clusterSecondaryRangeName=options.cluster_secondary_range_name,
+          servicesSecondaryRangeName=options.services_secondary_range_name)
+      cluster.clusterIpv4Cidr = None
+      cluster.ipAllocationPolicy = policy
     return cluster
 
   def CreateCluster(self, cluster_ref, options):
@@ -857,6 +901,33 @@ class APIAdapter(object):
           disabled=disable_dashboard)
     return addons
 
+  def _AddNodeTaintsToNodeConfig(self, node_config, options):
+    """Add nodeTaints to nodeConfig."""
+    if options.node_taints is None:
+      return
+    taints = []
+    effect_enum = self.messages.NodeTaint.EffectValueValuesEnum
+    for key, value in sorted(options.node_taints.iteritems()):
+      strs = value.split(':')
+      if len(strs) != 2:
+        raise util.Error(
+            NODE_TAINT_INCORRECT_FORMAT_ERROR_MSG.format(key=key, value=value))
+      value = strs[0]
+      taint_effect = strs[1]
+      if taint_effect == 'NoSchedule':
+        effect = effect_enum.NO_SCHEDULE
+      elif taint_effect == 'PreferNoSchedule':
+        effect = effect_enum.PREFER_NO_SCHEDULE
+      elif taint_effect == 'NoExecute':
+        effect = effect_enum.NO_EXECUTE
+      else:
+        raise util.Error(
+            NODE_TAINT_INCORRECT_EFFECT_ERROR_MSG.format(effect=strs[1]))
+      taints.append(self.messages.NodeTaint(
+          key=key, value=value, effect=effect))
+
+    node_config.taints = taints
+
   def SetNetworkPolicyCommon(self, options):
     """Returns a SetNetworkPolicy operation."""
     return self.messages.NetworkPolicy(
@@ -886,6 +957,9 @@ class APIAdapter(object):
 
   def CompleteIpRotation(self, cluster_ref):
     raise NotImplementedError('CompleteIpRotation is not overridden')
+
+  def SetMaintenanceWindow(self, cluster_ref, maintenance_window):
+    raise NotImplementedError('SetMaintenanceWindow is not overridden')
 
   def DeleteCluster(self, cluster_ref):
     raise NotImplementedError('DeleteCluster is not overridden')
@@ -927,6 +1001,7 @@ class APIAdapter(object):
       ]
 
     _AddNodeLabelsToNodeConfig(node_config, options)
+    self._AddNodeTaintsToNodeConfig(node_config, options)
 
     if options.preemptible:
       node_config.preemptible = options.preemptible
@@ -1229,6 +1304,26 @@ class V1Adapter(APIAdapter):
         projectId=project, zone=zone)
     return self.client.projects_zones_clusters.List(req)
 
+  def SetMaintenanceWindow(self, cluster_ref, maintenance_window):
+    policy = self.messages.MaintenancePolicy(
+        window=self.messages.MaintenanceWindow(
+            dailyMaintenanceWindow=self.messages.DailyMaintenanceWindow(
+                startTime=maintenance_window)))
+    req = (self.messages.
+           ContainerProjectsZonesClustersSetMaintenancePolicyRequest(
+               projectId=cluster_ref.projectId,
+               zone=cluster_ref.zone,
+               clusterId=cluster_ref.clusterId,
+               setMaintenancePolicyRequest=(self.messages.
+                                            SetMaintenancePolicyRequest(
+                                                maintenancePolicy=policy))))
+    if maintenance_window == 'None':
+      req.setMaintenancePolicyRequest.maintenancePolicy = None
+
+    operation = self.client.projects_zones_clusters.SetMaintenancePolicy(req)
+
+    return self.ParseOperation(operation.name, cluster_ref.zone)
+
   def CreateNodePool(self, node_pool_ref, options):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
     create_node_pool_req = self.messages.CreateNodePoolRequest(nodePool=pool)
@@ -1477,6 +1572,24 @@ class V1Beta1Adapter(APIAdapter):
     req = self.messages.ContainerProjectsLocationsClustersListRequest(
         parent=ProjectLocation(project, zone))
     return self.client.projects_locations_clusters.List(req)
+
+  def SetMaintenanceWindow(self, cluster_ref, maintenance_window):
+    policy = self.messages.MaintenancePolicy(
+        window=self.messages.MaintenanceWindow(
+            dailyMaintenanceWindow=self.messages.DailyMaintenanceWindow(
+                startTime=maintenance_window)))
+    req = self.messages.SetMaintenancePolicyRequest(
+        name=ProjectLocationCluster(cluster_ref.projectId,
+                                    cluster_ref.zone,
+                                    cluster_ref.clusterId),
+        maintenancePolicy=policy)
+    if maintenance_window == 'None':
+      req.maintenancePolicy = None
+
+    operation = self.client.projects_locations_clusters.SetMaintenancePolicy(
+        req)
+
+    return self.ParseOperation(operation.name, cluster_ref.zone)
 
   def CreateNodePool(self, node_pool_ref, options):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)

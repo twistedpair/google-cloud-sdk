@@ -573,7 +573,8 @@ def _TranslateZonesFlag(args, resources):
   # simple pattern?
   zone_regexp = ' '.join([zone for zone in args.zones])
   zone_arg = '(zone :({}))'.format(zone_regexp)
-  args.filter, filter_expr = filter_arg + zone_arg, None
+  args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(
+      filter_arg + zone_arg)
   return filter_expr, scope_set
 
 
@@ -621,7 +622,8 @@ def _TranslateRegionsFlag(args, resources):
   # simple pattern?
   region_regexp = ' '.join([region for region in args.regions])
   region_arg = '(region :({}))'.format(region_regexp)
-  args.filter, filter_expr = filter_arg + region_arg, None
+  args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(
+      filter_arg + region_arg)
   return filter_expr, scope_set
 
 
@@ -679,7 +681,7 @@ def ParseMultiScopeFlags(args, resources):
             properties.VALUES.core.project.GetOrFail(),
             collection='compute.projects')
     ])
-    args.filter, filter_expr = args.filter, None
+    args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(args.filter)
   else:
     scope_set = AllScopes(
         [
@@ -710,7 +712,7 @@ def ParseNamesAndRegexpFlags(args, resources):
           properties.VALUES.core.project.GetOrFail(),
           collection='compute.projects')
   ])
-  args.filter, filter_expr = args.filter, None
+  args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(args.filter)
   return _Frontend(filter_expr, frontend.max_results, scope_set)
 
 

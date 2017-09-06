@@ -217,14 +217,18 @@ class Cache(metadata_table.CacheUsingMetadataTable):
       self.Close(commit=False)
       raise
 
-  def Delete(self):
-    """Permanently deletes the persistent cache."""
-    self.Close(commit=False)
+  def _DeleteCacheFile(self):
+    """Permanently deletes the persistent cache file."""
     try:
       os.remove(self.name)
     except OSError as e:
       if e.errno not in (errno.ENOENT, errno.EISDIR):
         raise
+
+  def Delete(self):
+    """Closes and permanently deletes the persistent cache."""
+    self.Close(commit=False)
+    self._DeleteCacheFile()
 
   def Commit(self):
     """Commits all operations up to this point."""
@@ -237,7 +241,7 @@ class Cache(metadata_table.CacheUsingMetadataTable):
     self._persistent = True
 
   def Close(self, commit=True):
-    """Closes the cache, optionally comitting any changes.
+    """Closes the cache, optionally committing any changes.
 
     Args:
       commit: Commits any changes before closing if True.
@@ -245,13 +249,14 @@ class Cache(metadata_table.CacheUsingMetadataTable):
     if self._db:
       if commit:
         self.Commit()
+      del self.cursor
       self._db.close()
       self._db = None
       self._tables = None
       if not commit and not self._persistent:
         # Need this because sqlite3 creates a filesystem artifact even if there
         # were no commits.
-        self.Delete()
+        self._DeleteCacheFile()
 
   def _ImplementationCreateTable(self, name, columns, keys):
     """sqlite3 implementation specific _CreateTable."""

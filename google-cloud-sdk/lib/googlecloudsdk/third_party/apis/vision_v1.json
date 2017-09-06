@@ -1275,7 +1275,7 @@
           "type": "string"
         },
         "score": {
-          "description": "(Deprecated) Overall relevancy score for the image.",
+          "description": "Overall relevancy score for the image.\nNot normalized and not comparable across different image queries.",
           "type": "number",
           "format": "float"
         }
@@ -1291,7 +1291,7 @@
           "type": "string"
         },
         "score": {
-          "description": "(Deprecated) Overall relevancy score for the web page.",
+          "description": "Overall relevancy score for the web page.\nNot normalized and not comparable across different image queries.",
           "type": "number",
           "format": "float"
         }

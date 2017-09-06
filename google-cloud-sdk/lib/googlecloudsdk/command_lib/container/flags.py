@@ -287,6 +287,34 @@ See http://kubernetes.io/docs/user-guide/node-selection/ for examples."""
       help=help_text)
 
 
+def AddNodeTaintsFlag(parser, for_node_pool=False, hidden=False):
+  """Adds a --node-taints flag to the given parser."""
+  if for_node_pool:
+    help_text = """\
+Applies the given kubernetes taints on all nodes in the new node-pool, which can be used with tolerations for pod scheduling. Example:
+
+  $ {command} node-pool-1 --cluster=example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
+"""
+  else:
+    help_text = """\
+Applies the given kubernetes taints on all nodes in default node-pool(s) in new cluster, which can be used with tolerations for pod scheduling. Example:
+
+  $ {command} example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
+"""
+  help_text += """
+New nodes, including ones created by resize or recreate, will have these taints
+on the kubernetes API node object and can be used with tolerations for pod scheduling.
+See https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for examples.
+"""
+
+  parser.add_argument(
+      '--node-taints',
+      metavar='NODE_TAINT',
+      type=arg_parsers.ArgDict(),
+      help=help_text,
+      hidden=hidden)
+
+
 def AddPreemptibleFlag(parser, for_node_pool=False, suppressed=False):
   """Adds a --preemptible flag to parser."""
   if suppressed:
@@ -513,6 +541,38 @@ state."""
       help=help_text)
 
 
+def AddMaintenanceWindowFlag(parser, hidden=False, add_unset_text=False):
+  """Adds a --maintenance-window flag to parser."""
+  help_text = """\
+Set a time of day when you prefer maintenance to start on this cluster. \
+For example:
+
+  $ {command} example-cluster --maintenance-window=12:43
+
+The time corresponds to the UTC time zone, and must be in HH:MM format.
+"""
+  unset_text = """\
+  To remove an existing maintenance window from the cluster, use \
+\'--maintenance-window=None\'
+"""
+  description = 'Maintenance windows must be passed in using HH:MM format.'
+  unset_description = ' They can also be removed by using the word \"None\".'
+
+  if add_unset_text:
+    help_text += unset_text
+    description += unset_description
+
+  type_ = arg_parsers.RegexpValidator(
+      r'^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$|^None$',
+      description)
+  parser.add_argument(
+      '--maintenance-window',
+      default=None,
+      hidden=hidden,
+      type=type_,
+      help=help_text)
+
+
 def AddLabelsFlag(parser, suppressed=False):
   """Adds Labels related flags to parser.
 
@@ -616,7 +676,6 @@ range.
 
 Can not be specified unless '--enable-kubernetes-alpha' is also specified.
 """)
-
   parser.add_argument(
       '--services-ipv4-cidr',
       metavar='CIDR',
@@ -632,7 +691,6 @@ If unspecified, the services CIDR range will use automatic defaults.
 
 Can not be specified unless '--enable-ip-alias' is also specified.
 """)
-
   parser.add_argument(
       '--create-subnetwork',
       metavar='KEY=VALUE',
@@ -652,6 +710,10 @@ the free space in the cluster's network.
 
 Examples:
 
+Create a new subnetwork with a default name and size.
+
+      $ {command} --create-subnetwork ""
+
 Create a new subnetwork named "my-subnet" with netmask of size 21.
 
       $ {command} --create-subnetwork name=my-subnet,range=/21
@@ -667,6 +729,30 @@ Create a new subnetwork with the name "my-subnet" with a default range.
 
 Can not be specified unless '--enable-ip-alias' is also specified. Can
 not be used in conjunction with the '--subnetwork' option.
+""")
+  parser.add_argument(
+      '--cluster-secondary-range-name',
+      metavar='NAME',
+      hidden=hidden,
+      help="""\
+Set the secondary range to be used as the source for pod IPs. Alias
+ranges will be allocated from this secondary range.  NAME must be the
+name of an existing secondary range in the cluster subnetwork.
+
+Must be used in conjunction with '--enable-ip-alias'. Cannot be used
+with --create-subnetwork.
+""")
+  parser.add_argument(
+      '--services-secondary-range-name',
+      metavar='NAME',
+      hidden=hidden,
+      help="""\
+Set the secondary range to be used for services
+(e.g. ClusterIPs). NAME must be the name of an existing secondary
+range in the cluster subnetwork.
+
+Must be used in conjunction with '--enable-ip-alias'. Cannot be used
+with --create-subnetwork.
 """)
 
 

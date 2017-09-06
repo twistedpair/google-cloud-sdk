@@ -1280,6 +1280,151 @@
         }
       }
     },
+    "GoogleCloudMlV1beta1__OperationMetadata": {
+      "id": "GoogleCloudMlV1beta1__OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.\n\nNext ID: 9",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "The time the operation was submitted.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startTime": {
+          "description": "The time operation processing started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time operation processing completed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "isCancellationRequested": {
+          "description": "Indicates whether a request to cancel this operation has been made.",
+          "type": "boolean"
+        },
+        "operationType": {
+          "description": "The operation type.",
+          "enumDescriptions": [
+            "Unspecified operation type.",
+            "An operation to create a new version.",
+            "An operation to delete an existing version.",
+            "An operation to delete an existing model.",
+            "An operation to update an existing model.",
+            "An operation to update an existing version."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATION_TYPE_UNSPECIFIED",
+            "CREATE_VERSION",
+            "DELETE_VERSION",
+            "DELETE_MODEL",
+            "UPDATE_MODEL",
+            "UPDATE_VERSION"
+          ]
+        },
+        "modelName": {
+          "description": "Contains the name of the model associated with the operation.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Contains the version associated with the operation.",
+          "$ref": "GoogleCloudMlV1beta1__Version"
+        }
+      }
+    },
+    "GoogleCloudMlV1beta1__Version": {
+      "id": "GoogleCloudMlV1beta1__Version",
+      "description": "Represents a version of the model.\n\nEach version is a trained model deployed in the cloud, ready to handle\nprediction requests. A model can have multiple versions. You can get\ninformation about all of the versions of a given model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/list).\n\nNext ID: 18",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required.The name specified for the version when it was created.\n\nThe version name must be unique within the model it is created in.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. The description specified for the version when it was created.",
+          "type": "string"
+        },
+        "isDefault": {
+          "description": "Output only. If true, this version will be used to handle prediction\nrequests that do not specify a version.\n\nYou can change the default version by calling\n[projects.methods.versions.setDefault](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/setDefault).",
+          "type": "boolean"
+        },
+        "deploymentUri": {
+          "description": "Required. The Google Cloud Storage location of the trained model used to\ncreate the version. See the\n[overview of model\ndeployment](\/ml-engine\/docs\/concepts\/deployment-overview) for more\ninformation.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1beta1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.\nThe total number of model files can't exceed 1000.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time the version was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastUseTime": {
+          "description": "Output only. The time the version was last used for prediction.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "runtimeVersion": {
+          "description": "Optional. The Google Cloud ML runtime version to use for this deployment.\nIf not set, Google Cloud ML will choose a version.",
+          "type": "string"
+        },
+        "autoScaling": {
+          "description": "Automatically scale the number of nodes used to serve the model in\nresponse to increases and decreases in traffic. Care should be\ntaken to ramp up traffic according to the model's ability to scale\nor you will start seeing increases in latency and 429 response codes.",
+          "$ref": "GoogleCloudMlV1beta1__AutoScaling"
+        },
+        "manualScaling": {
+          "description": "Manually select the number of nodes to use for serving the\nmodel. You should generally use `auto_scaling` with an appropriate\n`min_nodes` instead, but this option is available if you want more\npredictable billing. Beware that latency and error rates will increase\nif the traffic exceeds that capability of the system to serve it based\non the selected number of nodes.",
+          "$ref": "GoogleCloudMlV1beta1__ManualScaling"
+        },
+        "state": {
+          "description": "Output only. The state of a version.",
+          "enumDescriptions": [
+            "The version state is unspecified.",
+            "The version is ready for prediction.",
+            "The version is in the process of creation.",
+            "The version failed to be created, possibly cancelled.\n`error_message` should contain the details of the failure.",
+            "The version is in the process of deletion."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "READY",
+            "CREATING",
+            "FAILED",
+            "DELETING"
+          ]
+        },
+        "errorMessage": {
+          "description": "Output only. The details of a failure or a cancellation.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudMlV1beta1__AutoScaling": {
+      "id": "GoogleCloudMlV1beta1__AutoScaling",
+      "description": "Options for automatically scaling a model.",
+      "type": "object",
+      "properties": {
+        "minNodes": {
+          "description": "Optional. The minimum number of nodes to allocate for this model. These\nnodes are always up, starting from the time the model is deployed, so the\ncost of operating this model will be at least\n`rate` * `min_nodes` * number of hours since last billing cycle,\nwhere `rate` is the cost per node-hour as documented in\n[pricing](https:\/\/cloud.google.com\/ml-engine\/pricing#prediction_pricing),\neven if no predictions are performed. There is additional cost for each\nprediction performed.\n\nUnlike manual scaling, if the load gets too heavy for the nodes\nthat are up, the service will automatically add nodes to handle the\nincreased load as well as scale back as traffic drops, always maintaining\nat least `min_nodes`. You will be charged for the time in which additional\nnodes are used.\n\nIf not specified, `min_nodes` defaults to 0, in which case, when traffic\nto a model stops (and after a cool-down period), nodes will be shut down\nand no charges will be incurred until traffic to the model resumes.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudMlV1beta1__ManualScaling": {
+      "id": "GoogleCloudMlV1beta1__ManualScaling",
+      "description": "Options for manually scaling a model.",
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "description": "The number of nodes to allocate for this model. These nodes are always up,\nstarting from the time the model is deployed, so the cost of operating\nthis model will be proportional to `nodes` * number of hours since\nlast billing cycle plus the cost for each prediction performed.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "GoogleCloudMlV1__OperationMetadata": {
       "id": "GoogleCloudMlV1__OperationMetadata",
       "description": "Represents the metadata of the long-running operation.\n\nNext ID: 9",

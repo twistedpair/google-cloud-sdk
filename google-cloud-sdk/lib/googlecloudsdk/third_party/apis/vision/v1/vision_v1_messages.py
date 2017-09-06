@@ -1303,7 +1303,8 @@ class WebImage(_messages.Message):
   """Metadata for online images.
 
   Fields:
-    score: (Deprecated) Overall relevancy score for the image.
+    score: Overall relevancy score for the image. Not normalized and not
+      comparable across different image queries.
     url: The result image URL.
   """
 
@@ -1315,7 +1316,8 @@ class WebPage(_messages.Message):
   """Metadata for web pages.
 
   Fields:
-    score: (Deprecated) Overall relevancy score for the web page.
+    score: Overall relevancy score for the web page. Not normalized and not
+      comparable across different image queries.
     url: The result web page URL.
   """
 

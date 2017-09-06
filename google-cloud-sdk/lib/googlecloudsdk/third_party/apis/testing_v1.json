@@ -578,6 +578,28 @@
         "name": {
           "description": "Client name, such as gcloud.\nRequired",
           "type": "string"
+        },
+        "clientInfoDetails": {
+          "description": "The list of detailed information about client.",
+          "type": "array",
+          "items": {
+            "$ref": "ClientInfoDetail"
+          }
+        }
+      }
+    },
+    "ClientInfoDetail": {
+      "id": "ClientInfoDetail",
+      "description": "Key-value pair of detailed information about the client which invoked the\ntest. For example {'Version', '1.0'}, {'Release Track', 'BETA'}",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "The key of detailed client information.\nRequired",
+          "type": "string"
+        },
+        "value": {
+          "description": "The value of detailed client information.\nRequired",
+          "type": "string"
         }
       }
     },

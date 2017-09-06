@@ -439,7 +439,7 @@ def BuildConfig(config=None, template=None,
       # flag is completely removed, simply change the warning to an exception
       log.warn('Creating deployments from templates with the \'--config\' '
                'flag has been deprecated.  Support for this will be '
-               'removed 2017/11/08.  Please use \'--template\'instead.')
+               'removed 2017/11/08.  Please use \'--template\' instead.')
     elif properties:
       raise exceptions.ArgumentError(
           'The properties flag should only be used '

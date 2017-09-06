@@ -1086,10 +1086,9 @@ class AttachedDisk(_messages.Message):
       managed instance group.
     diskSizeGb: The size of the disk in base-2 GB. This supersedes
       disk_size_gb in InitializeParams.
-    index: Assigns a zero-based index to this disk, where 0 is reserved for
-      the boot disk. For example, if you have many disks attached to an
-      instance, each disk would have a unique index number. If not specified,
-      the server will choose an appropriate value.
+    index: [Output Only] A zero-based index to this disk, where 0 is reserved
+      for the boot disk. If you have many disks attached to an instance, each
+      disk would have a unique index number.
     initializeParams: [Input Only] Specifies the parameters for a new disk
       that will be created alongside the new instance. Use initialization
       parameters to create boot disks or local SSDs attached to the new
@@ -2054,6 +2053,12 @@ class Backend(_messages.Message):
       Can be used with either CONNECTION or UTILIZATION balancing modes. For
       CONNECTION mode, either maxConnections or maxConnectionsPerInstance must
       be set.  This cannot be used for internal load balancing.
+    maxConnectionsPerEndpoint: The max number of simultaneous connections that
+      a single backend network endpoint can handle. This is used to calculate
+      the capacity of the group. Can be used in either CONNECTION or
+      UTILIZATION balancing modes. For CONNECTION mode, either maxConnections
+      or maxConnectionsPerEndpoint must be set.  This cannot be used for
+      internal load balancing.
     maxConnectionsPerInstance: The max number of simultaneous connections that
       a single backend instance can handle. This is used to calculate the
       capacity of the group. Can be used in either CONNECTION or UTILIZATION
@@ -2064,6 +2069,11 @@ class Backend(_messages.Message):
       either RATE or UTILIZATION balancing modes, but required if RATE mode.
       For RATE mode, either maxRate or maxRatePerInstance must be set.  This
       cannot be used for internal load balancing.
+    maxRatePerEndpoint: The max requests per second (RPS) that a single
+      backend network endpoint can handle. This is used to calculate the
+      capacity of the group. Can be used in either balancing mode. For RATE
+      mode, either maxRate or maxRatePerEndpoint must be set.  This cannot be
+      used for internal load balancing.
     maxRatePerInstance: The max requests per second (RPS) that a single
       backend instance can handle. This is used to calculate the capacity of
       the group. Can be used in either balancing mode. For RATE mode, either
@@ -2096,10 +2106,12 @@ class Backend(_messages.Message):
   failover = _messages.BooleanField(4)
   group = _messages.StringField(5)
   maxConnections = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  maxConnectionsPerInstance = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  maxRate = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  maxRatePerInstance = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
-  maxUtilization = _messages.FloatField(10, variant=_messages.Variant.FLOAT)
+  maxConnectionsPerEndpoint = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  maxConnectionsPerInstance = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  maxRate = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  maxRatePerEndpoint = _messages.FloatField(10, variant=_messages.Variant.FLOAT)
+  maxRatePerInstance = _messages.FloatField(11, variant=_messages.Variant.FLOAT)
+  maxUtilization = _messages.FloatField(12, variant=_messages.Variant.FLOAT)
 
 
 class BackendBucket(_messages.Message):
@@ -2304,6 +2316,7 @@ class BackendService(_messages.Message):
       property when you create the resource.
     enableCDN: If true, enable Cloud CDN for this BackendService.  When the
       load balancing scheme is INTERNAL, this field is not used.
+    failoverPolicy: A BackendServiceFailoverPolicy attribute.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
@@ -2419,21 +2432,22 @@ class BackendService(_messages.Message):
   customRequestHeaders = _messages.StringField(6, repeated=True)
   description = _messages.StringField(7)
   enableCDN = _messages.BooleanField(8)
-  fingerprint = _messages.BytesField(9)
-  healthChecks = _messages.StringField(10, repeated=True)
-  iap = _messages.MessageField('BackendServiceIAP', 11)
-  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(13, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 14)
-  name = _messages.StringField(15)
-  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(17)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 18)
-  region = _messages.StringField(19)
-  securityPolicy = _messages.StringField(20)
-  selfLink = _messages.StringField(21)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 22)
-  timeoutSec = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 9)
+  fingerprint = _messages.BytesField(10)
+  healthChecks = _messages.StringField(11, repeated=True)
+  iap = _messages.MessageField('BackendServiceIAP', 12)
+  id = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(14, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 15)
+  name = _messages.StringField(16)
+  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(18)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 19)
+  region = _messages.StringField(20)
+  securityPolicy = _messages.StringField(21)
+  selfLink = _messages.StringField(22)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 23)
+  timeoutSec = _messages.IntegerField(24, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -2593,6 +2607,36 @@ class BackendServiceCdnPolicy(_messages.Message):
   cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 1)
   signedUrlCacheMaxAgeSec = _messages.IntegerField(2)
   signedUrlKeyNames = _messages.StringField(3, repeated=True)
+
+
+class BackendServiceFailoverPolicy(_messages.Message):
+  """A BackendServiceFailoverPolicy object.
+
+  Fields:
+    disableConnectionDrainOnFailover: On failover or failback, this field
+      indicates whether connection drain will be honored. Setting this to true
+      has the following effect: connections to the old active pool are not
+      drained. Connections to the new active pool use the timeout of 10 min
+      (currently fixed). Setting to false has the following effect: both old
+      and new connections will have a drain timeout of 10 min.  This can be
+      set to true only if the protocol is TCP.  The default is false.
+    dropTrafficIfUnhealthy: This option is used only when no healthy VMs are
+      detected in the primary and backup instance groups. When set to true,
+      traffic is dropped. When set to false, new connections are sent across
+      all VMs in the primary group.  The default is false.
+    failoverRatio: The value of the field must be in [0, 1]. If the ratio of
+      the healthy VMs in the primary backend is at or below this number,
+      traffic arriving at the load-balanced IP will be directed to the
+      failover backend.  In case where 'failoverRatio' is not set or all the
+      VMs in the backup backend are unhealthy, the traffic will be directed
+      back to the primary backend in the "force" mode, where traffic will be
+      spread to the healthy VMs with the best effort, or to all VMs when no VM
+      is healthy.  This field is only used with l4 load balancing.
+  """
+
+  disableConnectionDrainOnFailover = _messages.BooleanField(1)
+  dropTrafficIfUnhealthy = _messages.BooleanField(2)
+  failoverRatio = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -10409,6 +10453,31 @@ class ComputeProjectsSetCommonInstanceMetadataRequest(_messages.Message):
 
   metadata = _messages.MessageField('Metadata', 1)
   project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeProjectsSetDefaultNetworkTierRequest(_messages.Message):
+  """A ComputeProjectsSetDefaultNetworkTierRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    projectsSetDefaultNetworkTierRequest: A
+      ProjectsSetDefaultNetworkTierRequest resource to be passed as the
+      request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  project = _messages.StringField(1, required=True)
+  projectsSetDefaultNetworkTierRequest = _messages.MessageField('ProjectsSetDefaultNetworkTierRequest', 2)
   requestId = _messages.StringField(3)
 
 
@@ -22654,9 +22723,11 @@ class Interconnect(_messages.Message):
     """InterconnectTypeValueValuesEnum enum type.
 
     Values:
+      IT_PARTNER: <no description>
       IT_PRIVATE: <no description>
     """
-    IT_PRIVATE = 0
+    IT_PARTNER = 0
+    IT_PRIVATE = 1
 
   class LinkTypeValueValuesEnum(_messages.Enum):
     """LinkTypeValueValuesEnum enum type.
@@ -26400,6 +26471,10 @@ class Project(_messages.Message):
   the console.
 
   Enums:
+    DefaultNetworkTierValueValuesEnum: This signifies the default network tier
+      used for configuring resources of the project and can only take the
+      following values: PREMIUM, STANDARD. Initially the default network tier
+      is PREMIUM.
     XpnProjectStatusValueValuesEnum: [Output Only] The role this project has
       in a shared VPC configuration. Currently only HOST projects are
       differentiated.
@@ -26410,6 +26485,10 @@ class Project(_messages.Message):
       information.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    defaultNetworkTier: This signifies the default network tier used for
+      configuring resources of the project and can only take the following
+      values: PREMIUM, STANDARD. Initially the default network tier is
+      PREMIUM.
     defaultServiceAccount: [Output Only] Default service account used by VMs
       running in this project.
     description: An optional textual description of the resource.
@@ -26429,6 +26508,20 @@ class Project(_messages.Message):
       configuration. Currently only HOST projects are differentiated.
   """
 
+  class DefaultNetworkTierValueValuesEnum(_messages.Enum):
+    """This signifies the default network tier used for configuring resources
+    of the project and can only take the following values: PREMIUM, STANDARD.
+    Initially the default network tier is PREMIUM.
+
+    Values:
+      PREMIUM: <no description>
+      SELECT: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    SELECT = 1
+    STANDARD = 2
+
   class XpnProjectStatusValueValuesEnum(_messages.Enum):
     """[Output Only] The role this project has in a shared VPC configuration.
     Currently only HOST projects are differentiated.
@@ -26442,16 +26535,17 @@ class Project(_messages.Message):
 
   commonInstanceMetadata = _messages.MessageField('Metadata', 1)
   creationTimestamp = _messages.StringField(2)
-  defaultServiceAccount = _messages.StringField(3)
-  description = _messages.StringField(4)
-  enabledFeatures = _messages.StringField(5, repeated=True)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#project')
-  name = _messages.StringField(8)
-  quotas = _messages.MessageField('Quota', 9, repeated=True)
-  selfLink = _messages.StringField(10)
-  usageExportLocation = _messages.MessageField('UsageExportLocation', 11)
-  xpnProjectStatus = _messages.EnumField('XpnProjectStatusValueValuesEnum', 12)
+  defaultNetworkTier = _messages.EnumField('DefaultNetworkTierValueValuesEnum', 3)
+  defaultServiceAccount = _messages.StringField(4)
+  description = _messages.StringField(5)
+  enabledFeatures = _messages.StringField(6, repeated=True)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default=u'compute#project')
+  name = _messages.StringField(9)
+  quotas = _messages.MessageField('Quota', 10, repeated=True)
+  selfLink = _messages.StringField(11)
+  usageExportLocation = _messages.MessageField('UsageExportLocation', 12)
+  xpnProjectStatus = _messages.EnumField('XpnProjectStatusValueValuesEnum', 13)
 
 
 class ProjectsDisableXpnResourceRequest(_messages.Message):
@@ -26505,6 +26599,31 @@ class ProjectsListXpnHostsRequest(_messages.Message):
   """
 
   organization = _messages.StringField(1)
+
+
+class ProjectsSetDefaultNetworkTierRequest(_messages.Message):
+  """A ProjectsSetDefaultNetworkTierRequest object.
+
+  Enums:
+    NetworkTierValueValuesEnum: Default network tier to be set.
+
+  Fields:
+    networkTier: Default network tier to be set.
+  """
+
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    """Default network tier to be set.
+
+    Values:
+      PREMIUM: <no description>
+      SELECT: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    SELECT = 1
+    STANDARD = 2
+
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 1)
 
 
 class ProjectsSetDefaultServiceAccountRequest(_messages.Message):
@@ -29005,8 +29124,52 @@ class Scheduling(_messages.Message):
   preemptible = _messages.BooleanField(3)
 
 
-class SecurityPoliciesList(_messages.Message):
-  """A SecurityPoliciesList object.
+class SecurityPolicy(_messages.Message):
+  """A security policy is comprised of one or more rules. It can also be
+  associated with one or more 'targets'.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    fingerprint: Specifies a fingerprint for this resource, which is
+      essentially a hash of the metadata's contents and used for optimistic
+      locking. The fingerprint is initially generated by Compute Engine and
+      changes after every request to modify or update metadata. You must
+      always provide an up-to-date fingerprint hash in order to update or
+      change metadata.  To see the latest fingerprint, make get() request to
+      the security policy.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output only] Type of the resource. Always compute#securityPolicyfor
+      security policies
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    rules: List of rules that belong to this policy. There must always be a
+      default rule (rule with priority 2147483647 and match "*"). If no rules
+      are provided when creating a security policy, a default rule with action
+      "allow" will be added.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  fingerprint = _messages.BytesField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#securityPolicy')
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('SecurityPolicyRule', 7, repeated=True)
+  selfLink = _messages.StringField(8)
+
+
+class SecurityPolicyList(_messages.Message):
+  """A SecurityPolicyList object.
 
   Messages:
     WarningValue: [Output Only] Informational warning message.
@@ -29015,7 +29178,7 @@ class SecurityPoliciesList(_messages.Message):
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
     items: A list of SecurityPolicy resources.
-    kind: [Output Only] Type of resource. Always compute#securityPoliciesList
+    kind: [Output Only] Type of resource. Always compute#securityPolicyList
       for listsof securityPolicies
     nextPageToken: [Output Only] This token allows you to get the next page of
       results for list requests. If the number of results is larger than
@@ -29111,53 +29274,9 @@ class SecurityPoliciesList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('SecurityPolicy', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#securityPoliciesList')
+  kind = _messages.StringField(3, default=u'compute#securityPolicyList')
   nextPageToken = _messages.StringField(4)
   warning = _messages.MessageField('WarningValue', 5)
-
-
-class SecurityPolicy(_messages.Message):
-  """A security policy is comprised of one or more rules. It can also be
-  associated with one or more 'targets'.
-
-  Fields:
-    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
-      format.
-    description: An optional description of this resource. Provide this
-      property when you create the resource.
-    fingerprint: Specifies a fingerprint for this resource, which is
-      essentially a hash of the metadata's contents and used for optimistic
-      locking. The fingerprint is initially generated by Compute Engine and
-      changes after every request to modify or update metadata. You must
-      always provide an up-to-date fingerprint hash in order to update or
-      change metadata.  To see the latest fingerprint, make get() request to
-      the security policy.
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    kind: [Output only] Type of the resource. Always compute#securityPolicyfor
-      security policies
-    name: Name of the resource. Provided by the client when the resource is
-      created. The name must be 1-63 characters long, and comply with RFC1035.
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
-      character must be a lowercase letter, and all following characters must
-      be a dash, lowercase letter, or digit, except the last character, which
-      cannot be a dash.
-    rules: List of rules that belong to this policy. There must always be a
-      default rule (rule with priority 2147483647 and match "*"). If no rules
-      are provided when creating a security policy, a default rule with action
-      "allow" will be added.
-    selfLink: [Output Only] Server-defined URL for the resource.
-  """
-
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  fingerprint = _messages.BytesField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#securityPolicy')
-  name = _messages.StringField(6)
-  rules = _messages.MessageField('SecurityPolicyRule', 7, repeated=True)
-  selfLink = _messages.StringField(8)
 
 
 class SecurityPolicyReference(_messages.Message):
@@ -33149,6 +33268,9 @@ class UsableSubnetwork(_messages.Message):
 class UsableSubnetworksAggregatedList(_messages.Message):
   """A UsableSubnetworksAggregatedList object.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -33162,13 +33284,99 @@ class UsableSubnetworksAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      FIELD_VALUE_OVERRIDEN = 3
+      INJECTED_KERNELS_DEPRECATED = 4
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
+      NEXT_HOP_CANNOT_IP_FORWARD = 6
+      NEXT_HOP_INSTANCE_NOT_FOUND = 7
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
+      NEXT_HOP_NOT_RUNNING = 9
+      NOT_CRITICAL_ERROR = 10
+      NO_RESULTS_ON_PAGE = 11
+      REQUIRED_TOS_AGREEMENT = 12
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
+      RESOURCE_NOT_DELETED = 14
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
+      UNREACHABLE = 16
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('UsableSubnetwork', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#usableSubnetworksAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class UsageExportLocation(_messages.Message):

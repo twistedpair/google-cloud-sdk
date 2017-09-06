@@ -120,8 +120,7 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
         address = EPHEMERAL_ADDRESS
 
       if support_network_tier:
-        network_tier = interface.get('network-tier',
-                                     constants.DEFAULT_NETWORK_TIER)
+        network_tier = interface.get('network-tier', None)
       else:
         network_tier = None
 

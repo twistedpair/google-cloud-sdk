@@ -132,6 +132,7 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir):
   files_to_upload = {}
   storage_client = storage_api.StorageClient()
   existing_items = storage_client.ListBucket(bucket_ref)
+  skipped_size, total_size = 0, 0
   for rel_path in manifest:
     full_path = os.path.join(source_dir, rel_path)
     # For generated files, the relative path is based on the tmp_dir rather
@@ -146,10 +147,14 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir):
       raise LargeFileError(full_path, size, _MAX_FILE_SIZE)
 
     sha1_hash = manifest[rel_path]['sha1Sum']
+    total_size += size
     if sha1_hash in existing_items:
       log.debug('Skipping upload of [{f}]'.format(f=rel_path))
+      skipped_size += size
     else:
       files_to_upload[sha1_hash] = full_path
+  log.info('Incremental upload skipped {pct}% of data'.format(
+      pct=round(100.0*skipped_size/total_size, 2)))
   return files_to_upload
 
 

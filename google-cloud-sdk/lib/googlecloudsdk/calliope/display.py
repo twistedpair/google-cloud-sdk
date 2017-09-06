@@ -36,12 +36,11 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import module_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.cache import cache_update_ops
-from googlecloudsdk.core.resource import resource_filter
-from googlecloudsdk.core.resource import resource_keys_expr
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_property
+from googlecloudsdk.core.resource import resource_reference
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import peek_iterable
 
@@ -428,26 +427,12 @@ class Displayer(object):
         self._defaults = self._printer.column_attributes
 
   def GetReferencedKeyNames(self):
-    """Returns the list of key names referenced by the command."""
-
-    keys = set()
-
-    # Add the format key references.
+    """Returns the set of key names referenced by the command."""
     self._InitPrinter()
-    if self._printer:
-      for col in self._printer.column_attributes.Columns():
-        keys.add(resource_lex.GetKeyName(col.key, omit_indices=True))
-
-    # Add the filter key references.
-    filter_expression = self._GetFilter()
-    if filter_expression:
-      expr = resource_filter.Compile(filter_expression,
-                                     defaults=self._defaults,
-                                     backend=resource_keys_expr.Backend())
-      for key in expr.Evaluate(None):
-        keys.add(resource_lex.GetKeyName(key, omit_indices=True))
-
-    return keys
+    return resource_reference.GetReferencedKeyNames(
+        filter_string=self._GetFilter(),
+        printer=self._printer,
+        defaults=self._defaults)
 
   def Display(self):
     """The default display method."""

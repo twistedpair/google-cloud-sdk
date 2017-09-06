@@ -279,8 +279,6 @@ class Deployment(_messages.Message):
       cannot be a dash.
     operation: [Output Only] The Operation that most recently ran, or is
       currently running, on this deployment.
-    outputs: api-linter: output-only-format=disabled [Output Only] Map of
-      outputs from the last manifest that deployed successfully.
     selfLink: [Output Only] Self link for the deployment.
     target: [Input Only] The parameters that define your deployment, including
       the deployment configuration and relevant templates.
@@ -297,26 +295,13 @@ class Deployment(_messages.Message):
   manifest = _messages.StringField(6)
   name = _messages.StringField(7)
   operation = _messages.MessageField('Operation', 8)
-  outputs = _messages.MessageField('DeploymentOutputsEntry', 9, repeated=True)
-  selfLink = _messages.StringField(10)
-  target = _messages.MessageField('TargetConfiguration', 11)
-  update = _messages.MessageField('DeploymentUpdate', 12)
+  selfLink = _messages.StringField(9)
+  target = _messages.MessageField('TargetConfiguration', 10)
+  update = _messages.MessageField('DeploymentUpdate', 11)
 
 
 class DeploymentLabelEntry(_messages.Message):
   """A DeploymentLabelEntry object.
-
-  Fields:
-    key: A string attribute.
-    value: A string attribute.
-  """
-
-  key = _messages.StringField(1)
-  value = _messages.StringField(2)
-
-
-class DeploymentOutputsEntry(_messages.Message):
-  """A DeploymentOutputsEntry object.
 
   Fields:
     key: A string attribute.

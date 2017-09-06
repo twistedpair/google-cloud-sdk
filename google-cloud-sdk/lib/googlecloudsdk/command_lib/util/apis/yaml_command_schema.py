@@ -17,6 +17,7 @@
 
 from enum import Enum
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import module_util
 
@@ -45,12 +46,10 @@ class CommandData(object):
     self.command_type = CommandType.ForName(data.get('command_type', name))
     self.help_text = data['help_text']
     self.request = Request(self.command_type, data['request'])
+    self.response = Response(data.get('response', {}))
     async_data = data.get('async', None)
     self.async = Async(async_data) if async_data else None
-    self.resource_arg = ResourceArg(data['resource_arg'])
-    self.message_params = {
-        param: Argument.FromData(param, param_data)
-        for param, param_data in data.get('message_params', {}).iteritems()}
+    self.arguments = Arguments(data['arguments'])
     self.input = Input(self.command_type, data.get('input', {}))
     self.output = Output(data.get('output', {}))
 
@@ -90,8 +89,24 @@ class Request(object):
       raise InvalidSchemaError(
           'request.method was not specified and there is no default for this '
           'command type.')
+    self.static_fields = data.get('static_fields', {})
+    self.modify_request_hook = Hook.FromData(data, 'modify_request_hook')
     self.create_request_hook = Hook.FromData(data, 'create_request_hook')
     self.issue_request_hook = Hook.FromData(data, 'issue_request_hook')
+
+
+class Response(object):
+
+  def __init__(self, data):
+    self.error = ResponseError(data['error']) if 'error' in data else None
+
+
+class ResponseError(object):
+
+  def __init__(self, data):
+    self.field = data.get('field', 'error')
+    self.code = data.get('code', None)
+    self.message = data.get('message', None)
 
 
 class Async(object):
@@ -119,39 +134,86 @@ class AsyncErrorField(object):
     self.field = data.get('field', 'error')
 
 
-class ResourceArg(object):
+class Arguments(object):
+  """Everything about cli arguments are registered in this section."""
+
+  def __init__(self, data):
+    resource = data.get('resource', None)
+    self.resource = Resource(resource) if resource else None
+    self.additional_arguments_hook = Hook.FromData(
+        data, 'additional_arguments_hook')
+    self.params = {
+        param: Argument.FromData(param, param_data)
+        for param, param_data in data.get('params', {}).iteritems()}
+    self.mutex_group_params = {}
+    for group_id, group_data in enumerate(data.get('mutex_groups', [])):
+      group = MutexGroup(group_id, group_data)
+      self.mutex_group_params.update({
+          param: Argument.FromData(param, param_data, group=group)
+          for param, param_data in group_data.get('params', {}).iteritems()})
+
+  def AllArguments(self):
+    args = {}
+    args.update(self.mutex_group_params)
+    args.update(self.params)
+    if self.resource:
+      args.update(self.resource.params)
+    return args
+
+
+class Resource(object):
 
   def __init__(self, data):
     self.help_text = data['help_text']
     self.response_id_field = data.get('response_id_field', None)
-    self.request_params = {
+    self.params = {
         param: Argument.FromData(param, param_data)
-        for param, param_data in data.get('request_params', {}).iteritems()}
+        for param, param_data in data.get('params', {}).iteritems()}
+
+
+class MutexGroup(object):
+
+  def __init__(self, group_id, data):
+    self.group_id = group_id
+    self.required = data.get('required', False)
 
 
 class Argument(object):
   """Encapsulates data used to generate arguments."""
 
   @classmethod
-  def FromData(cls, param, data):
+  def FromData(cls, param, data, group=None):
+    deprecation = data.get('deprecated', None)
+    name = data.get('arg_name', param)
     return Argument(
-        data.get('arg_name', param),
+        name,
         data['help_text'],
         Hook.FromData(data, 'completer'),
         data.get('is_positional', False),
         Hook.FromData(data, 'type'),
-        Hook.FromData(data, 'processor')
+        data.get('default', None),
+        Hook.FromData(data, 'processor'),
+        data.get('required', False),
+        data.get('hidden', False),
+        actions.DeprecationAction(name, **deprecation) if deprecation else None,
+        group
     )
 
   # pylint:disable=redefined-builtin, type param needs to match the schema.
   def __init__(self, arg_name, help_text, completer=None, is_positional=False,
-               type=None, processor=None):
+               type=None, default=None, processor=None, required=False,
+               hidden=False, action=None, group=None):
     self.arg_name = arg_name
     self.help_text = help_text
     self.completer = completer
     self.is_positional = is_positional
     self.type = type
+    self.default = default
     self.processor = processor
+    self.required = required
+    self.hidden = hidden
+    self.action = action or 'store'
+    self.group = group
 
 
 class Input(object):

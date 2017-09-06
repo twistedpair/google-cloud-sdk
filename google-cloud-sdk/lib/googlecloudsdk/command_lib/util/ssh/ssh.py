@@ -626,6 +626,19 @@ def GetDefaultSshUsername(warn_on_account_user=False):
   return user
 
 
+def ParseAndSubstituteSSHFlags(args, remote, ip_address):
+  """Obtain extra flags from the command arguments."""
+  extra_flags = []
+  if args.ssh_flag:
+    for flag in args.ssh_flag:
+      for flag_part in flag.split():  # We want grouping here
+        dereferenced_flag = (
+            flag_part.replace('%USER%', remote.user)
+            .replace('%INSTANCE%', ip_address))
+        extra_flags.append(dereferenced_flag)
+  return extra_flags
+
+
 def _SdkHelperBin():
   """Returns the SDK helper executable bin directory."""
   # TODO(b/33467618): Remove this method?
@@ -877,7 +890,8 @@ class SSHCommand(object):
       args.extend(self.remote_command)
     return args
 
-  def Run(self, env=None, force_connect=False):
+  def Run(self, env=None, force_connect=False,
+          explicit_output_file=None):
     """Run the SSH command using the given environment.
 
     Args:
@@ -885,6 +899,8 @@ class SSHCommand(object):
       force_connect: bool, whether to inject 'y' into the prompts for `plink`,
         which is insecure and not recommended. It serves legacy compatibility
         purposes only.
+      explicit_output_file: File-like object into which pipe stdout.
+        Useful when some process is needed over the command.
 
     Raises:
       MissingCommandError: If SSH command(s) not found.
@@ -899,7 +915,14 @@ class SSHCommand(object):
     log.debug('Running command [{}].'.format(' '.join(args)))
     # PuTTY and friends always ask on fingerprint mismatch
     in_str = 'y\n' if env.suite is Suite.PUTTY and force_connect else None
-    status = execution_utils.Exec(args, no_exit=True, in_str=in_str)
+
+    # We pipe stdout to a specific file
+    extra_popen_kwargs = {}
+    if explicit_output_file:
+      extra_popen_kwargs['stdout'] = explicit_output_file
+
+    status = execution_utils.Exec(args, no_exit=True, in_str=in_str,
+                                  **extra_popen_kwargs)
     if status == env.ssh_exit_code:
       raise CommandError(args[0], return_code=status)
     return status

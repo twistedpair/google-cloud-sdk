@@ -11,7 +11,7 @@ class LanguageV1beta2(base_api.BaseApiClient):
   BASE_URL = u'https://language.googleapis.com/'
 
   _PACKAGE = u'language'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-language', u'https://www.googleapis.com/auth/cloud-platform']
   _VERSION = u'v1beta2'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -156,8 +156,8 @@ properties.
     )
 
     def AnnotateText(self, request, global_params=None):
-      """A convenience method that provides all syntax, sentiment, and entity.
-features in one call.
+      """A convenience method that provides all syntax, sentiment, entity, and.
+classification features in one call.
 
       Args:
         request: (AnnotateTextRequest) input message
@@ -179,5 +179,31 @@ features in one call.
         request_field='<request>',
         request_type_name=u'AnnotateTextRequest',
         response_type_name=u'AnnotateTextResponse',
+        supports_download=False,
+    )
+
+    def ClassifyText(self, request, global_params=None):
+      """Classifies a document into categories.
+
+      Args:
+        request: (ClassifyTextRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ClassifyTextResponse) The response message.
+      """
+      config = self.GetMethodConfig('ClassifyText')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ClassifyText.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'language.documents.classifyText',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1beta2/documents:classifyText',
+        request_field='<request>',
+        request_type_name=u'ClassifyTextRequest',
+        response_type_name=u'ClassifyTextResponse',
         supports_download=False,
     )

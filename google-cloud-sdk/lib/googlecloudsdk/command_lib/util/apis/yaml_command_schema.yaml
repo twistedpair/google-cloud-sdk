@@ -19,9 +19,13 @@ definitions:
   python_hook:
     type: string
     pattern: |
-      "\w+\(.\w+)+:\w+(.\w+)*(:\w+=\w+(,\w+=\w+)*)?"
+      "\w+\(\.\w+)+:\w+(\.\w+)*(:\w+=\w+(,\w+=\w+)*)?"
 
-  argument:
+  attribute:
+    type: string
+    pattern: "\w+(\.\w+)*"
+
+  resource_argument:
     type: object
     additionalProperties: false
     required: [ help_text ]
@@ -36,12 +40,44 @@ definitions:
       # for this argument.
       completer: { type: string }
 
+  argument:
+    additionalProperties: false
+    allOf:
+    - { $ref: "#/definitions/resource_argument" }
+    - properties:
+        # True if this should be forced to be a positional argument
+        # instead of a flag.
+        is_positional: { type: boolean }
+        # The module path to a function used as the 'type' for the
+        # argument. The function takes a single parameter which is the
+        # parsed string value of the argument and returns the converted
+        # parsed value.
+        type: { $ref: "#/definitions/python_hook" }
+        # The default value of the argument when not provided.
+        default: { type: [ string, number, boolean, null ]}
+        # The module path to a function to process the parsed value
+        # before inserting it into the request message. It takes a
+        # single value which is the parsed argument's value and returns
+        # the value that should be inserted into the request.
+        processor: { $ref: "#/definitions/python_hook" }
+        # Whether the flag should required or not.
+        required: { type: boolean }
+        # Whether the flag should be hidden or not.
+        hidden: { type: boolean }
+        # Mark this flag as being deprecated. All the sub elements here
+        # are passed as kwargs to the calliope.actions.DeprecationAction
+        # action.
+        deprecated:
+          type: object
+          patternProperties:
+            .*: { type: string }
+
 
 type: array
 items:
   type: object
   additionalProperties: false
-  required: [ request, help_text, resource_arg ]
+  required: [ request, help_text, arguments ]
   properties:
 
     # Corresponds to the Hidden decorator for command classes.
@@ -80,20 +116,58 @@ items:
         api_version: { type: string }
         # The name of the method to call to perform the operation.
         method: { type: string }
+        # A mapping of request field names to static values to insert into the
+        # request. Specifying simple values here accomplishes the same as a
+        # a custom request generator, but is simpler.
+        static_fields:
+          type: object
+          patternProperties:
+            .*:
         oneOf:
+          - # The module path to a function to call to modify the API request
+            # before it is invoked. All registered arguments will be processed
+            # into the request, before this is called. This is a function
+            # that takes 3 arguments: a resource ref to the parsed resource,
+            # the parsed args namespace, and the created request. It must return
+            # an apitools request message that will be passed to the API method
+            # defined in this section.
+            modify_request_hook: { $ref: "#/definitions/python_hook" }
           - # The module path to a function to call to create the API request
-            # rather than having it done automatically. This is be a function
+            # rather than having it done automatically. This is a function
             # that takes 2 arguments: a resource ref to the parsed resource, and
             # the parsed args namespace. It must return an apitools request
             # message that will be passed to the API method defined in this
             # section.
             create_request_hook: { $ref: "#/definitions/python_hook" }
-            # The module path to a function to call to issue an API request
-            # rather than having it done automatically. This is be a function
+          - # The module path to a function to call to issue an API request
+            # rather than having it done automatically. This is a function
             # that takes 2 arguments: a resource ref to the parsed resource, and
             # the parsed args namespace. It should create a request, make the
             # API call, and return the response.
             issue_request_hook: { $ref: "#/definitions/python_hook" }
+
+    # Configuration for handling the API response.
+    response:
+      type: object
+      additionalProperties: false
+      properties:
+        # If given, the response will be searched for error information and an
+        # exception raised if found. This is useful for batch request methods
+        # that return 200 even though something may have failed.
+        error:
+          type: object
+          additionalProperties: false
+          properties:
+            # The dotted path of the field whose presence indicates that an
+            # error has occured. This is 'error' by default if the error section
+            # is declared.
+            field: { $ref: "#/definitions/attribute" }
+            # If the error message is found, extract the error code from this
+            # field within that message.
+            code: { $ref: "#/definitions/attribute" }
+            # If the error message is found, extract the error message from this
+            # field within that message.
+            message: { $ref: "#/definitions/attribute" }
 
     # If present, indicates that this API method uses operations and the --async
     # flag will be set up.
@@ -137,53 +211,67 @@ items:
             # default).
             field: { type: string }
 
-    # This section declares how to generate the arguments and flags that
-    # correspond to the resource being operated on by this command.
-    resource_arg:
-      description: Describes how to generate the resource arg and its flags
+    # Enumerates the non-resource API fields that arguments should be generated
+    # for.
+    arguments:
       type: object
       additionalProperties: false
-      required: [ help_text ]
       properties:
-        # The help text for the overall resource arg group.
-        help_text: { type: string }
-        # The field in the response that is the id of the resource (just the
-        # name, not the relative name or URI). This is used to construct a URI
-        # for resources out of the result of a list command. If not provided,
-        # there won't be a --uri flag on the list command.
-        response_id_field: { type: string }
+        # The module path to a function to call to generate extra arguments
+        # that for whatever reason cannot be defined here. It is a function that
+        # takes no arguments and returns a list of calliope.base.Action
+        # objects that will be added to the parser. These arguments will not
+        # be processed automatically so you will need to implement
+        # request.modify_request_hook to insert something into the request based
+        # on these arguments.
+        additional_arguments_hook: { $ref: "#/definitions/python_hook" }
+        # This section declares how to generate the arguments and flags that
+        # correspond to the resource being operated on by this command.
+        resource:
+          description: Describes how to generate the resource arg and its flags
+          type: object
+          additionalProperties: false
+          required: [ help_text ]
+          properties:
+            # The help text for the overall resource arg group.
+            help_text: { type: string }
+            # The field in the response that is the id of the resource (just the
+            # name, not the relative name or URI). This is used to construct a
+            # URI for resources out of the result of a list command. If not
+            # provided, there won't be a --uri flag on the list command.
+            response_id_field: { type: string }
 
-        # Enumerates the API fields that need to be set and information about
-        # each argument to generate.
-        request_params:
+            # Enumerates the API fields that need to be set and information
+            # about each argument to generate.
+            params:
+              type: object
+              patternProperties:
+                # The key is the API parameter name.
+                .*: { $ref: "#/definitions/resource_argument" }
+        # Same as the params section below, but each group of params will be
+        # placed in a mutually exclusive argument group for parsing purposes.
+        mutex_groups:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              # True if one of the arguments in the group must be provided.
+              required: { type: boolean }
+              # Enumerates the API fields that need to be set and information
+              # about each argument to generate.
+              params:
+                type: object
+                patternProperties:
+                  # The key is the API parameter name.
+                  .*: { $ref: "#/definitions/argument" }
+        # Enumerates the API fields that need to be set and information
+        # about each argument to generate.
+        params:
           type: object
           patternProperties:
             # The key is the API parameter name.
             .*: { $ref: "#/definitions/argument" }
-
-    # Enumerates the non-resource API fields that arguments should be generated
-    # for.
-    message_params:
-      type: object
-      patternProperties:
-        # The key is the API parameter name.
-        .*:
-          allOf:
-            - { $ref: "#/definitions/argument" }
-            - properties:
-                # True if this should be forced to be a positional argument
-                # instead of a flag.
-                is_positional: { type: boolean }
-                # The module path to a function used as the 'type' for the
-                # argument. The function takes a single parameter which is the
-                # parsed string value of the argument and returns the converted
-                # parsed value.
-                type: { $ref: "#/definitions/python_hook" }
-                # The module path to a function to process a the parsed value
-                # before inserting it into the request message. It takes a
-                # single value which is the parsed argument's value and returns
-                # the value that should be inserted into the request.
-                processor: { $ref: "#/definitions/python_hook" }
 
     # Information about how to collect input from the user.
     input:

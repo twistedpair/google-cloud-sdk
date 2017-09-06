@@ -68,7 +68,7 @@ class HttpErrorPayload(string.Formatter):
     'Error: [{status_code}] {status_message}{url?\n{?}}{.debugInfo?\n{?}}'
 
       Error: [404] Not found
-      https://dotcom/foo/bar
+      http://dotcom/foo/bar
       <content.debugInfo in yaml print format>
 
     'Error: {status_code} {details?\n\ndetails:\n{?}}'
@@ -151,11 +151,11 @@ class HttpErrorPayload(string.Formatter):
         value = self.__dict__.get(key[0], None)
         if value:
           content = {key[0]: value}
-      value = resource_property.Get(content, key, '')
+      value = resource_property.Get(content, key, None)
     elif name:
-      value = self.__dict__.get(name, '')
+      value = self.__dict__.get(name, None)
     else:
-      value = ''
+      value = None
     if not value and not isinstance(value, (int, float)):
       return '', name
     if printer_format or not isinstance(value, (basestring, int, float)):

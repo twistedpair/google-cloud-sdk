@@ -40,14 +40,14 @@ error. The row is simply replaced by the new data.
 
 A Table object can be restricted and hidden from cache users. These tables
 must be instantiated when the Cache object is instantiated, before the first
-user access to the the cache. This allows a cache implementation layer to have
+user access to the cache. This allows a cache implementation layer to have
 tables that are hidden from the layers above it.
 
 The table select and delete methods match against a row template. A template may
 have fewer columns than the number of columns in the table. Omitted template
-columns or columns with with value None match all values for that column. '*'
-and '?' matching operators are supported for string columns. It is not an error
-to select or delete a row that does not exist.
+columns or columns with value None match all values for that column. '*' and '?'
+matching operators are supported for string columns. It is not an error to
+select or delete a row that does not exist.
 
 HINTS for IMPLEMENTERS
 
@@ -314,7 +314,7 @@ class Cache(object):
 
   @abc.abstractmethod
   def Close(self, commit=True):
-    """Closes the cache, optionally comitting any changes.
+    """Closes the cache, optionally committing any changes.
 
     Args:
       commit: Commits any changes before closing if True.

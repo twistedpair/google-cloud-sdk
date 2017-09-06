@@ -644,7 +644,7 @@ version [{1}].  To clear your fixed version setting, run:
       # Possibly print any notifications that should be triggered right now.
       last_update_check.Notify(command_path)
 
-  def List(self, show_hidden=False):
+  def List(self, show_hidden=False, only_local_state=False):
     """Lists all of the components and their current state.
 
     This pretty prints the list of components along with whether they are up
@@ -652,10 +652,44 @@ version [{1}].  To clear your fixed version setting, run:
 
     Args:
       show_hidden: bool, include hidden components.
+      only_local_state: bool, only return component information for local state.
 
     Returns:
-      The list of snapshots.ComponentDiffs for all components that are not
-      hidden.
+      The list of snapshots.ComponentDiffs (or snapshots.ComponentInfos if
+      only_local_state is True) for all components that are not hidden.
+    """
+    if only_local_state:
+      to_print, current_version = self._GetPrintListOnlyLocal()
+      latest_version = None
+    else:
+      to_print, current_version, latest_version = self._GetPrintListWithDiff()
+
+    if not show_hidden:
+      to_print = [c for c in to_print if not c.is_hidden]
+
+    return to_print, current_version, latest_version
+
+  def _GetPrintListOnlyLocal(self):
+    """Helper method that gets a list of locally installed components to print.
+
+    Returns:
+      List of snapshots.ComponentInfos for the List method as well as the
+      current version string.
+    """
+    install_state = self._GetInstallState()
+    to_print = install_state.Snapshot().CreateComponentInfos(
+        platform_filter=self.__platform_filter)
+    current_version = config.INSTALLATION_CONFIG.version
+    self.__Write(log.status,
+                 '\nYour current Cloud SDK version is: ' + current_version)
+    return to_print, current_version
+
+  def _GetPrintListWithDiff(self):
+    """Helper method that computes a diff and returns a list of diffs to print.
+
+    Returns:
+      List of snapshots.ComponentDiffs for the List method as well as the
+      current and latest version strings.
     """
     try:
       _, diff = self._GetStateAndDiff(command_path='components.list')
@@ -671,9 +705,6 @@ version [{1}].  To clear your fixed version setting, run:
 
     to_print = (diff.AvailableUpdates() + diff.Removed() +
                 diff.AvailableToInstall() + diff.UpToDate())
-    if not show_hidden:
-      to_print = [c for c in to_print if not c.is_hidden]
-
     return (to_print, current_version, latest_version)
 
   def _PrintVersions(self, diff, latest_msg=None):

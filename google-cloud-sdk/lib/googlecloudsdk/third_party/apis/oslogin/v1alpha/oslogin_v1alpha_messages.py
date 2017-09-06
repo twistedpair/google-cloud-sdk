@@ -158,12 +158,12 @@ class PosixAccount(_messages.Message):
   """
 
   gecos = _messages.StringField(1)
-  gid = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  gid = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   homeDirectory = _messages.StringField(3)
   primary = _messages.BooleanField(4)
   shell = _messages.StringField(5)
   systemId = _messages.StringField(6)
-  uid = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
+  uid = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   username = _messages.StringField(8)
 
 

@@ -104,6 +104,14 @@ def AddCryptoKeyVersionFlag(parser, help_action, required=False):
       help='The version {0}.'.format(help_action))
 
 
+def AddCryptoKeyPrimaryVersionFlag(parser, help_action, required=False):
+  parser.add_argument(
+      '--primary-version',
+      required=required,
+      completer=KeyVersionCompleter,
+      help='The primary version {0}.'.format(help_action))
+
+
 def AddRotationPeriodFlag(parser):
   parser.add_argument(
       '--rotation-period',
@@ -116,6 +124,13 @@ def AddNextRotationTimeFlag(parser):
       '--next-rotation-time',
       type=arg_parsers.Datetime.Parse,
       help='Next automatic rotation time of the key.')
+
+
+def AddRemoveRotationScheduleFlag(parser):
+  parser.add_argument(
+      '--remove-rotation-schedule',
+      action='store_true',
+      help='Remove any existing rotation schedule on the key.')
 
 
 def AddPlaintextFileFlag(parser, help_action):
@@ -200,6 +215,15 @@ def ParseCryptoKeyVersionName(args):
           'projectsId': properties.VALUES.core.project.GetOrFail,
       },
       collection=CRYPTO_KEY_VERSION_COLLECTION)
+
+
+# Get parent type Resource from output of Parse functions above.
+def ParseParentFromResource(resource_ref):
+  collection_list = resource_ref.Collection().split('.')
+  parent_collection = '.'.join(collection_list[:-1])
+  params = resource_ref.AsDict()
+  del params[collection_list[-1] + 'Id']
+  return resources.REGISTRY.Create(parent_collection, **params)
 
 
 # Set proto fields from flags.

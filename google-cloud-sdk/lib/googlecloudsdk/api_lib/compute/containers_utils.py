@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Functions for creating GCE container (Docker) deployments."""
+import itertools
 import json
 import re
 import shlex
@@ -53,9 +54,9 @@ COS_PROJECT = 'cos-cloud'
 
 # Translation from CLI to API wording
 RESTART_POLICY_API = {
-    'NEVER': 'Never',
-    'ON-FAILURE': 'OnFailure',
-    'ALWAYS': 'Always'
+    'never': 'Never',
+    'on-failure': 'OnFailure',
+    'always': 'Always'
 }
 
 
@@ -324,7 +325,7 @@ def _CreateContainerManifest(args, instance_name):
   container = {'image': args.container_image, 'name': instance_name}
 
   if args.container_command is not None:
-    container['command'] = args.container_command
+    container['command'] = [args.container_command]
 
   if args.container_arg is not None:
     container['args'] = args.container_arg
@@ -408,16 +409,16 @@ def UpdateMetadata(metadata, args):
     manifest['spec']['containers'][0]['image'] = args.container_image
 
   if args.IsSpecified('container_command'):
-    manifest['spec']['containers'][0]['command'] = args.container_command
+    manifest['spec']['containers'][0]['command'] = [args.container_command]
 
   if args.IsSpecified('clear_container_command'):
-    del manifest['spec']['containers'][0]['command']
+    manifest['spec']['containers'][0].pop('command', None)
 
   if args.IsSpecified('container_arg'):
     manifest['spec']['containers'][0]['args'] = args.container_arg
 
   if args.IsSpecified('clear_container_args'):
-    del manifest['spec']['containers'][0]['args']
+    manifest['spec']['containers'][0].pop('args', None)
 
   if args.container_privileged is True:
     manifest['spec']['containers'][0]['securityContext']['privileged'] = True
@@ -429,8 +430,9 @@ def UpdateMetadata(metadata, args):
                 args.container_mount_host_path or [],
                 args.container_mount_tmpfs or [])
 
-  _UpdateEnv(manifest, args.remove_container_env or [], args.container_env_file,
-             args.container_env or [])
+  _UpdateEnv(manifest,
+             itertools.chain.from_iterable(args.remove_container_env or []),
+             args.container_env_file, args.container_env or [])
 
   if args.container_stdin is True:
     manifest['spec']['containers'][0]['stdin'] = True
@@ -506,7 +508,7 @@ def _CleanupMounts(manifest, remove_container_mounts, container_mount_host_path,
   used_mounts = []
   used_mounts_names = []
   removed_mount_names = []
-  for mount in manifest['spec']['containers'][0]['volumeMounts']:
+  for mount in manifest['spec']['containers'][0].get('volumeMounts', []):
     if mount['mountPath'] not in mount_paths_to_remove:
       used_mounts.append(mount)
       used_mounts_names.append(mount['name'])
@@ -518,7 +520,7 @@ def _CleanupMounts(manifest, remove_container_mounts, container_mount_host_path,
   # garbage collect volumes which become orphaned, skip volumes orphaned before
   # start of the procedure
   used_volumes = []
-  for volume in manifest['spec']['volumes']:
+  for volume in manifest['spec'].get('volumes', []):
     if (volume['name'] in used_mounts_names or
         volume['name'] not in removed_mount_names):
       used_volumes.append(volume)
@@ -536,7 +538,7 @@ def _UpdateEnv(manifest, remove_container_env, container_env_file,
     current_env[env_val['name']] = env_val['value']
 
   for env in remove_container_env:
-    del current_env[env]
+    current_env.pop(env, None)
 
   current_env.update(_ReadDictionary(container_env_file))
 

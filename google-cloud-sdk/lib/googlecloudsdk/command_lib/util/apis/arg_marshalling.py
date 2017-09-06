@@ -149,20 +149,28 @@ class ArgumentGenerator(object):
       etc).
     """
     field_names = self.method.ResourceFieldNames()
+    if not field_names:
+      return None
     return self._GetArgAttributes(field_names[-1], required=True).arg_name
 
-  def CreateRequest(self, namespace):
+  def CreateRequest(self, namespace, static_fields=None):
     """Generates the request object for the method call from the parsed args.
 
     Args:
       namespace: The argparse namespace.
+      static_fields: {str, value}, A mapping of API field name to value to
+        insert into the message. This is a convenient way to insert extra data
+        while the request is being constructed for fields that don't have
+        corresponding arguments.
 
     Returns:
       The apitools message to be send to the method.
     """
     request_type = self.method.GetRequestType()
     # Recursively create the message and sub-messages.
-    fields = self._ParseMessageFieldsFlags(namespace, '', request_type)
+
+    fields = self._ParseMessageFieldsFlags(
+        namespace, '', request_type, (static_fields or {}), is_root=True)
 
     # For each actual method path field, add the attribute to the request.
     ref = self._ParseResourceArg(namespace)
@@ -319,13 +327,18 @@ class ArgumentGenerator(object):
         collection=self.method.RequestCollection().full_name,
         params=params)
 
-  def _GenerateMessageFieldsFlags(self, prefix, message, is_root=True):
+  def _GenerateMessageFieldsFlags(self, prefix, message, groups=None,
+                                  is_root=True):
     """Gets the arguments to add to the parser that appear in the method body.
 
     Args:
       prefix: str, A string to prepend to the name of the flag. This is used
         for flags representing fields of a submessage.
       message: The apitools message to generate the flags for.
+      groups: {id: calliope.base.ArgumentGroup}, The collection of groups that
+        have been generated. Newly generated arguments will be put in one of
+        these groups if their attributes say they should be. This collection
+        is modified and should not be passed in at the root invocation.
       is_root: bool, True if this is the request message itself (not a
         sub-field).
 
@@ -333,33 +346,80 @@ class ArgumentGenerator(object):
       {str, calliope.base.Argument}, A map of field name to argument.
     """
     args = {}
+    if groups is None:
+      groups = {}
     field_helps = _FieldHelpDocs(message)
     for field in message.all_fields():
       attributes = self._FlagAttributesForField(prefix, field, is_root)
       if not attributes:
         continue
       name = attributes.arg_name
-      if field.variant == messages.Variant.MESSAGE:
-        field_help = field_helps.get(field.name, None)
-        group = base.ArgumentGroup(
-            name, description=(name + ': ' + field_help) if field_help else '')
+      if (field.variant == messages.Variant.MESSAGE and
+          (self.arg_info is None or prefix + field.name not in self.arg_info)):
         sub_args = self._GenerateMessageFieldsFlags(
-            name + '.', field.type, is_root=False)
-        if sub_args:
+            name + '.', field.type, groups, is_root=False)
+        if self.arg_info is not None:
+          args.update(sub_args)
+        elif sub_args:
+          field_help = field_helps.get(field.name, None)
+          group = base.ArgumentGroup(
+              name,
+              description=(name + ': ' + field_help) if field_help else '')
           for arg in sub_args.values():
             group.AddArgument(arg)
           args[name] = group
       else:
-        args[name] = self._GenerateMessageFieldFlag(attributes, prefix, field)
+        args[name] = self._MaybeAddArgToGroup(
+            attributes,
+            self._GenerateMessageFieldFlag(attributes, prefix, field),
+            groups)
     return {k: v for k, v in args.iteritems() if v is not None}
 
-  def _ParseMessageFieldsFlags(self, namespace, prefix, message, is_root=True):
+  def _MaybeAddArgToGroup(self, attributes, arg, groups):
+    """Conditionally adds the argument to a group if it should be in one.
+
+    Args:
+      attributes: yaml_command_schema.Argument, The attributes to use to
+        generate the arg.
+      arg: calliope.base.Argument: The generated arg.
+      groups: {id: calliope.base.ArgumentGroup}, The collection of groups that
+        have been generated.
+
+    Returns:
+      The argument if not in a group, an ArgumentGroup if a new group was
+      created for this argument, or None if it was added to a group that already
+      exists.
+    """
+    if not attributes.group:
+      # This is just a normal argument, return it so it can be added to the
+      # parser.
+      return arg
+
+    group = groups.get(attributes.group.group_id, None)
+    if group:
+      # The group this belongs to has already been created and stored. Just add
+      # this arg to the group, no need to add the group again, so return None.
+      group.AddArgument(arg)
+      return None
+
+    # Arg is in a group but it hasn't been created yet. Make the group, store it
+    # and return it for addition to the parser.
+    group = base.ArgumentGroup(attributes.group.group_id,
+                               required=attributes.group.required)
+    groups[attributes.group.group_id] = group
+    group.AddArgument(arg)
+    return group
+
+  def _ParseMessageFieldsFlags(self, namespace, prefix, message, static_fields,
+                               is_root):
     """Recursively generates the request message and any sub-messages.
 
     Args:
       namespace: The argparse namespace containing the all the parsed arguments.
       prefix: str, The flag prefix for the sub-message being generated.
       message: The apitools class for the message.
+      static_fields: {str, value}, A mapping of API field name to value to
+        insert into the message.
       is_root: bool, True if this is the request message itself (not a
         sub-field).
 
@@ -368,14 +428,19 @@ class ArgumentGenerator(object):
     """
     kwargs = {}
     for field in message.all_fields():
+      static_value = static_fields.get(prefix + field.name, None)
+      if static_value:
+        kwargs[field.name] = _ConvertValue(field, static_value)
+
       attributes = self._FlagAttributesForField(prefix, field, is_root)
       if not attributes:
         continue
       name = attributes.arg_name
       # Field is a sub-message, recursively generate it.
-      if field.variant == messages.Variant.MESSAGE:
+      if (field.variant == messages.Variant.MESSAGE and
+          (self.arg_info is None or prefix + field.name not in self.arg_info)):
         sub_kwargs = self._ParseMessageFieldsFlags(
-            namespace, name + '.', field.type, is_root=False)
+            namespace, name + '.', field.type, static_fields, is_root=False)
         if sub_kwargs:
           # Only construct the sub-message if we have something to put in it.
           value = field.type(**sub_kwargs)
@@ -383,10 +448,9 @@ class ArgumentGenerator(object):
           kwargs[field.name] = value if not field.repeated else [value]
       # Field is a scalar, just get the value.
       else:
-        value = getattr(namespace, name, None)
+        value = getattr(namespace, name.replace('-', '_'), None)
         if value is not None:
-          kwargs[field.name] = (attributes.processor(value)
-                                if attributes.processor else value)
+          kwargs[field.name] = _ConvertValue(field, value, attributes.processor)
     return kwargs
 
   def _FlagAttributesForField(self, prefix, field, is_root):
@@ -499,17 +563,30 @@ class ArgumentGenerator(object):
     if field.repeated:
       t = arg_parsers.ArgList(element_type=t, choices=choices)
     name = attributes.arg_name
-    return base.Argument(
+    arg = base.Argument(
         # TODO(b/38000796): Consider not using camel case for flags.
         name if attributes.is_positional else '--' + name,
         metavar=resource_property.ConvertToAngrySnakeCase(name[len(prefix):]),
         category=None if attributes.is_positional else 'MESSAGE',
-        action='store',
+        action=attributes.action,
         type=t,
+        default=attributes.default,
         choices=choices,
         completer=attributes.completer,
         help=attributes.help_text,
+        hidden=attributes.hidden,
     )
+    if not attributes.is_positional:
+      arg.kwargs['required'] = attributes.required
+    return arg
+
+
+def _ConvertValue(field, value, processor=None):
+  if processor:
+    return processor(value)
+  if field.variant == messages.Variant.ENUM:
+    return field.type.lookup_by_name(value)
+  return value
 
 
 def _FieldHelpDocs(message):

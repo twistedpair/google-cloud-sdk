@@ -7224,6 +7224,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def SetDefaultNetworkTier(self, request, global_params=None):
+      """Sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
+
+      Args:
+        request: (ComputeProjectsSetDefaultNetworkTierRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetDefaultNetworkTier')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetDefaultNetworkTier.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.projects.setDefaultNetworkTier',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/setDefaultNetworkTier',
+        request_field=u'projectsSetDefaultNetworkTierRequest',
+        request_type_name=u'ComputeProjectsSetDefaultNetworkTierRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetDefaultServiceAccount(self, request, global_params=None):
       """Sets the default service account of the project. The default service account is used when a VM instance is created with the service account email address set to "default".
 
@@ -9421,7 +9447,7 @@ If the group is part of a backend service that has enabled connection draining, 
         request: (ComputeSecurityPoliciesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (SecurityPoliciesList) The response message.
+        (SecurityPolicyList) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -9436,7 +9462,7 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/global/securityPolicies',
         request_field='',
         request_type_name=u'ComputeSecurityPoliciesListRequest',
-        response_type_name=u'SecurityPoliciesList',
+        response_type_name=u'SecurityPolicyList',
         supports_download=False,
     )
 

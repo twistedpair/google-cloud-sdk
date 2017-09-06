@@ -140,7 +140,9 @@ def _ErrorFromInvalidMatrix(matrix):
       enum_values.SCENARIO_LABEL_MALFORMED:
           'A scenario-label in the manifest includes invalid numbers or ranges',
       enum_values.SCENARIO_NOT_DECLARED:
-          'A scenario-number was not declared in the manifest file'
+          'A scenario-number was not declared in the manifest file',
+      enum_values.TEST_ONLY_APK:
+          '"testOnly" found in the Manifest. testOnly APKs are not allowed'
   }
   details_enum = matrix.invalidMatrixDetails
   if details_enum in error_dict:

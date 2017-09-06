@@ -134,9 +134,8 @@ def AddNetworkTier(parser):
   # option SELECT is hidden since it's not advertised to all customers.
   parser.add_argument(
       '--network-tier',
-      default='PREMIUM',
       type=lambda x: x.upper(),
       help="""\
       The network tier to assign to the reserved IP addresses. ``NETWORK_TIER''
-      must be one of: `PREMIUM`, `STANDARD`.
+      must be one of: `PREMIUM`, `STANDARD`. The default value is `PREMIUM`.
       """)

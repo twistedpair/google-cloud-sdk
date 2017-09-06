@@ -111,6 +111,182 @@ class ApiEndpointHandler(_messages.Message):
   scriptPath = _messages.StringField(1)
 
 
+class AppengineAppsAuthorizedCertificatesCreateRequest(_messages.Message):
+  """A AppengineAppsAuthorizedCertificatesCreateRequest object.
+
+  Fields:
+    authorizedCertificate: A AuthorizedCertificate resource to be passed as
+      the request body.
+    parent: Name of the parent Application resource. Example: apps/myapp.
+  """
+
+  authorizedCertificate = _messages.MessageField('AuthorizedCertificate', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AppengineAppsAuthorizedCertificatesDeleteRequest(_messages.Message):
+  """A AppengineAppsAuthorizedCertificatesDeleteRequest object.
+
+  Fields:
+    name: Name of the resource to delete. Example:
+      apps/myapp/authorizedCertificates/12345.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineAppsAuthorizedCertificatesGetRequest(_messages.Message):
+  """A AppengineAppsAuthorizedCertificatesGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Controls the set of fields returned in the GET
+      response.
+
+  Fields:
+    name: Name of the resource requested. Example:
+      apps/myapp/authorizedCertificates/12345.
+    view: Controls the set of fields returned in the GET response.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Controls the set of fields returned in the GET response.
+
+    Values:
+      BASIC_CERTIFICATE: <no description>
+      FULL_CERTIFICATE: <no description>
+    """
+    BASIC_CERTIFICATE = 0
+    FULL_CERTIFICATE = 1
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class AppengineAppsAuthorizedCertificatesListRequest(_messages.Message):
+  """A AppengineAppsAuthorizedCertificatesListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Controls the set of fields returned in the LIST
+      response.
+
+  Fields:
+    pageSize: Maximum results to return per page.
+    pageToken: Continuation token for fetching the next page of results.
+    parent: Name of the parent Application resource. Example: apps/myapp.
+    view: Controls the set of fields returned in the LIST response.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    """Controls the set of fields returned in the LIST response.
+
+    Values:
+      BASIC_CERTIFICATE: <no description>
+      FULL_CERTIFICATE: <no description>
+    """
+    BASIC_CERTIFICATE = 0
+    FULL_CERTIFICATE = 1
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
+class AppengineAppsAuthorizedCertificatesPatchRequest(_messages.Message):
+  """A AppengineAppsAuthorizedCertificatesPatchRequest object.
+
+  Fields:
+    authorizedCertificate: A AuthorizedCertificate resource to be passed as
+      the request body.
+    name: Name of the resource to update. Example:
+      apps/myapp/authorizedCertificates/12345.
+    updateMask: Standard field mask for the set of fields to be updated.
+      Updates are only supported on the certificate_raw_data and display_name
+      fields.
+  """
+
+  authorizedCertificate = _messages.MessageField('AuthorizedCertificate', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class AppengineAppsAuthorizedDomainsListRequest(_messages.Message):
+  """A AppengineAppsAuthorizedDomainsListRequest object.
+
+  Fields:
+    pageSize: Maximum results to return per page.
+    pageToken: Continuation token for fetching the next page of results.
+    parent: Name of the parent Application resource. Example: apps/myapp.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
+  """A AppengineAppsDomainMappingsCreateRequest object.
+
+  Fields:
+    domainMapping: A DomainMapping resource to be passed as the request body.
+    parent: Name of the parent Application resource. Example: apps/myapp.
+  """
+
+  domainMapping = _messages.MessageField('DomainMapping', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AppengineAppsDomainMappingsDeleteRequest(_messages.Message):
+  """A AppengineAppsDomainMappingsDeleteRequest object.
+
+  Fields:
+    name: Name of the resource to delete. Example:
+      apps/myapp/domainMappings/example.com.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineAppsDomainMappingsGetRequest(_messages.Message):
+  """A AppengineAppsDomainMappingsGetRequest object.
+
+  Fields:
+    name: Name of the resource requested. Example:
+      apps/myapp/domainMappings/example.com.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AppengineAppsDomainMappingsListRequest(_messages.Message):
+  """A AppengineAppsDomainMappingsListRequest object.
+
+  Fields:
+    pageSize: Maximum results to return per page.
+    pageToken: Continuation token for fetching the next page of results.
+    parent: Name of the parent Application resource. Example: apps/myapp.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AppengineAppsDomainMappingsPatchRequest(_messages.Message):
+  """A AppengineAppsDomainMappingsPatchRequest object.
+
+  Fields:
+    domainMapping: A DomainMapping resource to be passed as the request body.
+    name: Name of the resource to update. Example:
+      apps/myapp/domainMappings/example.com.
+    updateMask: Standard field mask for the set of fields to be updated.
+  """
+
+  domainMapping = _messages.MessageField('DomainMapping', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class AppengineAppsGetRequest(_messages.Message):
   """A AppengineAppsGetRequest object.
 
@@ -484,6 +660,69 @@ class Application(_messages.Message):
   servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 13)
 
 
+class AuthorizedCertificate(_messages.Message):
+  """An SSL certificate that a user has been authorized to administer. A user
+  is authorized to administer any certificate that applies to one of their
+  authorized domains.
+
+  Fields:
+    certificateRawData: The SSL certificate serving the AuthorizedCertificate
+      resource. This must be obtained independently from a certificate
+      authority.
+    displayName: The user-specified display name of the certificate. This is
+      not guaranteed to be unique. Example: My Certificate.
+    domainMappingsCount: Aggregate count of the domain mappings with this
+      certificate mapped. This count includes domain mappings on applications
+      for which the user does not have VIEWER permissions.Only returned by GET
+      or LIST requests when specifically requested by the
+      view=FULL_CERTIFICATE option.@OutputOnly
+    domainNames: Topmost applicable domains of this certificate. This
+      certificate applies to these domains and their subdomains. Example:
+      example.com.@OutputOnly
+    expireTime: The time when this certificate expires. To update the renewal
+      time on this certificate, upload an SSL certificate with a different
+      expiration time using
+      AuthorizedCertificates.UpdateAuthorizedCertificate.@OutputOnly
+    id: Relative name of the certificate. This is a unique value autogenerated
+      on AuthorizedCertificate resource creation. Example: 12345.@OutputOnly
+    name: Full path to the AuthorizedCertificate resource in the API. Example:
+      apps/myapp/authorizedCertificates/12345.@OutputOnly
+    visibleDomainMappings: The full paths to user visible Domain Mapping
+      resources that have this certificate mapped. Example:
+      apps/myapp/domainMappings/example.com.This may not represent the full
+      list of mapped domain mappings if the user does not have VIEWER
+      permissions on all of the applications that have this certificate
+      mapped. See domain_mappings_count for a complete count.Only returned by
+      GET or LIST requests when specifically requested by the
+      view=FULL_CERTIFICATE option.@OutputOnly
+  """
+
+  certificateRawData = _messages.MessageField('CertificateRawData', 1)
+  displayName = _messages.StringField(2)
+  domainMappingsCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  domainNames = _messages.StringField(4, repeated=True)
+  expireTime = _messages.StringField(5)
+  id = _messages.StringField(6)
+  name = _messages.StringField(7)
+  visibleDomainMappings = _messages.StringField(8, repeated=True)
+
+
+class AuthorizedDomain(_messages.Message):
+  """A domain that a user has been authorized to administer. To authorize use
+  of a domain, verify ownership via Webmaster Central
+  (https://www.google.com/webmasters/verification/home).
+
+  Fields:
+    id: Fully qualified domain name of the domain authorized for use. Example:
+      example.com.
+    name: Full path to the AuthorizedDomain resource in the API. Example:
+      apps/myapp/authorizedDomains/example.com.@OutputOnly
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class AutomaticScaling(_messages.Message):
   """Automatic scaling is based on request rate, response latencies, and other
   application metrics.
@@ -543,6 +782,25 @@ class BasicScaling(_messages.Message):
 
   idleTimeout = _messages.StringField(1)
   maxInstances = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class CertificateRawData(_messages.Message):
+  """An SSL certificate obtained from a certificate authority.
+
+  Fields:
+    privateKey: Unencrypted PEM encoded RSA private key. This field is set
+      once on certificate creation and then encrypted. The key size must be
+      2048 bits or fewer. Must include the header and footer. Example: <pre>
+      -----BEGIN RSA PRIVATE KEY----- <unencrypted_key_value> -----END RSA
+      PRIVATE KEY----- </pre> @InputOnly
+    publicCertificate: PEM encoded x.509 public key certificate. This field is
+      set once on certificate creation. Must include the header and footer.
+      Example: <pre> -----BEGIN CERTIFICATE----- <certificate_value> -----END
+      CERTIFICATE----- </pre>
+  """
+
+  privateKey = _messages.StringField(1)
+  publicCertificate = _messages.StringField(2)
 
 
 class ContainerInfo(_messages.Message):
@@ -650,6 +908,37 @@ class DiskUtilization(_messages.Message):
   targetReadOpsPerSecond = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   targetWriteBytesPerSecond = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   targetWriteOpsPerSecond = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class DomainMapping(_messages.Message):
+  """A domain serving an App Engine application.
+
+  Fields:
+    id: Relative name of the domain serving the application. Example:
+      example.com.
+    name: Full path to the DomainMapping resource in the API. Example:
+      apps/myapp/domainMapping/example.com.@OutputOnly
+    resourceRecords: The resource records required to configure this domain
+      mapping. These records must be added to the domain's DNS configuration
+      in order to serve the application via this domain mapping.@OutputOnly
+    sslSettings: SSL configuration for this domain. If unconfigured, this
+      domain will not serve with SSL.
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+  resourceRecords = _messages.MessageField('ResourceRecord', 3, repeated=True)
+  sslSettings = _messages.MessageField('SslSettings', 4)
+
+
+class Empty(_messages.Message):
+  """A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo {   rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for Empty is empty JSON object {}.
+  """
+
 
 
 class EndpointsApiService(_messages.Message):
@@ -865,6 +1154,42 @@ class Library(_messages.Message):
 
   name = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class ListAuthorizedCertificatesResponse(_messages.Message):
+  """Response message for AuthorizedCertificates.ListAuthorizedCertificates.
+
+  Fields:
+    certificates: The SSL certificates the user is authorized to administer.
+    nextPageToken: Continuation token for fetching the next page of results.
+  """
+
+  certificates = _messages.MessageField('AuthorizedCertificate', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListAuthorizedDomainsResponse(_messages.Message):
+  """Response message for AuthorizedDomains.ListAuthorizedDomains.
+
+  Fields:
+    domains: The authorized domains belonging to the user.
+    nextPageToken: Continuation token for fetching the next page of results.
+  """
+
+  domains = _messages.MessageField('AuthorizedDomain', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListDomainMappingsResponse(_messages.Message):
+  """Response message for DomainMappings.ListDomainMappings.
+
+  Fields:
+    domainMappings: The domain mappings for the application.
+    nextPageToken: Continuation token for fetching the next page of results.
+  """
+
+  domainMappings = _messages.MessageField('DomainMapping', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -1404,6 +1729,39 @@ class RequestUtilization(_messages.Message):
   targetRequestCountPerSecond = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class ResourceRecord(_messages.Message):
+  """A DNS resource record.
+
+  Enums:
+    TypeValueValuesEnum: Resource record type. Example: AAAA.
+
+  Fields:
+    name: Relative name of the object affected by this record. Only applicable
+      for CNAME records. Example: 'www'.
+    rrdata: Data for this record. Values vary by record type, as defined in
+      RFC 1035 (section 5) and RFC 1034 (section 3.6.1).
+    type: Resource record type. Example: AAAA.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Resource record type. Example: AAAA.
+
+    Values:
+      RECORD_TYPE_UNSPECIFIED: An unknown resource record.
+      A: An A resource record. Data is an IPv4 address.
+      AAAA: An AAAA resource record. Data is an IPv6 address.
+      CNAME: A CNAME resource record. Data is a domain name to be aliased.
+    """
+    RECORD_TYPE_UNSPECIFIED = 0
+    A = 1
+    AAAA = 2
+    CNAME = 3
+
+  name = _messages.StringField(1)
+  rrdata = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
 class Resources(_messages.Message):
   """Machine resources for a version.
 
@@ -1451,6 +1809,18 @@ class Service(_messages.Message):
   id = _messages.StringField(1)
   name = _messages.StringField(2)
   split = _messages.MessageField('TrafficSplit', 3)
+
+
+class SslSettings(_messages.Message):
+  """SSL configuration for a DomainMapping resource.
+
+  Fields:
+    certificateId: ID of the AuthorizedCertificate resource configuring SSL
+      for the application. Clearing this field will remove SSL support.
+      Example: 12345.
+  """
+
+  certificateId = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):

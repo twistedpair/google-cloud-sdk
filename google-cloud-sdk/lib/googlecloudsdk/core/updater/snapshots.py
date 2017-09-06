@@ -474,6 +474,12 @@ class ComponentSnapshot(object):
     return ComponentSnapshotDiff(self, latest_snapshot,
                                  platform_filter=platform_filter)
 
+  def CreateComponentInfos(self, platform_filter=None):
+    all_components = self.AllComponentIdsMatching(platform_filter)
+    infos = [ComponentInfo(component_id, self, platform_filter=platform_filter)
+             for component_id in all_components]
+    return infos
+
   def WriteToFile(self, path):
     """Writes this snapshot back out to a JSON file.
 
@@ -676,6 +682,65 @@ class ComponentSnapshotDiff(object):
     """
     return sorted(self.latest.ComponentsFromIds(component_ids),
                   key=lambda c: c.details.display_name)
+
+
+class ComponentInfo(object):
+  """Encapsulates information to be displayed for a component.
+
+  Attributes:
+    id: str, The component id.
+    name: str, The display name of the component.
+    current_version_string: str, The version of the component.
+    is_hidden: bool, If the component is hidden.
+    is_configuration: bool, True if this should be displayed in the packages
+      section of the component manager.
+  """
+
+  def __init__(self, component_id, snapshot, platform_filter=None):
+    """Create a new component info container.
+
+    Args:
+      component_id: str, The id of this component.
+      snapshot: ComponentSnapshot, The snapshot from which to create info from.
+      platform_filter: platforms.Platform, A platform that components must
+        match in order to be considered for any operations.
+    """
+    self._id = component_id
+    self._snapshot = snapshot
+    self._component = snapshot.ComponentFromId(component_id)
+    self._platform_filter = platform_filter
+
+  @property
+  def id(self):
+    return self._id
+
+  @property
+  def current_version_string(self):
+    return self._component.version.version_string
+
+  @property
+  def name(self):
+    return self._component.details.display_name
+
+  @property
+  def is_hidden(self):
+    return self._component.is_hidden
+
+  @property
+  def is_configuration(self):
+    return self._component.is_configuration
+
+  @property
+  def size(self):
+    return self._snapshot.GetEffectiveComponentSize(
+        self._id, platform_filter=self._platform_filter)
+
+  def __str__(self):
+    return (
+        '{name} ({id})\t[{current_version}]'
+        .format(name=self.name,
+                id=self.id,
+                current_version=self.current_version_string))
 
 
 class ComponentDiff(object):

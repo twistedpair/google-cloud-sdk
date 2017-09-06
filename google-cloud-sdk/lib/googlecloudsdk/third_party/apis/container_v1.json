@@ -241,6 +241,10 @@
           "description": "Master authorized networks is a Beta feature.\nThe configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
         },
+        "maintenancePolicy": {
+          "description": "Configure the maintenance policy for this cluster.",
+          "$ref": "MaintenancePolicy"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -821,6 +825,48 @@
         }
       }
     },
+    "MaintenancePolicy": {
+      "id": "MaintenancePolicy",
+      "description": "MaintenancePolicy defines the maintenance policy to be used for the cluster.",
+      "type": "object",
+      "properties": {
+        "window": {
+          "description": "Specifies the maintenance window in which maintenance may be performed.",
+          "$ref": "MaintenanceWindow"
+        }
+      }
+    },
+    "MaintenanceWindow": {
+      "id": "MaintenanceWindow",
+      "description": "MaintenanceWindow defines the maintenance window to be used for the cluster.",
+      "type": "object",
+      "properties": {
+        "dailyMaintenanceWindow": {
+          "description": "DailyMaintenanceWindow specifies a daily maintenance operation window.",
+          "$ref": "DailyMaintenanceWindow"
+        }
+      }
+    },
+    "DailyMaintenanceWindow": {
+      "id": "DailyMaintenanceWindow",
+      "description": "Time window specified for daily maintenance operations.",
+      "type": "object",
+      "properties": {
+        "daysInCycle": {
+          "description": "Allows to define schedule that runs every nth day of the month.\nNOTE: Unimplemented, reserved for future use.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "startTime": {
+          "description": "Time within the maintenance window to start the maintenance operations.\nTime format should be in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)\nformat \"HH:MM\u201D, where HH : [00-23] and MM : [00-59] GMT.",
+          "type": "string"
+        },
+        "duration": {
+          "description": "[Output only] Duration of the time window, automatically chosen to be\nsmallest possible in the given scenario.\nDuration will be in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)\nformat \"PTnHnMnS\".",
+          "type": "string"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -1331,6 +1377,17 @@
         "networkPolicy": {
           "description": "Configuration options for the NetworkPolicy feature.",
           "$ref": "NetworkPolicy"
+        }
+      }
+    },
+    "SetMaintenancePolicyRequest": {
+      "id": "SetMaintenancePolicyRequest",
+      "description": "SetMaintenancePolicyRequest sets the maintenance policy for a cluster.",
+      "type": "object",
+      "properties": {
+        "maintenancePolicy": {
+          "description": "The maintenance policy to be set for the cluster. An empty field\nclears the existing maintenance policy.",
+          "$ref": "MaintenancePolicy"
         }
       }
     },
@@ -2673,6 +2730,47 @@
                   ],
                   "request": {
                     "$ref": "SetNetworkPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "setMaintenancePolicy": {
+                  "id": "container.projects.zones.clusters.setMaintenancePolicy",
+                  "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy",
+                  "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy",
+                  "httpMethod": "POST",
+                  "description": "Sets the maintenance policy for a cluster.",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "zone": {
+                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "The name of the cluster to update.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "zone",
+                    "clusterId"
+                  ],
+                  "request": {
+                    "$ref": "SetMaintenancePolicyRequest"
                   },
                   "response": {
                     "$ref": "Operation"

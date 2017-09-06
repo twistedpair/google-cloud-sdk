@@ -23,6 +23,7 @@ Example usage:
 """
 
 import datetime
+import json
 
 from apitools.base.protorpclite import messages
 from apitools.base.py import encoding
@@ -82,12 +83,14 @@ class Projector(object):
     self._ignore_default_transforms = ignore_default_transforms
     self._retain_none_values = retain_none_values
     self._been_here_done_that = []
-    if 'transforms' in projection.Attributes():
+    attributes = projection.Attributes()
+    if 'transforms' in attributes:
       self._transforms_enabled_attribute = True
-    elif 'no-transforms' in projection.Attributes():
+    elif 'no-transforms' in attributes:
       self._transforms_enabled_attribute = False
     else:
       self._transforms_enabled_attribute = None
+    self._json_decode = 'json-decode' in attributes
 
   def _TransformIsEnabled(self, transform):
     """Returns True if transform is enabled.
@@ -349,7 +352,17 @@ class Projector(object):
       return None
     elif obj is None:
       pass
-    elif isinstance(obj, (basestring, bool, int, long, float, complex)):
+    elif isinstance(obj, basestring):
+      # Check for {" because valid compact JSON keys are always "..." quoted.
+      if (self._json_decode and (
+          obj.startswith('{"') and obj.endswith('}') or
+          obj.startswith('[') and obj.endswith(']'))):
+        try:
+          return self._Project(json.loads(obj), projection, flag, leaf=leaf)
+        except ValueError:
+          # OK if it's not JSON.
+          pass
+    elif isinstance(obj, (bool, int, long, float, complex)):
       # primitive data type
       pass
     elif isinstance(obj, bytearray):

@@ -521,6 +521,7 @@ class Cluster(_messages.Message):
       Cloud Logging service. * `none` - no logs will be exported from the
       cluster. * if left as an empty string,`logging.googleapis.com` will be
       used.
+    maintenancePolicy: Configure the maintenance policy for this cluster.
     masterAuth: The authentication information for accessing the master
       endpoint.
     masterAuthorizedNetworks: Deprecated. The configuration options for master
@@ -638,23 +639,24 @@ class Cluster(_messages.Message):
   legacyAbac = _messages.MessageField('LegacyAbac', 16)
   locations = _messages.StringField(17, repeated=True)
   loggingService = _messages.StringField(18)
-  masterAuth = _messages.MessageField('MasterAuth', 19)
-  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 20)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 21)
-  monitoringService = _messages.StringField(22)
-  name = _messages.StringField(23)
-  network = _messages.StringField(24)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 25)
-  nodeConfig = _messages.MessageField('NodeConfig', 26)
-  nodeIpv4CidrSize = _messages.IntegerField(27, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 28, repeated=True)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 29)
-  selfLink = _messages.StringField(30)
-  servicesIpv4Cidr = _messages.StringField(31)
-  status = _messages.EnumField('StatusValueValuesEnum', 32)
-  statusMessage = _messages.StringField(33)
-  subnetwork = _messages.StringField(34)
-  zone = _messages.StringField(35)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 19)
+  masterAuth = _messages.MessageField('MasterAuth', 20)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 21)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 22)
+  monitoringService = _messages.StringField(23)
+  name = _messages.StringField(24)
+  network = _messages.StringField(25)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 26)
+  nodeConfig = _messages.MessageField('NodeConfig', 27)
+  nodeIpv4CidrSize = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 29, repeated=True)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 30)
+  selfLink = _messages.StringField(31)
+  servicesIpv4Cidr = _messages.StringField(32)
+  status = _messages.EnumField('StatusValueValuesEnum', 33)
+  statusMessage = _messages.StringField(34)
+  subnetwork = _messages.StringField(35)
+  zone = _messages.StringField(36)
 
 
 class ClusterUpdate(_messages.Message):
@@ -1254,6 +1256,25 @@ class ContainerProjectsZonesClustersResourceLabelsRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ContainerProjectsZonesClustersSetMaintenancePolicyRequest(_messages.Message):
+  """A ContainerProjectsZonesClustersSetMaintenancePolicyRequest object.
+
+  Fields:
+    clusterId: The name of the cluster to update.
+    projectId: The Google Developers Console [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    setMaintenancePolicyRequest: A SetMaintenancePolicyRequest resource to be
+      passed as the request body.
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  setMaintenancePolicyRequest = _messages.MessageField('SetMaintenancePolicyRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ContainerProjectsZonesClustersSetMasterAuthRequest(_messages.Message):
   """A ContainerProjectsZonesClustersSetMasterAuthRequest object.
 
@@ -1448,6 +1469,26 @@ class CreateTokenRequest(_messages.Message):
 
   clusterId = _messages.StringField(1)
   projectNumber = _messages.IntegerField(2)
+
+
+class DailyMaintenanceWindow(_messages.Message):
+  """Time window specified for daily maintenance operations.
+
+  Fields:
+    daysInCycle: Allows to define schedule that runs every nth day of the
+      month. NOTE: Unimplemented, reserved for future use.
+    duration: [Output only] Duration of the time window, automatically chosen
+      to be smallest possible in the given scenario. Duration will be in
+      [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) format "PTnHnMnS".
+    startTime: Time within the maintenance window to start the maintenance
+      operations. Time format should be in
+      [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) format "HH:MM\u201d, where HH
+      : [00-23] and MM : [00-59] GMT.
+  """
+
+  daysInCycle = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  duration = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -1733,6 +1774,30 @@ class ListOperationsResponse(_messages.Message):
 
   missingZones = _messages.StringField(1, repeated=True)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class MaintenancePolicy(_messages.Message):
+  """MaintenancePolicy defines the maintenance policy to be used for the
+  cluster.
+
+  Fields:
+    window: Specifies the maintenance window in which maintenance may be
+      performed.
+  """
+
+  window = _messages.MessageField('MaintenanceWindow', 1)
+
+
+class MaintenanceWindow(_messages.Message):
+  """MaintenanceWindow defines the maintenance window to be used for the
+  cluster.
+
+  Fields:
+    dailyMaintenanceWindow: DailyMaintenanceWindow specifies a daily
+      maintenance operation window.
+  """
+
+  dailyMaintenanceWindow = _messages.MessageField('DailyMaintenanceWindow', 1)
 
 
 class MasterAuth(_messages.Message):
@@ -2413,6 +2478,17 @@ class SetLoggingServiceRequest(_messages.Message):
 
   loggingService = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class SetMaintenancePolicyRequest(_messages.Message):
+  """SetMaintenancePolicyRequest sets the maintenance policy for a cluster.
+
+  Fields:
+    maintenancePolicy: The maintenance policy to be set for the cluster. An
+      empty field clears the existing maintenance policy.
+  """
+
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 1)
 
 
 class SetMasterAuthRequest(_messages.Message):

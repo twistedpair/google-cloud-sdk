@@ -1845,30 +1845,6 @@
             "KEY",
             "VALUE"
           ]
-        },
-        "sideInput": {
-          "description": "ID of a side input being read from\/written to. Side inputs are identified\nby a pair of (reader, input_index). The reader is usually equal to the\noriginal name, but it may be different, if a ParDo emits it's Iterator \/\nMap side input object.",
-          "$ref": "SideInputId"
-        },
-        "originalShuffleStepName": {
-          "description": "The GroupByKey step name from the original graph.",
-          "type": "string"
-        }
-      }
-    },
-    "SideInputId": {
-      "id": "SideInputId",
-      "description": "Uniquely identifies a side input.",
-      "type": "object",
-      "properties": {
-        "declaringStepName": {
-          "description": "The step that receives and usually consumes this side input.",
-          "type": "string"
-        },
-        "inputIndex": {
-          "description": "The index of the side input, from the list of non_parallel_inputs.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -3504,10 +3480,6 @@
         "workerMetrics": {
           "description": "Resource metrics reported by workers.",
           "$ref": "ResourceUtilizationReport"
-        },
-        "workerShutdownNotice": {
-          "description": "Shutdown notice by workers.",
-          "$ref": "WorkerShutdownNotice"
         }
       }
     },
@@ -3598,17 +3570,6 @@
         }
       }
     },
-    "WorkerShutdownNotice": {
-      "id": "WorkerShutdownNotice",
-      "description": "Shutdown notification from workers. This is to be sent by the shutdown\nscript of the worker VM so that the backend knows that the VM is being\nshut down.",
-      "type": "object",
-      "properties": {
-        "reason": {
-          "description": "Optional reason to be attached for the shutdown notice.\nFor example: \"PREEMPTION\" would indicate the VM is being shut down because\nof preemption. Other possible reasons may be added in the future.",
-          "type": "string"
-        }
-      }
-    },
     "SendWorkerMessagesResponse": {
       "id": "SendWorkerMessagesResponse",
       "description": "The response to the worker messages.",
@@ -3635,10 +3596,6 @@
         "workerMetricsResponse": {
           "description": "Service's response to reporting worker metrics (currently empty).",
           "$ref": "ResourceUtilizationReportResponse"
-        },
-        "workerShutdownNoticeResponse": {
-          "description": "Service's response to shutdown notice (currently empty).",
-          "$ref": "WorkerShutdownNoticeResponse"
         }
       }
     },
@@ -3657,13 +3614,6 @@
     "ResourceUtilizationReportResponse": {
       "id": "ResourceUtilizationReportResponse",
       "description": "Service-side response to WorkerMessage reporting resource utilization.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "WorkerShutdownNoticeResponse": {
-      "id": "WorkerShutdownNoticeResponse",
-      "description": "Service-side response to WorkerMessage issuing shutdown notice.",
       "type": "object",
       "properties": {
       }

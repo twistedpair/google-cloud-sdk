@@ -572,6 +572,33 @@ zones.
         supports_download=False,
     )
 
+    def SetMaintenancePolicy(self, request, global_params=None):
+      """Sets the maintenance policy for a cluster.
+
+      Args:
+        request: (SetMaintenancePolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetMaintenancePolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMaintenancePolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMaintenancePolicy',
+        http_method=u'POST',
+        method_id=u'container.projects.locations.clusters.setMaintenancePolicy',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:setMaintenancePolicy',
+        request_field='<request>',
+        request_type_name=u'SetMaintenancePolicyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetMasterAuth(self, request, global_params=None):
       """Used to set master auth materials. Currently supports :-.
 Changing the admin password of a specific cluster.
@@ -1484,7 +1511,7 @@ zones.
       """Sets the maintenance policy for a cluster.
 
       Args:
-        request: (ContainerProjectsZonesClustersSetMaintenancePolicyRequest) input message
+        request: (SetMaintenancePolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -1500,8 +1527,8 @@ zones.
         path_params=[u'clusterId', u'projectId', u'zone'],
         query_params=[],
         relative_path=u'v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy',
-        request_field=u'setMaintenancePolicyRequest',
-        request_type_name=u'ContainerProjectsZonesClustersSetMaintenancePolicyRequest',
+        request_field='<request>',
+        request_type_name=u'SetMaintenancePolicyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

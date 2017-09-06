@@ -174,12 +174,12 @@
         "uid": {
           "description": "The user ID.",
           "type": "integer",
-          "format": "uint32"
+          "format": "int32"
         },
         "gid": {
           "description": "The default group ID.",
           "type": "integer",
-          "format": "uint32"
+          "format": "int32"
         },
         "homeDirectory": {
           "description": "The path to the home directory for this account.",

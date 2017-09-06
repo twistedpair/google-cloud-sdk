@@ -129,9 +129,13 @@ class PrinterAttributes(resource_printer_base.ResourcePrinter):
 
   Printer attributes:
     disable: Disables formatted output and does not consume the resources.
+    json-decode: Decodes string values that are JSON compact encodings of list
+      and dictionary objects. This may become the default.
     private: Disables log file output. Use this for sensitive resource data
       that should not be displayed in log files. Explicit command line IO
       redirection overrides this attribute.
+    transforms: Apply projection transforms to the resource values. The default
+      is format specific. Use *no-transforms* to disable.
   """
 
 

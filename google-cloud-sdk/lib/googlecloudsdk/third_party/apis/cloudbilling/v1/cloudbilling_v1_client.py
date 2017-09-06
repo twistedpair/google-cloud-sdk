@@ -37,8 +37,6 @@ class CloudbillingV1(base_api.BaseApiClient):
     self.billingAccounts_projects = self.BillingAccountsProjectsService(self)
     self.billingAccounts = self.BillingAccountsService(self)
     self.projects = self.ProjectsService(self)
-    self.services_skus = self.ServicesSkusService(self)
-    self.services = self.ServicesService(self)
 
   class BillingAccountsProjectsService(base_api.BaseApiService):
     """Service class for the billingAccounts_projects resource."""
@@ -239,78 +237,5 @@ disable billing, you should always call this method with the name of an
         request_field=u'projectBillingInfo',
         request_type_name=u'CloudbillingProjectsUpdateBillingInfoRequest',
         response_type_name=u'ProjectBillingInfo',
-        supports_download=False,
-    )
-
-  class ServicesSkusService(base_api.BaseApiService):
-    """Service class for the services_skus resource."""
-
-    _NAME = u'services_skus'
-
-    def __init__(self, client):
-      super(CloudbillingV1.ServicesSkusService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      """Lists all publicly available SKUs for a given cloud service.
-
-      Args:
-        request: (CloudbillingServicesSkusListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListSkusResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/services/{servicesId}/skus',
-        http_method=u'GET',
-        method_id=u'cloudbilling.services.skus.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'currencyCode', u'endTime', u'pageSize', u'pageToken', u'startTime'],
-        relative_path=u'v1/{+parent}/skus',
-        request_field='',
-        request_type_name=u'CloudbillingServicesSkusListRequest',
-        response_type_name=u'ListSkusResponse',
-        supports_download=False,
-    )
-
-  class ServicesService(base_api.BaseApiService):
-    """Service class for the services resource."""
-
-    _NAME = u'services'
-
-    def __init__(self, client):
-      super(CloudbillingV1.ServicesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      """Lists all public cloud services.
-
-      Args:
-        request: (CloudbillingServicesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListServicesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'cloudbilling.services.list',
-        ordered_params=[],
-        path_params=[],
-        query_params=[u'pageSize', u'pageToken'],
-        relative_path=u'v1/services',
-        request_field='',
-        request_type_name=u'CloudbillingServicesListRequest',
-        response_type_name=u'ListServicesResponse',
         supports_download=False,
     )

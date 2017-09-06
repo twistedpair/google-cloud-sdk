@@ -238,8 +238,6 @@ apis:
       discovery_doc: language_v1.json
       default: true
   logging:
-    v1beta3:
-      discovery_doc: logging_v1beta3.json
     v2:
       discovery_doc: logging_v2.json
       default: true

@@ -396,8 +396,7 @@ def CreateNetworkInterfaceMessages(resources, compute_client,
       address = interface.get('address', None)
       no_address = 'no-address' in interface
       if support_network_tier:
-        network_tier = interface.get('network-tier',
-                                     constants.DEFAULT_NETWORK_TIER)
+        network_tier = interface.get('network-tier', None)
       else:
         network_tier = None
 

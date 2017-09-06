@@ -811,25 +811,6 @@ class ContainerProjectsZonesClustersNodePoolsListRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
-class ContainerProjectsZonesClustersSetMaintenancePolicyRequest(_messages.Message):
-  """A ContainerProjectsZonesClustersSetMaintenancePolicyRequest object.
-
-  Fields:
-    clusterId: The name of the cluster to update.
-    projectId: The Google Developers Console [project ID or project
-      number](https://support.google.com/cloud/answer/6158840).
-    setMaintenancePolicyRequest: A SetMaintenancePolicyRequest resource to be
-      passed as the request body.
-    zone: The name of the Google Compute Engine
-      [zone](/compute/docs/zones#available) in which the cluster resides.
-  """
-
-  clusterId = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-  setMaintenancePolicyRequest = _messages.MessageField('SetMaintenancePolicyRequest', 3)
-  zone = _messages.StringField(4, required=True)
-
-
 class ContainerProjectsZonesGetServerconfigRequest(_messages.Message):
   """A ContainerProjectsZonesGetServerconfigRequest object.
 
@@ -1889,13 +1870,25 @@ class SetMaintenancePolicyRequest(_messages.Message):
   """SetMaintenancePolicyRequest sets the maintenance policy for a cluster.
 
   Fields:
+    clusterId: The name of the cluster to update.
     maintenancePolicy: The maintenance policy to be set for the cluster. An
       empty field clears the existing maintenance policy.
+    name: The name (project, location, cluster id) of the cluster to set
+      maintenance policy. Specified in the format
+      'projects/*/locations/*/clusters/*'.
+    projectId: The Google Developers Console [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
     version: API request version that initiates this operation.
+    zone: The name of the Google Compute Engine
+      [zone](/compute/docs/zones#available) in which the cluster resides.
   """
 
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 1)
-  version = _messages.StringField(2)
+  clusterId = _messages.StringField(1)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 2)
+  name = _messages.StringField(3)
+  projectId = _messages.StringField(4)
+  version = _messages.StringField(5)
+  zone = _messages.StringField(6)
 
 
 class SetMasterAuthRequest(_messages.Message):

@@ -158,7 +158,8 @@ def LoadCommonType(impl_paths, path, release_track,
         raise CommandLoadFailure(
             '.'.join(path),
             Exception('Command groups cannot be implemented in yaml'))
-      data = yaml.load(pkg_resources.GetData(impl_file))
+      data = yaml.load(pkg_resources.GetData(impl_file),
+                       Loader=CreateYamlLoader(impl_file))
       implementations.extend((_ImplementationsFromYaml(
           path, data, yaml_command_translator)))
     else:
@@ -168,6 +169,95 @@ def LoadCommonType(impl_paths, path, release_track,
 
   return _ExtractReleaseTrackImplementation(
       impl_paths[0], release_track, implementations)()
+
+
+def CreateYamlLoader(impl_path):
+  """Creates a custom yaml loader that handles includes from common data.
+
+  Args:
+    impl_path: str, The path to the file we are loading data from.
+
+  Returns:
+    yaml.Loader, A yaml loader to use.
+  """
+  # TODO(b/64147277) Allow for importing from other places.
+  common_file_path = os.path.join(os.path.dirname(impl_path), '__init__.yaml')
+  common_data = None
+  if os.path.exists(common_file_path):
+    common_data = yaml.load(pkg_resources.GetData(common_file_path))
+
+  class Loader(yaml.Loader):
+    """A custom yaml loader.
+
+    It adds 2 different import capabilities. Assuming __init__.yaml has the
+    contents:
+
+    foo:
+      a: b
+      c: d
+
+    The first uses a custom constructor to insert data into your current file,
+    so:
+
+    bar: !COMMON foo.a
+
+    results in:
+
+    bar: b
+
+    The second mechanism overrides construct_mapping to post process the data
+    and replace the merge macro with keys from the other file. We can't use the
+    custom constructor for this as well because the merge key type in yaml is
+    processed before custom constructors which makes importing and merging not
+    possible. So:
+
+    bar:
+      _COMMON_: foo
+      e: f
+
+    results in:
+
+    bar:
+      a: b
+      c: d
+      e: f
+    """
+
+    INCLUDE_MACRO = '!COMMON'
+    MERGE_MACRO = '_COMMON_'
+
+    def __init__(self, stream):
+      super(Loader, self).__init__(stream)
+
+    def construct_mapping(self, *args, **kwargs):
+      data = super(Loader, self).construct_mapping(*args, **kwargs)
+      attribute_path = data.pop(Loader.MERGE_MACRO, None)
+      if attribute_path:
+        for path in attribute_path.split(','):
+          data.update(self._GetData(path))
+      return data
+
+    def include(self, node):
+      attribute_path = self.construct_scalar(node)
+      return self._GetData(attribute_path)
+
+    def _GetData(self, attribute_path):
+      if not common_data:
+        raise LayoutException(
+            'Command [{}] references common command data but it does not exist.'
+            .format(impl_path))
+      value = common_data
+      for attribute in attribute_path.split('.'):
+        value = value.get(attribute, None)
+        if not value:
+          raise LayoutException(
+              'Command [{}] references common command data attribute [{}] in '
+              'path [{}] but it does not exist.'
+              .format(impl_path, attribute, attribute_path))
+      return value
+
+  Loader.add_constructor(Loader.INCLUDE_MACRO, Loader.include)
+  return Loader
 
 
 def _GetModuleFromPath(impl_file, path, construction_id):

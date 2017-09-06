@@ -833,7 +833,7 @@ class RuntimeconfigProjectsConfigsVariablesCreateRequest(_messages.Message):
 
   Fields:
     parent: The path to the RutimeConfig resource that this variable should
-      belong to. The configuration must exist beforehand; the path must be in
+      belong to. The configuration must exist beforehand; the path must by in
       the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
     requestId: An optional but recommended unique `request_id`. If the server
       receives two `create()` requests  with the same `request_id`, then the
@@ -887,7 +887,7 @@ class RuntimeconfigProjectsConfigsVariablesListRequest(_messages.Message):
       `nextPageToken` returned by a previous list request to get the next page
       of results.
     parent: The path to the RuntimeConfig resource for which you want to list
-      variables. The configuration must exist beforehand; the path must be in
+      variables. The configuration must exist beforehand; the path must by in
       the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
     returnValues: The flag indicates whether the user wants to return values
       of variables. If true, then only those variables that user has IAM
@@ -935,7 +935,7 @@ class RuntimeconfigProjectsConfigsWaitersCreateRequest(_messages.Message):
 
   Fields:
     parent: The path to the configuration that will own the waiter. The
-      configuration must exist beforehand; the path must be in the format:
+      configuration must exist beforehand; the path must by in the format:
       `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`.
     requestId: An optional but recommended unique `request_id`. If the server
       receives two `create()` requests  with the same `request_id`, then the
@@ -984,7 +984,7 @@ class RuntimeconfigProjectsConfigsWaitersListRequest(_messages.Message):
       `nextPageToken` returned by a previous list request to get the next page
       of results.
     parent: The path to the configuration for which you want to get a list of
-      waiters. The configuration must exist beforehand; the path must be in
+      waiters. The configuration must exist beforehand; the path must by in
       the format:  `projects/[PROJECT_ID]/configs/[CONFIG_NAME]`
   """
 

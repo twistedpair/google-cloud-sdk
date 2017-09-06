@@ -2,6 +2,62 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 170.0.0 (2017-09-06)
+
+### Google Cloud SDK
+
+*   You can now use the \[json-decode\] --format printer attribute to JSON
+    decode resource values that are compact JSON encodings.  For example,
+    *--format="yaml\[json-decode\]"*.
+
+*   `gcloud init` will now give the choice to enter a project id, create a
+    project, or list all projects if a user has a large number of projects.
+
+*   `gcloud components list` now has the `--only-local-state` flag which shows
+    only locally installed components.
+
+### Google App Engine
+
+*   A bug in which traffic split exhibited a rounding error has been fixed.
+
+### Google Cloud Bigtable
+
+*   An error with reading the results of Read-Modify-Write operations has been
+    fixed.
+
+### Google Cloud Dataproc
+
+*    The flags `--max-age`, `--max-idle`, and `--expiration-time` have been
+     added to `gcloud beta dataproc clusters create`.
+
+### Google Cloud Functions
+
+*   The `--update-labels` and `--remove-labels` flags have been added to
+    `gcloud beta functions deploy`.
+
+### Google Compute Engine
+
+*   The `--ssl-certificates` flag in
+    `compute target-{https|ssl}-proxies {create|update}` has been promoted to
+    GA. The `--ssl-certificate` flag in the same command groups has been
+    deprecated. Please use `--ssl-certificates` as an alternative.
+
+*   The hidden `compute diagnose routes` command is now available. It enables
+    (trace)routing to/from VMs in GCE.
+
+*   The `gcloud compute shared-vpc` command is now available as an alias of
+    `gcloud compute xpn`.
+
+### Google Container Engine
+
+*   Google Container Engine's kubectl version has been updated from 1.7.4 to
+    1.7.5.
+
+*   The following flags are now available in `gcloud beta containers create` for
+    enabling the use of IP aliases with an existing subnetwork:
+    `-enable-ip-alias`, `--cluster-secondary-range-name`,
+    `--services-secondary-range-name`.
+
 ## 169.0.0 (2017-08-30)
 
 ### Breaking Changes

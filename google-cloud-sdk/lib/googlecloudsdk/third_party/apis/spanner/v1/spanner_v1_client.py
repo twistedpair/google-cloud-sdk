@@ -360,7 +360,7 @@ periodically, e.g., `"SELECT 1"`.
         path_params=[u'database'],
         query_params=[],
         relative_path=u'v1/{+database}/sessions',
-        request_field='',
+        request_field=u'createSessionRequest',
         request_type_name=u'SpannerProjectsInstancesDatabasesSessionsCreateRequest',
         response_type_name=u'Session',
         supports_download=False,
@@ -555,6 +555,33 @@ alive.
         request_field='',
         request_type_name=u'SpannerProjectsInstancesDatabasesSessionsGetRequest',
         response_type_name=u'Session',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists all sessions in a given database.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesSessionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSessionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions',
+        http_method=u'GET',
+        method_id=u'spanner.projects.instances.databases.sessions.list',
+        ordered_params=[u'database'],
+        path_params=[u'database'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+database}/sessions',
+        request_field='',
+        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsListRequest',
+        response_type_name=u'ListSessionsResponse',
         supports_download=False,
     )
 

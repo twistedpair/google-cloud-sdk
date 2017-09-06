@@ -419,12 +419,6 @@ MAP = {
         ),
     },
     'logging': {
-        'v1beta3': APIDef(
-            class_path='googlecloudsdk.third_party.apis.logging.v1beta3',
-            client_classpath='logging_v1beta3_client.LoggingV1beta3',
-            messages_modulepath='logging_v1beta3_messages',
-            default_version=False
-        ),
         'v2': APIDef(
             class_path='googlecloudsdk.third_party.apis.logging.v2',
             client_classpath='logging_v2_client.LoggingV2',

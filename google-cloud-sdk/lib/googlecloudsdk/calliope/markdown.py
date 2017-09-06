@@ -268,6 +268,29 @@ class MarkdownGenerator(object):
     """Returns (group, group_attr, global_flags)."""
     pass
 
+  def FormatExample(self, cmd, args, with_args):
+    """Creates a link to the command reference from a command example.
+
+    If with_args is False and the provided command includes args,
+    returns None.
+
+    Args:
+      cmd: [str], a command.
+      args: [str], args with the command.
+      with_args: bool, whether the example is valid if it has args.
+
+    Returns:
+      (str) a representation of the command with a link to the reference, plus
+      any args. | None, if the command isn't valid.
+    """
+    if args and not with_args:
+      return None
+    ref = '/'.join(cmd)
+    command_link = 'link:' + ref + '[' + ' '.join(cmd) + ']'
+    if args:
+      command_link += ' ' + ' '.join(args)
+    return command_link
+
   def _FilterOutHidden(self, args):
     """Returns a copy of args containing only non-hidden arguments."""
     return [a for a in args if not self.IsHidden(a)]
@@ -732,16 +755,21 @@ class MarkdownGenerator(object):
       doc = rep + doc[pos:]
     return doc
 
-  def _AddCommandLinkMarkdown(self, doc):
-    r"""Add ([`*])command ...\1 link markdown to doc."""
-    if not self._command_path:
-      return doc
-    # This pattern matches "([`*]){top} {arg}*\1" where {top}...{arg} is a
-    # known command. The negative lookbehind prefix prevents hyperlinks in
-    # SYNOPSIS sections and as the first line in a paragraph.
-    pat = re.compile(r'(?<!\n\n)(?<!\*\(ALPHA\)\* )(?<!\*\(BETA\)\* )'
-                     r'([`*])(?P<command>{top}( [a-z][-a-z0-9]*)*)\1'.format(
-                         top=self._top))
+  def _LinkMarkdown(self, doc, pat, with_args=True):
+    """Build a representation of a doc, finding all command examples.
+
+    Finds examples of both inline commands and commands on their own line.
+
+    Args:
+      doc: str, the doc to find examples in.
+      pat: the compiled regexp pattern to match against (the "command" match
+          group).
+      with_args: bool, whether the examples are valid if they also have
+          args.
+
+    Returns:
+      (str) The final representation of the doc.
+    """
     pos = 0
     rep = ''
     while True:
@@ -749,46 +777,71 @@ class MarkdownGenerator(object):
       if not match:
         break
       cmd, args = self._SplitCommandFromArgs(match.group('command').split(' '))
-      if args:
-        # Skip invalid commands.
-        rep += doc[pos:match.end(0)]
+      lnk = self.FormatExample(cmd, args, with_args=with_args)
+      if lnk:
+        rep += doc[pos:match.start('command')] + lnk
       else:
-        ref = '/'.join(cmd)
-        lnk = 'link:' + ref + '[' + ' '.join(cmd) + ']'
-        rep += (doc[pos:match.start('command')] + lnk +
-                doc[match.end('command'):match.end(0)])
-      pos = match.end(0)
+        # Skip invalid commands.
+        rep += doc[pos:match.end('command')]
+      rep += doc[match.end('command'):match.end('end')]
+      pos = match.end('end')
     if rep:
       doc = rep + doc[pos:]
     return doc
 
-  def _AddCommandLineLinkMarkdown(self, doc):
-    """Add $ command ... link markdown to doc."""
+  def InlineCommandExamplePattern(self):
+    """Regex to search for inline command examples enclosed in ` or *.
+
+    Contains a 'command' group and an 'end' group which will be used
+    by the regexp search later.
+
+    Returns:
+      (str) the regex pattern, including a format string for the 'top'
+      command.
+    """
+    # This pattern matches "([`*]){top} {arg}*\1" where {top}...{arg} is a
+    # known command. The negative lookbehind prefix prevents hyperlinks in
+    # SYNOPSIS sections and as the first line in a paragraph.
+    return (
+        r'(?<!\n\n)(?<!\*\(ALPHA\)\* )(?<!\*\(BETA\)\* )'
+        r'([`*])(?P<command>{top}( [a-z][-a-z0-9]*)*)(?P<end>\1)'
+        .format(top=re.escape(self._top)))
+
+  def _AddCommandLinkMarkdown(self, doc):
+    r"""Add ([`*])command ...\1 link markdown to doc."""
     if not self._command_path:
       return doc
+    pat = re.compile(self.InlineCommandExamplePattern())
+    doc = self._LinkMarkdown(doc, pat, with_args=False)
+    return doc
+
+  def CommandLineExamplePattern(self):
+    """Regex to search for command examples starting with '$ '.
+
+    Contains a 'command' group and an 'end' group which will be used
+    by the regexp search later.
+
+    Returns:
+      (str) the regex pattern, including a format string for the 'top'
+      command.
+    """
     # This pattern matches "$ {top} {arg}*" where each arg is lower case and
     # does not start with example-, my-, or sample-. This follows the style
     # guide rule that user-supplied args to example commands contain upper case
     # chars or start with example-, my-, or sample-. The trailing .? allows for
     # an optional punctuation character before end of line. This handles cases
     # like ``... run $ <top> foo bar.'' at the end of a sentence.
-    pat = re.compile(r'\$ (' + self._top +
-                     '((?: (?!(example|my|sample)-)[a-z][-a-z0-9]*)*)).?[ `\n]')
-    pos = 0
-    rep = ''
-    while True:
-      match = pat.search(doc, pos)
-      if not match:
-        break
-      cmd, args = self._SplitCommandFromArgs(match.group(1).split(' '))
-      ref = '/'.join(cmd)
-      lnk = 'link:' + ref + '[' + ' '.join(cmd) + ']'
-      if args:
-        lnk += ' ' + ' '.join(args)
-      rep += doc[pos:match.start(1)] + lnk
-      pos = match.end(1)
-    if rep:
-      doc = rep + doc[pos:]
+    # The <end> group ends at the same place as the command group, without
+    # the punctuation or newlines.
+    return (r'\$ (?P<end>(?P<command>{top}((?: (?!(example|my|sample)-)'
+            r'[a-z][-a-z0-9]*)*))).?[ `\n]'.format(top=re.escape(self._top)))
+
+  def _AddCommandLineLinkMarkdown(self, doc):
+    """Add $ command ... link markdown to doc."""
+    if not self._command_path:
+      return doc
+    pat = re.compile(self.CommandLineExamplePattern())
+    doc = self._LinkMarkdown(doc, pat, with_args=True)
     return doc
 
   def _AddManPageLinkMarkdown(self, doc):

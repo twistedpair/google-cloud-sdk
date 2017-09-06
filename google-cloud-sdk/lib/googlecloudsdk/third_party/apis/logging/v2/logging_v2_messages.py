@@ -156,9 +156,7 @@ class ListLogEntriesResponse(_messages.Message):
   """Result returned from ListLogEntries.
 
   Fields:
-    entries: A list of log entries. If entries is empty, nextPageToken may
-      still be returned, indicating that more entries may exist. See
-      nextPageToken for more information.
+    entries: A list of log entries.
     nextPageToken: If there might be more results than those appearing in this
       response, then nextPageToken is included. To get the next set of
       results, call this method again using the value of nextPageToken as
@@ -520,9 +518,8 @@ class LogMetric(_messages.Message):
   log entries that match a logs filter in a given time interval.
 
   Enums:
-    VersionValueValuesEnum: Deprecated. The API version that created or
-      updated this metric. The v2 format is used by default and cannot be
-      changed.
+    VersionValueValuesEnum: Output only. The API version that created or
+      updated this metric. This value is currently always set to V2.
 
   Fields:
     description: Optional. A description of this metric, which is used in
@@ -540,13 +537,13 @@ class LogMetric(_messages.Message):
       when the metric identifier appears as the [METRIC_ID] part of a
       metric_name API parameter, then the metric identifier must be URL-
       encoded. Example: "projects/my-project/metrics/nginx%2Frequests".
-    version: Deprecated. The API version that created or updated this metric.
-      The v2 format is used by default and cannot be changed.
+    version: Output only. The API version that created or updated this metric.
+      This value is currently always set to V2.
   """
 
   class VersionValueValuesEnum(_messages.Enum):
-    """Deprecated. The API version that created or updated this metric. The v2
-    format is used by default and cannot be changed.
+    """Output only. The API version that created or updated this metric. This
+    value is currently always set to V2.
 
     Values:
       V2: Stackdriver Logging API v2.

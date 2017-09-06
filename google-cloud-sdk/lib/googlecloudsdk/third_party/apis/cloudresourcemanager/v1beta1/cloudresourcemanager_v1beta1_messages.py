@@ -695,7 +695,7 @@ class ResourceId(_messages.Message):
     id: Required field for the type-specific id. This should correspond to the
       id used in the type-specific API's.
     type: Required field representing the resource type this id is for. At
-      present, the valid types are "project", "folder", and "organization".
+      present, the valid types are "project" and "organization".
   """
 
   id = _messages.StringField(1)

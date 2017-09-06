@@ -27,6 +27,7 @@ from googlecloudsdk.calliope import command_loading
 from googlecloudsdk.command_lib.util.apis import arg_marshalling
 from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
@@ -51,10 +52,10 @@ class CommandBuilder(object):
     self.method = registry.GetMethod(
         self.spec.request.collection, self.spec.request.method,
         self.spec.request.api_version)
-    arg_info = dict(self.spec.message_params)
-    arg_info.update(self.spec.resource_arg.request_params)
     self.arg_generator = arg_marshalling.ArgumentGenerator(
-        self.method, arg_info, builtin_args=CommandBuilder.IGNORED_FLAGS,
+        self.method,
+        self.spec.arguments.AllArguments(),
+        builtin_args=CommandBuilder.IGNORED_FLAGS,
         clean_surface=True)
     self.resource_type = self.arg_generator.resource_arg_name
 
@@ -104,7 +105,7 @@ class CommandBuilder(object):
 
       def Run(self_, args):
         unused_ref, response = self._CommonRun(args)
-        return response
+        return self._HandleResponse(response)
 
     return Command
 
@@ -115,8 +116,8 @@ class CommandBuilder(object):
     collection of that resource. Because it extends the calliope base List
     command, it gets flags for things like limit, filter, and page size. A
     list command should register a table output format to display the result.
-    If resource_arg.response_id_field is specified, a --uri flag will also be
-    enabled.
+    If arguments.resource.response_id_field is specified, a --uri flag will also
+    be enabled.
 
     Returns:
       calliope.base.Command, The command that implements the spec.
@@ -133,13 +134,13 @@ class CommandBuilder(object):
         self._CommonArgs(parser)
         # Remove the URI flag if we don't know how to generate URIs for this
         # resource.
-        if not self.spec.resource_arg.response_id_field:
+        if not self.spec.arguments.resource.response_id_field:
           base.URI_FLAG.RemoveFromParser(parser)
 
       def Run(self_, args):
         self._RegisterURIFunc(args)
         unused_ref, response = self._CommonRun(args)
-        return response
+        return self._HandleResponse(response)
 
     return Command
 
@@ -180,8 +181,9 @@ class CommandBuilder(object):
               .format(yaml_command_schema.NAME_FORMAT_KEY),
               extract_resource_result=False)
           if args.async:
-            return response
+            return self._HandleResponse(response)
 
+        response = self._HandleResponse(response)
         log.DeletedResource(ref.Name(), kind=self.resource_type)
         return response
 
@@ -221,7 +223,7 @@ class CommandBuilder(object):
               sync_string='Performing operation on resource: [{{{}}}]'
               .format(yaml_command_schema.NAME_FORMAT_KEY),
               extract_resource_result=True)
-        return response
+        return self._HandleResponse(response)
 
     return Command
 
@@ -237,6 +239,9 @@ class CommandBuilder(object):
     args = self.arg_generator.GenerateArgs(include_global_list_flags=False)
     for arg in args.values():
       arg.AddToParser(parser)
+    if self.spec.arguments.additional_arguments_hook:
+      for arg in self.spec.arguments.additional_arguments_hook():
+        arg.AddToParser(parser)
     if self.spec.output.format:
       parser.display_info.AddFormat(self.spec.output.format)
 
@@ -268,7 +273,10 @@ class CommandBuilder(object):
       # We are going to make the request, but there is custom code to create it.
       request = self.spec.request.create_request_hook(ref, args)
     else:
-      request = self.arg_generator.CreateRequest(args)
+      request = self.arg_generator.CreateRequest(
+          args, self.spec.request.static_fields)
+      if self.spec.request.modify_request_hook:
+        request = self.spec.request.modify_request_hook(ref, args, request)
 
     response = self.method.Call(request,
                                 limit=self.arg_generator.Limit(args),
@@ -312,6 +320,65 @@ class CommandBuilder(object):
     return waiter.WaitFor(
         poller, operation_ref, self._Format(sync_string, resource_ref))
 
+  def _HandleResponse(self, response):
+    """Process the API response.
+
+    Args:
+      response: The apitools message object containing the API response.
+
+    Raises:
+      core.exceptions.Error: If an error was detected and extracted from the
+        response.
+
+    Returns:
+      A possibly modified response.
+    """
+    if self.spec.response.error:
+      error = self._FindPopulatedAttribute(
+          response, self.spec.response.error.field.split('.'))
+      if error:
+        messages = []
+        if self.spec.response.error.code:
+          messages.append('Code: [{}]'.format(
+              getattr(error, self.spec.response.error.code)))
+        if self.spec.response.error.message:
+          messages.append('Message: [{}]'.format(
+              getattr(error, self.spec.response.error.message)))
+        if messages:
+          raise exceptions.Error(' '.join(messages))
+        raise exceptions.Error(str(error))
+    return response
+
+  def _FindPopulatedAttribute(self, obj, attributes):
+    """Searches the given object for an attribute that is non-None.
+
+    This digs into the object search for the given attributes. If any attribute
+    along the way is a list, it will search for sub-attributes in each item
+    of that list. The first match is returned.
+
+    Args:
+      obj: The object to search
+      attributes: [str], A sequence of attributes to use to dig into the
+        resource.
+
+    Returns:
+      The first matching instance of the attribute that is non-None, or None
+      if one could nto be found.
+    """
+    if not attributes:
+      return obj
+    attr = attributes[0]
+    try:
+      obj = getattr(obj, attr)
+    except AttributeError:
+      return None
+    if isinstance(obj, list):
+      for x in obj:
+        obj = self._FindPopulatedAttribute(x, attributes[1:])
+        if obj:
+          return obj
+    return self._FindPopulatedAttribute(obj, attributes[1:])
+
   def _Format(self, format_string, resource_ref):
     """Formats a string with all the attributes of the given resource ref.
 
@@ -340,7 +407,8 @@ class CommandBuilder(object):
       into a URI.
     """
     def URIFunc(resource):
-      id_value = getattr(resource, self.spec.resource_arg.response_id_field)
+      id_value = getattr(
+          resource, self.spec.arguments.resource.response_id_field)
       ref = self.arg_generator.GetResponseResourceRef(id_value, args)
       return ref.SelfLink()
     args.GetDisplayInfo().AddUriFunc(URIFunc)

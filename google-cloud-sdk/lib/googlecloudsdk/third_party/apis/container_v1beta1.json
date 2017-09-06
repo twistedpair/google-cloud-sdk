@@ -1808,9 +1808,25 @@
       "description": "SetMaintenancePolicyRequest sets the maintenance policy for a cluster.",
       "type": "object",
       "properties": {
+        "projectId": {
+          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+          "type": "string"
+        },
+        "zone": {
+          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+          "type": "string"
+        },
+        "clusterId": {
+          "description": "The name of the cluster to update.",
+          "type": "string"
+        },
         "maintenancePolicy": {
           "description": "The maintenance policy to be set for the cluster. An empty field\nclears the existing maintenance policy.",
           "$ref": "MaintenancePolicy"
+        },
+        "name": {
+          "description": "The name (project, location, cluster id) of the cluster to set maintenance\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "type": "string"
         },
         "version": {
           "description": "API request version that initiates this operation.",
@@ -2355,6 +2371,34 @@
                   ],
                   "request": {
                     "$ref": "SetNetworkPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "setMaintenancePolicy": {
+                  "id": "container.projects.locations.clusters.setMaintenancePolicy",
+                  "path": "v1beta1/{+name}:setMaintenancePolicy",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMaintenancePolicy",
+                  "httpMethod": "POST",
+                  "description": "Sets the maintenance policy for a cluster.",
+                  "parameters": {
+                    "name": {
+                      "description": "The name (project, location, cluster id) of the cluster to set maintenance\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "SetMaintenancePolicyRequest"
                   },
                   "response": {
                     "$ref": "Operation"

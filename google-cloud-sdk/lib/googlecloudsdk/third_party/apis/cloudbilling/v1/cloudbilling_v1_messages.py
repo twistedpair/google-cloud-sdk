@@ -12,51 +12,6 @@ from apitools.base.py import encoding
 package = 'cloudbilling'
 
 
-class AggregationInfo(_messages.Message):
-  """Represents the aggregation level and interval for pricing of a single
-  SKU.
-
-  Enums:
-    AggregationIntervalValueValuesEnum:
-    AggregationLevelValueValuesEnum:
-
-  Fields:
-    aggregationCount: The number of intervals to aggregate over. Example: If
-      aggregation_level is "DAILY" and aggregation_count is 14, aggregation
-      will be over 14 days.
-    aggregationInterval: A AggregationIntervalValueValuesEnum attribute.
-    aggregationLevel: A AggregationLevelValueValuesEnum attribute.
-  """
-
-  class AggregationIntervalValueValuesEnum(_messages.Enum):
-    """AggregationIntervalValueValuesEnum enum type.
-
-    Values:
-      AGGREGATION_INTERVAL_UNSPECIFIED: <no description>
-      DAILY: <no description>
-      MONTHLY: <no description>
-    """
-    AGGREGATION_INTERVAL_UNSPECIFIED = 0
-    DAILY = 1
-    MONTHLY = 2
-
-  class AggregationLevelValueValuesEnum(_messages.Enum):
-    """AggregationLevelValueValuesEnum enum type.
-
-    Values:
-      AGGREGATION_LEVEL_UNSPECIFIED: <no description>
-      ACCOUNT: <no description>
-      PROJECT: <no description>
-    """
-    AGGREGATION_LEVEL_UNSPECIFIED = 0
-    ACCOUNT = 1
-    PROJECT = 2
-
-  aggregationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  aggregationInterval = _messages.EnumField('AggregationIntervalValueValuesEnum', 2)
-  aggregationLevel = _messages.EnumField('AggregationLevelValueValuesEnum', 3)
-
-
 class BillingAccount(_messages.Message):
   """A billing account in [Google Cloud
   Console](https://console.cloud.google.com/). You can assign a billing
@@ -78,25 +33,6 @@ class BillingAccount(_messages.Message):
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
   open = _messages.BooleanField(3)
-
-
-class Category(_messages.Message):
-  """Represents the category hierarchy of a SKU.
-
-  Fields:
-    resourceFamily: The type of product the SKU refers to. Example: "Compute",
-      "Storage", "Network", "ApplicationServices" etc.
-    resourceGroup: A group classification for related SKUs. Example: "RAM",
-      "GPU", "Prediction", "Ops", "GoogleEgress" etc.
-    serviceDisplayName: The display name of the service this SKU belongs to.
-    usageType: Represents how the SKU is consumed. Example: "OnDemand",
-      "Preemptible", "Commit1Mo", "Commit1Yr" etc.
-  """
-
-  resourceFamily = _messages.StringField(1)
-  resourceGroup = _messages.StringField(2)
-  serviceDisplayName = _messages.StringField(3)
-  usageType = _messages.StringField(4)
 
 
 class CloudbillingBillingAccountsGetRequest(_messages.Message):
@@ -171,52 +107,6 @@ class CloudbillingProjectsUpdateBillingInfoRequest(_messages.Message):
   projectBillingInfo = _messages.MessageField('ProjectBillingInfo', 2)
 
 
-class CloudbillingServicesListRequest(_messages.Message):
-  """A CloudbillingServicesListRequest object.
-
-  Fields:
-    pageSize: Requested page size. Defaults to 5000.
-    pageToken: A token identifying a page of results to return. This should be
-      a `next_page_token` value returned from a previous `ListServices` call.
-      If unspecified, the first page of results is returned.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-
-
-class CloudbillingServicesSkusListRequest(_messages.Message):
-  """A CloudbillingServicesSkusListRequest object.
-
-  Fields:
-    currencyCode: The ISO 4217 currency code for the pricing info in the
-      response proto. Will use the conversion rate as of start_time. Optional.
-      If not specified USD will be used.
-    endTime: Optional exclusive end time of the time range for which the
-      pricing versions will be returned. Timestamps in the future are not
-      allowed. Maximum allowable time range is 1 month (31 days). Time range
-      as a whole is optional. If not specified, the latest pricing will be
-      returned (up to 12 hours old at most).
-    pageSize: Requested page size. Defaults to 5000.
-    pageToken: A token identifying a page of results to return. This should be
-      a `next_page_token` value returned from a previous `ListSkus` call. If
-      unspecified, the first page of results is returned.
-    parent: The name of the service. Example: "services/DA34-426B-A397"
-    startTime: Optional inclusive start time of the time range for which the
-      pricing versions will be returned. Timestamps in the future are not
-      allowed. Maximum allowable time range is 1 month (31 days). Time range
-      as a whole is optional. If not specified, the latest pricing will be
-      returned (up to 12 hours old at most).
-  """
-
-  currencyCode = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-  startTime = _messages.StringField(6)
-
-
 class ListBillingAccountsResponse(_messages.Message):
   """Response message for `ListBillingAccounts`.
 
@@ -248,123 +138,6 @@ class ListProjectBillingInfoResponse(_messages.Message):
   projectBillingInfo = _messages.MessageField('ProjectBillingInfo', 2, repeated=True)
 
 
-class ListServicesResponse(_messages.Message):
-  """Response message for `ListServices`.
-
-  Fields:
-    nextPageToken: A token to retrieve the next page of results. To retrieve
-      the next page, call `ListServices` again with the `page_token` field set
-      to this value. This field is empty if there are no more results to
-      retrieve.
-    services: A list of services.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  services = _messages.MessageField('Service', 2, repeated=True)
-
-
-class ListSkusResponse(_messages.Message):
-  """Response message for `ListSkus`.
-
-  Fields:
-    nextPageToken: A token to retrieve the next page of results. To retrieve
-      the next page, call `ListSkus` again with the `page_token` field set to
-      this value. This field is empty if there are no more results to
-      retrieve.
-    skus: The list of public SKUs of the given service.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  skus = _messages.MessageField('Sku', 2, repeated=True)
-
-
-class Money(_messages.Message):
-  """Represents an amount of money with its currency type.
-
-  Fields:
-    currencyCode: The 3-letter currency code defined in ISO 4217.
-    nanos: Number of nano (10^-9) units of the amount. The value must be
-      between -999,999,999 and +999,999,999 inclusive. If `units` is positive,
-      `nanos` must be positive or zero. If `units` is zero, `nanos` can be
-      positive, zero, or negative. If `units` is negative, `nanos` must be
-      negative or zero. For example $-1.75 is represented as `units`=-1 and
-      `nanos`=-750,000,000.
-    units: The whole units of the amount. For example if `currencyCode` is
-      `"USD"`, then 1 unit is one US dollar.
-  """
-
-  currencyCode = _messages.StringField(1)
-  nanos = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  units = _messages.IntegerField(3)
-
-
-class PricingExpression(_messages.Message):
-  """Expresses a mathematical pricing formula. For Example:-  `usage_unit:
-  GBy` `tiered_rates:`    `[start_usage_amount: 20, unit_price: $10]`
-  `[start_usage_amount: 100, unit_price: $5]`  The above expresses a pricing
-  formula where the first 20GB is free, the next 80GB is priced at $10 per GB
-  followed by $5 per GB for additional usage.
-
-  Fields:
-    baseUnit: The base unit for the SKU which is the unit used in usage
-      exports. Example: "By"
-    baseUnitConversionFactor: Conversion factor for converting from price per
-      usage_unit to price per base_unit, and start_usage_amount to
-      start_usage_amount in base_unit. unit_price /
-      base_unit_conversion_factor = price per base_unit. start_usage_amount *
-      base_unit_conversion_factor = start_usage_amount in base_unit.
-    baseUnitDescription: The base unit in human readable form. Example:
-      "byte".
-    displayQuantity: The recommended quantity of units for displaying pricing
-      info. When displaying pricing info it is recommended to display:
-      (unit_price * display_quantity) per display_quantity usage_unit. This
-      field does not affect the pricing formula and is for display purposes
-      only. Example: If the unit_price is "0.0001 USD", the usage_unit is "GB"
-      and the display_quantity is "1000" then the recommended way of
-      displaying the pricing info is "0.10 USD per 1000 GB"
-    tieredRates: The list of tiered rates for this pricing. The total cost is
-      computed by applying each of the tiered rates on usage. This repeated
-      list is sorted by ascending order of start_usage_amount.
-    usageUnit: The short hand for unit of usage this pricing is specified in.
-      Example: usage_unit of "GiBy" means that usage is specified in "Gibi
-      Byte".
-    usageUnitDescription: The unit of usage in human readable form. Example:
-      "gibi byte".
-  """
-
-  baseUnit = _messages.StringField(1)
-  baseUnitConversionFactor = _messages.FloatField(2)
-  baseUnitDescription = _messages.StringField(3)
-  displayQuantity = _messages.FloatField(4)
-  tieredRates = _messages.MessageField('TierRate', 5, repeated=True)
-  usageUnit = _messages.StringField(6)
-  usageUnitDescription = _messages.StringField(7)
-
-
-class PricingInfo(_messages.Message):
-  """Represents the pricing information for a SKU at a single point of time.
-
-  Fields:
-    aggregationInfo: Aggregation Info. This can be left unspecified if the
-      pricing expression doesn't require aggregation.
-    currencyConversionRate: Conversion rate for currency conversion, from USD
-      to the currency specified in the request. If the currency is not
-      specified this defaults to 1.0. Example: USD * currency_conversion_rate
-      = JPY
-    effectiveTime: The timestamp from which this pricing was effective.
-    pricingExpression: Expresses the pricing formula. See `PricingExpression`
-      for an example.
-    summary: An optional human readable summary of the pricing information,
-      has a maximum length of 256 characters.
-  """
-
-  aggregationInfo = _messages.MessageField('AggregationInfo', 1)
-  currencyConversionRate = _messages.FloatField(2)
-  effectiveTime = _messages.StringField(3)
-  pricingExpression = _messages.MessageField('PricingExpression', 4)
-  summary = _messages.StringField(5)
-
-
 class ProjectBillingInfo(_messages.Message):
   """Encapsulation of billing information for a Cloud Console project. A
   project has at most one associated billing account at a time (but a billing
@@ -392,50 +165,6 @@ class ProjectBillingInfo(_messages.Message):
   billingEnabled = _messages.BooleanField(2)
   name = _messages.StringField(3)
   projectId = _messages.StringField(4)
-
-
-class Service(_messages.Message):
-  """Encapsulates a single service in Google Cloud Platform.
-
-  Fields:
-    displayName: A human readable display name for this service.
-    name: The resource name for the service. Example:
-      "services/DA34-426B-A397"
-    serviceId: The identifier for the service. Example: "DA34-426B-A397"
-  """
-
-  displayName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  serviceId = _messages.StringField(3)
-
-
-class Sku(_messages.Message):
-  """Encapsulates a single SKU in Google Cloud Platform
-
-  Fields:
-    category: The category hierarchy of this SKU, purely for organizational
-      purpose.
-    description: A human readable description of the SKU, has a maximum length
-      of 256 characters.
-    name: The resource name for the SKU. Example:
-      "services/DA34-426B-A397/skus/AA95-CD31-42FE"
-    pricingInfo: A timeline of pricing info for this SKU in chronological
-      order.
-    serviceProviderName: Identifies the service provider. This is 'Google' for
-      first party services in Google Cloud Platform.
-    serviceRegions: List of service regions this SKU is offered at. Example:
-      "asia-east1" Service regions can be found at
-      https://cloud.google.com/about/locations/
-    skuId: The identifier for the SKU. Example: "AA95-CD31-42FE"
-  """
-
-  category = _messages.MessageField('Category', 1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  pricingInfo = _messages.MessageField('PricingInfo', 4, repeated=True)
-  serviceProviderName = _messages.StringField(5)
-  serviceRegions = _messages.StringField(6, repeated=True)
-  skuId = _messages.StringField(7)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -503,21 +232,6 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(12)
   uploadType = _messages.StringField(13)
   upload_protocol = _messages.StringField(14)
-
-
-class TierRate(_messages.Message):
-  """The price rate indicating starting usage and its corresponding price.
-
-  Fields:
-    startUsageAmount: Usage is priced at this rate only after this amount.
-      Example: start_usage_amount of 10 indicates that the usage will be
-      priced at the unit_price after the first 10 usage_units.
-    unitPrice: The price per unit of usage. Example: unit_price of amount $10
-      indicates that each unit will cost $10.
-  """
-
-  startUsageAmount = _messages.FloatField(1)
-  unitPrice = _messages.MessageField('Money', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

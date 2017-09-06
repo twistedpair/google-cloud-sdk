@@ -33,7 +33,10 @@ and these operand types:
   float
 
 eq and ne on string operands treat the operand as a regular expression pattern.
-Multiple terms can be AND'ed by enclosing adjacent terms in parenthesis.
+The patterns must completely match the entire string (they are implicitly
+anchored).  The ~ operator is implicitly unanchored, so there are some gyrations
+in the ~ and !~ RE rewrite code to handle that.  Multiple terms can be AND'ed
+by enclosing adjacent terms in parenthesis.
 
 Explicit AND, OR or NOT operators are not supported.
 
@@ -62,6 +65,100 @@ import re
 from googlecloudsdk.core.resource import resource_expr_rewrite
 
 
+def ConvertEQPatternToFullMatch(pattern):
+  r"""Returns filter = pattern converted to a full match RE pattern.
+
+  This function converts pattern such that the compute filter expression
+    subject eq ConvertEQPatternToFullMatch(pattern)
+  matches (the entire subject matches) IFF
+    re.search(r'\b' + re.escape(pattern) + r'\b', subject)
+  matches (pattern matches anywhere in subject).
+
+  Args:
+    pattern: A filter = pattern that partially matches the subject string.
+
+  Returns:
+    The converted = pattern suitable for the compute eq filter match operator.
+  """
+  # re.escape() also escapes " which is a good thing in this context.
+  return r'".*\b{pattern}\b.*"'.format(pattern=re.escape(pattern))
+
+
+def ConvertHASPatternToFullMatch(pattern):
+  r"""Returns filter : pattern converted to a full match RE pattern.
+
+  This function converts pattern such that the compute filter expression
+    subject eq ConvertREPatternToFullMatch(pattern)
+  matches (the entire subject matches) IFF
+    re.search(r'\b' + re.escape(pattern) + r'\b', subject)  # no trailing '*'
+    re.search(r'\b' + re.escape(pattern[:-1]), subject)     # trailing '*'
+  matches (pattern matches anywhere in subject).
+
+  Args:
+    pattern: A filter : pattern that partially matches the subject string.
+
+  Returns:
+    The converted : pattern suitable for the compute eq filter match operator.
+  """
+  left = r'.*\b'
+  if pattern.endswith('*'):
+    # OnePlatform : operator unanchored right.
+    pattern = pattern[:-1]
+    right = '.*'
+  else:
+    right = r'\b.*'
+  # re.escape() also escapes " which is a good thing in this context.
+  return r'"{left}{pattern}{right}"'.format(
+      left=left, pattern=re.escape(pattern), right=right)
+
+
+def ConvertREPatternToFullMatch(pattern, wordmatch=False):
+  """Returns filter ~ pattern converted to a full match RE pattern.
+
+  This function converts pattern such that the compute filter expression
+    subject eq ConvertREPatternToFullMatch(pattern)
+  matches (the entire subject matches) IFF
+    re.search(pattern, subject)  # wordmatch=False
+  matches (pattern matches anywhere in subject).
+
+  Args:
+    pattern: A RE pattern that partially matches the subject string.
+    wordmatch: True if ^ and $ anchors should be converted to word boundaries.
+
+  Returns:
+    The converted ~ pattern suitable for the compute eq filter match operator.
+  """
+  if wordmatch:
+    # Convert ^ and $ to \b except if they are in a [...] character class or are
+    # \^ or \$ escaped.
+
+    # 0: not in class, 1: first class char, 2: subsequent class chars
+    cclass = 0
+    # False: next char is not escaped, True: next char is escaped (literal)
+    escape = False
+    full = []
+    for c in pattern:
+      if escape:
+        escape = False
+      elif c == '\\':
+        escape = True
+      elif cclass:
+        if c == ']':
+          if cclass == 1:
+            cclass = 2
+          else:
+            cclass = 0
+        elif c != '^':
+          cclass = 2
+      elif c == '[':
+        cclass = 1
+      elif c in ('^', '$'):
+        c = r'\b'
+      full.append(c)
+    pattern = ''.join(full)
+  return '".*(' + pattern.replace('"', r'\"') + ').*"'
+
+
 class Rewriter(resource_expr_rewrite.Backend):
   """Compute resource filter expression rewriter backend.
 
@@ -86,6 +183,9 @@ class Rewriter(resource_expr_rewrite.Backend):
   def RewriteAND(self, left, right):
     return ['('] + left + [')', '('] + right + [')']
 
+  def RewriteOR(self, left, right):
+    return None
+
   def RewriteTerm(self, key, op, operand):
     """Rewrites <key op operand>."""
     if isinstance(operand, list):
@@ -103,17 +203,18 @@ class Rewriter(resource_expr_rewrite.Backend):
         numeric = False
 
     if op == ':':
-      op = 'eq'
       if not numeric:
-        operand = '".*{operand}.*"'.format(operand=re.escape(operand))
+        operand = ConvertHASPatternToFullMatch(operand)
+      op = 'eq'
     elif op in ('=', '!='):
       op = 'ne' if op.startswith('!') else 'eq'
       if not numeric:
-        operand = '"{operand}"'.format(operand=re.escape(operand))
+        operand = ConvertEQPatternToFullMatch(operand)
     elif op in ('~', '!~'):
       # All re match operands are strings.
       op = 'ne' if op.startswith('!') else 'eq'
-      operand = '"{operand}"'.format(operand=operand.replace('"', '\\"'))
+      operand = ConvertREPatternToFullMatch(
+          operand, wordmatch=key in ('region', 'zone'))
     else:
       return None
 

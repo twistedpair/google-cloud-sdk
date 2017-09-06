@@ -393,10 +393,25 @@ class ClientInfo(_messages.Message):
   """Information about the client which invoked the test.
 
   Fields:
+    clientInfoDetails: The list of detailed information about client.
     name: Client name, such as gcloud. Required
   """
 
-  name = _messages.StringField(1)
+  clientInfoDetails = _messages.MessageField('ClientInfoDetail', 1, repeated=True)
+  name = _messages.StringField(2)
+
+
+class ClientInfoDetail(_messages.Message):
+  """Key-value pair of detailed information about the client which invoked the
+  test. For example {'Version', '1.0'}, {'Release Track', 'BETA'}
+
+  Fields:
+    key: The key of detailed client information. Required
+    value: The value of detailed client information. Required
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class Date(_messages.Message):

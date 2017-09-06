@@ -176,7 +176,7 @@ def GetApiEnablementInfo(exc):
   return (None, None)
 
 
-_PROJECTS_NOT_TO_ENABLE = set('google.com:cloudsdktool')
+_PROJECTS_NOT_TO_ENABLE = {'google.com:cloudsdktool'}
 
 
 def ShouldAttemptProjectEnable(project):

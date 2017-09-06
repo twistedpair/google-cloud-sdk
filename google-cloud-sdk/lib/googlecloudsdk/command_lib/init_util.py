@@ -12,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Contains utilities to support the `gcloud init` command."""
+import itertools
+
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
+from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 from googlecloudsdk.calliope import usage_text
+from googlecloudsdk.command_lib.projects import util as  projects_command_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
@@ -25,22 +29,50 @@ Project IDs must be 6-30 characters (lowercase ASCII, digits, or
 hyphens) in length and start with a lowercase letter. \
 """
 _CREATE_PROJECT_SENTINEL = object()
+# The numbers below are a bit arbitrary but work well in practice.
+# The batch size is the empirical max that CloudResourceManager accepts.
+_PROJECT_LIST_BATCH_SIZE = 2000
+# At around 200 projects, being able to list them out becomes less useful.
+_PROJECT_LIST_LIMIT = 200
 
 
-def _GetProjectIds():
+def _GetProjectIds(limit=None):
   """Returns a list of project IDs the current user can list.
+
+  Args:
+    limit: int, the maximum number of project ids to return.
 
   Returns:
     list of str, project IDs, or None (if the command fails).
   """
   try:
-    return sorted([project.projectId for project in projects_api.List()])
+    # We do limiting here because apitools.base.py.list_pager.YieldFromList
+    # will keep decreasing the batch size as it gets more items if we pass it
+    # a limit argument (It uses limit as a counter and sets the request batch
+    # size to min(batch_size, limit)). So using limit from YieldFromList would
+    # nullify the effect of setting a large batch size and could even make this
+    # step even slower.
+    projects = projects_api.List(batch_size=_PROJECT_LIST_BATCH_SIZE)
+    if limit is not None:
+      projects = itertools.islice(projects, limit)
+    return sorted([project.projectId for project in projects])
   except Exception as err:  # pylint: disable=broad-except
     log.warn('Listing available projects failed: %s', str(err))
     return None
 
 
-def _PromptForProjectId(project_ids):
+def _IsExistingProject(project_id):
+  project_ref = projects_command_util.ParseProject(project_id)
+  try:
+    project = projects_api.Get(project_ref)
+    return projects_util.IsActive(project)
+  except Exception:  # pylint: disable=broad-except
+    # Yeah, this isn't great, but there isn't a perfect exception super class
+    # that covers both API related errors and network errors.
+    return False
+
+
+def _PromptForProjectId(project_ids, limit_exceeded):
   """Prompt the user for a project ID, based on the list of available IDs.
 
   Also allows an option to create a project.
@@ -50,6 +82,9 @@ def _PromptForProjectId(project_ids):
       value is None, the listing was unsuccessful and we prompt the user
       free-form (and do not validate the input). If it's empty, we offer to
       create a project for the user.
+    limit_exceeded: bool, whether or not the project list limit was reached. If
+      this limit is reached, then user will be prompted with a choice to
+      manually enter a project id, create a new project, or list all projects.
 
   Returns:
     str, the project ID to use, or _CREATE_PROJECT_SENTINEL (if a project should
@@ -64,17 +99,34 @@ def _PromptForProjectId(project_ids):
         prompt_string='Would you like to create one?'):
       return None
     return _CREATE_PROJECT_SENTINEL
-  else:
+  elif limit_exceeded:
     idx = console_io.PromptChoice(
-        project_ids + ['Create a new project'],
-        message='Pick cloud project to use: ',
-        allow_freeform=True,
-        freeform_suggester=usage_text.TextChoiceSuggester())
+        ['Enter a project ID', 'Create a new project', 'List projects'],
+        message=('This account has a lot of projects! Listing them all can '
+                 'take a while.'))
     if idx is None:
       return None
-    elif idx == len(project_ids):
+    elif idx == 0:
+      return console_io.PromptWithValidator(
+          _IsExistingProject,
+          'Project ID does not exist or is not active. Please enter an '
+          'existing and active Project ID.',
+          'Enter an existing project id you would like to use:  ')
+    elif idx == 1:
       return _CREATE_PROJECT_SENTINEL
-    return project_ids[idx]
+    else:
+      project_ids = _GetProjectIds()
+
+  idx = console_io.PromptChoice(
+      project_ids + ['Create a new project'],
+      message='Pick cloud project to use: ',
+      allow_freeform=True,
+      freeform_suggester=usage_text.TextChoiceSuggester())
+  if idx is None:
+    return None
+  elif idx == len(project_ids):
+    return _CREATE_PROJECT_SENTINEL
+  return project_ids[idx]
 
 
 def _CreateProject(project_id, project_ids):
@@ -103,11 +155,22 @@ def PickProject(preselected=None):
   Returns:
     str, project_id or None if was not selected.
   """
-  project_ids = _GetProjectIds()
+  project_ids = _GetProjectIds(limit=_PROJECT_LIST_LIMIT + 1)
+  limit_exceeded = False
+  if project_ids is not None and len(project_ids) > _PROJECT_LIST_LIMIT:
+    limit_exceeded = True
 
-  project_id = preselected or _PromptForProjectId(project_ids)
-  if project_ids is None or project_id in project_ids or project_id is None:
-    return project_id
+  project_id = preselected or _PromptForProjectId(project_ids, limit_exceeded)
+  if not limit_exceeded:
+    if project_ids is None or project_id in project_ids or project_id is None:
+      return project_id
+  else:
+    # If we fall into limit_exceeded logic and preselected was None, then
+    # as long as project_id is not _CREATE_PROJECT_SENTINEL, then we know the
+    # project_id is valid.
+    if ((preselected and _IsExistingProject(preselected)) or
+        project_id is not _CREATE_PROJECT_SENTINEL):
+      return project_id
 
   if project_id is _CREATE_PROJECT_SENTINEL:
     project_id = console_io.PromptResponse(_ENTER_PROJECT_ID_MESSAGE)

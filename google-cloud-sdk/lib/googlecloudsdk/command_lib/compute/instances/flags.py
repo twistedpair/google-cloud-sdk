@@ -761,7 +761,8 @@ def AddAddressArgs(parser,
     if support_network_tier:
       network_interface_help += """
         *network-tier*::: Specifies the network tier of the interface.
-        ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`.
+        ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`. The default
+        value is `PREMIUM`.
         """
     if instances:
       network_interface_help += """
@@ -1039,16 +1040,16 @@ def AddNetworkTierArgs(parser, instance=True, for_update=False):
   if instance:
     network_tier_help = """\
         Specifies the network tier that will be used to configure the instance.
-        ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`.
+        ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`. The default
+        value is `PREMIUM`.
         """
   else:
     network_tier_help = """\
         Specifies the network tier of the access configuration. ``NETWORK_TIER''
-        must be one of: `PREMIUM`, `STANDARD`.
+        must be one of: `PREMIUM`, `STANDARD`. The default value is `PREMIUM`.
         """
   parser.add_argument(
       '--network-tier',
-      default=constants.DEFAULT_NETWORK_TIER,
       type=lambda x: x.upper(),
       help=network_tier_help)
 
@@ -1465,9 +1466,10 @@ def AddKonletArgs(parser):
 
   parser.add_argument(
       '--container-restart-policy',
-      choices=['NEVER', 'ON-FAILURE', 'ALWAYS'],
-      default='ALWAYS',
+      choices=['never', 'on-failure', 'always'],
+      default='always',
       metavar='POLICY',
+      type=str.lower,
       help="""\
       Specify whether to restart a container on exit.
       """)

@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20170818",
+ "revision": "20170825",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -947,7 +947,7 @@
     },
     "index": {
      "type": "integer",
-     "description": "Assigns a zero-based index to this disk, where 0 is reserved for the boot disk. For example, if you have many disks attached to an instance, each disk would have a unique index number. If not specified, the server will choose an appropriate value.",
+     "description": "[Output Only] A zero-based index to this disk, where 0 is reserved for the boot disk. If you have many disks attached to an instance, each disk would have a unique index number.",
      "format": "int32"
     },
     "initializeParams": {
@@ -1733,6 +1733,11 @@
      "description": "The max number of simultaneous connections for the group. Can be used with either CONNECTION or UTILIZATION balancing modes. For CONNECTION mode, either maxConnections or maxConnectionsPerInstance must be set.\n\nThis cannot be used for internal load balancing.",
      "format": "int32"
     },
+    "maxConnectionsPerEndpoint": {
+     "type": "integer",
+     "description": "The max number of simultaneous connections that a single backend network endpoint can handle. This is used to calculate the capacity of the group. Can be used in either CONNECTION or UTILIZATION balancing modes. For CONNECTION mode, either maxConnections or maxConnectionsPerEndpoint must be set.\n\nThis cannot be used for internal load balancing.",
+     "format": "int32"
+    },
     "maxConnectionsPerInstance": {
      "type": "integer",
      "description": "The max number of simultaneous connections that a single backend instance can handle. This is used to calculate the capacity of the group. Can be used in either CONNECTION or UTILIZATION balancing modes. For CONNECTION mode, either maxConnections or maxConnectionsPerInstance must be set.\n\nThis cannot be used for internal load balancing.",
@@ -1742,6 +1747,11 @@
      "type": "integer",
      "description": "The max requests per second (RPS) of the group. Can be used with either RATE or UTILIZATION balancing modes, but required if RATE mode. For RATE mode, either maxRate or maxRatePerInstance must be set.\n\nThis cannot be used for internal load balancing.",
      "format": "int32"
+    },
+    "maxRatePerEndpoint": {
+     "type": "number",
+     "description": "The max requests per second (RPS) that a single backend network endpoint can handle. This is used to calculate the capacity of the group. Can be used in either balancing mode. For RATE mode, either maxRate or maxRatePerEndpoint must be set.\n\nThis cannot be used for internal load balancing.",
+     "format": "float"
     },
     "maxRatePerInstance": {
      "type": "number",
@@ -1962,6 +1972,9 @@
     "enableCDN": {
      "type": "boolean",
      "description": "If true, enable Cloud CDN for this BackendService.\n\nWhen the load balancing scheme is INTERNAL, this field is not used."
+    },
+    "failoverPolicy": {
+     "$ref": "BackendServiceFailoverPolicy"
     },
     "fingerprint": {
      "type": "string",
@@ -2194,6 +2207,25 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "BackendServiceFailoverPolicy": {
+   "id": "BackendServiceFailoverPolicy",
+   "type": "object",
+   "properties": {
+    "disableConnectionDrainOnFailover": {
+     "type": "boolean",
+     "description": "On failover or failback, this field indicates whether connection drain will be honored. Setting this to true has the following effect: connections to the old active pool are not drained. Connections to the new active pool use the timeout of 10 min (currently fixed). Setting to false has the following effect: both old and new connections will have a drain timeout of 10 min.\n\nThis can be set to true only if the protocol is TCP.\n\nThe default is false."
+    },
+    "dropTrafficIfUnhealthy": {
+     "type": "boolean",
+     "description": "This option is used only when no healthy VMs are detected in the primary and backup instance groups. When set to true, traffic is dropped. When set to false, new connections are sent across all VMs in the primary group.\n\nThe default is false."
+    },
+    "failoverRatio": {
+     "type": "number",
+     "description": "The value of the field must be in [0, 1]. If the ratio of the healthy VMs in the primary backend is at or below this number, traffic arriving at the load-balanced IP will be directed to the failover backend.\n\nIn case where 'failoverRatio' is not set or all the VMs in the backup backend are unhealthy, the traffic will be directed back to the primary backend in the \"force\" mode, where traffic will be spread to the healthy VMs with the best effort, or to all VMs when no VM is healthy.\n\nThis field is only used with l4 load balancing.",
+     "format": "float"
     }
    }
   },
@@ -8895,9 +8927,11 @@
     "interconnectType": {
      "type": "string",
      "enum": [
+      "IT_PARTNER",
       "IT_PRIVATE"
      ],
      "enumDescriptions": [
+      "",
       ""
      ]
     },
@@ -12244,6 +12278,20 @@
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
     },
+    "defaultNetworkTier": {
+     "type": "string",
+     "description": "This signifies the default network tier used for configuring resources of the project and can only take the following values: PREMIUM, STANDARD. Initially the default network tier is PREMIUM.",
+     "enum": [
+      "PREMIUM",
+      "SELECT",
+      "STANDARD"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
     "defaultServiceAccount": {
      "type": "string",
      "description": "[Output Only] Default service account used by VMs running in this project."
@@ -12351,6 +12399,26 @@
     "organization": {
      "type": "string",
      "description": "Optional organization ID managed by Cloud Resource Manager, for which to list shared VPC host projects. If not specified, the organization will be inferred from the project."
+    }
+   }
+  },
+  "ProjectsSetDefaultNetworkTierRequest": {
+   "id": "ProjectsSetDefaultNetworkTierRequest",
+   "type": "object",
+   "properties": {
+    "networkTier": {
+     "type": "string",
+     "description": "Default network tier to be set.",
+     "enum": [
+      "PREMIUM",
+      "SELECT",
+      "STANDARD"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -14705,8 +14773,54 @@
     }
    }
   },
-  "SecurityPoliciesList": {
-   "id": "SecurityPoliciesList",
+  "SecurityPolicy": {
+   "id": "SecurityPolicy",
+   "type": "object",
+   "description": "A security policy is comprised of one or more rules. It can also be associated with one or more 'targets'.",
+   "properties": {
+    "creationTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+    },
+    "description": {
+     "type": "string",
+     "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "fingerprint": {
+     "type": "string",
+     "description": "Specifies a fingerprint for this resource, which is essentially a hash of the metadata's contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change metadata.\n\nTo see the latest fingerprint, make get() request to the security policy.",
+     "format": "byte"
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "format": "uint64"
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output only] Type of the resource. Always compute#securityPolicyfor security policies",
+     "default": "compute#securityPolicy"
+    },
+    "name": {
+     "type": "string",
+     "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "rules": {
+     "type": "array",
+     "description": "List of rules that belong to this policy. There must always be a default rule (rule with priority 2147483647 and match \"*\"). If no rules are provided when creating a security policy, a default rule with action \"allow\" will be added.",
+     "items": {
+      "$ref": "SecurityPolicyRule"
+     }
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for the resource."
+    }
+   }
+  },
+  "SecurityPolicyList": {
+   "id": "SecurityPolicyList",
    "type": "object",
    "properties": {
     "id": {
@@ -14722,8 +14836,8 @@
     },
     "kind": {
      "type": "string",
-     "description": "[Output Only] Type of resource. Always compute#securityPoliciesList for listsof securityPolicies",
-     "default": "compute#securityPoliciesList"
+     "description": "[Output Only] Type of resource. Always compute#securityPolicyList for listsof securityPolicies",
+     "default": "compute#securityPolicyList"
     },
     "nextPageToken": {
      "type": "string",
@@ -14797,52 +14911,6 @@
        "description": "[Output Only] A human-readable description of the warning code."
       }
      }
-    }
-   }
-  },
-  "SecurityPolicy": {
-   "id": "SecurityPolicy",
-   "type": "object",
-   "description": "A security policy is comprised of one or more rules. It can also be associated with one or more 'targets'.",
-   "properties": {
-    "creationTimestamp": {
-     "type": "string",
-     "description": "[Output Only] Creation timestamp in RFC3339 text format."
-    },
-    "description": {
-     "type": "string",
-     "description": "An optional description of this resource. Provide this property when you create the resource."
-    },
-    "fingerprint": {
-     "type": "string",
-     "description": "Specifies a fingerprint for this resource, which is essentially a hash of the metadata's contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change metadata.\n\nTo see the latest fingerprint, make get() request to the security policy.",
-     "format": "byte"
-    },
-    "id": {
-     "type": "string",
-     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
-     "format": "uint64"
-    },
-    "kind": {
-     "type": "string",
-     "description": "[Output only] Type of the resource. Always compute#securityPolicyfor security policies",
-     "default": "compute#securityPolicy"
-    },
-    "name": {
-     "type": "string",
-     "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
-     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
-    },
-    "rules": {
-     "type": "array",
-     "description": "List of rules that belong to this policy. There must always be a default rule (rule with priority 2147483647 and match \"*\"). If no rules are provided when creating a security policy, a default rule with action \"allow\" will be added.",
-     "items": {
-      "$ref": "SecurityPolicyRule"
-     }
-    },
-    "selfLink": {
-     "type": "string",
-     "description": "[Output Only] Server-defined URL for the resource."
     }
    }
   },
@@ -18311,6 +18379,75 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning message.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
     }
    }
   },
@@ -30559,6 +30696,39 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "setDefaultNetworkTier": {
+     "id": "compute.projects.setDefaultNetworkTier",
+     "path": "{project}/setDefaultNetworkTier",
+     "httpMethod": "POST",
+     "description": "Sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "ProjectsSetDefaultNetworkTierRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "setDefaultServiceAccount": {
      "id": "compute.projects.setDefaultServiceAccount",
      "path": "{project}/setDefaultServiceAccount",
@@ -34271,7 +34441,7 @@
       "project"
      ],
      "response": {
-      "$ref": "SecurityPoliciesList"
+      "$ref": "SecurityPolicyList"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

@@ -853,6 +853,165 @@ class GoogleCloudMlV1Version(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
+class GoogleCloudMlV1beta1AutoScaling(_messages.Message):
+  """Options for automatically scaling a model.
+
+  Fields:
+    minNodes: Optional. The minimum number of nodes to allocate for this
+      model. These nodes are always up, starting from the time the model is
+      deployed, so the cost of operating this model will be at least `rate` *
+      `min_nodes` * number of hours since last billing cycle, where `rate` is
+      the cost per node-hour as documented in
+      [pricing](https://cloud.google.com/ml-
+      engine/pricing#prediction_pricing), even if no predictions are
+      performed. There is additional cost for each prediction performed.
+      Unlike manual scaling, if the load gets too heavy for the nodes that are
+      up, the service will automatically add nodes to handle the increased
+      load as well as scale back as traffic drops, always maintaining at least
+      `min_nodes`. You will be charged for the time in which additional nodes
+      are used.  If not specified, `min_nodes` defaults to 0, in which case,
+      when traffic to a model stops (and after a cool-down period), nodes will
+      be shut down and no charges will be incurred until traffic to the model
+      resumes.
+  """
+
+  minNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudMlV1beta1ManualScaling(_messages.Message):
+  """Options for manually scaling a model.
+
+  Fields:
+    nodes: The number of nodes to allocate for this model. These nodes are
+      always up, starting from the time the model is deployed, so the cost of
+      operating this model will be proportional to `nodes` * number of hours
+      since last billing cycle plus the cost for each prediction performed.
+  """
+
+  nodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudMlV1beta1OperationMetadata(_messages.Message):
+  """Represents the metadata of the long-running operation.  Next ID: 9
+
+  Enums:
+    OperationTypeValueValuesEnum: The operation type.
+
+  Fields:
+    createTime: The time the operation was submitted.
+    endTime: The time operation processing completed.
+    isCancellationRequested: Indicates whether a request to cancel this
+      operation has been made.
+    modelName: Contains the name of the model associated with the operation.
+    operationType: The operation type.
+    startTime: The time operation processing started.
+    version: Contains the version associated with the operation.
+  """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    """The operation type.
+
+    Values:
+      OPERATION_TYPE_UNSPECIFIED: Unspecified operation type.
+      CREATE_VERSION: An operation to create a new version.
+      DELETE_VERSION: An operation to delete an existing version.
+      DELETE_MODEL: An operation to delete an existing model.
+      UPDATE_MODEL: An operation to update an existing model.
+      UPDATE_VERSION: An operation to update an existing version.
+    """
+    OPERATION_TYPE_UNSPECIFIED = 0
+    CREATE_VERSION = 1
+    DELETE_VERSION = 2
+    DELETE_MODEL = 3
+    UPDATE_MODEL = 4
+    UPDATE_VERSION = 5
+
+  createTime = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  isCancellationRequested = _messages.BooleanField(3)
+  modelName = _messages.StringField(4)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
+  startTime = _messages.StringField(6)
+  version = _messages.MessageField('GoogleCloudMlV1beta1Version', 7)
+
+
+class GoogleCloudMlV1beta1Version(_messages.Message):
+  """Represents a version of the model.  Each version is a trained model
+  deployed in the cloud, ready to handle prediction requests. A model can have
+  multiple versions. You can get information about all of the versions of a
+  given model by calling [projects.models.versions.list](/ml-
+  engine/reference/rest/v1beta1/projects.models.versions/list).  Next ID: 18
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of a version.
+
+  Fields:
+    autoScaling: Automatically scale the number of nodes used to serve the
+      model in response to increases and decreases in traffic. Care should be
+      taken to ramp up traffic according to the model's ability to scale or
+      you will start seeing increases in latency and 429 response codes.
+    createTime: Output only. The time the version was created.
+    deploymentUri: Required. The Google Cloud Storage location of the trained
+      model used to create the version. See the [overview of model deployment
+      ](/ml-engine/docs/concepts/deployment-overview) for more information.
+      When passing Version to [projects.models.versions.create](/ml-
+      engine/reference/rest/v1beta1/projects.models.versions/create) the model
+      service uses the specified location as the source of the model. Once
+      deployed, the model version is hosted by the prediction service, so this
+      location is useful only as a historical record. The total number of
+      model files can't exceed 1000.
+    description: Optional. The description specified for the version when it
+      was created.
+    errorMessage: Output only. The details of a failure or a cancellation.
+    isDefault: Output only. If true, this version will be used to handle
+      prediction requests that do not specify a version.  You can change the
+      default version by calling [projects.methods.versions.setDefault](/ml-
+      engine/reference/rest/v1beta1/projects.models.versions/setDefault).
+    lastUseTime: Output only. The time the version was last used for
+      prediction.
+    manualScaling: Manually select the number of nodes to use for serving the
+      model. You should generally use `auto_scaling` with an appropriate
+      `min_nodes` instead, but this option is available if you want more
+      predictable billing. Beware that latency and error rates will increase
+      if the traffic exceeds that capability of the system to serve it based
+      on the selected number of nodes.
+    name: Required.The name specified for the version when it was created.
+      The version name must be unique within the model it is created in.
+    runtimeVersion: Optional. The Google Cloud ML runtime version to use for
+      this deployment. If not set, Google Cloud ML will choose a version.
+    state: Output only. The state of a version.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """Output only. The state of a version.
+
+    Values:
+      UNKNOWN: The version state is unspecified.
+      READY: The version is ready for prediction.
+      CREATING: The version is in the process of creation.
+      FAILED: The version failed to be created, possibly cancelled.
+        `error_message` should contain the details of the failure.
+      DELETING: The version is in the process of deletion.
+    """
+    UNKNOWN = 0
+    READY = 1
+    CREATING = 2
+    FAILED = 3
+    DELETING = 4
+
+  autoScaling = _messages.MessageField('GoogleCloudMlV1beta1AutoScaling', 1)
+  createTime = _messages.StringField(2)
+  deploymentUri = _messages.StringField(3)
+  description = _messages.StringField(4)
+  errorMessage = _messages.StringField(5)
+  isDefault = _messages.BooleanField(6)
+  lastUseTime = _messages.StringField(7)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1beta1ManualScaling', 8)
+  name = _messages.StringField(9)
+  runtimeVersion = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+
+
 class GoogleIamV1AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,

@@ -1895,10 +1895,6 @@
           "items": {
             "$ref": "EffectiveQuotasForMetric"
           }
-        },
-        "force": {
-          "description": "Whether to force applying the quota settings, even if this may decrease\neffective limit for some quotas over the safe threshold, which is currently\nset to 10 percent.\nWhen unset or set to false, the whole request fails if quota overrides\nchanges decrease effective limit for any quota over the safe threshold.\nWhen set to true, the reason for forcing the change must be specified in\nthe 'request_reason' field of the RPC system parameter context.\nInput only.",
-          "type": "boolean"
         }
       }
     },

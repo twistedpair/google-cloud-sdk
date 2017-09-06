@@ -126,7 +126,7 @@ def IsInteractive(output=False, error=False, heuristic=False):
   if error and not sys.stderr.isatty():
     return False
   if platforms.OperatingSystem.Current() != platforms.OperatingSystem.WINDOWS:
-    if os.getppid() != os.getpgrp():
+    if os.getppid() == os.getpgrp():
       return False
   if heuristic:
     # Check the home path. Most startup scripts for example are executed by
@@ -473,6 +473,37 @@ def PromptChoice(options, default=None, message=None,
     else:
       sys.stderr.write('Please enter a value between 1 and {maximum}:  '
                        .format(maximum=maximum))
+
+
+def PromptWithValidator(validator, error_message, prompt_string,
+                        message=None):
+  """Prompts the user for a string that must pass a validator.
+
+  Args:
+    validator: function, A validation function that accepts a string and returns
+      a boolean value indicating whether or not the user input is valid.
+    error_message: str, Error message to display when user input does not pass
+      in a valid string.
+    prompt_string: str, A string to print when prompting the user to enter a
+      choice.  If not given, a default prompt is used.
+    message: str, An optional message to print before prompting.
+
+  Returns:
+    str, The string entered by the user, or the default if no value was
+    entered or prompts are disabled.
+  """
+  if properties.VALUES.core.disable_prompts.GetBool():
+    return None
+
+  if message:
+    sys.stderr.write(_DoWrap(message) + '\n')
+
+  while True:
+    answer = _RawInput(prompt_string)
+    if validator(answer):
+      return answer
+    else:
+      sys.stderr.write(_DoWrap(error_message) + '\n')
 
 
 def LazyFormat(s, **kwargs):

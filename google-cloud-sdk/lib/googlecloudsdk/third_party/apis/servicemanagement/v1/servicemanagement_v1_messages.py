@@ -3064,13 +3064,6 @@ class QuotaSettings(_messages.Message):
       For each limit, the effective value is the minimum of the producer and
       consumer overrides if either is present, or else the service default if
       neither is present. DEPRECATED. Use effective_quota_groups instead.
-    force: Whether to force applying the quota settings, even if this may
-      decrease effective limit for some quotas over the safe threshold, which
-      is currently set to 10 percent. When unset or set to false, the whole
-      request fails if quota overrides changes decrease effective limit for
-      any quota over the safe threshold. When set to true, the reason for
-      forcing the change must be specified in the 'request_reason' field of
-      the RPC system parameter context. Input only.
     producerOverrides: Quota overrides set by the producer. Note that if a
       consumer override is also specified, then the minimum of the two will be
       used. This allows consumers to cap their usage voluntarily.  The key for
@@ -3215,9 +3208,8 @@ class QuotaSettings(_messages.Message):
   effectiveQuotaForMetrics = _messages.MessageField('EffectiveQuotasForMetric', 3, repeated=True)
   effectiveQuotaGroups = _messages.MessageField('EffectiveQuotaGroup', 4, repeated=True)
   effectiveQuotas = _messages.MessageField('EffectiveQuotasValue', 5)
-  force = _messages.BooleanField(6)
-  producerOverrides = _messages.MessageField('ProducerOverridesValue', 7)
-  variableTermQuotas = _messages.MessageField('VariableTermQuota', 8, repeated=True)
+  producerOverrides = _messages.MessageField('ProducerOverridesValue', 6)
+  variableTermQuotas = _messages.MessageField('VariableTermQuota', 7, repeated=True)
 
 
 class QuotaUsage(_messages.Message):
