@@ -2,6 +2,13 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 170.0.1 (2017-09-08)
+
+### Google Compute Engine
+
+*   Revert a change which inadvertently removed `gcloud compute xpn` commands.
+
+
 ## 170.0.0 (2017-09-06)
 
 ### Google Cloud SDK

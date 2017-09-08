@@ -97,14 +97,14 @@ def CreateCLI(surfaces):
   for dot_path, dir_path in surfaces:
     loader.AddModule(dot_path, dir_path, component=None)
 
-    # TODO(b/63771276): Remove cloned xpn commands and PreRunHook after a
-    # suitable deprecation period.
-    # Clone 'compute shared-vpc' surface into 'compute xpn' for backward
-    # compatibility.
-    loader.AddModule('compute.xpn',
-                     os.path.join(pkg_root, 'surface', 'compute', 'shared_vpc'))
-    loader.RegisterPreRunHook(
-        _IssueTestWarning, include_commands=r'gcloud\.compute\.xpn\..*')
+  # TODO(b/63771276): Remove cloned xpn commands and PreRunHook after a
+  # suitable deprecation period.
+  # Clone 'compute shared-vpc' surface into 'compute xpn' for backward
+  # compatibility.
+  loader.AddModule('compute.xpn',
+                   os.path.join(pkg_root, 'surface', 'compute', 'shared_vpc'))
+  loader.RegisterPreRunHook(
+      _IssueTestWarning, include_commands=r'gcloud\.compute\.xpn\..*')
 
   # Check for updates on shutdown but not for any of the updater commands.
   loader.RegisterPostRunHook(UpdateCheck,
