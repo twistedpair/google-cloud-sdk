@@ -43,7 +43,6 @@ def BackupConfiguration(sql_messages,
   Raises:
     ToolException: Bad combination of arguments.
   """
-  print 'No backup {0}'.format(no_backup)
   no_backup_enabled = no_backup or backup is False
   should_generate_config = any(
       [backup_start_time, enable_bin_log is not None, no_backup_enabled])
@@ -65,7 +64,6 @@ def BackupConfiguration(sql_messages,
     backup_config.startTime = backup_start_time
     backup_config.enabled = True
   if no_backup:
-    print 'hey!'
     if backup_start_time or enable_bin_log is not None:
       raise exceptions.ToolException(
           ('Argument --no-backup not allowed with'
@@ -97,7 +95,6 @@ def DatabaseFlags(sql_messages,
   updated_flags = []
   if database_flags:
     for (name, value) in sorted(database_flags.items()):
-      print name, value
       updated_flags.append(sql_messages.DatabaseFlags(name=name, value=value))
   elif clear_database_flags:
     updated_flags = []

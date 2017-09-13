@@ -19,6 +19,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.credentials import creds as core_creds
 from googlecloudsdk.core.credentials import store
 
 from oauth2client import client
@@ -55,26 +56,42 @@ def Http(timeout='unset', enable_resource_quota=True):
       properties.VALUES.auth.authorization_token_file.Get())
   handlers = _GetIAMAuthHandlers(authority_selector, authorization_token_file)
 
-  # Inject the resource project header for quota unless explicitly disabled.
-  if enable_resource_quota:
-    quota_project = properties.VALUES.billing.quota_project.Get()
-    if quota_project == properties.VALUES.billing.LEGACY:
-      quota_project = None
-    elif quota_project == properties.VALUES.billing.CURRENT_PROJECT:
-      quota_project = properties.VALUES.core.project.Get()
-
-    if quota_project:
-      handlers.append(http.Modifiers.Handler(
-          http.Modifiers.SetHeader('X-Goog-User-Project', quota_project)))
-
   creds = store.LoadIfEnabled()
   if creds:
+    # Inject the resource project header for quota unless explicitly disabled.
+    if enable_resource_quota:
+      quota_project = _GetQuotaProject(creds)
+      if quota_project:
+        handlers.append(http.Modifiers.Handler(
+            http.Modifiers.SetHeader('X-Goog-User-Project', quota_project)))
+
     http_client = creds.authorize(http_client)
     # Wrap the request method to put in our own error handling.
     http_client = http.Modifiers.WrapRequest(
         http_client, handlers, _HandleAuthError, client.AccessTokenRefreshError)
 
   return http_client
+
+
+def _GetQuotaProject(credentials):
+  """Gets the value to use for the X-Goog-User-Project header.
+
+  Args:
+    credentials: The credentials that are going to be used for requests.
+
+  Returns:
+    str, The project id to send in the header or None to not populate the
+    header.
+  """
+  if not core_creds.CredentialType.FromCredentials(credentials).is_user:
+    return None
+
+  quota_project = properties.VALUES.billing.quota_project.Get()
+  if quota_project == properties.VALUES.billing.LEGACY:
+    return None
+  elif quota_project == properties.VALUES.billing.CURRENT_PROJECT:
+    return properties.VALUES.core.project.Get()
+  return quota_project
 
 
 def _GetIAMAuthHandlers(authority_selector, authorization_token_file):

@@ -2,12 +2,48 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 171.0.0 (2017-09-13)
+
+### Breaking changes
+
+*   **(MODIFIED)** `beta functions deploy` will set `deployment-tool` label to
+    `cli-gcloud`. Manually setting labels starting with "deployment" will no
+    longer be allowed.
+
+### Google Cloud SDK
+
+*   Implemented command line TAB completion cache using sqlite. You
+    can use the `gcloud meta cache list` command to view the cache.
+
+### Google App Engine
+
+*   Updated App Engine components for Python to version 1.9.60.
+    Please visit the release notes for details:
+    <https://cloud.google.com/appengine/docs/python/release-notes>.
+*   Updated App Engine components for Java to version 1.9.55.
+    Please visit the following release notes for details:
+    <https://cloud.google.com/appengine/docs/java/release-notes>.
+*   Fixed build tags when using dev_appserver.py with the Go 1.8 beta
+*   Improved client-side traffic split validation in `gcloud app services
+    set-traffic`.
+*   Promoted `gcloud app ssl-certificates` command group to GA and beta.
+*   Promoted `gcloud app domain-mappings` command group to GA and beta.
+*   Promoted `gcloud app domains` command group to GA.
+*   Promoted `gcloud app update` command to GA.
+
+### Google Cloud Compute Engine
+
+*   Promoted `gcloud compute commitments` command group to GA.
+
+### Google Cloud Source Repositories
+
+*   `gcloud source repos` commands now accept slashes `/` in repository names.
+
 ## 170.0.1 (2017-09-08)
 
 ### Google Compute Engine
 
 *   Revert a change which inadvertently removed `gcloud compute xpn` commands.
-
 
 ## 170.0.0 (2017-09-06)
 
@@ -41,6 +77,31 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 
 *   The `--update-labels` and `--remove-labels` flags have been added to
     `gcloud beta functions deploy`.
+
+### Google Cloud KMS
+
+*   The `gcloud beta kms keys update` command is new. This command allows users
+    to update a key's labels, rotation period, next rotation time, and primary
+    version. Effective with this change, use the following commands instead of
+    `remove-rotation-schedule`, `set-rotation-schedule`, and
+    `set-primary-version`:
+      *   Use `gcloud beta kms keys update --remove-rotation-schedule` to remove
+      a key's rotation schedule instead of
+      `gcloud kms keys remove-rotation-schedule`.
+      *   Use
+      `gcloud beta kms keys update --next-rotation-time --rotation-period` to
+      set the next rotation time and rotation period instead of
+      `gcloud kms keys set-rotation-schedule`.
+      *   Use `gcloud beta kms keys update --primary-version` to set a key's
+      primary version instead of `gcloud kms keys set-primary-version`.
+
+*   The `--labels` argument has been added to `cloud kms keys create`. This
+    argument allows users to create labels during key creation. Related to
+    labels in Cloud KMS:
+      *   Use `gcloud beta kms keys update --update-labels` to modify a key's
+      labels.
+      *   Use `gcloud beta kms keys update --remove-labels` to remove a key's
+      labels.
 
 ### Google Compute Engine
 

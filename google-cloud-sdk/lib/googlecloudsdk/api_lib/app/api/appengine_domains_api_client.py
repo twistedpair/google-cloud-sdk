@@ -22,7 +22,7 @@ from googlecloudsdk.core import resources
 
 
 DOMAINS_VERSION_MAP = {
-    calliope_base.ReleaseTrack.GA: 'v1beta',
+    calliope_base.ReleaseTrack.GA: 'v1',
     calliope_base.ReleaseTrack.ALPHA: 'v1alpha',
     calliope_base.ReleaseTrack.BETA: 'v1beta'
 }
@@ -30,10 +30,10 @@ DOMAINS_VERSION_MAP = {
 
 def GetApiClientForTrack(release_track):
   api_version = DOMAINS_VERSION_MAP[release_track]
-  if api_version == 'v1alpha':
-    return AppengineDomainsApiAlphaClient.GetApiClient('v1alpha')
-  else:
+  if release_track == calliope_base.ReleaseTrack.GA:
     return AppengineDomainsApiClient.GetApiClient(api_version)
+  else:
+    return AppengineDomainsApiBetaClient.GetApiClient(api_version)
 
 
 class AppengineDomainsApiClient(base.AppengineApiClientBase):
@@ -168,28 +168,29 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
     return res.RelativeName()
 
 
-class AppengineDomainsApiAlphaClient(AppengineDomainsApiClient):
+class AppengineDomainsApiBetaClient(AppengineDomainsApiClient):
   """Client used by gcloud to communicate with the App Engine API."""
 
-  def CreateDomainMapping(self, domain, certificate_id, no_managed_certificate):
+  def CreateDomainMapping(self, domain, certificate_id, management_type):
     """Creates a domain mapping for the given application.
 
     Args:
       domain: str, the custom domain string.
       certificate_id: str, a certificate id for the new domain.
-      no_managed_certificate: bool, don't automatically provision a certificate.
+      management_type: SslSettings.SslManagementTypeValueValuesEnum,
+                       AUTOMATIC or MANUAL certificate provisioning.
 
     Returns:
       The created DomainMapping object.
     """
-    ssl = self.messages.SslSettings(certificateId=certificate_id)
+    ssl = self.messages.SslSettings(certificateId=certificate_id,
+                                    sslManagementType=management_type)
 
     domain_mapping = self.messages.DomainMapping(id=domain, sslSettings=ssl)
 
     request = self.messages.AppengineAppsDomainMappingsCreateRequest(
         parent=self._FormatApp(),
-        domainMapping=domain_mapping,
-        noManagedCertificate=no_managed_certificate)
+        domainMapping=domain_mapping)
 
     operation = requests.MakeRequest(self.client.apps_domainMappings.Create,
                                      request)
@@ -201,14 +202,15 @@ class AppengineDomainsApiAlphaClient(AppengineDomainsApiClient):
                           domain,
                           certificate_id,
                           no_certificate_id,
-                          no_managed_certificate=None):
+                          management_type):
     """Updates a domain mapping for the given application.
 
     Args:
       domain: str, the custom domain string.
       certificate_id: str, a certificate id for the domain.
       no_certificate_id: bool, remove the certificate id from the domain.
-      no_managed_certificate: bool, don't automatically provision a certificate.
+      management_type: SslSettings.SslManagementTypeValueValuesEnum,
+                       AUTOMATIC or MANUAL certificate provisioning.
 
     Returns:
       The updated DomainMapping object.
@@ -216,10 +218,11 @@ class AppengineDomainsApiAlphaClient(AppengineDomainsApiClient):
     mask_fields = []
     if certificate_id or no_certificate_id:
       mask_fields.append('sslSettings.certificateId')
-    if no_managed_certificate:
-      mask_fields.append('noManagedCertificate')
+    if management_type:
+      mask_fields.append('sslSettings.sslManagementType')
 
-    ssl = self.messages.SslSettings(certificateId=certificate_id)
+    ssl = self.messages.SslSettings(
+        certificateId=certificate_id, sslManagementType=management_type)
 
     domain_mapping = self.messages.DomainMapping(id=domain, sslSettings=ssl)
 
@@ -230,7 +233,6 @@ class AppengineDomainsApiAlphaClient(AppengineDomainsApiClient):
 
     request = self.messages.AppengineAppsDomainMappingsPatchRequest(
         name=self._FormatDomainMapping(domain),
-        noManagedCertificate=no_managed_certificate,
         domainMapping=domain_mapping,
         updateMask=','.join(mask_fields))
 

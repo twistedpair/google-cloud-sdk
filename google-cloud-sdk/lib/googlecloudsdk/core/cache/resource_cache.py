@@ -77,15 +77,19 @@ from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import file_cache
 from googlecloudsdk.core.util import files
 
-PERSISTENT_CACHE_IMPLEMENTATION = file_cache
+# Rollout hedge just in case a cache implementation causes problems.
+try:
+  from googlecloudsdk.core.cache import sqlite_cache  # pylint: disable=g-import-not-at-top, sqlite3 is not ubiquitous
+except ImportError:
+  sqlite_cache = None
+if (sqlite_cache and
+    'sql' in os.environ.get('CLOUDSDK_CACHE_IMPLEMENTATION', 'sqlite')):
+  PERSISTENT_CACHE_IMPLEMENTATION = sqlite_cache
+else:
+  PERSISTENT_CACHE_IMPLEMENTATION = file_cache
+
 DEFAULT_TIMEOUT = 1*60*60
-
-
-def DeleteDeprecatedCache():
-  """Silently deletes the deprecated resource completion cache if it exists."""
-  cache_dir = config.Paths().completion_cache_dir
-  if os.path.isdir(cache_dir):
-    files.RmTree(cache_dir)
+VERSION = 'googlecloudsdk.resource-1.0'
 
 
 class ParameterInfo(object):
@@ -165,17 +169,15 @@ class _RuntimeParameter(Parameter):
   Attributes:
     aggregator: True if parameter is an aggregator (not aggregated by updater).
     generate: True if values must be generated for this parameter.
-    table: The cache table for all possible values of the parameter.
-    updater: The updater object.
+    updater_class: The updater class.
     value: A default value from the program state.
   """
 
-  def __init__(self, parameter, table, updater, value, aggregator):
+  def __init__(self, parameter, updater_class, value, aggregator):
     super(_RuntimeParameter, self).__init__(
         parameter.column, name=parameter.name)
     self.generate = False
-    self.table = table
-    self.updater = updater
+    self.updater_class = updater_class
     self.value = value
     self.aggregator = aggregator
 
@@ -264,26 +266,10 @@ class Updater(BaseUpdater):
     runtime_parameters = []
     for parameter in self.parameters:
       updater_class, aggregator = parameter_info.GetUpdater(parameter.name)
-      if updater_class:
-        # Updater object instantiation is on demand so they don't have to be
-        # instantiated at import time in the static CLI tree. It also makes it
-        # easier to serialize in the static CLI tree JSON object.
-        updater = updater_class(cache=self.cache)
-        # Instantiate the table to hold all possible values for this parameter.
-        # This table is a child of the collection table. It may itself be a
-        # resource object.
-        table = self.cache.Table(
-            updater.collection,
-            columns=updater.columns,
-            keys=updater.columns,
-            timeout=updater.timeout)
-      else:
-        updater = None
-        table = None
       value = parameter_info.GetValue(
           parameter.name, check_properties=aggregator)
       runtime_parameter = _RuntimeParameter(
-          parameter, table, updater, value, aggregator)
+          parameter, updater_class, value, aggregator)
       runtime_parameters.append(runtime_parameter)
     return runtime_parameters
 
@@ -361,11 +347,22 @@ class Updater(BaseUpdater):
       elif parameter.aggregator:
         aggregations.append(parameter)
         parameter.generate = True
-        sub_template = [None] * parameter.table.columns
-        sub_template[parameter.updater.column] = template[parameter.column]
-        rows = parameter.updater.SelectTable(
-            parameter.table, sub_template, parameter_info)
-        v = [row[parameter.updater.column] for row in rows]
+        # Updater object instantiation is on demand so they don't have to be
+        # instantiated at import time in the static CLI tree. It also makes it
+        # easier to serialize in the static CLI tree JSON object.
+        updater = parameter.updater_class(cache=self.cache)
+        # Instantiate the table to hold all possible values for this parameter.
+        # This table is a child of the collection table. It may itself be a
+        # resource object.
+        table = self.cache.Table(
+            updater.collection,
+            columns=updater.columns,
+            keys=updater.columns,
+            timeout=updater.timeout)
+        sub_template = [None] * table.columns
+        sub_template[updater.column] = template[parameter.column]
+        rows = updater.SelectTable(table, sub_template, parameter_info)
+        v = [row[updater.column] for row in rows]
         log.info('cache parameter=%s column=%s values=%s aggregate=%s',
                  parameter.name, parameter.column, v, parameter.aggregator)
         values.append(v)
@@ -393,6 +390,7 @@ class Updater(BaseUpdater):
           aggregations.append(parameter)
       rows.extend(self.SelectTable(
           table, template, parameter_info, aggregations))
+    log.info('cache rows=%s' % rows)
     return rows
 
   def GetTableForRow(self, row, parameter_info=None, create=True):
@@ -437,7 +435,7 @@ class ResourceCache(PERSISTENT_CACHE_IMPLEMENTATION.Cache):
     if not name:
       name = self.GetDefaultName()
     super(ResourceCache, self).__init__(
-        name=name, create=create, version='googlecloudsdk.resource-1.0')
+        name=name, create=create, version=VERSION)
 
   @staticmethod
   def GetDefaultName():
@@ -449,3 +447,26 @@ class ResourceCache(PERSISTENT_CACHE_IMPLEMENTATION.Cache):
     files.MakeDir(os.path.join(*path))
     path.append('resource.cache')
     return os.path.join(*path)
+
+
+def DeleteDeprecatedCache():
+  """Silently deletes the deprecated resource completion cache if it exists."""
+  cache_dir = config.Paths().completion_cache_dir
+  if os.path.isdir(cache_dir):
+    files.RmTree(cache_dir)
+
+
+def Delete(name=None):
+  """Deletes the current persistent resource cache however it's implemented."""
+  if not name:
+    name = ResourceCache.GetDefaultName()
+
+  # Keep trying implementation until cache not found or a matching cache found.
+  for implementation in (sqlite_cache, file_cache):
+    if not implementation:
+      continue
+    try:
+      implementation.Cache(name=name, create=False, version=VERSION).Delete()
+      return
+    except exceptions.CacheInvalid:
+      continue

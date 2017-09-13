@@ -103,6 +103,7 @@ class _Table(persistent_cache_base.Table):
     self._cache.cursor.execute(
         'DROP TABLE "{table}"'.format(table=self.name))
     # pylint: disable=protected-access
+    self._cache._db.commit()
     self._cache._metadata.DeleteRows([(self.name,)])
     self.deleted = True
 
@@ -134,6 +135,7 @@ class _Table(persistent_cache_base.Table):
         format(
             table=self.name, fields=self._fields, values=self._values),
         rows)
+    self._cache._db.commit()  # pylint: disable=protected-access
 
   def DeleteRows(self, row_templates=None):
     """Deletes each row in the table matching any of the row_templates."""
@@ -146,6 +148,7 @@ class _Table(persistent_cache_base.Table):
     else:
       self._cache.cursor.execute(
           'DELETE FROM "{table}" WHERE 1'.format(table=self.name))
+    self._cache._db.commit()  # pylint: disable=protected-access
 
   def Select(self, row_template=None, ignore_expiration=False):
     """Returns the list of rows that match row_template, None for all."""

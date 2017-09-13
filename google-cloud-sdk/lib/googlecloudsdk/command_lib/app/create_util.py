@@ -85,7 +85,7 @@ def CreateApp(api_client, project, region, suppress_warning=False):
             project=project))
 
 
-def CreateAppInteractively(api_client, project):
+def CreateAppInteractively(api_client, project, regions=None, extra_warning=''):
   """Interactively choose a region and create an App Engine app.
 
   The caller is responsible for calling this method only when the user can be
@@ -93,7 +93,9 @@ def CreateAppInteractively(api_client, project):
 
   Example interaction:
 
-      Which region?
+      Please choose the region where you want your App Engine application
+      located:
+
         [1] us-east1      (supports standard and flexible)
         [2] europe-west   (supports standard)
         [3] us-central    (supports standard and flexible)
@@ -103,6 +105,9 @@ def CreateAppInteractively(api_client, project):
   Args:
     api_client: The App Engine Admin API client
     project: The GCP project
+    regions: The list of regions to choose from; if None, all possible regions
+             are listed
+    extra_warning: An additional warning to print before listing regions.
 
   Raises:
     AppAlreadyExistsError if app already exists
@@ -110,12 +115,14 @@ def CreateAppInteractively(api_client, project):
   log.status.Print('You are creating an app for project [{}].'.format(project))
   log.warn(APP_CREATE_WARNING)
 
-  all_regions = sorted(set(api_client.ListRegions()))
+  regions = regions or sorted(set(api_client.ListRegions()))
+  if extra_warning:
+    log.warn(extra_warning)
   idx = console_io.PromptChoice(
-      all_regions,
+      regions,
       message=('Please choose the region where you want your App Engine '
                'application located:\n\n'),
       cancel_option=True)
-  region = all_regions[idx]
+  region = regions[idx]
   CreateApp(api_client, project, region.region, suppress_warning=True)
 

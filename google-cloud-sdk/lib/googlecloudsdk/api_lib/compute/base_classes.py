@@ -190,7 +190,7 @@ class BaseLister(base.ListCommand, BaseCommand):
         metavar='NAME',
         nargs='*',
         default=[],
-        completer=completers.DeprecatedInstancesCompleter,
+        completer=completers.InstancesCompleter,
         help=('If provided, show details for the specified names and/or URIs '
               'of resources.'))
 
@@ -496,7 +496,7 @@ class MultiScopeLister(BaseLister):
     """The service used to get aggregated list of resources."""
 
   def GetResources(self, args, errors):
-    """Yields zonal, regional and/or global resources.
+    """Returns zonal, regional and/or global resources.
 
     Args:
       args: argparse.Namespace, Parsed arguments

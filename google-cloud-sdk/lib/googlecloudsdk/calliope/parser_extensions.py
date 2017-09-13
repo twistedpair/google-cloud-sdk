@@ -478,8 +478,8 @@ class ArgumentParser(argparse.ArgumentParser):
 
     Args:
       action: argparse.Action, The action being checked against this value.
-      value: The command line argument provided that needs to correspond to this
-          action.
+      value: The parsed command line argument provided that needs to correspond
+          to this action.
 
     Raises:
       argparse.ArgumentError: If the action and value don't work together.
@@ -500,20 +500,23 @@ class ArgumentParser(argparse.ArgumentParser):
     if is_subparser and '_ARGCOMPLETE' in os.environ:
       # pylint:disable=protected-access, Required by argcomplete.
       action._orig_class = argparse._SubParsersAction
-
     # This is copied from this method in argparse's version of this method.
     if action.choices is None or value in action.choices:
       return
+    if isinstance(value, basestring):
+      arg = value
+    else:
+      arg = unicode(value)
 
     # We add this to check if we can lazy load the element.
-    if is_subparser and action.IsValidChoice(value):
+    if is_subparser and action.IsValidChoice(arg):
       return
 
     # Not something we know, raise an error.
     # pylint:disable=protected-access
     cli_generator = self._calliope_command._cli_generator
     missing_components = cli_generator.ComponentsForMissingCommand(
-        self._calliope_command.GetPath() + [value])
+        self._calliope_command.GetPath() + [arg])
     if missing_components:
       msg = ('You do not currently have this command group installed.  Using '
              'it requires the installation of components: '
@@ -531,7 +534,7 @@ class ArgumentParser(argparse.ArgumentParser):
     message = u"Invalid choice: '{0}'.".format(value)
 
     # Determine if the requested command is available in another release track.
-    existing_alternatives = self._ExistingAlternativeReleaseTracks(value)
+    existing_alternatives = self._ExistingAlternativeReleaseTracks(arg)
     if existing_alternatives:
       message += (u'\nThis command is available in one or more alternate '
                   u'release tracks.  Try:\n  ')
@@ -542,7 +545,7 @@ class ArgumentParser(argparse.ArgumentParser):
       # release track. It's safe to include it.
       raise parser_errors.WrongTrackError(
           message,
-          extra_path_arg=value,
+          extra_path_arg=arg,
           suggestions=existing_alternatives)
 
     # See if the spelling was close to something else that exists here.
@@ -555,12 +558,13 @@ class ArgumentParser(argparse.ArgumentParser):
       cli_name = self._calliope_command.GetPath()[0]
       for cmd, suggestion in cmd_suggestions.iteritems():
         suggester.AddAliases([cmd], cli_name + ' ' + suggestion)
-    suggestion = suggester.GetSuggestion(value)
+    suggestion = suggester.GetSuggestion(arg)
     if suggestion:
-      message += " Did you mean '{0}'?".format(suggestion)
+      message += u" Did you mean '{0}'?".format(suggestion)
     elif not is_subparser:
       # Command group choices will be displayed in the usage message.
-      message += '\n\nValid choices are [{0}].'.format(', '.join(choices))
+      message += u'\n\nValid choices are [{0}].'.format(
+          ', '.join([unicode(c) for c in choices]))
 
     # Log to analytics the attempt to execute a command.
     # We don't know if the user entered 'value' is a mistyped command or

@@ -104,9 +104,10 @@ def AddCertificateIdFlag(parser, include_no_cert):
 
   certificate_id = base.Argument(
       '--certificate-id',
-      help=('A certificate id to use for this domain. Use the '
-            ' `gcloud app ssl-certificates list` to see available certificates'
-            ' for this app.'))
+      help=('A certificate id to use for this domain. May not be used on a '
+            'domain mapping with automatically managed certificates. Use the '
+            '`gcloud app ssl-certificates list` to see available certificates '
+            'for this app.'))
 
   if include_no_cert:
     group = parser.add_mutually_exclusive_group()
@@ -119,13 +120,14 @@ def AddCertificateIdFlag(parser, include_no_cert):
     certificate_id.AddToParser(parser)
 
 
-def AddNoManagedCertificateFlag(parser):
+def AddCertificateManagementFlag(parser):
   parser.add_argument(
-      '--no-managed-certificate',
-      action='store_true',
-      help=('Do not automatically provision a certificate for the domain. '
-            'This flag may not be used in combination with a user provided '
-            'certificate-id'))
+      '--certificate-management',
+      choices=['AUTOMATIC', 'MANUAL'],
+      type=lambda x: x.upper(),
+      help=('Type of certificate management. AUTOMATIC will provision an SSL '
+            'certificate automatically while MANUAL requires the user to '
+            'provide a certificate id to provision.'))
 
 
 def AddSslCertificateFlags(parser, required):

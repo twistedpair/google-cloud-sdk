@@ -480,14 +480,33 @@ class ComponentSnapshot(object):
              for component_id in all_components]
     return infos
 
-  def WriteToFile(self, path):
+  def WriteToFile(self, path, component_id=None):
     """Writes this snapshot back out to a JSON file.
 
     Args:
       path: str, The path of the file to write to.
+      component_id: Limit snapshot to this component.
+          If not specified all components are written out.
+
+    Raises:
+      ValueError: for non existent component_id.
     """
+    sdk_def_dict = self.sdk_definition.ToDictionary()
+    if component_id:
+      component_dict = [c for c in sdk_def_dict['components']
+                        if c['id'] == component_id]
+      if not component_dict:
+        raise ValueError(
+            'Component {} is not in this snapshot {}'
+            .format(component_id,
+                    ','.join([c['id'] for c in sdk_def_dict['components']])))
+      sdk_def_dict['components'] = component_dict
+      # Remove unnecessary artifacts from snapshot.
+      for key in sdk_def_dict.keys():
+        if key not in ('components', 'schema_version', 'revision', 'version'):
+          del sdk_def_dict[key]
     with open(path, 'w') as fp:
-      json.dump(self.sdk_definition.ToDictionary(),
+      json.dump(sdk_def_dict,
                 fp, indent=2, sort_keys=True)
 
 

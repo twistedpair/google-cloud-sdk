@@ -29,7 +29,7 @@ def HealthCheckArgument(
   return compute_flags.ResourceArgument(
       name=name,
       resource_name='{} health check'.format(protocol_string),
-      completer=compute_completers.DeprecatedHealthChecksCompleter,
+      completer=compute_completers.HealthChecksCompleter,
       plural=plural,
       required=required,
       global_collection='compute.healthChecks')

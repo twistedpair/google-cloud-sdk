@@ -16,7 +16,6 @@
 
 
 from googlecloudsdk.command_lib.util import completers
-from googlecloudsdk.command_lib.util import deprecated_completers
 from googlecloudsdk.core import module_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
@@ -77,12 +76,7 @@ class PropertyValueCompleter(completers.Converter):
     if prop.completer:
       # prop.completer is the module path for the resource value completer.
       completer_class = module_util.ImportModule(prop.completer)
-      completer = completer_class()
-      if (hasattr(completer, 'GetListCommand') and not isinstance(
-          completer, deprecated_completers.DeprecatedListCommandCompleter)):
-        list_command = ' '.join(completer.GetListCommand(parameter_info))
-        completer = deprecated_completers.DeprecatedListCommandCompleter(
-            collection=completer.collection, list_command=list_command)
+      completer = completer_class(cache=self.cache)
       return completer.Complete(prefix, parameter_info)
 
     # No completer for this property.

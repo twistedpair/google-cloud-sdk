@@ -147,17 +147,21 @@ def ParseTrafficAllocations(args_allocations, split_method):
   max_decimal_places = 2 if split_method == 'ip' else 3
   sum_of_splits = sum([float(s) for s in args_allocations.values()])
 
-  # TODO(b/65216548): Properly handle traffic splits of 0.
-  if sum_of_splits < 10 ** -max_decimal_places:
-    raise ServicesSplitTrafficError(
-        'Cannot set traffic split to zero. If you would like a version to '
-        'receive no traffic, send 100% of traffic to other versions or delete '
-        'the service.')
+  err = ServicesSplitTrafficError(
+      'Cannot set traffic split to zero. If you would like a version to '
+      'receive no traffic, send 100% of traffic to other versions or delete '
+      'the service.')
+
+  # Prevent division by zero
+  if sum_of_splits == 0.0:
+    raise err
 
   allocations = {}
   for version, split in args_allocations.iteritems():
     allocation = float(split) / sum_of_splits
     allocation = round(allocation, max_decimal_places)
+    if allocation == 0.0:
+      raise err
     allocations[version] = allocation
 
   # The API requires that these sum to 1.0. This is hard to get exactly correct,

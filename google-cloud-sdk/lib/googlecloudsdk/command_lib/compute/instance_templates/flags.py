@@ -28,6 +28,6 @@ DEFAULT_LIST_FORMAT = """\
 def MakeInstanceTemplateArg(plural=False):
   return flags.ResourceArgument(
       resource_name='instance template',
-      completer=completers.DeprecatedInstanceTemplatesCompleter,
+      completer=completers.InstanceTemplatesCompleter,
       plural=plural,
       global_collection='compute.instanceTemplates')

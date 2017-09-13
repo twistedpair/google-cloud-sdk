@@ -13,6 +13,7 @@
 # limitations under the License.
 """Utilities for local ml-engine operations."""
 import json
+import os
 import subprocess
 
 from googlecloudsdk.command_lib.ml_engine import local_predict
@@ -51,7 +52,12 @@ def RunPredict(model_dir, json_instances=None, text_instances=None):
     raise LocalPredictEnvironmentError(
         'You must be running an installed Cloud SDK to perform local '
         'prediction.')
-  env = {'CLOUDSDK_ROOT': sdk_root}
+  # Inheriting the environment preserves important variables in the child
+  # process. In particular, LD_LIBRARY_PATH under linux and PATH under windows
+  # could be used to point to non-standard install locations of CUDA and CUDNN.
+  # If not inherited, the child process could fail to initialize Tensorflow.
+  env = os.environ.copy()
+  env['CLOUDSDK_ROOT'] = sdk_root
   # We want to use whatever the user's Python was, before the Cloud SDK started
   # changing the PATH. That's where Tensorflow is installed.
   python_executables = files.SearchForExecutableOnPath('python')

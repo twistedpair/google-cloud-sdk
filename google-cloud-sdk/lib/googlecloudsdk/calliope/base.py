@@ -23,7 +23,6 @@ import sys
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import display
 from googlecloudsdk.core import log
-from googlecloudsdk.core import remote_completion
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_registry
@@ -656,11 +655,6 @@ class Command(_Common):
     """
     return None
 
-  @staticmethod
-  def GetUriCacheUpdateOp():
-    """Returns the URI cache update OP."""
-    return None
-
 
 class TopicCommand(Command):
   """A command that displays its own help on execution."""
@@ -701,12 +695,6 @@ class CacheCommand(Command):
     super(CacheCommand, self).__init__(*args, **kwargs)
     self._uri_cache_enabled = True
 
-  @staticmethod
-  @abc.abstractmethod
-  def GetUriCacheUpdateOp():
-    """Returns the URI cache update OP."""
-    pass
-
 
 class ListCommand(CacheCommand):
   """A command that pretty-prints all resources."""
@@ -739,39 +727,17 @@ class ListCommand(CacheCommand):
   def DeprecatedFormat(self, args):
     return self.ListFormat(args)
 
-  @staticmethod
-  def GetUriCacheUpdateOp():
-    return remote_completion.ReplaceCacheOp
-
 
 class CreateCommand(CacheCommand, SilentCommand):
   """A command that creates resources."""
-
-  __metaclass__ = abc.ABCMeta
-
-  @staticmethod
-  def GetUriCacheUpdateOp():
-    return remote_completion.AddToCacheOp
 
 
 class DeleteCommand(CacheCommand, SilentCommand):
   """A command that deletes resources."""
 
-  __metaclass__ = abc.ABCMeta
-
-  @staticmethod
-  def GetUriCacheUpdateOp():
-    return remote_completion.DeleteFromCacheOp
-
 
 class RestoreCommand(CacheCommand, SilentCommand):
   """A command that restores resources."""
-
-  __metaclass__ = abc.ABCMeta
-
-  @staticmethod
-  def GetUriCacheUpdateOp():
-    return remote_completion.AddToCacheOp
 
 
 class UpdateCommand(SilentCommand):

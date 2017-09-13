@@ -1009,7 +1009,8 @@ def WriteFileAtomically(file_name, contents):
       os.rename(temp_file.name, file_name)
 
 
-def WriteFileContents(path, content, overwrite=True, binary=False):
+def WriteFileContents(path, content, overwrite=True, binary=False,
+                      private=False):
   """Writes content to the specified file.
 
   Args:
@@ -1017,6 +1018,7 @@ def WriteFileContents(path, content, overwrite=True, binary=False):
     content: str, The content to write to the file.
     overwrite: bool, Whether or not to overwrite the file if it exists.
     binary: bool, True to open the file in binary mode.
+    private: bool, Whether to write the file in private mode.
 
   Raises:
     Error: If the file cannot be written.
@@ -1024,15 +1026,20 @@ def WriteFileContents(path, content, overwrite=True, binary=False):
   try:
     if not overwrite and os.path.exists(path):
       raise Error(u'File [{0}] already exists and overwrite=False'.format(path))
-    with open(path, 'wb' if binary else 'w') as out_file:
-      out_file.write(content)
+    if private:
+      with OpenForWritingPrivate(path, binary=binary) as writer:
+        writer.write(content)
+    else:
+      with open(path, 'wb' if binary else 'w') as out_file:
+        out_file.write(content)
   except EnvironmentError as e:
     # EnvironmentError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.
     raise Error(u'Unable to write file [{0}]: {1}'.format(path, e))
 
 
-def WriteFileOrStdoutContents(path, content, overwrite=True, binary=False):
+def WriteFileOrStdoutContents(path, content, overwrite=True, binary=False,
+                              private=False):
   """Writes content to the specified file.
 
   Args:
@@ -1040,6 +1047,7 @@ def WriteFileOrStdoutContents(path, content, overwrite=True, binary=False):
     content: str, The content to write to the file.
     overwrite: bool, Whether or not to overwrite the file if it exists.
     binary: bool, True to open the file in binary mode.
+    private: bool, Whether to write the file in private mode.
 
   Raises:
     Error: If the file cannot be written.
@@ -1054,7 +1062,8 @@ def WriteFileOrStdoutContents(path, content, overwrite=True, binary=False):
       sys.stdout.write(content)
     return
 
-  WriteFileContents(path, content, overwrite=overwrite, binary=binary)
+  WriteFileContents(path, content, overwrite=overwrite, binary=binary,
+                    private=private)
 
 
 def GetTreeSizeBytes(path, ignore_regex):

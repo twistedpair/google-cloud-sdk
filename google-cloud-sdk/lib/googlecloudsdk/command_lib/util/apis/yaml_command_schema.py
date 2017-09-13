@@ -89,6 +89,7 @@ class Request(object):
       raise InvalidSchemaError(
           'request.method was not specified and there is no default for this '
           'command type.')
+    self.resource_method_params = data.get('resource_method_params', {})
     self.static_fields = data.get('static_fields', {})
     self.modify_request_hook = Hook.FromData(data, 'modify_request_hook')
     self.create_request_hook = Hook.FromData(data, 'create_request_hook')
@@ -113,9 +114,13 @@ class Async(object):
 
   def __init__(self, data):
     self.collection = data['collection']
+    self.api_version = data.get('api_version', None)
     self.method = data.get('method', 'get')
     self.response_name_field = data.get('response_name_field', 'name')
+    self.extract_resource_result = data.get('extract_resource_result', True)
     self.resource_get_method = data.get('resource_get_method', 'get')
+    self.resource_get_method_params = data.get('resource_get_method_params', {})
+    self.result_attribute = data.get('result_attribute', None)
     self.state = AsyncStateField(data.get('state', {}))
     self.error = AsyncErrorField(data.get('error', {}))
 
@@ -191,6 +196,7 @@ class Argument(object):
         Hook.FromData(data, 'completer'),
         data.get('is_positional', False),
         Hook.FromData(data, 'type'),
+        data.get('choices', None),
         data.get('default', None),
         Hook.FromData(data, 'processor'),
         data.get('required', False),
@@ -201,18 +207,19 @@ class Argument(object):
 
   # pylint:disable=redefined-builtin, type param needs to match the schema.
   def __init__(self, arg_name, help_text, completer=None, is_positional=False,
-               type=None, default=None, processor=None, required=False,
-               hidden=False, action=None, group=None):
+               type=None, choices=None, default=None, processor=None,
+               required=False, hidden=False, action=None, group=None):
     self.arg_name = arg_name
     self.help_text = help_text
     self.completer = completer
     self.is_positional = is_positional
     self.type = type
+    self.choices = choices
     self.default = default
     self.processor = processor
     self.required = required
     self.hidden = hidden
-    self.action = action or 'store'
+    self.action = action
     self.group = group
 
 

@@ -478,6 +478,7 @@ def _SubmitBuild(build, image, project, parallel_build):
             build_timeout, MAX_PARALLEL_BUILD_TIME))
 
   if parallel_build:
+    metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE_ASYNC_START)
     build_id = cloudbuild_build.CloudBuildClient().ExecuteCloudBuildAsync(
         build, project=project)
     return BuildArtifact.MakeBuildIdArtifact(build_id)

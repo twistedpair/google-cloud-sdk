@@ -1019,6 +1019,9 @@ class TestSpecification(_messages.Message):
       account is present on the device. Logging into the device with these
       generated accounts allows testing more functionalities. Default is
       false. Optional
+    disablePerformanceMetrics: Disables performance metrics recording; may
+      reduce test latency.
+    disableVideoRecording: Disables video recording; may reduce test latency.
     testSetup: Test setup requirements e.g. files to install, bootstrap
       scripts Optional
     testTimeout: Max time a test execution is allowed to run before it is
@@ -1029,8 +1032,10 @@ class TestSpecification(_messages.Message):
   androidRoboTest = _messages.MessageField('AndroidRoboTest', 2)
   androidTestLoop = _messages.MessageField('AndroidTestLoop', 3)
   autoGoogleLogin = _messages.BooleanField(4)
-  testSetup = _messages.MessageField('TestSetup', 5)
-  testTimeout = _messages.StringField(6)
+  disablePerformanceMetrics = _messages.BooleanField(5)
+  disableVideoRecording = _messages.BooleanField(6)
+  testSetup = _messages.MessageField('TestSetup', 7)
+  testTimeout = _messages.StringField(8)
 
 
 class TestingProjectsTestMatricesCancelRequest(_messages.Message):

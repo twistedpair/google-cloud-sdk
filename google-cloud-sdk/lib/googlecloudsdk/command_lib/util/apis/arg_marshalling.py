@@ -26,6 +26,10 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_property
 
 
+def _EnumNameToChoice(name):
+  return name.replace('_', '-').lower()
+
+
 _TYPES = {
     messages.Variant.DOUBLE: float,
     messages.Variant.FLOAT: float,
@@ -38,12 +42,16 @@ _TYPES = {
     messages.Variant.UINT32: int,
     messages.Variant.SINT32: int,
 
-    messages.Variant.BOOL: bool,
     messages.Variant.STRING: str,
 
     # TODO(b/38000796): Do something with bytes.
     messages.Variant.BYTES: None,
-    messages.Variant.ENUM: None,
+    # For boolean flags, we wan't to create a flag with action 'store_true'
+    # rather than a flag that takes a value and converts it to a boolean.
+    messages.Variant.BOOL: None,
+    # For enums, we want to accept upper and lower case from the user, but
+    # always compare against lowercase enum chioces.
+    messages.Variant.ENUM: _EnumNameToChoice,
     messages.Variant.MESSAGE: None,
 }
 
@@ -153,7 +161,8 @@ class ArgumentGenerator(object):
       return None
     return self._GetArgAttributes(field_names[-1], required=True).arg_name
 
-  def CreateRequest(self, namespace, static_fields=None):
+  def CreateRequest(self, namespace, static_fields=None,
+                    resource_method_params=None):
     """Generates the request object for the method call from the parsed args.
 
     Args:
@@ -162,10 +171,16 @@ class ArgumentGenerator(object):
         insert into the message. This is a convenient way to insert extra data
         while the request is being constructed for fields that don't have
         corresponding arguments.
+      resource_method_params: {str: str}, A mapping of API method parameter name
+        to resource ref attribute name when the API method uses non-standard
+        names.
 
     Returns:
       The apitools message to be send to the method.
     """
+    if resource_method_params is None:
+      resource_method_params = {}
+
     request_type = self.method.GetRequestType()
     # Recursively create the message and sub-messages.
 
@@ -177,7 +192,8 @@ class ArgumentGenerator(object):
     if ref:
       relative_name = ref.RelativeName()
       fields.update(
-          {f: getattr(ref, f, relative_name) for f in self.method.params})
+          {f: getattr(ref, resource_method_params.get(f, f), relative_name)
+           for f in self.method.params})
     return request_type(**fields)
 
   def GetRequestResourceRef(self, namespace):
@@ -450,7 +466,7 @@ class ArgumentGenerator(object):
       else:
         value = getattr(namespace, name.replace('-', '_'), None)
         if value is not None:
-          kwargs[field.name] = _ConvertValue(field, value, attributes.processor)
+          kwargs[field.name] = _ConvertValue(field, value, attributes)
     return kwargs
 
   def _FlagAttributesForField(self, prefix, field, is_root):
@@ -556,37 +572,92 @@ class ArgumentGenerator(object):
       return None
     variant = field.variant
     choices = None
-    if variant == messages.Variant.ENUM:
-      choices = field.type.names()
+    if attributes.choices is not None:
+      choices = attributes.choices.keys()
+    elif variant == messages.Variant.ENUM:
+      choices = [_EnumNameToChoice(name) for name in field.type.names()]
     t = attributes.type or _TYPES.get(variant, None)
+    action = attributes.action
+    if not action:
+      if variant == messages.Variant.BOOL and self.clean_surface:
+        # Create proper boolean flags for declarative surfaces
+        action = 'store_true'
+      else:
+        action = 'store'
+
     # Note that a field will never be a message at this point, always a scalar.
     if field.repeated:
       t = arg_parsers.ArgList(element_type=t, choices=choices)
+
     name = attributes.arg_name
+    metavar = name
+    if metavar.startswith(prefix):
+      metavar = metavar[len(prefix):]
+    category = None
+    if self.arg_info is None and not attributes.is_positional:
+      category = 'MESSAGE'
     arg = base.Argument(
         # TODO(b/38000796): Consider not using camel case for flags.
         name if attributes.is_positional else '--' + name,
-        metavar=resource_property.ConvertToAngrySnakeCase(name[len(prefix):]),
-        category=None if attributes.is_positional else 'MESSAGE',
-        action=attributes.action,
-        type=t,
-        default=attributes.default,
-        choices=choices,
+        category=category,
+        action=action,
         completer=attributes.completer,
         help=attributes.help_text,
         hidden=attributes.hidden,
     )
+    if attributes.default is not None:
+      arg.kwargs['default'] = attributes.default
+    if action != 'store_true':
+      # For this special action type, it won't accept a bunch of the common
+      # kwargs, so we can only add them if not generating a boolean flag.
+      arg.kwargs['metavar'] = resource_property.ConvertToAngrySnakeCase(
+          metavar.replace('-', '_'))
+      arg.kwargs['type'] = t
+      arg.kwargs['choices'] = choices
+
     if not attributes.is_positional:
       arg.kwargs['required'] = attributes.required
     return arg
 
 
-def _ConvertValue(field, value, processor=None):
-  if processor:
-    return processor(value)
+def _ConvertValue(field, value, attributes=None):
+  """Coverts the parsed value into something to insert into a request message.
+
+  If a processor is registered, that is called on the value.
+  If a choices mapping was provided, each value is mapped back into its original
+  value.
+  If the field is an enum, the value will be looked up by name and the Enum type
+  constructed.
+
+  Args:
+    field: The apitools field object.
+    value: The parsed value. This must be a scalar for scalar fields and a list
+      for repeated fields.
+    attributes: yaml_command_schema.Argument, The attributes used to
+        generate the arg.
+
+  Returns:
+    The value to insert into the message.
+  """
+  if attributes and attributes.processor:
+    return attributes.processor(value)
+
+  if attributes and attributes.choices:
+    if field.repeated:
+      value = [attributes.choices.get(v, v) for v in value]
+    else:
+      value = attributes.choices.get(value, value)
   if field.variant == messages.Variant.ENUM:
-    return field.type.lookup_by_name(value)
+    t = field.type
+    if field.repeated:
+      return [_ChoiceToEnum(v, t) for v in value]
+    return _ChoiceToEnum(value, t)
   return value
+
+
+def _ChoiceToEnum(choice, enum_type):
+  name = choice.replace('-', '_').upper()
+  return enum_type.lookup_by_name(name)
 
 
 def _FieldHelpDocs(message):
@@ -601,7 +672,7 @@ def _FieldHelpDocs(message):
   field_helps = {}
   current_field = None
 
-  match = re.search(r'^\s+Fields:.*$', message.__doc__, re.MULTILINE)
+  match = re.search(r'^\s+Fields:.*$', message.__doc__ or '', re.MULTILINE)
   if not match:
     # Couldn't find any fields at all.
     return field_helps

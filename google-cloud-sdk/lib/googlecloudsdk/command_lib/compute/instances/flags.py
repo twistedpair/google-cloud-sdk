@@ -85,14 +85,14 @@ DEFAULT_LIST_FORMAT = """\
 INSTANCE_ARG = compute_flags.ResourceArgument(
     resource_name='instance',
     name='instance_name',
-    completer=compute_completers.DeprecatedInstancesCompleter,
+    completer=compute_completers.InstancesCompleter,
     zonal_collection='compute.instances',
     zone_explanation=ZONE_PROPERTY_EXPLANATION)
 
 INSTANCES_ARG = compute_flags.ResourceArgument(
     resource_name='instance',
     name='instance_names',
-    completer=compute_completers.DeprecatedInstancesCompleter,
+    completer=compute_completers.InstancesCompleter,
     zonal_collection='compute.instances',
     zone_explanation=ZONE_PROPERTY_EXPLANATION,
     plural=True)
@@ -100,7 +100,7 @@ INSTANCES_ARG = compute_flags.ResourceArgument(
 INSTANCES_ARG_FOR_CREATE = compute_flags.ResourceArgument(
     resource_name='instance',
     name='instance_names',
-    completer=compute_completers.DeprecatedInstancesCompleter,
+    completer=compute_completers.InstancesCompleter,
     zonal_collection='compute.instances',
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
     plural=True)
@@ -154,7 +154,7 @@ def InstanceArgumentForRoute(required=True):
   return compute_flags.ResourceArgument(
       resource_name='instance',
       name='--next-hop-instance',
-      completer=compute_completers.DeprecatedInstancesCompleter,
+      completer=compute_completers.InstancesCompleter,
       required=required,
       zonal_collection='compute.instances',
       zone_explanation=ZONE_PROPERTY_EXPLANATION)
@@ -164,7 +164,7 @@ def InstanceArgumentForTargetInstance(required=True):
   return compute_flags.ResourceArgument(
       resource_name='instance',
       name='--instance',
-      completer=compute_completers.DeprecatedInstancesCompleter,
+      completer=compute_completers.InstancesCompleter,
       required=required,
       zonal_collection='compute.instances',
       short_help=('The name of the virtual machine instance that will handle '
@@ -177,7 +177,7 @@ def InstanceArgumentForTargetPool(action, required=True):
   return compute_flags.ResourceArgument(
       resource_name='instance',
       name='--instances',
-      completer=compute_completers.DeprecatedInstancesCompleter,
+      completer=compute_completers.InstancesCompleter,
       required=required,
       zonal_collection='compute.instances',
       short_help=(
@@ -191,7 +191,7 @@ def MakeSourceInstanceTemplateArg():
   return compute_flags.ResourceArgument(
       name='--source-instance-template',
       resource_name='instance template',
-      completer=compute_completers.DeprecatedInstanceTemplatesCompleter,
+      completer=compute_completers.InstanceTemplatesCompleter,
       required=False,
       global_collection='compute.instanceTemplates',
       short_help=('The name of the instance template that the instance will '
@@ -1439,12 +1439,11 @@ def AddKonletArgs(parser):
       - Lines are in format KEY=VALUE.
       - Values must contain equality signs.
       - Variables without values are not supported (this is different from
-      docker format).
-      - If # is first non-whitespace character in a line the line is ignored
-      as a comment.
+        docker format).
+      - If `#` is first non-whitespace character in a line the line is ignored
+        as a comment.
       - Lines with nothing but whitespace are ignored.
-      """,
-      hidden=True)
+      """)
 
   parser.add_argument(
       '--container-stdin',

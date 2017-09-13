@@ -23,7 +23,8 @@ definitions:
 
   attribute:
     type: string
-    pattern: "\w+(\.\w+)*"
+    pattern: |
+      "\w+(\.\w+)*"
 
   resource_argument:
     type: object
@@ -53,6 +54,13 @@ definitions:
         # parsed string value of the argument and returns the converted
         # parsed value.
         type: { $ref: "#/definitions/python_hook" }
+        # Overrides the choices that are generated for the argument. Each key is
+        # one choice and the value is the value that is returned when that
+        # choice is selected.
+        choices:
+          type: object
+          patternProperties:
+            .*: { type: [ string, null ] }
         # The default value of the argument when not provided.
         default: { type: [ string, number, boolean, null ]}
         # The module path to a function to process the parsed value
@@ -116,6 +124,12 @@ items:
         api_version: { type: string }
         # The name of the method to call to perform the operation.
         method: { type: string }
+        # A mapping of method parameter to resource reference field for
+        # references or APIs that use non-standard naming.
+        resource_method_params:
+          type: object
+          patternProperties:
+            .*: { type: string }
         # A mapping of request field names to static values to insert into the
         # request. Specifying simple values here accomplishes the same as a
         # a custom request generator, but is simpler.
@@ -179,14 +193,30 @@ items:
       properties:
         # The full collection name of the operation collection for this API.
         collection: { type: string }
+        # The API version to use, defaults to API set as gcloud default.
+        api_version: { type: string }
         # The API method to call to get the operation ('get' by default).
         method: { type: string }
         # The field in the operation message that corresponds to the operation's
         # full name ('name' by default).
         response_name_field: { type: string }
+        # Override whether the command should get the resulting resource after
+        # the operation is done, or just return the operation result. This is
+        # True by default (except for Delete commands).
+        extract_resource_result: { type: bool }
         # The API method to call to get the updated state of the resource being
         # operated on ('get' by default).
         resource_get_method: { type: string }
+        # A mapping of method parameter to operation reference field for
+        # references or APIs that use non-standard naming.
+        resource_get_method_params:
+          type: object
+          patternProperties:
+            .*: { type: string }
+        # The attribute of the result to return from polling. If
+        # extract_resource_result is False, this is an attribute on the
+        # operation, if True it is on the resource itself.
+        result_attribute: { $ref: "#/definitions/attribute" }
         state:
           type: object
           additionalProperties: false

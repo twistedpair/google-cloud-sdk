@@ -28,6 +28,7 @@ CLOUDBUILD_UPLOAD_START = CLOUDBUILD_UPLOAD + START
 # Time to execute Argo Cloud Build request
 CLOUDBUILD_EXECUTE = _APPENGINE_PREFIX + 'cloudbuild_execute'
 CLOUDBUILD_EXECUTE_START = CLOUDBUILD_EXECUTE + START
+CLOUDBUILD_EXECUTE_ASYNC_START = CLOUDBUILD_EXECUTE + '_async' + START
 
 # Time to copy application files to the application code bucket
 COPY_APP_FILES = _APPENGINE_PREFIX + 'copy_app_files'

@@ -357,17 +357,20 @@ class Oauth2ClientCredentialStore(CredentialStore):
 class CredentialType(enum.Enum):
   """Enum of credential types managed by gcloud."""
 
-  UNKNOWN = (0, 'unknown', False)
-  USER_ACCOUNT = (1, client.AUTHORIZED_USER, True)
-  SERVICE_ACCOUNT = (2, client.SERVICE_ACCOUNT, True)
-  P12_SERVICE_ACCOUNT = (3, 'service_account_p12', True)
-  DEVSHELL = (4, 'devshell', False)
-  GCE = (5, 'gce', False)
+  UNKNOWN = (0, 'unknown', False, False)
+  USER_ACCOUNT = (1, client.AUTHORIZED_USER, True, True)
+  SERVICE_ACCOUNT = (2, client.SERVICE_ACCOUNT, True, False)
+  P12_SERVICE_ACCOUNT = (3, 'service_account_p12', True, False)
+  DEVSHELL = (4, 'devshell', False, True)
+  GCE = (5, 'gce', False, False)
 
-  def __init__(self, type_id, key, is_serializable):
+  def __init__(self, type_id, key, is_serializable, is_user):
     self.type_id = type_id
     self.key = key
     self.is_serializable = is_serializable
+    # True if this cooresponds to a "user" or 3LO credential as opposed to a
+    # service account of some kind.
+    self.is_user = is_user
 
   @staticmethod
   def FromTypeKey(key):

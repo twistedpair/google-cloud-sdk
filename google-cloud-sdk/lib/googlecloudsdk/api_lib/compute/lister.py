@@ -22,7 +22,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.command_lib.compute import completers
+from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_expr_rewrite
 from googlecloudsdk.core.resource import resource_projector
@@ -367,7 +367,7 @@ def AddBaseListerArgs(parser):
       metavar='NAME',
       nargs='*',
       default=[],
-      completer=completers.DeprecatedInstancesCompleter,
+      completer=compute_completers.InstancesCompleter,
       help=('If provided, show details for the specified names and/or URIs of '
             'resources.'))
 
@@ -399,7 +399,7 @@ def AddZonalListerArgs(parser):
       metavar='ZONE',
       help='If provided, only resources from the given zones are queried.',
       type=arg_parsers.ArgList(min_length=1),
-      completer=completers.ZonesCompleter,
+      completer=compute_completers.ZonesCompleter,
       default=[])
 
 

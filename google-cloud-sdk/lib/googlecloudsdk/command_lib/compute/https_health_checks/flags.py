@@ -29,7 +29,7 @@ DEFAULT_LIST_FORMAT = """\
 def HttpsHealthCheckArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='HTTPS health check',
-      completer=compute_completers.DeprecatedHttpsHealthChecksCompleter,
+      completer=compute_completers.HttpsHealthChecksCompleter,
       plural=plural,
       required=required,
       global_collection='compute.httpsHealthChecks')

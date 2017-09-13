@@ -85,24 +85,28 @@ CREATE_LABELS_FLAG = base.Argument(
     action=arg_parsers.UpdateAction,
     help='A list of label KEY=VALUE pairs to add.')
 
-UPDATE_LABELS_FLAG = base.Argument(
-    '--update-labels',
-    metavar='KEY=VALUE',
-    type=arg_parsers.ArgDict(
-        key_type=KEY_FORMAT_VALIDATOR, value_type=VALUE_FORMAT_VALIDATOR),
-    action=arg_parsers.UpdateAction,
-    help="""\
-    A list of label KEY=VALUE pairs to update. If a label exists its value
-    is modified, otherwise a new label is created.""")
 
-REMOVE_LABELS_FLAG = base.Argument(
-    '--remove-labels',
-    metavar='KEY',
-    type=arg_parsers.ArgList(),
-    action=arg_parsers.UpdateAction,
-    help="""\
-    A list of label keys to remove. If a label does not exist it is
-    silently ignored.""")
+def GetUpdateLablesFlag(extra_message):
+  return base.Argument(
+      '--update-labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(
+          key_type=KEY_FORMAT_VALIDATOR, value_type=VALUE_FORMAT_VALIDATOR),
+      action=arg_parsers.UpdateAction,
+      help="""\
+      A list of label KEY=VALUE pairs to update. If a label exists its value
+      is modified, otherwise a new label is created.""" + extra_message)
+
+
+def GetRemoveLablesFlag(extra_message):
+  return base.Argument(
+      '--remove-labels',
+      metavar='KEY',
+      type=arg_parsers.ArgList(),
+      action=arg_parsers.UpdateAction,
+      help="""\
+      A list of label keys to remove. If a label does not exist it is
+      silently ignored.""" + extra_message)
 
 
 def AddCreateLabelsFlags(parser):
@@ -114,14 +118,19 @@ def AddCreateLabelsFlags(parser):
   CREATE_LABELS_FLAG.AddToParser(parser)
 
 
-def AddUpdateLabelsFlags(parser):
+def AddUpdateLabelsFlags(
+    parser, extra_update_message='', extra_remove_message=''):
   """Adds update command labels flags to an argparse parser.
 
   Args:
     parser: The argparse parser to add the flags to.
+    extra_update_message: str, extra message to append to help text for
+                          --update-labels flag.
+    extra_remove_message: str, extra message to append to help text for
+                          --delete-labels flag.
   """
-  UPDATE_LABELS_FLAG.AddToParser(parser)
-  REMOVE_LABELS_FLAG.AddToParser(parser)
+  GetUpdateLablesFlag(extra_update_message).AddToParser(parser)
+  GetRemoveLablesFlag(extra_remove_message).AddToParser(parser)
 
 
 def GetUpdateLabelsDictFromArgs(args):

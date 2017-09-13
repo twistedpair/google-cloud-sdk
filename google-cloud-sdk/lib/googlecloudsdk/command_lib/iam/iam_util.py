@@ -626,7 +626,7 @@ def GetResourceName(resource_ref):
   """Convert a full resource URL to an atomic path."""
   full_name = resource_ref.SelfLink()
   full_name = re.sub(r'\w+://', '//', full_name)  # no protocol at the start
-  full_name = re.sub(r'/v[0-9]+[0-9a-zA-z]*/', '/', full_name)  # no version
+  full_name = re.sub(r'/v[0-9]+[0-9a-zA-Z]*/', '/', full_name)  # no version
   if full_name.startswith('//www.'):
     # Convert '//www.googleapis.com/compute/' to '//compute.googleapis.com/'
     splitted_list = full_name.split('/')

@@ -37,42 +37,64 @@ class NoTablesMatched(Error):
   """No table names matched the patterns."""
 
 
-def GetCache(name, create=False):
-  """Returns the cache given a cache indentfier name.
+class GetCache(object):
+  """Context manager for opening a cache given a cache identifier name."""
 
-  Args:
-    name: The cache name to operate on. May be prefixed by "resource://" for
-      resource cache names or "file://" for persistent file cache names. If
-      only the prefix is specified then the default cache name for that prefix
-      is used.
-    create: Creates the persistent cache if it exists if True.
-
-  Raises:
-    CacheNotFound: If the cache does not exist.
-
-  Returns:
-    The cache object.
-  """
-
-  types = {
+  _TYPES = {
       'file': file_cache.Cache,
       'resource': resource_cache.ResourceCache,
   }
 
-  def _OpenCache(cache_class, name):
+  def __init__(self, name, create=False):
+    """Constructor.
+
+    Args:
+      name: The cache name to operate on. May be prefixed by "resource://" for
+        resource cache names or "file://" for persistent file cache names. If
+        only the prefix is specified then the default cache name for that prefix
+        is used.
+      create: Creates the persistent cache if it exists if True.
+
+    Raises:
+      CacheNotFound: If the cache does not exist.
+
+    Returns:
+      The cache object.
+    """
+    self._name = name
+    self._create = create
+    self._cache = None
+
+  def _OpenCache(self, cache_class, name):
     try:
-      return cache_class(name, create=create)
+      return cache_class(name, create=self._create)
     except cache_exceptions.Error as e:
       raise Error(e)
 
-  if name:
-    for cache_id, cache_class in types.iteritems():
-      if name.startswith(cache_id + '://'):
-        name = name[len(cache_id) + 3:]
-        if not name:
-          name = None
-        return _OpenCache(cache_class, name)
-  return _OpenCache(resource_cache.Cache, name)
+  def __enter__(self):
+    # Each cache_class has a default cache name. None or '' names that default.
+    if self._name:
+      for cache_id, cache_class in self._TYPES.iteritems():
+        if self._name.startswith(cache_id + '://'):
+          name = self._name[len(cache_id) + 3:]
+          if not name:
+            name = None
+          self._cache = self._OpenCache(cache_class, name)
+          return self._cache
+    self._cache = self._OpenCache(resource_cache.ResourceCache, self._name)
+    return self._cache
+
+  def __exit__(self, typ, value, traceback):
+    self._cache.Close(commit=typ is None)
+
+
+def Delete():
+  """Deletes the resource cache regardless of implementation."""
+  try:
+    resource_cache.Delete()
+  except cache_exceptions.Error as e:
+    raise Error(e)
+  return None
 
 
 def AddCacheFlag(parser):
@@ -80,10 +102,11 @@ def AddCacheFlag(parser):
   parser.add_argument(
       '--cache',
       metavar='CACHE_NAME',
-      default='resource://',
-      help=('The cache name to operate on. May be prefixed by '
-            '"resource://" for resource cache names. If only the prefix is '
-            'specified then the default cache name for that prefix is used.'))
+      default=_CACHE_RI_DEFAULT,
+      help=('The cache name to operate on. May be prefixed by "{}" for '
+            'resource cache names. If only the prefix is specified then the '
+            'default cache name for that prefix is used.'.format(
+                _CACHE_RI_DEFAULT)))
 
 
 def _GetCompleterType(completer_class):

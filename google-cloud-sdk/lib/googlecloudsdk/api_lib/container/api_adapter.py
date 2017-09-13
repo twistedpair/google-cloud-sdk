@@ -84,11 +84,21 @@ NODE_TAINT_INCORRECT_EFFECT_ERROR_MSG = """\
 Invalid taint effect [{effect}] for argument --node-taints. Valid effect values are NoSchedule, PreferNoSchedule, NoExecute'
 """
 
+UNKNOWN_WORKLOAD_METADATA_FROM_NODE_ERROR_MSG = """\
+Invalid option '{option}' for '--workload-metadata-from-node' (must be one of 'unspecified', 'secure', 'exposed').
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 INGRESS = 'HttpLoadBalancing'
 HPA = 'HorizontalPodAutoscaling'
 DASHBOARD = 'KubernetesDashboard'
+DEFAULT_ADDONS = [INGRESS, HPA]
+ADDONS_OPTIONS = [INGRESS, HPA, DASHBOARD]
+
+UNSPECIFIED = 'UNSPECIFIED'
+SECURE = 'SECURE'
+EXPOSE = 'EXPOSE'
 
 
 def CheckResponse(response):
@@ -196,6 +206,7 @@ class CreateClusterOptions(object):
                enable_cloud_logging=None,
                enable_cloud_monitoring=None,
                subnetwork=None,
+               addons=None,
                disable_addons=None,
                local_ssd_count=None,
                tags=None,
@@ -225,6 +236,7 @@ class CreateClusterOptions(object):
                accelerators=None,
                enable_audit_logging=None,
                min_cpu_platform=None,
+               workload_metadata_from_node=None,
                maintenance_window=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -243,6 +255,7 @@ class CreateClusterOptions(object):
     self.enable_cloud_monitoring = enable_cloud_monitoring
     self.subnetwork = subnetwork
     self.disable_addons = disable_addons
+    self.addons = addons
     self.local_ssd_count = local_ssd_count
     self.tags = tags
     self.node_labels = node_labels
@@ -271,11 +284,8 @@ class CreateClusterOptions(object):
     self.accelerators = accelerators
     self.enable_audit_logging = enable_audit_logging
     self.min_cpu_platform = min_cpu_platform
+    self.workload_metadata_from_node = workload_metadata_from_node
     self.maintenance_window = maintenance_window
-
-
-INGRESS = 'HttpLoadBalancing'
-HPA = 'HorizontalPodAutoscaling'
 
 
 class UpdateClusterOptions(object):
@@ -350,7 +360,8 @@ class CreateNodePoolOptions(object):
                service_account=None,
                disk_type=None,
                accelerators=None,
-               min_cpu_platform=None):
+               min_cpu_platform=None,
+               workload_metadata_from_node=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -371,6 +382,7 @@ class CreateNodePoolOptions(object):
     self.disk_type = disk_type
     self.accelerators = accelerators
     self.min_cpu_platform = min_cpu_platform
+    self.workload_metadata_from_node = workload_metadata_from_node
 
 
 class UpdateNodePoolOptions(object):
@@ -653,6 +665,8 @@ class APIAdapter(object):
     if options.min_cpu_platform is not None:
       node_config.minCpuPlatform = options.min_cpu_platform
 
+    _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
+
     max_nodes_per_pool = options.max_nodes_per_pool or MAX_NODES_PER_POOL
     pools = (options.num_nodes + max_nodes_per_pool - 1) / max_nodes_per_pool
     if pools == 1:
@@ -707,6 +721,12 @@ class APIAdapter(object):
           disable_ingress=INGRESS in options.disable_addons or None,
           disable_hpa=HPA in options.disable_addons or None,
           disable_dashboard=DASHBOARD in options.disable_addons or None)
+      cluster.addonsConfig = addons
+    if options.addons:
+      addons = self._AddonsConfig(
+          disable_ingress=INGRESS not in options.addons,
+          disable_hpa=HPA not in options.addons,
+          disable_dashboard=DASHBOARD not in options.addons)
       cluster.addonsConfig = addons
     if options.enable_master_authorized_networks:
       authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
@@ -1008,6 +1028,11 @@ class APIAdapter(object):
 
     if options.min_cpu_platform is not None:
       node_config.minCpuPlatform = options.min_cpu_platform
+
+    if options.workload_metadata_from_node:
+      node_config.workloadMetadataConfig = self.messages.WorkloadMetadataConfig(
+          nodeMetadata=self.messages.WorkloadMetadataConfig.
+          NodeMetadataValueValuesEnum.SECURE)
 
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,
@@ -1725,6 +1750,26 @@ def _AddNodeLabelsToNodeConfig(node_config, options):
     props.append(labels.AdditionalProperty(key=key, value=value))
   labels.additionalProperties = props
   node_config.labels = labels
+
+
+def _AddWorkloadMetadataToNodeConfig(node_config, options, messages):
+  if options.workload_metadata_from_node:
+    option = options.workload_metadata_from_node
+    if option == UNSPECIFIED:
+      node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
+          nodeMetadata=messages.WorkloadMetadataConfig.
+          NodeMetadataValueValuesEnum.UNSPECIFIED)
+    elif option == SECURE:
+      node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
+          nodeMetadata=messages.WorkloadMetadataConfig.
+          NodeMetadataValueValuesEnum.SECURE)
+    elif option == EXPOSE:
+      node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
+          nodeMetadata=messages.WorkloadMetadataConfig.
+          NodeMetadataValueValuesEnum.EXPOSE)
+    else:
+      raise util.Error(
+          UNKNOWN_WORKLOAD_METADATA_FROM_NODE_ERROR_MSG.format(option=option))
 
 
 def ProjectLocation(project, location):

@@ -17,6 +17,7 @@
 import argparse
 
 from googlecloudsdk.api_lib.compute import constants as compute_constants
+from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
@@ -798,6 +799,32 @@ CPU platform selection is available only in selected zones.
       help=help_text)
 
 
+def AddWorkloadMetadataFromNodeFlag(parser, hidden=False):
+  """Adds the --workload-metadata-from-node flag to the parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Whether or not to hide the help text.
+  """
+  help_text = """\
+Sets the node metadata option for workload metadata configuration.
+"""
+
+  parser.add_argument(
+      '--workload-metadata-from-node',
+      default=None,
+      choices={
+          'SECURE': 'Exposes only a secure subset of metadata to workloads. '
+                    'Currently, this blocks kube-env and instance identity, '
+                    'but exposes all other metadata.',
+          'EXPOSED': 'Exposes all metadata to workloads.',
+          'UNSPECIFIED': 'Chooses the default.',
+      },
+      type=lambda x: x.upper(),
+      hidden=hidden,
+      help=help_text)
+
+
 def AddTagOrDigestPositional(parser, verb, repeated=True, tags_only=False,
                              arg_name=None, metavar=None):
   digest_str = '*.gcr.io/project_id/image_path@sha256:<digest> or'
@@ -914,3 +941,36 @@ def AddNodePoolScopesFlag(parser):
 def AddOldNodePoolScopesFlag(parser):
   AddScopesFlag(parser, example_target='node-pool-1 --cluster=example-cluster',
                 is_deprecated=True)
+
+
+def AddAddonsFlags(
+    parser, hide_addons_flag=False, deprecate_disable_addons_flag=True):
+  """Adds the --addons and --disable-addons flags to the parser."""
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--addons',
+      type=arg_parsers.ArgList(
+          choices=api_adapter.ADDONS_OPTIONS),
+      metavar='ADDON',
+      hidden=hide_addons_flag,
+      # TODO(b/65264376): Replace the doc link when a better doc is ready.
+      help="""\
+Default set of addons includes {0}. Addons
+(https://cloud.google.com/container-engine/reference/rest/v1/projects.zones.clusters#AddonsConfig)
+are additional Kubernetes cluster components. Addons specified by this flag will
+be enabled. The others will be disabled.
+""".format(', '.join(api_adapter.DEFAULT_ADDONS)))
+  action = None
+  if deprecate_disable_addons_flag:
+    action = actions.DeprecationAction(
+        'disable-addons',
+        warn='This flag is deprecated. '
+        'Use --addons instead.')
+  group.add_argument(
+      '--disable-addons',
+      type=arg_parsers.ArgList(
+          choices=api_adapter.ADDONS_OPTIONS),
+      metavar='DISABLE_ADDON',
+      action=action,
+      help='List of cluster addons to disable. Options are {0}'.format(
+          ', '.join(api_adapter.ADDONS_OPTIONS)))

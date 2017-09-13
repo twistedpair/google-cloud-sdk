@@ -86,10 +86,24 @@ COMPLETERS_BY_CONVENTION = {
 # list command project aggregators
 
 
+class ListCommandParameterInfo(parameter_info_lib.ParameterInfoByConvention):
+
+  def GetFlag(self, parameter_name, parameter_value=None,
+              check_properties=True, for_update=False):
+    if for_update and self.GetDest(parameter_name) in ('region', 'zone'):
+      return None
+    return super(ListCommandParameterInfo, self).GetFlag(
+        parameter_name,
+        parameter_value=parameter_value,
+        check_properties=check_properties,
+        for_update=for_update,
+    )
+
+
 class ListCommandCompleter(completers.ListCommandCompleter):
 
   def ParameterInfo(self, parsed_args, argument):
-    return parameter_info_lib.ParameterInfoByConvention(
+    return ListCommandParameterInfo(
         parsed_args,
         argument,
         self.collection,
@@ -101,7 +115,7 @@ class GlobalListCommandCompleter(ListCommandCompleter):
   """A global resource list command completer."""
 
   def ParameterInfo(self, parsed_args, argument):
-    return parameter_info_lib.ParameterInfoByConvention(
+    return ListCommandParameterInfo(
         parsed_args,
         argument,
         self.collection,
@@ -112,8 +126,9 @@ class GlobalListCommandCompleter(ListCommandCompleter):
 
 # completers referenced by multiple command groups and/or flags modules
 #
-# Deprecated* completers have a non-deprecated ResourceSearchCompleter
-# counterpart that will be enabled after the new cache is switched on.
+# Search*Completer ResourceSearchCompleters have ListCommandCompleter
+# variants that are currently the default.  The Search completers are currently
+# for testing only.
 
 
 class DisksCompleter(ListCommandCompleter):
@@ -153,80 +168,71 @@ class DiskTypesCompleter(completers.MultiResourceCompleter):
         **kwargs)
 
 
-class DeprecatedDiskTypesCompleter(ListCommandCompleter):
-
-  def __init__(self, **kwargs):
-    super(DeprecatedDiskTypesCompleter, self).__init__(
-        collection='compute.diskTypes',
-        list_command='compute disk-types list --uri',
-        **kwargs)
-
-
-class HealthChecksCompleter(completers.ResourceSearchCompleter):
+class HealthChecksCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(HealthChecksCompleter, self).__init__(
-        collection='compute.healthChecks',
-        **kwargs)
-
-
-class DeprecatedHealthChecksCompleter(ListCommandCompleter):
-
-  def __init__(self, **kwargs):
-    super(DeprecatedHealthChecksCompleter, self).__init__(
         collection='compute.healthChecks',
         list_command='compute health-checks list --uri',
         **kwargs)
 
 
-class HttpHealthChecksCompleter(completers.ResourceSearchCompleter):
+class SearchHealthChecksCompleter(completers.ResourceSearchCompleter):
 
   def __init__(self, **kwargs):
-    super(HttpHealthChecksCompleter, self).__init__(
-        collection='compute.httpHealthChecks',
+    super(SearchHealthChecksCompleter, self).__init__(
+        collection='compute.healthChecks',
         **kwargs)
 
 
-class DeprecatedHttpHealthChecksCompleter(ListCommandCompleter):
+class HttpHealthChecksCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
-    super(DeprecatedHttpHealthChecksCompleter, self).__init__(
+    super(HttpHealthChecksCompleter, self).__init__(
         collection='compute.httpHealthChecks',
         list_command='compute http-health-checks list --uri',
         **kwargs)
 
 
-class HttpsHealthChecksCompleter(completers.ResourceSearchCompleter):
+class SearchHttpHealthChecksCompleter(completers.ResourceSearchCompleter):
 
   def __init__(self, **kwargs):
-    super(HttpsHealthChecksCompleter, self).__init__(
-        collection='compute.httpsHealthChecks',
+    super(SearchHttpHealthChecksCompleter, self).__init__(
+        collection='compute.httpHealthChecks',
         **kwargs)
 
 
-class DeprecatedHttpsHealthChecksCompleter(ListCommandCompleter):
+class HttpsHealthChecksCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
-    super(DeprecatedHttpsHealthChecksCompleter, self).__init__(
+    super(HttpsHealthChecksCompleter, self).__init__(
         collection='compute.httpsHealthChecks',
         list_command='compute https-health-checks list --uri',
         **kwargs)
 
 
-class InstancesCompleter(completers.ResourceSearchCompleter):
+class SearchHttpsHealthChecksCompleter(completers.ResourceSearchCompleter):
+
+  def __init__(self, **kwargs):
+    super(SearchHttpsHealthChecksCompleter, self).__init__(
+        collection='compute.httpsHealthChecks',
+        **kwargs)
+
+
+class InstancesCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(InstancesCompleter, self).__init__(
         collection='compute.instances',
+        list_command='compute instances list --uri',
         **kwargs)
 
 
-class DeprecatedInstancesCompleter(ListCommandCompleter):
+class SearchInstancesCompleter(completers.ResourceSearchCompleter):
 
   def __init__(self, **kwargs):
-    super(DeprecatedInstancesCompleter, self).__init__(
+    super(SearchInstancesCompleter, self).__init__(
         collection='compute.instances',
-        list_command='compute instances list --uri',
         **kwargs)
 
 
@@ -239,20 +245,20 @@ class InstanceGroupsCompleter(ListCommandCompleter):
         **kwargs)
 
 
-class InstanceTemplatesCompleter(completers.ResourceSearchCompleter):
+class InstanceTemplatesCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(InstanceTemplatesCompleter, self).__init__(
         collection='compute.instanceTemplates',
+        list_command='compute instance-templates list --uri',
         **kwargs)
 
 
-class DeprecatedInstanceTemplatesCompleter(ListCommandCompleter):
+class SearchInstanceTemplatesCompleter(completers.ResourceSearchCompleter):
 
   def __init__(self, **kwargs):
-    super(DeprecatedInstanceTemplatesCompleter, self).__init__(
+    super(SearchInstanceTemplatesCompleter, self).__init__(
         collection='compute.instanceTemplates',
-        list_command='compute instance-templates list --uri',
         **kwargs)
 
 

@@ -284,11 +284,13 @@ def _ReadDictionary(filename):
   Empty lines are ignored.
   Below grammar production follow in EBNF format.
 
-  file = definition*
-  definition = id "=" val
-
-  id = "[^=\n]*"
-  val = "[^\n]*"
+  file = (whitespace* statement '\n')*
+  statement = comment
+            | definition
+  whitespace = ' '
+             | '\t'
+  comment = '#' [^\n]*
+  definition = [^#=\n] [^= \t\n]* '=' [^\n]*
 
   Args:
     filename: str, name of the file to read
@@ -302,9 +304,12 @@ def _ReadDictionary(filename):
   try:
     with open(filename, 'r') as f:
       for i, line in enumerate(f):
-        # Ignore comments
+        # Strip whitespace at the beginning and end of line
+        line = line.strip()
+        # Ignore comments and empty lines
         if len(line) <= 1 or line[0] == '#':
           continue
+        # Find first left '=' character
         assignment_op_loc = line.find('=')
         if assignment_op_loc == -1:
           raise exceptions.BadFileException(
@@ -312,12 +317,22 @@ def _ReadDictionary(filename):
                   filename, i, line))
         env = line[:assignment_op_loc]
         val = line[assignment_op_loc+1:]
-        if val.endswith('\n'):
-          val = val[:len(val)-1]
+        if ' ' in env or '\t' in env:
+          raise exceptions.BadFileException(
+              'Syntax error in {}:{} Variable name cannot contain whitespaces,'
+              ' got "{}"'.format(filename, i, env))
         env_vars[env] = val
   except IOError as e:
     raise exceptions.BadFileException(e)
   return env_vars
+
+
+def _GetHostPathDiskName(idx):
+  return 'host-path-{}'.format(idx)
+
+
+def _GetTmpfsDiskName(idx):
+  return 'tmpfs-{}'.format(idx)
 
 
 def _CreateContainerManifest(args, instance_name):
@@ -346,27 +361,24 @@ def _CreateContainerManifest(args, instance_name):
 
   volumes = []
   volume_mounts = []
-  next_volume_name = 0
   default_mode = MountVolumeMode.READ_WRITE
-  for volume in args.container_mount_host_path or []:
-    name = next_volume_name
-    next_volume_name += 1
+  for idx, volume in enumerate(args.container_mount_host_path or []):
     volumes.append({
-        'name': str(name),
+        'name': _GetHostPathDiskName(idx),
         'hostPath': {
             'path': volume['host-path']
         },
     })
     volume_mounts.append({
-        'name': str(name),
+        'name': _GetHostPathDiskName(idx),
         'mountPath': volume['mount-path'],
         'readOnly': volume.get('mode', default_mode).isReadOnly()
     })
-  for tmpfs in args.container_mount_tmpfs or []:
-    name = next_volume_name
-    next_volume_name += 1
-    volumes.append({'name': str(name), 'emptyDir': {'medium': 'Memory'}})
-    volume_mounts.append({'name': str(name), 'mountPath': tmpfs['mount-path']})
+  for idx, tmpfs in enumerate(args.container_mount_tmpfs or []):
+    volumes.append(
+        {'name': _GetTmpfsDiskName(idx), 'emptyDir': {'medium': 'Memory'}})
+    volume_mounts.append(
+        {'name': _GetTmpfsDiskName(idx), 'mountPath': tmpfs['mount-path']})
 
   container['volumeMounts'] = volume_mounts
 
@@ -463,31 +475,31 @@ def _UpdateMounts(manifest, remove_container_mounts, container_mount_host_path,
   used_names = [volume['name'] for volume in manifest['spec']['volumes']]
   volumes = []
   volume_mounts = []
-  next_volume_name = 0
+  next_volume_index = 0
   default_mode = MountVolumeMode.READ_WRITE
   for volume in container_mount_host_path:
-    while str(next_volume_name) in used_names:
-      next_volume_name += 1
-    name = next_volume_name
-    next_volume_name += 1
+    while _GetHostPathDiskName(next_volume_index) in used_names:
+      next_volume_index += 1
+    name = _GetHostPathDiskName(next_volume_index)
+    next_volume_index += 1
     volumes.append({
-        'name': str(name),
+        'name': name,
         'hostPath': {
             'path': volume['host-path']
         },
     })
     volume_mounts.append({
-        'name': str(name),
+        'name': name,
         'mountPath': volume['mount-path'],
         'readOnly': volume.get('mode', default_mode).isReadOnly()
     })
   for tmpfs in container_mount_tmpfs:
-    while str(next_volume_name) in used_names:
-      next_volume_name += 1
-    name = next_volume_name
-    next_volume_name += 1
-    volumes.append({'name': str(name), 'emptyDir': {'medium': 'Memory'}})
-    volume_mounts.append({'name': str(name), 'mountPath': tmpfs['mount-path']})
+    while _GetTmpfsDiskName(next_volume_index) in used_names:
+      next_volume_index += 1
+    name = _GetTmpfsDiskName(next_volume_index)
+    next_volume_index += 1
+    volumes.append({'name': name, 'emptyDir': {'medium': 'Memory'}})
+    volume_mounts.append({'name': name, 'mountPath': tmpfs['mount-path']})
 
   manifest['spec']['containers'][0]['volumeMounts'].extend(volume_mounts)
   manifest['spec']['volumes'].extend(volumes)

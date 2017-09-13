@@ -19,8 +19,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
 
 
-_SERVICES_LIST_COMMAND = ('service-management list --format=disable '
-                          '--flatten=serviceName[]')
+_SERVICES_LIST_COMMAND = 'service-management list --uri'
 
 
 class ConsumerServiceCompleter(completers.ListCommandCompleter):

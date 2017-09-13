@@ -18,7 +18,6 @@ import os
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core.util import files
 
 
 class BaseIamCommand(base.Command):
@@ -79,27 +78,3 @@ class BaseIamCommand(base.Command):
     except EnvironmentError:
       raise exceptions.ToolException(
           'The given file could not be read: {0}'.format(file_name))
-
-  def WriteFile(self, file_name, contents, make_private=False):
-    """Writes a file, automatically handling all relevant errors.
-
-    Args:
-      file_name: The file to write
-      contents: The data to write into the file
-      make_private: If True, set the permission of the file to user
-                    read/write only. Otherwise set it as public.
-                    Default to False.
-
-    Raises:
-      ToolException: An error occurred when trying to write the file.
-    """
-    try:
-      if make_private:
-        with files.OpenForWritingPrivate(file_name, binary=True) as handle:
-          handle.write(contents)
-      else:
-        with open(file_name, 'wb') as handle:
-          handle.write(contents)
-    except EnvironmentError:
-      raise exceptions.ToolException(
-          'The given file could not be written: {0}'.format(file_name))

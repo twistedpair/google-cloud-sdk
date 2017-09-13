@@ -644,7 +644,7 @@ class InstallationManifest(object):
     with open(self.manifest_file, 'w') as fp:
       for f in _NormalizeFileList(files):
         fp.write(f + '\n')
-    snapshot.WriteToFile(self.snapshot_file)
+    snapshot.WriteToFile(self.snapshot_file, component_id=self.id)
 
   def MarkUninstalled(self):
     """Marks this component as no longer being installed.

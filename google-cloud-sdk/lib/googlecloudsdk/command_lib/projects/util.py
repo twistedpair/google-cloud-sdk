@@ -36,7 +36,8 @@ def ParseProject(project_id):
   # API interface basis.
   registry = resources.REGISTRY.Clone()
   registry.RegisterApiByName('cloudresourcemanager', PROJECTS_API_VERSION)
-  return registry.Parse(project_id, collection=PROJECTS_COLLECTION)
+  return registry.Parse(
+      None, params={'projectId': project_id}, collection=PROJECTS_COLLECTION)
 
 
 def ProjectsUriFunc(resource):

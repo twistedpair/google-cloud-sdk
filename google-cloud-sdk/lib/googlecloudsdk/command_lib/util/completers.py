@@ -256,7 +256,8 @@ class ListCommandCompleter(ResourceCompleter):
     for name in (self._flags +
                  [parameter.name for parameter in self.parameters] +
                  parameter_info.GetAdditionalParams()):
-      flag = parameter_info.GetFlag(name, check_properties=False)
+      flag = parameter_info.GetFlag(
+          name, check_properties=False, for_update=True)
       if flag:
         flag_name = _FlagName(flag)
         if flag_name not in flags:
@@ -282,8 +283,9 @@ class ListCommandCompleter(ResourceCompleter):
     """Returns the current list of parsed resources from list_command."""
     command = self.GetListCommand(parameter_info)
     for parameter in aggregations:
-      flag = parameter_info.GetFlag(parameter.name, parameter.value)
-      if flag:
+      flag = parameter_info.GetFlag(
+          parameter.name, parameter.value, for_update=True)
+      if flag and flag not in command:
         command.append(flag)
     log.info(u'cache update command: %s' % ' '.join(command))
     try:

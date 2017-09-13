@@ -29,7 +29,7 @@ DEFAULT_LIST_FORMAT = """\
 def HttpHealthCheckArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='HTTP health check',
-      completer=compute_completers.DeprecatedHttpHealthChecksCompleter,
+      completer=compute_completers.HttpHealthChecksCompleter,
       plural=plural,
       required=required,
       global_collection='compute.httpHealthChecks')
@@ -39,7 +39,7 @@ def HttpHealthCheckArgumentForTargetPool(action, required=True):
   return compute_flags.ResourceArgument(
       resource_name='http health check',
       name='--http-health-check',
-      completer=compute_completers.DeprecatedHttpHealthChecksCompleter,
+      completer=compute_completers.HttpHealthChecksCompleter,
       plural=False,
       required=required,
       global_collection='compute.httpHealthChecks',
@@ -51,7 +51,7 @@ def HttpHealthCheckArgumentForTargetPoolCreate(required=True):
   return compute_flags.ResourceArgument(
       resource_name='http health check',
       name='--http-health-check',
-      completer=compute_completers.DeprecatedHttpHealthChecksCompleter,
+      completer=compute_completers.HttpHealthChecksCompleter,
       plural=False,
       required=required,
       global_collection='compute.httpHealthChecks',

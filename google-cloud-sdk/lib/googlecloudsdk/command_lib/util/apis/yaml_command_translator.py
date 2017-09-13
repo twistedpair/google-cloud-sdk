@@ -175,9 +175,7 @@ class CommandBuilder(object):
         if self.spec.async:
           response = self._HandleAsync(
               args, ref, response,
-              async_string='Delete request issued for: [{{{}}}]'
-              .format(yaml_command_schema.NAME_FORMAT_KEY),
-              sync_string='Deleting resource: [{{{}}}]'
+              request_string='Delete request issued for: [{{{}}}]'
               .format(yaml_command_schema.NAME_FORMAT_KEY),
               extract_resource_result=False)
           if args.async:
@@ -216,13 +214,12 @@ class CommandBuilder(object):
       def Run(self_, args):
         ref, response = self._CommonRun(args)
         if self.spec.async:
+          request_string = None
+          if ref:
+            request_string = 'Request issued for: [{{{}}}]'.format(
+                yaml_command_schema.NAME_FORMAT_KEY)
           response = self._HandleAsync(
-              args, ref, response,
-              async_string='Request issued for: [{{{}}}]'
-              .format(yaml_command_schema.NAME_FORMAT_KEY),
-              sync_string='Performing operation on resource: [{{{}}}]'
-              .format(yaml_command_schema.NAME_FORMAT_KEY),
-              extract_resource_result=True)
+              args, ref, response, request_string=request_string)
         return self._HandleResponse(response)
 
     return Command
@@ -274,7 +271,8 @@ class CommandBuilder(object):
       request = self.spec.request.create_request_hook(ref, args)
     else:
       request = self.arg_generator.CreateRequest(
-          args, self.spec.request.static_fields)
+          args, self.spec.request.static_fields,
+          self.spec.request.resource_method_params)
       if self.spec.request.modify_request_hook:
         request = self.spec.request.modify_request_hook(ref, args, request)
 
@@ -284,7 +282,7 @@ class CommandBuilder(object):
     return ref, response
 
   def _HandleAsync(self, args, resource_ref, operation,
-                   async_string, sync_string, extract_resource_result):
+                   request_string, extract_resource_result=True):
     """Handles polling for operations if the async flag is provided.
 
     Args:
@@ -292,12 +290,10 @@ class CommandBuilder(object):
       resource_ref: resources.Resource, The resource reference for the resource
         being operated on (not the operation itself)
       operation: The operation message response.
-      async_string: The format string to print when in async mode. It should
-        have a single {__name__} parameter.
-      sync_string: The format string to print when in sync mode. It should
-        have a single {__name__} parameter.
+      request_string: The format string to print indicating a request has been
+        issued for the resource. If None, nothing is printed.
       extract_resource_result: bool, True to return the original resource as
-        the result or false to just return the operation response when it is
+        the result or False to just return the operation response when it is
         done. You would set this to False for things like Delete where the
         resource no longer exists when the operation is done.
 
@@ -307,18 +303,22 @@ class CommandBuilder(object):
     operation_ref = resources.REGISTRY.Parse(
         getattr(operation, self.spec.async.response_name_field),
         collection=self.spec.async.collection)
+    if request_string:
+      log.status.Print(self._Format(request_string, resource_ref))
     if args.async:
-      log.status.Print(self._Format(async_string, resource_ref))
       log.status.Print(self._Format(
           'Check operation [{{{}}}] for status.'
           .format(yaml_command_schema.NAME_FORMAT_KEY), operation_ref))
       return operation
 
     poller = AsyncOperationPoller(
-        self.spec, resource_ref,
-        extract_resource_result=extract_resource_result)
+        self.spec, resource_ref if extract_resource_result else None)
+    progress_string = self._Format(
+        'Waiting for operation [{{{}}}] to complete'.format(
+            yaml_command_schema.NAME_FORMAT_KEY),
+        operation_ref)
     return waiter.WaitFor(
-        poller, operation_ref, self._Format(sync_string, resource_ref))
+        poller, operation_ref, self._Format(progress_string, resource_ref))
 
   def _HandleResponse(self, response):
     """Process the API response.
@@ -340,10 +340,10 @@ class CommandBuilder(object):
         messages = []
         if self.spec.response.error.code:
           messages.append('Code: [{}]'.format(
-              getattr(error, self.spec.response.error.code)))
+              _GetAttribute(error, self.spec.response.error.code)))
         if self.spec.response.error.message:
           messages.append('Message: [{}]'.format(
-              getattr(error, self.spec.response.error.message)))
+              _GetAttribute(error, self.spec.response.error.message)))
         if messages:
           raise exceptions.Error(' '.join(messages))
         raise exceptions.Error(str(error))
@@ -390,9 +390,12 @@ class CommandBuilder(object):
     Returns:
       str, The formatted string.
     """
-    d = resource_ref.AsDict()
-    d[yaml_command_schema.NAME_FORMAT_KEY] = resource_ref.Name()
-    d[yaml_command_schema.REL_NAME_FORMAT_KEY] = resource_ref.RelativeName()
+    if resource_ref:
+      d = resource_ref.AsDict()
+      d[yaml_command_schema.NAME_FORMAT_KEY] = resource_ref.Name()
+      d[yaml_command_schema.REL_NAME_FORMAT_KEY] = resource_ref.RelativeName()
+    else:
+      d = {}
     d[yaml_command_schema.RESOURCE_TYPE_FORMAT_KEY] = self.resource_type
     return format_string.format(**d)
 
@@ -429,25 +432,24 @@ class CommandBuilder(object):
 class AsyncOperationPoller(waiter.OperationPoller):
   """An implementation of a operation poller."""
 
-  def __init__(self, spec, resource_ref, extract_resource_result=True):
+  def __init__(self, spec, resource_ref):
     """Creates the poller.
 
     Args:
       spec: yaml_command_schema.CommandData, the spec for the command being
         generated.
       resource_ref: resources.Resource, The resource reference for the resource
-        being operated on (not the operation itself).
-      extract_resource_result: bool, True to return the original resource as
-        the result or false to just return the operation response when it is
-        done. You would set this to False for things like Delete where the
-        resource no longer exists when the operation is done.
+        being operated on (not the operation itself). If None, the operation
+        will just be returned when it is done instead of getting the resulting
+        resource.
     """
     self.spec = spec
     self.resource_ref = resource_ref
-    self.extract_resource_result = extract_resource_result
+    if not self.spec.async.extract_resource_result:
+      self.resource_ref = None
     self.method = registry.GetMethod(
         spec.async.collection, spec.async.method,
-        api_version=spec.request.api_version)
+        api_version=spec.async.api_version or spec.request.api_version)
 
   def IsDone(self, operation):
     """Overrides."""
@@ -476,8 +478,15 @@ class AsyncOperationPoller(waiter.OperationPoller):
     Returns:
       fetched operation message.
     """
-    return self.method.Call(
-        self.method.GetRequestType()(**operation_ref.AsDict()))
+    request_type = self.method.GetRequestType()
+    relative_name = operation_ref.RelativeName()
+    fields = {
+        f.name: getattr(
+            operation_ref,
+            self.spec.async.resource_get_method_params.get(f.name, f.name),
+            relative_name)
+        for f in request_type.all_fields()}
+    return self.method.Call(request_type(**fields))
 
   def GetResult(self, operation):
     """Overrides.
@@ -488,9 +497,23 @@ class AsyncOperationPoller(waiter.OperationPoller):
     Returns:
       result of result_service.Get request.
     """
-    if not self.extract_resource_result:
-      return operation
-    method = registry.GetMethod(
-        self.spec.request.collection, self.spec.async.resource_get_method,
-        api_version=self.spec.request.api_version)
-    return method.Call(method.GetRequestType()(**self.resource_ref.AsDict()))
+    result = operation
+    if self.resource_ref:
+      method = registry.GetMethod(
+          self.spec.request.collection, self.spec.async.resource_get_method,
+          api_version=self.spec.request.api_version)
+      result = method.Call(method.GetRequestType()(
+          **self.resource_ref.AsDict()))
+    return _GetAttribute(result, self.spec.async.result_attribute)
+
+
+def _GetAttribute(obj, attr_path):
+  if attr_path:
+    for attr in attr_path.split('.'):
+      try:
+        obj = getattr(obj, attr)
+      except AttributeError:
+        raise AttributeError(
+            'Attribute path [{}] not found on type [{}]'.format(attr_path,
+                                                                type(obj)))
+  return obj

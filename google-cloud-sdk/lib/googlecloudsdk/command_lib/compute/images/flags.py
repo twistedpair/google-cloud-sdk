@@ -46,20 +46,20 @@ LIST_FORMAT = """\
     )"""
 
 
-class ImagesCompleter(completers.ResourceSearchCompleter):
+class ImagesCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(ImagesCompleter, self).__init__(
         collection='compute.images',
+        list_command='compute images list --uri',
         **kwargs)
 
 
-class DeprecatedImagesCompleter(compute_completers.ListCommandCompleter):
+class SearchImagesCompleter(completers.ResourceSearchCompleter):
 
   def __init__(self, **kwargs):
-    super(DeprecatedImagesCompleter, self).__init__(
+    super(SearchImagesCompleter, self).__init__(
         collection='compute.images',
-        list_command='compute images list --uri',
         **kwargs)
 
 
@@ -67,7 +67,7 @@ def MakeDiskImageArg(plural=False):
   return compute_flags.ResourceArgument(
       resource_name='disk image',
       name='image_name',
-      completer=DeprecatedImagesCompleter,
+      completer=ImagesCompleter,
       plural=plural,
       global_collection='compute.images')
 
@@ -104,7 +104,7 @@ def MakeForceArg():
 REPLACEMENT_DISK_IMAGE_ARG = compute_flags.ResourceArgument(
     resource_name='disk image',
     name='--replacement',
-    completer=DeprecatedImagesCompleter,
+    completer=ImagesCompleter,
     global_collection='compute.images',
     required=False,
     short_help='Specifies a Compute Engine image as a replacement.',

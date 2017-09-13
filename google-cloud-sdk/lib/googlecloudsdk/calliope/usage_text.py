@@ -125,7 +125,12 @@ class TextChoiceSuggester(object):
     if not self._choices:
       return None
 
-    match = difflib.get_close_matches(arg.lower(), self._choices, 1)
+    match = difflib.get_close_matches(arg.lower(),
+                                      [unicode(c) for c in self._choices],
+                                      1)
+    if match:
+      choice = [c for c in self._choices if unicode(c) == match[0]][0]
+      return self._choices[choice]
     return self._choices[match[0]] if match else None
 
 

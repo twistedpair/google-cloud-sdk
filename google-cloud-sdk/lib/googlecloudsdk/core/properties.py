@@ -667,7 +667,7 @@ class _SectionApp(_Section):
     # change is successful.
     self.use_deprecated_preparation = self._AddBool(
         'use_deprecated_preparation',
-        default=False,
+        default=True,
         hidden=True)
 
 

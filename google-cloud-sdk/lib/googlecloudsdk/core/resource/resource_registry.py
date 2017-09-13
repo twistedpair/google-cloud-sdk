@@ -32,28 +32,6 @@ RESOURCE_REGISTRY = {
             open
           )
         """,),
-    # Cloud SDK client side resources
-
-    # compute
-
-    # This entry is needed due to a bug in the resource parser. It will be
-    # removable when the new completion code lands.
-    'compute.instances':
-        resource_info.ResourceInfo(
-            async_collection='compute.operations',
-            cache_command='compute instances list',
-            list_format="""
-          table(
-            name,
-            zone.basename(),
-            machineType.machine_type().basename(),
-            scheduling.preemptible.yesno(yes=true, no=''),
-            networkInterfaces[].networkIP.notnull().list():label=INTERNAL_IP,
-            networkInterfaces[].accessConfigs[0].natIP.notnull().list()\
-            :label=EXTERNAL_IP,
-            status
-          )
-        """,),
 
     # iam
     'iam.service_accounts':
