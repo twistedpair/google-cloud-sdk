@@ -522,7 +522,7 @@ class Address(_messages.Message):
       RFC1035. Label values may be empty.
 
   Fields:
-    address: The static external IP address represented by this resource.
+    address: The static IP address represented by this resource.
     addressType: The type of address to reserve. If unspecified, defaults to
       EXTERNAL.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -2305,8 +2305,12 @@ class BackendService(_messages.Message):
       only until the end of the browser session (or equivalent). The maximum
       allowed value for TTL is one day.  When the load balancing scheme is
       INTERNAL, this field is not used.
+    appEngineBackend: Directs request to an App Engine app.
+      cloudFunctionBackend and backends[] must be empty if this is set.
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService.
+    cloudFunctionBackend: Directs request to a cloud function.
+      appEngineBackend and backends[] must be empty if this is set.
     connectionDraining: A ConnectionDraining attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -2425,29 +2429,31 @@ class BackendService(_messages.Message):
     NONE = 4
 
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  backends = _messages.MessageField('Backend', 2, repeated=True)
-  cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 3)
-  connectionDraining = _messages.MessageField('ConnectionDraining', 4)
-  creationTimestamp = _messages.StringField(5)
-  customRequestHeaders = _messages.StringField(6, repeated=True)
-  description = _messages.StringField(7)
-  enableCDN = _messages.BooleanField(8)
-  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 9)
-  fingerprint = _messages.BytesField(10)
-  healthChecks = _messages.StringField(11, repeated=True)
-  iap = _messages.MessageField('BackendServiceIAP', 12)
-  id = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(14, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 15)
-  name = _messages.StringField(16)
-  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(18)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 19)
-  region = _messages.StringField(20)
-  securityPolicy = _messages.StringField(21)
-  selfLink = _messages.StringField(22)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 23)
-  timeoutSec = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  appEngineBackend = _messages.MessageField('BackendServiceAppEngineBackend', 2)
+  backends = _messages.MessageField('Backend', 3, repeated=True)
+  cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 4)
+  cloudFunctionBackend = _messages.MessageField('BackendServiceCloudFunctionBackend', 5)
+  connectionDraining = _messages.MessageField('ConnectionDraining', 6)
+  creationTimestamp = _messages.StringField(7)
+  customRequestHeaders = _messages.StringField(8, repeated=True)
+  description = _messages.StringField(9)
+  enableCDN = _messages.BooleanField(10)
+  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 11)
+  fingerprint = _messages.BytesField(12)
+  healthChecks = _messages.StringField(13, repeated=True)
+  iap = _messages.MessageField('BackendServiceIAP', 14)
+  id = _messages.IntegerField(15, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(16, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 17)
+  name = _messages.StringField(18)
+  port = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(20)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 21)
+  region = _messages.StringField(22)
+  securityPolicy = _messages.StringField(23)
+  selfLink = _messages.StringField(24)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 25)
+  timeoutSec = _messages.IntegerField(26, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -2588,6 +2594,23 @@ class BackendServiceAggregatedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class BackendServiceAppEngineBackend(_messages.Message):
+  """Configuration of a App Engine backend.
+
+  Fields:
+    appEngineService: Optional. App Engine app service name.
+    targetProject: Required. Project ID of the project hosting the app. This
+      is the project ID of this project. Reference to another project is not
+      allowed.
+    version: Optional. Version of App Engine app service. When empty, App
+      Engine will do its normal traffic split.
+  """
+
+  appEngineService = _messages.StringField(1)
+  targetProject = _messages.StringField(2)
+  version = _messages.StringField(3)
+
+
 class BackendServiceCdnPolicy(_messages.Message):
   """Message containing Cloud CDN configuration for a backend service.
 
@@ -2607,6 +2630,20 @@ class BackendServiceCdnPolicy(_messages.Message):
   cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 1)
   signedUrlCacheMaxAgeSec = _messages.IntegerField(2)
   signedUrlKeyNames = _messages.StringField(3, repeated=True)
+
+
+class BackendServiceCloudFunctionBackend(_messages.Message):
+  """Configuration of a Cloud Function backend.
+
+  Fields:
+    functionName: Required. A cloud function name. Special value ?*?
+      represents all cloud functions in the project.
+    targetProject: Required. Project ID of the project hosting the cloud
+      function.
+  """
+
+  functionName = _messages.StringField(1)
+  targetProject = _messages.StringField(2)
 
 
 class BackendServiceFailoverPolicy(_messages.Message):
@@ -9367,6 +9404,18 @@ class ComputeInterconnectsTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeLicenseCodesGetIamPolicyRequest(_messages.Message):
+  """A ComputeLicenseCodesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeLicenseCodesGetRequest(_messages.Message):
   """A ComputeLicenseCodesGetRequest object.
 
@@ -9377,6 +9426,35 @@ class ComputeLicenseCodesGetRequest(_messages.Message):
 
   licenseCode = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+
+
+class ComputeLicenseCodesSetIamPolicyRequest(_messages.Message):
+  """A ComputeLicenseCodesSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeLicenseCodesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeLicenseCodesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeLicensesDeleteRequest(_messages.Message):
@@ -15037,6 +15115,34 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeTargetVpnGatewaysSetLabelsRequest(_messages.Message):
+  """A ComputeTargetVpnGatewaysSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
+
+
 class ComputeTargetVpnGatewaysTestIamPermissionsRequest(_messages.Message):
   """A ComputeTargetVpnGatewaysTestIamPermissionsRequest object.
 
@@ -17836,23 +17942,19 @@ class GuestOsFeature(_messages.Message):
     TypeValueValuesEnum: The type of supported feature. Currently only
       VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the
       server might also populate this property with the value WINDOWS to
-      indicate that this is a Windows image. This value is purely
-      informational and does not enable or disable any features.
+      indicate that this is a Windows image.
 
   Fields:
     type: The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE
       is supported. For newer Windows images, the server might also populate
       this property with the value WINDOWS to indicate that this is a Windows
-      image. This value is purely informational and does not enable or disable
-      any features.
+      image.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     """The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE is
     supported. For newer Windows images, the server might also populate this
     property with the value WINDOWS to indicate that this is a Windows image.
-    This value is purely informational and does not enable or disable any
-    features.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -19635,9 +19737,8 @@ class Image(_messages.Message):
       queue. For Windows images, you can only enable VIRTIO_SCSI_MULTIQUEUE on
       images with driver version 1.2.0.1621 or higher. Linux images with
       kernel versions 3.17 and higher will support VIRTIO_SCSI_MULTIQUEUE.
-      For new Windows images, the server might also populate this field with
-      the value WINDOWS, to indicate that this is a Windows image. This value
-      is purely informational and does not enable or disable any features.
+      For newer Windows images, the server might also populate this property
+      with the value WINDOWS to indicate that this is a Windows image.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -29488,9 +29589,9 @@ class Snapshot(_messages.Message):
       taken from the current or a previous instance of a given disk name.
     status: [Output Only] The status of the snapshot. This can be CREATING,
       DELETING, FAILED, READY, or UPLOADING.
-    storageBytes: [Output Only] A size of the the storage used by the
-      snapshot. As snapshots share storage, this number is expected to change
-      with snapshot creation/deletion.
+    storageBytes: [Output Only] A size of the storage used by the snapshot. As
+      snapshots share storage, this number is expected to change with snapshot
+      creation/deletion.
     storageBytesStatus: [Output Only] An indicator whether storageBytes is in
       a stable state or it is being adjusted as a result of shared storage
       reallocation. This status can either be UPDATING, meaning the size of

@@ -205,7 +205,8 @@ def FetchOccurrencesForResource(digest, occurrence_filter=None):
 def TransformContainerAnalysisData(image_name, occurrence_filter=None):
   """Transforms the occurrence data from Container Analysis API."""
   occurrences = FetchOccurrencesForResource(image_name, occurrence_filter)
-  analysis_obj = container_analysis_data_util.ContainerAnalysisData(image_name)
+  analysis_obj = container_analysis_data_util.ContainerAndAnalysisData(
+      image_name)
   for occurrence in occurrences:
     analysis_obj.add_record(occurrence)
   return analysis_obj
@@ -257,8 +258,7 @@ def TransformManifests(
       result[occ.kind].append(occ)
 
     results.append(result)
-
-  return sorted(results, key=lambda x: x.get('timestamp'))
+  return results
 
 
 def GetTagNamesForDigest(digest, http_obj):

@@ -51,7 +51,11 @@ class Binding(_messages.Message):
 class CreateSnapshotRequest(_messages.Message):
   """Request for the `CreateSnapshot` method.
 
+  Messages:
+    LabelsValue: User labels.
+
   Fields:
+    labels: User labels.
     subscription: The subscription whose backlog the snapshot retains.
       Specifically, the created snapshot is guaranteed to retain:  (a) The
       existing backlog on the subscription. More precisely, this is
@@ -63,7 +67,32 @@ class CreateSnapshotRequest(_messages.Message):
       `projects/{project}/subscriptions/{sub}`.
   """
 
-  subscription = _messages.StringField(1)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """User labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  subscription = _messages.StringField(2)
 
 
 class Empty(_messages.Message):
@@ -157,8 +186,8 @@ class ModifyPushConfigRequest(_messages.Message):
     pushConfig: The push configuration for future deliveries.  An empty
       `pushConfig` indicates that the Pub/Sub system should stop pushing
       messages from the given subscription and allow messages to be pulled and
-      acknowledged - effectively pausing the subscription if `Pull` is not
-      called.
+      acknowledged - effectively pausing the subscription if `Pull` or
+      `StreamingPull` is not called.
   """
 
   pushConfig = _messages.MessageField('PushConfig', 1)
@@ -806,6 +835,9 @@ class SetIamPolicyRequest(_messages.Message):
 class Snapshot(_messages.Message):
   """A snapshot resource.
 
+  Messages:
+    LabelsValue: User labels.
+
   Fields:
     expireTime: The snapshot is guaranteed to exist up until this time. A
       newly-created snapshot expires no later than 7 days from the time of its
@@ -818,14 +850,40 @@ class Snapshot(_messages.Message):
       backlog as long as the snapshot exists -- will expire in 4 days. The
       service will refuse to create a snapshot that would expire in less than
       1 hour after creation.
+    labels: User labels.
     name: The name of the snapshot.
     topic: The name of the topic from which this snapshot is retaining
       messages.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """User labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   expireTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  topic = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  topic = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -898,6 +956,9 @@ class StandardQueryParameters(_messages.Message):
 class Subscription(_messages.Message):
   """A subscription resource.
 
+  Messages:
+    LabelsValue: User labels.
+
   Fields:
     ackDeadlineSeconds: This value is the maximum time after a subscriber
       receives a message before the subscriber should acknowledge the message.
@@ -906,13 +967,16 @@ class Subscription(_messages.Message):
       be delivered again during that time (on a best-effort basis).  For pull
       subscriptions, this value is used as the initial value for the ack
       deadline. To override this value for a given message, call
-      `ModifyAckDeadline` with the corresponding `ack_id` if using pull. The
-      minimum custom deadline you can specify is 10 seconds. The maximum
-      custom deadline you can specify is 600 seconds (10 minutes). If this
-      parameter is 0, a default value of 10 seconds is used.  For push
-      delivery, this value is also used to set the request timeout for the
-      call to the push endpoint.  If the subscriber never acknowledges the
-      message, the Pub/Sub system will eventually redeliver the message.
+      `ModifyAckDeadline` with the corresponding `ack_id` if using non-
+      streaming pull or send the `ack_id` in a
+      `StreamingModifyAckDeadlineRequest` if using streaming pull. The minimum
+      custom deadline you can specify is 10 seconds. The maximum custom
+      deadline you can specify is 600 seconds (10 minutes). If this parameter
+      is 0, a default value of 10 seconds is used.  For push delivery, this
+      value is also used to set the request timeout for the call to the push
+      endpoint.  If the subscriber never acknowledges the message, the Pub/Sub
+      system will eventually redeliver the message.
+    labels: User labels.
     messageRetentionDuration: How long to retain unacknowledged messages in
       the subscription's backlog, from the moment a message is published. If
       `retain_acked_messages` is true, then this also configures the retention
@@ -937,12 +1001,37 @@ class Subscription(_messages.Message):
       this field will be `_deleted-topic_` if the topic has been deleted.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """User labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   ackDeadlineSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  messageRetentionDuration = _messages.StringField(2)
-  name = _messages.StringField(3)
-  pushConfig = _messages.MessageField('PushConfig', 4)
-  retainAckedMessages = _messages.BooleanField(5)
-  topic = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 2)
+  messageRetentionDuration = _messages.StringField(3)
+  name = _messages.StringField(4)
+  pushConfig = _messages.MessageField('PushConfig', 5)
+  retainAckedMessages = _messages.BooleanField(6)
+  topic = _messages.StringField(7)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -972,7 +1061,11 @@ class TestIamPermissionsResponse(_messages.Message):
 class Topic(_messages.Message):
   """A topic resource.
 
+  Messages:
+    LabelsValue: User labels.
+
   Fields:
+    labels: User labels.
     name: The name of the topic. It must have the format
       `"projects/{project}/topics/{topic}"`. `{topic}` must start with a
       letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes
@@ -981,7 +1074,32 @@ class Topic(_messages.Message):
       and it must not start with `"goog"`.
   """
 
-  name = _messages.StringField(1)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """User labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  name = _messages.StringField(2)
 
 
 class UpdateSubscriptionRequest(_messages.Message):

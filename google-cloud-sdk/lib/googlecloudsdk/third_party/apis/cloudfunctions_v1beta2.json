@@ -156,7 +156,7 @@
           }
         },
         "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf true, the operation is completed, and either `error` or `response` is\navailable.",
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
           "type": "boolean"
         },
         "error": {
@@ -277,27 +277,9 @@
           "description": "The name of the function (as defined in source code) that will be\nexecuted. Defaults to the resource name suffix, if not specified. For\nbackward compatibility, if function with given name is not found, then the\nsystem will try to use function named \"function\".\nFor Node.js this is name of a function exported by the module specified\nin `source_location`.",
           "type": "string"
         },
-        "language": {
-          "description": "The programming language in which the function is written.",
-          "enumDescriptions": [
-            "Language not specified.",
-            "Automatic language detection to be performed by Cloud Functions.",
-            "Node.js.",
-            "Python.",
-            "Go.",
-            "Java.",
-            "C#."
-          ],
-          "type": "string",
-          "enum": [
-            "LANGUAGE_UNSPECIFIED",
-            "AUTO",
-            "NODE_JS",
-            "PYTHON",
-            "GO",
-            "JAVA",
-            "C_SHARP"
-          ]
+        "runtime": {
+          "description": "The runtime in which the function is going to run.",
+          "$ref": "Runtime"
         },
         "timeout": {
           "description": "The function execution timeout. Execution is considered failed and\ncan be terminated if the function is not completed at the end of the\ntimeout period. Defaults to 60 seconds.",
@@ -387,6 +369,10 @@
           "description": "Which instance of the source's service should send events. E.g. for Pub\/Sub\nthis would be a Pub\/Sub topic at `projects\/*\/topics\/*`. For Google Cloud\nStorage this would be a bucket at `projects\/*\/buckets\/*`. For any source\nthat only supports one instance per-project, this should be the name of the\nproject (`projects\/*`)",
           "type": "string"
         },
+        "service": {
+          "description": "The hostname of the service that should be observed.\n\nIf no string is provided, the default service implementing the API will\nbe used. For example, `storage.googleapis.com` is the default for all\nevent types in the 'google.storage` namespace.",
+          "type": "string"
+        },
         "retryPolicy": {
           "description": "Specifies retry policy for failed executions.",
           "$ref": "RetryPolicy"
@@ -424,6 +410,17 @@
       "description": "Describes the retry policy in case of function's execution failure.\nA function execution will be retried on any failure.\nA failed execution will be retried up to 7 days with an exponential backoff\n(capped at 10 seconds).\nRetried execution is charged as any other execution.",
       "type": "object",
       "properties": {
+      }
+    },
+    "Runtime": {
+      "id": "Runtime",
+      "description": "The runtime in which a function is going to run.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the runtime.",
+          "type": "string"
+        }
       }
     },
     "CallFunctionRequest": {

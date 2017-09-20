@@ -14,26 +14,32 @@
 
 """Stores lookup keys for help search table."""
 
-COMMAND = 'command'
-COMMANDS = 'commands'
+from googlecloudsdk.calliope import cli_tree
+
+
+CAPSULE = cli_tree.LOOKUP_CAPSULE
+CHOICES = cli_tree.LOOKUP_CHOICES
+COMMANDS = cli_tree.LOOKUP_COMMANDS
+DEFAULT = cli_tree.LOOKUP_DEFAULT
+DESCRIPTION = cli_tree.LOOKUP_DESCRIPTION
+FLAGS = cli_tree.LOOKUP_FLAGS
+IS_GLOBAL = cli_tree.LOOKUP_IS_GLOBAL
+IS_HIDDEN = cli_tree.LOOKUP_IS_HIDDEN
+NAME = cli_tree.LOOKUP_NAME
+PATH = cli_tree.LOOKUP_PATH
+POSITIONALS = cli_tree.LOOKUP_POSITIONALS
+RELEASE = cli_tree.LOOKUP_RELEASE
+SECTIONS = cli_tree.LOOKUP_SECTIONS
+
 FLAG = 'flag'
-POSITIONAL = 'positional'
-RELEASE = 'release'
-MARKDOWN = 'markdown'
-TEXT = 'text'
+COMMAND = 'command'
 GENERATED = 'generated'
+MARKDOWN = 'markdown'
+POSITIONAL = 'positional'
 SUBSECTIONS = 'subsections'
-NAME = 'name'
-FLAGS = 'flags'
-POSITIONALS = 'positionals'
-SECTIONS = 'sections'
-DESCRIPTION = 'description'
-CAPSULE = 'capsule'
-CHOICES = 'choices'
-RELEASE = 'release'
+SUMMARY = 'summary'
+TEXT = 'text'
+
 ALPHA = 'ALPHA'
 BETA = 'BETA'
 GA = 'GA'
-PATH = 'path'
-DEFAULT = 'default'
-SUMMARY = 'summary'

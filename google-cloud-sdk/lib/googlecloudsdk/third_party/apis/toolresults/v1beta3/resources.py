@@ -40,6 +40,13 @@ class Collections(enum.Enum):
       {},
       [u'projectId', u'historyId', u'executionId']
   )
+  PROJECTS_HISTORIES_EXECUTIONS_CLUSTERS = (
+      'projects.histories.executions.clusters',
+      'projects/{projectId}/histories/{historyId}/executions/{executionId}/'
+      'clusters/{clusterId}',
+      {},
+      [u'projectId', u'historyId', u'executionId', u'clusterId']
+  )
   PROJECTS_HISTORIES_EXECUTIONS_STEPS = (
       'projects.histories.executions.steps',
       'projects/{projectId}/histories/{historyId}/executions/{executionId}/'

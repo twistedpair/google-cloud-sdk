@@ -226,6 +226,16 @@ class BigqueryJobsQueryRequest(_messages.Message):
   queryRequest = _messages.MessageField('QueryRequest', 2)
 
 
+class BigqueryProjectsGetServiceAccountRequest(_messages.Message):
+  """A BigqueryProjectsGetServiceAccountRequest object.
+
+  Fields:
+    projectId: Project ID for which the service account is requested.
+  """
+
+  projectId = _messages.StringField(1, required=True)
+
+
 class BigqueryProjectsListRequest(_messages.Message):
   """A BigqueryProjectsListRequest object.
 
@@ -741,6 +751,18 @@ class DatasetReference(_messages.Message):
   projectId = _messages.StringField(2)
 
 
+class EncryptionConfiguration(_messages.Message):
+  """A EncryptionConfiguration object.
+
+  Fields:
+    kmsKeyName: [Optional] Describes the Cloud KMS encryption key that will be
+      used to protect destination BigQuery table. The BigQuery Service Account
+      associated with your project requires access to this encryption key.
+  """
+
+  kmsKeyName = _messages.StringField(1)
+
+
 class ErrorProto(_messages.Message):
   """A ErrorProto object.
 
@@ -945,6 +967,18 @@ class GetQueryResultsResponse(_messages.Message):
   totalRows = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
 
 
+class GetServiceAccountResponse(_messages.Message):
+  """A GetServiceAccountResponse object.
+
+  Fields:
+    email: The service account email address.
+    kind: The resource type of the response.
+  """
+
+  email = _messages.StringField(1)
+  kind = _messages.StringField(2, default=u'bigquery#getServiceAccountResponse')
+
+
 class GoogleSheetsOptions(_messages.Message):
   """A GoogleSheetsOptions object.
 
@@ -1125,6 +1159,8 @@ class JobConfigurationLoad(_messages.Message):
       returned in the job result. The default value is CREATE_IF_NEEDED.
       Creation, truncation and append actions occur as one atomic update upon
       job completion.
+    destinationEncryptionConfiguration: [Experimental] Custom encryption
+      configuration (e.g., Cloud KMS keys).
     destinationTable: [Required] The destination table to load the data into.
     encoding: [Optional] The character encoding of the data. The supported
       values are UTF-8 or ISO-8859-1. The default value is UTF-8. BigQuery
@@ -1218,23 +1254,24 @@ class JobConfigurationLoad(_messages.Message):
   allowQuotedNewlines = _messages.BooleanField(2)
   autodetect = _messages.BooleanField(3)
   createDisposition = _messages.StringField(4)
-  destinationTable = _messages.MessageField('TableReference', 5)
-  encoding = _messages.StringField(6)
-  fieldDelimiter = _messages.StringField(7)
-  ignoreUnknownValues = _messages.BooleanField(8)
-  maxBadRecords = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  nullMarker = _messages.StringField(10)
-  projectionFields = _messages.StringField(11, repeated=True)
-  quote = _messages.StringField(12, default=u'"')
-  schema = _messages.MessageField('TableSchema', 13)
-  schemaInline = _messages.StringField(14)
-  schemaInlineFormat = _messages.StringField(15)
-  schemaUpdateOptions = _messages.StringField(16, repeated=True)
-  skipLeadingRows = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(18)
-  sourceUris = _messages.StringField(19, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 20)
-  writeDisposition = _messages.StringField(21)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 5)
+  destinationTable = _messages.MessageField('TableReference', 6)
+  encoding = _messages.StringField(7)
+  fieldDelimiter = _messages.StringField(8)
+  ignoreUnknownValues = _messages.BooleanField(9)
+  maxBadRecords = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  nullMarker = _messages.StringField(11)
+  projectionFields = _messages.StringField(12, repeated=True)
+  quote = _messages.StringField(13, default=u'"')
+  schema = _messages.MessageField('TableSchema', 14)
+  schemaInline = _messages.StringField(15)
+  schemaInlineFormat = _messages.StringField(16)
+  schemaUpdateOptions = _messages.StringField(17, repeated=True)
+  skipLeadingRows = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(19)
+  sourceUris = _messages.StringField(20, repeated=True)
+  timePartitioning = _messages.MessageField('TimePartitioning', 21)
+  writeDisposition = _messages.StringField(22)
 
 
 class JobConfigurationQuery(_messages.Message):
@@ -1262,6 +1299,8 @@ class JobConfigurationQuery(_messages.Message):
       job completion.
     defaultDataset: [Optional] Specifies the default dataset to use for
       unqualified table names in the query.
+    destinationEncryptionConfiguration: [Experimental] Custom encryption
+      configuration (e.g., Cloud KMS keys).
     destinationTable: [Optional] Describes the table where the query results
       should be stored. If not present, a new table will be created to store
       the results. This property must be set for large results that exceed the
@@ -1360,22 +1399,23 @@ class JobConfigurationQuery(_messages.Message):
   allowLargeResults = _messages.BooleanField(1, default=False)
   createDisposition = _messages.StringField(2)
   defaultDataset = _messages.MessageField('DatasetReference', 3)
-  destinationTable = _messages.MessageField('TableReference', 4)
-  flattenResults = _messages.BooleanField(5, default=True)
-  maximumBillingTier = _messages.IntegerField(6, variant=_messages.Variant.INT32, default=1)
-  maximumBytesBilled = _messages.IntegerField(7)
-  parameterMode = _messages.StringField(8)
-  preserveNulls = _messages.BooleanField(9)
-  priority = _messages.StringField(10)
-  query = _messages.StringField(11)
-  queryParameters = _messages.MessageField('QueryParameter', 12, repeated=True)
-  schemaUpdateOptions = _messages.StringField(13, repeated=True)
-  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 14)
-  timePartitioning = _messages.MessageField('TimePartitioning', 15)
-  useLegacySql = _messages.BooleanField(16)
-  useQueryCache = _messages.BooleanField(17, default=True)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 18, repeated=True)
-  writeDisposition = _messages.StringField(19)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 4)
+  destinationTable = _messages.MessageField('TableReference', 5)
+  flattenResults = _messages.BooleanField(6, default=True)
+  maximumBillingTier = _messages.IntegerField(7, variant=_messages.Variant.INT32, default=1)
+  maximumBytesBilled = _messages.IntegerField(8)
+  parameterMode = _messages.StringField(9)
+  preserveNulls = _messages.BooleanField(10)
+  priority = _messages.StringField(11)
+  query = _messages.StringField(12)
+  queryParameters = _messages.MessageField('QueryParameter', 13, repeated=True)
+  schemaUpdateOptions = _messages.StringField(14, repeated=True)
+  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 15)
+  timePartitioning = _messages.MessageField('TimePartitioning', 16)
+  useLegacySql = _messages.BooleanField(17)
+  useQueryCache = _messages.BooleanField(18, default=True)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 19, repeated=True)
+  writeDisposition = _messages.StringField(20)
 
 
 class JobConfigurationTableCopy(_messages.Message):
@@ -1389,6 +1429,8 @@ class JobConfigurationTableCopy(_messages.Message):
       returned in the job result. The default value is CREATE_IF_NEEDED.
       Creation, truncation and append actions occur as one atomic update upon
       job completion.
+    destinationEncryptionConfiguration: [Experimental] Custom encryption
+      configuration (e.g., Cloud KMS keys).
     destinationTable: [Required] The destination table
     sourceTable: [Pick one] Source table to copy.
     sourceTables: [Pick one] Source tables to copy.
@@ -1404,10 +1446,11 @@ class JobConfigurationTableCopy(_messages.Message):
   """
 
   createDisposition = _messages.StringField(1)
-  destinationTable = _messages.MessageField('TableReference', 2)
-  sourceTable = _messages.MessageField('TableReference', 3)
-  sourceTables = _messages.MessageField('TableReference', 4, repeated=True)
-  writeDisposition = _messages.StringField(5)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 2)
+  destinationTable = _messages.MessageField('TableReference', 3)
+  sourceTable = _messages.MessageField('TableReference', 4)
+  sourceTables = _messages.MessageField('TableReference', 5, repeated=True)
+  writeDisposition = _messages.StringField(6)
 
 
 class JobList(_messages.Message):
@@ -1518,6 +1561,7 @@ class JobStatistics2(_messages.Message):
       valid.
     totalBytesBilled: [Output-only] Total bytes billed for the job.
     totalBytesProcessed: [Output-only] Total bytes processed for the job.
+    totalSlotMs: [Output-only] Slot-milliseconds for the job.
     undeclaredQueryParameters: [Output-only, Experimental] Standard SQL only:
       list of undeclared query parameters detected during a dry run
       validation.
@@ -1532,7 +1576,8 @@ class JobStatistics2(_messages.Message):
   statementType = _messages.StringField(7)
   totalBytesBilled = _messages.IntegerField(8)
   totalBytesProcessed = _messages.IntegerField(9)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 10, repeated=True)
+  totalSlotMs = _messages.IntegerField(10)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 11, repeated=True)
 
 
 class JobStatistics3(_messages.Message):
@@ -1939,6 +1984,8 @@ class Table(_messages.Message):
     creationTime: [Output-only] The time when this table was created, in
       milliseconds since the epoch.
     description: [Optional] A user-friendly description of this table.
+    encryptionConfiguration: [Experimental] Custom encryption configuration
+      (e.g., Cloud KMS keys).
     etag: [Output-only] A hash of this resource.
     expirationTime: [Optional] The time when this table expires, in
       milliseconds since the epoch. If not present, the table will persist
@@ -2016,25 +2063,26 @@ class Table(_messages.Message):
 
   creationTime = _messages.IntegerField(1)
   description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  expirationTime = _messages.IntegerField(4)
-  externalDataConfiguration = _messages.MessageField('ExternalDataConfiguration', 5)
-  friendlyName = _messages.StringField(6)
-  id = _messages.StringField(7)
-  kind = _messages.StringField(8, default=u'bigquery#table')
-  labels = _messages.MessageField('LabelsValue', 9)
-  lastModifiedTime = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  location = _messages.StringField(11)
-  numBytes = _messages.IntegerField(12)
-  numLongTermBytes = _messages.IntegerField(13)
-  numRows = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
-  schema = _messages.MessageField('TableSchema', 15)
-  selfLink = _messages.StringField(16)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 17)
-  tableReference = _messages.MessageField('TableReference', 18)
-  timePartitioning = _messages.MessageField('TimePartitioning', 19)
-  type = _messages.StringField(20)
-  view = _messages.MessageField('ViewDefinition', 21)
+  encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 3)
+  etag = _messages.StringField(4)
+  expirationTime = _messages.IntegerField(5)
+  externalDataConfiguration = _messages.MessageField('ExternalDataConfiguration', 6)
+  friendlyName = _messages.StringField(7)
+  id = _messages.StringField(8)
+  kind = _messages.StringField(9, default=u'bigquery#table')
+  labels = _messages.MessageField('LabelsValue', 10)
+  lastModifiedTime = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  location = _messages.StringField(12)
+  numBytes = _messages.IntegerField(13)
+  numLongTermBytes = _messages.IntegerField(14)
+  numRows = _messages.IntegerField(15, variant=_messages.Variant.UINT64)
+  schema = _messages.MessageField('TableSchema', 16)
+  selfLink = _messages.StringField(17)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 18)
+  tableReference = _messages.MessageField('TableReference', 19)
+  timePartitioning = _messages.MessageField('TimePartitioning', 20)
+  type = _messages.StringField(21)
+  view = _messages.MessageField('ViewDefinition', 22)
 
 
 class TableCell(_messages.Message):
@@ -2293,12 +2341,17 @@ class TimePartitioning(_messages.Message):
   Fields:
     expirationMs: [Optional] Number of milliseconds for which to keep the
       storage for a partition.
+    field: [Experimental] [Optional] If not set, the table is partitioned by
+      pseudo column '_PARTITIONTIME'; if set, the table is partitioned by this
+      field. The field must be a top-level TIMESTAMP or DATE field. Its mode
+      must be NULLABLE or REQUIRED.
     type: [Required] The only type supported is DAY, which will generate one
-      partition per day based on data loading time.
+      partition per day.
   """
 
   expirationMs = _messages.IntegerField(1)
-  type = _messages.StringField(2)
+  field = _messages.StringField(2)
+  type = _messages.StringField(3)
 
 
 class UserDefinedFunctionResource(_messages.Message):

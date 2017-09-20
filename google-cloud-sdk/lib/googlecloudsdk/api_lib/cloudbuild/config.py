@@ -205,7 +205,10 @@ def LoadCloudbuildConfigFromStream(stream, messages, params=None,
   # Then, turn the dict into a proto message.
   try:
     build = _UnpackCheckUnused(structured_data, messages.Build)
-  except ValueError as e:
+  except Exception as e:
+    # Catch all exceptions here beacuse a valid YAML can sometimes not be a
+    # valid message, so we need to catch all errors in the dict to message
+    # conversion.
     raise BadConfigException(path, '%s' % e)
 
   subst = structured_data.get('substitutions', {})

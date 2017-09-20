@@ -243,6 +243,7 @@ def Exec(args,
          out_func=None,
          err_func=None,
          in_str=None,
+         encode_args_for_output=True,
          **extra_popen_kwargs):
   """Emulates the os.exec* set of commands, but uses subprocess.
 
@@ -259,6 +260,7 @@ def Exec(args,
     err_func: str->None, a function to call with the stderr of the executed
       process. This can be e.g. log.file_only_logger.debug or log.err.write.
     in_str: str, input to send to the subprocess' stdin.
+    encode_args_for_output: bool, whether to pass arguments encoded.
     **extra_popen_kwargs: Any additional kwargs will be passed through directly
       to subprocess.Popen
 
@@ -291,7 +293,7 @@ def Exec(args,
       try:
         # popen is silly when it comes to non-ascii args. The executable has to
         # be _unencoded_, while the rest of the args have to be _encoded_.
-        if args and isinstance(args, list):
+        if encode_args_for_output and args and isinstance(args, list):
           args = args[0:1] + [
               console_attr.EncodeForConsole(a) for a in args[1:]]
         p = subprocess.Popen(args, env=env, **extra_popen_kwargs)

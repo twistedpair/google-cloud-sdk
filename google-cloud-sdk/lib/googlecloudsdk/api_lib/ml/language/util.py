@@ -46,7 +46,9 @@ def GetLanguageMessages(version=LANGUAGE_GA_VERSION):
 class LanguageClient(object):
   """Wrapper for the Cloud Language API client class."""
 
-  def __init__(self, version=None, entity_sentiment_enabled=False):
+  def __init__(self, version=None,
+               entity_sentiment_enabled=False,
+               classify_text_enabled=False):
     version = version or LANGUAGE_GA_VERSION
     self.client = GetLanguageClient(version=version)
     self.messages = GetLanguageMessages(version=version)
@@ -56,8 +58,12 @@ class LanguageClient(object):
         'analyzeSyntax': (self.messages.AnalyzeSyntaxRequest,
                           self.client.documents.AnalyzeSyntax),
         'analyzeSentiment': (self.messages.AnalyzeSentimentRequest,
-                             self.client.documents.AnalyzeSentiment)
+                             self.client.documents.AnalyzeSentiment),
     }
+    # classifyText is only available in the beta API.
+    if classify_text_enabled:
+      self.features['classifyText'] = (self.messages.ClassifyTextRequest,
+                                       self.client.documents.ClassifyText)
     # analyzeEntitySentiment is only available in the beta API.
     if entity_sentiment_enabled:
       self.features.update({
@@ -110,9 +116,9 @@ class LanguageClient(object):
     """
     document = self._GetDocument(source=source, language=language,
                                  content_type=content_type)
-    encoding_enum = request_type.EncodingTypeValueValuesEnum
     request = request_type(document=document)
     if encoding_type:
+      encoding_enum = request_type.EncodingTypeValueValuesEnum
       request.encodingType = encoding_enum(encoding_type)
     return request
 

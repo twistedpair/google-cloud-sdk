@@ -13,10 +13,8 @@
 # limitations under the License.
 """Convenience functions for dealing with gaia accounts."""
 
-from apitools.base.py import credentials_lib
-
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core.credentials import store as c_store
+from googlecloudsdk.core import properties
 
 # API restriction: account names cannot be greater than 32 characters.
 _MAX_ACCOUNT_NAME_LENGTH = 32
@@ -45,20 +43,5 @@ def MapGaiaEmailToDefaultAccountName(email):
   return account_name[:_MAX_ACCOUNT_NAME_LENGTH]
 
 
-def GetDefaultAccountName(http):
-  return MapGaiaEmailToDefaultAccountName(GetAuthenticatedGaiaEmail(http))
-
-
-def GetAuthenticatedGaiaEmail(http):
-  """Get the email associated with the active credentails."""
-  # If there are no credentials in the c_store c_store.Load() will throw an
-  # error with a nice message on how to get credentials.
-  email = credentials_lib.GetUserinfo(c_store.Load(), http).get('email')
-  # GetUserinfo depends on the token having either the userinfo.email or
-  # userinfo.profile scope for the given token. Otherwise it will return empty
-  # JSON and email will be None.
-  if not email:
-    raise c_store.AuthenticationException(
-        'An error occured while obtaining your email from your active'
-        ' credentials.')
-  return email
+def GetDefaultAccountName():
+  return MapGaiaEmailToDefaultAccountName(properties.VALUES.core.account.Get())

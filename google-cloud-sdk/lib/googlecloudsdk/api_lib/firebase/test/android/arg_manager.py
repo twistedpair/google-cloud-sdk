@@ -71,14 +71,30 @@ def SharedArgRules():
   return {
       'required': ['type', 'app'],
       'optional': [
-          'device', 'device_ids', 'os_version_ids', 'locales', 'orientations',
-          'app_package', 'async', 'auto_google_login', 'obb_files',
-          'results_bucket', 'results_dir', 'results_history_name', 'timeout',
-          'environment_variables', 'directories_to_pull', 'network_profile'
+          'app_package',
+          'async',
+          'auto_google_login',
+          'device',
+          'device_ids',
+          'directories_to_pull',
+          'environment_variables',
+          'locales',
+          'network_profile',
+          'obb_files',
+          'orientations',
+          'os_version_ids',
+          'performance_metrics',
+          'record_video',
+          'results_bucket',
+          'results_dir',
+          'results_history_name',
+          'timeout',
       ],
       'defaults': {
           'async': False,
           'auto_google_login': True,
+          'performance_metrics': True,
+          'record_video': True,
           'timeout': 900,  # 15 minutes
       }
   }

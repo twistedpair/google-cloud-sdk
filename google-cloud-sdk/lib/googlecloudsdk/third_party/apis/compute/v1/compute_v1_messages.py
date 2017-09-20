@@ -291,7 +291,7 @@ class Address(_messages.Message):
       by another resource and is not available.
 
   Fields:
-    address: The static external IP address represented by this resource.
+    address: The static IP address represented by this resource.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -600,10 +600,9 @@ class AttachedDisk(_messages.Message):
       the disk later.  Instance templates do not store customer-supplied
       encryption keys, so you cannot use your own keys to encrypt disks in a
       managed instance group.
-    index: Assigns a zero-based index to this disk, where 0 is reserved for
-      the boot disk. For example, if you have many disks attached to an
-      instance, each disk would have a unique index number. If not specified,
-      the server will choose an appropriate value.
+    index: [Output Only] A zero-based index to this disk, where 0 is reserved
+      for the boot disk. If you have many disks attached to an instance, each
+      disk would have a unique index number.
     initializeParams: [Input Only] Specifies the parameters for a new disk
       that will be created alongside the new instance. Use initialization
       parameters to create boot disks or local SSDs attached to the new
@@ -11513,23 +11512,19 @@ class GuestOsFeature(_messages.Message):
     TypeValueValuesEnum: The type of supported feature. Currently only
       VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the
       server might also populate this property with the value WINDOWS to
-      indicate that this is a Windows image. This value is purely
-      informational and does not enable or disable any features.
+      indicate that this is a Windows image.
 
   Fields:
     type: The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE
       is supported. For newer Windows images, the server might also populate
       this property with the value WINDOWS to indicate that this is a Windows
-      image. This value is purely informational and does not enable or disable
-      any features.
+      image.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     """The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE is
     supported. For newer Windows images, the server might also populate this
     property with the value WINDOWS to indicate that this is a Windows image.
-    This value is purely informational and does not enable or disable any
-    features.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -11978,9 +11973,8 @@ class Image(_messages.Message):
       queue. For Windows images, you can only enable VIRTIO_SCSI_MULTIQUEUE on
       images with driver version 1.2.0.1621 or higher. Linux images with
       kernel versions 3.17 and higher will support VIRTIO_SCSI_MULTIQUEUE.
-      For new Windows images, the server might also populate this field with
-      the value WINDOWS, to indicate that this is a Windows image. This value
-      is purely informational and does not enable or disable any features.
+      For newer Windows images, the server might also populate this property
+      with the value WINDOWS to indicate that this is a Windows image.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -12023,6 +12017,16 @@ class Image(_messages.Message):
     sourceDiskId: The ID value of the disk used to create this image. This
       value may be used to determine whether the image was taken from the
       current or a previous instance of a given disk name.
+    sourceImage: URL of the source image used to create this image. This can
+      be a full or valid partial URL. You must provide exactly one of:   -
+      this property, or   - the rawDisk.source property, or   - the sourceDisk
+      property   in order to create an image.
+    sourceImageEncryptionKey: The customer-supplied encryption key of the
+      source image. Required if the source image is protected by a customer-
+      supplied encryption key.
+    sourceImageId: [Output Only] The ID value of the image used to create this
+      image. This value may be used to determine whether the image was taken
+      from the current or a previous instance of a given image name.
     sourceType: The type of the image used to create this disk. The default
       and only value is RAW
     status: [Output Only] The status of the image. An image can be used to
@@ -12134,8 +12138,11 @@ class Image(_messages.Message):
   sourceDisk = _messages.StringField(17)
   sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
   sourceDiskId = _messages.StringField(19)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 20, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  sourceImage = _messages.StringField(20)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceImageId = _messages.StringField(22)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 23, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
 
 
 class ImageList(_messages.Message):
@@ -15873,9 +15880,9 @@ class Snapshot(_messages.Message):
       taken from the current or a previous instance of a given disk name.
     status: [Output Only] The status of the snapshot. This can be CREATING,
       DELETING, FAILED, READY, or UPLOADING.
-    storageBytes: [Output Only] A size of the the storage used by the
-      snapshot. As snapshots share storage, this number is expected to change
-      with snapshot creation/deletion.
+    storageBytes: [Output Only] A size of the storage used by the snapshot. As
+      snapshots share storage, this number is expected to change with snapshot
+      creation/deletion.
     storageBytesStatus: [Output Only] An indicator whether storageBytes is in
       a stable state or it is being adjusted as a result of shared storage
       reallocation. This status can either be UPDATING, meaning the size of

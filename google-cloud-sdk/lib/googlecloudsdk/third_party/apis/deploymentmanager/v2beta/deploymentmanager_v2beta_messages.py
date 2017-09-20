@@ -236,13 +236,19 @@ class ConfigFile(_messages.Message):
 
 
 class Credential(_messages.Message):
-  """Credential used by ConfigurableResourceTypes.
+  """The credential used by Deployment Manager and TypeProvider. Only one of
+  the options is permitted.
 
   Fields:
-    basicAuth: Basic Auth Credentials for this Type.
+    basicAuth: Basic Auth Credential, only used by TypeProvider.
+    serviceAccount: Service Account Credential, only used by Deployment.
+    useProjectDefault: Specify to use the project default credential, only
+      supported by Deployment.
   """
 
   basicAuth = _messages.MessageField('BasicAuth', 1)
+  serviceAccount = _messages.MessageField('ServiceAccount', 2)
+  useProjectDefault = _messages.BooleanField(3)
 
 
 class Deployment(_messages.Message):
@@ -1839,6 +1845,17 @@ class Rule(_messages.Message):
   logConfigs = _messages.MessageField('LogConfig', 5, repeated=True)
   notIns = _messages.StringField(6, repeated=True)
   permissions = _messages.StringField(7, repeated=True)
+
+
+class ServiceAccount(_messages.Message):
+  """Service Account used as a credential.
+
+  Fields:
+    email: The IAM service account email address like
+      test@myproject.iam.gserviceaccount.com
+  """
+
+  email = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):

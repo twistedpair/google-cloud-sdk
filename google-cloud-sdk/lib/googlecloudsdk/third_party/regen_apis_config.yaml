@@ -234,9 +234,13 @@ apis:
   language:
     v1beta2:
       discovery_doc: language_v1beta2.json
+      resources:
+        documents: 'documents'
     v1:
       discovery_doc: language_v1.json
       default: true
+      resources:
+        documents: 'documents'
   logging:
     v2:
       discovery_doc: logging_v2.json
@@ -271,6 +275,8 @@ apis:
   speech:
     v1:
       discovery_doc: speech_v1.json
+      resources:
+        speech: 'speech'
   sqladmin:
     v1beta3:
       discovery_doc: sqladmin_v1beta3.json
@@ -300,11 +306,19 @@ apis:
   videointelligence:
     v1beta2:
       discovery_doc: videointelligence_v1beta2.json
+      resources:
+        videos: 'videos'
     v1beta1:
       discovery_doc: videointelligence_v1beta1.json
+      resources:
+        videos: 'videos'
     v1:
       discovery_doc: videointelligence_v1.json
       default: true
+      resources:
+        videos: 'videos'
   vision:
     v1:
       discovery_doc: vision_v1.json
+      resources:
+         images: 'images'

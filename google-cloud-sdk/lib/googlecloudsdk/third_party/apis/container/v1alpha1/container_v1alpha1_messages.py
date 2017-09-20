@@ -1334,8 +1334,7 @@ class NodeConfig(_messages.Message):
       within the list must comply with RFC1035.
     taints: List of kubernetes taints to be applied to each node.  For more
       information, including usage and the valid values, see:
-      https://kubernetes.io/docs/concepts/configuration/assign-pod-node
-      /#taints-and-tolerations-beta-feature
+      https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
     workloadMetadataConfig: The workload metadata configuration for this node.
   """
 
@@ -1527,8 +1526,7 @@ class NodeTaint(_messages.Message):
   """Kubernetes taint is comprised of three fields: key, value, and effect.
   Effect can only be one of three types:  NoSchedule, PreferNoSchedule or
   NoExecute.  For more information, including usage and the valid values, see:
-  https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-
-  and-tolerations-beta-feature
+  https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 
   Enums:
     EffectValueValuesEnum: Effect for taint.

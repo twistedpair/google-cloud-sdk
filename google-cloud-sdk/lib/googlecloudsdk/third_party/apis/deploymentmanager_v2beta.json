@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20170811",
+ "revision": "20170908",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -339,11 +339,19 @@
   "Credential": {
    "id": "Credential",
    "type": "object",
-   "description": "Credential used by ConfigurableResourceTypes.",
+   "description": "The credential used by Deployment Manager and TypeProvider. Only one of the options is permitted.",
    "properties": {
     "basicAuth": {
      "$ref": "BasicAuth",
-     "description": "Basic Auth Credentials for this Type."
+     "description": "Basic Auth Credential, only used by TypeProvider."
+    },
+    "serviceAccount": {
+     "$ref": "ServiceAccount",
+     "description": "Service Account Credential, only used by Deployment."
+    },
+    "useProjectDefault": {
+     "type": "boolean",
+     "description": "Specify to use the project default credential, only supported by Deployment."
     }
    }
   },
@@ -1166,6 +1174,17 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "ServiceAccount": {
+   "id": "ServiceAccount",
+   "type": "object",
+   "description": "Service Account used as a credential.",
+   "properties": {
+    "email": {
+     "type": "string",
+     "description": "The IAM service account email address like test@myproject.iam.gserviceaccount.com"
     }
    }
   },

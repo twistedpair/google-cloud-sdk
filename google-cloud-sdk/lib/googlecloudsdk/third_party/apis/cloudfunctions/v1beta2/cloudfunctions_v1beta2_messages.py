@@ -45,8 +45,6 @@ class CloudFunction(_messages.Message):
   response to an event. It encapsulate function and triggers configurations.
 
   Enums:
-    LanguageValueValuesEnum: The programming language in which the function is
-      written.
     StatusValueValuesEnum: Output only. Status of the function deployment.
 
   Messages:
@@ -66,12 +64,12 @@ class CloudFunction(_messages.Message):
     httpsTrigger: An HTTPS endpoint type of source that can be triggered via
       URL.
     labels: Labels associated with this Cloud Function.
-    language: The programming language in which the function is written.
     latestOperation: Output only. Name of the most recent operation modifying
       the function. If the function status is `DEPLOYING` or `DELETING`, then
       it points to the active operation.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
+    runtime: The runtime in which the function is going to run.
     serviceAccount: Output only. The service account of the function.
     sourceArchiveUrl: The Google Cloud Storage URL, starting with gs://,
       pointing to the zip archive which contains the function.
@@ -94,26 +92,6 @@ class CloudFunction(_messages.Message):
     updateTime: Output only. The last update timestamp of a Cloud Function.
     versionId: Output only. Google internal. The version of a Cloud Function.
   """
-
-  class LanguageValueValuesEnum(_messages.Enum):
-    """The programming language in which the function is written.
-
-    Values:
-      LANGUAGE_UNSPECIFIED: Language not specified.
-      AUTO: Automatic language detection to be performed by Cloud Functions.
-      NODE_JS: Node.js.
-      PYTHON: Python.
-      GO: Go.
-      JAVA: Java.
-      C_SHARP: C#.
-    """
-    LANGUAGE_UNSPECIFIED = 0
-    AUTO = 1
-    NODE_JS = 2
-    PYTHON = 3
-    GO = 4
-    JAVA = 5
-    C_SHARP = 6
 
   class StatusValueValuesEnum(_messages.Enum):
     """Output only. Status of the function deployment.
@@ -161,9 +139,9 @@ class CloudFunction(_messages.Message):
   eventTrigger = _messages.MessageField('EventTrigger', 3)
   httpsTrigger = _messages.MessageField('HTTPSTrigger', 4)
   labels = _messages.MessageField('LabelsValue', 5)
-  language = _messages.EnumField('LanguageValueValuesEnum', 6)
-  latestOperation = _messages.StringField(7)
-  name = _messages.StringField(8)
+  latestOperation = _messages.StringField(6)
+  name = _messages.StringField(7)
+  runtime = _messages.MessageField('Runtime', 8)
   serviceAccount = _messages.StringField(9)
   sourceArchiveUrl = _messages.StringField(10)
   sourceRepository = _messages.MessageField('SourceRepository', 11)
@@ -331,12 +309,17 @@ class EventTrigger(_messages.Message):
       For any source that only supports one instance per-project, this should
       be the name of the project (`projects/*`)
     retryPolicy: Specifies retry policy for failed executions.
+    service: The hostname of the service that should be observed.  If no
+      string is provided, the default service implementing the API will be
+      used. For example, `storage.googleapis.com` is the default for all event
+      types in the 'google.storage` namespace.
   """
 
   eventType = _messages.StringField(1)
   failurePolicy = _messages.MessageField('FailurePolicy', 2)
   resource = _messages.StringField(3)
   retryPolicy = _messages.MessageField('RetryPolicy', 4)
+  service = _messages.StringField(5)
 
 
 class FailurePolicy(_messages.Message):
@@ -536,7 +519,7 @@ class Operation(_messages.Message):
 
   Fields:
     done: If the value is `false`, it means the operation is still in
-      progress. If true, the operation is completed, and either `error` or
+      progress. If `true`, the operation is completed, and either `error` or
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
@@ -776,6 +759,16 @@ class RetryPolicy(_messages.Message):
   """
 
   retryOnFailure = _messages.BooleanField(1)
+
+
+class Runtime(_messages.Message):
+  """The runtime in which a function is going to run.
+
+  Fields:
+    name: The name of the runtime.
+  """
+
+  name = _messages.StringField(1)
 
 
 class SourceRepository(_messages.Message):

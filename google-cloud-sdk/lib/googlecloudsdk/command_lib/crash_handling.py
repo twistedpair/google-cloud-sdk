@@ -74,21 +74,28 @@ def _PrintInstallationAction(err, err_string):
       ).format(err.command, err_string, sys.executable))
 
 
-CRASH_SERVICE = 'gcloud'
-ERROR_SERVICE = 'gcloud-user-error'
-CRASH_PROJECT = 'cloud-sdk-errors'
-CRASH_API_KEY = 'AIzaSyA45D7bA0Y1vyLmQ_Gl10G149M8jiwwK-s'
+ERROR_PROJECT = 'cloud-sdk-user-errors'
+ERROR_API_KEY = 'AIzaSyCUuWyME_r4XylltWNeydEjKSkgXkvpVyU'
+SERVICE = 'gcloud'
+CRASH_PROJECT = 'cloud-sdk-crashes'
+CRASH_API_KEY = 'AIzaSyAp4DSI_Z3-mK-B8U0t7GE34n74OWDJmak'
 
 
-def _GetReportingClient():
+def _GetReportingClient(is_crash=True):
   """Returns a client that uses an API key for Cloud SDK crash reports.
+
+  Args:
+     is_crash: bool, True use CRASH_API_KEY, if False use ERROR_API_KEY.
 
   Returns:
     An error reporting client that uses an API key for Cloud SDK crash reports.
   """
   client_class = core_apis.GetClientClass(util.API_NAME, util.API_VERSION)
   client_instance = client_class(get_credentials=False, http=http.Http())
-  client_instance.AddGlobalParam('key', CRASH_API_KEY)
+  if is_crash:
+    client_instance.AddGlobalParam('key', CRASH_API_KEY)
+  else:
+    client_instance.AddGlobalParam('key', ERROR_API_KEY)
   return client_instance
 
 
@@ -108,14 +115,15 @@ def ReportError(err, is_crash):
   command = properties.VALUES.metrics.command_name.Get()
   cid = metrics.GetCIDIfMetricsEnabled()
 
-  client = _GetReportingClient()
+  client = _GetReportingClient(is_crash)
   reporter = util.ErrorReporting(client)
   try:
     method_config = client.projects_events.GetMethodConfig('Report')
     request = reporter.GenerateReportRequest(
         error_message=stacktrace,
-        service=CRASH_SERVICE if is_crash else ERROR_SERVICE,
-        version=config.CLOUD_SDK_VERSION, project=CRASH_PROJECT,
+        service=SERVICE,
+        version=config.CLOUD_SDK_VERSION,
+        project=CRASH_PROJECT if is_crash else ERROR_PROJECT,
         request_url=command, user=cid)
     http_request = client.projects_events.PrepareHttpRequest(
         method_config, request)

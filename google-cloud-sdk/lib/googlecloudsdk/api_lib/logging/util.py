@@ -18,11 +18,15 @@ from apitools.base.py import extra_types
 
 from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.api_lib.util import apis as core_apis
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.resource_manager import completers
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log as sdk_log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+
+
+class InvalidJSONValueError(exceptions.Error):
+  """Invalid JSON value error."""
 
 
 def GetClient():
@@ -68,7 +72,7 @@ def ConvertToJsonObject(json_string):
   try:
     return extra_types.JsonProtoDecoder(json_string)
   except Exception as e:
-    raise exceptions.ToolException('Invalid JSON value: %s' % e.message)
+    raise InvalidJSONValueError('Invalid JSON value: %s' % e.message)
 
 
 def AddNonProjectArgs(parser, help_string):

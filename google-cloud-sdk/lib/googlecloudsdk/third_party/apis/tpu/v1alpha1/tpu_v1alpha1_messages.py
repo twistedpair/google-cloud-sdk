@@ -593,6 +593,26 @@ class TpuProjectsLocationsNodesResetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class TpuProjectsLocationsNodesStartRequest(_messages.Message):
+  """A TpuProjectsLocationsNodesStartRequest object.
+
+  Fields:
+    name: The resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TpuProjectsLocationsNodesStopRequest(_messages.Message):
+  """A TpuProjectsLocationsNodesStopRequest object.
+
+  Fields:
+    name: The resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class TpuProjectsLocationsNodesUpdateStateRequest(_messages.Message):
   """A TpuProjectsLocationsNodesUpdateStateRequest object.
 

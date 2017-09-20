@@ -466,14 +466,14 @@ class BaseSSHHelper(object):
     else:
       return False
 
-  def _EnsureSSHKeyExistsForUser(self, http, fetcher, user):
+  def _EnsureSSHKeyExistsForUser(self, fetcher, user):
     """Ensure the user's public SSH key is known by the Account Service."""
     public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
     should_upload = True
     try:
       user_info = fetcher.LookupUser(user)
     except user_client.UserException:
-      owner_email = gaia.GetAuthenticatedGaiaEmail(http)
+      owner_email = properties.VALUES.core.account.Get()
       fetcher.CreateUser(user, owner_email)
       user_info = fetcher.LookupUser(user)
     for remote_public_key in user_info.publicKeys:
@@ -517,8 +517,7 @@ class BaseSSHHelper(object):
           properties.VALUES.core.project.GetOrFail(),
           compute_client.apitools_client.http, compute_client.batch_url)
       try:
-        keys_newly_added = self._EnsureSSHKeyExistsForUser(
-            compute_client.apitools_client.http, fetcher, user)
+        keys_newly_added = self._EnsureSSHKeyExistsForUser(fetcher, user)
       # TODO(b/37739425): find out what desired fallback mechanism is and
       # implement it.
       except  user_client.UserException as e:
@@ -588,7 +587,7 @@ class BaseSSHHelper(object):
     return keys_newly_added
 
   def CheckForOsloginAndGetUser(self, instance,
-                                project, requested_user, release_track, http):
+                                project, requested_user, release_track):
     """Checks instance/project metadata for oslogin and update username."""
     # Instance metadata has priority
     use_oslogin = False
@@ -607,7 +606,7 @@ class BaseSSHHelper(object):
                'in the {0} version of gcloud.'.format(release_track.id))
       return requested_user, use_oslogin
     public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
-    user_email = gaia.GetAuthenticatedGaiaEmail(http)
+    user_email = properties.VALUES.core.account.Get()
     login_profile = oslogin.ImportSshPublicKey(user_email, public_key)
     use_oslogin = True
 
@@ -740,12 +739,12 @@ def HostKeyAlias(instance):
   return 'compute.{0}'.format(instance.id)
 
 
-def GetUserAndInstance(user_host, use_account_service, http):
+def GetUserAndInstance(user_host, use_account_service):
   """Returns pair consiting of user name and instance name."""
   parts = user_host.split('@')
   if len(parts) == 1:
     if use_account_service:  # Using Account Service.
-      user = gaia.GetDefaultAccountName(http)
+      user = gaia.GetDefaultAccountName()
     else:  # Uploading keys through metadata.
       user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
     instance = parts[0]

@@ -18,6 +18,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags
+from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.util import completers
 
 
@@ -189,3 +190,12 @@ def ValidateManagedInstanceGroupScopeArgs(args, resources):
     if zone_region != region:
       raise exceptions.InvalidArgumentException(
           '--zones', 'Specified zones not in specified region.')
+
+
+def CreateGroupReference(client, resources, args):
+  resource_arg = MULTISCOPE_INSTANCE_GROUP_MANAGER_ARG
+  default_scope = compute_scope.ScopeEnum.ZONE
+  scope_lister = flags.GetDefaultScopeLister(client)
+  return resource_arg.ResolveAsResource(
+      args, resources, default_scope=default_scope,
+      scope_lister=scope_lister)

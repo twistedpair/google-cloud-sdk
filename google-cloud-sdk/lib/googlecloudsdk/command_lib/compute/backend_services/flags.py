@@ -194,6 +194,31 @@ def AddConnectionDrainingTimeout(parser):
       """)
 
 
+def AddCustomRequestHeaders(parser, remove_all_flag=False, default=None):
+  """Adds custom request header flag to the argparse."""
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--custom-request-header',
+      action='append',
+      help="""\
+      Specifies a HTTP Header to be added by your load balancer.
+      This flag can be repeated to specify multiple headers.
+      For example:
+
+        $ {command} NAME \
+            --custom-request-header "header-name: value" \
+            --custom-request-header "another-header:"
+      """)
+  if remove_all_flag:
+    group.add_argument(
+        '--no-custom-request-headers',
+        action='store_true',
+        default=default,
+        help="""\
+        Remove all custom request headers for the backend service.
+        """)
+
+
 def AddEnableCdn(parser, default):
   parser.add_argument(
       '--enable-cdn',

@@ -14,13 +14,9 @@
 
 """gcloud search-help command resources."""
 
-import json
-import os
-
+from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.command_lib.search_help import lookup
 from googlecloudsdk.command_lib.search_help import search_util
-from googlecloudsdk.command_lib.search_help import table
-from googlecloudsdk.core.console import progress_tracker
 
 
 def RunSearch(terms, cli):
@@ -33,22 +29,7 @@ def RunSearch(terms, cli):
   Returns:
     a list of json objects representing gcloud commands.
   """
-  try:
-    table_path = table.IndexPath()
-  # If the help table file can't be found, load the help tree directly from
-  # the passed cli.
-  except table.NoSdkRootException:
-    with progress_tracker.ProgressTracker('Command help index not found, '
-                                          'loading gcloud commands...'):
-      parent = table.GetSerializedHelpIndex(cli)
-  else:
-    if not os.path.exists(table_path):
-      with progress_tracker.ProgressTracker('Updating command help index...'):
-        table.Update(cli)
-
-    with open(table_path, 'r') as table_file:
-      parent = json.loads(table_file.read())
-
+  parent = cli_tree.Load(cli=cli, one_time_use_ok=True)
   searcher = Searcher(parent, terms)
   return searcher.Search()
 

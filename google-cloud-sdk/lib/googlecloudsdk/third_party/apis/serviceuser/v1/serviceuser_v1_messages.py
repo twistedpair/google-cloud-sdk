@@ -245,7 +245,8 @@ class BackendRule(_messages.Message):
   Fields:
     address: The address of the API backend.
     deadline: The number of seconds to wait for a response from a request.
-      The default depends on the deployment context.
+      The default deadline for gRPC is infinite (no deadline) and HTTP
+      requests is 5 seconds.
     minDeadline: Minimum deadline in seconds needed for this method. Calls
       having deadline value lower than this will be rejected.
     selector: Selects the methods to which this rule applies.  Refer to
@@ -1418,7 +1419,7 @@ class Operation(_messages.Message):
 
   Fields:
     done: If the value is `false`, it means the operation is still in
-      progress. If true, the operation is completed, and either `error` or
+      progress. If `true`, the operation is completed, and either `error` or
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.

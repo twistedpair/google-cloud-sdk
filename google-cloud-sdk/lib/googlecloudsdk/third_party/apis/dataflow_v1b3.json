@@ -1664,6 +1664,11 @@
           "description": "If the work item represented a SourceOperationRequest, and the work\nis completed, contains the result of the operation.",
           "$ref": "SourceOperationResponse"
         },
+        "totalThrottlerWaitTimeSeconds": {
+          "description": "Total time the worker spent being throttled by external systems.",
+          "type": "number",
+          "format": "double"
+        },
         "sourceFork": {
           "description": "DEPRECATED in favor of dynamic_source_split.",
           "$ref": "SourceFork"
@@ -1845,6 +1850,30 @@
             "KEY",
             "VALUE"
           ]
+        },
+        "sideInput": {
+          "description": "ID of a side input being read from\/written to. Side inputs are identified\nby a pair of (reader, input_index). The reader is usually equal to the\noriginal name, but it may be different, if a ParDo emits it's Iterator \/\nMap side input object.",
+          "$ref": "SideInputId"
+        },
+        "originalShuffleStepName": {
+          "description": "The GroupByKey step name from the original graph.",
+          "type": "string"
+        }
+      }
+    },
+    "SideInputId": {
+      "id": "SideInputId",
+      "description": "Uniquely identifies a side input.",
+      "type": "object",
+      "properties": {
+        "declaringStepName": {
+          "description": "The step that receives and usually consumes this side input.",
+          "type": "string"
+        },
+        "inputIndex": {
+          "description": "The index of the side input, from the list of non_parallel_inputs.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -2029,30 +2058,6 @@
           "description": "Use a double since the sum of squares is likely to overflow int64.",
           "type": "number",
           "format": "double"
-        },
-        "logBuckets": {
-          "description": "(Optional) Logarithmic histogram of values.\nEach log may be in no more than one bucket. Order does not matter.",
-          "type": "array",
-          "items": {
-            "$ref": "LogBucket"
-          }
-        }
-      }
-    },
-    "LogBucket": {
-      "id": "LogBucket",
-      "description": "Bucket of values for Distribution's logarithmic histogram.",
-      "type": "object",
-      "properties": {
-        "log": {
-          "description": "floor(log2(value)); defined to be zero for nonpositive values.\n  log(-1) = 0\n  log(0) = 0\n  log(1) = 0\n  log(2) = 1\n  log(3) = 1\n  log(4) = 2\n  log(5) = 2",
-          "type": "integer",
-          "format": "int32"
-        },
-        "count": {
-          "description": "Number of values in this bucket.",
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -3480,6 +3485,10 @@
         "workerMetrics": {
           "description": "Resource metrics reported by workers.",
           "$ref": "ResourceUtilizationReport"
+        },
+        "workerShutdownNotice": {
+          "description": "Shutdown notice by workers.",
+          "$ref": "WorkerShutdownNotice"
         }
       }
     },
@@ -3570,6 +3579,17 @@
         }
       }
     },
+    "WorkerShutdownNotice": {
+      "id": "WorkerShutdownNotice",
+      "description": "Shutdown notification from workers. This is to be sent by the shutdown\nscript of the worker VM so that the backend knows that the VM is being\nshut down.",
+      "type": "object",
+      "properties": {
+        "reason": {
+          "description": "Optional reason to be attached for the shutdown notice.\nFor example: \"PREEMPTION\" would indicate the VM is being shut down because\nof preemption. Other possible reasons may be added in the future.",
+          "type": "string"
+        }
+      }
+    },
     "SendWorkerMessagesResponse": {
       "id": "SendWorkerMessagesResponse",
       "description": "The response to the worker messages.",
@@ -3596,6 +3616,10 @@
         "workerMetricsResponse": {
           "description": "Service's response to reporting worker metrics (currently empty).",
           "$ref": "ResourceUtilizationReportResponse"
+        },
+        "workerShutdownNoticeResponse": {
+          "description": "Service's response to shutdown notice (currently empty).",
+          "$ref": "WorkerShutdownNoticeResponse"
         }
       }
     },
@@ -3614,6 +3638,13 @@
     "ResourceUtilizationReportResponse": {
       "id": "ResourceUtilizationReportResponse",
       "description": "Service-side response to WorkerMessage reporting resource utilization.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "WorkerShutdownNoticeResponse": {
+      "id": "WorkerShutdownNoticeResponse",
+      "description": "Service-side response to WorkerMessage issuing shutdown notice.",
       "type": "object",
       "properties": {
       }

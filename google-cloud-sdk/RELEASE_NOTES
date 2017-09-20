@@ -2,6 +2,81 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 172.0.0 (2017-09-20)
+
+### Google App Engine
+
+*   `gcloud app update` is now available.
+*   `gcloud app deploy` now uses a new runtime build pipeline to deploy apps for
+    `runtime: java`. This enables more robust and flexible deployments in some
+    cases. Consult the runtime release notes for your language at
+    https://cloud.google.com/appengine/docs/flexible/ for more details. To
+    revert to the legacy builder, you can set the `app/use_runtime_builders`
+    config to `false`.
+*   Updated App Engine Java components to version 1.9.56. For more details, see
+    the release notes at:
+    https://cloud.google.com/appengine/docs/java/release-notes.
+
+### Google Container Registry
+
+*   `gcloud container images describe` is now available.
+*   `gcloud alpha container images describe` now has additional functionality
+    for whitelisted users.
+*   Fixed a timestamp issue in `gcloud container images list-tags`.
+
+### Google Compute Engine
+
+*   Added support for Cloud KMS keys with Disks, Snapshots, Images, and
+    Instances.
+*   Added the `--autoscaling-config-file` flag to `gcloud beta compute
+    instance-groups managed set-autoscaling`.
+
+### Firebase Test Lab
+
+*   Added the `--no-record-video` and `--no-performance-metrics` flags to
+    `gcloud firebase test android run`. This supports running tests without
+    recording video and/or performance metrics. Disabling these options may
+    reduce test post-processing time.
+
+### Google Cloud Service Management
+*   Commands in `gcloud service-management` will soon be deprecated.
+      *   The preferred commands to list, enable, and disable services are now
+          under `gcloud <alpha|beta> services`.
+      *   The preferred commands to produce services for consumption are now
+          under `gcloud <alpha|beta> endpoints services`.
+
+### Google Cloud SQL
+
+*   Fixed the `--async` flag in `gcloud sql backups delete` to work as expected.
+
+### Google Cloud BigQuery CLI
+
+*   Updated the bq command-line tool to version 2.0.26.
+*   Added support for Data Transfer Service commands. You can now do the
+    following:
+      *   Transfer config: Show, List, Add, Delete, Edit
+      *   Transfer run: Show, List, Schedule, Delete
+      *   Transfer log: List
+*   Added support for customer-managed encryption keys with Cloud KMS. You
+    can specify your Cloud KMS crypto key in the following operations:
+      *   A query that creates a destination table: `bq query
+          --destination_kms_key {key name}`.
+      *   A load job that creates a destination table: `bq load
+          --destination_kms_key {key name}`.
+      *   When creating a new table: `bq mk --destination_kms_key {key name}`.
+*   Partitioned tables can now be created using the `query` and `load` commands.
+      *   Use the `--time_partitioning_xxx` flags and the `--destination_table`
+          flag to write or load data into a new partitioned table.
+
+### Google Cloud Container Builder Local Builder
+
+*   Updated container-builder-local to version 0.2.3. This:
+    *  Upgrades server docker to version 17.06.1.
+    *  Adds the `--no-source` flag and related tests.
+    *  Always pulls the latest `gcr.io/cloud-builders/metadata` container.
+    *  Increases the limit on encrypted secrets to 100.
+
+
 ## 171.0.0 (2017-09-13)
 
 ### Breaking changes

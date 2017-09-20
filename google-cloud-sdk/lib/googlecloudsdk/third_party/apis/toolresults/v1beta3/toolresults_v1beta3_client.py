@@ -54,6 +54,32 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Get(self, request, global_params=None):
+      """Retrieves a single screenshot cluster by its ID.
+
+      Args:
+        request: (ToolresultsProjectsHistoriesExecutionsClustersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ScreenshotCluster) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'toolresults.projects.histories.executions.clusters.get',
+        ordered_params=[u'projectId', u'historyId', u'executionId', u'clusterId'],
+        path_params=[u'clusterId', u'executionId', u'historyId', u'projectId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/histories/{historyId}/executions/{executionId}/clusters/{clusterId}',
+        request_field='',
+        request_type_name=u'ToolresultsProjectsHistoriesExecutionsClustersGetRequest',
+        response_type_name=u'ScreenshotCluster',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists Screenshot Clusters.
 
@@ -93,9 +119,9 @@ Returns the list of screenshot clusters corresponding to an execution. Screensho
           }
 
     def Create(self, request, global_params=None):
-      """Creates a PerfMetricsSummary resource.
+      """Creates a PerfMetricsSummary resource. Returns the existing one if it has already been created.
 
-May return any of the following error code(s): - ALREADY_EXISTS - A PerfMetricSummary already exists for the given Step - NOT_FOUND - The containing Step does not exist
+May return any of the following error code(s): - NOT_FOUND - The containing Step does not exist
 
       Args:
         request: (PerfMetricsSummary) input message

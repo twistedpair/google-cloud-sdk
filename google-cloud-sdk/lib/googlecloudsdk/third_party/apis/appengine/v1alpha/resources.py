@@ -24,12 +24,9 @@ class Collections(enum.Enum):
 
   APPS = (
       'apps',
-      '{+name}',
-      {
-          '':
-              'apps/{appsId}',
-      },
-      [u'name']
+      'apps/{appsId}',
+      {},
+      [u'appsId']
   )
   APPS_AUTHORIZEDCERTIFICATES = (
       'apps.authorizedCertificates',
@@ -65,34 +62,6 @@ class Collections(enum.Enum):
       {
           '':
               'apps/{appsId}/operations/{operationsId}',
-      },
-      [u'name']
-  )
-  APPS_SERVICES = (
-      'apps.services',
-      '{+name}',
-      {
-          '':
-              'apps/{appsId}/services/{servicesId}',
-      },
-      [u'name']
-  )
-  APPS_SERVICES_VERSIONS = (
-      'apps.services.versions',
-      '{+name}',
-      {
-          '':
-              'apps/{appsId}/services/{servicesId}/versions/{versionsId}',
-      },
-      [u'name']
-  )
-  APPS_SERVICES_VERSIONS_INSTANCES = (
-      'apps.services.versions.instances',
-      '{+name}',
-      {
-          '':
-              'apps/{appsId}/services/{servicesId}/versions/{versionsId}/'
-              'instances/{instancesId}',
       },
       [u'name']
   )

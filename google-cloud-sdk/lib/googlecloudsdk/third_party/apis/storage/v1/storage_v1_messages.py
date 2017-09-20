@@ -804,6 +804,7 @@ class Policy(_messages.Message):
     """A BindingsValueListEntry object.
 
     Fields:
+      condition: A extra_types.JsonValue attribute.
       members: A collection of identifiers for members who may assume the
         provided role. Recognized identifiers are as follows:   - allUsers \u2014 A
         special identifier that represents anyone on the internet; with or
@@ -847,8 +848,9 @@ class Policy(_messages.Message):
         entry on a bucket with the OWNER role.
     """
 
-    members = _messages.StringField(1, repeated=True)
-    role = _messages.StringField(2)
+    condition = _messages.MessageField('extra_types.JsonValue', 1)
+    members = _messages.StringField(2, repeated=True)
+    role = _messages.StringField(3)
 
   bindings = _messages.MessageField('BindingsValueListEntry', 1, repeated=True)
   etag = _messages.BytesField(2)
@@ -1136,6 +1138,8 @@ class StorageBucketsInsertRequest(_messages.Message):
     projection: Set of properties to return. Defaults to noAcl, unless the
       bucket resource specifies acl or defaultObjectAcl properties, when it
       defaults to full.
+    userProject: The project to be billed for this request, for Requester Pays
+      buckets.
   """
 
   class PredefinedAclValueValuesEnum(_messages.Enum):
@@ -1199,6 +1203,7 @@ class StorageBucketsInsertRequest(_messages.Message):
   predefinedDefaultObjectAcl = _messages.EnumField('PredefinedDefaultObjectAclValueValuesEnum', 3)
   project = _messages.StringField(4, required=True)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 5)
+  userProject = _messages.StringField(6)
 
 
 class StorageBucketsListRequest(_messages.Message):
@@ -1215,6 +1220,8 @@ class StorageBucketsListRequest(_messages.Message):
     prefix: Filter results to buckets whose names begin with this prefix.
     project: A valid API project identifier.
     projection: Set of properties to return. Defaults to noAcl.
+    userProject: The project to be billed for this request, for Requester Pays
+      buckets.
   """
 
   class ProjectionValueValuesEnum(_messages.Enum):
@@ -1232,6 +1239,7 @@ class StorageBucketsListRequest(_messages.Message):
   prefix = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 5)
+  userProject = _messages.StringField(6)
 
 
 class StorageBucketsPatchRequest(_messages.Message):
@@ -2557,9 +2565,12 @@ class StorageProjectsServiceAccountGetRequest(_messages.Message):
 
   Fields:
     projectId: Project ID
+    userProject: The project to be billed for this request, for Requester Pays
+      buckets.
   """
 
   projectId = _messages.StringField(1, required=True)
+  userProject = _messages.StringField(2)
 
 
 class TestIamPermissionsResponse(_messages.Message):

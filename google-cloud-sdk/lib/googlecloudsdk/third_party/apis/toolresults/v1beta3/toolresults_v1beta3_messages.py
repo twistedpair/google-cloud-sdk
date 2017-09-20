@@ -1449,6 +1449,22 @@ class ToolresultsProjectsHistoriesCreateRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
+class ToolresultsProjectsHistoriesExecutionsClustersGetRequest(_messages.Message):
+  """A ToolresultsProjectsHistoriesExecutionsClustersGetRequest object.
+
+  Fields:
+    clusterId: A Cluster id  Required.
+    executionId: An Execution id.  Required.
+    historyId: A History id.  Required.
+    projectId: A Project id.  Required.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  executionId = _messages.StringField(2, required=True)
+  historyId = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4, required=True)
+
+
 class ToolresultsProjectsHistoriesExecutionsClustersListRequest(_messages.Message):
   """A ToolresultsProjectsHistoriesExecutionsClustersListRequest object.
 

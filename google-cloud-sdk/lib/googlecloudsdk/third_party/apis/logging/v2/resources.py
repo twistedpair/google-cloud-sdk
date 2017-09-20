@@ -28,6 +28,15 @@ class Collections(enum.Enum):
       {},
       [u'billingAccountsId']
   )
+  BILLINGACCOUNTS_EXCLUSIONS = (
+      'billingAccounts.exclusions',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/exclusions/{exclusionsId}',
+      },
+      [u'name']
+  )
   BILLINGACCOUNTS_SINKS = (
       'billingAccounts.sinks',
       '{+sinkName}',
@@ -42,6 +51,15 @@ class Collections(enum.Enum):
       'folders/{foldersId}',
       {},
       [u'foldersId']
+  )
+  FOLDERS_EXCLUSIONS = (
+      'folders.exclusions',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/exclusions/{exclusionsId}',
+      },
+      [u'name']
   )
   FOLDERS_SINKS = (
       'folders.sinks',
@@ -58,6 +76,15 @@ class Collections(enum.Enum):
       {},
       [u'organizationsId']
   )
+  ORGANIZATIONS_EXCLUSIONS = (
+      'organizations.exclusions',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/exclusions/{exclusionsId}',
+      },
+      [u'name']
+  )
   ORGANIZATIONS_SINKS = (
       'organizations.sinks',
       '{+sinkName}',
@@ -72,6 +99,15 @@ class Collections(enum.Enum):
       'projects/{projectsId}',
       {},
       [u'projectsId']
+  )
+  PROJECTS_EXCLUSIONS = (
+      'projects.exclusions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/exclusions/{exclusionsId}',
+      },
+      [u'name']
   )
   PROJECTS_METRICS = (
       'projects.metrics',

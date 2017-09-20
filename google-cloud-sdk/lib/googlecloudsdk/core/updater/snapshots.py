@@ -500,6 +500,14 @@ class ComponentSnapshot(object):
             'Component {} is not in this snapshot {}'
             .format(component_id,
                     ','.join([c['id'] for c in sdk_def_dict['components']])))
+      if 'data' in component_dict[0]:
+        # Remove non-esential/random parts from component data.
+        for f in component_dict[0]['data'].keys():
+          if f not in ('contents_checksum', 'type', 'source'):
+            del component_dict[0]['data'][f]
+        # Source field is required for global snapshot, but is not for
+        # component snapshot.
+        component_dict[0]['data']['source'] = ''
       sdk_def_dict['components'] = component_dict
       # Remove unnecessary artifacts from snapshot.
       for key in sdk_def_dict.keys():

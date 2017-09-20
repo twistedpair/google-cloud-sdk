@@ -169,6 +169,33 @@ order (i.e.: newest first).
         supports_download=False,
     )
 
+    def GetConfig(self, request, global_params=None):
+      """Gets the configuration of a device.
+
+      Args:
+        request: (CloudiotProjectsLocationsRegistriesDevicesGetConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpDeviceConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/config',
+        http_method=u'GET',
+        method_id=u'cloudiot.projects.locations.registries.devices.getConfig',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'localVersion'],
+        relative_path=u'v1beta1/{+name}/config',
+        request_field='',
+        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesGetConfigRequest',
+        response_type_name=u'HttpDeviceConfig',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """List devices in a device registry.
 
@@ -249,6 +276,60 @@ meta-data.
         request_field=u'device',
         request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesPatchRequest',
         response_type_name=u'Device',
+        supports_download=False,
+    )
+
+    def PublishEvent(self, request, global_params=None):
+      """Publishes a telemetry event for a device.
+
+      Args:
+        request: (CloudiotProjectsLocationsRegistriesDevicesPublishEventRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HttpPublishEventResponse) The response message.
+      """
+      config = self.GetMethodConfig('PublishEvent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PublishEvent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}:publishEvent',
+        http_method=u'POST',
+        method_id=u'cloudiot.projects.locations.registries.devices.publishEvent',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:publishEvent',
+        request_field=u'httpPublishEventRequest',
+        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesPublishEventRequest',
+        response_type_name=u'HttpPublishEventResponse',
+        supports_download=False,
+    )
+
+    def SetState(self, request, global_params=None):
+      """Sets the state of a device.
+
+      Args:
+        request: (CloudiotProjectsLocationsRegistriesDevicesSetStateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('SetState')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetState.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}:setState',
+        http_method=u'POST',
+        method_id=u'cloudiot.projects.locations.registries.devices.setState',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}:setState',
+        request_field=u'httpSetDeviceStateRequest',
+        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesSetStateRequest',
+        response_type_name=u'Empty',
         supports_download=False,
     )
 

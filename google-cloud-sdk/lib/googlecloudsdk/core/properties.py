@@ -58,7 +58,9 @@ _VALID_PROJECT_REGEX = re.compile(
     #   Foozle         no match
     # We specifically disallow project number, even though some GCP backends
     # could accept them.
-    r'(?:(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?))'
+    # We also allow a leading digit as some legacy project ids can have
+    # a leading digit.
+    r'(?:(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))'
     r'$'
 )
 
@@ -937,8 +939,6 @@ class _SectionCore(_Section):
       """Checks to see if the project string is valid."""
       if project is None:
         return
-      if _VALID_PROJECT_REGEX.match(project):
-        return
 
       if not isinstance(project, basestring):
         raise InvalidValueError('project must be a string')
@@ -949,6 +949,10 @@ class _SectionCore(_Section):
         raise InvalidProjectError(
             'The project property must be set to a valid project ID, not the '
             'project number [{value}]'.format(value=project))
+
+      if _VALID_PROJECT_REGEX.match(project):
+        return
+
       if _LooksLikeAProjectName(project):
         raise InvalidProjectError(
             'The project property must be set to a valid project ID, not the '

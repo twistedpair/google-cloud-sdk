@@ -316,7 +316,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id=u'storage.buckets.insert',
         ordered_params=[u'project'],
         path_params=[],
-        query_params=[u'predefinedAcl', u'predefinedDefaultObjectAcl', u'project', u'projection'],
+        query_params=[u'predefinedAcl', u'predefinedDefaultObjectAcl', u'project', u'projection', u'userProject'],
         relative_path=u'b',
         request_field=u'bucket',
         request_type_name=u'StorageBucketsInsertRequest',
@@ -342,7 +342,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id=u'storage.buckets.list',
         ordered_params=[u'project'],
         path_params=[],
-        query_params=[u'maxResults', u'pageToken', u'prefix', u'project', u'projection'],
+        query_params=[u'maxResults', u'pageToken', u'prefix', u'project', u'projection', u'userProject'],
         relative_path=u'b',
         request_field='',
         request_type_name=u'StorageBucketsListRequest',
@@ -1152,18 +1152,21 @@ class StorageV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None):
-      """Updates an object's metadata. This method supports patch semantics.
+    def Patch(self, request, global_params=None, download=None):
+      """Patches an object's metadata.
 
       Args:
         request: (StorageObjectsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
+        download: (Download, default: None) If present, download
+            data from the request via this stream.
       Returns:
         (Object) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
-          config, request, global_params=global_params)
+          config, request, global_params=global_params,
+          download=download)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'PATCH',
@@ -1175,7 +1178,7 @@ class StorageV1(base_api.BaseApiClient):
         request_field=u'objectResource',
         request_type_name=u'StorageObjectsPatchRequest',
         response_type_name=u'Object',
-        supports_download=False,
+        supports_download=True,
     )
 
     def Rewrite(self, request, global_params=None):
@@ -1339,7 +1342,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id=u'storage.projects.serviceAccount.get',
         ordered_params=[u'projectId'],
         path_params=[u'projectId'],
-        query_params=[],
+        query_params=[u'userProject'],
         relative_path=u'projects/{projectId}/serviceAccount',
         request_field='',
         request_type_name=u'StorageProjectsServiceAccountGetRequest',

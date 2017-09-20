@@ -303,7 +303,8 @@ class BackendRule(_messages.Message):
   Fields:
     address: The address of the API backend.
     deadline: The number of seconds to wait for a response from a request.
-      The default depends on the deployment context.
+      The default deadline for gRPC is infinite (no deadline) and HTTP
+      requests is 5 seconds.
     minDeadline: Minimum deadline in seconds needed for this method. Calls
       having deadline value lower than this will be rejected.
     selector: Selects the methods to which this rule applies.  Refer to
@@ -360,32 +361,6 @@ class ChangeReport(_messages.Message):
   """
 
   configChanges = _messages.MessageField('ConfigChange', 1, repeated=True)
-
-
-class CloudAuditOptions(_messages.Message):
-  """Write a Cloud Audit log
-
-  Enums:
-    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
-      Record.
-
-  Fields:
-    logName: The log_name to populate in the Cloud Audit Record.
-  """
-
-  class LogNameValueValuesEnum(_messages.Enum):
-    """The log_name to populate in the Cloud Audit Record.
-
-    Values:
-      UNSPECIFIED_LOG_NAME: Default. Should not be used.
-      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
-      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
-    """
-    UNSPECIFIED_LOG_NAME = 0
-    ADMIN_ACTIVITY = 1
-    DATA_ACCESS = 2
-
-  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
 
 
 class CompositeOperationMetadata(_messages.Message):
@@ -477,99 +452,6 @@ class CompositeOperationMetadata(_messages.Message):
   responseFieldMasks = _messages.MessageField('ResponseFieldMasksValue', 4)
 
 
-class Condition(_messages.Message):
-  """A condition to be met.
-
-  Enums:
-    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
-    OpValueValuesEnum: An operator to apply the subject with.
-    SysValueValuesEnum: Trusted attributes supplied by any service that owns
-      resources and uses the IAM system for access control.
-
-  Fields:
-    iam: Trusted attributes supplied by the IAM system.
-    op: An operator to apply the subject with.
-    svc: Trusted attributes discharged by the service.
-    sys: Trusted attributes supplied by any service that owns resources and
-      uses the IAM system for access control.
-    value: DEPRECATED. Use 'values' instead.
-    values: The objects of the condition. This is mutually exclusive with
-      'value'.
-  """
-
-  class IamValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by the IAM system.
-
-    Values:
-      NO_ATTR: Default non-attribute.
-      AUTHORITY: Either principal or (if present) authority selector.
-      ATTRIBUTION: The principal (even if an authority selector is present),
-        which must only be used for attribution, not authorization.
-      APPROVER: An approver (distinct from the requester) that has authorized
-        this request. When used with IN, the condition indicates that one of
-        the approvers associated with the request matches the specified
-        principal, or is a member of the specified group. Approvers can only
-        grant additional access, and are thus only used in a strictly positive
-        context (e.g. ALLOW/IN or DENY/NOT_IN).
-      JUSTIFICATION_TYPE: What types of justifications have been supplied with
-        this request. String values should match enum names from
-        tech.iam.JustificationType, e.g. "MANUAL_STRING". It is not permitted
-        to grant access based on the *absence* of a justification, so
-        justification conditions can only be used in a "positive" context
-        (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple justifications, e.g., a
-        Buganizer ID and a manually-entered reason, are normal and supported.
-    """
-    NO_ATTR = 0
-    AUTHORITY = 1
-    ATTRIBUTION = 2
-    APPROVER = 3
-    JUSTIFICATION_TYPE = 4
-
-  class OpValueValuesEnum(_messages.Enum):
-    """An operator to apply the subject with.
-
-    Values:
-      NO_OP: Default no-op.
-      EQUALS: DEPRECATED. Use IN instead.
-      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
-      IN: The condition is true if the subject (or any element of it if it is
-        a set) matches any of the supplied values.
-      NOT_IN: The condition is true if the subject (or every element of it if
-        it is a set) matches none of the supplied values.
-      DISCHARGED: Subject is discharged
-    """
-    NO_OP = 0
-    EQUALS = 1
-    NOT_EQUALS = 2
-    IN = 3
-    NOT_IN = 4
-    DISCHARGED = 5
-
-  class SysValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by any service that owns resources and uses
-    the IAM system for access control.
-
-    Values:
-      NO_ATTR: Default non-attribute type
-      REGION: Region of the resource
-      SERVICE: Service name
-      NAME: Resource name
-      IP: IP address of the caller
-    """
-    NO_ATTR = 0
-    REGION = 1
-    SERVICE = 2
-    NAME = 3
-    IP = 4
-
-  iam = _messages.EnumField('IamValueValuesEnum', 1)
-  op = _messages.EnumField('OpValueValuesEnum', 2)
-  svc = _messages.StringField(3)
-  sys = _messages.EnumField('SysValueValuesEnum', 4)
-  value = _messages.StringField(5)
-  values = _messages.StringField(6, repeated=True)
-
-
 class ConfigChange(_messages.Message):
   """Output generated from semantically comparing two versions of a service
   configuration.  Includes detailed information about a field that have
@@ -649,12 +531,18 @@ class ConfigFile(_messages.Message):
         example test.proto file, the following command would put the value in
         a new file named out.pb.  $protoc --include_imports
         --include_source_info test.proto -o out.pb
+      PROTO_FILE: Uncompiled Proto file. Used for storage and display purposes
+        only, currently server-side compilation is not supported. Should match
+        the inputs to 'protoc' command used to generated
+        FILE_DESCRIPTOR_SET_PROTO. A file of this type can only be included if
+        at least one file of type FILE_DESCRIPTOR_SET_PROTO is included.
     """
     FILE_TYPE_UNSPECIFIED = 0
     SERVICE_CONFIG_YAML = 1
     OPEN_API_JSON = 2
     OPEN_API_YAML = 3
     FILE_DESCRIPTOR_SET_PROTO = 4
+    PROTO_FILE = 5
 
   contents = _messages.StringField(1)
   fileContents = _messages.BytesField(2)
@@ -796,30 +684,6 @@ class ConvertConfigResponse(_messages.Message):
   serviceConfig = _messages.MessageField('Service', 2)
 
 
-class CounterOptions(_messages.Message):
-  """Increment a streamz counter with the specified metric and field names.
-  Metric names should start with a '/', generally be lowercase-only, and end
-  in "_count". Field names should not contain an initial slash. The actual
-  exported metric names will have "/iam/policy" prepended.  Field names
-  correspond to IAM request parameters and field values are their respective
-  values.  At present the only supported field names are    - "iam_principal",
-  corresponding to IAMContext.principal;    - "" (empty string), resulting in
-  one aggretated counter with no field.  Examples:   counter { metric:
-  "/debug_access_count"  field: "iam_principal" }   ==> increment counter
-  /iam/policy/backend_debug_access_count
-  {iam_principal=[value of IAMContext.principal]}  At this time we do not
-  support: * multiple field names (though this may be supported in the future)
-  * decrementing the counter * incrementing it by anything other than 1
-
-  Fields:
-    field: The field value to attribute.
-    metric: The metric to update.
-  """
-
-  field = _messages.StringField(1)
-  metric = _messages.StringField(2)
-
-
 class CustomAuthRequirements(_messages.Message):
   """Configuration for a custom authentication provider.
 
@@ -894,44 +758,6 @@ class CustomerSettings(_messages.Message):
   customerId = _messages.StringField(1)
   quotaSettings = _messages.MessageField('QuotaSettings', 2)
   serviceName = _messages.StringField(3)
-
-
-class DataAccessOptions(_messages.Message):
-  """Write a Data Access (Gin) log
-
-  Enums:
-    LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.
-
-  Fields:
-    logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is relevant only in the LocalIAM implementation, for now.
-  """
-
-  class LogModeValueValuesEnum(_messages.Enum):
-    """Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is relevant only in the LocalIAM implementation, for now.
-
-    Values:
-      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
-        immediately after the authorization check. If client chooses to write
-        one and it fails, client may either fail open (allow the operation to
-        continue) or fail closed (handle as a DENY outcome).
-      LOG_FAIL_CLOSED: The application's operation in the context of which
-        this authorization check is being made may only be performed if it is
-        successfully logged to Gin. For instance, the authorization library
-        may satisfy this obligation by emitting a partial log entry at
-        authorization check time and only returning ALLOW to the application
-        if it succeeds.  If a matching Rule has this directive, but the client
-        has not indicated that it will honor such requirements, then the IAM
-        check will result in authorization failure by setting
-        CheckPolicyResponse.success=false.
-    """
-    LOG_MODE_UNSPECIFIED = 0
-    LOG_FAIL_CLOSED = 1
-
-  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
 class DeleteServiceStrategy(_messages.Message):
@@ -1854,20 +1680,6 @@ class ListServicesResponse(_messages.Message):
   services = _messages.MessageField('ManagedService', 2, repeated=True)
 
 
-class LogConfig(_messages.Message):
-  """Specifies what kind of log the caller must write
-
-  Fields:
-    cloudAudit: Cloud audit options.
-    counter: Counter options.
-    dataAccess: Data access options.
-  """
-
-  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
-  counter = _messages.MessageField('CounterOptions', 2)
-  dataAccess = _messages.MessageField('DataAccessOptions', 3)
-
-
 class LogDescriptor(_messages.Message):
   """A description of a log type. Example in YAML format:      - name:
   library.googleapis.com/activity_history       description: The history of
@@ -2435,7 +2247,7 @@ class Operation(_messages.Message):
 
   Fields:
     done: If the value is `false`, it means the operation is still in
-      progress. If true, the operation is completed, and either `error` or
+      progress. If `true`, the operation is completed, and either `error` or
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
@@ -2650,13 +2462,6 @@ class Policy(_messages.Message):
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
     iamOwned: A boolean attribute.
-    rules: If more than one rule is specified, the rules are applied in the
-      following manner: - All matching LOG rules are always applied. - If any
-      DENY/DENY_WITH_LOG rule matches, permission is denied.   Logging will be
-      applied if one or more matching rule requires logging. - Otherwise, if
-      any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
-      Logging will be applied if one or more matching rule requires logging. -
-      Otherwise, if no rule applies, permission is denied.
     version: Version of the `Policy`. The default version is 0.
   """
 
@@ -2664,8 +2469,7 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   iamOwned = _messages.BooleanField(4)
-  rules = _messages.MessageField('Rule', 5, repeated=True)
-  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class ProjectSettings(_messages.Message):
@@ -3064,6 +2868,13 @@ class QuotaSettings(_messages.Message):
       For each limit, the effective value is the minimum of the producer and
       consumer overrides if either is present, or else the service default if
       neither is present. DEPRECATED. Use effective_quota_groups instead.
+    force: Whether to force applying the quota settings, even if this may
+      decrease effective limit for some quotas over the safe threshold, which
+      is currently set to 10 percent. When unset or set to false, the whole
+      request fails if quota overrides changes decrease effective limit for
+      any quota over the safe threshold. When set to true, the reason for
+      forcing the change must be specified in the 'request_reason' field of
+      the RPC system parameter context. Input only.
     producerOverrides: Quota overrides set by the producer. Note that if a
       consumer override is also specified, then the minimum of the two will be
       used. This allows consumers to cap their usage voluntarily.  The key for
@@ -3208,8 +3019,9 @@ class QuotaSettings(_messages.Message):
   effectiveQuotaForMetrics = _messages.MessageField('EffectiveQuotasForMetric', 3, repeated=True)
   effectiveQuotaGroups = _messages.MessageField('EffectiveQuotaGroup', 4, repeated=True)
   effectiveQuotas = _messages.MessageField('EffectiveQuotasValue', 5)
-  producerOverrides = _messages.MessageField('ProducerOverridesValue', 6)
-  variableTermQuotas = _messages.MessageField('VariableTermQuota', 7, repeated=True)
+  force = _messages.BooleanField(6)
+  producerOverrides = _messages.MessageField('ProducerOverridesValue', 7)
+  variableTermQuotas = _messages.MessageField('VariableTermQuota', 8, repeated=True)
 
 
 class QuotaUsage(_messages.Message):
@@ -3308,59 +3120,6 @@ class Rollout(_messages.Message):
   serviceName = _messages.StringField(5)
   status = _messages.EnumField('StatusValueValuesEnum', 6)
   trafficPercentStrategy = _messages.MessageField('TrafficPercentStrategy', 7)
-
-
-class Rule(_messages.Message):
-  """A rule to be applied in a Policy.
-
-  Enums:
-    ActionValueValuesEnum: Required
-
-  Fields:
-    action: Required
-    conditions: Additional restrictions that must be met
-    description: Human-readable description of the rule.
-    in_: If one or more 'in' clauses are specified, the rule matches if the
-      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
-    notIn: If one or more 'not_in' clauses are specified, the rule matches if
-      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
-      for in and not_in entries is the same as for members in a Binding (see
-      google/iam/v1/policy.proto).
-    permissions: A permission is a string of form '<service>.<resource
-      type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
-      permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
-      all verbs.
-  """
-
-  class ActionValueValuesEnum(_messages.Enum):
-    """Required
-
-    Values:
-      NO_ACTION: Default no action.
-      ALLOW: Matching 'Entries' grant access.
-      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
-        to log the request per the returned log_configs.
-      DENY: Matching 'Entries' deny access.
-      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
-        log the request per the returned log_configs.
-      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
-    """
-    NO_ACTION = 0
-    ALLOW = 1
-    ALLOW_WITH_LOG = 2
-    DENY = 3
-    DENY_WITH_LOG = 4
-    LOG = 5
-
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  conditions = _messages.MessageField('Condition', 2, repeated=True)
-  description = _messages.StringField(3)
-  in_ = _messages.StringField(4, repeated=True)
-  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
-  notIn = _messages.StringField(6, repeated=True)
-  permissions = _messages.StringField(7, repeated=True)
 
 
 class Service(_messages.Message):
@@ -3966,6 +3725,39 @@ class ServicemanagementServicesProjectSettingsPatchRequest(_messages.Message):
   projectSettings = _messages.MessageField('ProjectSettings', 2)
   serviceName = _messages.StringField(3, required=True)
   updateMask = _messages.StringField(4)
+
+
+class ServicemanagementServicesRolloutsCreateRequest(_messages.Message):
+  """A ServicemanagementServicesRolloutsCreateRequest object.
+
+  Fields:
+    force: This flag will skip safety checks for this rollout. The current
+      safety check is whether to skip default quota limit validation.  Quota
+      limit validation verifies that the default quota limits defined in the
+      configs that are effective in this rollout don't decrease by more than a
+      specific percentage (10% right now) from the configs that are effective
+      in the current rollout.  For group-based quota limits, the default limit
+      for a quota limit cannot decrease by more than 10%.  For metric-based
+      quota limits, the assigned quota for each reputation tier cannot
+      decrease by more than 10%. Regional quota is assigned per region, and
+      the quota for each region cannot decrease by more than 10%. Removing a
+      regional quota can cause an effective decrease for that region, if the
+      global quota for that tier is lower. For example, if the current rollout
+      has a quota limit with values: {STANDARD: 50, STANDARD/us-central1: 100}
+      and it is to be changed in the new rollout to: {STANDARD: 50} The net
+      effect is the STANDARD tier in us-central1 is decreased by 50%. Adding a
+      regional quota can have a similar effect for that region.  In order to
+      gradually dial down default quota limit, the recommended practice is to
+      create multiple rollouts at least 1 hour apart.
+    rollout: A Rollout resource to be passed as the request body.
+    serviceName: The name of the service.  See the [overview](/service-
+      management/overview) for naming requirements.  For example:
+      `example.googleapis.com`.
+  """
+
+  force = _messages.BooleanField(1)
+  rollout = _messages.MessageField('Rollout', 2)
+  serviceName = _messages.StringField(3, required=True)
 
 
 class ServicemanagementServicesRolloutsGetRequest(_messages.Message):
@@ -4695,8 +4487,9 @@ class VisibilityRule(_messages.Message):
 
 
 class VisibilitySettings(_messages.Message):
-  """Settings that control which features of the service are visible to the
-  consumer project.
+  """Settings that control which features of the service surface are visible
+  to the consumer project. More details: go/api/visibility.md That is the only
+  intended usecase for Visibility Labels.
 
   Fields:
     visibilityLabels: The set of visibility labels that are used to determine
@@ -4712,8 +4505,6 @@ class VisibilitySettings(_messages.Message):
   visibilityLabels = _messages.StringField(1, repeated=True)
 
 
-encoding.AddCustomJsonFieldMapping(
-    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

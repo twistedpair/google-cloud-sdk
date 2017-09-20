@@ -236,13 +236,19 @@ class ConfigurableService(_messages.Message):
 
 
 class Credential(_messages.Message):
-  """Credential used by ConfigurableResourceTypes.
+  """The credential used by Deployment Manager and TypeProvider. Only one of
+  the options is permitted.
 
   Fields:
-    basicAuth: Basic Auth Credentials for this Type.
+    basicAuth: Basic Auth Credential, only used by TypeProvider.
+    serviceAccount: Service Account Credential, only used by Deployment.
+    useProjectDefault: Specify to use the project default credential, only
+      supported by Deployment.
   """
 
   basicAuth = _messages.MessageField('BasicAuth', 1)
+  serviceAccount = _messages.MessageField('ServiceAccount', 2)
+  useProjectDefault = _messages.BooleanField(3)
 
 
 class Deployment(_messages.Message):
@@ -279,6 +285,8 @@ class Deployment(_messages.Message):
       cannot be a dash.
     operation: [Output Only] The Operation that most recently ran, or is
       currently running, on this deployment.
+    outputs: api-linter: output-only-format=disabled [Output Only] Map of
+      outputs from the last manifest that deployed successfully.
     selfLink: [Output Only] Self link for the deployment.
     target: [Input Only] The parameters that define your deployment, including
       the deployment configuration and relevant templates.
@@ -295,13 +303,26 @@ class Deployment(_messages.Message):
   manifest = _messages.StringField(6)
   name = _messages.StringField(7)
   operation = _messages.MessageField('Operation', 8)
-  selfLink = _messages.StringField(9)
-  target = _messages.MessageField('TargetConfiguration', 10)
-  update = _messages.MessageField('DeploymentUpdate', 11)
+  outputs = _messages.MessageField('DeploymentOutputsEntry', 9, repeated=True)
+  selfLink = _messages.StringField(10)
+  target = _messages.MessageField('TargetConfiguration', 11)
+  update = _messages.MessageField('DeploymentUpdate', 12)
 
 
 class DeploymentLabelEntry(_messages.Message):
   """A DeploymentLabelEntry object.
+
+  Fields:
+    key: A string attribute.
+    value: A string attribute.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class DeploymentOutputsEntry(_messages.Message):
+  """A DeploymentOutputsEntry object.
 
   Fields:
     key: A string attribute.
@@ -1899,6 +1920,17 @@ class Rule(_messages.Message):
   logConfigs = _messages.MessageField('LogConfig', 5, repeated=True)
   notIns = _messages.StringField(6, repeated=True)
   permissions = _messages.StringField(7, repeated=True)
+
+
+class ServiceAccount(_messages.Message):
+  """Service Account used as a credential.
+
+  Fields:
+    email: The IAM service account email address like
+      test@myproject.iam.gserviceaccount.com
+  """
+
+  email = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):

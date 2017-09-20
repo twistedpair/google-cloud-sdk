@@ -1694,7 +1694,7 @@ class SoftwareConfig(_messages.Message):
       mappings: capacity-scheduler: capacity-scheduler.xml core: core-site.xml
       distcp: distcp-default.xml hdfs: hdfs-site.xml hive: hive-site.xml
       mapred: mapred-site.xml pig: pig.properties spark: spark-defaults.conf
-      yarn: yarn-site.xml
+      yarn: yarn-site.xmlFor more information, see Cluster properties.
 
   Fields:
     imageVersion: Optional. The version of software inside the cluster. It
@@ -1706,7 +1706,7 @@ class SoftwareConfig(_messages.Message):
       mappings: capacity-scheduler: capacity-scheduler.xml core: core-site.xml
       distcp: distcp-default.xml hdfs: hdfs-site.xml hive: hive-site.xml
       mapred: mapred-site.xml pig: pig.properties spark: spark-defaults.conf
-      yarn: yarn-site.xml
+      yarn: yarn-site.xmlFor more information, see Cluster properties.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1716,7 +1716,8 @@ class SoftwareConfig(_messages.Message):
     following are supported prefixes and their mappings: capacity-scheduler:
     capacity-scheduler.xml core: core-site.xml distcp: distcp-default.xml
     hdfs: hdfs-site.xml hive: hive-site.xml mapred: mapred-site.xml pig:
-    pig.properties spark: spark-defaults.conf yarn: yarn-site.xml
+    pig.properties spark: spark-defaults.conf yarn: yarn-site.xmlFor more
+    information, see Cluster properties.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.

@@ -24,6 +24,7 @@ import sys
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import yaml_printer
 from googlecloudsdk.core.util import files
 
@@ -163,12 +164,56 @@ class FileIoCapturer(FileIoCapturerBase):
     return self._GetResult(self._inputs)
 
 
+class _Mock(object):
+  """A class to mock and unmock a function."""
+
+  def __init__(self, target, function, new=None, return_value=None):
+    if new is None:
+      new = lambda *args, **kwargs: return_value
+    self._target = target
+    self._function = function
+    self._real_function = getattr(target, function)
+    self._new = new
+
+  def Start(self):
+    setattr(self._target, self._function, self._new)
+
+  def Stop(self):
+    setattr(self._target, self._function, self._real_function)
+
+
+class SessionDeterminer(object):
+  """A class to mock several things that may make session undetermined as is."""
+
+  _mocks = []
+
+  @classmethod
+  def Mock(cls):
+    if cls._mocks:
+      raise Exception('Mocks already created')
+    cls._mocks = [
+        _Mock(progress_tracker.ProgressTracker, '_autotick',
+              new=property(lambda self: False)),
+        _Mock(progress_tracker.ProgressTracker, 'Tick',
+              new=lambda self: self._done),  # pylint: disable=protected-access
+    ]
+    for m in cls._mocks:
+      m.Start()
+
+  @classmethod
+  def Unmock(cls):
+    for m in cls._mocks:
+      m.Stop()
+    cls._mocks = []
+
+
 class SessionCapturer(object):
   """Captures the session to file."""
   capturer = None  # is SessionCapturer if session is being captured
 
   def __init__(self, capture_streams=True):
     self._records = []
+    SessionDeterminer.Mock()
     if capture_streams:
       self._streams = (OutputStreamCapturer(sys.stdout),
                        OutputStreamCapturer(sys.stderr),)
@@ -199,11 +244,17 @@ class SessionCapturer(object):
         }})
 
   def CaptureArgs(self, args):
+    """Captures command line args."""
     specified_args = {}
     command = args.command_path[1:]
     for k, v in args.GetSpecifiedArgs().iteritems():
       if not k.startswith('--'):
-        command.append(v)
+        if isinstance(v, basestring):
+          command.append(v)
+        elif isinstance(v, list):
+          command += v
+        else:
+          raise Exception('Unknown args type {}'.format(type(v)))
       elif k != '--capture-session-file':
         specified_args[k] = v
     self._records.append({
@@ -214,7 +265,9 @@ class SessionCapturer(object):
     })
 
   DEFAULT_STATE = {
-      'interactive_console': False
+      'interactive_console': False,
+      'random_seed': 0,
+      'term_size': (80, 24),
   }
 
   def CaptureState(self, **kwargs):
@@ -252,6 +305,7 @@ class SessionCapturer(object):
       printer.AddRecord(record)
 
   def _Finalize(self):
+    """Finalize records, restore state."""
     if self._streams is not None:
       for stream in self._streams + (self._stdin,):
         stream.flush()
@@ -273,9 +327,10 @@ class SessionCapturer(object):
         inputs['stdin'] = self._stdin.GetValue()
       if self._fileio.GetInputs():
         inputs['files'] = self._fileio.GetInputs()
-      self._records.insert(2, {
+      self._records.insert(3, {
           'input': inputs
       })
+    SessionDeterminer.Unmock()
 
   @staticmethod
   def _FinalizePrimitive(primitive):
@@ -284,7 +339,7 @@ class SessionCapturer(object):
       return primitive
     if isinstance(primitive, basestring):
       return primitive.replace(project, 'fake-project')
-    elif isinstance(primitive, (int, float,)):
+    elif isinstance(primitive, (int, long, float,)):
       return primitive
     else:
       raise Exception('Unknown primitive type {}'.format(type(primitive)))
@@ -295,7 +350,7 @@ class SessionCapturer(object):
           self._FinalizePrimitive(k):
               self._FinalizeRecords(v) for k, v in records.iteritems()
       }
-    elif isinstance(records, list):
+    elif isinstance(records, (list, tuple)):
       return [
           self._FinalizeRecords(r) for r in records
       ]

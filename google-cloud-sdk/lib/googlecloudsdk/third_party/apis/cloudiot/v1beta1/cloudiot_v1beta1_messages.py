@@ -114,32 +114,6 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
-class CloudAuditOptions(_messages.Message):
-  """Write a Cloud Audit log
-
-  Enums:
-    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
-      Record.
-
-  Fields:
-    logName: The log_name to populate in the Cloud Audit Record.
-  """
-
-  class LogNameValueValuesEnum(_messages.Enum):
-    """The log_name to populate in the Cloud Audit Record.
-
-    Values:
-      UNSPECIFIED_LOG_NAME: Default. Should not be used.
-      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
-      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
-    """
-    UNSPECIFIED_LOG_NAME = 0
-    ADMIN_ACTIVITY = 1
-    DATA_ACCESS = 2
-
-  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
-
-
 class CloudiotProjectsLocationsRegistriesCreateRequest(_messages.Message):
   """A CloudiotProjectsLocationsRegistriesCreateRequest object.
 
@@ -207,6 +181,24 @@ class CloudiotProjectsLocationsRegistriesDevicesDeleteRequest(_messages.Message)
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class CloudiotProjectsLocationsRegistriesDevicesGetConfigRequest(_messages.Message):
+  """A CloudiotProjectsLocationsRegistriesDevicesGetConfigRequest object.
+
+  Fields:
+    localVersion: If zero, returns the current device configuration from Cloud
+      IoT Core. If nonzero, specifies the local version of the configuration
+      on the device. The server returns config data only if a higher (newer)
+      version is available from Cloud IoT Core. If this value is higher than
+      the latest version available in Cloud IoT Core, returns an
+      `OUT_OF_RANGE` error.
+    name: The name of the device. For example, `projects/p0/locations/us-
+      central1/registries/registry0/devices/device0`.
+  """
+
+  localVersion = _messages.IntegerField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudiotProjectsLocationsRegistriesDevicesGetRequest(_messages.Message):
@@ -288,6 +280,34 @@ class CloudiotProjectsLocationsRegistriesDevicesPatchRequest(_messages.Message):
   device = _messages.MessageField('Device', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class CloudiotProjectsLocationsRegistriesDevicesPublishEventRequest(_messages.Message):
+  """A CloudiotProjectsLocationsRegistriesDevicesPublishEventRequest object.
+
+  Fields:
+    httpPublishEventRequest: A HttpPublishEventRequest resource to be passed
+      as the request body.
+    name: The name of the device. For example, `projects/p0/locations/us-
+      central1/registries/registry0/devices/device0`.
+  """
+
+  httpPublishEventRequest = _messages.MessageField('HttpPublishEventRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudiotProjectsLocationsRegistriesDevicesSetStateRequest(_messages.Message):
+  """A CloudiotProjectsLocationsRegistriesDevicesSetStateRequest object.
+
+  Fields:
+    httpSetDeviceStateRequest: A HttpSetDeviceStateRequest resource to be
+      passed as the request body.
+    name: The name of the device. For example, `projects/p0/locations/us-
+      central1/registries/registry0/devices/device0`.
+  """
+
+  httpSetDeviceStateRequest = _messages.MessageField('HttpSetDeviceStateRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudiotProjectsLocationsRegistriesGetIamPolicyRequest(_messages.Message):
@@ -383,161 +403,6 @@ class CloudiotProjectsLocationsRegistriesTestIamPermissionsRequest(_messages.Mes
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class Condition(_messages.Message):
-  """A condition to be met.
-
-  Enums:
-    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
-    OpValueValuesEnum: An operator to apply the subject with.
-    SysValueValuesEnum: Trusted attributes supplied by any service that owns
-      resources and uses the IAM system for access control.
-
-  Fields:
-    iam: Trusted attributes supplied by the IAM system.
-    op: An operator to apply the subject with.
-    svc: Trusted attributes discharged by the service.
-    sys: Trusted attributes supplied by any service that owns resources and
-      uses the IAM system for access control.
-    value: DEPRECATED. Use 'values' instead.
-    values: The objects of the condition. This is mutually exclusive with
-      'value'.
-  """
-
-  class IamValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by the IAM system.
-
-    Values:
-      NO_ATTR: Default non-attribute.
-      AUTHORITY: Either principal or (if present) authority selector.
-      ATTRIBUTION: The principal (even if an authority selector is present),
-        which must only be used for attribution, not authorization.
-      APPROVER: An approver (distinct from the requester) that has authorized
-        this request. When used with IN, the condition indicates that one of
-        the approvers associated with the request matches the specified
-        principal, or is a member of the specified group. Approvers can only
-        grant additional access, and are thus only used in a strictly positive
-        context (e.g. ALLOW/IN or DENY/NOT_IN).
-      JUSTIFICATION_TYPE: What types of justifications have been supplied with
-        this request. String values should match enum names from
-        tech.iam.JustificationType, e.g. "MANUAL_STRING". It is not permitted
-        to grant access based on the *absence* of a justification, so
-        justification conditions can only be used in a "positive" context
-        (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple justifications, e.g., a
-        Buganizer ID and a manually-entered reason, are normal and supported.
-    """
-    NO_ATTR = 0
-    AUTHORITY = 1
-    ATTRIBUTION = 2
-    APPROVER = 3
-    JUSTIFICATION_TYPE = 4
-
-  class OpValueValuesEnum(_messages.Enum):
-    """An operator to apply the subject with.
-
-    Values:
-      NO_OP: Default no-op.
-      EQUALS: DEPRECATED. Use IN instead.
-      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
-      IN: The condition is true if the subject (or any element of it if it is
-        a set) matches any of the supplied values.
-      NOT_IN: The condition is true if the subject (or every element of it if
-        it is a set) matches none of the supplied values.
-      DISCHARGED: Subject is discharged
-    """
-    NO_OP = 0
-    EQUALS = 1
-    NOT_EQUALS = 2
-    IN = 3
-    NOT_IN = 4
-    DISCHARGED = 5
-
-  class SysValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by any service that owns resources and uses
-    the IAM system for access control.
-
-    Values:
-      NO_ATTR: Default non-attribute type
-      REGION: Region of the resource
-      SERVICE: Service name
-      NAME: Resource name
-      IP: IP address of the caller
-    """
-    NO_ATTR = 0
-    REGION = 1
-    SERVICE = 2
-    NAME = 3
-    IP = 4
-
-  iam = _messages.EnumField('IamValueValuesEnum', 1)
-  op = _messages.EnumField('OpValueValuesEnum', 2)
-  svc = _messages.StringField(3)
-  sys = _messages.EnumField('SysValueValuesEnum', 4)
-  value = _messages.StringField(5)
-  values = _messages.StringField(6, repeated=True)
-
-
-class CounterOptions(_messages.Message):
-  """Increment a streamz counter with the specified metric and field names.
-  Metric names should start with a '/', generally be lowercase-only, and end
-  in "_count". Field names should not contain an initial slash. The actual
-  exported metric names will have "/iam/policy" prepended.  Field names
-  correspond to IAM request parameters and field values are their respective
-  values.  At present the only supported field names are    - "iam_principal",
-  corresponding to IAMContext.principal;    - "" (empty string), resulting in
-  one aggretated counter with no field.  Examples:   counter { metric:
-  "/debug_access_count"  field: "iam_principal" }   ==> increment counter
-  /iam/policy/backend_debug_access_count
-  {iam_principal=[value of IAMContext.principal]}  At this time we do not
-  support: * multiple field names (though this may be supported in the future)
-  * decrementing the counter * incrementing it by anything other than 1
-
-  Fields:
-    field: The field value to attribute.
-    metric: The metric to update.
-  """
-
-  field = _messages.StringField(1)
-  metric = _messages.StringField(2)
-
-
-class DataAccessOptions(_messages.Message):
-  """Write a Data Access (Gin) log
-
-  Enums:
-    LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.
-
-  Fields:
-    logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is relevant only in the LocalIAM implementation, for now.
-  """
-
-  class LogModeValueValuesEnum(_messages.Enum):
-    """Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is relevant only in the LocalIAM implementation, for now.
-
-    Values:
-      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
-        immediately after the authorization check. If client chooses to write
-        one and it fails, client may either fail open (allow the operation to
-        continue) or fail closed (handle as a DENY outcome).
-      LOG_FAIL_CLOSED: The application's operation in the context of which
-        this authorization check is being made may only be performed if it is
-        successfully logged to Gin. For instance, the authorization library
-        may satisfy this obligation by emitting a partial log entry at
-        authorization check time and only returning ALLOW to the application
-        if it succeeds.  If a matching Rule has this directive, but the client
-        has not indicated that it will honor such requirements, then the IAM
-        check will result in authorization failure by setting
-        CheckPolicyResponse.success=false.
-    """
-    LOG_MODE_UNSPECIFIED = 0
-    LOG_FAIL_CLOSED = 1
-
-  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
 class Device(_messages.Message):
@@ -739,6 +604,56 @@ class GetIamPolicyRequest(_messages.Message):
   """Request message for `GetIamPolicy` method."""
 
 
+class HttpDeviceConfig(_messages.Message):
+  """The device configuration obtained from Cloud IoT Core.
+
+  Fields:
+    binaryData: Data in binary format.
+    version: The version of the configuration in Cloud IoT Core.
+  """
+
+  binaryData = _messages.BytesField(1)
+  version = _messages.IntegerField(2)
+
+
+class HttpDeviceState(_messages.Message):
+  """The device state reported to Cloud IoT Core.
+
+  Fields:
+    binaryData: Data in binary format.
+  """
+
+  binaryData = _messages.BytesField(1)
+
+
+class HttpPublishEventRequest(_messages.Message):
+  """Request for `PublishEvent`.
+
+  Fields:
+    binaryData: Payload data in binary format.
+    subFolder: Optional subfolder for the telemetry event. This can be used to
+      classify types of events, and is included in the Pub/Sub message
+      attributes.
+  """
+
+  binaryData = _messages.BytesField(1)
+  subFolder = _messages.StringField(2)
+
+
+class HttpPublishEventResponse(_messages.Message):
+  """Response for `PublishEvent`."""
+
+
+class HttpSetDeviceStateRequest(_messages.Message):
+  """Request for `SetDeviceState`.
+
+  Fields:
+    state: The device state.
+  """
+
+  state = _messages.MessageField('HttpDeviceState', 1)
+
+
 class ListDeviceConfigVersionsResponse(_messages.Message):
   """Response for `ListDeviceConfigVersions`.
 
@@ -777,20 +692,6 @@ class ListDevicesResponse(_messages.Message):
 
   devices = _messages.MessageField('Device', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class LogConfig(_messages.Message):
-  """Specifies what kind of log the caller must write
-
-  Fields:
-    cloudAudit: Cloud audit options.
-    counter: Counter options.
-    dataAccess: Data access options.
-  """
-
-  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
-  counter = _messages.MessageField('CounterOptions', 2)
-  dataAccess = _messages.MessageField('DataAccessOptions', 3)
 
 
 class ModifyCloudToDeviceConfigRequest(_messages.Message):
@@ -878,13 +779,6 @@ class Policy(_messages.Message):
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
     iamOwned: A boolean attribute.
-    rules: If more than one rule is specified, the rules are applied in the
-      following manner: - All matching LOG rules are always applied. - If any
-      DENY/DENY_WITH_LOG rule matches, permission is denied.   Logging will be
-      applied if one or more matching rule requires logging. - Otherwise, if
-      any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
-      Logging will be applied if one or more matching rule requires logging. -
-      Otherwise, if no rule applies, permission is denied.
     version: Version of the `Policy`. The default version is 0.
   """
 
@@ -892,8 +786,7 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   iamOwned = _messages.BooleanField(4)
-  rules = _messages.MessageField('Rule', 5, repeated=True)
-  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class PublicKeyCredential(_messages.Message):
@@ -931,59 +824,6 @@ class PublicKeyCredential(_messages.Message):
 
   format = _messages.EnumField('FormatValueValuesEnum', 1)
   key = _messages.StringField(2)
-
-
-class Rule(_messages.Message):
-  """A rule to be applied in a Policy.
-
-  Enums:
-    ActionValueValuesEnum: Required
-
-  Fields:
-    action: Required
-    conditions: Additional restrictions that must be met
-    description: Human-readable description of the rule.
-    in_: If one or more 'in' clauses are specified, the rule matches if the
-      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
-    notIn: If one or more 'not_in' clauses are specified, the rule matches if
-      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
-      for in and not_in entries is the same as for members in a Binding (see
-      google/iam/v1/policy.proto).
-    permissions: A permission is a string of form '<service>.<resource
-      type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
-      permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
-      all verbs.
-  """
-
-  class ActionValueValuesEnum(_messages.Enum):
-    """Required
-
-    Values:
-      NO_ACTION: Default no action.
-      ALLOW: Matching 'Entries' grant access.
-      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
-        to log the request per the returned log_configs.
-      DENY: Matching 'Entries' deny access.
-      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
-        log the request per the returned log_configs.
-      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
-    """
-    NO_ACTION = 0
-    ALLOW = 1
-    ALLOW_WITH_LOG = 2
-    DENY = 3
-    DENY_WITH_LOG = 4
-    LOG = 5
-
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  conditions = _messages.MessageField('Condition', 2, repeated=True)
-  description = _messages.StringField(3)
-  in_ = _messages.StringField(4, repeated=True)
-  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
-  notIn = _messages.StringField(6, repeated=True)
-  permissions = _messages.StringField(7, repeated=True)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1173,8 +1013,6 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
-encoding.AddCustomJsonFieldMapping(
-    Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

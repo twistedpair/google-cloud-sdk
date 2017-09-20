@@ -16,6 +16,7 @@
 import abc
 import collections
 
+from googlecloudsdk.api_lib.container.images import container_data_util
 from googlecloudsdk.api_lib.util import apis
 
 _INDENT = '  '
@@ -179,11 +180,17 @@ class BuildDetails(object):
     return ('\n' + _INDENT).join(output)
 
 
-class ContainerAnalysisData(object):
-  """Class defining all container analysis data."""
+class ContainerAndAnalysisData(container_data_util.ContainerData):
+  """Class defining container and analysis data.
 
-  def __init__(self, digest):
-    self.digest = str(digest)
+  ContainerAndAnalysisData superclasses ContainerData because we want it to
+  contain a superset of the attributes, particularly when `--format=json`,
+  `format=value(digest)`, etc. is used with `container images describe`.
+  """
+
+  def __init__(self, name):
+    super(ContainerAndAnalysisData, self).__init__(
+        registry=name.registry, repository=name.repository, digest=name.digest)
     self.vulz_analysis = PackageVulnerability.Collection()
     self.image_analysis = BaseImage.Collection()
     self.build_details = BuildDetails.Collection()
@@ -207,9 +214,7 @@ class ContainerAnalysisData(object):
       self.build_details.add(BuildDetails(occurrence))
 
   def __str__(self):
-    obj_str = [
-        'Image: {0}'.format(self.digest),
-        '',
+    analysis_str = [
         str(self.build_details),
         '',
         str(self.image_analysis),
@@ -217,4 +222,5 @@ class ContainerAnalysisData(object):
         str(self.vulz_analysis),
         ''  # Trailing newline.
     ]
-    return '\n'.join(obj_str)
+    return (super(ContainerAndAnalysisData, self).__str__() +
+            '\n'.join(analysis_str))

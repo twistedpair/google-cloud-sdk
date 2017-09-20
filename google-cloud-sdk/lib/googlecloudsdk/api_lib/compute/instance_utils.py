@@ -19,6 +19,7 @@ from googlecloudsdk.api_lib.compute import alias_ip_range_utils
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import csek_utils
 from googlecloudsdk.api_lib.compute import image_utils
+from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
@@ -466,6 +467,10 @@ def CreatePersistentAttachedDiskMessages(
     else:
       kwargs = {}
 
+    kwargs['diskEncryptionKey'] = kms_utils.MaybeGetKmsKey(
+        disk, disk_ref.project, compute,
+        kwargs.get('diskEncryptionKey', None))
+
     attached_disk = messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=boot,
@@ -562,6 +567,10 @@ def CreatePersistentCreateDiskMessages(compute_client,
         disk_key = csek_utils.MaybeLookupKeyMessage(csek_keys, disk_ref,
                                                     compute)
 
+    disk_key = kms_utils.MaybeGetKmsKeyFromDict(
+        disk, instance_ref.project, compute,
+        disk_key)
+
     create_disk = messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=False,
@@ -604,7 +613,7 @@ def CreateAcceleratorConfigMessages(msgs, accelerator_type_ref,
 def CreateDefaultBootAttachedDiskMessage(
     compute_client, resources, disk_type, disk_device_name, disk_auto_delete,
     disk_size_gb, require_csek_key_create, image_uri, instance_ref,
-    csek_keys=None):
+    csek_keys=None, kms_args=None):
   """Returns an AttachedDisk message for creating a new boot disk."""
   messages = compute_client.messages
   compute = compute_client.apitools_client
@@ -662,6 +671,12 @@ def CreateDefaultBootAttachedDiskMessage(
     kwargs_disk = {}
     kwargs_init_parms = {}
     effective_boot_disk_name = disk_device_name
+
+  kms_key = kms_utils.MaybeGetKmsKey(
+      kms_args, instance_ref.project, compute,
+      kwargs_disk.get('diskEncryptionKey', None))
+  if kms_key:
+    kwargs_disk = {'diskEncryptionKey': kms_key}
 
   return messages.AttachedDisk(
       autoDelete=disk_auto_delete,

@@ -44,8 +44,10 @@ def RunLanguageCommand(feature, content_file=None, content=None,
           messages.AnalyzeEntitiesResponse).
   """
   entity_sentiment = True if feature == 'analyzeEntitySentiment' else False
+  classify_text = True if feature == 'classifyText' else False
   client = util.LanguageClient(version=api_version,
-                               entity_sentiment_enabled=entity_sentiment)
+                               entity_sentiment_enabled=entity_sentiment,
+                               classify_text_enabled=classify_text)
   source = util.GetContentSource(content, content_file)
   return client.SingleFeatureAnnotate(feature, source=source, language=language,
                                       content_type=content_type,

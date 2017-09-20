@@ -782,6 +782,7 @@ class GoogleCloudMlV1Version(_messages.Message):
   multiple versions. You can get information about all of the versions of a
   given model by calling [projects.models.versions.list](/ml-
   engine/reference/rest/v1/projects.models.versions/list).  Next ID: 18
+  LINT.IfChange
 
   Enums:
     StateValueValuesEnum: Output only. The state of a version.
@@ -848,165 +849,6 @@ class GoogleCloudMlV1Version(_messages.Message):
   isDefault = _messages.BooleanField(6)
   lastUseTime = _messages.StringField(7)
   manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 8)
-  name = _messages.StringField(9)
-  runtimeVersion = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-
-
-class GoogleCloudMlV1beta1AutoScaling(_messages.Message):
-  """Options for automatically scaling a model.
-
-  Fields:
-    minNodes: Optional. The minimum number of nodes to allocate for this
-      model. These nodes are always up, starting from the time the model is
-      deployed, so the cost of operating this model will be at least `rate` *
-      `min_nodes` * number of hours since last billing cycle, where `rate` is
-      the cost per node-hour as documented in
-      [pricing](https://cloud.google.com/ml-
-      engine/pricing#prediction_pricing), even if no predictions are
-      performed. There is additional cost for each prediction performed.
-      Unlike manual scaling, if the load gets too heavy for the nodes that are
-      up, the service will automatically add nodes to handle the increased
-      load as well as scale back as traffic drops, always maintaining at least
-      `min_nodes`. You will be charged for the time in which additional nodes
-      are used.  If not specified, `min_nodes` defaults to 0, in which case,
-      when traffic to a model stops (and after a cool-down period), nodes will
-      be shut down and no charges will be incurred until traffic to the model
-      resumes.
-  """
-
-  minNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudMlV1beta1ManualScaling(_messages.Message):
-  """Options for manually scaling a model.
-
-  Fields:
-    nodes: The number of nodes to allocate for this model. These nodes are
-      always up, starting from the time the model is deployed, so the cost of
-      operating this model will be proportional to `nodes` * number of hours
-      since last billing cycle plus the cost for each prediction performed.
-  """
-
-  nodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudMlV1beta1OperationMetadata(_messages.Message):
-  """Represents the metadata of the long-running operation.  Next ID: 9
-
-  Enums:
-    OperationTypeValueValuesEnum: The operation type.
-
-  Fields:
-    createTime: The time the operation was submitted.
-    endTime: The time operation processing completed.
-    isCancellationRequested: Indicates whether a request to cancel this
-      operation has been made.
-    modelName: Contains the name of the model associated with the operation.
-    operationType: The operation type.
-    startTime: The time operation processing started.
-    version: Contains the version associated with the operation.
-  """
-
-  class OperationTypeValueValuesEnum(_messages.Enum):
-    """The operation type.
-
-    Values:
-      OPERATION_TYPE_UNSPECIFIED: Unspecified operation type.
-      CREATE_VERSION: An operation to create a new version.
-      DELETE_VERSION: An operation to delete an existing version.
-      DELETE_MODEL: An operation to delete an existing model.
-      UPDATE_MODEL: An operation to update an existing model.
-      UPDATE_VERSION: An operation to update an existing version.
-    """
-    OPERATION_TYPE_UNSPECIFIED = 0
-    CREATE_VERSION = 1
-    DELETE_VERSION = 2
-    DELETE_MODEL = 3
-    UPDATE_MODEL = 4
-    UPDATE_VERSION = 5
-
-  createTime = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  isCancellationRequested = _messages.BooleanField(3)
-  modelName = _messages.StringField(4)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
-  startTime = _messages.StringField(6)
-  version = _messages.MessageField('GoogleCloudMlV1beta1Version', 7)
-
-
-class GoogleCloudMlV1beta1Version(_messages.Message):
-  """Represents a version of the model.  Each version is a trained model
-  deployed in the cloud, ready to handle prediction requests. A model can have
-  multiple versions. You can get information about all of the versions of a
-  given model by calling [projects.models.versions.list](/ml-
-  engine/reference/rest/v1beta1/projects.models.versions/list).  Next ID: 18
-
-  Enums:
-    StateValueValuesEnum: Output only. The state of a version.
-
-  Fields:
-    autoScaling: Automatically scale the number of nodes used to serve the
-      model in response to increases and decreases in traffic. Care should be
-      taken to ramp up traffic according to the model's ability to scale or
-      you will start seeing increases in latency and 429 response codes.
-    createTime: Output only. The time the version was created.
-    deploymentUri: Required. The Google Cloud Storage location of the trained
-      model used to create the version. See the [overview of model deployment
-      ](/ml-engine/docs/concepts/deployment-overview) for more information.
-      When passing Version to [projects.models.versions.create](/ml-
-      engine/reference/rest/v1beta1/projects.models.versions/create) the model
-      service uses the specified location as the source of the model. Once
-      deployed, the model version is hosted by the prediction service, so this
-      location is useful only as a historical record. The total number of
-      model files can't exceed 1000.
-    description: Optional. The description specified for the version when it
-      was created.
-    errorMessage: Output only. The details of a failure or a cancellation.
-    isDefault: Output only. If true, this version will be used to handle
-      prediction requests that do not specify a version.  You can change the
-      default version by calling [projects.methods.versions.setDefault](/ml-
-      engine/reference/rest/v1beta1/projects.models.versions/setDefault).
-    lastUseTime: Output only. The time the version was last used for
-      prediction.
-    manualScaling: Manually select the number of nodes to use for serving the
-      model. You should generally use `auto_scaling` with an appropriate
-      `min_nodes` instead, but this option is available if you want more
-      predictable billing. Beware that latency and error rates will increase
-      if the traffic exceeds that capability of the system to serve it based
-      on the selected number of nodes.
-    name: Required.The name specified for the version when it was created.
-      The version name must be unique within the model it is created in.
-    runtimeVersion: Optional. The Google Cloud ML runtime version to use for
-      this deployment. If not set, Google Cloud ML will choose a version.
-    state: Output only. The state of a version.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    """Output only. The state of a version.
-
-    Values:
-      UNKNOWN: The version state is unspecified.
-      READY: The version is ready for prediction.
-      CREATING: The version is in the process of creation.
-      FAILED: The version failed to be created, possibly cancelled.
-        `error_message` should contain the details of the failure.
-      DELETING: The version is in the process of deletion.
-    """
-    UNKNOWN = 0
-    READY = 1
-    CREATING = 2
-    FAILED = 3
-    DELETING = 4
-
-  autoScaling = _messages.MessageField('GoogleCloudMlV1beta1AutoScaling', 1)
-  createTime = _messages.StringField(2)
-  deploymentUri = _messages.StringField(3)
-  description = _messages.StringField(4)
-  errorMessage = _messages.StringField(5)
-  isDefault = _messages.BooleanField(6)
-  lastUseTime = _messages.StringField(7)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1beta1ManualScaling', 8)
   name = _messages.StringField(9)
   runtimeVersion = _messages.StringField(10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
@@ -1113,201 +955,6 @@ class GoogleIamV1Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
-class GoogleIamV1Condition(_messages.Message):
-  """A condition to be met.
-
-  Enums:
-    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
-    OpValueValuesEnum: An operator to apply the subject with.
-    SysValueValuesEnum: Trusted attributes supplied by any service that owns
-      resources and uses the IAM system for access control.
-
-  Fields:
-    iam: Trusted attributes supplied by the IAM system.
-    op: An operator to apply the subject with.
-    svc: Trusted attributes discharged by the service.
-    sys: Trusted attributes supplied by any service that owns resources and
-      uses the IAM system for access control.
-    value: DEPRECATED. Use 'values' instead.
-    values: The objects of the condition. This is mutually exclusive with
-      'value'.
-  """
-
-  class IamValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by the IAM system.
-
-    Values:
-      NO_ATTR: Default non-attribute.
-      AUTHORITY: Either principal or (if present) authority selector.
-      ATTRIBUTION: The principal (even if an authority selector is present),
-        which must only be used for attribution, not authorization.
-      APPROVER: An approver (distinct from the requester) that has authorized
-        this request. When used with IN, the condition indicates that one of
-        the approvers associated with the request matches the specified
-        principal, or is a member of the specified group. Approvers can only
-        grant additional access, and are thus only used in a strictly positive
-        context (e.g. ALLOW/IN or DENY/NOT_IN).
-      JUSTIFICATION_TYPE: What types of justifications have been supplied with
-        this request. String values should match enum names from
-        tech.iam.JustificationType, e.g. "MANUAL_STRING". It is not permitted
-        to grant access based on the *absence* of a justification, so
-        justification conditions can only be used in a "positive" context
-        (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple justifications, e.g., a
-        Buganizer ID and a manually-entered reason, are normal and supported.
-    """
-    NO_ATTR = 0
-    AUTHORITY = 1
-    ATTRIBUTION = 2
-    APPROVER = 3
-    JUSTIFICATION_TYPE = 4
-
-  class OpValueValuesEnum(_messages.Enum):
-    """An operator to apply the subject with.
-
-    Values:
-      NO_OP: Default no-op.
-      EQUALS: DEPRECATED. Use IN instead.
-      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
-      IN: The condition is true if the subject (or any element of it if it is
-        a set) matches any of the supplied values.
-      NOT_IN: The condition is true if the subject (or every element of it if
-        it is a set) matches none of the supplied values.
-      DISCHARGED: Subject is discharged
-    """
-    NO_OP = 0
-    EQUALS = 1
-    NOT_EQUALS = 2
-    IN = 3
-    NOT_IN = 4
-    DISCHARGED = 5
-
-  class SysValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by any service that owns resources and uses
-    the IAM system for access control.
-
-    Values:
-      NO_ATTR: Default non-attribute type
-      REGION: Region of the resource
-      SERVICE: Service name
-      NAME: Resource name
-      IP: IP address of the caller
-    """
-    NO_ATTR = 0
-    REGION = 1
-    SERVICE = 2
-    NAME = 3
-    IP = 4
-
-  iam = _messages.EnumField('IamValueValuesEnum', 1)
-  op = _messages.EnumField('OpValueValuesEnum', 2)
-  svc = _messages.StringField(3)
-  sys = _messages.EnumField('SysValueValuesEnum', 4)
-  value = _messages.StringField(5)
-  values = _messages.StringField(6, repeated=True)
-
-
-class GoogleIamV1LogConfig(_messages.Message):
-  """Specifies what kind of log the caller must write
-
-  Fields:
-    cloudAudit: Cloud audit options.
-    counter: Counter options.
-    dataAccess: Data access options.
-  """
-
-  cloudAudit = _messages.MessageField('GoogleIamV1LogConfigCloudAuditOptions', 1)
-  counter = _messages.MessageField('GoogleIamV1LogConfigCounterOptions', 2)
-  dataAccess = _messages.MessageField('GoogleIamV1LogConfigDataAccessOptions', 3)
-
-
-class GoogleIamV1LogConfigCloudAuditOptions(_messages.Message):
-  """Write a Cloud Audit log
-
-  Enums:
-    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
-      Record.
-
-  Fields:
-    logName: The log_name to populate in the Cloud Audit Record.
-  """
-
-  class LogNameValueValuesEnum(_messages.Enum):
-    """The log_name to populate in the Cloud Audit Record.
-
-    Values:
-      UNSPECIFIED_LOG_NAME: Default. Should not be used.
-      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
-      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
-    """
-    UNSPECIFIED_LOG_NAME = 0
-    ADMIN_ACTIVITY = 1
-    DATA_ACCESS = 2
-
-  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
-
-
-class GoogleIamV1LogConfigCounterOptions(_messages.Message):
-  """Increment a streamz counter with the specified metric and field names.
-  Metric names should start with a '/', generally be lowercase-only, and end
-  in "_count". Field names should not contain an initial slash. The actual
-  exported metric names will have "/iam/policy" prepended.  Field names
-  correspond to IAM request parameters and field values are their respective
-  values.  At present the only supported field names are    - "iam_principal",
-  corresponding to IAMContext.principal;    - "" (empty string), resulting in
-  one aggretated counter with no field.  Examples:   counter { metric:
-  "/debug_access_count"  field: "iam_principal" }   ==> increment counter
-  /iam/policy/backend_debug_access_count
-  {iam_principal=[value of IAMContext.principal]}  At this time we do not
-  support: * multiple field names (though this may be supported in the future)
-  * decrementing the counter * incrementing it by anything other than 1
-
-  Fields:
-    field: The field value to attribute.
-    metric: The metric to update.
-  """
-
-  field = _messages.StringField(1)
-  metric = _messages.StringField(2)
-
-
-class GoogleIamV1LogConfigDataAccessOptions(_messages.Message):
-  """Write a Data Access (Gin) log
-
-  Enums:
-    LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
-      manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.
-
-  Fields:
-    logMode: Whether Gin logging should happen in a fail-closed manner at the
-      caller. This is relevant only in the LocalIAM implementation, for now.
-  """
-
-  class LogModeValueValuesEnum(_messages.Enum):
-    """Whether Gin logging should happen in a fail-closed manner at the
-    caller. This is relevant only in the LocalIAM implementation, for now.
-
-    Values:
-      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
-        immediately after the authorization check. If client chooses to write
-        one and it fails, client may either fail open (allow the operation to
-        continue) or fail closed (handle as a DENY outcome).
-      LOG_FAIL_CLOSED: The application's operation in the context of which
-        this authorization check is being made may only be performed if it is
-        successfully logged to Gin. For instance, the authorization library
-        may satisfy this obligation by emitting a partial log entry at
-        authorization check time and only returning ALLOW to the application
-        if it succeeds.  If a matching Rule has this directive, but the client
-        has not indicated that it will honor such requirements, then the IAM
-        check will result in authorization failure by setting
-        CheckPolicyResponse.success=false.
-    """
-    LOG_MODE_UNSPECIFIED = 0
-    LOG_FAIL_CLOSED = 1
-
-  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
-
-
 class GoogleIamV1Policy(_messages.Message):
   """Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
@@ -1337,13 +984,6 @@ class GoogleIamV1Policy(_messages.Message):
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
     iamOwned: A boolean attribute.
-    rules: If more than one rule is specified, the rules are applied in the
-      following manner: - All matching LOG rules are always applied. - If any
-      DENY/DENY_WITH_LOG rule matches, permission is denied.   Logging will be
-      applied if one or more matching rule requires logging. - Otherwise, if
-      any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
-      Logging will be applied if one or more matching rule requires logging. -
-      Otherwise, if no rule applies, permission is denied.
     version: Version of the `Policy`. The default version is 0.
   """
 
@@ -1351,61 +991,7 @@ class GoogleIamV1Policy(_messages.Message):
   bindings = _messages.MessageField('GoogleIamV1Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   iamOwned = _messages.BooleanField(4)
-  rules = _messages.MessageField('GoogleIamV1Rule', 5, repeated=True)
-  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-
-
-class GoogleIamV1Rule(_messages.Message):
-  """A rule to be applied in a Policy.
-
-  Enums:
-    ActionValueValuesEnum: Required
-
-  Fields:
-    action: Required
-    conditions: Additional restrictions that must be met
-    description: Human-readable description of the rule.
-    in_: If one or more 'in' clauses are specified, the rule matches if the
-      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
-    notIn: If one or more 'not_in' clauses are specified, the rule matches if
-      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
-      for in and not_in entries is the same as for members in a Binding (see
-      google/iam/v1/policy.proto).
-    permissions: A permission is a string of form '<service>.<resource
-      type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
-      permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
-      all verbs.
-  """
-
-  class ActionValueValuesEnum(_messages.Enum):
-    """Required
-
-    Values:
-      NO_ACTION: Default no action.
-      ALLOW: Matching 'Entries' grant access.
-      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
-        to log the request per the returned log_configs.
-      DENY: Matching 'Entries' deny access.
-      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
-        log the request per the returned log_configs.
-      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
-    """
-    NO_ACTION = 0
-    ALLOW = 1
-    ALLOW_WITH_LOG = 2
-    DENY = 3
-    DENY_WITH_LOG = 4
-    LOG = 5
-
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  conditions = _messages.MessageField('GoogleIamV1Condition', 2, repeated=True)
-  description = _messages.StringField(3)
-  in_ = _messages.StringField(4, repeated=True)
-  logConfig = _messages.MessageField('GoogleIamV1LogConfig', 5, repeated=True)
-  notIn = _messages.StringField(6, repeated=True)
-  permissions = _messages.StringField(7, repeated=True)
+  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class GoogleIamV1SetIamPolicyRequest(_messages.Message):
@@ -1483,7 +1069,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
   Fields:
     done: If the value is `false`, it means the operation is still in
-      progress. If true, the operation is completed, and either `error` or
+      progress. If `true`, the operation is completed, and either `error` or
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
@@ -2085,8 +1671,6 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(14)
 
 
-encoding.AddCustomJsonFieldMapping(
-    GoogleIamV1Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

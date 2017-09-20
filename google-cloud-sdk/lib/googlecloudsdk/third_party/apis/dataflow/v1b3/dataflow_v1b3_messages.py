@@ -335,9 +335,14 @@ class CounterStructuredName(_messages.Message):
     origin: One of the standard Origins defined above.
     originNamespace: A string containing a more specific namespace of the
       counter's origin.
+    originalShuffleStepName: The GroupByKey step name from the original graph.
     originalStepName: System generated name of the original step in the user's
       graph, before optimization.
     portion: Portion of this counter, either key or value.
+    sideInput: ID of a side input being read from/written to. Side inputs are
+      identified by a pair of (reader, input_index). The reader is usually
+      equal to the original name, but it may be different, if a ParDo emits
+      it's Iterator / Map side input object.
     workerId: ID of a particular worker.
   """
 
@@ -368,9 +373,11 @@ class CounterStructuredName(_messages.Message):
   name = _messages.StringField(3)
   origin = _messages.EnumField('OriginValueValuesEnum', 4)
   originNamespace = _messages.StringField(5)
-  originalStepName = _messages.StringField(6)
-  portion = _messages.EnumField('PortionValueValuesEnum', 7)
-  workerId = _messages.StringField(8)
+  originalShuffleStepName = _messages.StringField(6)
+  originalStepName = _messages.StringField(7)
+  portion = _messages.EnumField('PortionValueValuesEnum', 8)
+  sideInput = _messages.MessageField('SideInputId', 9)
+  workerId = _messages.StringField(10)
 
 
 class CounterStructuredNameAndMetadata(_messages.Message):
@@ -1384,8 +1391,6 @@ class DistributionUpdate(_messages.Message):
 
   Fields:
     count: The count of the number of elements present in the distribution.
-    logBuckets: (Optional) Logarithmic histogram of values. Each log may be in
-      no more than one bucket. Order does not matter.
     max: The maximum value present in the distribution.
     min: The minimum value present in the distribution.
     sum: Use an int64 since we'd prefer the added precision. If overflow is a
@@ -1395,11 +1400,10 @@ class DistributionUpdate(_messages.Message):
   """
 
   count = _messages.MessageField('SplitInt64', 1)
-  logBuckets = _messages.MessageField('LogBucket', 2, repeated=True)
-  max = _messages.MessageField('SplitInt64', 3)
-  min = _messages.MessageField('SplitInt64', 4)
-  sum = _messages.MessageField('SplitInt64', 5)
-  sumOfSquares = _messages.FloatField(6)
+  max = _messages.MessageField('SplitInt64', 2)
+  min = _messages.MessageField('SplitInt64', 3)
+  sum = _messages.MessageField('SplitInt64', 4)
+  sumOfSquares = _messages.FloatField(5)
 
 
 class DynamicSourceSplit(_messages.Message):
@@ -2476,20 +2480,6 @@ class ListJobsResponse(_messages.Message):
   nextPageToken = _messages.StringField(3)
 
 
-class LogBucket(_messages.Message):
-  """Bucket of values for Distribution's logarithmic histogram.
-
-  Fields:
-    count: Number of values in this bucket.
-    log: floor(log2(value)); defined to be zero for nonpositive values.
-      log(-1) = 0   log(0) = 0   log(1) = 0   log(2) = 1   log(3) = 1   log(4)
-      = 2   log(5) = 2
-  """
-
-  count = _messages.IntegerField(1)
-  log = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
 class MapTask(_messages.Message):
   """MapTask consists of an ordered set of instructions, each of which
   describes one particular low-level operation for the worker to perform in
@@ -3194,6 +3184,20 @@ class ShellTask(_messages.Message):
 
   command = _messages.StringField(1)
   exitCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class SideInputId(_messages.Message):
+  """Uniquely identifies a side input.
+
+  Fields:
+    declaringStepName: The step that receives and usually consumes this side
+      input.
+    inputIndex: The index of the side input, from the list of
+      non_parallel_inputs.
+  """
+
+  declaringStepName = _messages.StringField(1)
+  inputIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class SideInputInfo(_messages.Message):
@@ -4410,6 +4414,8 @@ class WorkItemStatus(_messages.Message):
       progress and proposed_stop_position should be interpreted relative to P,
       and in a potential subsequent dynamic_source_split into {P', R'}, P' and
       R' must be together equivalent to P, etc.
+    totalThrottlerWaitTimeSeconds: Total time the worker spent being throttled
+      by external systems.
     workItemId: Identifies the WorkItem.
   """
 
@@ -4425,7 +4431,8 @@ class WorkItemStatus(_messages.Message):
   sourceFork = _messages.MessageField('SourceFork', 10)
   sourceOperationResponse = _messages.MessageField('SourceOperationResponse', 11)
   stopPosition = _messages.MessageField('Position', 12)
-  workItemId = _messages.StringField(13)
+  totalThrottlerWaitTimeSeconds = _messages.FloatField(13)
+  workItemId = _messages.StringField(14)
 
 
 class WorkerHealthReport(_messages.Message):
@@ -4516,6 +4523,7 @@ class WorkerMessage(_messages.Message):
     workerHealthReport: The health of a worker.
     workerMessageCode: A worker message code.
     workerMetrics: Resource metrics reported by workers.
+    workerShutdownNotice: Shutdown notice by workers.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4552,6 +4560,7 @@ class WorkerMessage(_messages.Message):
   workerHealthReport = _messages.MessageField('WorkerHealthReport', 3)
   workerMessageCode = _messages.MessageField('WorkerMessageCode', 4)
   workerMetrics = _messages.MessageField('ResourceUtilizationReport', 5)
+  workerShutdownNotice = _messages.MessageField('WorkerShutdownNotice', 6)
 
 
 class WorkerMessageCode(_messages.Message):
@@ -4648,10 +4657,13 @@ class WorkerMessageResponse(_messages.Message):
       report.
     workerMetricsResponse: Service's response to reporting worker metrics
       (currently empty).
+    workerShutdownNoticeResponse: Service's response to shutdown notice
+      (currently empty).
   """
 
   workerHealthReportResponse = _messages.MessageField('WorkerHealthReportResponse', 1)
   workerMetricsResponse = _messages.MessageField('ResourceUtilizationReportResponse', 2)
+  workerShutdownNoticeResponse = _messages.MessageField('WorkerShutdownNoticeResponse', 3)
 
 
 class WorkerPool(_messages.Message):
@@ -4895,6 +4907,24 @@ class WorkerSettings(_messages.Message):
   shuffleServicePath = _messages.StringField(4)
   tempStoragePrefix = _messages.StringField(5)
   workerId = _messages.StringField(6)
+
+
+class WorkerShutdownNotice(_messages.Message):
+  """Shutdown notification from workers. This is to be sent by the shutdown
+  script of the worker VM so that the backend knows that the VM is being shut
+  down.
+
+  Fields:
+    reason: Optional reason to be attached for the shutdown notice. For
+      example: "PREEMPTION" would indicate the VM is being shut down because
+      of preemption. Other possible reasons may be added in the future.
+  """
+
+  reason = _messages.StringField(1)
+
+
+class WorkerShutdownNoticeResponse(_messages.Message):
+  """Service-side response to WorkerMessage issuing shutdown notice."""
 
 
 class WriteInstruction(_messages.Message):

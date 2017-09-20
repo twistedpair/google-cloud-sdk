@@ -592,7 +592,7 @@ not be blocked by previous Rollouts.
 Operation<response: Rollout>
 
       Args:
-        request: (Rollout) input message
+        request: (ServicemanagementServicesRolloutsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -606,10 +606,10 @@ Operation<response: Rollout>
         method_id=u'servicemanagement.services.rollouts.create',
         ordered_params=[u'serviceName'],
         path_params=[u'serviceName'],
-        query_params=[],
+        query_params=[u'force'],
         relative_path=u'v1/services/{serviceName}/rollouts',
-        request_field='<request>',
-        request_type_name=u'Rollout',
+        request_field=u'rollout',
+        request_type_name=u'ServicemanagementServicesRolloutsCreateRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

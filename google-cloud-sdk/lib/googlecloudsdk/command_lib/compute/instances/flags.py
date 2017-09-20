@@ -18,6 +18,7 @@ import functools
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import containers_utils
 from googlecloudsdk.api_lib.compute import image_utils
+from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute.zones import service as zones_service
 from googlecloudsdk.calliope import arg_parsers
@@ -305,7 +306,7 @@ def AddLocalSsdArgsWithSize(parser):
       """)
 
 
-def AddDiskArgs(parser, enable_regional_disks=False):
+def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False):
   """Adds arguments related to disks for instances and instance-templates."""
 
   parser.add_argument(
@@ -342,6 +343,68 @@ def AddDiskArgs(parser, enable_regional_disks=False):
       action='store_true',
       default=True,
       help='Automatically delete boot disks when their instances are deleted.')
+
+  if enable_kms:
+    parser.add_argument(
+        '--boot-disk-kms-key',
+        help="""\
+        Fully qualified Cloud KMS cryptokey name that will protect the
+        {resource}.
+
+        This can either be the fully qualified path or the name.
+
+        The fully qualified Cloud KMS cryptokey has the format:
+        ``projects/<project-id>/locations/<location>/keyRings/<ring-name>/
+        cryptoKeys/<key-name>''
+
+        If the value is not fully qualified then --boot-disk-kms-location,
+        --boot-disk-kms-keyring, and optionally --boot-disk-kms-project are
+        required.
+
+        See {kms_help} for more details.
+        """.format(resource='boot disk', kms_help=kms_utils.KMS_HELP_URL))
+
+    parser.add_argument(
+        '--boot-disk-kms-project',
+        help="""\
+        Project that contains the Cloud KMS cryptokey that will protect the
+        {resource}.
+
+        If the project is not specified then the project where the {resource} is
+        being created will be used.
+
+        If this flag is set then --boot-disk-key-location,
+        --boot-disk-kms-keyring, and --boot-disk-kms-key are required.
+
+        See {kms_help} for more details.
+        """.format(resource='boot disk', kms_help=kms_utils.KMS_HELP_URL))
+
+    parser.add_argument(
+        '--boot-disk-kms-location',
+        help="""\
+        Location of the Cloud KMS cryptokey to be used for protecting the
+        {resource}.
+
+        All Cloud KMS cryptokeys are reside in a 'location'.
+        To get a list of possible locations run 'gcloud kms locations list'.
+
+        If this flag is set then --boot-disk-kms-keyring and
+        --boot-disk-kms-key are required.
+
+        See {kms_help} for more details.
+        """.format(resource='boot disk', kms_help=kms_utils.KMS_HELP_URL))
+
+    parser.add_argument(
+        '--boot-disk-kms-keyring',
+        help="""\
+        The keyring which contains the Cloud KMS cryptokey that will protect the
+        {resource}.
+
+        If this flag is set then --boot-disk-kms-location and
+        --boot-disk-kms-key are required.
+
+        See {kms_help} for more details.
+        """.format(resource='boot disk', kms_help=kms_utils.KMS_HELP_URL))
 
   disk_arg_spec = {
       'name': str,
@@ -388,6 +451,7 @@ def AddDiskArgs(parser, enable_regional_disks=False):
       If ``regional'', the disk is interpreted as a regional disk in the same
       region as the instance. The default value for this is ``zonal''.
       """
+
   parser.add_argument(
       '--disk',
       type=arg_parsers.ArgDict(spec=disk_arg_spec),
@@ -395,25 +459,10 @@ def AddDiskArgs(parser, enable_regional_disks=False):
       help=disk_help)
 
 
-def AddCreateDiskArgs(parser):
+def AddCreateDiskArgs(parser, enable_kms=False):
   """Adds create-disk argument for instances and instance-templates."""
 
-  parser.add_argument(
-      '--create-disk',
-      type=arg_parsers.ArgDict(spec={
-          'name': str,
-          'mode': str,
-          'image': str,
-          'image-family': str,
-          'image-project': str,
-          'size': arg_parsers.BinarySize(lower_bound='10GB'),
-          'type': str,
-          'device-name': str,
-          'auto-delete': str,
-      }),
-      action='append',
-      metavar='PROPERTY=VALUE',
-      help="""\
+  disk_help = """\
       Creates and attaches persistent disks to the instances.
 
       *name*::: Specifies the name of the disk. This option cannot be
@@ -465,7 +514,62 @@ def AddCreateDiskArgs(parser):
       automatically deleted when the instance is deleted. However,
       if the disk is later detached from the instance, this option
       won't apply. The default value for this is ``no''.
-      """)
+      """
+  if enable_kms:
+    disk_help += """
+      *kms-key*::: Fully qualified Cloud KMS cryptokey name that will
+      protect the {resource}.
+      This can either be the fully qualified path or the name.
+      The fully qualified Cloud KMS cryptokey name format is:
+      ``projects/<kms-project>/locations/<kms-location>/keyRings/<kms-keyring>/
+      cryptoKeys/<key-name>''.
+      If the value is not fully qualified then kms-location, kms-keyring, and
+      optionally kms-project are required.
+      See {kms_help} for more details.
+
+      *kms-project*::: Project that contains the Cloud KMS cryptokey that will
+      protect the {resource}.
+      If the project is not specified then the project where the {resource} is
+      being created will be used.
+      If this flag is set then key-location, kms-keyring, and kms-key
+      are required.
+      See {kms_help} for more details.
+
+      *kms-location*::: Location of the Cloud KMS cryptokey to be used for
+      protecting the {resource}.
+      All Cloud KMS cryptokeys are reside in a 'location'.
+      To get a list of possible locations run 'gcloud kms locations list'.
+      If this flag is set then kms-keyring and kms-key are required.
+      See {kms_help} for more details.
+
+      *kms-keyring*::: The keyring which contains the Cloud KMS cryptokey that
+      will protect the {resource}.
+      If this flag is set then kms-location and kms-key are required.
+      See {kms_help} for more details.
+      """.format(resource='disk', kms_help=kms_utils.KMS_HELP_URL)
+  spec = {
+      'name': str,
+      'mode': str,
+      'image': str,
+      'image-family': str,
+      'image-project': str,
+      'size': arg_parsers.BinarySize(lower_bound='10GB'),
+      'type': str,
+      'device-name': str,
+      'auto-delete': str,
+  }
+  if enable_kms:
+    spec['kms-key'] = str
+    spec['kms-project'] = str
+    spec['kms-location'] = str
+    spec['kms-keyring'] = str
+
+  parser.add_argument(
+      '--create-disk',
+      type=arg_parsers.ArgDict(spec=spec),
+      action='append',
+      metavar='PROPERTY=VALUE',
+      help=disk_help)
 
 
 def AddCustomMachineTypeArgs(parser):
@@ -567,11 +671,11 @@ def GetAddressRef(resources, address, region):
       })
 
 
-def ValidateDiskFlags(args):
+def ValidateDiskFlags(args, enable_kms=False):
   """Validates the values of all disk-related flags."""
   ValidateDiskCommonFlags(args)
   ValidateDiskAccessModeFlags(args)
-  ValidateDiskBootFlags(args)
+  ValidateDiskBootFlags(args, enable_kms=enable_kms)
   ValidateCreateDiskFlags(args)
 
 
@@ -611,7 +715,7 @@ def ValidateDiskAccessModeFlags(args):
           'instance.'.format(disk_name))
 
 
-def ValidateDiskBootFlags(args):
+def ValidateDiskBootFlags(args, enable_kms=False):
   """Validates the values of boot disk-related flags."""
   boot_disk_specified = False
   for disk in args.disk or []:
@@ -656,6 +760,27 @@ def ValidateDiskBootFlags(args):
       raise exceptions.ToolException(
           '[--no-boot-disk-auto-delete] can only be used when creating a '
           'new boot disk.')
+
+    if enable_kms:
+      if args.boot_disk_kms_key:
+        raise exceptions.ToolException(
+            '[--boot-disk-kms-key] can only be used when creating a new boot '
+            'disk.')
+
+      if args.boot_disk_kms_keyring:
+        raise exceptions.ToolException(
+            '[--boot-disk-kms-keyring] can only be used when creating a new '
+            'boot disk.')
+
+      if args.boot_disk_kms_location:
+        raise exceptions.ToolException(
+            '[--boot-disk-kms-location] can only be used when creating a new '
+            'boot disk.')
+
+      if args.boot_disk_kms_project:
+        raise exceptions.ToolException(
+            '[--boot-disk-kms-project] can only be used when creating a new '
+            'boot disk.')
 
 
 def ValidateCreateDiskFlags(args):

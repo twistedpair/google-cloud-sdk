@@ -118,7 +118,7 @@ def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
     log.warn('--filter : operator evaluation is changing for '
              'consistency across Google APIs.  {key}{op}{operand} currently '
              '{old_match} but {new_match} in the near future.  Run '
-             '`gcloud topics filters` for details.'.format(
+             '`gcloud topic filters` for details.'.format(
                  key=resource_lex.GetKeyName(key),
                  op=op,
                  operand=operand,

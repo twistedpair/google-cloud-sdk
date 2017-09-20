@@ -394,6 +394,32 @@ class BigqueryV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GetServiceAccount(self, request, global_params=None):
+      """Returns the email address of the service account for your project used for interactions with Google Cloud KMS.
+
+      Args:
+        request: (BigqueryProjectsGetServiceAccountRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetServiceAccountResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetServiceAccount')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetServiceAccount.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'bigquery.projects.getServiceAccount',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'projects/{projectId}/serviceAccount',
+        request_field='',
+        request_type_name=u'BigqueryProjectsGetServiceAccountRequest',
+        response_type_name=u'GetServiceAccountResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists all projects to which you have been granted any project role.
 

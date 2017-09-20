@@ -129,6 +129,17 @@ def AddAndroidTestArgs(parser):
       'OBB file name must conform to the format as specified by Android (e.g. '
       '[main|patch].0300110.com.example.android.obb) and will be installed '
       'into <shared-storage>/Android/obb/<package-name>/ on the test device.')
+  parser.add_argument(
+      '--record-video',
+      action='store_true',
+      default=True,
+      help='Enable video recording during the test.')
+  parser.add_argument(
+      '--performance-metrics',
+      action='store_true',
+      default=True,
+      help='Monitor and record performance metrics: CPU, memory, network usage,'
+           ' and FPS (game-loop only).')
 
   # The following args are specific to Android instrumentation tests.
 

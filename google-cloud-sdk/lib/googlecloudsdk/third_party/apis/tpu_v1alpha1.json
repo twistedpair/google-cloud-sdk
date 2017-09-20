@@ -776,6 +776,56 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ]
+                },
+                "stop": {
+                  "id": "tpu.projects.locations.nodes.stop",
+                  "path": "v1alpha1/{+name}:stop",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:stop",
+                  "httpMethod": "POST",
+                  "description": "Stops a node.",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "start": {
+                  "id": "tpu.projects.locations.nodes.start",
+                  "path": "v1alpha1/{+name}:start",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:start",
+                  "httpMethod": "POST",
+                  "description": "Start a node.",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 }
               }
             }

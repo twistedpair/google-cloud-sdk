@@ -359,13 +359,13 @@ class CommandTreeGenerator(walker.Walker):
           self._global_flags.update(flags)
     if is_group:
       if parent:
-        if 'groups' not in parent:
-          parent['groups'] = []
-        parent['groups'].append(info)
+        if cli_tree.LOOKUP_GROUPS not in parent:
+          parent[cli_tree.LOOKUP_GROUPS] = []
+        parent[cli_tree.LOOKUP_GROUPS].append(info)
       return info
-    if 'commands' not in parent:
-      parent['commands'] = []
-    parent['commands'].append(info)
+    if cli_tree.LOOKUP_COMMANDS not in parent:
+      parent[cli_tree.LOOKUP_COMMANDS] = []
+    parent[cli_tree.LOOKUP_COMMANDS].append(info)
     return None
 
 

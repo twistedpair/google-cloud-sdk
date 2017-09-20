@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """API Library for gcloud tasks queues."""
-
+# TODO(b/36865670): Add GetLocation, ListLocation, SetIamPolicy,
+#    GetIamPolicy, and TestIamPermissions
+from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib import tasks
 from googlecloudsdk.core import exceptions
@@ -45,30 +47,31 @@ class Queues(object):
         field='queues', batch_size_attribute='pageSize')
 
   def Create(self, parent_ref, queue_ref, retry_config=None,
-             throttle_config=None, pull_queue_config=None,
-             app_engine_queue_config=None):
+             throttle_config=None, pull_target=None,
+             app_engine_http_target=None):
     """Prepares and sends a Patch request for creating a queue."""
-    if pull_queue_config and app_engine_queue_config:
+    if pull_target and app_engine_http_target:
       raise ModifyingPullAndAppEngineQueueError(
-          'Attempting to send PullQueueConfig and AppEngineQueueConfig '
+          'Attempting to send PullTarget and AppEngineHttpTarget '
           'simultaneously')
     queue = self.api.messages.Queue(
         name=queue_ref.RelativeName(), retryConfig=retry_config,
-        throttleConfig=throttle_config, pullQueueConfig=pull_queue_config,
-        appEngineQueueConfig=app_engine_queue_config)
-    request = (self.api.messages.CloudtasksProjectsLocationsQueuesCreateRequest(
-        parent=parent_ref.RelativeName(), queue=queue))
+        throttleConfig=throttle_config, pullTarget=pull_target,
+        appEngineHttpTarget=app_engine_http_target)
+    request = self.api.messages.CloudtasksProjectsLocationsQueuesCreateRequest(
+        parent=parent_ref.RelativeName(), queue=queue)
     return self.api.queues_service.Create(request)
 
   def Patch(self, queue_ref, retry_config=None, throttle_config=None,
-            pull_queue_config=None, app_engine_queue_config=None):
+            pull_target=None, app_engine_http_target=None):
     """Prepares and sends a Patch request for modifying a queue."""
-    if pull_queue_config and app_engine_queue_config:
+    if pull_target and app_engine_http_target:
       raise ModifyingPullAndAppEngineQueueError(
-          'Attempting to send PullQueueConfig and AppEngineQueueConfig '
+          'Attempting to send PullTarget and AppEngineHttpTarget '
           'simultaneously')
-    if not any((retry_config, throttle_config, pull_queue_config,
-                app_engine_queue_config)):
+
+    if _AllEmptyConfigs([retry_config, throttle_config, pull_target,
+                         app_engine_http_target]):
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
 
     queue = self.api.messages.Queue(name=queue_ref.RelativeName())
@@ -80,12 +83,12 @@ class Queues(object):
     if throttle_config is not None:
       queue.throttleConfig = throttle_config
       updated_fields.append('throttleConfig')
-    if pull_queue_config is not None:
-      queue.pullQueueConfig = pull_queue_config
-      updated_fields.append('pullQueueConfig')
-    if app_engine_queue_config is not None:
-      queue.appEngineQueueConfig = app_engine_queue_config
-      updated_fields.append('appEngineQueueConfig')
+    if pull_target is not None:
+      queue.pullTarget = pull_target
+      updated_fields.append('pullTarget')
+    if app_engine_http_target is not None:
+      queue.appEngineHttpTarget = app_engine_http_target
+      updated_fields.append('appEngineHttpTarget')
     update_mask = ','.join(updated_fields)
 
     request = self.api.messages.CloudtasksProjectsLocationsQueuesPatchRequest(
@@ -111,3 +114,17 @@ class Queues(object):
     request = self.api.messages.CloudtasksProjectsLocationsQueuesResumeRequest(
         name=queue_ref.RelativeName())
     return self.api.queues_service.Resume(request)
+
+
+def _AllEmptyConfigs(configs):
+  return all(map(_IsEmptyConfig, configs))
+
+
+def _IsEmptyConfig(config):
+  if config is None:
+    return True
+
+  config_dict = encoding.MessageToDict(config)
+  return not any(config_dict.values())
+
+

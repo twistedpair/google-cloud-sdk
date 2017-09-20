@@ -55,6 +55,10 @@ class IamEtagReadError(core_exceptions.Error):
   """IamEtagReadError is raised when etag is badly formatted."""
 
 
+class IamPolicyBindingNotFound(core_exceptions.Error):
+  """Raised when the specified IAM policy binding is not found."""
+
+
 def AddArgsForAddIamPolicyBinding(parser, completer=None):
   """Adds the IAM policy binding arguments for role and members.
 
@@ -138,7 +142,7 @@ def AddBindingToIamPolicy(binding_message_type, policy, member, role):
 
 
 def RemoveBindingFromIamPolicy(policy, member, role):
-  """Given an IAM policy, add remove bindings as specified by the args.
+  """Given an IAM policy, remove bindings as specified by the args.
 
   An IAM binding is a pair of role and member. Check if the arguments passed
   define both the role and member attribute, search the policy for a binding
@@ -148,6 +152,9 @@ def RemoveBindingFromIamPolicy(policy, member, role):
     policy: IAM policy from which we want to remove bindings.
     member: The member to remove from the IAM policy.
     role: The role the member should be removed from.
+
+  Raises:
+    IamPolicyBindingNotFound: If specified binding is not found.
   """
 
   # First, remove the member from any binding that has the given role.
@@ -155,6 +162,10 @@ def RemoveBindingFromIamPolicy(policy, member, role):
   for binding in policy.bindings:
     if binding.role == role and member in binding.members:
       binding.members.remove(member)
+      break
+  else:
+    message = 'Policy binding with the specified member and role not found!'
+    raise IamPolicyBindingNotFound(message)
 
   # Second, remove any empty bindings.
   policy.bindings[:] = [b for b in policy.bindings if b.members]

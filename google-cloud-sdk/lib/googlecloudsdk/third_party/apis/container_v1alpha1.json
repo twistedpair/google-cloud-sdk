@@ -417,7 +417,7 @@
           "$ref": "WorkloadMetadataConfig"
         },
         "taints": {
-          "description": "List of kubernetes taints to be applied to each node.\n\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/configuration\/assign-pod-node\/#taints-and-tolerations-beta-feature",
+          "description": "List of kubernetes taints to be applied to each node.\n\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/configuration\/taint-and-toleration\/",
           "type": "array",
           "items": {
             "$ref": "NodeTaint"
@@ -468,7 +468,7 @@
     },
     "NodeTaint": {
       "id": "NodeTaint",
-      "description": "Kubernetes taint is comprised of three fields: key, value, and effect. Effect\ncan only be one of three types:  NoSchedule, PreferNoSchedule or NoExecute.\n\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/configuration\/assign-pod-node\/#taints-and-tolerations-beta-feature",
+      "description": "Kubernetes taint is comprised of three fields: key, value, and effect. Effect\ncan only be one of three types:  NoSchedule, PreferNoSchedule or NoExecute.\n\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/configuration\/taint-and-toleration\/",
       "type": "object",
       "properties": {
         "key": {

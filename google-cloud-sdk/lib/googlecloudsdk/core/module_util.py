@@ -14,9 +14,13 @@
 
 """Utilities for accessing modules by installation independent paths."""
 
+import compileall
+import imp
 import importlib
+import os
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.util import files
 
 
 class Error(exceptions.Error):
@@ -97,3 +101,29 @@ def GetModulePath(obj):
       return module + ':' + obj.__class__.__name__
     except AttributeError:
       return None
+
+
+def ImportPath(path):
+  """Imports and returns the module given a python source file path."""
+  module_dir = os.path.dirname(path)
+  module_name = os.path.splitext(os.path.basename(path))[0]
+  module_file = None
+  try:
+    module_file, module_path, module_description = imp.find_module(
+        module_name, [module_dir])
+    return imp.load_module(
+        module_name, module_file, module_path, module_description)
+  except ImportError as e:
+    raise ImportModuleError(
+        'Module file [{}] not found: {}.'.format(path, e))
+  finally:
+    if module_file:
+      module_file.close()
+
+
+def CompileAll(directory):
+  """Recursively compiles all Python files in directory."""
+  # directory could contain unicode chars and py_compile chokes on unicode
+  # paths. Using relative paths from within directory works around the problem.
+  with files.ChDir(directory):
+    compileall.compile_dir('.', quiet=True)

@@ -353,9 +353,13 @@ class OneOfArgumentsRequiredException(ToolException):
 class MinimumArgumentException(ToolException):
   """An exception for when one of several arguments is required."""
 
-  def __init__(self, parameter_names, message):
+  def __init__(self, parameter_names, message=None):
+    if message:
+      message = ': {}'.format(message)
+    else:
+      message = ''
     super(MinimumArgumentException, self).__init__(
-        'One of [{0}] must be supplied: {1}'.format(
+        'One of [{0}] must be supplied{1}.'.format(
             ', '.join(['{0}'.format(p) for p in parameter_names]),
             message)
         )

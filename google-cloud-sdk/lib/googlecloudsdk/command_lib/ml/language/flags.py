@@ -16,7 +16,7 @@
 from googlecloudsdk.calliope import base
 
 
-def AddLanguageFlags(parser):
+def AddLanguageFlags(parser, with_encoding=True):
   """Adds flags common to all gcloud ml language commands to the parser.
 
   Adds these flags: (--content= | --content-file=) [--content-type=]
@@ -24,6 +24,7 @@ def AddLanguageFlags(parser):
 
   Args:
     parser: the parser for the command line.
+    with_encoding: boolean, whether or not to include encoding type parameter.
 
   Returns:
     None.
@@ -55,15 +56,18 @@ def AddLanguageFlags(parser):
             'will attempt to auto-detect. Both ISO (such as `en` or `es`) '
             'and BCP-47 (such as `en-US` or `ja-JP`) language codes '
             'are accepted.'))
-  encoding_type_arg = base.Argument(
-      '--encoding-type',
-      choices=['NONE', 'UTF8', 'UTF16', 'UTF32'],
-      default='UTF8',
-      help=('The encoding type used by the API to calculate offsets. If NONE, '
-            'those offsets are not calculated. This is an optional flag '
-            'only used for the entity mentions in results, and does not '
-            'affect how the input is read or analyzed.'))
 
   content_type_arg.AddToParser(parser)
   language_arg.AddToParser(parser)
-  encoding_type_arg.AddToParser(parser)
+  # encoding type is not supported by all language API commands
+  if with_encoding:
+    encoding_type_arg = base.Argument(
+        '--encoding-type',
+        choices=['NONE', 'UTF8', 'UTF16', 'UTF32'],
+        default='UTF8',
+        help=(
+            'The encoding type used by the API to calculate offsets. If NONE, '
+            'those offsets are not calculated. This is an optional flag '
+            'only used for the entity mentions in results, and does not '
+            'affect how the input is read or analyzed.'))
+    encoding_type_arg.AddToParser(parser)

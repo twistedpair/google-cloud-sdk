@@ -794,7 +794,7 @@
           "type": "string"
         },
         "deadline": {
-          "description": "The number of seconds to wait for a response from a request.  The\ndefault depends on the deployment context.",
+          "description": "The number of seconds to wait for a response from a request.  The default\ndeadline for gRPC is infinite (no deadline) and HTTP requests is 5 seconds.",
           "type": "number",
           "format": "double"
         },
@@ -1731,7 +1731,7 @@
           }
         },
         "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf true, the operation is completed, and either `error` or `response` is\navailable.",
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
           "type": "boolean"
         },
         "error": {

@@ -12,23 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Methods for looking up completions from the static completion table."""
+"""Methods for looking up completions from the static CLI tree."""
 
-import imp
 import os
 import shlex
 
-LINE = 'COMP_LINE'
-POINT = 'COMP_POINT'
-IFS = '_ARGCOMPLETE_IFS'
-IFS_DEFAULT = '\013'
+from googlecloudsdk.calliope import cli_tree
 
-DYNAMIC = 'DYNAMIC'
-CANNOT_BE_COMPLETED = 'CANNOT_BE_COMPLETED'
 
-COMMANDS_KEY = 'commands'
-FLAGS_KEY = 'flags'
-POSITIONALS_KEY = 'positionals'
+LINE_ENV_VAR = 'COMP_LINE'
+POINT_ENV_VAR = 'COMP_POINT'
+IFS_ENV_VAR = '_ARGCOMPLETE_IFS'
+IFS_ENV_DEFAULT = '\013'
+COMPLETIONS_OUTPUT_FD = 8
+
+FLAG_BOOLEAN, FLAG_CANNOT_BE_COMPLETED, FLAG_DYNAMIC = range(3)
+
+LOOKUP_CHOICES = 'choices'
+LOOKUP_COMMANDS = 'commands'
+LOOKUP_COMPLETER = 'completer'
+LOOKUP_FLAGS = 'flags'
+LOOKUP_IS_HIDDEN = 'hidden'
+LOOKUP_NARGS = 'nargs'
+LOOKUP_POSITIONALS = 'positionals'
+LOOKUP_TYPE = 'type'
+
 FLAG_PREFIX = '--'
 
 _EMPTY_STRING = ''
@@ -41,33 +49,14 @@ class CannotHandleCompletionError(Exception):
   pass
 
 
-def LoadTable(gcloud_py_dir):
-  """Returns table to be used for finding completions.
-
-  Args:
-    gcloud_py_dir: str, Directory path of currently executing gcloud.py.
-
-  Returns:
-    table: tree.
-  """
-  # installation root path
-  table_py_path = os.path.dirname(gcloud_py_dir)
-  # .install/static_completion/table.pyc
-  table_py_path = os.path.join(table_py_path, '.install', 'static_completion',
-                               'table.py')
-
-  # Load table using relative path and return
-  return imp.load_source('static_completion_table', table_py_path).table
-
-
 def _GetCmdLineFromEnv():
   """Gets the command line from the environment.
 
   Returns:
     str, Command line.
   """
-  cmd_line = os.environ.get(LINE)
-  completion_point = int(os.environ.get(POINT))
+  cmd_line = os.environ.get(LINE_ENV_VAR)
+  completion_point = int(os.environ.get(POINT_ENV_VAR))
   cmd_line = cmd_line[:completion_point]
   return cmd_line
 
@@ -92,104 +81,114 @@ def _GetCmdWordQueue(cmd_line):
   return cmd_words
 
 
-def _OpenCompletionsStream():
-  return os.fdopen(8, 'wb')
+def _GetFlagMode(flag):
+  """Returns the FLAG_* mode or choices list for flag."""
+  choices = flag.get(LOOKUP_CHOICES, None)
+  if choices:
+    return choices
+  if flag.get(LOOKUP_COMPLETER, None):
+    return FLAG_DYNAMIC
+  if flag.get(LOOKUP_TYPE, None) == 'bool':
+    return FLAG_BOOLEAN
+  return FLAG_CANNOT_BE_COMPLETED
 
 
-def _CloseCompletionsStream(file_object):
-  file_object.close()
-
-
-def Complete(gcloud_py_dir):
-  """Attemps to do completions and successful completions are written to stream.
-
-  Args:
-    gcloud_py_dir: str, Directory path of currently executing gcloud.py.
-  """
-  node = LoadTable(gcloud_py_dir)
-  cmd_line = _GetCmdLineFromEnv()
-
-  completions = FindCompletions(node, cmd_line)
-  if completions:
-    # The bash/zsh completion scripts set IFS to one character.
-    ifs = os.environ.get(IFS, IFS_DEFAULT)
-    # Write completions to stream
-    out_stream = _OpenCompletionsStream()
-    out_stream.write(ifs.join(completions))
-    out_stream.flush()
-    _CloseCompletionsStream(out_stream)
-
-
-def FindCompletions(table, cmd_line):
-  """Try to perform a completion based on the static completion table.
+def _FindCompletions(root, cmd_line):
+  """Try to perform a completion based on the static CLI tree.
 
   Args:
-    table: Tree that will be traversed to find completions.
+    root: The root of the tree that will be traversed to find completions.
     cmd_line: [str], original command line.
+
+  Raises:
+    CannotHandleCompletionError: If FindCompletions cannot handle completion.
 
   Returns:
     []: No completions.
     [completions]: List, all possible sorted completions.
-
-  Raises:
-    CannotHandleCompletionError: If FindCompletions cannot handle completion.
   """
   words = _GetCmdWordQueue(cmd_line)
-  node = table
+  node = root
 
-  global_flags = node[FLAGS_KEY]
+  global_flags = node[LOOKUP_FLAGS]
 
   completions = []
-  flag_value_mode = None
+  flag_mode = FLAG_BOOLEAN
   while words:
+    if node.get(LOOKUP_IS_HIDDEN, False):
+      return []
     word = words.pop()
 
     if word.startswith(FLAG_PREFIX):
       is_flag_word = True
-      child_nodes = node.get(FLAGS_KEY, {})
+      child_nodes = node.get(LOOKUP_FLAGS, {})
       child_nodes.update(global_flags)
       # Add the value part back to the queue if it exists
       if _VALUE_SEP in word:
         word, flag_value = word.split(_VALUE_SEP, 1)
         words.append(flag_value)
     else:
-      child_nodes = node.get(COMMANDS_KEY, {})
+      child_nodes = node.get(LOOKUP_COMMANDS, {})
       is_flag_word = False
 
     # Consume word
     if words:
       if word in child_nodes:
         if is_flag_word:
-          flag_value_mode = child_nodes[word]
+          flag = child_nodes[word]
+          flag_mode = _GetFlagMode(flag)
         else:
-          flag_value_mode = None
+          flag_mode = FLAG_BOOLEAN
           node = child_nodes[word]  # Progress to next command node
-      elif flag_value_mode:
-        flag_value_mode = None
+      elif flag_mode:
+        flag_mode = FLAG_BOOLEAN
         continue  # Just consume if we are expecting a flag value
       else:
         return []  # Non-existing command/flag, so nothing to do
 
     # Complete word
     else:
-      if flag_value_mode == DYNAMIC:
+      if flag_mode == FLAG_DYNAMIC:
         raise CannotHandleCompletionError(
             'Dynamic completions are not handled by this module')
-      elif flag_value_mode == CANNOT_BE_COMPLETED:
+      elif flag_mode == FLAG_CANNOT_BE_COMPLETED:
         return []  # Cannot complete, so nothing to do
-      elif flag_value_mode:  # Must be list of choices
-        for value in flag_value_mode:
+      elif flag_mode:  # Must be list of choices
+        for value in flag_mode:
           if value.startswith(word):
             completions.append(value)
-      elif not child_nodes and node.get(POSITIONALS_KEY, None):
+      elif not child_nodes and node.get(LOOKUP_POSITIONALS, None):
         raise CannotHandleCompletionError(
-            'Completion of positionals is not handled by this module')
+            'Positional completions are not handled by this module')
       else:  # Command/flag completion
         for child, value in child_nodes.iteritems():
           if not child.startswith(word):
             continue
-          if is_flag_word and value:
+          if value.get(LOOKUP_IS_HIDDEN, False):
+            continue
+          if is_flag_word and _GetFlagMode(value) != FLAG_BOOLEAN:
             child += _VALUE_SEP
           completions.append(child)
-  completions.sort()
-  return completions
+  return sorted(completions)
+
+
+def _OpenCompletionsOutputStream():
+  """Returns the completions output stream."""
+  return os.fdopen(COMPLETIONS_OUTPUT_FD, 'wb')
+
+
+def Complete():
+  """Attempts completions and writes them to the completion stream."""
+  root = cli_tree.Load()
+  cmd_line = _GetCmdLineFromEnv()
+
+  completions = _FindCompletions(root, cmd_line)
+  if completions:
+    # The bash/zsh completion scripts set IFS_ENV_VAR to one character.
+    ifs = os.environ.get(IFS_ENV_VAR, IFS_ENV_DEFAULT)
+    # Write completions to stream
+    try:
+      f = _OpenCompletionsOutputStream()
+      f.write(ifs.join(completions))
+    finally:
+      f.close()

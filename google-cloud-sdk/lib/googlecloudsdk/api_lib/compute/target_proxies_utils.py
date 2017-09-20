@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Code that's shared between multiple target-ssl subcommands."""
+"""Code that's shared between multiple target-*-proxies subcommands."""
 
 
 def AddProxyHeaderRelatedCreateArgs(parser, default='NONE'):
@@ -32,3 +32,25 @@ def AddProxyHeaderRelatedUpdateArgs(parser):
   """Adds parser arguments for update related to ProxyHeader."""
 
   AddProxyHeaderRelatedCreateArgs(parser, default=None)
+
+
+def AddQuicOverrideCreateArgs(parser, default='NONE'):
+  """Adds parser arguments for creation related to QuicOverride."""
+
+  parser.add_argument(
+      '--quic-override',
+      choices={
+          'NONE': 'Allows Google to control when QUIC is rolled out.',
+          'ENABLE': 'Allows load balancer to negotiate QUIC with clients.',
+          'DISABLE': 'Disallows load balancer to negotiate QUIC with clients.',
+      },
+      default=default,
+      help='Controls whether load balancer may negotiate QUIC with clients. '
+      'QUIC is a new transport which reduces latency compared to that of TCP. '
+      'See https://www.chromium.org/quic for more details.')
+
+
+def AddQuicOverrideUpdateArgs(parser):
+  """Adds parser arguments for update related to QuicOverride."""
+
+  AddQuicOverrideCreateArgs(parser, default=None)

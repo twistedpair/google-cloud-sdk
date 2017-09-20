@@ -210,6 +210,13 @@
         "name": {
           "description": "The name of the topic. It must have the format\n`\"projects\/{project}\/topics\/{topic}\"`. `{topic}` must start with a letter,\nand contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`),\nunderscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent\nsigns (`%`). It must be between 3 and 255 characters in length, and it\nmust not start with `\"goog\"`.",
           "type": "string"
+        },
+        "labels": {
+          "description": "User labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -330,7 +337,7 @@
           "$ref": "PushConfig"
         },
         "ackDeadlineSeconds": {
-          "description": "This value is the maximum time after a subscriber receives a message\nbefore the subscriber should acknowledge the message. After message\ndelivery but before the ack deadline expires and before the message is\nacknowledged, it is an outstanding message and will not be delivered\nagain during that time (on a best-effort basis).\n\nFor pull subscriptions, this value is used as the initial value for the ack\ndeadline. To override this value for a given message, call\n`ModifyAckDeadline` with the corresponding `ack_id` if using\npull.\nThe minimum custom deadline you can specify is 10 seconds.\nThe maximum custom deadline you can specify is 600 seconds (10 minutes).\nIf this parameter is 0, a default value of 10 seconds is used.\n\nFor push delivery, this value is also used to set the request timeout for\nthe call to the push endpoint.\n\nIf the subscriber never acknowledges the message, the Pub\/Sub\nsystem will eventually redeliver the message.",
+          "description": "This value is the maximum time after a subscriber receives a message\nbefore the subscriber should acknowledge the message. After message\ndelivery but before the ack deadline expires and before the message is\nacknowledged, it is an outstanding message and will not be delivered\nagain during that time (on a best-effort basis).\n\nFor pull subscriptions, this value is used as the initial value for the ack\ndeadline. To override this value for a given message, call\n`ModifyAckDeadline` with the corresponding `ack_id` if using\nnon-streaming pull or send the `ack_id` in a\n`StreamingModifyAckDeadlineRequest` if using streaming pull.\nThe minimum custom deadline you can specify is 10 seconds.\nThe maximum custom deadline you can specify is 600 seconds (10 minutes).\nIf this parameter is 0, a default value of 10 seconds is used.\n\nFor push delivery, this value is also used to set the request timeout for\nthe call to the push endpoint.\n\nIf the subscriber never acknowledges the message, the Pub\/Sub\nsystem will eventually redeliver the message.",
           "type": "integer",
           "format": "int32"
         },
@@ -342,6 +349,13 @@
           "description": "How long to retain unacknowledged messages in the subscription's backlog,\nfrom the moment a message is published.\nIf `retain_acked_messages` is true, then this also configures the retention\nof acknowledged messages, and thus configures how far back in time a `Seek`\ncan be done. Defaults to 7 days. Cannot be more than 7 days or less than 10\nminutes.",
           "type": "string",
           "format": "google-duration"
+        },
+        "labels": {
+          "description": "User labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -481,7 +495,7 @@
       "type": "object",
       "properties": {
         "pushConfig": {
-          "description": "The push configuration for future deliveries.\n\nAn empty `pushConfig` indicates that the Pub\/Sub system should\nstop pushing messages from the given subscription and allow\nmessages to be pulled and acknowledged - effectively pausing\nthe subscription if `Pull` is not called.",
+          "description": "The push configuration for future deliveries.\n\nAn empty `pushConfig` indicates that the Pub\/Sub system should\nstop pushing messages from the given subscription and allow\nmessages to be pulled and acknowledged - effectively pausing\nthe subscription if `Pull` or `StreamingPull` is not called.",
           "$ref": "PushConfig"
         }
       }
@@ -521,6 +535,13 @@
           "description": "The snapshot is guaranteed to exist up until this time.\nA newly-created snapshot expires no later than 7 days from the time of its\ncreation. Its exact lifetime is determined at creation by the existing\nbacklog in the source subscription. Specifically, the lifetime of the\nsnapshot is `7 days - (age of oldest unacked message in the subscription)`.\nFor example, consider a subscription whose oldest unacked message is 3 days\nold. If a snapshot is created from this subscription, the snapshot -- which\nwill always capture this 3-day-old backlog as long as the snapshot\nexists -- will expire in 4 days. The service will refuse to create a\nsnapshot that would expire in less than 1 hour after creation.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "labels": {
+          "description": "User labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -532,6 +553,13 @@
         "subscription": {
           "description": "The subscription whose backlog the snapshot retains.\nSpecifically, the created snapshot is guaranteed to retain:\n (a) The existing backlog on the subscription. More precisely, this is\n     defined as the messages in the subscription's backlog that are\n     unacknowledged upon the successful completion of the\n     `CreateSnapshot` request; as well as:\n (b) Any messages published to the subscription's topic following the\n     successful completion of the CreateSnapshot request.\nFormat is `projects\/{project}\/subscriptions\/{sub}`.",
           "type": "string"
+        },
+        "labels": {
+          "description": "User labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
