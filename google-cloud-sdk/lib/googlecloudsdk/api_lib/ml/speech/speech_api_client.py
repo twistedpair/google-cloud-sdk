@@ -37,8 +37,8 @@ def GetSpeechMessages(version=SPEECH_API_VERSION):
 class SpeechClient(object):
   """Wrapper for the Cloud Language API client class."""
 
-  def __init__(self, version=None):
-    version = version or SPEECH_API_VERSION
+  def __init__(self, version=SPEECH_API_VERSION):
+    self.version = version
     self.client = GetSpeechClient(version=version)
     self.messages = GetSpeechMessages(version=version)
 
@@ -56,18 +56,7 @@ class SpeechClient(object):
     Returns:
       speech_v1_messages.RecognitionAudio, the audio message.
     """
-    try:
-      source = content_source.ContentSource.FromContentPath(
-          audio_path, SPEECH_API,
-          url_validator=storage_util.ObjectReference.IsStorageUrl)
-    except content_source.UnrecognizedContentSourceError:
-      raise exceptions.AudioException(
-          'Invalid audio source [{}]. The source must either '
-          'be a local path or a Google Cloud Storage URL '
-          '(such as gs://bucket/object).'.format(audio_path))
-    audio = self.messages.RecognitionAudio()
-    source.UpdateContent(audio)
-    return audio
+    return GetAudio(audio_path, version=self.version)
 
   def GetRecognitionConfig(self, language, max_alternatives, sample_rate=None,
                            encoding=None, filter_profanity=False, hints=None):
@@ -165,3 +154,31 @@ class SpeechClient(object):
         sleep_ms=5000,
         wait_ceiling_ms=20000)
 
+
+def GetAudio(audio_path, version=SPEECH_API_VERSION):
+  """Determine whether path to audio is local, build RecognitionAudio message.
+
+  Args:
+    audio_path: str, the path to the audio.
+    version: str, the API version to use.
+
+  Raises:
+    googlecloudsdk.api_lib.ml.speech.exceptions.AudioException, if audio
+        is not found locally and does not appear to be Google Cloud Storage
+        URL.
+
+  Returns:
+    speech_v1_messages.RecognitionAudio, the audio message.
+  """
+  try:
+    source = content_source.ContentSource.FromContentPath(
+        audio_path, SPEECH_API,
+        url_validator=storage_util.ObjectReference.IsStorageUrl)
+  except content_source.UnrecognizedContentSourceError:
+    raise exceptions.AudioException(
+        'Invalid audio source [{}]. The source must either '
+        'be a local path or a Google Cloud Storage URL '
+        '(such as gs://bucket/object).'.format(audio_path))
+  audio = GetSpeechMessages(version=version).RecognitionAudio()
+  source.UpdateContent(audio)
+  return audio

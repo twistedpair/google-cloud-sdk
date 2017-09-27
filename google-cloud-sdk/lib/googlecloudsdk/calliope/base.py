@@ -16,8 +16,10 @@
 """
 
 import abc
+import collections
 from functools import wraps
 import itertools
+import re
 import sys
 
 from googlecloudsdk.calliope import arg_parsers
@@ -187,10 +189,23 @@ class ArgumentGroup(Action):
     Returns:
       The result of parser.add_argument().
     """
-    group = parser.add_argument_group(*self.args, **self.kwargs)
+    group = self._CreateGroup(parser)
     for arg in self.arguments:
       arg.AddToParser(group)
     return group
+
+  def _CreateGroup(self, parser):
+    return parser.add_argument_group(*self.args, **self.kwargs)
+
+
+class MutuxArgumentGroup(ArgumentGroup):
+  """A class that allows you to save an mutex group configuration for reuse."""
+
+  def __init__(self, *args, **kwargs):
+    super(MutuxArgumentGroup, self).__init__(*args, **kwargs)
+
+  def _CreateGroup(self, parser):
+    return parser.add_mutually_exclusive_group(*self.args, **self.kwargs)
 
 
 class Argument(Action):
@@ -887,3 +902,69 @@ def Deprecate(is_removed=True,
     return cmd_class
 
   return DeprecateCommand
+
+
+def _ChoiceValueType(value):
+  """Returns a function that ensures choice flag values match Cloud SDK Style.
+
+  Args:
+    value: string, string representing flag choice value parsed from command
+           line.
+
+  Returns:
+       A string value entirely in lower case, with words separated by
+       hyphens.
+  """
+  return value.replace('_', '-').lower()
+
+
+def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,
+                   action=None, metavar=None, dest=None, default=None):
+  """Returns Argument with a Cloud SDK style compliant set of choices.
+
+  Args:
+    name_or_flag: string, Either a name or a list of option strings,
+       e.g. foo or -f, --foo.
+    choices: container,  A container (e.g. set, dict, list, tuple) of the
+       allowable values for the argument. Should consist of strings entirely in
+       lower case, with words separated by hyphens.
+    help_str: string,  A brief description of what the argument does.
+    required: boolean, Whether or not the command-line option may be omitted.
+    action: string or argparse.Action, The basic type of argeparse.action
+       to be taken when this argument is encountered at the command line.
+    metavar: string,  A name for the argument in usage messages.
+    dest: string,  The name of the attribute to be added to the object returned
+       by parse_args().
+    default: string,  The value produced if the argument is absent from the
+       command line.
+
+  Returns:
+     Argument object with choices, that can accept both lowercase and uppercase
+     user input with hyphens or undersores.
+
+  Raises:
+     TypeError: If choices are not an iterable container of string options.
+     ValueError: If provided choices are not Cloud SDK Style compliant.
+  """
+
+  if not choices:
+    raise ValueError('Choices must not be empty.')
+
+  if (not isinstance(choices, collections.Iterable)
+      or isinstance(choices, basestring)):
+    raise TypeError(
+        'Choices must be an iterable container of options: [{}].'.format(
+            ', '.join(choices)))
+
+  # Valid choices should be alphanumeric sequences followed by an optional
+  # period '.', separated by a single hyphen '-'.
+  choice_re = re.compile(r'^([a-z0-9]\.?-?)+[a-z0-9]$')
+  invalid_choices = [x for x in choices if not choice_re.match(x)]
+  if invalid_choices:
+    raise ValueError(
+        ('Invalid choices [{}]. Choices must be entirely in lowercase with '
+         'words separated by hyphens(-)').format(', '.join(invalid_choices)))
+
+  return Argument(name_or_flag, choices=choices, required=required,
+                  type=_ChoiceValueType, help=help_str, action=action,
+                  metavar=metavar, dest=dest, default=default)

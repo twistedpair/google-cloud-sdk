@@ -720,6 +720,33 @@ projects/{projectid}/notes/{noteid} for notes
       self._upload_configs = {
           }
 
+    def GetVulnzsummary(self, request, global_params=None):
+      """Lists the number and severity of Occurrences matching some filters.
+
+      Args:
+        request: (ContaineranalysisProjectsGetVulnzsummaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetVulnzOccurrencesSummaryResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetVulnzsummary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVulnzsummary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/vulnzsummary',
+        http_method=u'GET',
+        method_id=u'containeranalysis.projects.getVulnzsummary',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter'],
+        relative_path=u'v1alpha1/{+parent}/vulnzsummary',
+        request_field='',
+        request_type_name=u'ContaineranalysisProjectsGetVulnzsummaryRequest',
+        response_type_name=u'GetVulnzOccurrencesSummaryResponse',
+        supports_download=False,
+    )
+
   class ProvidersNotesOccurrencesService(base_api.BaseApiService):
     """Service class for the providers_notes_occurrences resource."""
 

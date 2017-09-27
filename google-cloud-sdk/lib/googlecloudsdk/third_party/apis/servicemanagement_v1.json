@@ -3065,6 +3065,27 @@
           "items": {
             "type": "string"
           }
+        },
+        "operationType": {
+          "description": "Operation type which is a flow type and subtype info as that is missing in\nour datastore otherwise. This maps to the ordinal value of the enum:\njcg\/api\/tenant\/operations\/OperationNamespace.java",
+          "type": "integer",
+          "format": "int32"
+        },
+        "surface": {
+
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            "TenancyUnit, ServiceNetworking fall under this"
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED_OP_SERVICE",
+            "SERVICE_MANAGEMENT",
+            "SERVICE_USAGE",
+            "SERVICE_CONSUMER_MANAGEMENT"
+          ]
         }
       }
     }

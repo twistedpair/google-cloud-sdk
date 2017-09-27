@@ -491,7 +491,10 @@ def AddNetworkPolicyFlags(parser, hidden=False):
       action='store_true',
       default=None,
       hidden=hidden,
-      help='Enable network policy enforcement for this cluster.')
+      help='Enable network policy enforcement for this cluster. If you are '
+      'enabling network policy on an existing cluster the network policy '
+      'addon must first be enabled on the master by using '
+      '--update-addons=NetworkPolicy=ENABLED flag.')
 
 
 def AddEnableLegacyAuthorizationFlag(parser, hidden=False):

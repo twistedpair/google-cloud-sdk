@@ -6,9 +6,41 @@ An API to insert and retrieve annotations on container resources.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'containeranalysis'
+
+
+class AWSElasticBlockStoreVolumeSource(_messages.Message):
+  """Represents a Persistent Disk resource in AWS.  An AWS EBS disk must exist
+  before mounting to a container. The disk must also be in the same AWS zone
+  as the kubelet. An AWS EBS disk can only be mounted as read/write once. AWS
+  EBS volumes support ownership management and SELinux relabeling.
+
+  Fields:
+    fsType: Filesystem type of the volume that you want to mount. Tip: Ensure
+      that the filesystem type is supported by the host operating system.
+      Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if
+      unspecified. More info: http://kubernetes.io/docs/user-
+      guide/volumes#awselasticblockstore
+    partition: The partition in the volume that you want to mount. If omitted,
+      the default is to mount by volume name. Examples: For volume /dev/sda1,
+      you specify the partition as "1". Similarly, the volume partition for
+      /dev/sda is "0" (or you can leave the property empty). +optional
+    readOnly: Specify "true" to force and set the ReadOnly property in
+      VolumeMounts to "true". If omitted, the default is "false". More info:
+      http://kubernetes.io/docs/user-guide/volumes#awselasticblockstore
+      +optional
+    volumeID: Unique ID of the persistent disk resource in AWS (Amazon EBS
+      volume). More info: http://kubernetes.io/docs/user-
+      guide/volumes#awselasticblockstore
+  """
+
+  fsType = _messages.StringField(1)
+  partition = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  readOnly = _messages.BooleanField(3)
+  volumeID = _messages.StringField(4)
 
 
 class AliasContext(_messages.Message):
@@ -139,6 +171,45 @@ class AuditLogConfig(_messages.Message):
 
   exemptedMembers = _messages.StringField(1, repeated=True)
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class AzureDiskVolumeSource(_messages.Message):
+  """AzureDisk represents an Azure Data Disk mount on the host and bind mount
+  to the pod.
+
+  Fields:
+    cachingMode: Host Caching mode: None, Read Only, Read Write. +optional
+    diskName: The Name of the data disk in the blob storage
+    diskURI: The URI the data disk in the blob storage
+    fsType: Filesystem type to mount. Must be a filesystem type supported by
+      the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly
+      inferred to be "ext4" if unspecified. +optional
+    readOnly: Defaults to false (read/write). ReadOnly here will force the
+      ReadOnly setting in VolumeMounts. +optional
+  """
+
+  cachingMode = _messages.StringField(1)
+  diskName = _messages.StringField(2)
+  diskURI = _messages.StringField(3)
+  fsType = _messages.StringField(4)
+  readOnly = _messages.BooleanField(5)
+
+
+class AzureFileVolumeSource(_messages.Message):
+  """AzureFile represents an Azure File Service mount on the host and bind
+  mount to the pod.
+
+  Fields:
+    readOnly: Defaults to false (read/write). ReadOnly here will force the
+      ReadOnly setting in VolumeMounts. +optional
+    secretName: the name of secret that contains Azure Storage Account Name
+      and Key
+    shareName: Share Name
+  """
+
+  readOnly = _messages.BooleanField(1)
+  secretName = _messages.StringField(2)
+  shareName = _messages.StringField(3)
 
 
 class Basis(_messages.Message):
@@ -340,6 +411,76 @@ class BuildType(_messages.Message):
   signature = _messages.MessageField('BuildSignature', 2)
 
 
+class Capabilities(_messages.Message):
+  """Adds and removes POSIX capabilities from running containers.
+
+  Fields:
+    add: Added capabilities +optional
+    drop: Removed capabilities +optional
+  """
+
+  add = _messages.StringField(1, repeated=True)
+  drop = _messages.StringField(2, repeated=True)
+
+
+class CephFSVolumeSource(_messages.Message):
+  """Represents a Ceph Filesystem mount that lasts the lifetime of a pod
+  Cephfs volumes do not support ownership management or SELinux relabeling.
+
+  Fields:
+    monitors: Required: Monitors is a collection of Ceph monitors More info:
+      http://releases.k8s.io/HEAD/examples/volumes/cephfs/README.md#how-to-
+      use-it
+    path: Optional: Used as the mounted root, rather than the full Ceph tree,
+      default is / +optional
+    readOnly: Optional: Defaults to false (read/write). ReadOnly here will
+      force the ReadOnly setting in VolumeMounts. More info:
+      http://releases.k8s.io/HEAD/examples/volumes/cephfs/README.md#how-to-
+      use-it +optional
+    secretFile: Optional: SecretFile is the path to key ring for User, default
+      is /etc/ceph/user.secret More info:
+      http://releases.k8s.io/HEAD/examples/volumes/cephfs/README.md#how-to-
+      use-it +optional
+    secretRef: Optional: SecretRef is reference to the authentication secret
+      for User, default is empty. More info:
+      http://releases.k8s.io/HEAD/examples/volumes/cephfs/README.md#how-to-
+      use-it +optional
+    user: Optional: User is the rados user name, default is admin More info:
+      http://releases.k8s.io/HEAD/examples/volumes/cephfs/README.md#how-to-
+      use-it +optional
+  """
+
+  monitors = _messages.StringField(1, repeated=True)
+  path = _messages.StringField(2)
+  readOnly = _messages.BooleanField(3)
+  secretFile = _messages.StringField(4)
+  secretRef = _messages.MessageField('LocalObjectReference', 5)
+  user = _messages.StringField(6)
+
+
+class CinderVolumeSource(_messages.Message):
+  """Represents a cinder volume resource in Openstack. A Cinder volume must
+  exist before mounting to a container. The volume must also be in the same
+  region as the kubelet. Cinder volumes support ownership management and
+  SELinux relabeling.
+
+  Fields:
+    fsType: Filesystem type to mount. Must be a filesystem type supported by
+      the host operating system. Examples: "ext4", "xfs", "ntfs". Implicitly
+      inferred to be "ext4" if unspecified. More info:
+      http://releases.k8s.io/HEAD/examples/mysql-cinder-pd/README.md +optional
+    readOnly: Optional: Defaults to false (read/write). ReadOnly here will
+      force the ReadOnly setting in VolumeMounts. More info:
+      http://releases.k8s.io/HEAD/examples/mysql-cinder-pd/README.md +optional
+    volumeID: volume id used to identify the volume in cinder More info:
+      http://releases.k8s.io/HEAD/examples/mysql-cinder-pd/README.md
+  """
+
+  fsType = _messages.StringField(1)
+  readOnly = _messages.BooleanField(2)
+  volumeID = _messages.StringField(3)
+
+
 class CloudRepoSourceContext(_messages.Message):
   """A CloudRepoSourceContext denotes a particular revision in a cloud repo (a
   repo hosted by the Google Cloud Platform).
@@ -410,6 +551,168 @@ class Command(_messages.Message):
   waitFor = _messages.StringField(6, repeated=True)
 
 
+class ConfigMapKeySelector(_messages.Message):
+  """Selects a key from a ConfigMap.
+
+  Fields:
+    key: The key to select.
+    localObjectReference: The ConfigMap to select from.
+  """
+
+  key = _messages.StringField(1)
+  localObjectReference = _messages.MessageField('LocalObjectReference', 2)
+
+
+class ConfigMapVolumeSource(_messages.Message):
+  """Adapts a ConfigMap into a volume.  The contents of the target ConfigMap's
+  Data field will be presented in a volume as files using the keys in the Data
+  field as the file names, unless the items element is populated with specific
+  mappings of keys to paths. ConfigMap volumes support ownership management
+  and SELinux relabeling.
+
+  Fields:
+    defaultMode: Optional: mode bits to use on created files by default. Must
+      be a value between 0 and 0777. Defaults to 0644. Directories within the
+      path are not affected by this setting. This might be in conflict with
+      other options that affect the file mode, like fsGroup, and the result
+      can be other mode bits set. +optional
+    items: If unspecified, each key-value pair in the Data field of the
+      referenced ConfigMap will be projected into the volume as a file whose
+      name is the key and content is the value. If specified, the listed keys
+      will be projected into the specified paths, and unlisted keys will not
+      be present. If a key is specified which is not present in the ConfigMap,
+      the volume setup will error. Paths must be relative and may not contain
+      the '..' path or start with '..'. +optional
+    localObjectReference: A LocalObjectReference attribute.
+  """
+
+  defaultMode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  items = _messages.MessageField('KeyToPath', 2, repeated=True)
+  localObjectReference = _messages.MessageField('LocalObjectReference', 3)
+
+
+class Container(_messages.Message):
+  """A single application container that you want to run within a pod.
+
+  Fields:
+    args: Arguments to the entrypoint. The docker image's CMD is used if this
+      is not provided. Variable references $(VAR_NAME) are expanded using the
+      container's environment. If a variable cannot be resolved, the reference
+      in the input string will be unchanged. The $(VAR_NAME) syntax can be
+      escaped with a double $$, ie: $$(VAR_NAME). Escaped references will
+      never be expanded, regardless of whether the variable exists or not.
+      Cannot be updated. More info: http://kubernetes.io/docs/user-
+      guide/containers#containers-and-commands +optional
+    command: Entrypoint array. Not executed within a shell. The docker image's
+      ENTRYPOINT is used if this is not provided. Variable references
+      $(VAR_NAME) are expanded using the container's environment. If a
+      variable cannot be resolved, the reference in the input string will be
+      unchanged. The $(VAR_NAME) syntax can be escaped with a double $$, ie:
+      $$(VAR_NAME). Escaped references will never be expanded, regardless of
+      whether the variable exists or not. Cannot be updated. More info:
+      http://kubernetes.io/docs/user-guide/containers#containers-and-commands
+      +optional
+    env: List of environment variables to set in the container. Cannot be
+      updated. +optional
+    image: Docker image name. More info: http://kubernetes.io/docs/user-
+      guide/images +optional
+    imagePullPolicy: Image pull policy. One of Always, Never, IfNotPresent.
+      Defaults to Always if :latest tag is specified, or IfNotPresent
+      otherwise. Cannot be updated. More info: http://kubernetes.io/docs/user-
+      guide/images#updating-images +optional
+    lifecycle: Actions that the management system should take in response to
+      container lifecycle events. Cannot be updated. +optional
+    livenessProbe: Periodic probe of container liveness. Container will be
+      restarted if the probe fails. Cannot be updated. More info:
+      http://kubernetes.io/docs/user-guide/pod-states#container-probes
+      +optional
+    name: Name of the container specified as a DNS_LABEL. Each container in a
+      pod must have a unique name (DNS_LABEL). Cannot be updated.
+    ports: List of ports to expose from the container. Exposing a port here
+      gives the system additional information about the network connections a
+      container uses, but is primarily informational. Not specifying a port
+      here DOES NOT prevent that port from being exposed. Any port which is
+      listening on the default "0.0.0.0" address inside a container will be
+      accessible from the network. Cannot be updated. +optional
+    readinessProbe: Periodic probe of container service readiness. Container
+      will be removed from service endpoints if the probe fails. Cannot be
+      updated. More info: http://kubernetes.io/docs/user-guide/pod-states
+      #container-probes +optional
+    resources: Compute Resources required by this container. Cannot be
+      updated. More info: http://kubernetes.io/docs/user-guide/persistent-
+      volumes#resources +optional
+    securityContext: Security options the pod should run with. More info:
+      http://releases.k8s.io/HEAD/docs/design/security_context.md +optional
+    stdin: Whether this container should allocate a buffer for stdin in the
+      container runtime. If this is not set, reads from stdin in the container
+      will always result in EOF. Default is false. +optional
+    stdinOnce: Whether the container runtime should close the stdin channel
+      after it has been opened by a single attach. When stdin is true the
+      stdin stream will remain open across multiple attach sessions. If
+      stdinOnce is set to true, stdin is opened on container start, is empty
+      until the first client attaches to stdin, and then remains open and
+      accepts data until the client disconnects, at which time stdin is closed
+      and remains closed until the container is restarted. If this flag is
+      false, a container processes that reads from stdin will never receive an
+      EOF. Default is false +optional
+    terminationMessagePath: Optional: Path at which the file to which the
+      container's termination message will be written is mounted into the
+      container's filesystem. Message written is intended to be brief final
+      status, such as an assertion failure message. Defaults to /dev
+      /termination-log. Cannot be updated. +optional
+    tty: Whether this container should allocate a TTY for itself, also
+      requires 'stdin' to be true. Default is false. +optional
+    volumeMounts: Pod volumes to mount into the container's filesystem. Cannot
+      be updated. +optional
+    workingDir: Container's working directory. If not specified, the container
+      runtime's default will be used, which might be configured in the
+      container image. Cannot be updated. +optional
+  """
+
+  args = _messages.StringField(1, repeated=True)
+  command = _messages.StringField(2, repeated=True)
+  env = _messages.MessageField('EnvVar', 3, repeated=True)
+  image = _messages.StringField(4)
+  imagePullPolicy = _messages.StringField(5)
+  lifecycle = _messages.MessageField('Lifecycle', 6)
+  livenessProbe = _messages.MessageField('Probe', 7)
+  name = _messages.StringField(8)
+  ports = _messages.MessageField('ContainerPort', 9, repeated=True)
+  readinessProbe = _messages.MessageField('Probe', 10)
+  resources = _messages.MessageField('ResourceRequirements', 11)
+  securityContext = _messages.MessageField('SecurityContext', 12)
+  stdin = _messages.BooleanField(13)
+  stdinOnce = _messages.BooleanField(14)
+  terminationMessagePath = _messages.StringField(15)
+  tty = _messages.BooleanField(16)
+  volumeMounts = _messages.MessageField('VolumeMount', 17, repeated=True)
+  workingDir = _messages.StringField(18)
+
+
+class ContainerPort(_messages.Message):
+  """ContainerPort represents a network port in a single container.
+
+  Fields:
+    containerPort: Number of port to expose on the pod's IP address. This must
+      be a valid port number, 0 < x < 65536.
+    hostIP: What host IP to bind the external port to. +optional
+    hostPort: Number of port to expose on the host. If specified, this must be
+      a valid port number, 0 < x < 65536. If HostNetwork is specified, this
+      must match ContainerPort. Most containers do not need this. +optional
+    name: If specified, this must be an IANA_SVC_NAME and unique within the
+      pod. Each named port in a pod must have a unique name. Name for the port
+      that can be referred to by services. +optional
+    protocol: Protocol for port. Must be UDP or TCP. Defaults to "TCP".
+      +optional
+  """
+
+  containerPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  hostIP = _messages.StringField(2)
+  hostPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  name = _messages.StringField(4)
+  protocol = _messages.StringField(5)
+
+
 class ContaineranalysisProjectsAcknowledgmentsGetIamPolicyRequest(_messages.Message):
   """A ContaineranalysisProjectsAcknowledgmentsGetIamPolicyRequest object.
 
@@ -438,6 +741,18 @@ class ContaineranalysisProjectsAcknowledgmentsSetIamPolicyRequest(_messages.Mess
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class ContaineranalysisProjectsGetVulnzsummaryRequest(_messages.Message):
+  """A ContaineranalysisProjectsGetVulnzsummaryRequest object.
+
+  Fields:
+    filter: The filter expression.
+    parent: This contains the projectId for example: projects/{project_id}
+  """
+
+  filter = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
 
 
 class ContaineranalysisProjectsNotesCreateRequest(_messages.Message):
@@ -797,6 +1112,65 @@ class ContaineranalysisProvidersNotesTestIamPermissionsRequest(_messages.Message
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class Deployable(_messages.Message):
+  """An artifact that can be deployed in some runtime.
+
+  Fields:
+    resourceUri: Resource URI for the artifact being deployed.
+  """
+
+  resourceUri = _messages.StringField(1, repeated=True)
+
+
+class Deployment(_messages.Message):
+  """The period during which some deployable was active in a runtime.
+
+  Messages:
+    ConfigValue: Configuration used to create this deployment.
+
+  Fields:
+    address: Address of the runtime element hosting this deployment.
+    config: Configuration used to create this deployment.
+    deployTime: Beginning of the lifetime of this deployment.
+    resourceUri: Resource URI for the artifact being deployed. Taken from the
+      Deployable field with the same name. @OutputOnly
+    undeployTime: End of the lifetime of this deployment.
+    userEmail: Identity of the user that triggered this deployment.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConfigValue(_messages.Message):
+    """Configuration used to create this deployment.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConfigValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  address = _messages.StringField(1)
+  config = _messages.MessageField('ConfigValue', 2)
+  deployTime = _messages.StringField(3)
+  resourceUri = _messages.StringField(4, repeated=True)
+  undeployTime = _messages.StringField(5)
+  userEmail = _messages.StringField(6)
+
+
 class Derived(_messages.Message):
   """Derived describes the derived image portion (Occurrence) of the
   DockerImage relationship.  This image would be produced from a Dockerfile
@@ -851,6 +1225,17 @@ class Detail(_messages.Message):
   severityName = _messages.StringField(7)
 
 
+class Discovered(_messages.Message):
+  """Provides information about the scan status of a discovered resource.
+
+  Fields:
+    operation: An operation that indicates the status of the current scan.
+      @OutputOnly
+  """
+
+  operation = _messages.MessageField('Operation', 1)
+
+
 class Distribution(_messages.Message):
   """This represents a particular channel of distribution for a given package.
   e.g. Debian's jessie-backports dpkg mirror
@@ -893,6 +1278,48 @@ class Distribution(_messages.Message):
   url = _messages.StringField(6)
 
 
+class DownwardAPIVolumeFile(_messages.Message):
+  """DownwardAPIVolumeFile represents information to create the file
+  containing the pod field
+
+  Fields:
+    fieldRef: Required: Selects a field of the pod: only annotations, labels,
+      name and namespace are supported. +optional
+    mode: Optional: mode bits to use on this file, must be a value between 0
+      and 0777. If not specified, the volume defaultMode will be used. This
+      might be in conflict with other options that affect the file mode, like
+      fsGroup, and the result can be other mode bits set. +optional
+    path: Required: Path is  the relative path name of the file to be created.
+      Must not be absolute or contain the '..' path. Must be utf-8 encoded.
+      The first item of the relative path must not start with '..'
+    resourceFieldRef: Selects a resource of the container: only resources
+      limits and requests (limits.cpu, limits.memory, requests.cpu and
+      requests.memory) are currently supported. +optional
+  """
+
+  fieldRef = _messages.MessageField('ObjectFieldSelector', 1)
+  mode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  path = _messages.StringField(3)
+  resourceFieldRef = _messages.MessageField('ResourceFieldSelector', 4)
+
+
+class DownwardAPIVolumeSource(_messages.Message):
+  """DownwardAPIVolumeSource represents a volume containing downward API info.
+  Downward API volumes support ownership management and SELinux relabeling.
+
+  Fields:
+    defaultMode: Optional: mode bits to use on created files by default. Must
+      be a value between 0 and 0777. Defaults to 0644. Directories within the
+      path are not affected by this setting. This might be in conflict with
+      other options that affect the file mode, like fsGroup, and the result
+      can be other mode bits set. +optional
+    items: Items is a list of downward API volume file +optional
+  """
+
+  defaultMode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  items = _messages.MessageField('DownwardAPIVolumeFile', 2, repeated=True)
+
+
 class Empty(_messages.Message):
   """A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -901,6 +1328,76 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EmptyDirVolumeSource(_messages.Message):
+  """Represents an empty directory for a pod. Empty directory volumes support
+  ownership management and SELinux relabeling.
+
+  Fields:
+    medium: What type of storage medium should back this directory. The
+      default is "" which means to use the node's default medium. Must be an
+      empty string (default) or Memory. More info: http://kubernetes.io/docs
+      /user-guide/volumes#emptydir +optional
+  """
+
+  medium = _messages.StringField(1)
+
+
+class EnvVar(_messages.Message):
+  """EnvVar represents an environment variable present in a Container.
+
+  Fields:
+    name: Name of the environment variable. Must be a C_IDENTIFIER.
+    value: Variable references $(VAR_NAME) are expanded using the previous
+      defined environment variables in the container and any service
+      environment variables. If a variable cannot be resolved, the reference
+      in the input string will be unchanged. The $(VAR_NAME) syntax can be
+      escaped with a double $$, ie: $$(VAR_NAME). Escaped references will
+      never be expanded, regardless of whether the variable exists or not.
+      Defaults to "". +optional
+    valueFrom: Source for the environment variable's value. Cannot be used if
+      value is not empty. +optional
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+  valueFrom = _messages.MessageField('EnvVarSource', 3)
+
+
+class EnvVarSource(_messages.Message):
+  """EnvVarSource represents a source for the value of an EnvVar.
+
+  Fields:
+    configMapKeyRef: Selects a key of a ConfigMap. +optional
+    fieldRef: Selects a field of the pod: supports metadata.name,
+      metadata.namespace, metadata.labels, metadata.annotations,
+      spec.nodeName, spec.serviceAccountName, status.podIP. +optional
+    resourceFieldRef: Selects a resource of the container: only resources
+      limits and requests (limits.cpu, limits.memory, requests.cpu and
+      requests.memory) are currently supported. +optional
+    secretKeyRef: Selects a key of a secret in the pod's namespace +optional
+  """
+
+  configMapKeyRef = _messages.MessageField('ConfigMapKeySelector', 1)
+  fieldRef = _messages.MessageField('ObjectFieldSelector', 2)
+  resourceFieldRef = _messages.MessageField('ResourceFieldSelector', 3)
+  secretKeyRef = _messages.MessageField('SecretKeySelector', 4)
+
+
+class ExecAction(_messages.Message):
+  """ExecAction describes a "run in container" action.
+
+  Fields:
+    command: Command is the command line to execute inside the container, the
+      working directory for the command  is root ('/') in the container's
+      filesystem. The command is simply exec'd, it is not run inside a shell,
+      so traditional shell instructions ('|', etc) won't work. To use a shell,
+      you need to explicitly call out to that shell. Exit status of 0 is
+      treated as live/healthy and non-zero is unhealthy. +optional
+  """
+
+  command = _messages.StringField(1, repeated=True)
 
 
 class Expr(_messages.Message):
@@ -967,6 +1464,27 @@ class ExtendedSourceContext(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
 
 
+class FCVolumeSource(_messages.Message):
+  """Represents a Fibre Channel volume. Fibre Channel volumes can only be
+  mounted as read/write once. Fibre Channel volumes support ownership
+  management and SELinux relabeling.
+
+  Fields:
+    fsType: Filesystem type to mount. Must be a filesystem type supported by
+      the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly
+      inferred to be "ext4" if unspecified.
+    lun: Required: FC target lun number
+    readOnly: Optional: Defaults to false (read/write). ReadOnly here will
+      force the ReadOnly setting in VolumeMounts. +optional
+    targetWWNs: Required: FC target worldwide names (WWNs)
+  """
+
+  fsType = _messages.StringField(1)
+  lun = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  readOnly = _messages.BooleanField(3)
+  targetWWNs = _messages.StringField(4, repeated=True)
+
+
 class FileHashes(_messages.Message):
   """Container message for hashes of byte content of files, used in Source
   messages to verify integrity of source input to the build.
@@ -996,6 +1514,108 @@ class Fingerprint(_messages.Message):
   v2Name = _messages.StringField(3)
 
 
+class FlexVolumeSource(_messages.Message):
+  """FlexVolume represents a generic volume resource that is
+  provisioned/attached using an exec based plugin. This is an alpha feature
+  and may change in future.
+
+  Messages:
+    OptionsValue: Optional: Extra command options if any. +optional
+
+  Fields:
+    driver: Driver is the name of the driver to use for this volume.
+    fsType: Filesystem type to mount. Must be a filesystem type supported by
+      the host operating system. Ex. "ext4", "xfs", "ntfs". The default
+      filesystem depends on FlexVolume script. +optional
+    options: Optional: Extra command options if any. +optional
+    readOnly: Optional: Defaults to false (read/write). ReadOnly here will
+      force the ReadOnly setting in VolumeMounts. +optional
+    secretRef: Optional: SecretRef is reference to the secret object
+      containing sensitive information to pass to the plugin scripts. This may
+      be empty if no secret object is specified. If the secret object contains
+      more than one secret, all secrets are passed to the plugin scripts.
+      +optional
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OptionsValue(_messages.Message):
+    """Optional: Extra command options if any. +optional
+
+    Messages:
+      AdditionalProperty: An additional property for a OptionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type OptionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a OptionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  driver = _messages.StringField(1)
+  fsType = _messages.StringField(2)
+  options = _messages.MessageField('OptionsValue', 3)
+  readOnly = _messages.BooleanField(4)
+  secretRef = _messages.MessageField('LocalObjectReference', 5)
+
+
+class FlockerVolumeSource(_messages.Message):
+  """Represents a Flocker volume mounted by the Flocker agent. One and only
+  one of datasetName and datasetUUID should be set. Flocker volumes do not
+  support ownership management or SELinux relabeling.
+
+  Fields:
+    datasetName: Name of the dataset stored as metadata -> name on the dataset
+      for Flocker should be considered as deprecated +optional
+    datasetUUID: UUID of the dataset. This is unique identifier of a Flocker
+      dataset +optional
+  """
+
+  datasetName = _messages.StringField(1)
+  datasetUUID = _messages.StringField(2)
+
+
+class GCEPersistentDiskVolumeSource(_messages.Message):
+  """Represents a Persistent Disk resource in Google Compute Engine.  A GCE PD
+  must exist before mounting to a container. The disk must also be in the same
+  GCE project and zone as the kubelet. A GCE PD can only be mounted as
+  read/write once or read-only many times. GCE PDs support ownership
+  management and SELinux relabeling.
+
+  Fields:
+    fsType: Filesystem type of the volume that you want to mount. Tip: Ensure
+      that the filesystem type is supported by the host operating system.
+      Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if
+      unspecified. More info: http://kubernetes.io/docs/user-
+      guide/volumes#gcepersistentdisk
+    partition: The partition in the volume that you want to mount. If omitted,
+      the default is to mount by volume name. Examples: For volume /dev/sda1,
+      you specify the partition as "1". Similarly, the volume partition for
+      /dev/sda is "0" (or you can leave the property empty). More info:
+      http://kubernetes.io/docs/user-guide/volumes#gcepersistentdisk +optional
+    pdName: Unique name of the PD resource in GCE. Used to identify the disk
+      in GCE. More info: http://kubernetes.io/docs/user-
+      guide/volumes#gcepersistentdisk
+    readOnly: ReadOnly here will force the ReadOnly setting in VolumeMounts.
+      Defaults to false. More info: http://kubernetes.io/docs/user-
+      guide/volumes#gcepersistentdisk +optional
+  """
+
+  fsType = _messages.StringField(1)
+  partition = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pdName = _messages.StringField(3)
+  readOnly = _messages.BooleanField(4)
+
+
 class GerritSourceContext(_messages.Message):
   """A SourceContext referring to a Gerrit project.
 
@@ -1020,6 +1640,35 @@ class GetIamPolicyRequest(_messages.Message):
   """Request message for `GetIamPolicy` method."""
 
 
+class GetVulnzOccurrencesSummaryResponse(_messages.Message):
+  """A summary of how many vulnz occurrences there are per severity type.
+
+  Fields:
+    counts: A map of how many occurrences were found for each severity.
+  """
+
+  counts = _messages.MessageField('SeverityCount', 1, repeated=True)
+
+
+class GitRepoVolumeSource(_messages.Message):
+  """Represents a volume that is populated with the contents of a git
+  repository. Git repo volumes do not support ownership management. Git repo
+  volumes support SELinux relabeling.
+
+  Fields:
+    directory: Target directory name. Must not contain or start with '..'.  If
+      '.' is supplied, the volume directory will be the git repository.
+      Otherwise, if specified, the volume will contain the git repository in
+      the subdirectory with the given name. +optional
+    repository: Repository URL
+    revision: Commit hash for the specified revision. +optional
+  """
+
+  directory = _messages.StringField(1)
+  repository = _messages.StringField(2)
+  revision = _messages.StringField(3)
+
+
 class GitSourceContext(_messages.Message):
   """A GitSourceContext denotes a particular revision in a third party Git
   repository (e.g. GitHub).
@@ -1031,6 +1680,76 @@ class GitSourceContext(_messages.Message):
 
   revisionId = _messages.StringField(1)
   url = _messages.StringField(2)
+
+
+class GlusterfsVolumeSource(_messages.Message):
+  """Represents a Glusterfs mount that lasts the lifetime of a pod. Glusterfs
+  volumes do not support ownership management or SELinux relabeling.
+
+  Fields:
+    endpoints: EndpointsName is the endpoint name that details Glusterfs
+      topology. More info: http://releases.k8s.io/HEAD/examples/volumes/gluste
+      rfs/README.md#create-a-pod
+    path: Path is the Glusterfs volume path. More info: http://releases.k8s.io
+      /HEAD/examples/volumes/glusterfs/README.md#create-a-pod
+    readOnly: ReadOnly here will force the Glusterfs volume to be mounted with
+      read-only permissions. Defaults to false. More info: http://releases.k8s
+      .io/HEAD/examples/volumes/glusterfs/README.md#create-a-pod +optional
+  """
+
+  endpoints = _messages.StringField(1)
+  path = _messages.StringField(2)
+  readOnly = _messages.BooleanField(3)
+
+
+class HTTPGetAction(_messages.Message):
+  """HTTPGetAction describes an action based on HTTP Get requests.
+
+  Fields:
+    host: Host name to connect to, defaults to the pod IP. You probably want
+      to set "Host" in httpHeaders instead. +optional
+    httpHeaders: Custom headers to set in the request. HTTP allows repeated
+      headers. +optional
+    path: Path to access on the HTTP server. +optional
+    port: Name or number of the port to access on the container. Number must
+      be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+    scheme: Scheme to use for connecting to the host. Defaults to HTTP.
+      +optional
+  """
+
+  host = _messages.StringField(1)
+  httpHeaders = _messages.MessageField('HTTPHeader', 2, repeated=True)
+  path = _messages.StringField(3)
+  port = _messages.MessageField('IntOrString', 4)
+  scheme = _messages.StringField(5)
+
+
+class HTTPHeader(_messages.Message):
+  """HTTPHeader describes a custom header to be used in HTTP probes
+
+  Fields:
+    name: The header field name
+    value: The header field value
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class Handler(_messages.Message):
+  """Handler defines a specific action that should be taken
+
+  Fields:
+    exec_: One and only one of the following should be specified. Exec
+      specifies the action to take. +optional
+    httpGet: HTTPGet specifies the http request to perform. +optional
+    tcpSocket: TCPSocket specifies an action involving a TCP port. TCP hooks
+      not yet supported
+  """
+
+  exec_ = _messages.MessageField('ExecAction', 1)
+  httpGet = _messages.MessageField('HTTPGetAction', 2)
+  tcpSocket = _messages.MessageField('TCPSocketAction', 3)
 
 
 class Hash(_messages.Message):
@@ -1058,6 +1777,47 @@ class Hash(_messages.Message):
   value = _messages.BytesField(2)
 
 
+class HostPathVolumeSource(_messages.Message):
+  """Represents a host path mapped into a pod. Host path volumes do not
+  support ownership management or SELinux relabeling.
+
+  Fields:
+    path: Path of the directory on the host. More info:
+      http://kubernetes.io/docs/user-guide/volumes#hostpath
+  """
+
+  path = _messages.StringField(1)
+
+
+class ISCSIVolumeSource(_messages.Message):
+  """Represents an ISCSI disk. ISCSI volumes can only be mounted as read/write
+  once. ISCSI volumes support ownership management and SELinux relabeling.
+
+  Fields:
+    fsType: Filesystem type of the volume that you want to mount. Tip: Ensure
+      that the filesystem type is supported by the host operating system.
+      Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if
+      unspecified. More info: http://kubernetes.io/docs/user-
+      guide/volumes#iscsi
+    iqn: Target iSCSI Qualified Name.
+    iscsiInterface: Optional: Defaults to 'default' (tcp). iSCSI interface
+      name that uses an iSCSI transport. +optional
+    lun: iSCSI target lun number.
+    readOnly: ReadOnly here will force the ReadOnly setting in VolumeMounts.
+      Defaults to false. +optional
+    targetPortal: iSCSI target portal. The portal is either an IP or
+      ip_addr:port if the port is other than default (typically TCP ports 860
+      and 3260).
+  """
+
+  fsType = _messages.StringField(1)
+  iqn = _messages.StringField(2)
+  iscsiInterface = _messages.StringField(3)
+  lun = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  readOnly = _messages.BooleanField(5)
+  targetPortal = _messages.StringField(6)
+
+
 class Installation(_messages.Message):
   """This represents how a particular software package may be installed on a
   system.
@@ -1070,6 +1830,42 @@ class Installation(_messages.Message):
 
   location = _messages.MessageField('Location', 1, repeated=True)
   name = _messages.StringField(2)
+
+
+class IntOrString(_messages.Message):
+  """IntOrString is a type that can hold an int32 or a string.  When used in
+  JSON or YAML marshalling and unmarshalling, it produces or consumes the
+  inner type.  This allows you to have, for example, a JSON field that can
+  accept a name or number.
+
+  Fields:
+    intVal: A integer attribute.
+    strVal: A string attribute.
+    type: A string attribute.
+  """
+
+  intVal = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  strVal = _messages.StringField(2)
+  type = _messages.IntegerField(3)
+
+
+class KeyToPath(_messages.Message):
+  """Maps a string key to a path within a volume.
+
+  Fields:
+    key: The key to project.
+    mode: Optional: mode bits to use on this file, must be a value between 0
+      and 0777. If not specified, the volume defaultMode will be used. This
+      might be in conflict with other options that affect the file mode, like
+      fsGroup, and the result can be other mode bits set. +optional
+    path: The relative path of the file to map the key to. May not be an
+      absolute path. May not contain the path element '..'. May not start with
+      the string '..'.
+  """
+
+  key = _messages.StringField(1)
+  mode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  path = _messages.StringField(3)
 
 
 class Layer(_messages.Message):
@@ -1131,6 +1927,32 @@ class Layer(_messages.Message):
   directive = _messages.EnumField('DirectiveValueValuesEnum', 2)
 
 
+class Lifecycle(_messages.Message):
+  """Lifecycle describes actions that the management system should take in
+  response to container lifecycle events. For the PostStart and PreStop
+  lifecycle handlers, management of the container blocks until the action is
+  complete, unless the container process fails, in which case the handler is
+  aborted.
+
+  Fields:
+    postStart: PostStart is called immediately after a container is created.
+      If the handler fails, the container is terminated and restarted
+      according to its restart policy. Other management of the container
+      blocks until the hook completes. More info: http://kubernetes.io/docs
+      /user-guide/container-environment#hook-details +optional
+    preStop: PreStop is called immediately before a container is terminated.
+      The container is terminated after the handler completes. The reason for
+      termination is passed to the handler. Regardless of the outcome of the
+      handler, the container is eventually terminated. Other management of the
+      container blocks until the hook completes. More info:
+      http://kubernetes.io/docs/user-guide/container-environment#hook-details
+      +optional
+  """
+
+  postStart = _messages.MessageField('Handler', 1)
+  preStop = _messages.MessageField('Handler', 2)
+
+
 class ListNoteOccurrencesResponse(_messages.Message):
   """Response including listed occurrences for a note.
 
@@ -1171,6 +1993,18 @@ class ListOccurrencesResponse(_messages.Message):
   occurrences = _messages.MessageField('Occurrence', 2, repeated=True)
 
 
+class LocalObjectReference(_messages.Message):
+  """LocalObjectReference contains enough information to let you locate the
+  referenced object inside the same namespace.
+
+  Fields:
+    name: Name of the referent. More info: http://kubernetes.io/docs/user-
+      guide/identifiers#names
+  """
+
+  name = _messages.StringField(1)
+
+
 class Location(_messages.Message):
   """An occurrence of a particular package installation found within a
   system's filesystem. e.g. glibc was found in /var/lib/dpkg/status
@@ -1188,6 +2022,25 @@ class Location(_messages.Message):
   version = _messages.MessageField('Version', 3)
 
 
+class NFSVolumeSource(_messages.Message):
+  """Represents an NFS mount that lasts the lifetime of a pod. NFS volumes do
+  not support ownership management or SELinux relabeling.
+
+  Fields:
+    path: Path that is exported by the NFS server. More info:
+      http://kubernetes.io/docs/user-guide/volumes#nfs
+    readOnly: ReadOnly here will force the NFS export to be mounted with read-
+      only permissions. Defaults to false. More info:
+      http://kubernetes.io/docs/user-guide/volumes#nfs +optional
+    server: Server is the hostname or IP address of the NFS server. More info:
+      http://kubernetes.io/docs/user-guide/volumes#nfs
+  """
+
+  path = _messages.StringField(1)
+  readOnly = _messages.BooleanField(2)
+  server = _messages.StringField(3)
+
+
 class Note(_messages.Message):
   """Note provides a detailed description of a note using information from the
   provider of the note.
@@ -1202,6 +2055,7 @@ class Note(_messages.Message):
     buildType: Build provenance type for a verifiable build.
     createTime: The time this note was created. This field can be used as a
       filter in list requests. @OutputOnly
+    deployable: A note describing something that can be deployed.
     expirationTime: Time of expiration for this Note, null if Note currently
       does not expire.
     kind: This explicitly denotes which kind of note is specified. This field
@@ -1229,25 +2083,41 @@ class Note(_messages.Message):
       IMAGE_BASIS: This represents an image basis relationship.
       PACKAGE_MANAGER: This represents a package installed via a package
         manager.
+      DEPLOYABLE: The note and occurrence track deployment events.
     """
     UNKNOWN = 0
     PACKAGE_VULNERABILITY = 1
     BUILD_DETAILS = 2
     IMAGE_BASIS = 3
     PACKAGE_MANAGER = 4
+    DEPLOYABLE = 5
 
   baseImage = _messages.MessageField('Basis', 1)
   buildType = _messages.MessageField('BuildType', 2)
   createTime = _messages.StringField(3)
-  expirationTime = _messages.StringField(4)
-  kind = _messages.EnumField('KindValueValuesEnum', 5)
-  longDescription = _messages.StringField(6)
-  name = _messages.StringField(7)
-  package = _messages.MessageField('Package', 8)
-  relatedUrl = _messages.MessageField('RelatedUrl', 9, repeated=True)
-  shortDescription = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
-  vulnerabilityType = _messages.MessageField('VulnerabilityType', 12)
+  deployable = _messages.MessageField('Deployable', 4)
+  expirationTime = _messages.StringField(5)
+  kind = _messages.EnumField('KindValueValuesEnum', 6)
+  longDescription = _messages.StringField(7)
+  name = _messages.StringField(8)
+  package = _messages.MessageField('Package', 9)
+  relatedUrl = _messages.MessageField('RelatedUrl', 10, repeated=True)
+  shortDescription = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  vulnerabilityType = _messages.MessageField('VulnerabilityType', 13)
+
+
+class ObjectFieldSelector(_messages.Message):
+  """ObjectFieldSelector selects an APIVersioned field of an object.
+
+  Fields:
+    apiVersion: Version of the schema the FieldPath is written in terms of,
+      defaults to "v1". +optional
+    fieldPath: Path of the field to select in the specified API version.
+  """
+
+  apiVersion = _messages.StringField(1)
+  fieldPath = _messages.StringField(2)
 
 
 class Occurrence(_messages.Message):
@@ -1262,8 +2132,10 @@ class Occurrence(_messages.Message):
   Fields:
     buildDetails: Build details for a verifiable build.
     createTime: The time this occurrence was created. @OutputOnly
+    deployment: Describes the deployment of an artifact on a runtime.
     derivedImage: Describes how this resource derives from the basis in the
       associated note.
+    discovered: Describes the initial scan status for this resource.
     installation: Describes the installation of a package on the linked
       resource.
     kind: This explicitly denotes which of the occurrence details is
@@ -1294,24 +2166,135 @@ class Occurrence(_messages.Message):
       IMAGE_BASIS: This represents an image basis relationship.
       PACKAGE_MANAGER: This represents a package installed via a package
         manager.
+      DEPLOYABLE: The note and occurrence track deployment events.
     """
     UNKNOWN = 0
     PACKAGE_VULNERABILITY = 1
     BUILD_DETAILS = 2
     IMAGE_BASIS = 3
     PACKAGE_MANAGER = 4
+    DEPLOYABLE = 5
 
   buildDetails = _messages.MessageField('BuildDetails', 1)
   createTime = _messages.StringField(2)
-  derivedImage = _messages.MessageField('Derived', 3)
-  installation = _messages.MessageField('Installation', 4)
-  kind = _messages.EnumField('KindValueValuesEnum', 5)
-  name = _messages.StringField(6)
-  noteName = _messages.StringField(7)
-  remediation = _messages.StringField(8)
-  resourceUrl = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 11)
+  deployment = _messages.MessageField('Deployment', 3)
+  derivedImage = _messages.MessageField('Derived', 4)
+  discovered = _messages.MessageField('Discovered', 5)
+  installation = _messages.MessageField('Installation', 6)
+  kind = _messages.EnumField('KindValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  noteName = _messages.StringField(9)
+  remediation = _messages.StringField(10)
+  resourceUrl = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 13)
+
+
+class Operation(_messages.Message):
+  """This resource represents a long-running operation that is the result of a
+  network API call.
+
+  Messages:
+    MetadataValue: Service-specific metadata associated with the operation.
+      It typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata.  Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    ResponseValue: The normal response of the operation in case of success.
+      If the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`.  If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name.  For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+  Fields:
+    done: If the value is `false`, it means the operation is still in
+      progress. If `true`, the operation is completed, and either `error` or
+      `response` is available.
+    error: The error result of the operation in case of failure or
+      cancellation.
+    metadata: Service-specific metadata associated with the operation.  It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata.  Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    name: The server-assigned name, which is only unique within the same
+      service that originally returns it. If you use the default HTTP mapping,
+      the `name` should have the format of `operations/some/unique/name`.
+    response: The normal response of the operation in case of success.  If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`.  If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name.  For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    """Service-specific metadata associated with the operation.  It typically
+    contains progress information and common metadata such as create time.
+    Some services might not provide such metadata.  Any method that returns a
+    long-running operation should document the metadata type, if any.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseValue(_messages.Message):
+    """The normal response of the operation in case of success.  If the
+    original method returns no data on success, such as `Delete`, the response
+    is `google.protobuf.Empty`.  If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    methods, the response should have the type `XxxResponse`, where `Xxx` is
+    the original method name.  For example, if the original method name is
+    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ResponseValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('Status', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  response = _messages.MessageField('ResponseValue', 5)
 
 
 class Package(_messages.Message):
@@ -1342,6 +2325,201 @@ class PackageIssue(_messages.Message):
   affectedLocation = _messages.MessageField('VulnerabilityLocation', 1)
   fixedLocation = _messages.MessageField('VulnerabilityLocation', 2)
   severityName = _messages.StringField(3)
+
+
+class PersistentVolumeClaimVolumeSource(_messages.Message):
+  """PersistentVolumeClaimVolumeSource references the user's PVC in the same
+  namespace. This volume finds the bound PV and mounts that volume for the
+  pod. A PersistentVolumeClaimVolumeSource is, essentially, a wrapper around
+  another type of volume that is owned by someone else (the system).
+
+  Fields:
+    claimName: ClaimName is the name of a PersistentVolumeClaim in the same
+      namespace as the pod using this volume. More info:
+      http://kubernetes.io/docs/user-guide/persistent-
+      volumes#persistentvolumeclaims
+    readOnly: Will force the ReadOnly setting in VolumeMounts. Default false.
+      +optional
+  """
+
+  claimName = _messages.StringField(1)
+  readOnly = _messages.BooleanField(2)
+
+
+class PhotonPersistentDiskVolumeSource(_messages.Message):
+  """Represents a Photon Controller persistent disk resource.
+
+  Fields:
+    fsType: Filesystem type to mount. Must be a filesystem type supported by
+      the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly
+      inferred to be "ext4" if unspecified.
+    pdID: ID that identifies Photon Controller persistent disk
+  """
+
+  fsType = _messages.StringField(1)
+  pdID = _messages.StringField(2)
+
+
+class PodSecurityContext(_messages.Message):
+  """PodSecurityContext holds pod-level security attributes and common
+  container settings. Some fields are also present in
+  container.securityContext.  Field values of container.securityContext take
+  precedence over field values of PodSecurityContext.
+
+  Fields:
+    fsGroup: A special supplemental group that applies to all containers in a
+      pod. Some volume types allow the Kubelet to change the ownership of that
+      volume to be owned by the pod:  1. The owning GID will be the FSGroup 2.
+      The setgid bit is set (new files created in the volume will be owned by
+      FSGroup) 3. The permission bits are OR'd with rw-rw----  If unset, the
+      Kubelet will not modify the ownership and permissions of any volume.
+      +optional
+    runAsNonRoot: Indicates that the container must run as a non-root user. If
+      true, the Kubelet will validate the image at runtime to ensure that it
+      does not run as UID 0 (root) and fail to start the container if it does.
+      If unset or false, no such validation will be performed. May also be set
+      in SecurityContext.  If set in both SecurityContext and
+      PodSecurityContext, the value specified in SecurityContext takes
+      precedence. +optional
+    runAsUser: The UID to run the entrypoint of the container process.
+      Defaults to user specified in image metadata if unspecified. May also be
+      set in SecurityContext.  If set in both SecurityContext and
+      PodSecurityContext, the value specified in SecurityContext takes
+      precedence for that container. +optional
+    seLinuxOptions: The SELinux context to be applied to all containers. If
+      unspecified, the container runtime will allocate a random SELinux
+      context for each container.  May also be set in SecurityContext.  If set
+      in both SecurityContext and PodSecurityContext, the value specified in
+      SecurityContext takes precedence for that container. +optional
+    supplementalGroups: A list of groups applied to the first process run in
+      each container, in addition to the container's primary GID.  If
+      unspecified, no groups will be added to any container. +optional
+  """
+
+  fsGroup = _messages.IntegerField(1)
+  runAsNonRoot = _messages.BooleanField(2)
+  runAsUser = _messages.IntegerField(3)
+  seLinuxOptions = _messages.MessageField('SELinuxOptions', 4)
+  supplementalGroups = _messages.IntegerField(5, repeated=True)
+
+
+class PodSpec(_messages.Message):
+  """PodSpec is a description of a pod.
+
+  Messages:
+    NodeSelectorValue: NodeSelector is a selector which must be true for the
+      pod to fit on a node. Selector which must match a node's labels for the
+      pod to be scheduled on that node. More info: http://kubernetes.io/docs
+      /user-guide/node-selection/README +optional
+
+  Fields:
+    activeDeadlineSeconds: Optional duration in seconds the pod may be active
+      on the node relative to StartTime before the system will actively try to
+      mark it failed and kill associated containers. Value must be a positive
+      integer. +optional
+    containers: List of containers belonging to the pod. Containers cannot
+      currently be added or removed. There must be at least one container in a
+      Pod. Cannot be updated. More info: http://kubernetes.io/docs/user-
+      guide/containers
+    dnsPolicy: Set DNS policy for containers within the pod. One of
+      'ClusterFirst' or 'Default'. Defaults to "ClusterFirst". +optional
+    hostIPC: Use the host's ipc namespace. Optional: Default to false. +k8s
+      :conversion-gen=false +optional
+    hostNetwork: Host networking requested for this pod. Use the host's
+      network namespace. If this option is set, the ports that will be used
+      must be specified. Default to false. +k8s:conversion-gen=false +optional
+    hostPID: Use the host's pid namespace. Optional: Default to false. +k8s
+      :conversion-gen=false +optional
+    hostname: Specifies the hostname of the Pod If not specified, the pod's
+      hostname will be set to a system-defined value. +optional
+    imagePullSecrets: ImagePullSecrets is an optional list of references to
+      secrets in the same namespace to use for pulling any of the images used
+      by this PodSpec. If specified, these secrets will be passed to
+      individual puller implementations for them to use. For example, in the
+      case of docker, only DockerConfig type secrets are honored. More info:
+      http://kubernetes.io/docs/user-guide/images#specifying-imagepullsecrets-
+      on-a-pod +optional
+    nodeName: NodeName is a request to schedule this pod onto a specific node.
+      If it is non-empty, the scheduler simply schedules this pod onto that
+      node, assuming that it fits resource requirements. +optional
+    nodeSelector: NodeSelector is a selector which must be true for the pod to
+      fit on a node. Selector which must match a node's labels for the pod to
+      be scheduled on that node. More info: http://kubernetes.io/docs/user-
+      guide/node-selection/README +optional
+    restartPolicy: Restart policy for all containers within the pod. One of
+      Always, OnFailure, Never. Default to Always. More info:
+      http://kubernetes.io/docs/user-guide/pod-states#restartpolicy +optional
+    securityContext: SecurityContext holds pod-level security attributes and
+      common container settings. Optional: Defaults to empty.  See type
+      description for default values of each field. +optional
+    serviceAccount: DeprecatedServiceAccount is a depreciated alias for
+      ServiceAccountName. Deprecated: Use serviceAccountName instead. +k8s
+      :conversion-gen=false +optional
+    serviceAccountName: ServiceAccountName is the name of the ServiceAccount
+      to use to run this pod. More info:
+      http://releases.k8s.io/HEAD/docs/design/service_accounts.md +optional
+    subdomain: If specified, the fully qualified Pod hostname will be
+      "<hostname>.<subdomain>.<pod namespace>.svc.<cluster domain>". If not
+      specified, the pod will not have a domainname at all. +optional
+    terminationGracePeriodSeconds: Optional duration in seconds the pod needs
+      to terminate gracefully. May be decreased in delete request. Value must
+      be non-negative integer. The value zero indicates delete immediately. If
+      this value is nil, the default grace period will be used instead. The
+      grace period is the duration in seconds after the processes running in
+      the pod are sent a termination signal and the time when the processes
+      are forcibly halted with a kill signal. Set this value longer than the
+      expected cleanup time for your process. Defaults to 30 seconds.
+      +optional
+    volumes: List of volumes that can be mounted by containers belonging to
+      the pod. More info: http://kubernetes.io/docs/user-guide/volumes
+      +optional
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NodeSelectorValue(_messages.Message):
+    """NodeSelector is a selector which must be true for the pod to fit on a
+    node. Selector which must match a node's labels for the pod to be
+    scheduled on that node. More info: http://kubernetes.io/docs/user-guide
+    /node-selection/README +optional
+
+    Messages:
+      AdditionalProperty: An additional property for a NodeSelectorValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type NodeSelectorValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a NodeSelectorValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  activeDeadlineSeconds = _messages.IntegerField(1)
+  containers = _messages.MessageField('Container', 2, repeated=True)
+  dnsPolicy = _messages.StringField(3)
+  hostIPC = _messages.BooleanField(4)
+  hostNetwork = _messages.BooleanField(5)
+  hostPID = _messages.BooleanField(6)
+  hostname = _messages.StringField(7)
+  imagePullSecrets = _messages.MessageField('LocalObjectReference', 8, repeated=True)
+  nodeName = _messages.StringField(9)
+  nodeSelector = _messages.MessageField('NodeSelectorValue', 10)
+  restartPolicy = _messages.StringField(11)
+  securityContext = _messages.MessageField('PodSecurityContext', 12)
+  serviceAccount = _messages.StringField(13)
+  serviceAccountName = _messages.StringField(14)
+  subdomain = _messages.StringField(15)
+  terminationGracePeriodSeconds = _messages.IntegerField(16)
+  volumes = _messages.MessageField('Volume', 17, repeated=True)
 
 
 class Policy(_messages.Message):
@@ -1383,6 +2561,38 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
+class Probe(_messages.Message):
+  """Probe describes a health check to be performed against a container to
+  determine whether it is alive or ready to receive traffic.
+
+  Fields:
+    failureThreshold: Minimum consecutive failures for the probe to be
+      considered failed after having succeeded. Defaults to 3. Minimum value
+      is 1. +optional
+    handler: The action taken to determine the health of a container
+    initialDelaySeconds: Number of seconds after the container has started
+      before liveness probes are initiated. More info:
+      http://kubernetes.io/docs/user-guide/pod-states#container-probes
+      +optional
+    periodSeconds: How often (in seconds) to perform the probe. Default to 10
+      seconds. Minimum value is 1. +optional
+    successThreshold: Minimum consecutive successes for the probe to be
+      considered successful after having failed. Defaults to 1. Must be 1 for
+      liveness. Minimum value is 1. +optional
+    timeoutSeconds: Number of seconds after which the probe times out.
+      Defaults to 1 second. Minimum value is 1. More info:
+      http://kubernetes.io/docs/user-guide/pod-states#container-probes
+      +optional
+  """
+
+  failureThreshold = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  handler = _messages.MessageField('Handler', 2)
+  initialDelaySeconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  periodSeconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  successThreshold = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  timeoutSeconds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class ProjectRepoId(_messages.Message):
   """Selects a repo using a Google Cloud Platform project ID (e.g. winged-
   cargo-31) and a repo name within that project.
@@ -1394,6 +2604,110 @@ class ProjectRepoId(_messages.Message):
 
   projectId = _messages.StringField(1)
   repoName = _messages.StringField(2)
+
+
+class Quantity(_messages.Message):
+  """Quantity is a fixed-point representation of a number. It provides
+  convenient marshaling/unmarshaling in JSON and YAML, in addition to String()
+  and Int64() accessors.  The serialization format is:  <quantity>        ::=
+  <signedNumber><suffix>   (Note that <suffix> may be empty, from the "" case
+  in <decimalSI>.) <digit>           ::= 0 | 1 | ... | 9 <digits>          ::=
+  <digit> | <digit><digits> <number>          ::= <digits> | <digits>.<digits>
+  | <digits>. | .<digits> <sign>            ::= "+" | "-" <signedNumber>
+  ::= <number> | <sign><number> <suffix>          ::= <binarySI> |
+  <decimalExponent> | <decimalSI> <binarySI>        ::= Ki | Mi | Gi | Ti | Pi
+  | Ei   (International System of units; See:
+  http://physics.nist.gov/cuu/Units/binary.html) <decimalSI>       ::= m | ""
+  | k | M | G | T | P | E   (Note that 1024 = 1Ki but 1000 = 1k; I didn't
+  choose the capitalization.) <decimalExponent> ::= "e" <signedNumber> | "E"
+  <signedNumber>  No matter which of the three exponent forms is used, no
+  quantity may represent a number greater than 2^63-1 in magnitude, nor may it
+  have more than 3 decimal places. Numbers larger or more precise will be
+  capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be
+  extended in the future if we require larger or smaller quantities.  When a
+  Quantity is parsed from a string, it will remember the type of suffix it
+  had, and will use the same type again when it is serialized.  Before
+  serializing, Quantity will be put in "canonical form". This means that
+  Exponent/suffix will be adjusted up or down (with a corresponding increase
+  or decrease in Mantissa) such that:   a. No precision is lost   b. No
+  fractional digits will be emitted   c. The exponent (or suffix) is as large
+  as possible. The sign will be omitted unless the number is negative.
+  Examples:   1.5 will be serialized as "1500m"   1.5Gi will be serialized as
+  "1536Mi"  NOTE: We reserve the right to amend this canonical format, perhaps
+  to   allow 1.5 to be canonical.
+
+  Fields:
+    string: A string attribute.
+  """
+
+  string = _messages.StringField(1)
+
+
+class QuobyteVolumeSource(_messages.Message):
+  """Represents a Quobyte mount that lasts the lifetime of a pod. Quobyte
+  volumes do not support ownership management or SELinux relabeling.
+
+  Fields:
+    group: Group to map volume access to Default is no group +optional
+    readOnly: ReadOnly here will force the Quobyte volume to be mounted with
+      read-only permissions. Defaults to false. +optional
+    registry: Registry represents a single or multiple Quobyte Registry
+      services specified as a string as host:port pair (multiple entries are
+      separated with commas) which acts as the central registry for volumes
+    user: User to map volume access to Defaults to serivceaccount user
+      +optional
+    volume: Volume is a string that references an already created Quobyte
+      volume by name.
+  """
+
+  group = _messages.StringField(1)
+  readOnly = _messages.BooleanField(2)
+  registry = _messages.StringField(3)
+  user = _messages.StringField(4)
+  volume = _messages.StringField(5)
+
+
+class RBDVolumeSource(_messages.Message):
+  """Represents a Rados Block Device mount that lasts the lifetime of a pod.
+  RBD volumes support ownership management and SELinux relabeling.
+
+  Fields:
+    fsType: Filesystem type of the volume that you want to mount. Tip: Ensure
+      that the filesystem type is supported by the host operating system.
+      Examples: "ext4", "xfs", "ntfs". Implicitly inferred to be "ext4" if
+      unspecified. More info: http://kubernetes.io/docs/user-guide/volumes#rbd
+    image: The rados image name. More info:
+      http://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it
+    keyring: Keyring is the path to key ring for RBDUser. Default is
+      /etc/ceph/keyring. More info:
+      http://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it
+      +optional
+    monitors: A collection of Ceph monitors. More info:
+      http://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it
+    pool: The rados pool name. Default is rbd. More info:
+      http://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-
+      it. +optional
+    readOnly: ReadOnly here will force the ReadOnly setting in VolumeMounts.
+      Defaults to false. More info:
+      http://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it
+      +optional
+    secretRef: SecretRef is name of the authentication secret for RBDUser. If
+      provided overrides keyring. Default is nil. More info:
+      http://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it
+      +optional
+    user: The rados user name. Default is admin. More info:
+      http://releases.k8s.io/HEAD/examples/volumes/rbd/README.md#how-to-use-it
+      +optional
+  """
+
+  fsType = _messages.StringField(1)
+  image = _messages.StringField(2)
+  keyring = _messages.StringField(3)
+  monitors = _messages.StringField(4, repeated=True)
+  pool = _messages.StringField(5)
+  readOnly = _messages.BooleanField(6)
+  secretRef = _messages.MessageField('LocalObjectReference', 7)
+  user = _messages.StringField(8)
 
 
 class RelatedUrl(_messages.Message):
@@ -1439,6 +2753,206 @@ class RepoSource(_messages.Message):
   tagName = _messages.StringField(5)
 
 
+class ResourceFieldSelector(_messages.Message):
+  """ResourceFieldSelector represents container resources (cpu, memory) and
+  their output format
+
+  Fields:
+    containerName: Container name: required for volumes, optional for env vars
+      +optional
+    divisor: Specifies the output format of the exposed resources, defaults to
+      "1" +optional
+    resource: Required: resource to select
+  """
+
+  containerName = _messages.StringField(1)
+  divisor = _messages.MessageField('Quantity', 2)
+  resource = _messages.StringField(3)
+
+
+class ResourceRequirements(_messages.Message):
+  """ResourceRequirements describes the compute resource requirements.
+
+  Messages:
+    LimitsValue: Limits describes the maximum amount of compute resources
+      allowed. More info: http://kubernetes.io/docs/user-guide/compute-
+      resources/ +optional
+    RequestsValue: Requests describes the minimum amount of compute resources
+      required. If Requests is omitted for a container, it defaults to Limits
+      if that is explicitly specified, otherwise to an implementation-defined
+      value. More info: http://kubernetes.io/docs/user-guide/compute-
+      resources/ +optional
+
+  Fields:
+    limits: Limits describes the maximum amount of compute resources allowed.
+      More info: http://kubernetes.io/docs/user-guide/compute-resources/
+      +optional
+    requests: Requests describes the minimum amount of compute resources
+      required. If Requests is omitted for a container, it defaults to Limits
+      if that is explicitly specified, otherwise to an implementation-defined
+      value. More info: http://kubernetes.io/docs/user-guide/compute-
+      resources/ +optional
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LimitsValue(_messages.Message):
+    """Limits describes the maximum amount of compute resources allowed. More
+    info: http://kubernetes.io/docs/user-guide/compute-resources/ +optional
+
+    Messages:
+      AdditionalProperty: An additional property for a LimitsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LimitsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LimitsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Quantity attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Quantity', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestsValue(_messages.Message):
+    """Requests describes the minimum amount of compute resources required. If
+    Requests is omitted for a container, it defaults to Limits if that is
+    explicitly specified, otherwise to an implementation-defined value. More
+    info: http://kubernetes.io/docs/user-guide/compute-resources/ +optional
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type RequestsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a RequestsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Quantity attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Quantity', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  limits = _messages.MessageField('LimitsValue', 1)
+  requests = _messages.MessageField('RequestsValue', 2)
+
+
+class SELinuxOptions(_messages.Message):
+  """SELinuxOptions are the labels to be applied to the container
+
+  Fields:
+    level: Level is SELinux level label that applies to the container.
+      +optional
+    role: Role is a SELinux role label that applies to the container.
+      +optional
+    type: Type is a SELinux type label that applies to the container.
+      +optional
+    user: User is a SELinux user label that applies to the container.
+      +optional
+  """
+
+  level = _messages.StringField(1)
+  role = _messages.StringField(2)
+  type = _messages.StringField(3)
+  user = _messages.StringField(4)
+
+
+class SecretKeySelector(_messages.Message):
+  """SecretKeySelector selects a key of a Secret.
+
+  Fields:
+    key: The key of the secret to select from.  Must be a valid secret key.
+    localObjectReference: The name of the secret in the pod's namespace to
+      select from.
+  """
+
+  key = _messages.StringField(1)
+  localObjectReference = _messages.MessageField('LocalObjectReference', 2)
+
+
+class SecretVolumeSource(_messages.Message):
+  """Adapts a Secret into a volume.  The contents of the target Secret's Data
+  field will be presented in a volume as files using the keys in the Data
+  field as the file names. Secret volumes support ownership management and
+  SELinux relabeling.
+
+  Fields:
+    defaultMode: Optional: mode bits to use on created files by default. Must
+      be a value between 0 and 0777. Defaults to 0644. Directories within the
+      path are not affected by this setting. This might be in conflict with
+      other options that affect the file mode, like fsGroup, and the result
+      can be other mode bits set. +optional
+    items: If unspecified, each key-value pair in the Data field of the
+      referenced Secret will be projected into the volume as a file whose name
+      is the key and content is the value. If specified, the listed keys will
+      be projected into the specified paths, and unlisted keys will not be
+      present. If a key is specified which is not present in the Secret, the
+      volume setup will error. Paths must be relative and may not contain the
+      '..' path or start with '..'. +optional
+    secretName: Name of the secret in the pod's namespace to use. More info:
+      http://kubernetes.io/docs/user-guide/volumes#secrets +optional
+  """
+
+  defaultMode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  items = _messages.MessageField('KeyToPath', 2, repeated=True)
+  secretName = _messages.StringField(3)
+
+
+class SecurityContext(_messages.Message):
+  """SecurityContext holds security configuration that will be applied to a
+  container. Some fields are present in both SecurityContext and
+  PodSecurityContext.  When both are set, the values in SecurityContext take
+  precedence.
+
+  Fields:
+    capabilities: The capabilities to add/drop when running containers.
+      Defaults to the default set of capabilities granted by the container
+      runtime. +optional
+    privileged: Run container in privileged mode. Processes in privileged
+      containers are essentially equivalent to root on the host. Defaults to
+      false. +optional
+    readOnlyRootFilesystem: Whether this container has a read-only root
+      filesystem. Default is false. +optional
+    runAsNonRoot: Indicates that the container must run as a non-root user. If
+      true, the Kubelet will validate the image at runtime to ensure that it
+      does not run as UID 0 (root) and fail to start the container if it does.
+      If unset or false, no such validation will be performed. May also be set
+      in PodSecurityContext.  If set in both SecurityContext and
+      PodSecurityContext, the value specified in SecurityContext takes
+      precedence. +optional
+    runAsUser: The UID to run the entrypoint of the container process.
+      Defaults to user specified in image metadata if unspecified. May also be
+      set in PodSecurityContext.  If set in both SecurityContext and
+      PodSecurityContext, the value specified in SecurityContext takes
+      precedence. +optional
+    seLinuxOptions: The SELinux context to be applied to the container. If
+      unspecified, the container runtime will allocate a random SELinux
+      context for each container.  May also be set in PodSecurityContext.  If
+      set in both SecurityContext and PodSecurityContext, the value specified
+      in SecurityContext takes precedence. +optional
+  """
+
+  capabilities = _messages.MessageField('Capabilities', 1)
+  privileged = _messages.BooleanField(2)
+  readOnlyRootFilesystem = _messages.BooleanField(3)
+  runAsNonRoot = _messages.BooleanField(4)
+  runAsUser = _messages.IntegerField(5)
+  seLinuxOptions = _messages.MessageField('SELinuxOptions', 6)
+
+
 class SetIamPolicyRequest(_messages.Message):
   """Request message for `SetIamPolicy` method.
 
@@ -1455,6 +2969,39 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class SeverityCount(_messages.Message):
+  """The number of occurrences created for a specific severity.
+
+  Enums:
+    SeverityValueValuesEnum: The severity of the occurrences.
+
+  Fields:
+    count: The number of occurrences with the severity.
+    severity: The severity of the occurrences.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    """The severity of the occurrences.
+
+    Values:
+      UNKNOWN: Unknown Impact
+      MINIMAL: Minimal Impact
+      LOW: Low Impact
+      MEDIUM: Medium Impact
+      HIGH: High Impact
+      CRITICAL: Critical Impact
+    """
+    UNKNOWN = 0
+    MINIMAL = 1
+    LOW = 2
+    MEDIUM = 3
+    HIGH = 4
+    CRITICAL = 5
+
+  count = _messages.IntegerField(1)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 2)
 
 
 class Source(_messages.Message):
@@ -1611,6 +3158,84 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(14)
 
 
+class Status(_messages.Message):
+  """The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). The error model is designed to be:
+  - Simple to use and understand for most users - Flexible enough to meet
+  unexpected needs  # Overview  The `Status` message contains three pieces of
+  data: error code, error message, and error details. The error code should be
+  an enum value of google.rpc.Code, but it may accept additional error codes
+  if needed.  The error message should be a developer-facing English message
+  that helps developers *understand* and *resolve* the error. If a localized
+  user-facing error message is needed, put the localized message in the error
+  details or localize it in the client. The optional error details may contain
+  arbitrary information about the error. There is a predefined set of error
+  detail types in the package `google.rpc` that can be used for common error
+  conditions.  # Language mapping  The `Status` message is the logical
+  representation of the error model, but it is not necessarily the actual wire
+  format. When the `Status` message is exposed in different client libraries
+  and different wire protocols, it can be mapped differently. For example, it
+  will likely be mapped to some exceptions in Java, but more likely mapped to
+  some error codes in C.  # Other uses  The error model and the `Status`
+  message can be used in a variety of environments, either with or without
+  APIs, to provide a consistent developer experience across different
+  environments.  Example uses of this error model include:  - Partial errors.
+  If a service needs to return partial errors to the client,     it may embed
+  the `Status` in the normal response to indicate the partial     errors.  -
+  Workflow errors. A typical workflow has multiple steps. Each step may
+  have a `Status` message for error reporting.  - Batch operations. If a
+  client uses batch request and batch response, the     `Status` message
+  should be used directly inside batch response, one for     each error sub-
+  response.  - Asynchronous operations. If an API call embeds asynchronous
+  operation     results in its response, the status of those operations should
+  be     represented directly using the `Status` message.  - Logging. If some
+  API errors are stored in logs, the message `Status` could     be used
+  directly after any stripping needed for security/privacy reasons.
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details.  There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    """A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
 class StorageSource(_messages.Message):
   """StorageSource describes the location of the source in an archive file in
   Google Cloud Storage.
@@ -1626,6 +3251,17 @@ class StorageSource(_messages.Message):
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
+
+
+class TCPSocketAction(_messages.Message):
+  """TCPSocketAction describes an action based on opening a socket
+
+  Fields:
+    port: Number or name of the port to access on the container. Number must
+      be in the range 1 to 65535. Name must be an IANA_SVC_NAME.
+  """
+
+  port = _messages.MessageField('IntOrString', 1)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -1691,6 +3327,152 @@ class Version(_messages.Message):
   kind = _messages.EnumField('KindValueValuesEnum', 2)
   name = _messages.StringField(3)
   revision = _messages.StringField(4)
+
+
+class Volume(_messages.Message):
+  """Volume represents a named volume in a pod that may be accessed by any
+  container in the pod.
+
+  Fields:
+    name: Volume's name. Must be a DNS_LABEL and unique within the pod. More
+      info: http://kubernetes.io/docs/user-guide/identifiers#names
+    volumeSource: VolumeSource represents the location and type of the mounted
+      volume. If not specified, the Volume is implied to be an EmptyDir. This
+      implied behavior is deprecated and will be removed in a future version.
+  """
+
+  name = _messages.StringField(1)
+  volumeSource = _messages.MessageField('VolumeSource', 2)
+
+
+class VolumeMount(_messages.Message):
+  """VolumeMount describes a mounting of a Volume within a container.
+
+  Fields:
+    mountPath: Path within the container at which the volume should be
+      mounted.  Must not contain ':'.
+    name: This must match the Name of a Volume.
+    readOnly: Mounted read-only if true, read-write otherwise (false or
+      unspecified). Defaults to false. +optional
+    subPath: Path within the volume from which the container's volume should
+      be mounted. Defaults to "" (volume's root). +optional
+  """
+
+  mountPath = _messages.StringField(1)
+  name = _messages.StringField(2)
+  readOnly = _messages.BooleanField(3)
+  subPath = _messages.StringField(4)
+
+
+class VolumeSource(_messages.Message):
+  """Represents the source of a volume to mount. Only one of its members may
+  be specified.
+
+  Fields:
+    awsElasticBlockStore: AWSElasticBlockStore represents an AWS Disk resource
+      that is attached to a kubelet's host machine and then exposed to the
+      pod. More info: http://kubernetes.io/docs/user-
+      guide/volumes#awselasticblockstore +optional
+    azureDisk: AzureDisk represents an Azure Data Disk mount on the host and
+      bind mount to the pod. +optional
+    azureFile: AzureFile represents an Azure File Service mount on the host
+      and bind mount to the pod. +optional
+    cephfs: CephFS represents a Ceph FS mount on the host that shares a pod's
+      lifetime +optional
+    cinder: Cinder represents a cinder volume attached and mounted on kubelets
+      host machine More info: http://releases.k8s.io/HEAD/examples/mysql-
+      cinder-pd/README.md +optional
+    configMap: ConfigMap represents a configMap that should populate this
+      volume +optional
+    downwardAPI: DownwardAPI represents downward API about the pod that should
+      populate this volume +optional
+    emptyDir: EmptyDir represents a temporary directory that shares a pod's
+      lifetime. More info: http://kubernetes.io/docs/user-
+      guide/volumes#emptydir +optional
+    fc: FC represents a Fibre Channel resource that is attached to a kubelet's
+      host machine and then exposed to the pod. +optional
+    flexVolume: FlexVolume represents a generic volume resource that is
+      provisioned/attached using an exec based plugin. This is an alpha
+      feature and may change in future. +optional
+    flocker: Flocker represents a Flocker volume attached to a kubelet's host
+      machine. This depends on the Flocker control service being running
+      +optional
+    gcePersistentDisk: GCEPersistentDisk represents a GCE Disk resource that
+      is attached to a kubelet's host machine and then exposed to the pod.
+      More info: http://kubernetes.io/docs/user-
+      guide/volumes#gcepersistentdisk +optional
+    gitRepo: GitRepo represents a git repository at a particular revision.
+      +optional
+    glusterfs: Glusterfs represents a Glusterfs mount on the host that shares
+      a pod's lifetime. More info:
+      http://releases.k8s.io/HEAD/examples/volumes/glusterfs/README.md
+      +optional
+    hostPath: HostPath represents a pre-existing file or directory on the host
+      machine that is directly exposed to the container. This is generally
+      used for system agents or other privileged things that are allowed to
+      see the host machine. Most containers will NOT need this. ## More info:
+      http://kubernetes.io/docs/user-guide/volumes#hostpath  TODO(user) We
+      need to restrict who can use host directory mounts and who can/can not
+      mount host directories as read/write. +optional
+    iscsi: ISCSI represents an ISCSI Disk resource that is attached to a
+      kubelet's host machine and then exposed to the pod. More info:
+      http://releases.k8s.io/HEAD/examples/volumes/iscsi/README.md +optional
+    nfs: NFS represents an NFS mount on the host that shares a pod's lifetime
+      More info: http://kubernetes.io/docs/user-guide/volumes#nfs +optional
+    persistentVolumeClaim: PersistentVolumeClaimVolumeSource represents a
+      reference to a PersistentVolumeClaim in the same namespace. More info:
+      http://kubernetes.io/docs/user-guide/persistent-
+      volumes#persistentvolumeclaims +optional
+    photonPersistentDisk: PhotonPersistentDisk represents a PhotonController
+      persistent disk attached and mounted on kubelets host machine
+    quobyte: Quobyte represents a Quobyte mount on the host that shares a
+      pod's lifetime +optional
+    rbd: RBD represents a Rados Block Device mount on the host that shares a
+      pod's lifetime. More info:
+      http://releases.k8s.io/HEAD/examples/volumes/rbd/README.md +optional
+    secret: Secret represents a secret that should populate this volume. More
+      info: http://kubernetes.io/docs/user-guide/volumes#secrets +optional
+    vsphereVolume: VsphereVolume represents a vSphere volume attached and
+      mounted on kubelets host machine +optional
+  """
+
+  awsElasticBlockStore = _messages.MessageField('AWSElasticBlockStoreVolumeSource', 1)
+  azureDisk = _messages.MessageField('AzureDiskVolumeSource', 2)
+  azureFile = _messages.MessageField('AzureFileVolumeSource', 3)
+  cephfs = _messages.MessageField('CephFSVolumeSource', 4)
+  cinder = _messages.MessageField('CinderVolumeSource', 5)
+  configMap = _messages.MessageField('ConfigMapVolumeSource', 6)
+  downwardAPI = _messages.MessageField('DownwardAPIVolumeSource', 7)
+  emptyDir = _messages.MessageField('EmptyDirVolumeSource', 8)
+  fc = _messages.MessageField('FCVolumeSource', 9)
+  flexVolume = _messages.MessageField('FlexVolumeSource', 10)
+  flocker = _messages.MessageField('FlockerVolumeSource', 11)
+  gcePersistentDisk = _messages.MessageField('GCEPersistentDiskVolumeSource', 12)
+  gitRepo = _messages.MessageField('GitRepoVolumeSource', 13)
+  glusterfs = _messages.MessageField('GlusterfsVolumeSource', 14)
+  hostPath = _messages.MessageField('HostPathVolumeSource', 15)
+  iscsi = _messages.MessageField('ISCSIVolumeSource', 16)
+  nfs = _messages.MessageField('NFSVolumeSource', 17)
+  persistentVolumeClaim = _messages.MessageField('PersistentVolumeClaimVolumeSource', 18)
+  photonPersistentDisk = _messages.MessageField('PhotonPersistentDiskVolumeSource', 19)
+  quobyte = _messages.MessageField('QuobyteVolumeSource', 20)
+  rbd = _messages.MessageField('RBDVolumeSource', 21)
+  secret = _messages.MessageField('SecretVolumeSource', 22)
+  vsphereVolume = _messages.MessageField('VsphereVirtualDiskVolumeSource', 23)
+
+
+class VsphereVirtualDiskVolumeSource(_messages.Message):
+  """Represents a vSphere volume resource.
+
+  Fields:
+    fsType: Filesystem type to mount. Must be a filesystem type supported by
+      the host operating system. Ex. "ext4", "xfs", "ntfs". Implicitly
+      inferred to be "ext4" if unspecified. +optional
+    volumePath: Path that identifies vSphere volume vmdk
+  """
+
+  fsType = _messages.StringField(1)
+  volumePath = _messages.StringField(2)
 
 
 class VulnerabilityDetails(_messages.Message):
@@ -1792,6 +3574,8 @@ class VulnerabilityType(_messages.Message):
   severity = _messages.EnumField('SeverityValueValuesEnum', 3)
 
 
+encoding.AddCustomJsonFieldMapping(
+    Handler, 'exec_', 'exec')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

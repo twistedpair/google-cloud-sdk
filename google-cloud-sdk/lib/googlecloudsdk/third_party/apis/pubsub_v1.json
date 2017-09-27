@@ -220,6 +220,22 @@
         }
       }
     },
+    "UpdateTopicRequest": {
+      "id": "UpdateTopicRequest",
+      "description": "Request for the UpdateTopic method.",
+      "type": "object",
+      "properties": {
+        "topic": {
+          "description": "The topic to update.",
+          "$ref": "Topic"
+        },
+        "updateMask": {
+          "description": "Indicates which fields in the provided topic to update.\nMust be specified and non-empty.",
+          "type": "string",
+          "format": "google-fieldmask"
+        }
+      }
+    },
     "PublishRequest": {
       "id": "PublishRequest",
       "description": "Request for the Publish method.",
@@ -563,6 +579,22 @@
         }
       }
     },
+    "UpdateSnapshotRequest": {
+      "id": "UpdateSnapshotRequest",
+      "description": "Request for the UpdateSnapshot method.",
+      "type": "object",
+      "properties": {
+        "snapshot": {
+          "description": "The updated snpashot object.",
+          "$ref": "Snapshot"
+        },
+        "updateMask": {
+          "description": "Indicates which fields in the provided snapshot to update.\nMust be specified and non-empty.",
+          "type": "string",
+          "format": "google-fieldmask"
+        }
+      }
+    },
     "SeekRequest": {
       "id": "SeekRequest",
       "description": "Request for the `Seek` method.",
@@ -696,6 +728,35 @@
               ],
               "request": {
                 "$ref": "Topic"
+              },
+              "response": {
+                "$ref": "Topic"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/pubsub"
+              ]
+            },
+            "patch": {
+              "id": "pubsub.projects.topics.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/topics/{topicsId}",
+              "httpMethod": "PATCH",
+              "description": "Updates an existing topic. Note that certain properties of a\ntopic are not modifiable.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the topic. It must have the format\n`\"projects\/{project}\/topics\/{topic}\"`. `{topic}` must start with a letter,\nand contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`),\nunderscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or percent\nsigns (`%`). It must be between 3 and 255 characters in length, and it\nmust not start with `\"goog\"`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "UpdateTopicRequest"
               },
               "response": {
                 "$ref": "Topic"
@@ -1392,6 +1453,35 @@
               ],
               "request": {
                 "$ref": "CreateSnapshotRequest"
+              },
+              "response": {
+                "$ref": "Snapshot"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/pubsub"
+              ]
+            },
+            "patch": {
+              "id": "pubsub.projects.snapshots.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/snapshots/{snapshotsId}",
+              "httpMethod": "PATCH",
+              "description": "Updates an existing snapshot. Note that certain properties of a\nsnapshot are not modifiable.",
+              "parameters": {
+                "name": {
+                  "description": "The name of the snapshot.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/snapshots\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "UpdateSnapshotRequest"
               },
               "response": {
                 "$ref": "Snapshot"

@@ -176,6 +176,34 @@ set.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates an existing snapshot. Note that certain properties of a.
+snapshot are not modifiable.
+
+      Args:
+        request: (PubsubProjectsSnapshotsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Snapshot) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/snapshots/{snapshotsId}',
+        http_method=u'PATCH',
+        method_id=u'pubsub.projects.snapshots.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field=u'updateSnapshotRequest',
+        request_type_name=u'PubsubProjectsSnapshotsPatchRequest',
+        response_type_name=u'Snapshot',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on the specified resource. Replaces any.
 existing policy.
@@ -825,6 +853,34 @@ set.
         request_field='',
         request_type_name=u'PubsubProjectsTopicsListRequest',
         response_type_name=u'ListTopicsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates an existing topic. Note that certain properties of a.
+topic are not modifiable.
+
+      Args:
+        request: (PubsubProjectsTopicsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Topic) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/topics/{topicsId}',
+        http_method=u'PATCH',
+        method_id=u'pubsub.projects.topics.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field=u'updateTopicRequest',
+        request_type_name=u'PubsubProjectsTopicsPatchRequest',
+        response_type_name=u'Topic',
         supports_download=False,
     )
 

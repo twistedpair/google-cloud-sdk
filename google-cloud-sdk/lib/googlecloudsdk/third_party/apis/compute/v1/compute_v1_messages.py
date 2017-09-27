@@ -65,6 +65,7 @@ class AcceleratorTypeAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of AcceleratorTypesScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -79,6 +80,7 @@ class AcceleratorTypeAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -106,15 +108,111 @@ class AcceleratorTypeAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#acceleratorTypeAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class AcceleratorTypeList(_messages.Message):
   """Contains a list of accelerator types.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -128,13 +226,107 @@ class AcceleratorTypeList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('AcceleratorType', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#acceleratorTypeList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class AcceleratorTypesScopedList(_messages.Message):
@@ -181,8 +373,10 @@ class AcceleratorTypesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -193,26 +387,32 @@ class AcceleratorTypesScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -282,16 +482,21 @@ class Address(_messages.Message):
   """A reserved address resource.
 
   Enums:
+    AddressTypeValueValuesEnum: The type of address to reserve. If
+      unspecified, defaults to EXTERNAL.
     IpVersionValueValuesEnum: The IP Version that will be used by this
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
-      be either IN_USE or RESERVED. An address that is RESERVED is currently
-      reserved and available to use. An IN_USE address is currently being used
-      by another resource and is not available.
+      be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
+      is currently in the process of being reserved. A RESERVED address is
+      currently reserved and available to use. An IN_USE address is currently
+      being used by another resource and is not available.
 
   Fields:
     address: The static IP address represented by this resource.
+    addressType: The type of address to reserve. If unspecified, defaults to
+      EXTERNAL.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -312,13 +517,29 @@ class Address(_messages.Message):
     region: [Output Only] URL of the region where the regional address
       resides. This field is not applicable to global addresses.
     selfLink: [Output Only] Server-defined URL for the resource.
-    status: [Output Only] The status of the address, which can be either
-      IN_USE or RESERVED. An address that is RESERVED is currently reserved
-      and available to use. An IN_USE address is currently being used by
-      another resource and is not available.
+    status: [Output Only] The status of the address, which can be one of
+      RESERVING, RESERVED, or IN_USE. An address that is RESERVING is
+      currently in the process of being reserved. A RESERVED address is
+      currently reserved and available to use. An IN_USE address is currently
+      being used by another resource and is not available.
+    subnetwork: For external addresses, this field should not be used.  The
+      URL of the subnetwork in which to reserve the address. If an IP address
+      is specified, it must be within the subnetwork's IP range.
     users: [Output Only] The URLs of the resources that are using this
       address.
   """
+
+  class AddressTypeValueValuesEnum(_messages.Enum):
+    """The type of address to reserve. If unspecified, defaults to EXTERNAL.
+
+    Values:
+      EXTERNAL: <no description>
+      INTERNAL: <no description>
+      UNSPECIFIED_TYPE: <no description>
+    """
+    EXTERNAL = 0
+    INTERNAL = 1
+    UNSPECIFIED_TYPE = 2
 
   class IpVersionValueValuesEnum(_messages.Enum):
     """The IP Version that will be used by this address. Valid options are
@@ -334,10 +555,11 @@ class Address(_messages.Message):
     UNSPECIFIED_VERSION = 2
 
   class StatusValueValuesEnum(_messages.Enum):
-    """[Output Only] The status of the address, which can be either IN_USE or
-    RESERVED. An address that is RESERVED is currently reserved and available
-    to use. An IN_USE address is currently being used by another resource and
-    is not available.
+    """[Output Only] The status of the address, which can be one of RESERVING,
+    RESERVED, or IN_USE. An address that is RESERVING is currently in the
+    process of being reserved. A RESERVED address is currently reserved and
+    available to use. An IN_USE address is currently being used by another
+    resource and is not available.
 
     Values:
       IN_USE: <no description>
@@ -347,16 +569,18 @@ class Address(_messages.Message):
     RESERVED = 1
 
   address = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 5)
-  kind = _messages.StringField(6, default=u'compute#address')
-  name = _messages.StringField(7)
-  region = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  users = _messages.StringField(11, repeated=True)
+  addressType = _messages.EnumField('AddressTypeValueValuesEnum', 2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 6)
+  kind = _messages.StringField(7, default=u'compute#address')
+  name = _messages.StringField(8)
+  region = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  subnetwork = _messages.StringField(12)
+  users = _messages.StringField(13, repeated=True)
 
 
 class AddressAggregatedList(_messages.Message):
@@ -364,6 +588,7 @@ class AddressAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of AddressesScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -377,6 +602,7 @@ class AddressAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -404,15 +630,111 @@ class AddressAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#addressAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class AddressList(_messages.Message):
   """Contains a list of addresses.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -426,13 +748,107 @@ class AddressList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Address', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#addressList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class AddressesScopedList(_messages.Message):
@@ -478,8 +894,10 @@ class AddressesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -490,26 +908,32 @@ class AddressesScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -806,6 +1230,7 @@ class AutoscalerAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of AutoscalersScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -819,6 +1244,7 @@ class AutoscalerAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -846,15 +1272,111 @@ class AutoscalerAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#autoscalerAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class AutoscalerList(_messages.Message):
   """Contains a list of Autoscaler resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -868,13 +1390,107 @@ class AutoscalerList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Autoscaler', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#autoscalerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class AutoscalerStatusDetails(_messages.Message):
@@ -971,8 +1587,10 @@ class AutoscalersScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -983,26 +1601,32 @@ class AutoscalersScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -1262,6 +1886,9 @@ class BackendBucket(_messages.Message):
 class BackendBucketList(_messages.Message):
   """Contains a list of BackendBucket resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -1273,13 +1900,107 @@ class BackendBucketList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('BackendBucket', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#backendBucketList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class BackendService(_messages.Message):
@@ -1447,6 +2168,7 @@ class BackendServiceAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of BackendServicesScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -1459,6 +2181,7 @@ class BackendServiceAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1486,11 +2209,104 @@ class BackendServiceAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#backendServiceAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class BackendServiceCdnPolicy(_messages.Message):
@@ -1536,6 +2352,9 @@ class BackendServiceIAP(_messages.Message):
 class BackendServiceList(_messages.Message):
   """Contains a list of BackendService resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -1548,13 +2367,107 @@ class BackendServiceList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('BackendService', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#backendServiceList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class BackendServicesScopedList(_messages.Message):
@@ -1600,8 +2513,10 @@ class BackendServicesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -1612,26 +2527,32 @@ class BackendServicesScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -1803,6 +2724,7 @@ class CommitmentAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of CommitmentsScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -1816,6 +2738,7 @@ class CommitmentAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1843,15 +2766,111 @@ class CommitmentAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#commitmentAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class CommitmentList(_messages.Message):
   """Contains a list of Commitment resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -1865,13 +2884,107 @@ class CommitmentList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Commitment', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#commitmentList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class CommitmentsScopedList(_messages.Message):
@@ -1917,8 +3030,10 @@ class CommitmentsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -1929,26 +3044,32 @@ class CommitmentsScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -5827,6 +6948,34 @@ class ComputeInstancesSetMetadataRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesSetMinCpuPlatformRequest(_messages.Message):
+  """A ComputeInstancesSetMinCpuPlatformRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    instancesSetMinCpuPlatformRequest: A InstancesSetMinCpuPlatformRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesSetMinCpuPlatformRequest = _messages.MessageField('InstancesSetMinCpuPlatformRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstancesSetSchedulingRequest(_messages.Message):
   """A ComputeInstancesSetSchedulingRequest object.
 
@@ -6245,6 +7394,31 @@ class ComputeNetworksListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeNetworksPatchRequest(_messages.Message):
+  """A ComputeNetworksPatchRequest object.
+
+  Fields:
+    network: Name of the network to update.
+    networkResource: A Network resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  network = _messages.StringField(1, required=True)
+  networkResource = _messages.MessageField('Network', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeNetworksRemovePeeringRequest(_messages.Message):
@@ -10511,6 +11685,7 @@ class DiskAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of DisksScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -10524,6 +11699,7 @@ class DiskAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -10551,15 +11727,111 @@ class DiskAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#diskAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class DiskList(_messages.Message):
   """A list of Disk resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -10573,13 +11845,107 @@ class DiskList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Disk', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#diskList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class DiskMoveRequest(_messages.Message):
@@ -10640,6 +12006,7 @@ class DiskTypeAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of DiskTypesScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -10653,6 +12020,7 @@ class DiskTypeAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -10680,15 +12048,111 @@ class DiskTypeAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#diskTypeAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class DiskTypeList(_messages.Message):
   """Contains a list of disk types.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -10702,13 +12166,107 @@ class DiskTypeList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('DiskType', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#diskTypeList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class DiskTypesScopedList(_messages.Message):
@@ -10754,8 +12312,10 @@ class DiskTypesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -10766,26 +12326,32 @@ class DiskTypesScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -10866,8 +12432,10 @@ class DisksScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -10878,26 +12446,32 @@ class DisksScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -10990,6 +12564,18 @@ class Firewall(_messages.Message):
       that belongs to a tag listed in the sourceTags property. The connection
       does not need to match both properties for the firewall to apply. Only
       IPv4 is supported.
+    sourceServiceAccounts: If source service accounts are specified, the
+      firewall will apply only to traffic originating from an instance with a
+      service account in this list. Source service accounts cannot be used to
+      control traffic to an instance's external IP address because service
+      accounts are associated with an instance, not an IP address.
+      sourceRanges can be set at the same time as sourceServiceAccounts. If
+      both are set, the firewall will apply to traffic that has source IP
+      address within sourceRanges OR the source IP belongs to an instance with
+      service account listed in sourceServiceAccount. The connection does not
+      need to match both properties for the firewall to apply.
+      sourceServiceAccounts cannot be used at the same time as sourceTags or
+      targetTags.
     sourceTags: If source tags are specified, the firewall rule applies only
       to traffic with source IPs that match the primary network interfaces of
       VM instances that have the tag and are in the same VPC network. Source
@@ -11001,6 +12587,12 @@ class Firewall(_messages.Message):
       source IP address within sourceRanges OR the source IP that belongs to a
       tag listed in the sourceTags property. The connection does not need to
       match both properties for the firewall to apply.
+    targetServiceAccounts: A list of service accounts indicating sets of
+      instances located in the network that may make network connections as
+      specified in allowed[]. targetServiceAccounts cannot be used at the same
+      time as targetTags or sourceTags. If neither targetServiceAccounts nor
+      targetTags are specified, the firewall rule applies to all instances on
+      the specified network.
     targetTags: A list of instance tags indicating sets of instances located
       in the network that may make network connections as specified in
       allowed[]. If no targetTags are specified, the firewall rule applies to
@@ -11069,12 +12661,17 @@ class Firewall(_messages.Message):
   priority = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   selfLink = _messages.StringField(12)
   sourceRanges = _messages.StringField(13, repeated=True)
-  sourceTags = _messages.StringField(14, repeated=True)
-  targetTags = _messages.StringField(15, repeated=True)
+  sourceServiceAccounts = _messages.StringField(14, repeated=True)
+  sourceTags = _messages.StringField(15, repeated=True)
+  targetServiceAccounts = _messages.StringField(16, repeated=True)
+  targetTags = _messages.StringField(17, repeated=True)
 
 
 class FirewallList(_messages.Message):
   """Contains a list of firewalls.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -11088,13 +12685,107 @@ class FirewallList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Firewall', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#firewallList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class ForwardingRule(_messages.Message):
@@ -11269,6 +12960,7 @@ class ForwardingRuleAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of ForwardingRulesScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -11282,6 +12974,7 @@ class ForwardingRuleAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -11309,15 +13002,111 @@ class ForwardingRuleAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#forwardingRuleAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class ForwardingRuleList(_messages.Message):
   """Contains a list of ForwardingRule resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -11330,13 +13119,107 @@ class ForwardingRuleList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('ForwardingRule', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#forwardingRuleList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class ForwardingRulesScopedList(_messages.Message):
@@ -11382,8 +13265,10 @@ class ForwardingRulesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -11394,26 +13279,32 @@ class ForwardingRulesScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -11701,6 +13592,9 @@ class HealthCheck(_messages.Message):
 class HealthCheckList(_messages.Message):
   """Contains a list of HealthCheck resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -11712,13 +13606,107 @@ class HealthCheckList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('HealthCheck', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#healthCheckList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class HealthCheckReference(_messages.Message):
@@ -11841,6 +13829,9 @@ class HttpHealthCheck(_messages.Message):
 class HttpHealthCheckList(_messages.Message):
   """Contains a list of HttpHealthCheck resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -11852,13 +13843,107 @@ class HttpHealthCheckList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('HttpHealthCheck', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#httpHealthCheckList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class HttpsHealthCheck(_messages.Message):
@@ -11917,6 +14002,9 @@ class HttpsHealthCheck(_messages.Message):
 class HttpsHealthCheckList(_messages.Message):
   """Contains a list of HttpsHealthCheck resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -11928,13 +14016,107 @@ class HttpsHealthCheckList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('HttpsHealthCheck', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#httpsHealthCheckList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class Image(_messages.Message):
@@ -12148,6 +14330,9 @@ class Image(_messages.Message):
 class ImageList(_messages.Message):
   """Contains a list of images.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -12159,13 +14344,107 @@ class ImageList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Image', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#imageList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class Instance(_messages.Message):
@@ -12220,6 +14499,9 @@ class Instance(_messages.Message):
       read the Specifications for custom machine types.
     metadata: The metadata key/value pairs assigned to this instance. This
       includes custom metadata and predefined keys.
+    minCpuPlatform: Specifies a minimum CPU platform for the VM instance.
+      Applicable values are the friendly names of CPU platforms, such as
+      minCpuPlatform: "Intel Haswell" or minCpuPlatform: "Intel Sandy Bridge".
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -12313,16 +14595,17 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 10)
   machineType = _messages.StringField(11)
   metadata = _messages.MessageField('Metadata', 12)
-  name = _messages.StringField(13)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 14, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 15)
-  selfLink = _messages.StringField(16)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 17, repeated=True)
-  startRestricted = _messages.BooleanField(18)
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
-  statusMessage = _messages.StringField(20)
-  tags = _messages.MessageField('Tags', 21)
-  zone = _messages.StringField(22)
+  minCpuPlatform = _messages.StringField(13)
+  name = _messages.StringField(14)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 15, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 16)
+  selfLink = _messages.StringField(17)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 18, repeated=True)
+  startRestricted = _messages.BooleanField(19)
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  statusMessage = _messages.StringField(21)
+  tags = _messages.MessageField('Tags', 22)
+  zone = _messages.StringField(23)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -12330,6 +14613,7 @@ class InstanceAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of InstancesScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -12344,6 +14628,7 @@ class InstanceAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -12371,11 +14656,104 @@ class InstanceAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#instanceAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class InstanceGroup(_messages.Message):
@@ -12433,6 +14811,7 @@ class InstanceGroupAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of InstanceGroupsScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -12447,6 +14826,7 @@ class InstanceGroupAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -12474,15 +14854,111 @@ class InstanceGroupAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#instanceGroupAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class InstanceGroupList(_messages.Message):
   """A list of InstanceGroup resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -12496,13 +14972,107 @@ class InstanceGroupList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceGroup', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#instanceGroupList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class InstanceGroupManager(_messages.Message):
@@ -12617,6 +15187,7 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of InstanceGroupManagersScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -12631,6 +15202,7 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -12658,15 +15230,111 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#instanceGroupManagerAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class InstanceGroupManagerList(_messages.Message):
   """[Output Only] A list of managed instance groups.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -12680,13 +15348,107 @@ class InstanceGroupManagerList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceGroupManager', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#instanceGroupManagerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class InstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -12779,8 +15541,10 @@ class InstanceGroupManagersScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -12791,26 +15555,32 @@ class InstanceGroupManagersScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -12883,6 +15653,9 @@ class InstanceGroupsAddInstancesRequest(_messages.Message):
 class InstanceGroupsListInstances(_messages.Message):
   """A InstanceGroupsListInstances object.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -12896,13 +15669,107 @@ class InstanceGroupsListInstances(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceWithNamedPorts', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#instanceGroupsListInstances')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class InstanceGroupsListInstancesRequest(_messages.Message):
@@ -12989,8 +15856,10 @@ class InstanceGroupsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -13001,26 +15870,32 @@ class InstanceGroupsScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -13068,6 +15943,9 @@ class InstanceGroupsSetNamedPortsRequest(_messages.Message):
 class InstanceList(_messages.Message):
   """Contains a list of instances.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -13080,13 +15958,107 @@ class InstanceList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Instance', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#instanceList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class InstanceMoveRequest(_messages.Message):
@@ -13137,6 +16109,11 @@ class InstanceProperties(_messages.Message):
       created from this template. These pairs can consist of custom metadata
       or predefined keys. See Project and instance metadata for more
       information.
+    minCpuPlatform: Minimum cpu/platform to be used by this instance. The
+      instance may be scheduled on the specified or newer cpu/platform.
+      Applicable values are the friendly names of CPU platforms, such as
+      minCpuPlatform: "Intel Haswell" or minCpuPlatform: "Intel Sandy Bridge".
+      For more information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
     scheduling: Specifies the scheduling options for the instances that are
@@ -13182,10 +16159,11 @@ class InstanceProperties(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   machineType = _messages.StringField(6)
   metadata = _messages.MessageField('Metadata', 7)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 8, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 9)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 10, repeated=True)
-  tags = _messages.MessageField('Tags', 11)
+  minCpuPlatform = _messages.StringField(8)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 9, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 10)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 11, repeated=True)
+  tags = _messages.MessageField('Tags', 12)
 
 
 class InstanceReference(_messages.Message):
@@ -13234,6 +16212,9 @@ class InstanceTemplate(_messages.Message):
 class InstanceTemplateList(_messages.Message):
   """A list of instance templates.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -13246,13 +16227,107 @@ class InstanceTemplateList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceTemplate', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#instanceTemplateList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class InstanceWithNamedPorts(_messages.Message):
@@ -13338,8 +16413,10 @@ class InstancesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -13350,26 +16427,32 @@ class InstancesScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -13459,6 +16542,16 @@ class InstancesSetMachineTypeRequest(_messages.Message):
   """
 
   machineType = _messages.StringField(1)
+
+
+class InstancesSetMinCpuPlatformRequest(_messages.Message):
+  """A InstancesSetMinCpuPlatformRequest object.
+
+  Fields:
+    minCpuPlatform: Minimum cpu/platform this instance should be started at.
+  """
+
+  minCpuPlatform = _messages.StringField(1)
 
 
 class InstancesSetServiceAccountRequest(_messages.Message):
@@ -13572,6 +16665,7 @@ class MachineTypeAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of MachineTypesScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -13585,6 +16679,7 @@ class MachineTypeAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -13612,15 +16707,111 @@ class MachineTypeAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#machineTypeAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class MachineTypeList(_messages.Message):
   """Contains a list of machine types.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -13634,13 +16825,107 @@ class MachineTypeList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('MachineType', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#machineTypeList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class MachineTypesScopedList(_messages.Message):
@@ -13686,8 +16971,10 @@ class MachineTypesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -13698,26 +16985,32 @@ class MachineTypesScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -14000,6 +17293,9 @@ class Network(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     peerings: [Output Only] List of network peerings for the resource.
+    routingConfig: The network-level routing configuration for this network.
+      Used by Cloud Router to determine what type of network-wide routing
+      behavior to enforce.
     selfLink: [Output Only] Server-defined URL for the resource.
     subnetworks: [Output Only] Server-defined fully-qualified URLs for all
       subnetworks in this network.
@@ -14014,8 +17310,9 @@ class Network(_messages.Message):
   kind = _messages.StringField(7, default=u'compute#network')
   name = _messages.StringField(8)
   peerings = _messages.MessageField('NetworkPeering', 9, repeated=True)
-  selfLink = _messages.StringField(10)
-  subnetworks = _messages.StringField(11, repeated=True)
+  routingConfig = _messages.MessageField('NetworkRoutingConfig', 10)
+  selfLink = _messages.StringField(11)
+  subnetworks = _messages.StringField(12, repeated=True)
 
 
 class NetworkInterface(_messages.Message):
@@ -14068,6 +17365,9 @@ class NetworkInterface(_messages.Message):
 class NetworkList(_messages.Message):
   """Contains a list of networks.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -14080,13 +17380,107 @@ class NetworkList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Network', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#networkList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class NetworkPeering(_messages.Message):
@@ -14134,6 +17528,43 @@ class NetworkPeering(_messages.Message):
   network = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
   stateDetails = _messages.StringField(5)
+
+
+class NetworkRoutingConfig(_messages.Message):
+  """A routing configuration attached to a network resource. The message
+  includes the list of routers associated with the network, and a flag
+  indicating the type of routing behavior to enforce network-wide.
+
+  Enums:
+    RoutingModeValueValuesEnum: The network-wide routing mode to use. If set
+      to REGIONAL, this network's cloud routers will only advertise routes
+      with subnetworks of this network in the same region as the router. If
+      set to GLOBAL, this network's cloud routers will advertise routes with
+      all subnetworks of this network, across regions.
+
+  Fields:
+    routingMode: The network-wide routing mode to use. If set to REGIONAL,
+      this network's cloud routers will only advertise routes with subnetworks
+      of this network in the same region as the router. If set to GLOBAL, this
+      network's cloud routers will advertise routes with all subnetworks of
+      this network, across regions.
+  """
+
+  class RoutingModeValueValuesEnum(_messages.Enum):
+    """The network-wide routing mode to use. If set to REGIONAL, this
+    network's cloud routers will only advertise routes with subnetworks of
+    this network in the same region as the router. If set to GLOBAL, this
+    network's cloud routers will advertise routes with all subnetworks of this
+    network, across regions.
+
+    Values:
+      GLOBAL: <no description>
+      REGIONAL: <no description>
+    """
+    GLOBAL = 0
+    REGIONAL = 1
+
+  routingMode = _messages.EnumField('RoutingModeValueValuesEnum', 1)
 
 
 class NetworksAddPeeringRequest(_messages.Message):
@@ -14296,8 +17727,10 @@ class Operation(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -14308,26 +17741,32 @@ class Operation(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -14381,6 +17820,7 @@ class OperationAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: [Output Only] A map of scoped operation lists.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -14394,6 +17834,7 @@ class OperationAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -14421,15 +17862,111 @@ class OperationAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#operationAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class OperationList(_messages.Message):
   """Contains a list of Operation resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -14443,13 +17980,107 @@ class OperationList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Operation', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#operationList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class OperationsScopedList(_messages.Message):
@@ -14495,8 +18126,10 @@ class OperationsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -14507,26 +18140,32 @@ class OperationsScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -14865,6 +18504,9 @@ class Region(_messages.Message):
 class RegionAutoscalerList(_messages.Message):
   """Contains a list of autoscalers.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -14876,17 +18518,114 @@ class RegionAutoscalerList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Autoscaler', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#regionAutoscalerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class RegionInstanceGroupList(_messages.Message):
   """Contains a list of InstanceGroup resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -14899,17 +18638,114 @@ class RegionInstanceGroupList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceGroup', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#regionInstanceGroupList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class RegionInstanceGroupManagerList(_messages.Message):
   """Contains a list of managed instance groups.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -14924,13 +18760,107 @@ class RegionInstanceGroupManagerList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceGroupManager', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#regionInstanceGroupManagerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class RegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -15008,6 +18938,9 @@ class RegionInstanceGroupManagersSetTemplateRequest(_messages.Message):
 class RegionInstanceGroupsListInstances(_messages.Message):
   """A RegionInstanceGroupsListInstances object.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -15019,13 +18952,107 @@ class RegionInstanceGroupsListInstances(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('InstanceWithNamedPorts', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#regionInstanceGroupsListInstances')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class RegionInstanceGroupsListInstancesRequest(_messages.Message):
@@ -15078,6 +19105,9 @@ class RegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
 class RegionList(_messages.Message):
   """Contains a list of region resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -15090,13 +19120,107 @@ class RegionList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Region', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#regionList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class ResourceCommitment(_messages.Message):
@@ -15237,8 +19361,10 @@ class Route(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -15249,26 +19375,32 @@ class Route(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -15314,6 +19446,9 @@ class Route(_messages.Message):
 class RouteList(_messages.Message):
   """Contains a list of Route resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -15325,13 +19460,107 @@ class RouteList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Route', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#routeList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class Router(_messages.Message):
@@ -15382,6 +19611,7 @@ class RouterAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of Router resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -15394,6 +19624,7 @@ class RouterAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -15420,11 +19651,104 @@ class RouterAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#routerAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class RouterBgp(_messages.Message):
@@ -15490,6 +19814,9 @@ class RouterInterface(_messages.Message):
 class RouterList(_messages.Message):
   """Contains a list of Router resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -15501,13 +19828,107 @@ class RouterList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Router', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#routerList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class RouterStatus(_messages.Message):
@@ -15635,8 +20056,10 @@ class RoutersScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -15647,26 +20070,32 @@ class RoutersScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -15967,6 +20396,9 @@ class Snapshot(_messages.Message):
 class SnapshotList(_messages.Message):
   """Contains a list of Snapshot resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -15978,13 +20410,107 @@ class SnapshotList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Snapshot', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#snapshotList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class SslCertificate(_messages.Message):
@@ -16029,6 +20555,9 @@ class SslCertificate(_messages.Message):
 class SslCertificateList(_messages.Message):
   """Contains a list of SslCertificate resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -16040,13 +20569,107 @@ class SslCertificateList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('SslCertificate', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#sslCertificateList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -16154,6 +20777,7 @@ class SubnetworkAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of SubnetworksScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -16167,6 +20791,7 @@ class SubnetworkAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -16194,15 +20819,111 @@ class SubnetworkAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#subnetworkAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class SubnetworkList(_messages.Message):
   """Contains a list of Subnetwork resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -16216,13 +20937,107 @@ class SubnetworkList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Subnetwork', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#subnetworkList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class SubnetworkSecondaryRange(_messages.Message):
@@ -16299,8 +21114,10 @@ class SubnetworksScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -16311,26 +21128,32 @@ class SubnetworksScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -16465,6 +21288,9 @@ class TargetHttpProxy(_messages.Message):
 class TargetHttpProxyList(_messages.Message):
   """A list of TargetHttpProxy resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -16477,13 +21303,107 @@ class TargetHttpProxyList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetHttpProxy', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#targetHttpProxyList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
@@ -16541,6 +21461,9 @@ class TargetHttpsProxy(_messages.Message):
 class TargetHttpsProxyList(_messages.Message):
   """Contains a list of TargetHttpsProxy resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -16553,13 +21476,107 @@ class TargetHttpsProxyList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetHttpsProxy', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#targetHttpsProxyList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class TargetInstance(_messages.Message):
@@ -16624,6 +21641,7 @@ class TargetInstanceAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of TargetInstance resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -16636,6 +21654,7 @@ class TargetInstanceAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -16663,15 +21682,111 @@ class TargetInstanceAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#targetInstanceAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class TargetInstanceList(_messages.Message):
   """Contains a list of TargetInstance resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -16684,13 +21799,107 @@ class TargetInstanceList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetInstance', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#targetInstanceList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class TargetInstancesScopedList(_messages.Message):
@@ -16736,8 +21945,10 @@ class TargetInstancesScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -16748,26 +21959,32 @@ class TargetInstancesScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -16906,6 +22123,7 @@ class TargetPoolAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of TargetPool resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -16919,6 +22137,7 @@ class TargetPoolAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -16946,11 +22165,104 @@ class TargetPoolAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#targetPoolAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class TargetPoolInstanceHealth(_messages.Message):
@@ -16970,6 +22282,9 @@ class TargetPoolInstanceHealth(_messages.Message):
 class TargetPoolList(_messages.Message):
   """Contains a list of TargetPool resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -16982,13 +22297,107 @@ class TargetPoolList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetPool', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#targetPoolList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class TargetPoolsAddHealthCheckRequest(_messages.Message):
@@ -17083,8 +22492,10 @@ class TargetPoolsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -17095,26 +22506,32 @@ class TargetPoolsScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -17259,6 +22676,9 @@ class TargetSslProxy(_messages.Message):
 class TargetSslProxyList(_messages.Message):
   """Contains a list of TargetSslProxy resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -17270,13 +22690,107 @@ class TargetSslProxyList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetSslProxy', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#targetSslProxyList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class TargetTcpProxiesSetBackendServiceRequest(_messages.Message):
@@ -17370,6 +22884,9 @@ class TargetTcpProxy(_messages.Message):
 class TargetTcpProxyList(_messages.Message):
   """Contains a list of TargetTcpProxy resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -17381,13 +22898,107 @@ class TargetTcpProxyList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetTcpProxy', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#targetTcpProxyList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class TargetVpnGateway(_messages.Message):
@@ -17458,6 +23069,7 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of TargetVpnGateway resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -17471,6 +23083,7 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -17498,15 +23111,111 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#targetVpnGatewayAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class TargetVpnGatewayList(_messages.Message):
   """Contains a list of TargetVpnGateway resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -17520,13 +23229,107 @@ class TargetVpnGatewayList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('TargetVpnGateway', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#targetVpnGatewayList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class TargetVpnGatewaysScopedList(_messages.Message):
@@ -17573,8 +23376,10 @@ class TargetVpnGatewaysScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -17585,26 +23390,32 @@ class TargetVpnGatewaysScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -17698,6 +23509,9 @@ class UrlMap(_messages.Message):
 class UrlMapList(_messages.Message):
   """Contains a list of UrlMap resources.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -17709,13 +23523,107 @@ class UrlMapList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('UrlMap', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#urlMapList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class UrlMapReference(_messages.Message):
@@ -17906,6 +23814,7 @@ class VpnTunnelAggregatedList(_messages.Message):
 
   Messages:
     ItemsValue: A list of VpnTunnelsScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -17919,6 +23828,7 @@ class VpnTunnelAggregatedList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -17946,15 +23856,111 @@ class VpnTunnelAggregatedList(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   id = _messages.StringField(1)
   items = _messages.MessageField('ItemsValue', 2)
   kind = _messages.StringField(3, default=u'compute#vpnTunnelAggregatedList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class VpnTunnelList(_messages.Message):
   """Contains a list of VpnTunnel resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -17968,13 +23974,107 @@ class VpnTunnelList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('VpnTunnel', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#vpnTunnelList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class VpnTunnelsScopedList(_messages.Message):
@@ -18020,8 +24120,10 @@ class VpnTunnelsScopedList(_messages.Message):
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
         NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
         NEXT_HOP_CANNOT_IP_FORWARD: <no description>
         NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
@@ -18032,26 +24134,32 @@ class VpnTunnelsScopedList(_messages.Message):
         REQUIRED_TOS_AGREEMENT: <no description>
         RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
         RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
         SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
         UNREACHABLE: <no description>
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
       DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      FIELD_VALUE_OVERRIDEN = 3
-      INJECTED_KERNELS_DEPRECATED = 4
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 5
-      NEXT_HOP_CANNOT_IP_FORWARD = 6
-      NEXT_HOP_INSTANCE_NOT_FOUND = 7
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 8
-      NEXT_HOP_NOT_RUNNING = 9
-      NOT_CRITICAL_ERROR = 10
-      NO_RESULTS_ON_PAGE = 11
-      REQUIRED_TOS_AGREEMENT = 12
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 13
-      RESOURCE_NOT_DELETED = 14
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 15
-      UNREACHABLE = 16
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -18082,6 +24190,9 @@ class VpnTunnelsScopedList(_messages.Message):
 class XpnHostList(_messages.Message):
   """A XpnHostList object.
 
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -18094,13 +24205,107 @@ class XpnHostList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Project', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#xpnHostList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class XpnResourceId(_messages.Message):
@@ -18138,6 +24343,8 @@ class Zone(_messages.Message):
       DOWN.
 
   Fields:
+    availableCpuPlatforms: [Output Only] Available cpu/platform selections for
+      the zone.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     deprecated: [Output Only] The deprecation status associated with this
@@ -18163,19 +24370,23 @@ class Zone(_messages.Message):
     DOWN = 0
     UP = 1
 
-  creationTimestamp = _messages.StringField(1)
-  deprecated = _messages.MessageField('DeprecationStatus', 2)
-  description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#zone')
-  name = _messages.StringField(6)
-  region = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  availableCpuPlatforms = _messages.StringField(1, repeated=True)
+  creationTimestamp = _messages.StringField(2)
+  deprecated = _messages.MessageField('DeprecationStatus', 3)
+  description = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#zone')
+  name = _messages.StringField(7)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
 
 
 class ZoneList(_messages.Message):
   """Contains a list of zone resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -18188,13 +24399,107 @@ class ZoneList(_messages.Message):
       pageToken in the next list request. Subsequent list requests will have
       their own nextPageToken to continue paging through the results.
     selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
   """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
+      EXTERNAL_API_WARNING = 3
+      FIELD_VALUE_OVERRIDEN = 4
+      INJECTED_KERNELS_DEPRECATED = 5
+      MISSING_TYPE_DEPENDENCY = 6
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
+      NEXT_HOP_CANNOT_IP_FORWARD = 8
+      NEXT_HOP_INSTANCE_NOT_FOUND = 9
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
+      NEXT_HOP_NOT_RUNNING = 11
+      NOT_CRITICAL_ERROR = 12
+      NO_RESULTS_ON_PAGE = 13
+      REQUIRED_TOS_AGREEMENT = 14
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
+      RESOURCE_NOT_DELETED = 16
+      SCHEMA_VALIDATION_IGNORED = 17
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
+      UNDECLARED_PROPERTIES = 19
+      UNREACHABLE = 20
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Zone', 2, repeated=True)
   kind = _messages.StringField(3, default=u'compute#zoneList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class ZoneSetLabelsRequest(_messages.Message):

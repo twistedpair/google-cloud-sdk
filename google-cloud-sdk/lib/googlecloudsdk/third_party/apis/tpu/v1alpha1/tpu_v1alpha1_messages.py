@@ -138,48 +138,51 @@ class Location(_messages.Message):
 
 
 class Node(_messages.Message):
-  """An instance.
+  """A TPU instance.
 
   Enums:
-    StateValueValuesEnum: This contains a current state for the accelerator.
-      Output only.
+    StateValueValuesEnum: The current state for the TPU Node. Output only.
 
   Fields:
     acceleratorType: The type of hardware accelerators associated with this
-      node.
-    cidrBlock: The user must supply a CIDR block that the TPU node will use
-      when selecting an IP address. This CIDR block must be a /29 block; the
-      GCE networks API forbids a smaller block, and using a larger block would
-      be wasteful (a node can only consume one IP address). Errors will occur
-      if the CIDR block has already been used for a currently existing TPU
-      node, the CIDR block conflicts with any subnetworks in the user's
-      provided network, or the provided network is peered with another network
-      that is using that CIDR block.
+      node. Required.
+    cidrBlock: The CIDR block that the TPU node will use when selecting //an
+      IP address. This CIDR block must be a /29 block; the GCE networks API
+      forbids a smaller block, and using a larger block would be wasteful (a
+      node can only consume one IP address). Errors will occur if the CIDR
+      block has already been used for a currently existing TPU node, the CIDR
+      block conflicts with any subnetworks in the user's provided network, or
+      the provided network is peered with another network that is using that
+      CIDR block. Required.
     createTime: The time when the node was created. Output only.
-    description: User-supplied description of the TPU. Maximum of 512
+    description: The user-supplied description of the TPU. Maximum of 512
       characters.
-    healthDescription: Human readable description of why the service is
-      unhealthy. Output only.
-    ipAddress: The network address for the TPU as visible to other GCE
+    greenVmInstanceId: A string attribute.
+    greenVmSelflink: A string attribute.
+    healthDescription: If this field is populated, it contains a description
+      of why the TPU Node is unhealthy. Output only.
+    ipAddress: The network address for the TPU Node as visible to GCE
       instances. Output only.
     machineType: A string attribute.
-    name: Immutable name of the TPU
-    network: The user specifies the name of a network they wish to peer the
-      TPU node to. It must be a preexisting GCE network inside of the project
-      on which this API has been activated. If none is provided, "default"
-      will be used.
-    port: The network port for the TPU as visible to other GCE instances.
+    name: The immutable name of the TPU
+    network: The name of a network they wish to peer the TPU node to. It must
+      be a preexisting GCE network inside of the project on which this API has
+      been activated. If none is provided, "default" will be used.
+    port: The network port for the TPU Node as visible to GCE instances.
       Output only.
+    schedulingConfig: A SchedulingConfig attribute.
     serviceAccount: The service account used to run the tensor flow services
       within the node. To share resources, including Google Cloud Storage
       data, with the Tensorflow job running in the Node, this account must
       have permissions to that data. Output only.
-    state: This contains a current state for the accelerator. Output only.
+    state: The current state for the TPU Node. Output only.
+    tensorFlowUrlOverride: A string attribute.
     tensorflowVersion: The version of Tensorflow running in the Node.
+      Required.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """This contains a current state for the accelerator. Output only.
+    """The current state for the TPU Node. Output only.
 
     Values:
       STATE_UNSPECIFIED: TPU node state is not known/set.
@@ -203,15 +206,19 @@ class Node(_messages.Message):
   cidrBlock = _messages.StringField(2)
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
-  healthDescription = _messages.StringField(5)
-  ipAddress = _messages.StringField(6)
-  machineType = _messages.StringField(7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  port = _messages.StringField(10)
-  serviceAccount = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  tensorflowVersion = _messages.StringField(13)
+  greenVmInstanceId = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  greenVmSelflink = _messages.StringField(6)
+  healthDescription = _messages.StringField(7)
+  ipAddress = _messages.StringField(8)
+  machineType = _messages.StringField(9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  port = _messages.StringField(12)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 13)
+  serviceAccount = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  tensorFlowUrlOverride = _messages.StringField(16)
+  tensorflowVersion = _messages.StringField(17)
 
 
 class Operation(_messages.Message):
@@ -346,6 +353,16 @@ class OperationMetadata(_messages.Message):
   statusDetail = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class SchedulingConfig(_messages.Message):
+  """A SchedulingConfig object.
+
+  Fields:
+    preemptible: A boolean attribute.
+  """
+
+  preemptible = _messages.BooleanField(1)
 
 
 class StandardQueryParameters(_messages.Message):

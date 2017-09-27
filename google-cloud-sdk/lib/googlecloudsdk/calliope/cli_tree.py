@@ -414,6 +414,11 @@ class CliTreeGenerator(walker.Walker):
   This implements the resource generator for gcloud meta list-gcloud.
   """
 
+  def __init__(self, cli=None, branch=None, *args, **kwargs):
+    """branch is the command path of the CLI subtree to generate."""
+    super(CliTreeGenerator, self).__init__(*args, cli=cli, **kwargs)
+    self._branch = branch
+
   def Visit(self, node, parent, is_group):
     """Visits each node in the CLI command tree to construct the external rep.
 
@@ -425,7 +430,47 @@ class CliTreeGenerator(walker.Walker):
     Returns:
       The subtree parent value, used here to construct an external rep node.
     """
+    if self._Prune(node):
+      return parent
     return Command(node, parent)
+
+  def _Prune(self, command):
+    """Returns True if command should be pruned from the CLI tree.
+
+    Branch pruning is mainly for generating static unit test data. The static
+    tree for the entire CLI would be an unnecessary burden on the depot.
+
+    self._branch, if not None, is already split into a path with the first
+    name popped. If branch is not a prefix of command.GetPath()[1:] it will
+    be pruned.
+
+    Args:
+      command: The calliope Command object to check.
+
+    Returns:
+      True if command should be pruned from the CLI tree.
+    """
+    # Only prune if branch is not empty.
+    if not self._branch:
+      return False
+    path = command.GetPath()
+    # The top level command is never pruned.
+    if len(path) < 2:
+      return False
+    path = path[1:]
+    # All tracks in the branch are active.
+    if path[0] in ('alpha', 'beta'):
+      path = path[1:]
+    for name in self._branch:
+      # branch is longer than path => don't prune.
+      if not path:
+        return False
+      # prefix mismatch => prune.
+      if path[0] != name:
+        return True
+      path.pop(0)
+    # branch is a prefix of path => don't prune.
+    return False
 
 
 _LOOKUP_SERIALIZED_FLAG_LIST = 'SERIALIZED_FLAG_LIST'
@@ -598,7 +643,7 @@ def CliTreePath(name=DEFAULT_CLI_NAME):
   return os.path.join(CliTreeDir(), name + '.py')
 
 
-def _GenerateRoot(cli, path=None, name=DEFAULT_CLI_NAME):
+def _GenerateRoot(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
   """Generates and returns the CLI root for name."""
   if path == '-':
     message = 'Generating the {} CLI'.format(name)
@@ -608,10 +653,10 @@ def _GenerateRoot(cli, path=None, name=DEFAULT_CLI_NAME):
     message = 'Generating the {} CLI for one-time use (no SDK root)'.format(
         name)
   with progress_tracker.ProgressTracker(message):
-    return CliTreeGenerator(cli).Walk(hidden=True)
+    return CliTreeGenerator(cli, branch=branch).Walk(hidden=True)
 
 
-def Dump(cli, path=None, name=DEFAULT_CLI_NAME):
+def Dump(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
   """Dumps the CLI tree to a Python file.
 
   The tree is processed by cli_tree._Serialize() to minimize the JSON file size
@@ -622,13 +667,14 @@ def Dump(cli, path=None, name=DEFAULT_CLI_NAME):
     path: The Python file path to dump to, the standard output if '-', the
       default CLI tree path if None.
     name: The CLI name.
+    branch: The path of the CLI subtree to generate.
 
   Returns:
     The generated CLI tree.
   """
   if path is None:
     path = CliTreePath()
-  tree = _GenerateRoot(cli=cli, path=path, name=name)
+  tree = _GenerateRoot(cli=cli, path=path, name=name, branch=branch)
   if path == '-':
     _DumpToFile(tree, name, sys.stdout)
   else:

@@ -441,7 +441,7 @@ class Operation(_messages.Message):
       with the Operation.
     ResponseValue: If importing ReadGroupSets, an ImportReadGroupSetsResponse
       is returned. If importing Variants, an ImportVariantsResponse is
-      returned. For pipelines and exports, an empty response is returned.
+      returned. For pipelines and exports, an Empty response is returned.
 
   Fields:
     done: If the value is `false`, it means the operation is still in
@@ -456,7 +456,7 @@ class Operation(_messages.Message):
       /CJHU7Oi_ChDrveSpBRjfuL-qzoWAgEw`
     response: If importing ReadGroupSets, an ImportReadGroupSetsResponse is
       returned. If importing Variants, an ImportVariantsResponse is returned.
-      For pipelines and exports, an empty response is returned.
+      For pipelines and exports, an Empty response is returned.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -489,7 +489,7 @@ class Operation(_messages.Message):
   class ResponseValue(_messages.Message):
     """If importing ReadGroupSets, an ImportReadGroupSetsResponse is returned.
     If importing Variants, an ImportVariantsResponse is returned. For
-    pipelines and exports, an empty response is returned.
+    pipelines and exports, an Empty response is returned.
 
     Messages:
       AdditionalProperty: An additional property for a ResponseValue object.

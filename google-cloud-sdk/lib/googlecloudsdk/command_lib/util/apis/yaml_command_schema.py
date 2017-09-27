@@ -118,7 +118,12 @@ class Async(object):
     self.method = data.get('method', 'get')
     self.response_name_field = data.get('response_name_field', 'name')
     self.extract_resource_result = data.get('extract_resource_result', True)
-    self.resource_get_method = data.get('resource_get_method', 'get')
+    resource_get_method = data.get('resource_get_method', None)
+    if not self.extract_resource_result and resource_get_method:
+      raise InvalidSchemaError(
+          'async.resource_get_method was specified but extract_resource_result '
+          'is False')
+    self.resource_get_method = resource_get_method or 'get'
     self.resource_get_method_params = data.get('resource_get_method_params', {})
     self.result_attribute = data.get('result_attribute', None)
     self.state = AsyncStateField(data.get('state', {}))
@@ -147,23 +152,14 @@ class Arguments(object):
     self.resource = Resource(resource) if resource else None
     self.additional_arguments_hook = Hook.FromData(
         data, 'additional_arguments_hook')
-    self.params = {
-        param: Argument.FromData(param, param_data)
-        for param, param_data in data.get('params', {}).iteritems()}
-    self.mutex_group_params = {}
+    self.params = [
+        Argument.FromData(param_data) for param_data in data.get('params', [])]
+    self.mutex_group_params = []
     for group_id, group_data in enumerate(data.get('mutex_groups', [])):
-      group = MutexGroup(group_id, group_data)
-      self.mutex_group_params.update({
-          param: Argument.FromData(param, param_data, group=group)
-          for param, param_data in group_data.get('params', {}).iteritems()})
-
-  def AllArguments(self):
-    args = {}
-    args.update(self.mutex_group_params)
-    args.update(self.params)
-    if self.resource:
-      args.update(self.resource.params)
-    return args
+      group = MutexGroup.FromData(group_id, group_data)
+      self.mutex_group_params.extend([
+          Argument.FromData(param_data, group=group)
+          for param_data in group_data.get('params', [])])
 
 
 class Resource(object):
@@ -171,28 +167,34 @@ class Resource(object):
   def __init__(self, data):
     self.help_text = data['help_text']
     self.response_id_field = data.get('response_id_field', None)
-    self.params = {
-        param: Argument.FromData(param, param_data)
-        for param, param_data in data.get('params', {}).iteritems()}
+    self.params = [
+        Argument.FromData(param_data) for param_data in data.get('params', [])]
 
 
 class MutexGroup(object):
 
-  def __init__(self, group_id, data):
+  @classmethod
+  def FromData(cls, group_id, data):
+    return MutexGroup(group_id, required=data.get('required', False))
+
+  def __init__(self, group_id, required=False):
     self.group_id = group_id
-    self.required = data.get('required', False)
+    self.required = required
 
 
 class Argument(object):
   """Encapsulates data used to generate arguments."""
 
   @classmethod
-  def FromData(cls, param, data, group=None):
+  def FromData(cls, data, group=None):
     deprecation = data.get('deprecated', None)
-    name = data.get('arg_name', param)
+    api_field = data['api_field']
+    arg_name = data.get('arg_name', api_field)
     return Argument(
-        name,
+        api_field,
+        arg_name,
         data['help_text'],
+        data.get('metavar', None),
         Hook.FromData(data, 'completer'),
         data.get('is_positional', False),
         Hook.FromData(data, 'type'),
@@ -201,16 +203,20 @@ class Argument(object):
         Hook.FromData(data, 'processor'),
         data.get('required', False),
         data.get('hidden', False),
-        actions.DeprecationAction(name, **deprecation) if deprecation else None,
+        (actions.DeprecationAction(arg_name, **deprecation)
+         if deprecation else None),
         group
     )
 
   # pylint:disable=redefined-builtin, type param needs to match the schema.
-  def __init__(self, arg_name, help_text, completer=None, is_positional=False,
-               type=None, choices=None, default=None, processor=None,
-               required=False, hidden=False, action=None, group=None):
+  def __init__(self, api_field, arg_name, help_text, metavar=None,
+               completer=None, is_positional=False, type=None, choices=None,
+               default=None, processor=None, required=False, hidden=False,
+               action=None, group=None):
+    self.api_field = api_field
     self.arg_name = arg_name
     self.help_text = help_text
+    self.metavar = metavar
     self.completer = completer
     self.is_positional = is_positional
     self.type = type

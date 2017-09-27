@@ -236,7 +236,7 @@
           "$ref": "SourceRepository"
         },
         "sourceRepositoryUrl": {
-          "description": "The URL pointing to the hosted repository where the function is defined.\nThere are supported Cloud Source Repository URLs in the following\nformats:\n\nTo refer to a specific commit:\n`https:\/\/source.developers.google.com\/projects\/*\/repos\/*\/revisions\/*\/paths\/*`\nTo refer to a moveable alias (branch):\n`https:\/\/source.developers.google.com\/projects\/*\/repos\/*\/aliases\/movable\/*\/paths\/*`\nIn particular, to refer to HEAD use `master` moveable alias.\nTo refer to a specific fixed alias (tag):\n`https:\/\/source.developers.google.com\/projects\/*\/repos\/*\/aliases\/fixed\/*\/paths\/*`\n\nYou may omit `paths\/*` if you want to use the main directory.",
+          "description": "The URL pointing to the hosted repository where the function is defined.\nThere are supported Cloud Source Repository URLs in the following\nformats:\n\nTo refer to a specific commit:\n`https:\/\/source.developers.google.com\/projects\/*\/repos\/*\/revisions\/*\/paths\/*`\nTo refer to a moveable alias (branch):\n`https:\/\/source.developers.google.com\/projects\/*\/repos\/*\/moveable-aliases\/*\/paths\/*`\nIn particular, to refer to HEAD use `master` moveable alias.\nTo refer to a specific fixed alias (tag):\n`https:\/\/source.developers.google.com\/projects\/*\/repos\/*\/fixed-aliases\/*\/paths\/*`\n\nYou may omit `paths\/*` if you want to use the main directory.",
           "type": "string"
         },
         "sourceUploadUrl": {
@@ -301,7 +301,7 @@
           "format": "google-datetime"
         },
         "versionId": {
-          "description": "Output only. Google internal. The version of a Cloud Function.",
+          "description": "Output only.\nThe version identifier of the Cloud Function. Each deployment attempt\nresults in a new version of a function being created.",
           "type": "string",
           "format": "int64"
         },
@@ -576,7 +576,7 @@
           }
         },
         "versionId": {
-          "description": "Google internal optional id of the version created by the operation.\nFor every create and update action new version of function is created.\nFor other operations (currently - delete function and some internal\noperations) in which no new version is created this field is going\nto have default value - 0 - which means no version id.",
+          "description": "Version id of the function created or updated by an API call.\nThis field is only pupulated for Create and Update operations.",
           "type": "string",
           "format": "int64"
         }
@@ -616,7 +616,7 @@
           }
         },
         "versionId": {
-          "description": "Google internal optional id of the version created by the operation.\nFor every create and update action new version of function is created.\nFor other operations (currently - delete function and some internal\noperations) in which no new version is created this field is going\nto have default value - 0 - which means no version id.",
+          "description": "Version id of the function created or updated by an API call.\nThis field is only pupulated for Create and Update operations.",
           "type": "string",
           "format": "int64"
         }

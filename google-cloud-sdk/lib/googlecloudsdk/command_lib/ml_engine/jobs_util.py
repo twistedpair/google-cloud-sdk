@@ -229,3 +229,22 @@ def SubmitPrediction(jobs_client, job,
       batch_size=batch_size)
   PrintSubmitFollowUp(job.jobId, print_follow_up_message=True)
   return jobs_client.Create(project_ref, job)
+
+
+def GetSummaryFormat(job):
+  """Get summary table format for an ml job resource.
+
+  Args:
+    job: job resource to build summary output for.
+
+  Returns:
+    dynamic format string for resource output.
+  """
+  if job:
+    if getattr(job, 'trainingInput', False):
+      if getattr(job.trainingInput, 'hyperparameters', False):
+        return flags.GetHPTrainingJobSummary()
+      return flags.GetStandardTrainingJobSummary()
+    else:
+      return flags.GetPredictJobSummary()
+  return 'yaml'  # Fallback to yaml on empty resource

@@ -1152,21 +1152,18 @@ class StorageV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None, download=None):
-      """Patches an object's metadata.
+    def Patch(self, request, global_params=None):
+      """Updates an object's metadata. This method supports patch semantics.
 
       Args:
         request: (StorageObjectsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-        download: (Download, default: None) If present, download
-            data from the request via this stream.
       Returns:
         (Object) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
-          config, request, global_params=global_params,
-          download=download)
+          config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'PATCH',
@@ -1178,7 +1175,7 @@ class StorageV1(base_api.BaseApiClient):
         request_field=u'objectResource',
         request_type_name=u'StorageObjectsPatchRequest',
         response_type_name=u'Object',
-        supports_download=True,
+        supports_download=False,
     )
 
     def Rewrite(self, request, global_params=None):

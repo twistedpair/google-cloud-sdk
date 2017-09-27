@@ -23,7 +23,8 @@ class Build(_messages.Message):
   RepoSource. - $BRANCH_NAME: the branch name specified by RepoSource. -
   $TAG_NAME: the tag name specified by RepoSource. - $REVISION_ID or
   $COMMIT_SHA: the commit SHA specified by RepoSource or   resolved from the
-  specified branch or tag.
+  specified branch or tag. - $SHORT_SHA: first 7 characters of $REVISION_ID or
+  $COMMIT_SHA.
 
   Enums:
     StatusValueValuesEnum: Status of the build. @OutputOnly
@@ -767,7 +768,7 @@ class Source(_messages.Message):
 
   Fields:
     repoSource: If provided, get source from this location in a Cloud Repo.
-    storageSource: If provided, get the source from this location in in Google
+    storageSource: If provided, get the source from this location in Google
       Cloud Storage.
   """
 

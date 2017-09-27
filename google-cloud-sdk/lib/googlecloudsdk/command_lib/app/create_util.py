@@ -23,7 +23,7 @@ from googlecloudsdk.core.console import console_io
 APP_CREATE_WARNING = """\
 Creating an App Engine application for a project is irreversible and the region
 cannot be changed. More information about regions is at
-https://cloud.google.com/appengine/docs/locations.
+<https://cloud.google.com/appengine/docs/locations>.
 """
 
 

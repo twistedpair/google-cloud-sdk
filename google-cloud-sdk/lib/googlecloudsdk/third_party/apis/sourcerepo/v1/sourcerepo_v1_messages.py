@@ -171,7 +171,7 @@ class MirrorConfig(_messages.Message):
       Source Repositories from mirroring.
     url: URL of the main repository at the other hosting service.
     webhookId: ID of the webhook listening to updates to trigger mirroring.
-      Removing this webook from the other hosting service will stop Google
+      Removing this webhook from the other hosting service will stop Google
       Cloud Source Repositories from receiving notifications, and thereby
       disabling mirroring.
   """

@@ -409,7 +409,7 @@
           "type": "string"
         },
         "minCpuPlatform": {
-          "description": "Minimum cpu\/platform to be used by this instance. The instance may be\nscheduled on the specified or newer cpu\/platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read <a href=\"\/compute\/docs\/instances\/specify-min-cpu-platform\">Specifying a Minimum CPU Platform<\/a>.",
+          "description": "Minimum CPU platform to be used by this instance. The instance may be\nscheduled on the specified or newer CPU platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform)",
           "type": "string"
         },
         "taints": {
@@ -524,6 +524,10 @@
         "kubernetesDashboard": {
           "description": "Configuration for the Kubernetes Dashboard.",
           "$ref": "KubernetesDashboard"
+        },
+        "networkPolicyConfig": {
+          "description": "Configuration for NetworkPolicy. This only tracks whether the addon\nis enabled or not on the Master, it does not track whether network policy\nis enabled for the nodes.",
+          "$ref": "NetworkPolicyConfig"
         }
       }
     },
@@ -556,6 +560,17 @@
       "properties": {
         "disabled": {
           "description": "Whether the Kubernetes Dashboard is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "NetworkPolicyConfig": {
+      "id": "NetworkPolicyConfig",
+      "description": "Configuration for NetworkPolicy. This only tracks whether the addon\nis enabled or not on the Master, it does not track whether network policy\nis enabled for the nodes.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Whether NetworkPolicy is enabled for this cluster.",
           "type": "boolean"
         }
       }
@@ -1376,17 +1391,19 @@
           "type": "string"
         },
         "action": {
-          "description": "The exact form of action to be taken on the master auth",
+          "description": "The exact form of action to be taken on the master auth.",
           "enumDescriptions": [
-            "Operation is unknown and will error out",
+            "Operation is unknown and will error out.",
             "Set the password to a user generated value.",
-            "Generate a new password and set it to that."
+            "Generate a new password and set it to that.",
+            "Set the username.  If an empty username is provided, basic authentication\nis disabled for the cluster.  If a non-empty username is provided, basic\nauthentication is enabled, with either a provided password or a generated\none."
           ],
           "type": "string",
           "enum": [
             "UNKNOWN",
             "SET_PASSWORD",
-            "GENERATE_PASSWORD"
+            "GENERATE_PASSWORD",
+            "SET_USERNAME"
           ]
         },
         "update": {

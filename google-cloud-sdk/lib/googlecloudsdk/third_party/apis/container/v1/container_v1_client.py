@@ -34,6 +34,9 @@ class ContainerV1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.masterProjects_locations_signedUrls = self.MasterProjectsLocationsSignedUrlsService(self)
+    self.masterProjects_locations_tokens = self.MasterProjectsLocationsTokensService(self)
+    self.masterProjects_locations = self.MasterProjectsLocationsService(self)
     self.masterProjects_zones_signedUrls = self.MasterProjectsZonesSignedUrlsService(self)
     self.masterProjects_zones_tokens = self.MasterProjectsZonesTokensService(self)
     self.masterProjects_zones = self.MasterProjectsZonesService(self)
@@ -43,6 +46,241 @@ class ContainerV1(base_api.BaseApiClient):
     self.projects_zones_operations = self.ProjectsZonesOperationsService(self)
     self.projects_zones = self.ProjectsZonesService(self)
     self.projects = self.ProjectsService(self)
+
+  class MasterProjectsLocationsSignedUrlsService(base_api.BaseApiService):
+    """Service class for the masterProjects_locations_signedUrls resource."""
+
+    _NAME = u'masterProjects_locations_signedUrls'
+
+    def __init__(self, client):
+      super(ContainerV1.MasterProjectsLocationsSignedUrlsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates signed URLs that allow for writing a file to a private GCS bucket.
+for storing backups of hosted master data. Signed URLs are explained here:
+https://cloud.google.com/storage/docs/access-control#Signed-URLs
+
+      Args:
+        request: (ContainerMasterProjectsLocationsSignedUrlsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SignedUrls) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.locations.signedUrls.create',
+        ordered_params=[u'masterProjectId', u'location'],
+        path_params=[u'location', u'masterProjectId'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/signedUrls',
+        request_field=u'createSignedUrlsRequest',
+        request_type_name=u'ContainerMasterProjectsLocationsSignedUrlsCreateRequest',
+        response_type_name=u'SignedUrls',
+        supports_download=False,
+    )
+
+  class MasterProjectsLocationsTokensService(base_api.BaseApiService):
+    """Service class for the masterProjects_locations_tokens resource."""
+
+    _NAME = u'masterProjects_locations_tokens'
+
+    def __init__(self, client):
+      super(ContainerV1.MasterProjectsLocationsTokensService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a compute-read-write (https://www.googleapis.com/auth/compute).
+scoped OAuth2 access token for <project_number>, to allow a hosted master
+to make modifications to its user's project.
+
+      Args:
+        request: (ContainerMasterProjectsLocationsTokensCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Token) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.locations.tokens.create',
+        ordered_params=[u'masterProjectId', u'location'],
+        path_params=[u'location', u'masterProjectId'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/tokens',
+        request_field=u'createTokenRequest',
+        request_type_name=u'ContainerMasterProjectsLocationsTokensCreateRequest',
+        response_type_name=u'Token',
+        supports_download=False,
+    )
+
+  class MasterProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the masterProjects_locations resource."""
+
+    _NAME = u'masterProjects_locations'
+
+    def __init__(self, client):
+      super(ContainerV1.MasterProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Audit(self, request, global_params=None):
+      """Audits the provided events to Cloud Audit Logging and/or Gin, depending on.
+policies defined by GKE.
+
+      Args:
+        request: (ContainerMasterProjectsLocationsAuditRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuditResponse) The response message.
+      """
+      config = self.GetMethodConfig('Audit')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Audit.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.locations.audit',
+        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/audit',
+        request_field=u'auditEventList',
+        request_type_name=u'ContainerMasterProjectsLocationsAuditRequest',
+        response_type_name=u'AuditResponse',
+        supports_download=False,
+    )
+
+    def Authenticate(self, request, global_params=None):
+      """Processes a request to authenticate a token. If it is able to authenticate.
+the token, the email for the authorized user is also returned.
+AuthenticateResponse also contains fields from the AuthenticateRequest. The
+server is expected to only fill in the AuthenticateResponse.Status. This is
+due to how the Authentication types are defined for the Kubernetes webhook
+authenticator:
+https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authentication.k8s.io/v1beta1/types.go.
+
+      Args:
+        request: (ContainerMasterProjectsLocationsAuthenticateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuthenticateResponse) The response message.
+      """
+      config = self.GetMethodConfig('Authenticate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Authenticate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.locations.authenticate',
+        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/authenticate',
+        request_field=u'authenticateRequest',
+        request_type_name=u'ContainerMasterProjectsLocationsAuthenticateRequest',
+        response_type_name=u'AuthenticateResponse',
+        supports_download=False,
+    )
+
+    def Authorize(self, request, global_params=None):
+      """Processes the attributes of a user request and determines whether or not.
+to authorize the request. If unauthorized, a reason is also provided. The
+AuthorizeResponse also contains fields from the AuthorizeRequest. The
+server is expected to only fill in the AuthorizeResponse.Status. This is
+due to how the Authorization types are defined for the Kubernetes webhook
+authorizer:
+https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1beta1/types.go.
+
+      Args:
+        request: (ContainerMasterProjectsLocationsAuthorizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuthorizeResponse) The response message.
+      """
+      config = self.GetMethodConfig('Authorize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Authorize.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.locations.authorize',
+        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/authorize',
+        request_field=u'authorizeRequest',
+        request_type_name=u'ContainerMasterProjectsLocationsAuthorizeRequest',
+        response_type_name=u'AuthorizeResponse',
+        supports_download=False,
+    )
+
+    def Imagereview(self, request, global_params=None):
+      """Processes a request to verify the container image. If unverified, a reason.
+is also provided. The ImageReviewResponse also contains fields from the
+ImageReviewRequest. The server is expected to only fill in the
+ImageReviewResponse.Status. This is due to how the ImageReview types are
+defined for the Kubernetes webhook image review:
+https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/imagepolicy/v1beta1/types.go.
+
+      Args:
+        request: (ContainerMasterProjectsLocationsImagereviewRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ImageReviewResponse) The response message.
+      """
+      config = self.GetMethodConfig('Imagereview')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Imagereview.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.locations.imagereview',
+        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/imagereview',
+        request_field=u'imageReviewRequest',
+        request_type_name=u'ContainerMasterProjectsLocationsImagereviewRequest',
+        response_type_name=u'ImageReviewResponse',
+        supports_download=False,
+    )
+
+    def Signcertificate(self, request, global_params=None):
+      """Signs a CertificateSigningRequest (CSR) with the cluster's certificate.
+authority (CA).
+
+      Args:
+        request: (CertificateSigningRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CertificateSigningRequest) The response message.
+      """
+      config = self.GetMethodConfig('Signcertificate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Signcertificate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.locations.signcertificate',
+        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/signcertificate',
+        request_field='<request>',
+        request_type_name=u'CertificateSigningRequest',
+        response_type_name=u'CertificateSigningRequest',
+        supports_download=False,
+    )
 
   class MasterProjectsZonesSignedUrlsService(base_api.BaseApiService):
     """Service class for the masterProjects_zones_signedUrls resource."""

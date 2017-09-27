@@ -1703,3 +1703,22 @@ def ValidateNetworkTierArgs(args, support_network_tier):
       raise exceptions.InvalidArgumentException(
           '--network-tier',
           'Invalid network tier [{tier}]'.format(tier=args.network_tier))
+
+
+def AddDeletionProtectionFlag(parser, use_default_value=True):
+  """Adds --deletion-protection Boolean flag.
+
+  Args:
+    parser: ArgumentParser, parser to which flags will be added.
+    use_default_value: Bool, if True, deletion protection flag will be given
+        the default value False, else None. Update uses None as an indicator
+        that no update needs to be done for deletion protection.
+  """
+  help_text = ('Enables deletion protection for the instance.')
+  if use_default_value:
+    help_text += ' Deletion protection is disabled by default.'
+  parser.add_argument(
+      '--deletion-protection',
+      help=help_text,
+      action='store_true',
+      default=False if use_default_value else None)

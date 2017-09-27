@@ -30,19 +30,8 @@ def AddLanguageFlags(parser, with_encoding=True):
     None.
   """
   # Content/Content File flag group
-  content_group = parser.add_mutually_exclusive_group(required=True)
-  content_group.add_argument(
-      '--content',
-      metavar='CONTENT',
-      help=('Specify input text on the command line. Useful for experiments, '
-            'or for extremely short text.'))
-  content_group.add_argument(
-      '--content-file',
-      metavar='CONTENT_FILE',
-      help=('Specify a local file or Google Cloud Storage (format '
-            '`gs://bucket/object`) file path containing the text to '
-            'be analyzed. More useful for longer text or data output from '
-            'another system.'))
+  for f in GetContentFlagsGroup():
+    f.AddToParser(parser)
   # Other flags
   content_type_arg = base.Argument(
       '--content-type',
@@ -71,3 +60,23 @@ def AddLanguageFlags(parser, with_encoding=True):
             'only used for the entity mentions in results, and does not '
             'affect how the input is read or analyzed.'))
     encoding_type_arg.AddToParser(parser)
+
+
+def GetContentFlagsGroup():
+  """Creates a mutex flag group for the content."""
+  content = base.Argument(
+      '--content',
+      metavar='CONTENT',
+      help=('Specify input text on the command line. Useful for experiments, '
+            'or for extremely short text.'))
+  content_file = base.Argument(
+      '--content-file',
+      metavar='CONTENT_FILE',
+      help=('Specify a local file or Google Cloud Storage (format '
+            '`gs://bucket/object`) file path containing the text to '
+            'be analyzed. More useful for longer text or data output from '
+            'another system.'))
+  content_group = base.MutuxArgumentGroup(required=True)
+  content_group.AddArgument(content)
+  content_group.AddArgument(content_file)
+  return [content_group]

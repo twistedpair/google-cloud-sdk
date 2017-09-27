@@ -52,11 +52,12 @@ class CommandBuilder(object):
     self.method = registry.GetMethod(
         self.spec.request.collection, self.spec.request.method,
         self.spec.request.api_version)
-    self.arg_generator = arg_marshalling.ArgumentGenerator(
+    resource_args = (self.spec.arguments.resource.params
+                     if self.spec.arguments.resource else None)
+    self.arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
         self.method,
-        self.spec.arguments.AllArguments(),
-        builtin_args=CommandBuilder.IGNORED_FLAGS,
-        clean_surface=True)
+        self.spec.arguments.params + self.spec.arguments.mutex_group_params,
+        resource_args)
     self.resource_type = self.arg_generator.resource_arg_name
 
   def Generate(self):
@@ -233,7 +234,7 @@ class CommandBuilder(object):
     Args:
       parser: The argparse parser.
     """
-    args = self.arg_generator.GenerateArgs(include_global_list_flags=False)
+    args = self.arg_generator.GenerateArgs()
     for arg in args.values():
       arg.AddToParser(parser)
     if self.spec.arguments.additional_arguments_hook:
@@ -499,12 +500,15 @@ class AsyncOperationPoller(waiter.OperationPoller):
     """
     result = operation
     if self.resource_ref:
-      method = registry.GetMethod(
-          self.spec.request.collection, self.spec.async.resource_get_method,
-          api_version=self.spec.request.api_version)
+      method = self._ResourceGetMethod()
       result = method.Call(method.GetRequestType()(
           **self.resource_ref.AsDict()))
     return _GetAttribute(result, self.spec.async.result_attribute)
+
+  def _ResourceGetMethod(self):
+    return registry.GetMethod(
+        self.spec.request.collection, self.spec.async.resource_get_method,
+        api_version=self.spec.request.api_version)
 
 
 def _GetAttribute(obj, attr_path):

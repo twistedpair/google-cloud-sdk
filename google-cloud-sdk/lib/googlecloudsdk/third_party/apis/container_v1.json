@@ -395,7 +395,7 @@
           "type": "string"
         },
         "minCpuPlatform": {
-          "description": "Minimum cpu\/platform to be used by this instance. The instance may be\nscheduled on the specified or newer cpu\/platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read <a href=\"\/compute\/docs\/instances\/specify-min-cpu-platform\">Specifying a Minimum CPU Platform<\/a>.",
+          "description": "Minimum CPU platform to be used by this instance. The instance may be\nscheduled on the specified or newer CPU platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform)",
           "type": "string"
         },
         "taints": {
@@ -510,6 +510,10 @@
         "kubernetesDashboard": {
           "description": "Configuration for the Kubernetes Dashboard.",
           "$ref": "KubernetesDashboard"
+        },
+        "networkPolicyConfig": {
+          "description": "Configuration for NetworkPolicy. This only tracks whether the addon\nis enabled or not on the Master, it does not track whether network policy\nis enabled for the nodes.",
+          "$ref": "NetworkPolicyConfig"
         }
       }
     },
@@ -542,6 +546,17 @@
       "properties": {
         "disabled": {
           "description": "Whether the Kubernetes Dashboard is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "NetworkPolicyConfig": {
+      "id": "NetworkPolicyConfig",
+      "description": "Configuration for NetworkPolicy. This only tracks whether the addon\nis enabled or not on the Master, it does not track whether network policy\nis enabled for the nodes.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Whether NetworkPolicy is enabled for this cluster.",
           "type": "boolean"
         }
       }
@@ -909,7 +924,8 @@
             "Set labels.",
             "Set\/generate master auth materials",
             "Set node pool size.",
-            "Updates network policy for a cluster."
+            "Updates network policy for a cluster.",
+            "Set the maintenance policy."
           ],
           "type": "string",
           "enum": [
@@ -928,7 +944,8 @@
             "SET_LABELS",
             "SET_MASTER_AUTH",
             "SET_NODE_POOL_SIZE",
-            "SET_NETWORK_POLICY"
+            "SET_NETWORK_POLICY",
+            "SET_MAINTENANCE_POLICY"
           ]
         },
         "status": {
@@ -1177,17 +1194,19 @@
       "type": "object",
       "properties": {
         "action": {
-          "description": "The exact form of action to be taken on the master auth",
+          "description": "The exact form of action to be taken on the master auth.",
           "enumDescriptions": [
-            "Operation is unknown and will error out",
+            "Operation is unknown and will error out.",
             "Set the password to a user generated value.",
-            "Generate a new password and set it to that."
+            "Generate a new password and set it to that.",
+            "Set the username.  If an empty username is provided, basic authentication\nis disabled for the cluster.  If a non-empty username is provided, basic\nauthentication is enabled, with either a provided password or a generated\none."
           ],
           "type": "string",
           "enum": [
             "UNKNOWN",
             "SET_PASSWORD",
-            "GENERATE_PASSWORD"
+            "GENERATE_PASSWORD",
+            "SET_USERNAME"
           ]
         },
         "update": {
@@ -1396,6 +1415,10 @@
       "description": "A request for a compute-read-write (https:\/\/www.googleapis.com\/auth\/compute)\nscoped OAuth2 access token for <project_number>, to allow hosted masters to\nmake modifications to a user's project.",
       "type": "object",
       "properties": {
+        "zone": {
+          "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
+          "type": "string"
+        },
         "projectNumber": {
           "description": "The project number for which the access is being requested.  This is the\nproject in which this master's cluster resides.\n\nNote that this must be a project number, not a project ID.",
           "type": "string",
@@ -1403,6 +1426,10 @@
         },
         "clusterId": {
           "description": "The name of this master's cluster.",
+          "type": "string"
+        },
+        "location": {
+          "description": "The location of this master's cluster.",
           "type": "string"
         }
       }
@@ -1428,6 +1455,10 @@
       "description": "A request for signed URLs that allow for writing a file to a private GCS\nbucket for storing backups of hosted master data.",
       "type": "object",
       "properties": {
+        "zone": {
+          "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
+          "type": "string"
+        },
         "projectNumber": {
           "description": "The project number for which the signed URLs are being requested.  This is\nthe project in which this master's cluster resides.\n\nNote that this must be a project number, not a project ID.",
           "type": "string",
@@ -1443,6 +1474,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "location": {
+          "description": "The location of this master's cluster.",
+          "type": "string"
         }
       }
     },
@@ -1462,7 +1497,7 @@
     },
     "AuditEventList": {
       "id": "AuditEventList",
-      "description": "A request to audit write audit events (to Cloud Audit Logging and\/or Gin).\nThe request contains items to audit.\n\nThis should look very close to the EventList struct in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apiserver\/pkg\/apis\/audit\/v1alpha1\/generated.proto.\nThis message has 4 GKE-specific fields that get mapped from the path, but the\nother fields (the expected JSON payload) must match EventList.",
+      "description": "A request to audit write audit events (to Cloud Audit Logging and\/or Gin).\nThe request contains items to audit.\n\nThis should look very close to the EventList struct in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apiserver\/pkg\/apis\/audit\/v1beta1\/generated.proto.\nThis message has 4 GKE-specific fields that get mapped from the path, but the\nother fields (the expected JSON payload) must match EventList.",
       "type": "object",
       "properties": {
         "items": {
@@ -1471,12 +1506,20 @@
           "items": {
             "$ref": "AuditEvent"
           }
+        },
+        "zone": {
+          "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
+          "type": "string"
+        },
+        "location": {
+          "description": "The location of this master's cluster.",
+          "type": "string"
         }
       }
     },
     "AuditEvent": {
       "id": "AuditEvent",
-      "description": "Event captures all the information that can be included in an API audit log.\n\nShould match Event in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apiserver\/pkg\/apis\/audit\/v1alpha1\/generated.proto.",
+      "description": "Event captures all the information that can be included in an API audit log.\n\nShould match Event in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apiserver\/pkg\/apis\/audit\/v1beta1\/generated.proto.",
       "type": "object",
       "properties": {
         "timestamp": {
@@ -1554,7 +1597,7 @@
     },
     "AuditObjectReference": {
       "id": "AuditObjectReference",
-      "description": "AuditObjectReference contains enough information to let you inspect or modify the referred object.\n\nShould match ObjectReference in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apiserver\/pkg\/apis\/audit\/v1alpha1\/generated.proto.",
+      "description": "AuditObjectReference contains enough information to let you inspect or modify the referred object.\n\nShould match ObjectReference in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apiserver\/pkg\/apis\/audit\/v1beta1\/generated.proto.",
       "type": "object",
       "properties": {
         "resource": {
@@ -1565,8 +1608,12 @@
           "description": "+optional",
           "type": "string"
         },
+        "apiGroup": {
+          "description": "+optional",
+          "type": "string"
+        },
         "apiVersion": {
-          "description": "+optional\n\nIn alpha, this field follows Kubernetes conventions, except there is a\nleading slash for the core group.  I.e. the core group is represented as\n\"\/v1\"; other group versions are represented as\n\"fully.qualified.group.name\/v1\".",
+          "description": "+optional\n\nIn alpha, this field follows Kubernetes conventions, except there is a\nleading slash for the core group.  I.e. the core group is represented as\n\"\/v1\"; other group versions are represented as\n\"fully.qualified.group.name\/v1\". In beta and so on this is only version,\ngroup is located in a separate field api_group.",
           "type": "string"
         },
         "subresource": {
@@ -1603,6 +1650,10 @@
       "description": "A request to authenticate a user based on a provided OAuth2 token.\n\nThis should look very close to the TokenReview struct in\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authentication.k8s.io\/v1beta1\/types.go.\nThis message has 4 GKE-specific fields that get mapped from the path, but the\nother fields (the expected JSON payload) must match TokenReview.",
       "type": "object",
       "properties": {
+        "zone": {
+          "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
+          "type": "string"
+        },
         "kind": {
           "description": "Fields from \"pkg\/apis\/authentication.k8s.io\/v1beta1\".TokenReview:\n\nThe \"kind\" of the TokenReview object.",
           "type": "string"
@@ -1618,6 +1669,10 @@
         "status": {
           "description": "The response for the provided request. (this won't be filled in for an\nAuthenticateRequest, but it is part of the struct, so we need it here to be\nsafe).",
           "$ref": "TokenReviewStatus"
+        },
+        "location": {
+          "description": "The location of this master's cluster.",
+          "type": "string"
         }
       }
     },
@@ -1707,6 +1762,10 @@
       "description": "A request to authorize a user action. The request contains the attributes of\nthe action the user is attempting. These attributes are mapped to a GKE IAM\npermission and policy to check.\n\nThis should look very close to the SubjectAccessReview struct in\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authorization\/v1beta1\/types.go.\nThis message has 4 GKE-specific fields that get mapped from the path, but the\nother fields (the expected JSON payload) must match SubjectAccessReview.",
       "type": "object",
       "properties": {
+        "zone": {
+          "description": "The zone of this master's cluster.",
+          "type": "string"
+        },
         "kind": {
           "description": "Fields from \"pkg\/apis\/authorization\/v1beta1\".SubjectAccessReview:\n\nThe \"kind\" of the SubjectAccessReview object.",
           "type": "string"
@@ -1722,6 +1781,10 @@
         "status": {
           "description": "The response for the provided request (this won't be filled in for an\nAuthorizeRequest, but it is part of the struct, so we need it here to be\nsafe).",
           "$ref": "SubjectAccessReviewStatus"
+        },
+        "location": {
+          "description": "The location of this master's cluster.",
+          "type": "string"
         }
       }
     },
@@ -1854,6 +1917,10 @@
       "description": "A request to verify an image. The request contains the attributes of the\ncontainer to create. These are passed to BCID for verification.\n\nThis should look very close to the ImageReview struct in\nhttp:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/imagepolicy\/v1beta1\/types.go.\nThis message has 4 GKE-specific fields that get mapped from the path, but the\nother fields (the expected JSON payload) must match ImageReview.",
       "type": "object",
       "properties": {
+        "zone": {
+          "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
+          "type": "string"
+        },
         "kind": {
           "description": "Fields from \"pkg\/apis\/authorization\/v1beta1\".SubjectAccessReview:\n\nThe \"kind\" of the SubjectAccessReview object.",
           "type": "string"
@@ -1869,6 +1936,10 @@
         "status": {
           "description": "The response for the provided request (this won't be filled in for an\nAuthorizeRequest, but it is part of the struct, so we need it here to be\nsafe).",
           "$ref": "ImageReviewStatus"
+        },
+        "location": {
+          "description": "The location of this master's cluster.",
+          "type": "string"
         }
       }
     },
@@ -1956,7 +2027,7 @@
           "type": "string"
         },
         "zone": {
-          "description": "The zone of this master's cluster.",
+          "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
           "type": "string"
         },
         "projectNumber": {
@@ -1974,6 +2045,10 @@
         },
         "apiVersion": {
           "description": "The api version of the CertificateSigningRequest object.",
+          "type": "string"
+        },
+        "location": {
+          "description": "The location of this master's cluster.",
           "type": "string"
         },
         "spec": {
@@ -3317,6 +3392,334 @@
     },
     "masterProjects": {
       "resources": {
+        "locations": {
+          "methods": {
+            "audit": {
+              "id": "container.masterProjects.locations.audit",
+              "path": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/audit",
+              "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/audit",
+              "httpMethod": "POST",
+              "description": "Audits the provided events to Cloud Audit Logging and\/or Gin, depending on\npolicies defined by GKE.",
+              "parameters": {
+                "masterProjectId": {
+                  "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "location": {
+                  "description": "The location of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "projectNumber": {
+                  "description": "The project number for which the request is being authorized.  This is\nthe project in which this master's cluster resides.\n\nThis is an int64, so it must be a project number, not a project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                },
+                "clusterId": {
+                  "description": "The name of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "masterProjectId",
+                "location",
+                "projectNumber",
+                "clusterId"
+              ],
+              "request": {
+                "$ref": "AuditEventList"
+              },
+              "response": {
+                "$ref": "AuditResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
+            },
+            "authenticate": {
+              "id": "container.masterProjects.locations.authenticate",
+              "path": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/authenticate",
+              "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/authenticate",
+              "httpMethod": "POST",
+              "description": "Processes a request to authenticate a token. If it is able to authenticate\nthe token, the email for the authorized user is also returned.\nAuthenticateResponse also contains fields from the AuthenticateRequest. The\nserver is expected to only fill in the AuthenticateResponse.Status. This is\ndue to how the Authentication types are defined for the Kubernetes webhook\nauthenticator:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authentication.k8s.io\/v1beta1\/types.go.",
+              "parameters": {
+                "masterProjectId": {
+                  "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "location": {
+                  "description": "The location of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "projectNumber": {
+                  "description": "The project number for which the signed URLs are being requested.  This is\nthe project in which this master's cluster resides.\n\nNote that this must be a project number, not a project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                },
+                "clusterId": {
+                  "description": "The name of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "masterProjectId",
+                "location",
+                "projectNumber",
+                "clusterId"
+              ],
+              "request": {
+                "$ref": "AuthenticateRequest"
+              },
+              "response": {
+                "$ref": "AuthenticateResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
+            },
+            "authorize": {
+              "id": "container.masterProjects.locations.authorize",
+              "path": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/authorize",
+              "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/authorize",
+              "httpMethod": "POST",
+              "description": "Processes the attributes of a user request and determines whether or not\nto authorize the request. If unauthorized, a reason is also provided. The\nAuthorizeResponse also contains fields from the AuthorizeRequest. The\nserver is expected to only fill in the AuthorizeResponse.Status. This is\ndue to how the Authorization types are defined for the Kubernetes webhook\nauthorizer:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authorization\/v1beta1\/types.go.",
+              "parameters": {
+                "masterProjectId": {
+                  "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "location": {
+                  "description": "The location of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "projectNumber": {
+                  "description": "This field is deprecated. Use location instead.\nThe project number for which the request is being authorized.  This is\nthe project in which this master's cluster resides.\n\nThis is an int64, so it must be a project number, not a project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                },
+                "clusterId": {
+                  "description": "The name of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "masterProjectId",
+                "location",
+                "projectNumber",
+                "clusterId"
+              ],
+              "request": {
+                "$ref": "AuthorizeRequest"
+              },
+              "response": {
+                "$ref": "AuthorizeResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
+            },
+            "imagereview": {
+              "id": "container.masterProjects.locations.imagereview",
+              "path": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/imagereview",
+              "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/imagereview",
+              "httpMethod": "POST",
+              "description": "Processes a request to verify the container image. If unverified, a reason\nis also provided. The ImageReviewResponse also contains fields from the\nImageReviewRequest. The server is expected to only fill in the\nImageReviewResponse.Status. This is due to how the ImageReview types are\ndefined for the Kubernetes webhook image review:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/imagepolicy\/v1beta1\/types.go.",
+              "parameters": {
+                "masterProjectId": {
+                  "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "location": {
+                  "description": "The location of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "projectNumber": {
+                  "description": "The project number for which the request is being authorized.  This is\nthe project in which this master's cluster resides.\n\nThis is an int64, so it must be a project number, not a project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                },
+                "clusterId": {
+                  "description": "The name of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "masterProjectId",
+                "location",
+                "projectNumber",
+                "clusterId"
+              ],
+              "request": {
+                "$ref": "ImageReviewRequest"
+              },
+              "response": {
+                "$ref": "ImageReviewResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
+            },
+            "signcertificate": {
+              "id": "container.masterProjects.locations.signcertificate",
+              "path": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/signcertificate",
+              "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/signcertificate",
+              "httpMethod": "POST",
+              "description": "Signs a CertificateSigningRequest (CSR) with the cluster's certificate\nauthority (CA).",
+              "parameters": {
+                "masterProjectId": {
+                  "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "location": {
+                  "description": "The location of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "projectNumber": {
+                  "description": "The project number for which the certificate is being signed. This is the\nproject in which this master's cluster resides.\n\nThis is an int64, so it must be a project number, not a project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                },
+                "clusterId": {
+                  "description": "The name of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "masterProjectId",
+                "location",
+                "projectNumber",
+                "clusterId"
+              ],
+              "request": {
+                "$ref": "CertificateSigningRequest"
+              },
+              "response": {
+                "$ref": "CertificateSigningRequest"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/userinfo.email"
+              ]
+            }
+          }
+          ,
+          "resources": {
+            "tokens": {
+              "methods": {
+                "create": {
+                  "id": "container.masterProjects.locations.tokens.create",
+                  "path": "v1/masterProjects/{masterProjectId}/locations/{location}/tokens",
+                  "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/tokens",
+                  "httpMethod": "POST",
+                  "description": "Creates a compute-read-write (https:\/\/www.googleapis.com\/auth\/compute)\nscoped OAuth2 access token for <project_number>, to allow a hosted master\nto make modifications to its user's project.",
+                  "parameters": {
+                    "masterProjectId": {
+                      "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The location of this master's cluster.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "masterProjectId",
+                    "location"
+                  ],
+                  "request": {
+                    "$ref": "CreateTokenRequest"
+                  },
+                  "response": {
+                    "$ref": "Token"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ]
+                }
+              }
+            },
+            "signedUrls": {
+              "methods": {
+                "create": {
+                  "id": "container.masterProjects.locations.signedUrls.create",
+                  "path": "v1/masterProjects/{masterProjectId}/locations/{location}/signedUrls",
+                  "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/signedUrls",
+                  "httpMethod": "POST",
+                  "description": "Creates signed URLs that allow for writing a file to a private GCS bucket\nfor storing backups of hosted master data. Signed URLs are explained here:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control#Signed-URLs",
+                  "parameters": {
+                    "masterProjectId": {
+                      "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The location of this master's cluster.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "masterProjectId",
+                    "location"
+                  ],
+                  "request": {
+                    "$ref": "CreateSignedUrlsRequest"
+                  },
+                  "response": {
+                    "$ref": "SignedUrls"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ]
+                }
+              }
+            }
+          }
+        },
         "zones": {
           "methods": {
             "audit": {
@@ -3333,7 +3736,7 @@
                   "type": "string"
                 },
                 "zone": {
-                  "description": "The zone of this master's cluster.",
+                  "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3382,7 +3785,7 @@
                   "type": "string"
                 },
                 "zone": {
-                  "description": "The zone of this master's cluster.",
+                  "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3437,7 +3840,7 @@
                   "type": "string"
                 },
                 "projectNumber": {
-                  "description": "The project number for which the request is being authorized.  This is\nthe project in which this master's cluster resides.\n\nThis is an int64, so it must be a project number, not a project ID.",
+                  "description": "This field is deprecated. Use location instead.\nThe project number for which the request is being authorized.  This is\nthe project in which this master's cluster resides.\n\nThis is an int64, so it must be a project number, not a project ID.",
                   "location": "path",
                   "required": true,
                   "type": "string",
@@ -3480,7 +3883,7 @@
                   "type": "string"
                 },
                 "zone": {
-                  "description": "The zone of this master's cluster.",
+                  "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3529,7 +3932,7 @@
                   "type": "string"
                 },
                 "zone": {
-                  "description": "The zone of this master's cluster.",
+                  "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -3583,7 +3986,7 @@
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The zone of this master's cluster.",
+                      "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3621,7 +4024,7 @@
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The zone of this master's cluster.",
+                      "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
                       "location": "path",
                       "required": true,
                       "type": "string"

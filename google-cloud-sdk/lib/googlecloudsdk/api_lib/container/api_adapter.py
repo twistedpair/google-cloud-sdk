@@ -95,6 +95,7 @@ HPA = 'HorizontalPodAutoscaling'
 DASHBOARD = 'KubernetesDashboard'
 DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = [INGRESS, HPA, DASHBOARD]
+NETWORK_POLICY = 'NetworkPolicy'
 
 UNSPECIFIED = 'UNSPECIFIED'
 SECURE = 'SECURE'
@@ -720,7 +721,9 @@ class APIAdapter(object):
       addons = self._AddonsConfig(
           disable_ingress=INGRESS in options.disable_addons or None,
           disable_hpa=HPA in options.disable_addons or None,
-          disable_dashboard=DASHBOARD in options.disable_addons or None)
+          disable_dashboard=DASHBOARD in options.disable_addons or None,
+          disable_network_policy=(
+              NETWORK_POLICY in options.disable_addons or None))
       cluster.addonsConfig = addons
     if options.addons:
       addons = self._AddonsConfig(
@@ -849,7 +852,8 @@ class APIAdapter(object):
       addons = self._AddonsConfig(
           disable_ingress=options.disable_addons.get(INGRESS),
           disable_hpa=options.disable_addons.get(HPA),
-          disable_dashboard=options.disable_addons.get(DASHBOARD))
+          disable_dashboard=options.disable_addons.get(DASHBOARD),
+          disable_network_policy=options.disable_addons.get(NETWORK_POLICY))
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif options.enable_autoscaling is not None:
       # For update, we can either enable or disable.
@@ -897,13 +901,15 @@ class APIAdapter(object):
   def _AddonsConfig(self,
                     disable_ingress=None,
                     disable_hpa=None,
-                    disable_dashboard=None):
+                    disable_dashboard=None,
+                    disable_network_policy=None):
     """Generates an AddonsConfig object given specific parameters.
 
     Args:
       disable_ingress: whether to disable the GCLB ingress controller.
       disable_hpa: whether to disable the horizontal pod autoscaling controller.
       disable_dashboard: whether to disable the Kuberntes Dashboard.
+      disable_network_policy: whether to disable NetworkPolicy enforcement.
 
     Returns:
       An AddonsConfig object that contains the options defining what addons to
@@ -919,6 +925,10 @@ class APIAdapter(object):
     if disable_dashboard is not None:
       addons.kubernetesDashboard = self.messages.KubernetesDashboard(
           disabled=disable_dashboard)
+    # Network policy is disabled by default.
+    if disable_network_policy is not None:
+      addons.networkPolicyConfig = self.messages.NetworkPolicyConfig(
+          disabled=disable_network_policy)
     return addons
 
   def _AddNodeTaintsToNodeConfig(self, node_config, options):

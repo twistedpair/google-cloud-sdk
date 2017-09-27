@@ -22,7 +22,7 @@ class NoFieldsSpecifiedError(exceptions.Error):
 
 
 def GetClientInstance(no_http=False):
-  return apis.GetClientInstance('cloudiot', 'v1beta1', no_http=no_http)
+  return apis.GetClientInstance('cloudiot', 'v1', no_http=no_http)
 
 
 def GetMessagesModule(client=None):
@@ -49,39 +49,72 @@ class RegistriesClient(object):
 
   @property
   def mqtt_config_enum(self):
-    return self.messages.MqttConfig.MqttConfigStateValueValuesEnum
+    return self.messages.MqttConfig.MqttEnabledStateValueValuesEnum
 
-  def Create(self, parent_ref, registry_id,
-             pubsub_topic=None, mqtt_config_state=None):
+  @property
+  def http_config_enum(self):
+    return self.messages.HttpConfig.HttpEnabledStateValueValuesEnum
+
+  def Create(self, parent_ref, registry_id, credentials=None,
+             event_pubsub_topic=None, state_pubsub_topic=None,
+             mqtt_enabled_state=None, http_enabled_state=None):
     """Creates a DeviceRegistry.
 
     Args:
       parent_ref: a Resource reference to a cloudiot.projects.locations
         resource for the parent of this registry.
       registry_id: str, the name of the resource to create.
-      pubsub_topic: an optional Resource reference to a pubsub.projects.topics.
-        The pubsub topic for notifications on this device registry.
-      mqtt_config_state: MqttConfigStateValueValuesEnum, the state of MQTT for
-        the registry
+      credentials: List of RegistryCredentials or None, credentials for the
+        DeviceRegistry.
+      event_pubsub_topic: an optional Resource reference to a
+        pubsub.projects.topics. The pubsub topic for event notifications on this
+        device registry.
+      state_pubsub_topic: an optional Resource reference to a
+        pubsub.projects.topics. The pubsub topic for state notifications on this
+        device registry.
+      mqtt_enabled_state: MqttEnabledStateValueValuesEnum, the state of MQTT for
+        the registry.
+      http_enabled_state: HttpEnabledStateValueValuesEnum, the state of HTTP for
+        the registry.
 
     Returns:
       DeviceRegistry: the created registry.
     """
-    if pubsub_topic:
-      notification_config = self.messages.NotificationConfig(
-          pubsubTopicName=pubsub_topic.RelativeName())
+    if event_pubsub_topic:
+      # This is a repeated field, only the first entry is used though.
+      event_notification_config = [self.messages.EventNotificationConfig(
+          pubsubTopicName=event_pubsub_topic.RelativeName())]
     else:
-      notification_config = None
-    if mqtt_config_state:
-      mqtt_config = self.messages.MqttConfig(mqttConfigState=mqtt_config_state)
+      event_notification_config = []
+
+    if state_pubsub_topic:
+      # This is a repeated field, only the first entry is used though.
+      state_notification_config = self.messages.StateNotificationConfig(
+          pubsubTopicName=state_pubsub_topic.RelativeName())
+    else:
+      state_notification_config = None
+
+    if mqtt_enabled_state:
+      mqtt_config = self.messages.MqttConfig(
+          mqttEnabledState=mqtt_enabled_state)
     else:
       mqtt_config = None
+
+    if http_enabled_state:
+      http_config = self.messages.HttpConfig(
+          httpEnabledState=http_enabled_state)
+    else:
+      http_config = None
+
     create_req = self.messages.CloudiotProjectsLocationsRegistriesCreateRequest(
         parent=parent_ref.RelativeName(),
         deviceRegistry=self.messages.DeviceRegistry(
             id=registry_id,
-            eventNotificationConfig=notification_config,
-            mqttConfig=mqtt_config))
+            credentials=credentials or [],
+            eventNotificationConfigs=event_notification_config,
+            stateNotificationConfig=state_notification_config,
+            mqttConfig=mqtt_config,
+            httpConfig=http_config))
 
     return self._service.Create(create_req)
 
@@ -113,8 +146,9 @@ class RegistriesClient(object):
         self._service, list_req, batch_size=page_size, limit=limit,
         field='deviceRegistries', batch_size_attribute='pageSize')
 
-  def Patch(self, registry_ref,
-            pubsub_topic=None, mqtt_config_state=None):
+  def Patch(self, registry_ref, credentials=None,
+            event_pubsub_topic=None, state_pubsub_topic=None,
+            mqtt_enabled_state=None, http_enabled_state=None):
     """Updates a DeviceRegistry.
 
     Any fields not specified will not be updated; at least one field must be
@@ -123,10 +157,18 @@ class RegistriesClient(object):
     Args:
       registry_ref: a Resource reference to a
         cloudiot.projects.locations.registries resource.
-      pubsub_topic: an optional Resource reference to a pubsub.projects.topic.
-        The pubsub topic for notifications on this device registry.
-      mqtt_config_state: MqttConfigStateValueValuesEnum, the state of MQTT for
-        the registry
+      credentials: List of RegistryCredentials or None, credentials for the
+        DeviceRegistry.
+      event_pubsub_topic: an optional Resource reference to a
+        pubsub.projects.topics. The pubsub topic for event notifications on this
+        device registry.
+      state_pubsub_topic: an optional Resource reference to a
+        pubsub.projects.topics. The pubsub topic for state notifications on this
+        device registry.
+      mqtt_enabled_state: MqttEnabledStateValueValuesEnum, the state of MQTT for
+        the registry.
+      http_enabled_state: HttpConfigStateValuEnabledsEnum, the state of HTTP for
+        the registry.
 
     Returns:
       DeviceRegistry: the created registry.
@@ -135,24 +177,52 @@ class RegistriesClient(object):
       NoFieldsSpecifiedError: if no fields were specified.
     """
     registry = self.messages.DeviceRegistry()
-    if pubsub_topic:
-      notification_config = self.messages.NotificationConfig(
-          pubsubTopicName=pubsub_topic.RelativeName())
+    if event_pubsub_topic:
+      event_notification_config = [self.messages.EventNotificationConfig(
+          pubsubTopicName=event_pubsub_topic.RelativeName())]
     else:
-      notification_config = None
-    if mqtt_config_state:
-      mqtt_config = self.messages.MqttConfig(mqttConfigState=mqtt_config_state)
+      event_notification_config = None
+
+    if state_pubsub_topic:
+      # This is a repeated field, only the first entry is used though.
+      state_notification_config = self.messages.StateNotificationConfig(
+          pubsubTopicName=state_pubsub_topic.RelativeName())
+    else:
+      state_notification_config = None
+
+    if mqtt_enabled_state:
+      mqtt_config = self.messages.MqttConfig(
+          mqttEnabledState=mqtt_enabled_state)
     else:
       mqtt_config = None
+
+    if http_enabled_state:
+      http_config = self.messages.HttpConfig(
+          httpEnabledState=http_enabled_state)
+    else:
+      http_config = None
+
     device_registry_update_settings = [
         _DeviceRegistryUpdateSetting(
-            'eventNotificationConfig',
-            'device_registry.event_notification_config.pubsub_topic_name',
-            notification_config),
+            'credentials',
+            'credentials',
+            credentials),
+        _DeviceRegistryUpdateSetting(
+            'eventNotificationConfigs',
+            'event_notification_configs',
+            event_notification_config),
+        _DeviceRegistryUpdateSetting(
+            'stateNotificationConfig',
+            'state_notification_config.pubsub_topic_name',
+            state_notification_config),
         _DeviceRegistryUpdateSetting(
             'mqttConfig',
-            'device_registry.mqtt_config.mqtt_config_state',
-            mqtt_config)
+            'mqtt_config.mqtt_enabled_state',
+            mqtt_config),
+        _DeviceRegistryUpdateSetting(
+            'httpConfig',
+            'http_config.http_enabled_state',
+            http_config)
     ]
     update_mask = []
     for update_setting in device_registry_update_settings:

@@ -31,6 +31,11 @@ from googlecloudsdk.core.util import archive
 from googlecloudsdk.core.util import files as file_utils
 
 
+def CleanOldSourceInfo(function):
+  function.sourceArchiveUrl = None
+  function.sourceRepositoryUrl = None
+
+
 def GetLocalPath(args):
   return args.local_path or '.'
 
@@ -40,6 +45,16 @@ def GetIgnoreFilesRegex(include_ignored_files):
     return None
   else:
     return r'(node_modules{}.*)|(node_modules)'.format(re.escape(os.sep))
+
+
+def _ValidateUnpackedSourceSize(path, include_ignored_files):
+  ignore_regex = GetIgnoreFilesRegex(include_ignored_files)
+  size_b = file_utils.GetTreeSizeBytes(path, ignore_regex)
+  size_limit_mb = 512
+  size_limit_b = size_limit_mb * 2 ** 20
+  if size_b > size_limit_b:
+    raise exceptions.OversizedDeployment(
+        str(size_b) + 'B', str(size_limit_b) + 'B')
 
 
 def CreateSourcesZipFile(zip_dir, source_path, include_ignored_files):
@@ -56,6 +71,8 @@ def CreateSourcesZipFile(zip_dir, source_path, include_ignored_files):
   Raises:
     FunctionsError
   """
+  util.ValidateDirectoryExistsOrRaiseFunctionError(source_path)
+  _ValidateUnpackedSourceSize(source_path, include_ignored_files)
   zip_file_name = os.path.join(zip_dir, 'fun.zip')
   try:
     if include_ignored_files:
@@ -91,6 +108,7 @@ def UploadFile(source, function_name, stage_bucket):
 
 def AddSourceToFunction(function, source_arg, include_ignored_files,
                         function_name, stage_bucket):
+  CleanOldSourceInfo(function)
   if source_arg.startswith('gs://'):
     function.sourceArchiveUrl = source_arg
     return
@@ -190,7 +208,6 @@ def _ValidateSourceArgs(args):
       raise exceptions.FunctionsError(
           'argument --source-tag: can be given only if argument '
           '--source-url is provided')
-    util.ValidateDirectoryExistsOrRaiseFunctionError(GetLocalPath(args))
   else:
     if args.source_path is None:
       raise exceptions.FunctionsError(

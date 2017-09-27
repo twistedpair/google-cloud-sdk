@@ -35,6 +35,9 @@ _GROUP_NOT_FOUND_ERROR_MESSAGE = (
 _IP_RANGE_NOT_FOUND_ERROR_MESSAGE = (
     'Advertised IP range {ip_range} not found on this {resource}.')
 
+_REQUIRE_IP_ADDRESS_AND_MASK_LENGTH_ERROR_MESSAGE = (
+    '--ip-address and --mask-length must be set together.')
+
 
 class RouterError(core_exceptions.Error):
   """Error superclass for all router surface-related errors."""
@@ -47,6 +50,23 @@ class PeerNotFoundError(RouterError):
     self.name = name
     msg = 'peer `{0}` not found'.format(name)
     super(PeerNotFoundError, self).__init__(msg)
+
+
+class InterfaceNotFoundError(RouterError):
+  """Raised when an interface is specified but not found in the router."""
+
+  def __init__(self, name):
+    self.name = name
+    msg = 'interface `{0}` not found'.format(name)
+    super(InterfaceNotFoundError, self).__init__(msg)
+
+
+class RequireIpAddressAndMaskLengthError(RouterError):
+  """Raised when ip-address or mask-length is specified without the other."""
+
+  def __init__(self):
+    msg = _REQUIRE_IP_ADDRESS_AND_MASK_LENGTH_ERROR_MESSAGE
+    super(RequireIpAddressAndMaskLengthError, self).__init__(msg)
 
 
 class CustomWithDefaultError(RouterError):

@@ -28,6 +28,7 @@ import sys
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import cli
 from googlecloudsdk.command_lib import crash_handling
+from googlecloudsdk.command_lib.util.apis import yaml_command_translator
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -64,13 +65,14 @@ def UpdateCheck(command_path, **unused_kwargs):
     log.debug('Failed to perform update check.', exc_info=True)
 
 
-def CreateCLI(surfaces):
+def CreateCLI(surfaces, translator=None):
   """Generates the gcloud CLI from 'surface' folder with extra surfaces.
 
   Args:
     surfaces: list(tuple(dot_path, dir_path)), extra commands or subsurfaces
               to add, where dot_path is calliope command path and dir_path
               path to command group or command.
+    translator: yaml_command_translator.Translator, an alternative translator.
   Returns:
     calliope cli object.
   """
@@ -86,7 +88,10 @@ def CreateCLI(surfaces):
       command_root_directory=os.path.join(pkg_root, 'surface'),
       allow_non_existing_modules=True,
       version_func=VersionFunc,
-      known_error_handler=HandleKnownErrorFunc)
+      known_error_handler=HandleKnownErrorFunc,
+      yaml_command_translator=(translator or
+                               yaml_command_translator.Translator()),
+  )
   loader.AddReleaseTrack(base.ReleaseTrack.ALPHA,
                          os.path.join(pkg_root, 'surface', 'alpha'),
                          component='alpha')

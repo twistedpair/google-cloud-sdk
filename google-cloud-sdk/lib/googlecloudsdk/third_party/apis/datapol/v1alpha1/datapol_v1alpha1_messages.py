@@ -1221,7 +1221,8 @@ class Rule(_messages.Message):
 
   Fields:
     action: Required
-    conditions: Additional restrictions that must be met
+    conditions: Additional restrictions that must be met. All conditions must
+      pass for the rule to match.
     description: Human-readable description of the rule.
     in_: If one or more 'in' clauses are specified, the rule matches if the
       PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.

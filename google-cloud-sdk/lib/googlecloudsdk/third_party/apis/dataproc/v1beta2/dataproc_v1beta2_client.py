@@ -34,11 +34,196 @@ class DataprocV1beta2(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.projects_locations_workflowTemplates = self.ProjectsLocationsWorkflowTemplatesService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_regions_clusters = self.ProjectsRegionsClustersService(self)
     self.projects_regions_jobs = self.ProjectsRegionsJobsService(self)
     self.projects_regions_operations = self.ProjectsRegionsOperationsService(self)
+    self.projects_regions_workflowTemplates = self.ProjectsRegionsWorkflowTemplatesService(self)
     self.projects_regions = self.ProjectsRegionsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsWorkflowTemplatesService(base_api.BaseApiService):
+    """Service class for the projects_locations_workflowTemplates resource."""
+
+    _NAME = u'projects_locations_workflowTemplates'
+
+    def __init__(self, client):
+      super(DataprocV1beta2.ProjectsLocationsWorkflowTemplatesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates new workflow template.
+
+      Args:
+        request: (DataprocProjectsLocationsWorkflowTemplatesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkflowTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates',
+        http_method=u'POST',
+        method_id=u'dataproc.projects.locations.workflowTemplates.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta2/{+parent}/workflowTemplates',
+        request_field=u'workflowTemplate',
+        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesCreateRequest',
+        response_type_name=u'WorkflowTemplate',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes a workflow template. It does not cancel in-progress workflows.
+
+      Args:
+        request: (DataprocProjectsLocationsWorkflowTemplatesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}',
+        http_method=u'DELETE',
+        method_id=u'dataproc.projects.locations.workflowTemplates.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'version'],
+        relative_path=u'v1beta2/{+name}',
+        request_field='',
+        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Retrieves the latest workflow template.Can retrieve previously instantiated template by specifying optional version parameter.
+
+      Args:
+        request: (DataprocProjectsLocationsWorkflowTemplatesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkflowTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}',
+        http_method=u'GET',
+        method_id=u'dataproc.projects.locations.workflowTemplates.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'version'],
+        relative_path=u'v1beta2/{+name}',
+        request_field='',
+        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesGetRequest',
+        response_type_name=u'WorkflowTemplate',
+        supports_download=False,
+    )
+
+    def Instantiate(self, request, global_params=None):
+      """Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling google.cloud.dataproc.v1beta2.OperationService.GetOperation. The Operation will complete when entire workflow is finished.The running workflow can be aborted via google.cloud.dataproc.v1beta2.OperationService.CancelOperation.The google.cloud.dataproc.v1beta2.Operation.metadata will always be google.cloud.dataproc.v1beta2.WorkflowMetadata.The google.cloud.dataproc.v1beta2.Operation.result will always be google.protobuf.Empty.
+
+      Args:
+        request: (DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Instantiate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Instantiate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}:instantiate',
+        http_method=u'POST',
+        method_id=u'dataproc.projects.locations.workflowTemplates.instantiate',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta2/{+name}:instantiate',
+        request_field=u'instantiateWorkflowTemplateRequest',
+        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists workflows that match the specified filter in the request.
+
+      Args:
+        request: (DataprocProjectsLocationsWorkflowTemplatesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkflowTemplatesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates',
+        http_method=u'GET',
+        method_id=u'dataproc.projects.locations.workflowTemplates.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta2/{+parent}/workflowTemplates',
+        request_field='',
+        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesListRequest',
+        response_type_name=u'ListWorkflowTemplatesResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates (replaces) workflow template. The updated template must contain version that matches the current server version.
+
+      Args:
+        request: (WorkflowTemplate) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkflowTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates/{workflowTemplatesId}',
+        http_method=u'PUT',
+        method_id=u'dataproc.projects.locations.workflowTemplates.update',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta2/{+name}',
+        request_field='<request>',
+        request_type_name=u'WorkflowTemplate',
+        response_type_name=u'WorkflowTemplate',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = u'projects_locations'
+
+    def __init__(self, client):
+      super(DataprocV1beta2.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsRegionsClustersService(base_api.BaseApiService):
     """Service class for the projects_regions_clusters resource."""
@@ -154,6 +339,33 @@ class DataprocV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (DataprocProjectsRegionsClustersGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}:getIamPolicy',
+        http_method=u'GET',
+        method_id=u'dataproc.projects.regions.clusters.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1beta2/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsClustersGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists all regions/{region}/clusters in a project.
 
@@ -203,6 +415,60 @@ class DataprocV1beta2(base_api.BaseApiClient):
         request_field=u'cluster',
         request_type_name=u'DataprocProjectsRegionsClustersPatchRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (DataprocProjectsRegionsClustersSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.clusters.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1beta2/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'DataprocProjectsRegionsClustersSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (DataprocProjectsRegionsClustersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.clusters.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1beta2/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'DataprocProjectsRegionsClustersTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -487,6 +753,178 @@ class DataprocV1beta2(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'DataprocProjectsRegionsOperationsListRequest',
         response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsRegionsWorkflowTemplatesService(base_api.BaseApiService):
+    """Service class for the projects_regions_workflowTemplates resource."""
+
+    _NAME = u'projects_regions_workflowTemplates'
+
+    def __init__(self, client):
+      super(DataprocV1beta2.ProjectsRegionsWorkflowTemplatesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates new workflow template.
+
+      Args:
+        request: (DataprocProjectsRegionsWorkflowTemplatesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkflowTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates',
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.workflowTemplates.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta2/{+parent}/workflowTemplates',
+        request_field=u'workflowTemplate',
+        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesCreateRequest',
+        response_type_name=u'WorkflowTemplate',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes a workflow template. It does not cancel in-progress workflows.
+
+      Args:
+        request: (DataprocProjectsRegionsWorkflowTemplatesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}',
+        http_method=u'DELETE',
+        method_id=u'dataproc.projects.regions.workflowTemplates.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'version'],
+        relative_path=u'v1beta2/{+name}',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Retrieves the latest workflow template.Can retrieve previously instantiated template by specifying optional version parameter.
+
+      Args:
+        request: (DataprocProjectsRegionsWorkflowTemplatesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkflowTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}',
+        http_method=u'GET',
+        method_id=u'dataproc.projects.regions.workflowTemplates.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'version'],
+        relative_path=u'v1beta2/{+name}',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesGetRequest',
+        response_type_name=u'WorkflowTemplate',
+        supports_download=False,
+    )
+
+    def Instantiate(self, request, global_params=None):
+      """Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling google.cloud.dataproc.v1beta2.OperationService.GetOperation. The Operation will complete when entire workflow is finished.The running workflow can be aborted via google.cloud.dataproc.v1beta2.OperationService.CancelOperation.The google.cloud.dataproc.v1beta2.Operation.metadata will always be google.cloud.dataproc.v1beta2.WorkflowMetadata.The google.cloud.dataproc.v1beta2.Operation.result will always be google.protobuf.Empty.
+
+      Args:
+        request: (DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Instantiate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Instantiate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}:instantiate',
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.workflowTemplates.instantiate',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta2/{+name}:instantiate',
+        request_field=u'instantiateWorkflowTemplateRequest',
+        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists workflows that match the specified filter in the request.
+
+      Args:
+        request: (DataprocProjectsRegionsWorkflowTemplatesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkflowTemplatesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates',
+        http_method=u'GET',
+        method_id=u'dataproc.projects.regions.workflowTemplates.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta2/{+parent}/workflowTemplates',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesListRequest',
+        response_type_name=u'ListWorkflowTemplatesResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates (replaces) workflow template. The updated template must contain version that matches the current server version.
+
+      Args:
+        request: (WorkflowTemplate) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkflowTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates/{workflowTemplatesId}',
+        http_method=u'PUT',
+        method_id=u'dataproc.projects.regions.workflowTemplates.update',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta2/{+name}',
+        request_field='<request>',
+        request_type_name=u'WorkflowTemplate',
+        response_type_name=u'WorkflowTemplate',
         supports_download=False,
     )
 

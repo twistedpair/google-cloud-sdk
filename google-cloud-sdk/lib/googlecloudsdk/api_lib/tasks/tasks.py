@@ -18,6 +18,7 @@ from googlecloudsdk.api_lib import tasks
 
 
 class Tasks(object):
+  """API client for Cloud Tasks tasks."""
 
   def __init__(self, tasks_api=None):
     if tasks_api is None:
@@ -31,3 +32,21 @@ class Tasks(object):
     return list_pager.YieldFromList(
         self.api.tasks_service, request, batch_size=page_size, limit=limit,
         field='tasks', batch_size_attribute='pageSize')
+
+  def Get(self, task_ref):
+    request = (
+        self.api.messages.CloudtasksProjectsLocationsQueuesTasksGetRequest(
+            name=task_ref.RelativeName()))
+    return self.api.tasks_service.Get(request)
+
+  def Delete(self, task_ref):
+    request = (
+        self.api.messages.CloudtasksProjectsLocationsQueuesTasksDeleteRequest(
+            name=task_ref.RelativeName()))
+    return self.api.tasks_service.Delete(request)
+
+  def Run(self, task_ref):
+    request = (
+        self.api.messages.CloudtasksProjectsLocationsQueuesTasksRunRequest(
+            name=task_ref.RelativeName()))
+    return self.api.tasks_service.Run(request)

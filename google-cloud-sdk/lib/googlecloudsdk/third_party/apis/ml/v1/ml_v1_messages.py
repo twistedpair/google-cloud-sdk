@@ -126,7 +126,8 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
     HyperparametersValue: The hyperparameters given to this trial.
 
   Fields:
-    allMetrics: All recorded object metrics for this trial.
+    allMetrics: All recorded object metrics for this trial. This field is not
+      currently populated.
     finalMetric: The final objective metric seen for this trial.
     hyperparameters: The hyperparameters given to this trial.
     trialId: The trial id for these results.
@@ -718,6 +719,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       PREMIUM_1: A large number of workers with many parameter servers.
       BASIC_GPU: A single worker instance [with a GPU](/ml-engine/docs/how-tos
         /using-gpus).
+      BASIC_TPU: A single worker instance with a [Cloud TPU](/tpu)
       CUSTOM: The CUSTOM tier is not a set tier, but rather enables you to use
         your own cluster specification. When you use this tier, set values to
         configure your processing cluster according to these guidelines:  *
@@ -740,7 +742,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     STANDARD_1 = 1
     PREMIUM_1 = 2
     BASIC_GPU = 3
-    CUSTOM = 4
+    BASIC_TPU = 4
+    CUSTOM = 5
 
   args = _messages.StringField(1, repeated=True)
   hyperparameters = _messages.MessageField('GoogleCloudMlV1HyperparameterSpec', 2)
@@ -781,7 +784,7 @@ class GoogleCloudMlV1Version(_messages.Message):
   deployed in the cloud, ready to handle prediction requests. A model can have
   multiple versions. You can get information about all of the versions of a
   given model by calling [projects.models.versions.list](/ml-
-  engine/reference/rest/v1/projects.models.versions/list).  Next ID: 18
+  engine/reference/rest/v1/projects.models.versions/list).  Next ID: 19
   LINT.IfChange
 
   Enums:

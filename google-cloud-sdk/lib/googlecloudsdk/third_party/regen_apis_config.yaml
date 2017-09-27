@@ -101,8 +101,9 @@ apis:
         # EventTrigger API in the format that it expects (with the underscore).
         projects.buckets: projects/_/buckets/{bucketId}
   cloudiot:
-    v1beta1:
-      discovery_doc: cloudiot_v1beta1.json
+    v1:
+      discovery_doc: cloudiot_v1.json
+      default: true
       resources:
         projects.locations: "projects/{projectsId}/locations/{locationsId}"
         projects.locations.registries.devices.configVersions: "projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/configVersions"

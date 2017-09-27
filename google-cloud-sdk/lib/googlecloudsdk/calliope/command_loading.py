@@ -196,6 +196,10 @@ def CreateYamlLoader(impl_path):
       a: b
       c: d
 
+    baz:
+      - e: f
+      - g: h
+
     The first uses a custom constructor to insert data into your current file,
     so:
 
@@ -205,22 +209,35 @@ def CreateYamlLoader(impl_path):
 
     bar: b
 
-    The second mechanism overrides construct_mapping to post process the data
-    and replace the merge macro with keys from the other file. We can't use the
-    custom constructor for this as well because the merge key type in yaml is
-    processed before custom constructors which makes importing and merging not
-    possible. So:
+    The second mechanism overrides construct_mapping and construct_sequence to
+    post process the data and replace the merge macro with keys from the other
+    file. We can't use the custom constructor for this as well because the
+    merge key type in yaml is processed before custom constructors which makes
+    importing and merging not possible. So:
 
     bar:
       _COMMON_: foo
-      e: f
+      i: j
 
     results in:
 
     bar:
       a: b
       c: d
-      e: f
+      i: j
+
+    This can also be used to merge list contexts, so:
+
+    bar:
+      - _COMMON_baz
+      - i: j
+
+    results in:
+
+    bar:
+      - e: f
+      - g: h
+      - i: j
     """
 
     INCLUDE_MACRO = '!COMMON'
@@ -236,6 +253,18 @@ def CreateYamlLoader(impl_path):
         for path in attribute_path.split(','):
           data.update(self._GetData(path))
       return data
+
+    def construct_sequence(self, *args, **kwargs):
+      data = super(Loader, self).construct_sequence(*args, **kwargs)
+      new_list = []
+      for i in data:
+        if isinstance(i, basestring) and i.startswith(Loader.MERGE_MACRO):
+          attribute_path = i[len(Loader.MERGE_MACRO):]
+          for path in attribute_path.split(','):
+            new_list.extend(self._GetData(path))
+        else:
+          new_list.append(i)
+      return new_list
 
     def include(self, node):
       attribute_path = self.construct_scalar(node)

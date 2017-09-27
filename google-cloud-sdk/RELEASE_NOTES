@@ -2,6 +2,52 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 173.0.0 (2017-09-27)
+
+### Google App Engine
+
+*   Add build tag for Go 1.9 to go-app-stager
+*   Fixed build tags when using dev_appserver.py with the Go 1.8 beta
+
+### Google Cloud Dataproc
+
+*    Added `gcloud beta dataproc clusters get-iam-policy` and `gcloud beta dataproc clusters set-iam-policy` commands to manage IAM permissions on a cluster.
+
+### Google Cloud IOT
+
+*   `gcloud iot` is now in public beta.
+*   The --enable-device boolean flag for `beta iot device create/update` is now deprecated and renamed to --blocked.
+*   Added `--enable-http-config` flag to `beta iot registries create/update`.
+*   Added new flag `--state-pubsub-topic` flag to `beta iot registries create/update`
+*   Added two new key types for `iot device` credentials and renamed existing types.
+*   Added --metadata[-from-file] flag to `beta iot devices create/update`.
+*   Added `beta iot registries credentials` command group and added the `--public-key-path` flag to `beta iot registries create`.
+*   Added `beta iot devices states list` surface.
+
+### Google Compute Engine
+
+*   Fix validation in `gcloud compute routers update-interface` to disallow --mask-length to be specified without --ip-address.
+*   Add `--zones` flag to `beta compute instance-groups managed create` command.
+
+### Google Container Engine
+
+*   The `--enable-network-policy` flag is now available in the `gcloud beta container clusters update` command. To use this command on an existing cluster, first run `gcloud beta container clusters update --update-addons network-policy=ENABLED`.
+*   Added --maintenance-window flag to `gcloud beta container clusters create` and `gcloud beta container clusters update`.
+*   Updated Google Container Engine's kubectl from version 1.7.5 to 1.7.6.
+*   The `--enable-autoupgrade` flag is now GA, available for `gcloud container cluster create`, `gcloud container node-pools create` and `gcloud container node-pools update` commands.
+
+### Google Container Registry
+
+*   gcloud auth configure-docker is now in BETA. This is the new preferred method to configure gcloud/docker integration.
+
+### Google Cloud Machine Learning Engine
+
+*   Added `--summarize` flag to `gcloud ml-engine jobs describe` command. Prints job resource in human readable table format.
+
+### Google Cloud Machine Learning Language
+
+*   `gcloud ml language analyze-entity-sentiment` is now in GA
+
 ## 172.0.1 (2017-09-21)
 
 ### Google Cloud Service Management
@@ -104,7 +150,6 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 *   Updated App Engine components for Java to version 1.9.55.
     Please visit the following release notes for details:
     <https://cloud.google.com/appengine/docs/java/release-notes>.
-*   Fixed build tags when using dev_appserver.py with the Go 1.8 beta
 *   Improved client-side traffic split validation in `gcloud app services
     set-traffic`.
 *   Promoted `gcloud app ssl-certificates` command group to GA and beta.

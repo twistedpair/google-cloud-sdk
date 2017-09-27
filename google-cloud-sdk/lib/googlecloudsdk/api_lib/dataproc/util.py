@@ -160,7 +160,8 @@ def WaitForOperation(dataproc, operation, message, timeout_s, poll_period_s=5):
     while timeout_s > (time.time() - start_time):
       try:
         operation = dataproc.client.projects_regions_operations.Get(request)
-        metadata = ParseOperationJsonMetadata(operation.metadata, dataproc)
+        metadata = ParseOperationJsonMetadata(
+            operation.metadata, dataproc.messages.ClusterOperationMetadata)
         _LogWarnings(metadata.warnings)
         warnings_so_far = len(metadata.warnings)
         if operation.done:
@@ -170,7 +171,8 @@ def WaitForOperation(dataproc, operation, message, timeout_s, poll_period_s=5):
         if IsClientHttpException(http_exception):
           raise
       time.sleep(poll_period_s)
-  metadata = ParseOperationJsonMetadata(operation.metadata, dataproc)
+  metadata = ParseOperationJsonMetadata(
+      operation.metadata, dataproc.messages.ClusterOperationMetadata)
   _LogWarnings(metadata.warnings)
   if not operation.done:
     raise exceptions.OperationTimeoutError(
@@ -178,6 +180,128 @@ def WaitForOperation(dataproc, operation, message, timeout_s, poll_period_s=5):
   elif operation.error:
     raise exceptions.OperationError('Operation [{0}] failed: {1}.'.format(
         operation.name, FormatRpcError(operation.error)))
+
+  log.info('Operation [%s] finished after %.3f seconds', operation.name,
+           (time.time() - start_time))
+  return operation
+
+
+def PrintWorkflowMetadata(metadata, status, operations, errors):
+  """Print workflow and job status for the running workflow template.
+
+  This method will detect any changes of state in the latest metadata and print
+  all the new states in a workflow template.
+
+  For example:
+    Workflow template template-name RUNNING
+    Creating cluster: Operation ID create-id.
+    Job ID job-id-1 RUNNING
+    Job ID job-id-1 COMPLETED
+    Deleting cluster: Operation ID delete-id.
+    Workflow template template-name DONE
+
+  Args:
+    metadata: Dataproc WorkflowMetadata message object, contains the latest
+        states of a workflow template.
+    status: Dictionary, stores all jobs' status in the current workflow
+        template.
+    operations: Dictionary, stores cluster operation status for the workflow
+        template.
+    errors: Dictionary, stores errors from the current workflow template.
+  """
+  if metadata.template not in status or metadata.state != status[metadata.
+                                                                 template]:
+    log.status.Print(
+        'Workflow template {0} {1}'.format(metadata.template, metadata.state))
+    status[metadata.template] = metadata.state
+  if metadata.createCluster != operations['createCluster']:
+    if hasattr(metadata.createCluster,
+               'error') and metadata.createCluster.error is not None:
+      log.status.Print(metadata.createCluster.error)
+    elif hasattr(
+        metadata.createCluster,
+        'operationId') and metadata.createCluster.operationId is not None:
+      log.status.Print('Creating cluster: Operation ID [{0}].'.format(
+          metadata.createCluster.operationId))
+    operations['createCluster'] = metadata.createCluster
+  if metadata.deleteCluster != operations['deleteCluster']:
+    if hasattr(metadata.deleteCluster,
+               'error') and metadata.deleteCluster.error is not None:
+      log.status.Print(metadata.deleteCluster.error)
+    elif hasattr(
+        metadata.deleteCluster,
+        'operationId') and metadata.deleteCluster.operationId is not None:
+      log.status.Print('Deleting cluster: Operation ID [{0}].'.format(
+          metadata.deleteCluster.operationId))
+    operations['deleteCluster'] = metadata.deleteCluster
+  if hasattr(metadata.graph, 'nodes'):
+    for node in metadata.graph.nodes:
+      if not node.jobId:
+        continue
+      if node.jobId not in status or status[node.jobId] != node.state:
+        log.status.Print('Job ID {0} {1}'.format(node.jobId, node.state))
+        status[node.jobId] = node.state
+      if node.error and (node.jobId not in errors or
+                         errors[node.jobId] != node.error):
+        log.status.Print('Job ID {0} error: {1}'.format(node.jobId, node.error))
+        errors[node.jobId] = node.error
+
+
+# TODO(b/36056506): Use api_lib.utils.waiter
+def WaitForWorkflowTemplateOperation(dataproc,
+                                     operation,
+                                     timeout_s,
+                                     poll_period_s=5):
+  """Poll dataproc Operation until its status is done or timeout reached.
+
+  Args:
+    dataproc: wrapper for Dataproc messages, resources, and client
+    operation: Operation, message of the operation to be polled.
+    timeout_s: number, seconds to poll with retries before timing out.
+    poll_period_s: number, delay in seconds between requests.
+
+  Returns:
+    Operation: the return value of the last successful operations.get
+    request.
+
+  Raises:
+    OperationError: if the operation times out or finishes with an error.
+  """
+  request = dataproc.messages.DataprocProjectsRegionsOperationsGetRequest(
+      name=operation.name)
+  log.status.Print('Waiting on operation [{0}].'.format(operation.name))
+  start_time = time.time()
+  operations = {'createCluster': None, 'deleteCluster': None}
+  status = {}
+  errors = {}
+
+  while timeout_s > (time.time() - start_time):
+    try:
+      operation = dataproc.client.projects_regions_operations.Get(request)
+      metadata = ParseOperationJsonMetadata(operation.metadata,
+                                            dataproc.messages.WorkflowMetadata)
+
+      PrintWorkflowMetadata(metadata, status, operations, errors)
+      if operation.done:
+        break
+    except apitools_exceptions.HttpError as http_exception:
+      # Do not retry on 4xx errors.
+      if IsClientHttpException(http_exception):
+        raise
+    time.sleep(poll_period_s)
+  metadata = ParseOperationJsonMetadata(operation.metadata,
+                                        dataproc.messages.WorkflowMetadata)
+
+  if not operation.done:
+    raise exceptions.OperationTimeoutError(
+        'Operation [{0}] timed out.'.format(operation.name))
+  elif operation.error:
+    raise exceptions.OperationError('Operation [{0}] failed: {1}.'.format(
+        operation.name, FormatRpcError(operation.error)))
+  for op in ['createCluster', 'deleteCluster']:
+    if op in operations and operations[op] is not None and operations[op].error:
+      raise exceptions.OperationError('Operation [{0}] failed: {1}.'.format(
+          operations[op].operationId, operations[op].error))
 
   log.info('Operation [%s] finished after %.3f seconds', operation.name,
            (time.time() - start_time))
@@ -354,8 +478,33 @@ def ParseOperation(operation, dataproc):
       collection=collection)
 
 
-def ParseOperationJsonMetadata(metadata_value, dataproc):
+def ParseOperationJsonMetadata(metadata_value, metadata_type):
   if not metadata_value:
-    return dataproc.messages.ClusterOperationMetadata()
-  return encoding.JsonToMessage(dataproc.messages.ClusterOperationMetadata,
+    return metadata_type()
+  return encoding.JsonToMessage(metadata_type,
                                 encoding.MessageToJson(metadata_value))
+
+
+def ParseWorkflowTemplates(template,
+                           dataproc,
+                           region=properties.VALUES.dataproc.region.GetOrFail):
+  # TODO(b/65845794): make caller to pass in region explicitly
+  ref = dataproc.resources.Parse(
+      template,
+      params={
+          'regionsId': region,
+          'projectsId': properties.VALUES.core.project.GetOrFail
+      },
+      collection='dataproc.projects.regions.workflowTemplates')
+  return ref
+
+
+def ParseRegion(dataproc):
+  ref = dataproc.resources.Parse(
+      None,
+      params={
+          'regionId': properties.VALUES.dataproc.region.GetOrFail,
+          'projectId': properties.VALUES.core.project.GetOrFail
+      },
+      collection='dataproc.projects.regions')
+  return ref

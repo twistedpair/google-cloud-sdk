@@ -165,10 +165,10 @@ MAP = {
         ),
     },
     'cloudiot': {
-        'v1beta1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.cloudiot.v1beta1',
-            client_classpath='cloudiot_v1beta1_client.CloudiotV1beta1',
-            messages_modulepath='cloudiot_v1beta1_messages',
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudiot.v1',
+            client_classpath='cloudiot_v1_client.CloudiotV1',
+            messages_modulepath='cloudiot_v1_messages',
             default_version=True
         ),
     },

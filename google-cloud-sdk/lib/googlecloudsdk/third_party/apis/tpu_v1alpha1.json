@@ -274,19 +274,19 @@
     },
     "Node": {
       "id": "Node",
-      "description": "An instance.",
+      "description": "A TPU instance.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable name of the TPU",
+          "description": "The immutable name of the TPU",
           "type": "string"
         },
         "description": {
-          "description": "User-supplied description of the TPU. Maximum of 512 characters.",
+          "description": "The user-supplied description of the TPU. Maximum of 512 characters.",
           "type": "string"
         },
         "acceleratorType": {
-          "description": "The type of hardware accelerators associated with this node.",
+          "description": "The type of hardware accelerators associated with this node.\nRequired.",
           "type": "string"
         },
         "machineType": {
@@ -294,15 +294,15 @@
           "type": "string"
         },
         "ipAddress": {
-          "description": "The network address for the TPU as visible to other GCE instances.\nOutput only.",
+          "description": "The network address for the TPU Node as visible to GCE instances.\nOutput only.",
           "type": "string"
         },
         "port": {
-          "description": "The network port for the TPU as visible to other GCE instances.\nOutput only.",
+          "description": "The network port for the TPU Node as visible to GCE instances.\nOutput only.",
           "type": "string"
         },
         "state": {
-          "description": "This contains a current state for the accelerator.\nOutput only.",
+          "description": "The current state for the TPU Node.\nOutput only.",
           "enumDescriptions": [
             "TPU node state is not known\/set.",
             "TPU node is being created.",
@@ -324,19 +324,19 @@
           ]
         },
         "healthDescription": {
-          "description": "Human readable description of why the service is unhealthy.\nOutput only.",
+          "description": "If this field is populated, it contains a description of why the TPU Node\nis unhealthy.\nOutput only.",
           "type": "string"
         },
         "tensorflowVersion": {
-          "description": "The version of Tensorflow running in the Node.",
+          "description": "The version of Tensorflow running in the Node.\nRequired.",
           "type": "string"
         },
         "network": {
-          "description": "The user specifies the name of a network they wish to peer the TPU node to.\nIt must be a preexisting GCE network inside of the project on which this\nAPI has been activated. If none is provided, \"default\" will be used.",
+          "description": "The name of a network they wish to peer the TPU node to. It must be a\npreexisting GCE network inside of the project on which this API has been\nactivated. If none is provided, \"default\" will be used.",
           "type": "string"
         },
         "cidrBlock": {
-          "description": "The user must supply a CIDR block that the TPU node will use when selecting\nan IP address. This CIDR block must be a \/29 block; the GCE networks API\nforbids a smaller block, and using a larger block would be wasteful (a node\ncan only consume one IP address). Errors will occur if the CIDR block has\nalready been used for a currently existing TPU node, the CIDR block\nconflicts with any subnetworks in the user's provided network, or the\nprovided network is peered with another network that is using that CIDR\nblock.",
+          "description": "The CIDR block that the TPU node will use when selecting \/\/an IP address.\nThis CIDR block must be a \/29 block; the GCE networks API forbids a smaller\nblock, and using a larger block would be wasteful (a node can only consume\none IP address). Errors will occur if the CIDR block has already been used\nfor a currently existing TPU node, the CIDR block conflicts with any\nsubnetworks in the user's provided network, or the provided network is\npeered with another network that is using that CIDR block.\nRequired.",
           "type": "string"
         },
         "serviceAccount": {
@@ -347,6 +347,34 @@
           "description": "The time when the node was created.\nOutput only.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "schedulingConfig": {
+
+          "$ref": "SchedulingConfig"
+        },
+        "greenVmSelflink": {
+
+          "type": "string"
+        },
+        "greenVmInstanceId": {
+
+          "type": "string",
+          "format": "uint64"
+        },
+        "tensorFlowUrlOverride": {
+
+          "type": "string"
+        }
+      }
+    },
+    "SchedulingConfig": {
+      "id": "SchedulingConfig",
+
+      "type": "object",
+      "properties": {
+        "preemptible": {
+
+          "type": "boolean"
         }
       }
     },

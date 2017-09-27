@@ -39,11 +39,15 @@ class AddonsConfig(_messages.Message):
       controller addon, which makes it easy to set up HTTP load balancers for
       services in a cluster.
     kubernetesDashboard: Configuration for the Kubernetes Dashboard.
+    networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
+      whether the addon is enabled or not on the Master, it does not track
+      whether network policy is enabled for the nodes.
   """
 
   horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 1)
   httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 2)
   kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 3)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 4)
 
 
 class AuditConfig(_messages.Message):
@@ -1228,6 +1232,18 @@ class NetworkPolicy(_messages.Message):
   provider = _messages.EnumField('ProviderValueValuesEnum', 2)
 
 
+class NetworkPolicyConfig(_messages.Message):
+  """Configuration for NetworkPolicy. This only tracks whether the addon is
+  enabled or not on the Master, it does not track whether network policy is
+  enabled for the nodes.
+
+  Fields:
+    disabled: Whether NetworkPolicy is enabled for this cluster.
+  """
+
+  disabled = _messages.BooleanField(1)
+
+
 class NodeConfig(_messages.Message):
   """Parameters that describe the nodes in a cluster.
 
@@ -1290,13 +1306,14 @@ class NodeConfig(_messages.Message):
       interpreted by the image running in the instance. The only restriction
       placed on them is that each value's size must be less than or equal to
       32 KB.  The total size of all keys and values must be less than 512 KB.
-    minCpuPlatform: Minimum cpu/platform to be used by this instance. The
-      instance may be scheduled on the specified or newer cpu/platform.
+    minCpuPlatform: Minimum CPU platform to be used by this instance. The
+      instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
       <code>minCpuPlatform: &quot;Intel Haswell&quot;</code> or
       <code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;</code>. For more
-      information, read <a href="/compute/docs/instances/specify-min-cpu-
-      platform">Specifying a Minimum CPU Platform</a>.
+      information, read [how to specify min CPU
+      platform](https://cloud.google.com/compute/docs/instances/specify-min-
+      cpu-platform)
     oauthScopes: The set of Google API scopes to be made available on all of
       the node VMs under the "default" service account.  The following scopes
       are recommended, but not required, and by default are not included:  *
@@ -1894,10 +1911,10 @@ class SetMasterAuthRequest(_messages.Message):
 
   Enums:
     ActionValueValuesEnum: The exact form of action to be taken on the master
-      auth
+      auth.
 
   Fields:
-    action: The exact form of action to be taken on the master auth
+    action: The exact form of action to be taken on the master auth.
     clusterId: The name of the cluster to upgrade. This field is deprecated,
       use name instead.
     name: The name (project, location, cluster) of the cluster to set auth.
@@ -1913,16 +1930,21 @@ class SetMasterAuthRequest(_messages.Message):
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    """The exact form of action to be taken on the master auth
+    """The exact form of action to be taken on the master auth.
 
     Values:
-      UNKNOWN: Operation is unknown and will error out
+      UNKNOWN: Operation is unknown and will error out.
       SET_PASSWORD: Set the password to a user generated value.
       GENERATE_PASSWORD: Generate a new password and set it to that.
+      SET_USERNAME: Set the username.  If an empty username is provided, basic
+        authentication is disabled for the cluster.  If a non-empty username
+        is provided, basic authentication is enabled, with either a provided
+        password or a generated one.
     """
     UNKNOWN = 0
     SET_PASSWORD = 1
     GENERATE_PASSWORD = 2
+    SET_USERNAME = 3
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   clusterId = _messages.StringField(2)

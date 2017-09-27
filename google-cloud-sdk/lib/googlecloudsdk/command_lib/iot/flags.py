@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Shared flags for Cloud IoT commands."""
+import enum
+
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -90,6 +92,18 @@ def AddDeviceRegistrySettingsFlagsToParser(parser, defaults=True):
       default=True if defaults else None,
       action='store_true'
   ).AddToParser(parser)
+  base.Argument(
+      '--enable-http-config',
+      help='Whether to allow device connections to the HTTP bridge.',
+      default=True if defaults else None,
+      action='store_true'
+  ).AddToParser(parser)
+
+  base.Argument(
+      '--state-pubsub-topic',
+      required=False,
+      help=('A Google Cloud Pub/Sub topic name for state notifications.')
+  ).AddToParser(parser)
   pubsub_args = parser.add_mutually_exclusive_group()
   # TODO(b/64597199): Remove this flag when usage is low.
   base.Argument(
@@ -100,15 +114,33 @@ def AddDeviceRegistrySettingsFlagsToParser(parser, defaults=True):
                                              'Use --event-pubsub-topic '
                                              'instead.')),
       hidden=True,
-      help=('The Google Cloud Pub/Sub topic on which to forward messages, '
-            'such as telemetry events.')
+      help=('A Google Cloud Pub/Sub topic name for event notifications')
   ).AddToParser(pubsub_args)
   base.Argument(
       '--event-pubsub-topic',
       required=False,
-      help=('The Google Cloud Pub/Sub topic on which to forward messages, '
-            'such as telemetry events.')
+      help=('A Google Cloud Pub/Sub topic name for event notifications')
   ).AddToParser(pubsub_args)
+
+
+def AddDeviceRegistryCredentialFlagsToParser(parser, credentials_surface=True):
+  help_text = ('Path to a file containing an X.509v3 certificate '
+               '([RFC5280](https://www.ietf.org/rfc/rfc5280.txt)), encoded in '
+               'base64, and wrapped by `-----BEGIN CERTIFICATE-----` and '
+               '`-----END CERTIFICATE-----`.')
+  if not credentials_surface:
+    base.Argument(
+        '--public-key-path',
+        type=str,
+        help=help_text
+    ).AddToParser(parser)
+  else:
+    base.Argument(
+        '--path',
+        type=str,
+        required=True,
+        help=help_text
+    ).AddToParser(parser)
 
 
 def GetIamPolicyFileFlag():
@@ -117,51 +149,124 @@ def GetIamPolicyFileFlag():
       help='JSON or YAML file with the IAM policy')
 
 
-def GetDeviceFlags(defaults=True):
-  """Get flags for device commands.
+def AddDeviceFlagsToParser(parser, default_for_blocked_flags=True):
+  """Add flags for device commands to parser.
 
   Args:
-    defaults: bool, whether to populate default values (for instance, should be
-        false for Patch commands).
-
-  Returns:
-    list of base.Argument, the flags common to and specific to device commands.
+    parser: argparse parser to which to add these flags.
+    default_for_blocked_flags: bool, whether to populate default values for
+        device blocked state flags.
   """
-  help_text = (
-      'If disabled, connections from this device will fail.\n\n'
+  blocked_state_help_text = (
+      'If {0}, connections from this device will fail.\n\n'
       'Can be used to temporarily prevent the device from '
       'connecting if, for example, the sensor is generating bad '
       'data and needs maintenance.\n\n')
-  if not defaults:
-    help_text += (
-        '\n\n'
-        'Use `--enable-device` to enable and `--no-enable-device` to disable.')
-  return [
-      base.Argument(
-          '--enable-device',
-          default=True if defaults else None,
-          action='store_true',
-          help=help_text)
-  ]
+  enable_device_format_args = ('disabled',)
+  blocked_format_args = ('blocked',)
+  if not default_for_blocked_flags:
+    blocked_state_help_text += (
+        '+\n\n'  # '+' here preserves markdown indentation.
+        'Use `--{1}` to enable connections and `--{2}` to disable.')
+    enable_device_format_args += ('enable-device', 'no-enable-device')
+    blocked_format_args += ('no-blocked', 'blocked')
+  else:
+    blocked_state_help_text += (
+        '+\n\n'
+        'Connections to device is not blocked by default.')
+
+  blocked_state_args = parser.add_mutually_exclusive_group()
+  # Defaults are set to None because with nested groups, help text isn't being
+  # generated correctly.
+  blocked_state_args.add_argument(
+      '--enable-device',
+      default=None,
+      action=actions.DeprecationAction('--[no-]enable-device',
+                                       warn=('Flag {flag_name} is deprecated. '
+                                             'Use --[no-]blocked instead.'),
+                                       action='store_true'),
+      help=blocked_state_help_text.format(*enable_device_format_args)
+  )
+  blocked_state_args.add_argument(
+      '--blocked',
+      default=None,
+      action='store_true',
+      help=blocked_state_help_text.format(*blocked_format_args)
+  )
+
+  metadata_key_validator = arg_parsers.RegexpValidator(
+      r'[a-zA-Z0-9-_]{1,127}',
+      'Invalid metadata key. Keys should only contain the following characters '
+      '[a-zA-Z0-9-_] and be fewer than 128 bytes in length.')
+  base.Argument(
+      '--metadata',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(key_type=metadata_key_validator),
+      help="""\
+The metadata key/value pairs assigned to devices. This metadata is not
+interpreted or indexed by Cloud IoT Core. It can be used to add contextual
+information for the device.
+
+Keys should only contain the following characters ```[a-zA-Z0-9-_]``` and be
+fewer than 128 bytes in length. Values are free-form strings. Each value must
+be fewer than or equal to 32 KB in size.
+
+The total size of all keys and values must be less than 256 KB, and the
+maximum number of key-value pairs is 500.
+""").AddToParser(parser)
+
+  base.Argument(
+      '--metadata-from-file',
+      metavar='KEY=PATH',
+      type=arg_parsers.ArgDict(key_type=metadata_key_validator),
+      help=('Same as --metadata, but the metadata values will be read from the '
+            'file specified by path.')
+  ).AddToParser(parser)
+
+
+class KeyTypes(enum.Enum):
+  """Valid key types for device credentials."""
+  RS256 = 1
+  ES256 = 2
+  RSA_PEM = 3
+  RSA_X509_PEM = 4
+  ES256_PEM = 5
+  ES256_X509_PEM = 6
+
+  def __init__(self, value):
+    self.choice_name = self.name.replace('_', '-').lower()
 
 
 _VALID_KEY_TYPES = {
-    'rs256': ('An RSA public key wrapped in an X.509v3 certificate '
-              '([RFC5280](https://www.ietf.org/rfc/rfc5280.txt)), '
-              'base64-encoded, and wrapped by `-----BEGIN CERTIFICATE-----` '
-              'and `-----END CERTIFICATE-----`.'),
-    'es256': ('An ECDSA public key. The key must use P-256 and SHA-256, be '
-              'base64-encoded, and wrapped by `-----BEGIN PUBLIC KEY-----` and '
-              '`-----END PUBLIC KEY-----`.')
+    KeyTypes.RSA_PEM.choice_name: """\
+        An RSA public key encoded in base64, and wrapped by
+        `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----`.
+        This can be used to verify `RS256` signatures in JWT tokens
+        ([RFC7518](https://www.ietf.org/rfc/rfc7518.txt)).""",
+    KeyTypes.RSA_X509_PEM.choice_name: """\
+        As RSA_PEM, but wrapped in an X.509v3 certificate
+        ([RFC5280](https://www.ietf.org/rfc/rfc5280.txt)),
+        encoded in base64, and wrapped by
+        `-----BEGIN CERTIFICATE-----` and
+        `-----END CERTIFICATE-----`.""",
+    KeyTypes.ES256_PEM.choice_name: """\
+        Public key for the ECDSA algorithm using P-256 and
+        SHA-256, encoded in base64, and wrapped by
+        `-----BEGIN PUBLIC KEY-----` and
+        `-----END PUBLIC KEY-----`. This can be used to verify JWT
+        tokens with the `ES256` algorithm
+        ([RFC7518](https://www.ietf.org/rfc/rfc7518.txt)). This
+        curve is defined in [OpenSSL](https://www.openssl.org/) as
+        the `prime256v1` curve.""",
+    KeyTypes.ES256_X509_PEM.choice_name: """\
+        (As ES256_PEM, but wrapped in an X.509v3 certificate
+        ([RFC5280]( https://www.ietf.org/rfc/rfc5280.txt)),
+        encoded in base64, and wrapped by
+        `-----BEGIN CERTIFICATE-----` and
+        `-----END CERTIFICATE-----`.""",
+    KeyTypes.RS256.choice_name: 'Deprecated name for `rsa-x509-pem`',
+    KeyTypes.ES256.choice_name: 'Deprecated nmame for `es256-pem`'
 }
-
-
-def _KeyTypeValidator(type_):
-  if type_ not in _VALID_KEY_TYPES:
-    raise arg_parsers.ArgumentTypeError(
-        'Invalid key type [{}]. Must be one of [{}]'.format(
-            type_, ', '.join(_VALID_KEY_TYPES)))
-  return type_
 
 
 def AddDeviceCredentialFlagsToParser(parser, combine_flags=True,
@@ -187,9 +292,8 @@ def AddDeviceCredentialFlagsToParser(parser, combine_flags=True,
     flags.extend([
         base.Argument('--path', required=True, type=str,
                       help='The path on disk to the file containing the key.'),
-        base.Argument('--type', required=True, type=_KeyTypeValidator,
-                      choices=_VALID_KEY_TYPES,
-                      help='The type of the key.')
+        base.ChoiceArgument('--type', choices=_VALID_KEY_TYPES, required=True,
+                            help_str='The type of the key.')
     ])
   flags.append(
       base.Argument('--expiration-time', type=arg_parsers.Datetime.Parse,
@@ -224,7 +328,7 @@ def AddDeviceCredentialFlagsToParser(parser, combine_flags=True,
         help="""\
 Specify a public key.
 
-Supports two key types:
+Supports four key types:
 
 {key_type_help}
 
@@ -235,7 +339,7 @@ The key specification is given via the following sub-arguments:
 For example:
 
     --public-key \\
-        path=/path/to/id_rsa.pem,type=rs256,expiration-time=2017-01-01T00:00-05
+        path=/path/to/id_rsa.pem,type=RSA_PEM,expiration-time=2017-01-01T00:00-05
 
 This flag may be provide multiple times to provide multiple keys (maximum 3).
 """.format(key_type_help='\n'.join(key_type_help),

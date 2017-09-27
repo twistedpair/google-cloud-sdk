@@ -1265,6 +1265,7 @@ class FlowOperationMetadata(_messages.Message):
   Enums:
     CancelStateValueValuesEnum: The state of the operation with respect to
       cancellation.
+    SurfaceValueValuesEnum:
 
   Fields:
     cancelState: The state of the operation with respect to cancellation.
@@ -1277,9 +1278,13 @@ class FlowOperationMetadata(_messages.Message):
       don't have orphans. see also: go/prevent-orphaned-operations
     flowName: The name of the top-level flow corresponding to this operation.
       Must be equal to the "name" field for a FlowName enum.
+    operationType: Operation type which is a flow type and subtype info as
+      that is missing in our datastore otherwise. This maps to the ordinal
+      value of the enum: jcg/api/tenant/operations/OperationNamespace.java
     resourceNames: The full name of the resources that this flow is directly
       associated with.
     startTime: The start time of the operation.
+    surface: A SurfaceValueValuesEnum attribute.
   """
 
   class CancelStateValueValuesEnum(_messages.Enum):
@@ -1296,11 +1301,28 @@ class FlowOperationMetadata(_messages.Message):
     UNCANCELLABLE = 1
     CANCELLED = 2
 
+  class SurfaceValueValuesEnum(_messages.Enum):
+    """SurfaceValueValuesEnum enum type.
+
+    Values:
+      UNSPECIFIED_OP_SERVICE: <no description>
+      SERVICE_MANAGEMENT: <no description>
+      SERVICE_USAGE: <no description>
+      SERVICE_CONSUMER_MANAGEMENT: TenancyUnit, ServiceNetworking fall under
+        this
+    """
+    UNSPECIFIED_OP_SERVICE = 0
+    SERVICE_MANAGEMENT = 1
+    SERVICE_USAGE = 2
+    SERVICE_CONSUMER_MANAGEMENT = 3
+
   cancelState = _messages.EnumField('CancelStateValueValuesEnum', 1)
   deadline = _messages.StringField(2)
   flowName = _messages.StringField(3)
-  resourceNames = _messages.StringField(4, repeated=True)
-  startTime = _messages.StringField(5)
+  operationType = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  resourceNames = _messages.StringField(5, repeated=True)
+  startTime = _messages.StringField(6)
+  surface = _messages.EnumField('SurfaceValueValuesEnum', 7)
 
 
 class GenerateConfigReportRequest(_messages.Message):

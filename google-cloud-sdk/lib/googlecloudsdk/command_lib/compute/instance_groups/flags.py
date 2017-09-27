@@ -69,20 +69,6 @@ MULTISCOPE_INSTANCE_GROUP_ARG = flags.ResourceArgument(
     zone_explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT,
     region_explanation=flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT)
 
-ZONAL_INSTANCE_GROUP_MANAGER_ARG = flags.ResourceArgument(
-    resource_name='managed instance group',
-    completer=ZonalInstanceGroupManagersCompleter,
-    zonal_collection='compute.instanceGroupManagers',
-    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
-
-ZONAL_INSTANCE_GROUP_MANAGERS_ARG = flags.ResourceArgument(
-    resource_name='managed instance group',
-    plural=True,
-    name='names',
-    completer=ZonalInstanceGroupManagersCompleter,
-    zonal_collection='compute.instanceGroupManagers',
-    zone_explanation=flags.ZONE_PROPERTY_EXPLANATION)
-
 MULTISCOPE_INSTANCE_GROUP_MANAGER_ARG = flags.ResourceArgument(
     resource_name='managed instance group',
     completer=InstanceGroupManagersCompleter,
@@ -161,7 +147,6 @@ def AddZonesFlag(parser):
           All zones must belong to the same region. You may specify --region
           flag but it must be the region to which zones belong. This flag is
           mutually exclusive with --zone flag.""",
-      hidden=True,
       type=arg_parsers.ArgList(min_length=1),
       completer=compute_completers.ZonesCompleter,
       default=[])
@@ -192,8 +177,28 @@ def ValidateManagedInstanceGroupScopeArgs(args, resources):
           '--zones', 'Specified zones not in specified region.')
 
 
+def GetInstanceGroupManagerArg(zones_flag=False):
+  """Returns ResourceArgument for working with instance group managers."""
+  if zones_flag:
+    extra_region_info_about_zones_flag = (
+        '\n\nIf you specify `--zones` flag this flag must be unspecified '
+        'or specify the region to which the zones you listed belong.'
+    )
+    region_explanation = (flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT +
+                          extra_region_info_about_zones_flag)
+  else:
+    region_explanation = flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT
+  return flags.ResourceArgument(
+      resource_name='managed instance group',
+      completer=InstanceGroupManagersCompleter,
+      zonal_collection='compute.instanceGroupManagers',
+      regional_collection='compute.regionInstanceGroupManagers',
+      zone_explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT,
+      region_explanation=region_explanation)
+
+
 def CreateGroupReference(client, resources, args):
-  resource_arg = MULTISCOPE_INSTANCE_GROUP_MANAGER_ARG
+  resource_arg = GetInstanceGroupManagerArg()
   default_scope = compute_scope.ScopeEnum.ZONE
   scope_lister = flags.GetDefaultScopeLister(client)
   return resource_arg.ResolveAsResource(

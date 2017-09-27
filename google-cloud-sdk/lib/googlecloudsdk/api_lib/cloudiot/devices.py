@@ -22,7 +22,7 @@ class NoFieldsSpecifiedError(exceptions.Error):
 
 
 def GetClientInstance(no_http=False):
-  return apis.GetClientInstance('cloudiot', 'v1beta1', no_http=no_http)
+  return apis.GetClientInstance('cloudiot', 'v1', no_http=no_http)
 
 
 def GetMessagesModule(client=None):
@@ -47,20 +47,18 @@ class DevicesClient(object):
     self.messages = messages or GetMessagesModule(client)
     self._service = self.client.projects_locations_registries_devices
 
-  @property
-  def enabled_state_enum(self):
-    return self.messages.Device.EnabledStateValueValuesEnum
-
-  def Create(self, parent_ref, device_id, enabled_state=None, credentials=None):
+  def Create(self, parent_ref, device_id,
+             blocked=None, credentials=None, metadata=None):
     """Creates a Device.
 
     Args:
       parent_ref: a Resource reference to a parent
         cloudiot.projects.locations.registries resource for this device.
       device_id: str, the name of the resource to create.
-      enabled_state: EnabledStateValueValuesEnum or None, whether the device to
-        create should be enabled or disabled
+      blocked: bool, whether the device to create should have connections
+        blocked or not.
       credentials: list of DeviceCredential, the credentials for the device.
+      metadata: MetadataValue, the metadata message for the device.
 
     Returns:
       Device: the created device.
@@ -73,8 +71,9 @@ class DevicesClient(object):
         parent=parent_ref.RelativeName(),
         device=self.messages.Device(
             id=device_id,
-            enabledState=enabled_state,
-            credentials=credentials
+            blocked=blocked,
+            credentials=credentials,
+            metadata=metadata
         ))
 
     return self._service.Create(create_req)
@@ -121,7 +120,7 @@ class DevicesClient(object):
         self._service, list_req, batch_size=page_size, limit=limit,
         field='devices', batch_size_attribute='pageSize')
 
-  def Patch(self, device_ref, enabled_state=None, credentials=None):
+  def Patch(self, device_ref, blocked=None, credentials=None, metadata=None):
     """Updates a Device.
 
     Any fields not specified will not be updated; at least one field must be
@@ -130,10 +129,11 @@ class DevicesClient(object):
     Args:
       device_ref: a Resource reference to a
         cloudiot.projects.locations.registries.devices resource.
-      enabled_state: EnabledStateValueValuesEnum or None, whether the device
-        should be enabled or disabled
+      blocked: bool, whether the device to create should have connections
+        blocked or not.
       credentials: List of DeviceCredential or None. If given, update the
         credentials for the device.
+      metadata: MetadataValue, the metadata message for the device.
 
     Returns:
       Device: the updated device.
@@ -144,13 +144,17 @@ class DevicesClient(object):
     device = self.messages.Device()
     update_settings = [
         _DeviceUpdateSetting(
-            'enabledState',
-            'device.enabled_state',
-            enabled_state),
+            'blocked',
+            'blocked',
+            blocked),
         _DeviceUpdateSetting(
             'credentials',
-            'device.credentials',
-            credentials)
+            'credentials',
+            credentials),
+        _DeviceUpdateSetting(
+            'metadata',
+            'metadata',
+            metadata)
     ]
     update_mask = []
     for update_setting in update_settings:
@@ -192,9 +196,7 @@ class DevicesClient(object):
     request = request_type(
         name=device_ref.RelativeName(),
         modifyCloudToDeviceConfigRequest=modify_request_type(
-            data=self.messages.DeviceConfigData(
-                binaryData=data
-            ),
+            binaryData=data,
             versionToUpdate=version
         )
     )
@@ -231,3 +233,33 @@ class DeviceConfigsClient(object):
         request_type(name=parent_ref.RelativeName(),
                      numVersions=num_versions))
     return response.deviceConfigs
+
+
+class DeviceStatesClient(object):
+  """Client for device_states service in the Cloud IoT API."""
+
+  def __init__(self, client=None, messages=None):
+    self.client = client or GetClientInstance()
+    self.messages = messages or GetMessagesModule(client)
+    self._service = self.client.projects_locations_registries_devices_states
+
+  def List(self, parent_ref, num_states=None):
+    """List all device states available for a device.
+
+    Up to a maximum of 10 (enforced by service). No pagination.
+
+    Args:
+      parent_ref: a Resource reference to a
+        cloudiot.projects.locations.registries.devices resource.
+      num_states: int, the number of device states to list (max 10).
+
+    Returns:
+      List of DeviceStates
+    """
+    request_type = getattr(self.messages,
+                           'CloudiotProjectsLocationsRegistries'
+                           'DevicesStatesListRequest')
+    response = self._service.List(
+        request_type(name=parent_ref.RelativeName(),
+                     numStates=num_states))
+    return response.deviceStates

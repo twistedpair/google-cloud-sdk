@@ -22,6 +22,28 @@ BASE_URL = 'https://dataproc.googleapis.com/v1beta2/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId']
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      [u'projectsId', u'locationsId']
+  )
+  PROJECTS_LOCATIONS_WORKFLOWTEMPLATES = (
+      'projects.locations.workflowTemplates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'workflowTemplates/{workflowTemplatesId}',
+      },
+      [u'name']
+  )
   PROJECTS_REGIONS = (
       'projects.regions',
       'projects/{projectId}/regions/{regionId}',
@@ -55,6 +77,16 @@ class Collections(enum.Enum):
       'projects/{projectId}/regions/{regionId}/operations',
       {},
       ['projectId', 'regionId']
+  )
+  PROJECTS_REGIONS_WORKFLOWTEMPLATES = (
+      'projects.regions.workflowTemplates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/regions/{regionsId}/workflowTemplates/'
+              '{workflowTemplatesId}',
+      },
+      [u'name']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

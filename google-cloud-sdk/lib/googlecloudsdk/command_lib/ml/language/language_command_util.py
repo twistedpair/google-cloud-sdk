@@ -54,6 +54,13 @@ def RunLanguageCommand(feature, content_file=None, content=None,
                                       encoding_type=encoding_type)
 
 
+def AddContentToRequest(unused_ref, args, request):
+  """The Python hook for yaml commands to inject content into the request."""
+  source = util.GetContentSource(args.content, args.content_file)
+  source.UpdateContent(request.document)
+  return request
+
+
 SERVICE_ACCOUNT_HELP = (
     'This command requires a service account from a project that has enabled '
     'the Natural Language API. To learn about using service accounts with the '

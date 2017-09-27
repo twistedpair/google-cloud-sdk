@@ -30,9 +30,12 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
-      'projects/{projectsId}/locations/{locationsId}',
-      {},
-      [u'projectsId', u'locationsId']
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}',
+      },
+      [u'name']
   )
   PROJECTS_LOCATIONS_QUEUES = (
       'projects.locations.queues',

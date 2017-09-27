@@ -158,12 +158,12 @@ class PosixAccount(_messages.Message):
   """
 
   gecos = _messages.StringField(1)
-  gid = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  gid = _messages.IntegerField(2)
   homeDirectory = _messages.StringField(3)
   primary = _messages.BooleanField(4)
   shell = _messages.StringField(5)
   systemId = _messages.StringField(6)
-  uid = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
+  uid = _messages.IntegerField(7)
   username = _messages.StringField(8)
 
 
@@ -172,7 +172,7 @@ class SshPublicKey(_messages.Message):
 
   Fields:
     expirationTimeUsec: An expiration time in microseconds since epoch.
-    fingerprint: [Output Only] The SHA-256 fingerprint of the SSH public key.
+    fingerprint: The SHA-256 fingerprint of the SSH public key. Output only.
     key: Public key text in SSH format, defined by <a
       href="https://www.ietf.org/rfc/rfc4253.txt" target="_blank">RFC4253</a>
       section 6.6.

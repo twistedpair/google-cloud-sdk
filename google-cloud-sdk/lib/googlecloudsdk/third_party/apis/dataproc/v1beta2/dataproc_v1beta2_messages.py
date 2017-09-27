@@ -32,6 +32,31 @@ class AcceleratorConfig(_messages.Message):
   acceleratorTypeUri = _messages.StringField(2)
 
 
+class Binding(_messages.Message):
+  """Associates members with a role.
+
+  Fields:
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. members can have the following values: allUsers: A special
+      identifier that represents anyone who is  on the internet; with or
+      without a Google account. allAuthenticatedUsers: A special identifier
+      that represents anyone  who is authenticated with a Google account or a
+      service account. user:{emailid}: An email address that represents a
+      specific Google  account. For example, alice@gmail.com or
+      joe@example.com. serviceAccount:{emailid}: An email address that
+      represents a service  account. For example, my-other-
+      app@appspot.gserviceaccount.com. group:{emailid}: An email address that
+      represents a Google group.  For example, admins@example.com.
+      domain:{domain}: A Google Apps domain name that represents all the
+      users of that domain. For example, google.com or example.com.
+    role: Role that is assigned to members. For example, roles/viewer,
+      roles/editor, or roles/owner. Required
+  """
+
+  members = _messages.StringField(1, repeated=True)
+  role = _messages.StringField(2)
+
+
 class CancelJobRequest(_messages.Message):
   """A request to cancel a job."""
 
@@ -220,6 +245,20 @@ class ClusterMetrics(_messages.Message):
   yarnMetrics = _messages.MessageField('YarnMetricsValue', 2)
 
 
+class ClusterOperation(_messages.Message):
+  """A ClusterOperation object.
+
+  Fields:
+    done: Output-only Indicates the operation is done.
+    error: Output-only Error, if operation failed.
+    operationId: Output-only The id of the cluster operation.
+  """
+
+  done = _messages.BooleanField(1)
+  error = _messages.StringField(2)
+  operationId = _messages.StringField(3)
+
+
 class ClusterOperationMetadata(_messages.Message):
   """Metadata describing the operation.
 
@@ -306,6 +345,48 @@ class ClusterOperationStatus(_messages.Message):
   stateStartTime = _messages.StringField(4)
 
 
+class ClusterSelector(_messages.Message):
+  """A selector that chooses target cluster for jobs based on metadata.
+
+  Messages:
+    ClusterLabelsValue: Required The cluster labels. Cluster must have all
+      labels to match.
+
+  Fields:
+    clusterLabels: Required The cluster labels. Cluster must have all labels
+      to match.
+    zone: Required The cluster target zone.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ClusterLabelsValue(_messages.Message):
+    """Required The cluster labels. Cluster must have all labels to match.
+
+    Messages:
+      AdditionalProperty: An additional property for a ClusterLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ClusterLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ClusterLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clusterLabels = _messages.MessageField('ClusterLabelsValue', 1)
+  zone = _messages.StringField(2)
+
+
 class ClusterStatus(_messages.Message):
   """The status of a cluster and its instances.
 
@@ -366,6 +447,86 @@ class ClusterStatus(_messages.Message):
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
+class DataprocProjectsLocationsWorkflowTemplatesCreateRequest(_messages.Message):
+  """A DataprocProjectsLocationsWorkflowTemplatesCreateRequest object.
+
+  Fields:
+    parent: Required The "resource name" of the region, as described in
+      https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}
+    workflowTemplate: A WorkflowTemplate resource to be passed as the request
+      body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workflowTemplate = _messages.MessageField('WorkflowTemplate', 2)
+
+
+class DataprocProjectsLocationsWorkflowTemplatesDeleteRequest(_messages.Message):
+  """A DataprocProjectsLocationsWorkflowTemplatesDeleteRequest object.
+
+  Fields:
+    name: Required The "resource name" of the workflow template, as described
+      in https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+    version: Optional The version of workflow template to delete. If
+      specified, will only delete the template if the current server version
+      matches specified version.
+  """
+
+  name = _messages.StringField(1, required=True)
+  version = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class DataprocProjectsLocationsWorkflowTemplatesGetRequest(_messages.Message):
+  """A DataprocProjectsLocationsWorkflowTemplatesGetRequest object.
+
+  Fields:
+    name: Required The "resource name" of the workflow template, as described
+      in https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+    version: Optional The version of workflow template to retrieve. Only
+      previously instatiated versions can be retrieved.If unspecified,
+      retrieves the current version.
+  """
+
+  name = _messages.StringField(1, required=True)
+  version = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest(_messages.Message):
+  """A DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest object.
+
+  Fields:
+    instantiateWorkflowTemplateRequest: A InstantiateWorkflowTemplateRequest
+      resource to be passed as the request body.
+    name: Required The "resource name" of the workflow template, as described
+      in https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+  """
+
+  instantiateWorkflowTemplateRequest = _messages.MessageField('InstantiateWorkflowTemplateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsLocationsWorkflowTemplatesListRequest(_messages.Message):
+  """A DataprocProjectsLocationsWorkflowTemplatesListRequest object.
+
+  Fields:
+    pageSize: Optional The maximum number of results to return in each
+      response.
+    pageToken: Optional The page token, returned by a previous call, to
+      request the next page of results.
+    parent: Required The "resource name" of the region, as described in
+      https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):
   """A DataprocProjectsRegionsClustersCreateRequest object.
 
@@ -415,6 +576,18 @@ class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
   diagnoseClusterRequest = _messages.MessageField('DiagnoseClusterRequest', 2)
   projectId = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
+
+
+class DataprocProjectsRegionsClustersGetIamPolicyRequest(_messages.Message):
+  """A DataprocProjectsRegionsClustersGetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  resource = _messages.StringField(1, required=True)
 
 
 class DataprocProjectsRegionsClustersGetRequest(_messages.Message):
@@ -506,6 +679,36 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
   projectId = _messages.StringField(4, required=True)
   region = _messages.StringField(5, required=True)
   updateMask = _messages.StringField(6)
+
+
+class DataprocProjectsRegionsClustersSetIamPolicyRequest(_messages.Message):
+  """A DataprocProjectsRegionsClustersSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsRegionsClustersTestIamPermissionsRequest(_messages.Message):
+  """A DataprocProjectsRegionsClustersTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class DataprocProjectsRegionsJobsCancelRequest(_messages.Message):
@@ -696,6 +899,86 @@ class DataprocProjectsRegionsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class DataprocProjectsRegionsWorkflowTemplatesCreateRequest(_messages.Message):
+  """A DataprocProjectsRegionsWorkflowTemplatesCreateRequest object.
+
+  Fields:
+    parent: Required The "resource name" of the region, as described in
+      https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}
+    workflowTemplate: A WorkflowTemplate resource to be passed as the request
+      body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workflowTemplate = _messages.MessageField('WorkflowTemplate', 2)
+
+
+class DataprocProjectsRegionsWorkflowTemplatesDeleteRequest(_messages.Message):
+  """A DataprocProjectsRegionsWorkflowTemplatesDeleteRequest object.
+
+  Fields:
+    name: Required The "resource name" of the workflow template, as described
+      in https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+    version: Optional The version of workflow template to delete. If
+      specified, will only delete the template if the current server version
+      matches specified version.
+  """
+
+  name = _messages.StringField(1, required=True)
+  version = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class DataprocProjectsRegionsWorkflowTemplatesGetRequest(_messages.Message):
+  """A DataprocProjectsRegionsWorkflowTemplatesGetRequest object.
+
+  Fields:
+    name: Required The "resource name" of the workflow template, as described
+      in https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+    version: Optional The version of workflow template to retrieve. Only
+      previously instatiated versions can be retrieved.If unspecified,
+      retrieves the current version.
+  """
+
+  name = _messages.StringField(1, required=True)
+  version = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest(_messages.Message):
+  """A DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest object.
+
+  Fields:
+    instantiateWorkflowTemplateRequest: A InstantiateWorkflowTemplateRequest
+      resource to be passed as the request body.
+    name: Required The "resource name" of the workflow template, as described
+      in https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+  """
+
+  instantiateWorkflowTemplateRequest = _messages.MessageField('InstantiateWorkflowTemplateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsRegionsWorkflowTemplatesListRequest(_messages.Message):
+  """A DataprocProjectsRegionsWorkflowTemplatesListRequest object.
+
+  Fields:
+    pageSize: Optional The maximum number of results to return in each
+      response.
+    pageToken: Optional The page token, returned by a previous call, to
+      request the next page of results.
+    parent: Required The "resource name" of the region, as described in
+      https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class DiagnoseClusterRequest(_messages.Message):
@@ -1053,6 +1336,27 @@ class InstanceGroupConfig(_messages.Message):
   numInstances = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
+class InstantiateWorkflowTemplateRequest(_messages.Message):
+  """A request to instantiate a workflow template.
+
+  Fields:
+    instanceId: Optional A tag that prevents multiple concurrent workflow
+      instances with the same tag from running. This mitigates risk of
+      concurrent instances started due to retries.It is recommended to always
+      set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The tag
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+    version: Optional The version of workflow template to instantiate. If
+      specified, the workflow will be instantiated only if the current version
+      of the workflow template has the supplied version.This option cannot be
+      used to instantiate a previous version of workflow template.
+  """
+
+  instanceId = _messages.StringField(1)
+  version = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class Job(_messages.Message):
   """A Cloud Dataproc job resource.
 
@@ -1324,6 +1628,21 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListWorkflowTemplatesResponse(_messages.Message):
+  """A response to a request to list workflow templates in a project.
+
+  Fields:
+    nextPageToken: Output-only This token is included in the response if there
+      are more results to fetch. To fetch additional results, provide this
+      value as the page_token in a subsequent
+      <code>ListWorkflowTemplatesRequest</code>.
+    templates: Output-only WorkflowTemplates list.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  templates = _messages.MessageField('WorkflowTemplate', 2, repeated=True)
+
+
 class LoggingConfig(_messages.Message):
   """The runtime logging config of the job.
 
@@ -1393,6 +1712,63 @@ class LoggingConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   driverLogLevels = _messages.MessageField('DriverLogLevelsValue', 1)
+
+
+class ManagedCluster(_messages.Message):
+  """Cluster that is managed by the workflow.
+
+  Messages:
+    LabelsValue: Optional The labels to associate with this cluster.Label keys
+      must be between 1 and 63 characters long, and must conform to the
+      following PCRE regular expression: \p{Ll}\p{Lo}{0,62}Label values must
+      be between 1 and 63 characters long, and must conform to the following
+      PCRE regular expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels
+      can be associated with a given cluster.
+
+  Fields:
+    clusterName: Required The cluster name. Cluster names within a project
+      must be unique. Names from deleted clusters can be reused.
+    config: Required The cluster configuration.
+    labels: Optional The labels to associate with this cluster.Label keys must
+      be between 1 and 63 characters long, and must conform to the following
+      PCRE regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between
+      1 and 63 characters long, and must conform to the following PCRE regular
+      expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels can be
+      associated with a given cluster.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Optional The labels to associate with this cluster.Label keys must be
+    between 1 and 63 characters long, and must conform to the following PCRE
+    regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between 1 and
+    63 characters long, and must conform to the following PCRE regular
+    expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels can be
+    associated with a given cluster.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clusterName = _messages.StringField(1)
+  config = _messages.MessageField('ClusterConfig', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
 
 
 class ManagedGroupConfig(_messages.Message):
@@ -1533,6 +1909,80 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OrderedJob(_messages.Message):
+  """A OrderedJob object.
+
+  Messages:
+    LabelsValue: Optional The labels to associate with this job.Label keys
+      must be between 1 and 63 characters long, and must conform to the
+      following regular expression: \p{Ll}\p{Lo}{0,62}Label values must be
+      between 1 and 63 characters long, and must conform to the following
+      regular expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels can
+      be associated with a given job.
+
+  Fields:
+    hadoopJob: Job is a Hadoop job.
+    hiveJob: Job is a Hive job.
+    labels: Optional The labels to associate with this job.Label keys must be
+      between 1 and 63 characters long, and must conform to the following
+      regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between 1 and
+      63 characters long, and must conform to the following regular
+      expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels can be
+      associated with a given job.
+    pigJob: Job is a Pig job.
+    prerequisiteStepIds: Optional The optional list of prerequisite job
+      step_ids. If not specified, the job will start at the beginning of
+      workflow.
+    pysparkJob: Job is a Pyspark job.
+    scheduling: Optional Job scheduling configuration.
+    sparkJob: Job is a Spark job.
+    sparkSqlJob: Job is a SparkSql job.
+    stepId: Required The step id. The id must be unique among all jobs within
+      the template.The step id is used as prefix for job id, as job workflow-
+      step-id label, and in prerequisite_step_ids field from other steps.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Optional The labels to associate with this job.Label keys must be
+    between 1 and 63 characters long, and must conform to the following
+    regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between 1 and
+    63 characters long, and must conform to the following regular expression:
+    \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels can be associated with a
+    given job.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  hadoopJob = _messages.MessageField('HadoopJob', 1)
+  hiveJob = _messages.MessageField('HiveJob', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  pigJob = _messages.MessageField('PigJob', 4)
+  prerequisiteStepIds = _messages.StringField(5, repeated=True)
+  pysparkJob = _messages.MessageField('PySparkJob', 6)
+  scheduling = _messages.MessageField('JobScheduling', 7)
+  sparkJob = _messages.MessageField('SparkJob', 8)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 9)
+  stepId = _messages.StringField(10)
+
+
 class PigJob(_messages.Message):
   """A Cloud Dataproc job for running Apache Pig (https://pig.apache.org/)
   queries on YARN.
@@ -1626,6 +2076,40 @@ class PigJob(_messages.Message):
   scriptVariables = _messages.MessageField('ScriptVariablesValue', 7)
 
 
+class Policy(_messages.Message):
+  """Defines an Identity and Access Management (IAM) policy. It is used to
+  specify access control policies for Cloud Platform resources.A Policy
+  consists of a list of bindings. A Binding binds a list of members to a role,
+  where the members can be user accounts, Google groups, Google domains, and
+  service accounts. A role is a named list of permissions defined by
+  IAM.Example {   "bindings": [     {       "role": "roles/owner",
+  "members": [         "user:mike@example.com",
+  "group:admins@example.com",         "domain:google.com",
+  "serviceAccount:my-other-app@appspot.gserviceaccount.com",       ]     },
+  {       "role": "roles/viewer",       "members": ["user:sean@example.com"]
+  }   ] } For a description of IAM and its features, see the IAM developer's
+  guide (https://cloud.google.com/iam).
+
+  Fields:
+    bindings: Associates a list of members to a role. bindings with no members
+      will result in an error.
+    etag: etag is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the etag in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An etag is returned in the response to getIamPolicy, and
+      systems are expected to put that etag in the request to setIamPolicy to
+      ensure that their change will be applied to the same version of the
+      policy.If no etag is provided in the call to setIamPolicy, then the
+      existing policy is overwritten blindly.
+    version: Version of the Policy. The default version is 0.
+  """
+
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class PySparkJob(_messages.Message):
   """A Cloud Dataproc job for running Apache PySpark
   (https://spark.apache.org/docs/0.9.0/python-programming-guide.html)
@@ -1709,6 +2193,19 @@ class QueryList(_messages.Message):
   """
 
   queries = _messages.StringField(1, repeated=True)
+
+
+class SetIamPolicyRequest(_messages.Message):
+  """Request message for SetIamPolicy method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the resource. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Cloud Platform services (such as Projects)
+      might reject them.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
 
 
 class SoftwareConfig(_messages.Message):
@@ -2076,6 +2573,214 @@ class SubmitJobRequest(_messages.Message):
   """
 
   job = _messages.MessageField('Job', 1)
+
+
+class TestIamPermissionsRequest(_messages.Message):
+  """Request message for TestIamPermissions method.
+
+  Fields:
+    permissions: The set of permissions to check for the resource. Permissions
+      with wildcards (such as '*' or 'storage.*') are not allowed. For more
+      information see IAM Overview
+      (https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestIamPermissionsResponse(_messages.Message):
+  """Response message for TestIamPermissions method.
+
+  Fields:
+    permissions: A subset of TestPermissionsRequest.permissions that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class WorkflowGraph(_messages.Message):
+  """The workflow graph.
+
+  Fields:
+    nodes: Output-only The workflow nodes.
+  """
+
+  nodes = _messages.MessageField('WorkflowNode', 1, repeated=True)
+
+
+class WorkflowMetadata(_messages.Message):
+  """A Cloud Dataproc workflow template resource.
+
+  Enums:
+    StateValueValuesEnum: Output-only The workflow state.
+
+  Fields:
+    clusterName: Output-only The name of the managed cluster.
+    createCluster: Output-only The create cluster operation metadata.
+    deleteCluster: Output-only The delete cluster operation metadata.
+    graph: Output-only The workflow graph.
+    state: Output-only The workflow state.
+    template: Output-only The "resource name" of the template.
+    version: Output-only The version of template at the time of workflow
+      instantiation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """Output-only The workflow state.
+
+    Values:
+      UNKNOWN: Unused.
+      PENDING: The operation has been created.
+      RUNNING: The operation is running.
+      DONE: The operation is done; either cancelled or completed.
+    """
+    UNKNOWN = 0
+    PENDING = 1
+    RUNNING = 2
+    DONE = 3
+
+  clusterName = _messages.StringField(1)
+  createCluster = _messages.MessageField('ClusterOperation', 2)
+  deleteCluster = _messages.MessageField('ClusterOperation', 3)
+  graph = _messages.MessageField('WorkflowGraph', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  template = _messages.StringField(6)
+  version = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+
+
+class WorkflowNode(_messages.Message):
+  """The workflow node.
+
+  Enums:
+    StateValueValuesEnum: Output-only The node state.
+
+  Fields:
+    error: Output-only The error detail.
+    jobId: Output-only The job id; populated after the node enters RUNNING
+      state.
+    prerequisiteStepIds: Output-only Node's prerequisite nodes.
+    state: Output-only The node state.
+    stepId: Output-only The name of the node.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """Output-only The node state.
+
+    Values:
+      NODE_STATUS_UNSPECIFIED: <no description>
+      BLOCKED: The node is awaiting prerequisite node to finish.
+      RUNNABLE: The node is runnable but not running.
+      RUNNING: The node is running.
+      COMPLETED: The node completed successfully.
+      FAILED: The node failed. A node can be marked FAILED because its
+        ancestor or peer failed.
+    """
+    NODE_STATUS_UNSPECIFIED = 0
+    BLOCKED = 1
+    RUNNABLE = 2
+    RUNNING = 3
+    COMPLETED = 4
+    FAILED = 5
+
+  error = _messages.StringField(1)
+  jobId = _messages.StringField(2)
+  prerequisiteStepIds = _messages.StringField(3, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  stepId = _messages.StringField(5)
+
+
+class WorkflowTemplate(_messages.Message):
+  """A Cloud Dataproc workflow template resource.
+
+  Messages:
+    LabelsValue: Optional The labels to associate with this template. These
+      labels will be propagated to all jobs and clusters created by the
+      workflow instance.Label keys must contain 1 to 63 characters, and must
+      conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).Label values
+      may be empty, but, if present, must contain 1 to 63 characters, and must
+      conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).No more than
+      32 labels can be associated with a template.
+
+  Fields:
+    createTime: Output-only The time template was created.
+    id: Required The template id.
+    jobs: Required The Directed Acyclic Graph of Jobs to submit.
+    labels: Optional The labels to associate with this template. These labels
+      will be propagated to all jobs and clusters created by the workflow
+      instance.Label keys must contain 1 to 63 characters, and must conform to
+      RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).Label values may be
+      empty, but, if present, must contain 1 to 63 characters, and must
+      conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).No more than
+      32 labels can be associated with a template.
+    name: Output-only The "resource name" of the template, as described in
+      https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+    placement: Required WorkflowTemplate scheduling information.
+    updateTime: Output-only The time template was last updated.
+    version: Optional Used to perform a consistent read-modify-write.This
+      field should be left blank for a CreateWorkflowTemplate request. It is
+      required for an UpdateWorkflowTemplate request, and must match the
+      current server version. A typical update template flow would fetch the
+      current template with a GetWorkflowTemplate request, which will return
+      the current template with the version field filled in with the current
+      server version. The user updates other fields in the template, then
+      returns it as part of the UpdateWorkflowTemplate request.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Optional The labels to associate with this template. These labels will
+    be propagated to all jobs and clusters created by the workflow
+    instance.Label keys must contain 1 to 63 characters, and must conform to
+    RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).Label values may be empty,
+    but, if present, must contain 1 to 63 characters, and must conform to RFC
+    1035 (https://www.ietf.org/rfc/rfc1035.txt).No more than 32 labels can be
+    associated with a template.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  id = _messages.StringField(2)
+  jobs = _messages.MessageField('OrderedJob', 3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  placement = _messages.MessageField('WorkflowTemplatePlacement', 6)
+  updateTime = _messages.StringField(7)
+  version = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+
+
+class WorkflowTemplatePlacement(_messages.Message):
+  """Specifies workflow execution target.Either managed_cluster or
+  cluster_selector is required.
+
+  Fields:
+    clusterSelector: Optional A selector that chooses target cluster for jobs
+      based on metadata.The selector is evaluated at the time each job is
+      submitted.
+    managedCluster: Optional A cluster that is managed by the workflow.
+  """
+
+  clusterSelector = _messages.MessageField('ClusterSelector', 1)
+  managedCluster = _messages.MessageField('ManagedCluster', 2)
 
 
 class YarnApplication(_messages.Message):

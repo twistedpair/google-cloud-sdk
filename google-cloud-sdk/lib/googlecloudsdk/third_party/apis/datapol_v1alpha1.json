@@ -334,7 +334,7 @@
           }
         },
         "conditions": {
-          "description": "Additional restrictions that must be met",
+          "description": "Additional restrictions that must be met. All conditions must pass for the\nrule to match.",
           "type": "array",
           "items": {
             "$ref": "Condition"

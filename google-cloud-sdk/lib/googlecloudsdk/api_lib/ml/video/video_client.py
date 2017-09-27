@@ -72,69 +72,6 @@ class VideoClient(object):
     self.operations_client = apis.GetClientInstance(
         VIDEO_API, OPERATIONS_VERSION)
 
-  def _ValidateAndParseSegments(self, given_segments):
-    """Get VideoSegment messages from string of form START1:END1,START2:END2....
-
-    Args:
-      given_segments: str, the string representing the segments.
-
-    Raises:
-      SegmentError: if the string is malformed.
-
-    Returns:
-      [GoogleCloudVideointelligenceV1beta1VideoSegment], the messages
-        representing the segments.
-    """
-    segment_messages = []
-    segments = [s.split(':') for s in given_segments.split(',')]
-    for segment in segments:
-      if len(segment) != 2:
-        raise SegmentError('Could not get video segments from [{}]. '
-                           'Please make sure you give the desired '
-                           'segments in the form: START1:END1,START2:'
-                           'END2, etc.'.format(given_segments))
-      start, end = int(segment[0]), int(segment[1])
-      segment_messages.append(
-          self.segment_msg(
-              startTimeOffset=start,
-              endTimeOffset=end))
-    return segment_messages
-
-  def _ValidateAndParseInput(self, input_path):
-    """Validates input path and returns content_source.ContentSource object.
-
-    Args:
-      input_path: str, the location of the video.
-
-    Raises:
-      VideoUriFormatError: if the video path is invalid.
-
-    Returns:
-      (content_source.ContentSource) the source object.
-    """
-    try:
-      video_source = content_source.ContentSource.FromContentPath(
-          input_path,
-          VIDEO_API,
-          url_validator=storage_util.ObjectReference.IsStorageUrl,
-          encode=base64.b64encode
-      )
-    except content_source.UnrecognizedContentSourceError:
-      raise VideoUriFormatError(INPUT_ERROR_MESSAGE.format(input_path))
-    return video_source
-
-  def _ValidateOutputUri(self, output_uri):
-    """Validates given output URI against validator function.
-
-    Args:
-      output_uri: str, the output URI for the analysis.
-
-    Raises:
-      VideoUriFormatError: if the URI is not valid.
-    """
-    if output_uri and not storage_util.ObjectReference.IsStorageUrl(output_uri):
-      raise VideoUriFormatError(OUTPUT_ERROR_MESSAGE.format(output_uri))
-
   def _GetContext(self, segment_messages, detection_mode):
     """Get VideoContext message from information about context.
 
@@ -148,6 +85,8 @@ class VideoClient(object):
     Returns:
       the Context message.
     """
+    if not segment_messages and not detection_mode:
+      return None
     context = self.context_msg()
     if segment_messages:
       context.segments = segment_messages
@@ -177,7 +116,7 @@ class VideoClient(object):
     Returns:
       messages.AnnotateRequest: a request for the API to annotate an image.
     """
-    segs = self._ValidateAndParseSegments(segments) if segments else None
+    segs = _ValidateAndParseSegments(segments)
     request = self.req_msg(features=[self.features_enum(request_type)])
     if output_uri:
       request.outputUri = output_uri
@@ -210,8 +149,8 @@ class VideoClient(object):
     Returns:
       messages.GoogleLongrunningOperation, the result of the request.
     """
-    self._ValidateOutputUri(output_uri)
-    video_source = self._ValidateAndParseInput(input_uri)
+    output_uri = _ValidateOutputUri(output_uri)
+    video_source = _ValidateAndParseInput(input_uri)
     request = self._GetAnnotateRequest(
         request_type, video_source, output_uri=output_uri,
         segments=segments, region=region, detection_mode=detection_mode)
@@ -255,3 +194,82 @@ class VideoClient(object):
         exponential_sleep_multiplier=2.0,
         sleep_ms=500,
         wait_ceiling_ms=20000)
+
+
+def _ValidateOutputUri(output_uri):
+  """Validates given output URI against validator function.
+
+  Args:
+    output_uri: str, the output URI for the analysis.
+
+  Raises:
+    VideoUriFormatError: if the URI is not valid.
+
+  Returns:
+    str, The same output_uri.
+  """
+  if output_uri and not storage_util.ObjectReference.IsStorageUrl(output_uri):
+    raise VideoUriFormatError(OUTPUT_ERROR_MESSAGE.format(output_uri))
+  return output_uri
+
+
+def _ValidateAndParseInput(input_path):
+  """Validates input path and returns content_source.ContentSource object.
+
+  Args:
+    input_path: str, the location of the video.
+
+  Raises:
+    VideoUriFormatError: if the video path is invalid.
+
+  Returns:
+    (content_source.ContentSoallurce) the source object.
+  """
+  try:
+    video_source = content_source.ContentSource.FromContentPath(
+        input_path,
+        VIDEO_API,
+        url_validator=storage_util.ObjectReference.IsStorageUrl,
+        encode=base64.b64encode
+    )
+  except content_source.UnrecognizedContentSourceError:
+    raise VideoUriFormatError(INPUT_ERROR_MESSAGE.format(input_path))
+  return video_source
+
+
+def _UpdateRequestWithInput(unused_ref, args, request):
+  """The Python hook for yaml commands to inject content into the request."""
+  video_source = _ValidateAndParseInput(args.input_path)
+  video_source.UpdateContent(request)
+  return request
+
+
+def _ValidateAndParseSegments(given_segments):
+  """Get VideoSegment messages from string of form START1:END1,START2:END2....
+
+  Args:
+    given_segments: [str], the list of strings representing the segments.
+
+  Raises:
+    SegmentError: if the string is malformed.
+
+  Returns:
+    [GoogleCloudVideointelligenceV1beta1VideoSegment], the messages
+      representing the segments.
+  """
+  if given_segments is None:
+    return None
+  messages = apis.GetMessagesModule(VIDEO_API, VIDEO_API_VERSION)
+  segment_msg = messages.GoogleCloudVideointelligenceV1beta1VideoSegment
+  segment_messages = []
+  segments = [s.split(':') for s in given_segments]
+  for segment in segments:
+    if len(segment) != 2:
+      raise SegmentError('Could not get video segments from [{}]. '
+                         'Please make sure you give the desired '
+                         'segments in the form: START1:END1,START2:'
+                         'END2, etc.'.format(','.join(given_segments)))
+    start, end = int(segment[0]), int(segment[1])
+    segment_messages.append(
+        segment_msg(startTimeOffset=start, endTimeOffset=end))
+  return segment_messages

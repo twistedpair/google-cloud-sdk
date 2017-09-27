@@ -201,6 +201,7 @@
             "Many workers and a few parameter servers.",
             "A large number of workers with many parameter servers.",
             "A single worker instance [with a\nGPU](\/ml-engine\/docs\/how-tos\/using-gpus).",
+            "A single worker instance with a [Cloud TPU](\/tpu)",
             "The CUSTOM tier is not a set tier, but rather enables you to use your\nown cluster specification. When you use this tier, set values to\nconfigure your processing cluster according to these guidelines:\n\n*   You _must_ set `TrainingInput.masterType` to specify the type\n    of machine to use for your master node. This is the only required\n    setting.\n\n*   You _may_ set `TrainingInput.workerCount` to specify the number of\n    workers to use. If you specify one or more workers, you _must_ also\n    set `TrainingInput.workerType` to specify the type of machine to use\n    for your worker nodes.\n\n*   You _may_ set `TrainingInput.parameterServerCount` to specify the\n    number of parameter servers to use. If you specify one or more\n    parameter servers, you _must_ also set\n    `TrainingInput.parameterServerType` to specify the type of machine to\n    use for your parameter servers.\n\nNote that all of your workers must use the same machine type, which can\nbe different from your parameter server type and master type. Your\nparameter servers must likewise use the same machine type, which can be\ndifferent from your worker type and master type."
           ],
           "type": "string",
@@ -209,6 +210,7 @@
             "STANDARD_1",
             "PREMIUM_1",
             "BASIC_GPU",
+            "BASIC_TPU",
             "CUSTOM"
           ]
         },
@@ -495,7 +497,7 @@
           "$ref": "GoogleCloudMlV1_HyperparameterOutput_HyperparameterMetric"
         },
         "allMetrics": {
-          "description": "All recorded object metrics for this trial.",
+          "description": "All recorded object metrics for this trial. This field is not currently\npopulated.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudMlV1_HyperparameterOutput_HyperparameterMetric"
@@ -690,7 +692,7 @@
     },
     "GoogleCloudMlV1__Version": {
       "id": "GoogleCloudMlV1__Version",
-      "description": "Represents a version of the model.\n\nEach version is a trained model deployed in the cloud, ready to handle\nprediction requests. A model can have multiple versions. You can get\ninformation about all of the versions of a given model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list).\n\nNext ID: 18\nLINT.IfChange",
+      "description": "Represents a version of the model.\n\nEach version is a trained model deployed in the cloud, ready to handle\nprediction requests. A model can have multiple versions. You can get\ninformation about all of the versions of a given model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list).\n\nNext ID: 19\nLINT.IfChange",
       "type": "object",
       "properties": {
         "name": {

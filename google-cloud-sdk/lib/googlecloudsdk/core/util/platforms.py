@@ -61,6 +61,9 @@ class OperatingSystem(object):
       self.name = name
       self.file_name = file_name
 
+    def __str__(self):
+      return self.id
+
   WINDOWS = _OS('WINDOWS', 'Windows', 'windows')
   MACOSX = _OS('MACOSX', 'Mac OS X', 'darwin')
   LINUX = _OS('LINUX', 'Linux', 'linux')
@@ -138,6 +141,9 @@ class Architecture(object):
       self.name = name
       self.file_name = file_name
 
+    def __str__(self):
+      return self.id
+
   x86 = _ARCH('x86', 'x86', 'x86')
   x86_64 = _ARCH('x86_64', 'x86_64', 'x86_64')
   ppc = _ARCH('PPC', 'PPC', 'ppc')
@@ -211,6 +217,9 @@ class Platform(object):
     """
     self.operating_system = operating_system
     self.architecture = architecture
+
+  def __str__(self):
+    return '{}-{}'.format(self.operating_system, self.architecture)
 
   @staticmethod
   def Current(os_override=None, arch_override=None):

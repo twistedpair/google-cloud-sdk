@@ -180,7 +180,7 @@
           "type": "string"
         },
         "webhookId": {
-          "description": "ID of the webhook listening to updates to trigger mirroring.\nRemoving this webook from the other hosting service will stop\nGoogle Cloud Source Repositories from receiving notifications,\nand thereby disabling mirroring.",
+          "description": "ID of the webhook listening to updates to trigger mirroring.\nRemoving this webhook from the other hosting service will stop\nGoogle Cloud Source Repositories from receiving notifications,\nand thereby disabling mirroring.",
           "type": "string"
         },
         "deployKeyId": {

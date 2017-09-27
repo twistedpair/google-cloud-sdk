@@ -18,19 +18,23 @@ description: The specification for a full calliope command
 definitions:
   python_hook:
     type: string
-    pattern: |
-      "\w+\(\.\w+)+:\w+(\.\w+)*(:\w+=\w+(,\w+=\w+)*)?"
+    # Examples:
+    #   googlecloudsdk.module:classname
+    #   googlecloudsdk.module:class.attribute
+    #   googlecloudsdk.module:class.function:foo=bar,baz=stuff
+    pattern: "\\w+(\\.\\w+)+:\\w+(\\.\\w+)*(:\\w+=\\w+(,\\w+=\\w+)*)?"
 
   attribute:
     type: string
-    pattern: |
-      "\w+(\.\w+)*"
+    # Examples: a, a.b, a.c.b
+    pattern: "\\w+(\\.\\w+)*"
 
   resource_argument:
-    type: object
+    required: [ api_field, help_text ]
     additionalProperties: false
-    required: [ help_text ]
     properties:
+      # The name of the API field the value of this argument goes into.
+      api_field: { type: string }
       # The help text for this individual flag.
       help_text: { type: string }
       # The name of the argument as it should appear in the CLI. If
@@ -42,281 +46,290 @@ definitions:
       completer: { type: string }
 
   argument:
+    required: [ api_field, help_text ]
     additionalProperties: false
-    allOf:
-    - { $ref: "#/definitions/resource_argument" }
-    - properties:
-        # True if this should be forced to be a positional argument
-        # instead of a flag.
-        is_positional: { type: boolean }
-        # The module path to a function used as the 'type' for the
-        # argument. The function takes a single parameter which is the
-        # parsed string value of the argument and returns the converted
-        # parsed value.
-        type: { $ref: "#/definitions/python_hook" }
-        # Overrides the choices that are generated for the argument. Each key is
-        # one choice and the value is the value that is returned when that
-        # choice is selected.
-        choices:
-          type: object
-          patternProperties:
-            .*: { type: [ string, null ] }
-        # The default value of the argument when not provided.
-        default: { type: [ string, number, boolean, null ]}
-        # The module path to a function to process the parsed value
-        # before inserting it into the request message. It takes a
-        # single value which is the parsed argument's value and returns
-        # the value that should be inserted into the request.
-        processor: { $ref: "#/definitions/python_hook" }
-        # Whether the flag should required or not.
-        required: { type: boolean }
-        # Whether the flag should be hidden or not.
-        hidden: { type: boolean }
-        # Mark this flag as being deprecated. All the sub elements here
-        # are passed as kwargs to the calliope.actions.DeprecationAction
-        # action.
-        deprecated:
-          type: object
-          patternProperties:
-            .*: { type: string }
+    properties:
+      # The name of the API field the value of this argument goes into.
+      api_field: { type: string }
+      # The help text for this individual flag.
+      help_text: { type: string }
+      # The name of the argument as it should appear in the CLI. If
+      # not given it will match the API field name. This does not
+      # include '--' even if it will be a flag.
+      arg_name: { type: string }
+      # The module path to a class that implements remote completion
+      # for this argument.
+      completer: { $ref: "#/definitions/python_hook" }
+      # True if this should be forced to be a positional argument
+      # instead of a flag.
+      is_positional: { type: boolean }
+      # The module path to a function used as the 'type' for the
+      # argument. The function takes a single parameter which is the
+      # parsed string value of the argument and returns the converted
+      # parsed value.
+      type: { $ref: "#/definitions/python_hook" }
+      # Overrides the choices that are generated for the argument. Each key
+      # is one choice and the value is the value that is returned when that
+      # choice is selected.
+      choices:
+        type: object
+        patternProperties:
+          .*: { type: string }
+      # The default value of the argument when not provided.
+      default: { type: [ string, number, boolean, array ] }
+      # The module path to a function to process the parsed value
+      # before inserting it into the request message. It takes a
+      # single value which is the parsed argument's value and returns
+      # the value that should be inserted into the request.
+      processor: { $ref: "#/definitions/python_hook" }
+      # Whether the flag should required or not.
+      required: { type: boolean }
+      # Whether the flag should be hidden or not.
+      hidden: { type: boolean }
+      # Mark this flag as being deprecated. All the sub elements here
+      # are passed as kwargs to the calliope.actions.DeprecationAction
+      # action.
+      deprecated:
+        type: object
+        patternProperties:
+          .*: { type: string }
 
 
-type: array
-items:
-  type: object
-  additionalProperties: false
-  required: [ request, help_text, arguments ]
-  properties:
+type: object
+additionalProperties: false
+required: [ request, help_text, arguments ]
+properties:
 
-    # Corresponds to the Hidden decorator for command classes.
-    is_hidden: { type: boolean }
+  # Corresponds to the Hidden decorator for command classes.
+  is_hidden: { type: boolean }
 
-    # Corresponds to the ReleaseTracks decorator for command classes.
-    release_tracks:
-      type: array
-      items: { enum: [ ALPHA, BETA, GA ] }
+  # Corresponds to the ReleaseTracks decorator for command classes.
+  release_tracks:
+    type: array
+    items: { enum: [ ALPHA, BETA, GA ] }
 
-    # The type of command to generate. This is inferred based on the name
-    # of the command.
-    command_type: { enum: [ DESCRIBE, LIST, DELETE, GENERIC ] }
+  # The type of command to generate. This is inferred based on the name
+  # of the command.
+  command_type: { enum: [ DESCRIBE, LIST, DELETE, GENERIC ] }
 
-    # Corresponds to the detailed_help attribute on command classes.
-    help_text:
-      type: object
-      additionalProperties: false
-      required: [ brief, DESCRIPTION ]
-      patternProperties:
-        brief: { type: string }
-        description: { type: string }
-        examples: { type: string }
-        .*: { type: string }
+  # Corresponds to the detailed_help attribute on command classes.
+  help_text:
+    type: object
+    additionalProperties: false
+    required: [ brief, DESCRIPTION ]
+    patternProperties:
+      brief: { type: string }
+      description: { type: string }
+      examples: { type: string }
+      .*: { type: string }
 
-    # Attributes about the API request the command will make.
-    request:
-      description: Describes information about the API that this command calls
-      type: object
-      additionalProperties: false
-      required: [ collection ]
-      properties:
-        # The full collection name of the resource the command operates on.
-        collection: { type: string }
-        # The API version to use, defaults to API set as gcloud default.
-        api_version: { type: string }
-        # The name of the method to call to perform the operation.
-        method: { type: string }
-        # A mapping of method parameter to resource reference field for
-        # references or APIs that use non-standard naming.
-        resource_method_params:
-          type: object
-          patternProperties:
-            .*: { type: string }
-        # A mapping of request field names to static values to insert into the
-        # request. Specifying simple values here accomplishes the same as a
-        # a custom request generator, but is simpler.
-        static_fields:
-          type: object
-          patternProperties:
-            .*:
-        oneOf:
-          - # The module path to a function to call to modify the API request
-            # before it is invoked. All registered arguments will be processed
-            # into the request, before this is called. This is a function
-            # that takes 3 arguments: a resource ref to the parsed resource,
-            # the parsed args namespace, and the created request. It must return
-            # an apitools request message that will be passed to the API method
-            # defined in this section.
-            modify_request_hook: { $ref: "#/definitions/python_hook" }
-          - # The module path to a function to call to create the API request
-            # rather than having it done automatically. This is a function
-            # that takes 2 arguments: a resource ref to the parsed resource, and
-            # the parsed args namespace. It must return an apitools request
-            # message that will be passed to the API method defined in this
-            # section.
-            create_request_hook: { $ref: "#/definitions/python_hook" }
-          - # The module path to a function to call to issue an API request
-            # rather than having it done automatically. This is a function
-            # that takes 2 arguments: a resource ref to the parsed resource, and
-            # the parsed args namespace. It should create a request, make the
-            # API call, and return the response.
-            issue_request_hook: { $ref: "#/definitions/python_hook" }
+  # Attributes about the API request the command will make.
+  request:
+    description: Describes information about the API that this command calls
+    type: object
+    additionalProperties: false
+    required: [ collection ]
+    oneOf:
+      - required: [ modify_request_hook ]
+      - required: [ create_request_hook ]
+      - required: [ issue_request_hook ]
+      - allOf:
+        - not: { required: [modify_request_hook]}
+        - not: { required: [create_request_hook]}
+        - not: { required: [issue_request_hook]}
+    properties:
+      # The full collection name of the resource the command operates on.
+      collection: { type: string }
+      # The API version to use, defaults to API set as gcloud default.
+      api_version: { type: string }
+      # The name of the method to call to perform the operation.
+      method: { type: string }
+      # A mapping of method parameter to resource reference field for
+      # references or APIs that use non-standard naming.
+      resource_method_params:
+        type: object
+        patternProperties:
+          .*: { type: string }
+      # A mapping of request field names to static values to insert into the
+      # request. Specifying simple values here accomplishes the same as a
+      # a custom request generator, but is simpler.
+      static_fields:
+        type: object
+        patternProperties:
+          .*: { }
+      # The module path to a function to call to modify the API request
+      # before it is invoked. All registered arguments will be processed
+      # into the request, before this is called. This is a function
+      # that takes 3 arguments: a resource ref to the parsed resource,
+      # the parsed args namespace, and the created request. It must return
+      # an apitools request message that will be passed to the API method
+      # defined in this section.
+      modify_request_hook: { $ref: "#/definitions/python_hook" }
+      # The module path to a function to call to create the API request
+      # rather than having it done automatically. This is a function
+      # that takes 2 arguments: a resource ref to the parsed resource, and
+      # the parsed args namespace. It must return an apitools request
+      # message that will be passed to the API method defined in this
+      # section.
+      create_request_hook: { $ref: "#/definitions/python_hook" }
+      # The module path to a function to call to issue an API request
+      # rather than having it done automatically. This is a function
+      # that takes 2 arguments: a resource ref to the parsed resource, and
+      # the parsed args namespace. It should create a request, make the
+      # API call, and return the response.
+      issue_request_hook: { $ref: "#/definitions/python_hook" }
 
-    # Configuration for handling the API response.
-    response:
-      type: object
-      additionalProperties: false
-      properties:
-        # If given, the response will be searched for error information and an
-        # exception raised if found. This is useful for batch request methods
-        # that return 200 even though something may have failed.
-        error:
+  # Configuration for handling the API response.
+  response:
+    type: object
+    additionalProperties: false
+    properties:
+      # If given, the response will be searched for error information and an
+      # exception raised if found. This is useful for batch request methods
+      # that return 200 even though something may have failed.
+      error:
+        type: object
+        additionalProperties: false
+        properties:
+          # The dotted path of the field whose presence indicates that an
+          # error has occured. This is 'error' by default if the error section
+          # is declared.
+          field: { $ref: "#/definitions/attribute" }
+          # If the error message is found, extract the error code from this
+          # field within that message.
+          code: { $ref: "#/definitions/attribute" }
+          # If the error message is found, extract the error message from this
+          # field within that message.
+          message: { $ref: "#/definitions/attribute" }
+
+  # If present, indicates that this API method uses operations and the --async
+  # flag will be set up.
+  async:
+    description: Describes how to poll and report the result of the operation
+    type: object
+    additionalProperties: false
+    required: [ collection ]
+    properties:
+      # The full collection name of the operation collection for this API.
+      collection: { type: string }
+      # The API version to use, defaults to API set as gcloud default.
+      api_version: { type: string }
+      # The API method to call to get the operation ('get' by default).
+      method: { type: string }
+      # The field in the operation message that corresponds to the operation's
+      # full name ('name' by default).
+      response_name_field: { type: string }
+      # Override whether the command should get the resulting resource after
+      # the operation is done, or just return the operation result. This is
+      # True by default (except for Delete commands).
+      extract_resource_result: { type: boolean }
+      # The API method to call to get the updated state of the resource being
+      # operated on ('get' by default).
+      resource_get_method: { type: string }
+      # A mapping of method parameter to operation reference field for
+      # references or APIs that use non-standard naming.
+      resource_get_method_params:
+        type: object
+        patternProperties:
+          .*: { type: string }
+      # The attribute of the result to return from polling. If
+      # extract_resource_result is False, this is an attribute on the
+      # operation, if True it is on the resource itself.
+      result_attribute: { $ref: "#/definitions/attribute" }
+      state:
+        type: object
+        additionalProperties: false
+        required: [ field, success_values ]
+        properties:
+          # The field to check for status. Polling continues until it matches
+          # something in success_values or error_values. ('done' by default).
+          field: { type: string }
+          # Values that indicate that the operation is done and finished
+          # successfully. ('True' by default).
+          success_values: { type: array, items: { type: [ boolean, string ] } }
+          # Values that indicate that the operation is done but finished
+          # unsuccessfully. (Nothing by default).
+          error_values: { type: array, items: { type: [ boolean, string ] } }
+      error:
+        type: object
+        additionalProperties: false
+        required: [ field ]
+        properties:
+          # If this field is set when the operation completes, it will be
+          # used to generate an error message and polling stops. ('error' by
+          # default).
+          field: { type: string }
+
+  # Enumerates the non-resource API fields that arguments should be generated
+  # for.
+  arguments:
+    type: object
+    additionalProperties: false
+    properties:
+      # The module path to a function to call to generate extra arguments
+      # that for whatever reason cannot be defined here. It is a function that
+      # takes no arguments and returns a list of calliope.base.Action
+      # objects that will be added to the parser. These arguments will not
+      # be processed automatically so you will need to implement
+      # request.modify_request_hook to insert something into the request based
+      # on these arguments.
+      additional_arguments_hook: { $ref: "#/definitions/python_hook" }
+      # This section declares how to generate the arguments and flags that
+      # correspond to the resource being operated on by this command.
+      resource:
+        description: Describes how to generate the resource arg and its flags
+        type: object
+        additionalProperties: false
+        required: [ help_text ]
+        properties:
+          # The help text for the overall resource arg group.
+          help_text: { type: string }
+          # The field in the response that is the id of the resource (just the
+          # name, not the relative name or URI). This is used to construct a
+          # URI for resources out of the result of a list command. If not
+          # provided, there won't be a --uri flag on the list command.
+          response_id_field: { type: string }
+
+          # Enumerates the API fields that need to be set and information
+          # about each argument to generate.
+          params:
+            type: array
+            items: { $ref: "#/definitions/resource_argument" }
+      # Same as the params section below, but each group of params will be
+      # placed in a mutually exclusive argument group for parsing purposes.
+      mutex_groups:
+        type: array
+        items:
           type: object
           additionalProperties: false
           properties:
-            # The dotted path of the field whose presence indicates that an
-            # error has occured. This is 'error' by default if the error section
-            # is declared.
-            field: { $ref: "#/definitions/attribute" }
-            # If the error message is found, extract the error code from this
-            # field within that message.
-            code: { $ref: "#/definitions/attribute" }
-            # If the error message is found, extract the error message from this
-            # field within that message.
-            message: { $ref: "#/definitions/attribute" }
-
-    # If present, indicates that this API method uses operations and the --async
-    # flag will be set up.
-    async:
-      description: Describes how to poll and report the result of the operation
-      type: object
-      additionalProperties: false
-      required: [ collection ]
-      properties:
-        # The full collection name of the operation collection for this API.
-        collection: { type: string }
-        # The API version to use, defaults to API set as gcloud default.
-        api_version: { type: string }
-        # The API method to call to get the operation ('get' by default).
-        method: { type: string }
-        # The field in the operation message that corresponds to the operation's
-        # full name ('name' by default).
-        response_name_field: { type: string }
-        # Override whether the command should get the resulting resource after
-        # the operation is done, or just return the operation result. This is
-        # True by default (except for Delete commands).
-        extract_resource_result: { type: bool }
-        # The API method to call to get the updated state of the resource being
-        # operated on ('get' by default).
-        resource_get_method: { type: string }
-        # A mapping of method parameter to operation reference field for
-        # references or APIs that use non-standard naming.
-        resource_get_method_params:
-          type: object
-          patternProperties:
-            .*: { type: string }
-        # The attribute of the result to return from polling. If
-        # extract_resource_result is False, this is an attribute on the
-        # operation, if True it is on the resource itself.
-        result_attribute: { $ref: "#/definitions/attribute" }
-        state:
-          type: object
-          additionalProperties: false
-          required: [ field, success_values ]
-          properties:
-            # The field to check for status. Polling continues until it matches
-            # something in success_values or error_values. ('done' by default).
-            field: { type: string }
-            # Values that indicate that the operation is done and finished
-            # successfully. ('True' by default).
-            success_values: { type: array, items: { type: [ boolean, string ] } }
-            # Values that indicate that the operation is done but finished
-            # unsuccessfully. (Nothing by default).
-            error_values: { type: array, items: { type: [ boolean, string ] } }
-        error:
-          type: object
-          additionalProperties: false
-          required: [ field ]
-          properties:
-            # If this field is set when the operation completes, it will be
-            # used to generate an error message and polling stops. ('error' by
-            # default).
-            field: { type: string }
-
-    # Enumerates the non-resource API fields that arguments should be generated
-    # for.
-    arguments:
-      type: object
-      additionalProperties: false
-      properties:
-        # The module path to a function to call to generate extra arguments
-        # that for whatever reason cannot be defined here. It is a function that
-        # takes no arguments and returns a list of calliope.base.Action
-        # objects that will be added to the parser. These arguments will not
-        # be processed automatically so you will need to implement
-        # request.modify_request_hook to insert something into the request based
-        # on these arguments.
-        additional_arguments_hook: { $ref: "#/definitions/python_hook" }
-        # This section declares how to generate the arguments and flags that
-        # correspond to the resource being operated on by this command.
-        resource:
-          description: Describes how to generate the resource arg and its flags
-          type: object
-          additionalProperties: false
-          required: [ help_text ]
-          properties:
-            # The help text for the overall resource arg group.
-            help_text: { type: string }
-            # The field in the response that is the id of the resource (just the
-            # name, not the relative name or URI). This is used to construct a
-            # URI for resources out of the result of a list command. If not
-            # provided, there won't be a --uri flag on the list command.
-            response_id_field: { type: string }
-
+            # True if one of the arguments in the group must be provided.
+            required: { type: boolean }
             # Enumerates the API fields that need to be set and information
             # about each argument to generate.
             params:
-              type: object
-              patternProperties:
-                # The key is the API parameter name.
-                .*: { $ref: "#/definitions/resource_argument" }
-        # Same as the params section below, but each group of params will be
-        # placed in a mutually exclusive argument group for parsing purposes.
-        mutex_groups:
-          type: array
-          items:
-            type: object
-            additionalProperties: false
-            properties:
-              # True if one of the arguments in the group must be provided.
-              required: { type: boolean }
-              # Enumerates the API fields that need to be set and information
-              # about each argument to generate.
-              params:
-                type: object
-                patternProperties:
-                  # The key is the API parameter name.
-                  .*: { $ref: "#/definitions/argument" }
-        # Enumerates the API fields that need to be set and information
-        # about each argument to generate.
-        params:
-          type: object
-          patternProperties:
-            # The key is the API parameter name.
-            .*: { $ref: "#/definitions/argument" }
+              type: array
+              items: { $ref: "#/definitions/argument" }
+      # Enumerates the API fields that need to be set and information
+      # about each argument to generate.
+      params:
+        type: array
+        items: { $ref: "#/definitions/argument" }
 
-    # Information about how to collect input from the user.
-    input:
-      type: object
-      additionalProperties: false
-      properties:
-        # An optional confirmation prompt to show before actually performing the
-        # operation. The string may have named format substiutions in it which
-        # will be replaced with attributes of the resource being operated on.
-        confirmation_prompt: { type: string }
+  # Information about how to collect input from the user.
+  input:
+    type: object
+    additionalProperties: false
+    properties:
+      # An optional confirmation prompt to show before actually performing the
+      # operation. The string may have named format substiutions in it which
+      # will be replaced with attributes of the resource being operated on.
+      confirmation_prompt: { type: string }
 
-    # Information about how to show output to the user.
-    output:
-      type: object
-      additionalProperties: false
-      properties:
-        # Corresponds tothe default output format setting on the command.
-        format: { type: string }
+  # Information about how to show output to the user.
+  output:
+    type: object
+    additionalProperties: false
+    properties:
+      # Corresponds tothe default output format setting on the command.
+      format: { type: string }

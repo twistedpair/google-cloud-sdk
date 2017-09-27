@@ -431,10 +431,10 @@ class IamProjectsServiceAccountsDeleteRequest(_messages.Message):
 
   Fields:
     name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}`. Using
-      `-` as a wildcard for the project will infer the project from the
-      account. The `account` value can be the `email` address or the
-      `unique_id` of the service account.
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
+      wildcard for the `PROJECT_ID` will infer the project from the account.
+      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
+      service account.
   """
 
   name = _messages.StringField(1, required=True)
@@ -457,10 +457,10 @@ class IamProjectsServiceAccountsGetRequest(_messages.Message):
 
   Fields:
     name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}`. Using
-      `-` as a wildcard for the project will infer the project from the
-      account. The `account` value can be the `email` address or the
-      `unique_id` of the service account.
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
+      wildcard for the `PROJECT_ID` will infer the project from the account.
+      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
+      service account.
   """
 
   name = _messages.StringField(1, required=True)
@@ -473,10 +473,10 @@ class IamProjectsServiceAccountsKeysCreateRequest(_messages.Message):
     createServiceAccountKeyRequest: A CreateServiceAccountKeyRequest resource
       to be passed as the request body.
     name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}`. Using
-      `-` as a wildcard for the project will infer the project from the
-      account. The `account` value can be the `email` address or the
-      `unique_id` of the service account.
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
+      wildcard for the `PROJECT_ID` will infer the project from the account.
+      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
+      service account.
   """
 
   createServiceAccountKeyRequest = _messages.MessageField('CreateServiceAccountKeyRequest', 1)
@@ -488,10 +488,10 @@ class IamProjectsServiceAccountsKeysDeleteRequest(_messages.Message):
 
   Fields:
     name: The resource name of the service account key in the following
-      format: `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}/k
-      eys/{key}`. Using `-` as a wildcard for the project will infer the
-      project from the account. The `account` value can be the `email` address
-      or the `unique_id` of the service account.
+      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`.
+      Using `-` as a wildcard for the `PROJECT_ID` will infer the project from
+      the account. The `ACCOUNT` value can be the `email` address or the
+      `unique_id` of the service account.
   """
 
   name = _messages.StringField(1, required=True)
@@ -506,10 +506,10 @@ class IamProjectsServiceAccountsKeysGetRequest(_messages.Message):
 
   Fields:
     name: The resource name of the service account key in the following
-      format: `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}/k
-      eys/{key}`.  Using `-` as a wildcard for the project will infer the
-      project from the account. The `account` value can be the `email` address
-      or the `unique_id` of the service account.
+      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`.
+      Using `-` as a wildcard for the `PROJECT_ID` will infer the project from
+      the account. The `ACCOUNT` value can be the `email` address or the
+      `unique_id` of the service account.
     publicKeyType: The output format of the public key requested. X509_PEM is
       the default output format.
   """
@@ -544,10 +544,10 @@ class IamProjectsServiceAccountsKeysListRequest(_messages.Message):
       response. Duplicate key types are not allowed. If no key type is
       provided, all keys are returned.
     name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}`.  Using
-      `-` as a wildcard for the project, will infer the project from the
-      account. The `account` value can be the `email` address or the
-      `unique_id` of the service account.
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.  Using `-` as a
+      wildcard for the `PROJECT_ID`, will infer the project from the account.
+      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
+      service account.
   """
 
   class KeyTypesValueValuesEnum(_messages.Enum):
@@ -606,10 +606,10 @@ class IamProjectsServiceAccountsSignBlobRequest(_messages.Message):
 
   Fields:
     name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}`. Using
-      `-` as a wildcard for the project will infer the project from the
-      account. The `account` value can be the `email` address or the
-      `unique_id` of the service account.
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
+      wildcard for the `PROJECT_ID` will infer the project from the account.
+      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
+      service account.
     signBlobRequest: A SignBlobRequest resource to be passed as the request
       body.
   """
@@ -623,10 +623,10 @@ class IamProjectsServiceAccountsSignJwtRequest(_messages.Message):
 
   Fields:
     name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}`. Using
-      `-` as a wildcard for the project will infer the project from the
-      account. The `account` value can be the `email` address or the
-      `unique_id` of the service account.
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
+      wildcard for the `PROJECT_ID` will infer the project from the account.
+      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
+      service account.
     signJwtRequest: A SignJwtRequest resource to be passed as the request
       body.
   """
@@ -969,13 +969,12 @@ class ServiceAccount(_messages.Message):
   generate the service account email address and a stable `unique_id`.  If the
   account already exists, the account's resource name is returned in
   util::Status's ResourceInfo.resource_name in the format of
-  projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}. The caller
-  can use the name in other methods to access the account.  All other methods
-  can identify the service account using the format
-  `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}`. Using `-`
-  as a wildcard for the project will infer the project from the account. The
-  `account` value can be the `email` address or the `unique_id` of the service
-  account.
+  projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. The caller can use the name
+  in other methods to access the account.  All other methods can identify the
+  service account using the format
+  `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a wildcard
+  for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT`
+  value can be the `email` address or the `unique_id` of the service account.
 
   Fields:
     displayName: Optional. A user-specified description of the service
@@ -983,12 +982,12 @@ class ServiceAccount(_messages.Message):
     email: @OutputOnly The email address of the service account.
     etag: Used to perform a consistent read-modify-write.
     name: The resource name of the service account in the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}`.
-      Requests using `-` as a wildcard for the project will infer the project
-      from the `account` and the `account` value can be the `email` address or
-      the `unique_id` of the service account.  In responses the resource name
-      will always be in the format
-      `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}`.
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.  Requests using `-`
+      as a wildcard for the `PROJECT_ID` will infer the project from the
+      `account` and the `ACCOUNT` value can be the `email` address or the
+      `unique_id` of the service account.  In responses the resource name will
+      always be in the format
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.
     oauth2ClientId: @OutputOnly. The OAuth2 client id for the service account.
       This is used in conjunction with the OAuth2 clientconfig API to make
       three legged OAuth2 (3LO) flows to access the data of Google users.
@@ -1029,8 +1028,7 @@ class ServiceAccountKey(_messages.Message):
   Fields:
     keyAlgorithm: Specifies the algorithm (and possibly key size) for the key.
     name: The resource name of the service account key in the following format
-      `projects/{PROJECT_ID}/serviceAccounts/{SERVICE_ACCOUNT_EMAIL}/keys/{key
-      }`.
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`.
     privateKeyData: The private key data. Only provided in
       `CreateServiceAccountKey` responses. Make sure to keep the private key
       data secure because it allows for the assertion of the service account

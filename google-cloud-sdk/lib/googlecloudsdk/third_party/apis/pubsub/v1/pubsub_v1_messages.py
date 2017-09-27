@@ -357,6 +357,19 @@ class PubsubProjectsSnapshotsListRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
+class PubsubProjectsSnapshotsPatchRequest(_messages.Message):
+  """A PubsubProjectsSnapshotsPatchRequest object.
+
+  Fields:
+    name: The name of the snapshot.
+    updateSnapshotRequest: A UpdateSnapshotRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateSnapshotRequest = _messages.MessageField('UpdateSnapshotRequest', 2)
+
+
 class PubsubProjectsSnapshotsSetIamPolicyRequest(_messages.Message):
   """A PubsubProjectsSnapshotsSetIamPolicyRequest object.
 
@@ -602,6 +615,24 @@ class PubsubProjectsTopicsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   project = _messages.StringField(3, required=True)
+
+
+class PubsubProjectsTopicsPatchRequest(_messages.Message):
+  """A PubsubProjectsTopicsPatchRequest object.
+
+  Fields:
+    name: The name of the topic. It must have the format
+      `"projects/{project}/topics/{topic}"`. `{topic}` must start with a
+      letter, and contain only letters (`[A-Za-z]`), numbers (`[0-9]`), dashes
+      (`-`), underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or
+      percent signs (`%`). It must be between 3 and 255 characters in length,
+      and it must not start with `"goog"`.
+    updateTopicRequest: A UpdateTopicRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateTopicRequest = _messages.MessageField('UpdateTopicRequest', 2)
 
 
 class PubsubProjectsTopicsPublishRequest(_messages.Message):
@@ -1102,6 +1133,19 @@ class Topic(_messages.Message):
   name = _messages.StringField(2)
 
 
+class UpdateSnapshotRequest(_messages.Message):
+  """Request for the UpdateSnapshot method.
+
+  Fields:
+    snapshot: The updated snpashot object.
+    updateMask: Indicates which fields in the provided snapshot to update.
+      Must be specified and non-empty.
+  """
+
+  snapshot = _messages.MessageField('Snapshot', 1)
+  updateMask = _messages.StringField(2)
+
+
 class UpdateSubscriptionRequest(_messages.Message):
   """Request for the UpdateSubscription method.
 
@@ -1112,6 +1156,19 @@ class UpdateSubscriptionRequest(_messages.Message):
   """
 
   subscription = _messages.MessageField('Subscription', 1)
+  updateMask = _messages.StringField(2)
+
+
+class UpdateTopicRequest(_messages.Message):
+  """Request for the UpdateTopic method.
+
+  Fields:
+    topic: The topic to update.
+    updateMask: Indicates which fields in the provided topic to update. Must
+      be specified and non-empty.
+  """
+
+  topic = _messages.MessageField('Topic', 1)
   updateMask = _messages.StringField(2)
 
 

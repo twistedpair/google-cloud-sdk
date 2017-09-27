@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and utilities for `gcloud ml video` commands."""
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
 
@@ -26,6 +27,12 @@ SERVICE_ACCOUNT_HELP = (
 _REGIONS = ['us-east1', 'us-west1', 'europe-west1', 'asia-east1']
 
 
+IMAGE_PATH_FLAG = base.Argument(
+    'input_path',
+    help=('The path to the video to be analyzed. Must be a local path '
+          'or a Google Cloud Storage URI.'))
+
+
 def AddVideoFlags(parser):
   """Adds flags common to gcloud ml video-intelligence commands to the parser.
 
@@ -36,11 +43,7 @@ def AddVideoFlags(parser):
     parser: the parser for the command line.
   """
   base.ASYNC_FLAG.AddToParser(parser)
-  parser.add_argument(
-      'input_path',
-      help=('The path to the video to be analyzed. Must be a local path '
-            'or a Google Cloud Storage URI.')
-  )
+  IMAGE_PATH_FLAG.AddToParser(parser)
   parser.add_argument(
       '--output-uri',
       metavar='OUTPUT_URI',
@@ -50,6 +53,7 @@ def AddVideoFlags(parser):
   parser.add_argument(
       '--segments',
       metavar='SEGMENTS',
+      type=arg_parsers.ArgList(),
       help=('The segments from the video which you want to analyze (by '
             'default, the entire video will be treated as one segment). '
             'Must be in the format START1:END1[,START2:END2,...]. Start '
@@ -72,3 +76,8 @@ def AddDetectionModeFlag(parser):
       choices=['shot', 'frame', 'shot-and-frame'],
       default='shot',
       help='The mode of label detection requested.')
+
+
+def AdditionalFlagsHook():
+  """The Python hook for yaml commands to add the image flag."""
+  return [IMAGE_PATH_FLAG]

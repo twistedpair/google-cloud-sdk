@@ -65,6 +65,58 @@ class AnalyzeEntitiesResponse(_messages.Message):
   language = _messages.StringField(2)
 
 
+class AnalyzeEntitySentimentRequest(_messages.Message):
+  """The entity-level sentiment analysis request message.
+
+  Enums:
+    EncodingTypeValueValuesEnum: The encoding type used by the API to
+      calculate offsets.
+
+  Fields:
+    document: Input document.
+    encodingType: The encoding type used by the API to calculate offsets.
+  """
+
+  class EncodingTypeValueValuesEnum(_messages.Enum):
+    """The encoding type used by the API to calculate offsets.
+
+    Values:
+      NONE: If `EncodingType` is not specified, encoding-dependent information
+        (such as `begin_offset`) will be set at `-1`.
+      UTF8: Encoding-dependent information (such as `begin_offset`) is
+        calculated based on the UTF-8 encoding of the input. C++ and Go are
+        examples of languages that use this encoding natively.
+      UTF16: Encoding-dependent information (such as `begin_offset`) is
+        calculated based on the UTF-16 encoding of the input. Java and
+        Javascript are examples of languages that use this encoding natively.
+      UTF32: Encoding-dependent information (such as `begin_offset`) is
+        calculated based on the UTF-32 encoding of the input. Python is an
+        example of a language that uses this encoding natively.
+    """
+    NONE = 0
+    UTF8 = 1
+    UTF16 = 2
+    UTF32 = 3
+
+  document = _messages.MessageField('Document', 1)
+  encodingType = _messages.EnumField('EncodingTypeValueValuesEnum', 2)
+
+
+class AnalyzeEntitySentimentResponse(_messages.Message):
+  """The entity-level sentiment analysis response message.
+
+  Fields:
+    entities: The recognized entities in the input document with associated
+      sentiments.
+    language: The language of the text, which will be the same as the language
+      specified in the request or, if not specified, the automatically-
+      detected language. See Document.language field for more details.
+  """
+
+  entities = _messages.MessageField('Entity', 1, repeated=True)
+  language = _messages.StringField(2)
+
+
 class AnalyzeSentimentRequest(_messages.Message):
   """The sentiment analysis request message.
 
@@ -338,6 +390,12 @@ class DependencyEdge(_messages.Message):
       NUMC: Compound of numeric modifier
       COP: Copula
       DISLOCATED: Dislocated relation (for fronted/topicalized elements)
+      ASP: Aspect marker
+      GMOD: Genitive modifier
+      GOBJ: Genitive object
+      INFMOD: Infinitival modifier
+      MES: Measure
+      NCOMP: Nominal complement of a noun
     """
     UNKNOWN = 0
     ABBREV = 1
@@ -416,6 +474,12 @@ class DependencyEdge(_messages.Message):
     NUMC = 74
     COP = 75
     DISLOCATED = 76
+    ASP = 77
+    GMOD = 78
+    GOBJ = 79
+    INFMOD = 80
+    MES = 81
+    NCOMP = 82
 
   headTokenIndex = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   label = _messages.EnumField('LabelValueValuesEnum', 2)
@@ -490,6 +554,10 @@ class Entity(_messages.Message):
       importance or centrality of that entity to the entire document text.
       Scores closer to 0 are less salient, while scores closer to 1.0 are
       highly salient.
+    sentiment: For calls to AnalyzeEntitySentiment or if
+      AnnotateTextRequest.Features.extract_entity_sentiment is set to true,
+      this field will contain the aggregate sentiment expressed for this
+      entity in the provided document.
     type: The entity type.
   """
 
@@ -545,7 +613,8 @@ class Entity(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 2)
   name = _messages.StringField(3)
   salience = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  sentiment = _messages.MessageField('Sentiment', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class EntityMention(_messages.Message):
@@ -556,6 +625,10 @@ class EntityMention(_messages.Message):
     TypeValueValuesEnum: The type of the entity mention.
 
   Fields:
+    sentiment: For calls to AnalyzeEntitySentiment or if
+      AnnotateTextRequest.Features.extract_entity_sentiment is set to true,
+      this field will contain the sentiment expressed for this mention of the
+      entity in the provided document.
     text: The mention text.
     type: The type of the entity mention.
   """
@@ -572,8 +645,9 @@ class EntityMention(_messages.Message):
     PROPER = 1
     COMMON = 2
 
-  text = _messages.MessageField('TextSpan', 1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  sentiment = _messages.MessageField('Sentiment', 1)
+  text = _messages.MessageField('TextSpan', 2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class Features(_messages.Message):
@@ -583,12 +657,14 @@ class Features(_messages.Message):
   Fields:
     extractDocumentSentiment: Extract document-level sentiment.
     extractEntities: Extract entities.
+    extractEntitySentiment: Extract entities and their associated sentiment.
     extractSyntax: Extract syntax information.
   """
 
   extractDocumentSentiment = _messages.BooleanField(1)
   extractEntities = _messages.BooleanField(2)
-  extractSyntax = _messages.BooleanField(3)
+  extractEntitySentiment = _messages.BooleanField(3)
+  extractSyntax = _messages.BooleanField(4)
 
 
 class PartOfSpeech(_messages.Message):

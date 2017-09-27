@@ -872,7 +872,7 @@
           "$ref": "Status"
         },
         "response": {
-          "description": "If importing ReadGroupSets, an ImportReadGroupSetsResponse is returned. If importing Variants, an ImportVariantsResponse is returned. For pipelines and exports, an empty response is returned.",
+          "description": "If importing ReadGroupSets, an ImportReadGroupSetsResponse is returned. If importing Variants, an ImportVariantsResponse is returned. For pipelines and exports, an Empty response is returned.",
           "type": "object",
           "additionalProperties": {
             "type": "any",

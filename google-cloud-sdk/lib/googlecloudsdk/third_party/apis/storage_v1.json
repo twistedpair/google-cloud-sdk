@@ -4,7 +4,7 @@
  "id": "storage:v1",
  "name": "storage",
  "version": "v1",
- "revision": "20170908",
+ "revision": "20170920",
  "title": "Cloud Storage JSON API",
  "description": "Stores and retrieves potentially large, immutable data objects.",
  "ownerDomain": "google.com",
@@ -3121,7 +3121,7 @@
      "id": "storage.objects.patch",
      "path": "b/{bucket}/o/{object}",
      "httpMethod": "PATCH",
-     "description": "Patches an object's metadata.",
+     "description": "Updates an object's metadata. This method supports patch semantics.",
      "parameters": {
       "bucket": {
        "type": "string",
@@ -3218,8 +3218,7 @@
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/devstorage.full_control"
-     ],
-     "supportsMediaDownload": true
+     ]
     },
     "rewrite": {
      "id": "storage.objects.rewrite",

@@ -868,7 +868,11 @@ class _SectionCore(_Section):
         return
       if not isinstance(filename, basestring):
         raise InvalidValueError('Filename is not string')
-      dirname = os.path.dirname(filename)
+      dirname = os.path.dirname(os.path.realpath(filename))
+      if not os.path.exists(dirname):
+        while not os.path.exists(os.path.dirname(dirname)):
+          dirname = os.path.dirname(dirname)
+        raise InvalidValueError('Directory {} does not exist'.format(dirname))
       try:
         has_write_access = files.HasWriteAccessInDir(dirname)
       except ValueError as e:  # dirname is not a directory

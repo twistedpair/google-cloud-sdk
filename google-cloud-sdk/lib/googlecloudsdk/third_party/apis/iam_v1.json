@@ -140,11 +140,11 @@
     },
     "ServiceAccount": {
       "id": "ServiceAccount",
-      "description": "A service account in the Identity and Access Management API.\n\nTo create a service account, specify the `project_id` and the `account_id`\nfor the account.  The `account_id` is unique within the project, and is used\nto generate the service account email address and a stable\n`unique_id`.\n\nIf the account already exists, the account's resource name is returned\nin util::Status's ResourceInfo.resource_name in the format of\nprojects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}. The caller can\nuse the name in other methods to access the account.\n\nAll other methods can identify the service account using the format\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
+      "description": "A service account in the Identity and Access Management API.\n\nTo create a service account, specify the `project_id` and the `account_id`\nfor the account.  The `account_id` is unique within the project, and is used\nto generate the service account email address and a stable\n`unique_id`.\n\nIf the account already exists, the account's resource name is returned\nin util::Status's ResourceInfo.resource_name in the format of\nprojects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}. The caller can\nuse the name in other methods to access the account.\n\nAll other methods can identify the service account using the format\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}`.\n\nRequests using `-` as a wildcard for the project will infer the project\nfrom the `account` and the `account` value can be the `email` address or\nthe `unique_id` of the service account.\n\nIn responses the resource name will always be in the format\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}`.",
+          "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\n\nRequests using `-` as a wildcard for the `PROJECT_ID` will infer the\nproject from the `account` and the `ACCOUNT` value can be the `email`\naddress or the `unique_id` of the service account.\n\nIn responses the resource name will always be in the format\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.",
           "type": "string"
         },
         "projectId": {
@@ -216,7 +216,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the service account key in the following format\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}\/keys\/{key}`.",
+          "description": "The resource name of the service account key in the following format\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/keys\/{key}`.",
           "type": "string"
         },
         "privateKeyType": {
@@ -811,7 +811,7 @@
               "description": "Gets a ServiceAccount.",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
@@ -864,7 +864,7 @@
               "description": "Updates a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` .\nThe `etag` is mandatory.",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}`.\n\nRequests using `-` as a wildcard for the project will infer the project\nfrom the `account` and the `account` value can be the `email` address or\nthe `unique_id` of the service account.\n\nIn responses the resource name will always be in the format\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}`.",
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\n\nRequests using `-` as a wildcard for the `PROJECT_ID` will infer the\nproject from the `account` and the `ACCOUNT` value can be the `email`\naddress or the `unique_id` of the service account.\n\nIn responses the resource name will always be in the format\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
@@ -892,7 +892,7 @@
               "description": "Deletes a ServiceAccount.",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
@@ -917,7 +917,7 @@
               "description": "Signs a blob using a service account's system-managed private key.",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
@@ -945,7 +945,7 @@
               "description": "Signs a JWT using a service account's system-managed private key.\n\nIf no expiry time (`exp`) is provided in the `SignJwtRequest`, IAM sets an\nan expiry time of one hour by default. If you request an expiry time of\nmore than one hour, the request will fail.",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
@@ -1059,7 +1059,7 @@
                   "description": "Lists ServiceAccountKeys.",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}`.\n\nUsing `-` as a wildcard for the project, will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
+                      "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\n\nUsing `-` as a wildcard for the `PROJECT_ID`, will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
@@ -1095,7 +1095,7 @@
                   "description": "Gets the ServiceAccountKey\nby key id.",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the service account key in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}\/keys\/{key}`.\n\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
+                      "description": "The resource name of the service account key in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/keys\/{key}`.\n\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/keys\/[^\/]+$",
@@ -1130,7 +1130,7 @@
                   "description": "Creates a ServiceAccountKey\nand returns it.",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
+                      "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
@@ -1158,7 +1158,7 @@
                   "description": "Deletes a ServiceAccountKey.",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the service account key in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{SERVICE_ACCOUNT_EMAIL}\/keys\/{key}`.\nUsing `-` as a wildcard for the project will infer the project from\nthe account. The `account` value can be the `email` address or the\n`unique_id` of the service account.",
+                      "description": "The resource name of the service account key in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/keys\/{key}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/keys\/[^\/]+$",

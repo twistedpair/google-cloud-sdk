@@ -28,6 +28,70 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
+_JOB_SUMMARY = """\
+table[box,title="Job Overview"](
+  jobId,
+  createTime,
+  startTime,
+  endTime,
+  state,
+  {INPUT},
+  {OUTPUT})
+"""
+
+_JOB_TRAIN_INPUT_SUMMARY_FORMAT = """\
+trainingInput:format='table[box,title="Training Input Summary"](
+  runtimeVersion:optional,
+  region,
+  scaleTier:optional,
+  pythonModule,
+  parameterServerType:optional,
+  parameterServerCount:optional,
+  masterType:optional,
+  workerType:optional,
+  workerCount:optional,
+  jobDir:optional
+)'
+"""
+
+_JOB_TRAIN_OUTPUT_SUMMARY_FORMAT = """\
+trainingOutput:format='table[box,title="Training Output Summary"](
+  completedTrialCount:optional:label=TRIALS,
+  consumedMLUnits:label=ML_UNITS)'
+  {HP_OUTPUT}
+"""
+
+_JOB_TRAIN_OUTPUT_TRIALS_FORMAT = """\
+,trainingOutput.trials.sort(trialId):format='table[box,title="Training Output Trials"](
+  trialId:label=TRIAL,
+  finalMetric.objectiveValue:label=OBJECTIVE_VALUE,
+  finalMetric.trainingStep:label=STEP,
+  hyperparameters.list(separator="\n"))'
+"""
+
+_JOB_PREDICT_INPUT_SUMMARY_FORMAT = """\
+predictionInput:format='table[box,title="Predict Input Summary"](
+  runtimeVersion:optional,
+  region,
+  model.basename():optional,
+  versionName.basename(),
+  outputPath,
+  uri:optional,
+  dataFormat,
+  batchSize:optional
+)'
+"""
+
+_JOB_PREDICT_OUTPUT_SUMMARY_FORMAT = """\
+predictionOutput:format='table[box,title="Predict Output Summary"](
+  errorCount,
+  nodeHours,
+  outputPath,
+  predictionCount
+  )'
+"""
+
+
 class ArgumentError(exceptions.Error):
   pass
 
@@ -253,3 +317,52 @@ STAGING_BUCKET = base.Argument(
         include local paths) and no other flags implicitly specify an upload
         path.
         """)
+
+
+def GetSummarizeFlag():
+  return base.Argument(
+      '--summarize',
+      action='store_true',
+      required=False,
+      help="""\
+      Summarize job output in a set of human readable read tables instead of
+      rendering the entire resource as json or yaml. The tables currently rendered
+      are:
+
+      * `Job Overview`: Overview of job including, jobId, status and create time.
+      * `Training Input Summary`: Summary of input for a training job including
+         region, main training python module and scale tier.
+      * `Training Output Summary`: Summary of output for a training job including
+         the amount of ML units consumed by the job.
+      * `Training Output Trials`: Summary of hyper parameter trials run for a
+         hyperparameter tuning training job.
+      * `Predict Input Summary`: Summary of input for a prediction job including
+         region, model verion and output path.
+      * `Predict Output Summary`: Summary of output for a prediction job. Includes
+         prediction count and output path.
+
+      This flag overrides the `--format` flag. If
+      both are present on the command line, a warning is displayed.
+      """)
+
+
+def GetStandardTrainingJobSummary():
+  """Get tabular format for standard ml training job."""
+  return _JOB_SUMMARY.format(
+      INPUT=_JOB_TRAIN_INPUT_SUMMARY_FORMAT,
+      OUTPUT=_JOB_TRAIN_OUTPUT_SUMMARY_FORMAT.format(HP_OUTPUT=''))
+
+
+def GetHPTrainingJobSummary():
+  """Get tablular format to HyperParameter tuning ml job."""
+  return _JOB_SUMMARY.format(
+      INPUT=_JOB_PREDICT_INPUT_SUMMARY_FORMAT,
+      OUTPUT=_JOB_TRAIN_OUTPUT_SUMMARY_FORMAT.format(
+          HP_OUTPUT=_JOB_TRAIN_OUTPUT_TRIALS_FORMAT))
+
+
+def GetPredictJobSummary():
+  """Get table format for ml prediction job."""
+  return _JOB_SUMMARY.format(
+      INPUT=_JOB_PREDICT_INPUT_SUMMARY_FORMAT,
+      OUTPUT=_JOB_PREDICT_OUTPUT_SUMMARY_FORMAT)

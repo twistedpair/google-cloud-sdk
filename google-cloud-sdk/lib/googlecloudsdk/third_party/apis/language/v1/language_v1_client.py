@@ -74,6 +74,33 @@ other properties.
         supports_download=False,
     )
 
+    def AnalyzeEntitySentiment(self, request, global_params=None):
+      """Finds entities, similar to AnalyzeEntities in the text and analyzes.
+sentiment associated with each entity and its mentions.
+
+      Args:
+        request: (AnalyzeEntitySentimentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnalyzeEntitySentimentResponse) The response message.
+      """
+      config = self.GetMethodConfig('AnalyzeEntitySentiment')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AnalyzeEntitySentiment.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'language.documents.analyzeEntitySentiment',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/documents:analyzeEntitySentiment',
+        request_field='<request>',
+        request_type_name=u'AnalyzeEntitySentimentRequest',
+        response_type_name=u'AnalyzeEntitySentimentResponse',
+        supports_download=False,
+    )
+
     def AnalyzeSentiment(self, request, global_params=None):
       """Analyzes the sentiment of the provided text.
 

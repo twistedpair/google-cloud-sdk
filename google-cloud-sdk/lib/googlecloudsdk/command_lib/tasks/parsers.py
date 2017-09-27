@@ -48,6 +48,23 @@ def ParseQueue(queue):
   return queue_ref
 
 
+def ParseTask(task, queue):
+  """Parses an id or uri for a task."""
+  task_ref = None
+  try:
+    task_ref = resources.REGISTRY.Parse(task,
+                                        collection=constants.TASKS_COLLECTION,
+                                        params={'queuesId': queue})
+  except resources.RequiredFieldOmittedException:
+    location_ref = ParseLocation(app.ResolveAppLocation())
+    task_ref = resources.REGISTRY.Parse(
+        task, params={'projectsId': location_ref.projectsId,
+                      'locationsId': location_ref.locationsId,
+                      'queuesId': queue},
+        collection=constants.TASKS_COLLECTION)
+  return task_ref
+
+
 def ExtractLocationRefFromQueueRef(queue_ref):
   params = queue_ref.AsDict()
   del params['queuesId']
@@ -137,15 +154,17 @@ def AddQueueResourceArg(parser, verb):
       parser)
 
 
-def AddQueueResourceFlag(parser, description='The queue the tasks belong to.',
-                         required=True):
+def AddQueueResourceFlag(parser, required=True, plural_tasks=False):
+  description = ('The queue the tasks belong to.' if plural_tasks else
+                 'The queue the task belongs to.')
   argument = base.Argument('--queue', help=description, required=required)
   argument.AddToParser(parser)
 
 
-def AddTaskResourceArg(parser, verb):
+def AddTaskResourceArgs(parser, verb):
   base.Argument('task', help='The task {}.\n\n'.format(verb)).AddToParser(
       parser)
+  AddQueueResourceFlag(parser, required=False)
 
 
 def AddIdArg(parser, noun, verb, metavar=None):
