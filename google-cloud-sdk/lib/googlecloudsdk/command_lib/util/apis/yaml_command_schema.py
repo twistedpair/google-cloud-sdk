@@ -61,12 +61,13 @@ class CommandType(Enum):
     default_method: str, The name of the API method to use by default for this
       type of command.
   """
-  DESCRIBE = ('get')
-  LIST = ('list')
-  DELETE = ('delete')
+  DESCRIBE = 'get'
+  LIST = 'list'
+  DELETE = 'delete'
+  CREATE = 'create'
   # Generic commands are those that don't extend a specific calliope command
   # base class.
-  GENERIC = (None)
+  GENERIC = None
 
   def __init__(self, default_method):
     self.default_method = default_method
@@ -212,7 +213,7 @@ class Argument(object):
   def __init__(self, api_field, arg_name, help_text, metavar=None,
                completer=None, is_positional=False, type=None, choices=None,
                default=None, processor=None, required=False, hidden=False,
-               action=None, group=None):
+               action=None, group=None, generate=True):
     self.api_field = api_field
     self.arg_name = arg_name
     self.help_text = help_text
@@ -227,6 +228,7 @@ class Argument(object):
     self.hidden = hidden
     self.action = action
     self.group = group
+    self.generate = generate
 
 
 class Input(object):

@@ -24,11 +24,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_printer
 
 
-ERROR_FORMAT_STRING = ('Error Response:{status_code? [{?}]}'
-                       '{status_message? {?}}{url?\n{?}}'
-                       '{details?\n\nDetails:\n{?}}')
-
-
 def ExtractErrorMessage(error_details):
   """Extracts error details from an apitools_exceptions.HttpError.
 
@@ -63,7 +58,7 @@ def MakeRequest(service_method, request_message):
     return service_method(request_message)
   except apitools_exceptions.HttpError as error:
     log.debug(error)
-    exc = http_exception.HttpException(error, error_format=ERROR_FORMAT_STRING)
+    exc = http_exception.HttpException(error)
     # Make it easier to switch on certain common error codes.
     err = api_lib_exceptions.STATUS_CODE_TO_ERROR.get(exc.payload.status_code)
     if err:

@@ -26,10 +26,9 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_pager
+from googlecloudsdk.core.console import prompt_completer
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
-
-FLOAT_COMPARE_EPSILON = 1e-6
 
 
 class Error(exceptions.Error):
@@ -236,22 +235,25 @@ def PromptContinue(message=None, prompt_string=None, default=True,
   return answer
 
 
-def PromptResponse(message):
+def PromptResponse(message=None, choices=None):
   """Prompts the user for a string.
 
   Args:
     message: str, The prompt to print before the question.
+    choices: callable or list, A callable with no arguments that returns the
+      list of all choices, or the list of choices.
 
   Returns:
     str, The string entered by the user, or None if prompts are disabled.
   """
   if properties.VALUES.core.disable_prompts.GetBool():
     return None
-  response = _RawInput(message)
-  return response
+  if choices and IsInteractive(error=True):
+    return prompt_completer.PromptCompleter(message, choices=choices).Input()
+  return _RawInput(message)
 
 
-def PromptWithDefault(message, default=None):
+def PromptWithDefault(message=None, default=None, choices=None):
   """Prompts the user for a string, allowing a default.
 
   Unlike PromptResponse, this also appends a ':  ' to the prompt.  If 'default'
@@ -265,21 +267,21 @@ def PromptWithDefault(message, default=None):
   Args:
     message: str, The prompt to print before the question.
     default: str, The default value (if any).
+    choices: callable or list, A callable with no arguments that returns the
+      list of all choices, or the list of choices.
 
   Returns:
     str, The string entered by the user, or the default if no value was
     entered or prompts are disabled.
   """
-  if properties.VALUES.core.disable_prompts.GetBool():
-    return default
+  message = message or ''
   if default:
-    message += ' ({default}):  '.format(default=default)
+    if message:
+      message += ' '
+    message += '({default}):  '.format(default=default)
   else:
     message += ':  '
-  response = _RawInput(message)
-  if not response:
-    response = default
-  return response
+  return PromptResponse(message, choices=choices) or default
 
 
 def _ParseAnswer(answer, options, allow_freeform):

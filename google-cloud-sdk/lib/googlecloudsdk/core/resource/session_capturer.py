@@ -19,14 +19,35 @@ import abc
 import copy
 import io
 import json
+import random
 import StringIO
 import sys
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_attr_os
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import yaml_printer
 from googlecloudsdk.core.util import files
+
+
+class _Mock(object):
+  """A class to mock and unmock a function."""
+
+  def __init__(self, target, function, new=None, return_value=None):
+    if new is None:
+      new = lambda *args, **kwargs: return_value
+    self._target = target
+    self._function = function
+    self._real_function = getattr(target, function)
+    self._new = new
+
+  def Start(self):
+    setattr(self._target, self._function, self._new)
+
+  def Stop(self):
+    setattr(self._target, self._function, self._real_function)
 
 
 class _StreamCapturerBase(io.IOBase):
@@ -87,10 +108,14 @@ class FileIoCapturerBase(object):
     self._private_outputs = []
     self._real_open = __builtin__.open
     self._real_private = files.OpenForWritingPrivate
+    self._mocks = (
+        _Mock(__builtin__, 'open', new=self.Open),
+        _Mock(files, 'OpenForWritingPrivate', new=self.OpenForWritingPrivate),
+    )
 
   def Mock(self):
-    __builtin__.open = self.Open
-    files.OpenForWritingPrivate = self.OpenForWritingPrivate
+    for m in self._mocks:
+      m.Start()
 
   @abc.abstractmethod
   def Open(self, name, mode='r', buffering=-1):
@@ -101,8 +126,8 @@ class FileIoCapturerBase(object):
     pass
 
   def Unmock(self):
-    __builtin__.open = self._real_open
-    files.OpenForWritingPrivate = self._real_private
+    for m in self._mocks:
+      m.Stop()
 
   def GetOutputs(self):
     return self._GetResult(self._outputs)
@@ -164,24 +189,6 @@ class FileIoCapturer(FileIoCapturerBase):
     return self._GetResult(self._inputs)
 
 
-class _Mock(object):
-  """A class to mock and unmock a function."""
-
-  def __init__(self, target, function, new=None, return_value=None):
-    if new is None:
-      new = lambda *args, **kwargs: return_value
-    self._target = target
-    self._function = function
-    self._real_function = getattr(target, function)
-    self._new = new
-
-  def Start(self):
-    setattr(self._target, self._function, self._new)
-
-  def Stop(self):
-    setattr(self._target, self._function, self._real_function)
-
-
 class SessionDeterminer(object):
   """A class to mock several things that may make session undetermined as is."""
 
@@ -205,6 +212,65 @@ class SessionDeterminer(object):
     for m in cls._mocks:
       m.Stop()
     cls._mocks = []
+
+
+class _StateMock(object):
+  """A class to represent a simple mock."""
+  __metaclass__ = abc.ABCMeta
+
+  def __init__(self, default_value):
+    self.default_value = default_value
+
+  @abc.abstractmethod
+  def Capture(self):
+    pass
+
+  @abc.abstractmethod
+  def Mock(self, test, value):
+    pass
+
+
+class _FunctionStateMock(_StateMock):
+  """A class to mock a call to some function."""
+
+  def __init__(self, target, func, default_value):
+    super(_FunctionStateMock, self).__init__(default_value)
+    self._func_to_call = getattr(target, func)  # pylint: disable=invalid-name
+    self._target = target
+    self._func = func
+
+  def Capture(self):
+    return self._func_to_call()
+
+  def Mock(self, test, value):
+    test.StartObjectPatch(self._target, self._func, return_value=value)
+
+
+class _RandomStateMock(_StateMock):
+  """A class to mock random."""
+
+  def __init__(self):
+    super(_RandomStateMock, self).__init__(0)
+
+  def Capture(self):
+    # Create a new unique random seed: the state is different each run and
+    # hashes will be different with high probability
+    random_seed = hash(random.getstate())
+    random.seed(random_seed)
+    return random_seed
+
+  def Mock(self, unused_test, value):
+    random.seed(value)
+
+
+class classproperty(object):  # pylint: disable=invalid-name
+  """Decorator that can be used to make @classmethod like @properties."""
+
+  def __init__(self, property_fn):
+    self.fget = property_fn
+
+  def __get__(self, unused_instance, typ):
+    return self.fget(typ)
 
 
 class SessionCapturer(object):
@@ -264,19 +330,26 @@ class SessionCapturer(object):
         }
     })
 
-  DEFAULT_STATE = {
-      'interactive_console': False,
-      'random_seed': 0,
-      'term_size': (80, 24),
-  }
+  _STATE_MOCKS = None
 
-  def CaptureState(self, **kwargs):
+  @classproperty
+  def STATE_MOCKS(cls):  # pylint: disable=invalid-name
+    if cls._STATE_MOCKS is None:
+      cls._STATE_MOCKS = {
+          'interactive_console': _FunctionStateMock(
+              console_io, 'IsInteractive', False),
+          'random_seed': _RandomStateMock(),
+          'term_size': _FunctionStateMock(
+              console_attr_os, 'GetTermSize', (80, 24))
+      }
+    return cls._STATE_MOCKS
+
+  def CaptureState(self):
     state = {}
-    for k, v in kwargs.iteritems():
-      if k not in SessionCapturer.DEFAULT_STATE:
-        raise Exception('Unknown state arg {} to capture'.format(k))
-      if v != SessionCapturer.DEFAULT_STATE[k]:
-        state[k] = v
+    for k, v in self.STATE_MOCKS.iteritems():
+      result = v.Capture()
+      if result != v.default_value:
+        state[k] = result
     self._records.append({
         'state': state
     })
@@ -405,6 +478,6 @@ class SessionCapturer(object):
   def _KeepHeader(self, header):
     if header.startswith('x-google'):
       return False
-    if header in ['user-agent', 'Authorization']:
+    if header in ('user-agent', 'Authorization', 'content-length',):
       return False
     return True

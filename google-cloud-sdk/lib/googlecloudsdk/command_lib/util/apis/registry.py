@@ -131,13 +131,44 @@ class APIMethod(object):
       self.detailed_path = self.path
       self.detailed_params = self.params
 
-    self.request_params_match_resource = (
-        self.detailed_params == self.collection.detailed_params)
-
     self.http_method = method_config.http_method
     self.request_field = method_config.request_field
     self.request_type = method_config.request_type_name
     self.response_type = method_config.response_type_name
+
+    self._request_collection = self._RequestCollection()
+
+  @property
+  def resource_argument_collection(self):
+    """Gets the collection that should be used to represent the resource.
+
+    Most of the time this is the same as request_collection because all methods
+    in a collection operate on the same resource and so the API method takes
+    the same parameters that make up the resource.
+
+    One exception is List methods where the API parameters are for the parent
+    collection. Because people don't specify the resource directly for list
+    commands this also returns the parent collection for parsing purposes.
+
+    The other exception is Create methods. They reference the parent collection
+    list Like, but the difference is that we *do* want to specify the actual
+    resource on the command line, so the original resource collection is
+    returned here instead of the one that matches the API methods. When
+    generating the request, you must figure out how to generate the message
+    correctly from the parsed resource (as you cannot simply pass the reference
+    to the API).
+
+    Returns:
+      APICollection: The collection.
+    """
+    if self.IsList():
+      return self._request_collection
+    return self.collection
+
+  @property
+  def request_collection(self):
+    """Gets the API collection that matches the parameters of the API method."""
+    return self._request_collection
 
   def GetRequestType(self):
     """Gets the apitools request class for this method."""
@@ -185,8 +216,8 @@ class APIMethod(object):
         return found[0].name
     return None
 
-  def RequestCollection(self):
-    """Gets the collection that should be used to parse resources for this call.
+  def _RequestCollection(self):
+    """Gets the collection that matches the API parameters of this method.
 
     Methods apply to elements of a collection. The resource argument is always
     of the type of that collection.  List is an exception where you are listing
@@ -198,7 +229,7 @@ class APIMethod(object):
       APICollection, The collection to use or None if no parent collection could
       be found.
     """
-    if self.request_params_match_resource:
+    if self.detailed_params == self.collection.detailed_params:
       return self.collection
     collections = GetAPICollections(
         self.collection.api_name, self.collection.api_version)
@@ -206,19 +237,6 @@ class APIMethod(object):
       if self.detailed_params == c.detailed_params:
         return c
     return None
-
-  def ResourceFieldNames(self):
-    """Gets the field names that are part of the resource that is parsed.
-
-    This is the detailed parameters of RequestCollection()
-
-    Returns:
-      [str], The field names.
-    """
-    request_collection = self.RequestCollection()
-    if request_collection:
-      return request_collection.detailed_params
-    return []
 
   def _RequestFieldNames(self):
     """Gets the fields that are actually a part of the request message.

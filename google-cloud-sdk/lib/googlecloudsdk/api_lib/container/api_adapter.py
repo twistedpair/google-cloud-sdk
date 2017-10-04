@@ -236,6 +236,7 @@ class CreateClusterOptions(object):
                services_secondary_range_name=None,
                accelerators=None,
                enable_audit_logging=None,
+               enable_binauthz=None,
                min_cpu_platform=None,
                workload_metadata_from_node=None,
                maintenance_window=None):
@@ -284,6 +285,7 @@ class CreateClusterOptions(object):
     self.services_secondary_range_name = services_secondary_range_name
     self.accelerators = accelerators
     self.enable_audit_logging = enable_audit_logging
+    self.enable_binauthz = enable_binauthz
     self.min_cpu_platform = min_cpu_platform
     self.workload_metadata_from_node = workload_metadata_from_node
     self.maintenance_window = maintenance_window
@@ -760,6 +762,10 @@ class APIAdapter(object):
     if options.enable_audit_logging is not None:
       cluster.auditConfig = self.messages.AuditConfig(
           enabled=options.enable_audit_logging)
+
+    if options.enable_binauthz is not None:
+      cluster.binaryAuthorization = self.messages.BinaryAuthorization(
+          enabled=options.enable_binauthz)
 
     if options.maintenance_window is not None:
       policy = self.messages.MaintenancePolicy(

@@ -50,6 +50,15 @@ class Collections(enum.Enum):
       },
       [u'name']
   )
+  APPS_FIREWALL_INGRESSRULES = (
+      'apps.firewall.ingressRules',
+      '{+name}',
+      {
+          '':
+              'apps/{appsId}/firewall/ingressRules/{ingressRulesId}',
+      },
+      [u'name']
+  )
   APPS_LOCATIONS = (
       'apps.locations',
       '{+name}',

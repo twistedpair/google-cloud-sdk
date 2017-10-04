@@ -19,6 +19,7 @@ import re
 from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_property
 
 
@@ -61,9 +62,19 @@ def SetFieldInMessage(message, field_path, value):
   setattr(message, fields[-1], value)
 
 
-def GetFromNamespace(namespace, arg_name):
+# TODO(b/64147277): Pass this down from the generator, don't hard code.
+DEFAULT_PARAMS = {'project': properties.VALUES.core.project.Get,
+                  'projectId': properties.VALUES.core.project.Get,
+                  'projectsId': properties.VALUES.core.project.Get,
+                 }
+
+
+def GetFromNamespace(namespace, arg_name, use_defaults=False):
   """Gets the given argument from the namespace."""
-  return getattr(namespace, arg_name.replace('-', '_'), None)
+  value = getattr(namespace, arg_name.replace('-', '_'), None)
+  if not value and use_defaults:
+    value = DEFAULT_PARAMS.get(arg_name, lambda: None)()
+  return value
 
 
 def Limit(method, namespace):

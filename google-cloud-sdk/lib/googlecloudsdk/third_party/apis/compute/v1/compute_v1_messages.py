@@ -1720,13 +1720,13 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
 
   Fields:
     metric: The identifier (type) of the Stackdriver Monitoring metric. The
-      metric cannot have negative values and should be a utilization metric,
-      which means that the number of virtual machines handling requests should
-      increase or decrease proportionally to the metric.  The metric must have
-      a value type of INT64 or DOUBLE.
+      metric cannot have negative values.  The metric must have a value type
+      of INT64 or DOUBLE.
     utilizationTarget: The target value of the metric that autoscaler should
-      maintain. This must be a positive value.  For example, a good metric to
-      use as a utilization_target is
+      maintain. This must be a positive value. A utilization metric scales
+      number of virtual machines handling requests to increase or decrease
+      proportionally to the metric.  For example, a good metric to use as a
+      utilization_target is
       compute.googleapis.com/instance/network/received_bytes_count. The
       autoscaler will work to keep this value constant for each of the
       instances.
@@ -6806,6 +6806,34 @@ class ComputeInstancesResetRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstancesSetDeletionProtectionRequest(_messages.Message):
+  """A ComputeInstancesSetDeletionProtectionRequest object.
+
+  Fields:
+    deletionProtection: Whether the resource should be protected against
+      deletion.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  deletionProtection = _messages.BooleanField(1, default=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  resource = _messages.StringField(4, required=True)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
@@ -12593,10 +12621,11 @@ class Firewall(_messages.Message):
       time as targetTags or sourceTags. If neither targetServiceAccounts nor
       targetTags are specified, the firewall rule applies to all instances on
       the specified network.
-    targetTags: A list of instance tags indicating sets of instances located
-      in the network that may make network connections as specified in
-      allowed[]. If no targetTags are specified, the firewall rule applies to
-      all instances on the specified network.
+    targetTags: A list of tags that controls which instances the firewall rule
+      applies to. If targetTags are specified, then the firewall rule applies
+      only to instances in the VPC network that have one of those tags. If no
+      targetTags are specified, the firewall rule applies to all instances on
+      the specified network.
   """
 
   class DirectionValueValuesEnum(_messages.Enum):
@@ -12809,17 +12838,25 @@ class ForwardingRule(_messages.Message):
 
   Fields:
     IPAddress: The IP address that this forwarding rule is serving on behalf
-      of.  For global forwarding rules, the address must be a global IP. For
-      regional forwarding rules, the address must live in the same region as
-      the forwarding rule. By default, this field is empty and an ephemeral
-      IPv4 address from the same scope (global or regional) will be assigned.
-      A regional forwarding rule supports IPv4 only. A global forwarding rule
-      supports either IPv4 or IPv6.  When the load balancing scheme is
-      INTERNAL, this can only be an RFC 1918 IP address belonging to the
-      network/subnetwork configured for the forwarding rule. A reserved
-      address cannot be used. If the field is empty, the IP address will be
-      automatically allocated from the internal IP range of the subnetwork or
-      network configured for this forwarding rule.
+      of.  Addresses are restricted based on the forwarding rule's load
+      balancing scheme (EXTERNAL or INTERNAL) and scope (global or regional).
+      When the load balancing scheme is EXTERNAL, for global forwarding rules,
+      the address must be a global IP, and for regional forwarding rules, the
+      address must live in the same region as the forwarding rule. If this
+      field is empty, an ephemeral IPv4 address from the same scope (global or
+      regional) will be assigned. A regional forwarding rule supports IPv4
+      only. A global forwarding rule supports either IPv4 or IPv6.  When the
+      load balancing scheme is INTERNAL, this can only be an RFC 1918 IP
+      address belonging to the network/subnet configured for the forwarding
+      rule. By default, if this field is empty, an ephemeral internal IP
+      address will be automatically allocated from the IP range of the subnet
+      or network configured for this forwarding rule.  An address can be
+      specified either by a literal IP address or a URL reference to an
+      existing Address resource. The following examples are all valid:   -
+      100.1.2.3  - https://www.googleapis.com/compute/v1/projects/project/regi
+      ons/region/addresses/address  -
+      projects/project/regions/region/addresses/address  -
+      regions/region/addresses/address  - global/addresses/address  - address
     IPProtocol: The IP protocol to which this rule applies. Valid options are
       TCP, UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is
       INTERNAL, only TCP and UDP are valid.
@@ -14467,6 +14504,8 @@ class Instance(_messages.Message):
     cpuPlatform: [Output Only] The CPU platform used by this instance.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    deletionProtection: Whether the resource should be protected against
+      deletion.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     disks: Array of disks associated with this instance. Persistent disks must
@@ -14586,26 +14625,27 @@ class Instance(_messages.Message):
   canIpForward = _messages.BooleanField(1)
   cpuPlatform = _messages.StringField(2)
   creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  disks = _messages.MessageField('AttachedDisk', 5, repeated=True)
-  guestAccelerators = _messages.MessageField('AcceleratorConfig', 6, repeated=True)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default=u'compute#instance')
-  labelFingerprint = _messages.BytesField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  machineType = _messages.StringField(11)
-  metadata = _messages.MessageField('Metadata', 12)
-  minCpuPlatform = _messages.StringField(13)
-  name = _messages.StringField(14)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 15, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 16)
-  selfLink = _messages.StringField(17)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 18, repeated=True)
-  startRestricted = _messages.BooleanField(19)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
-  statusMessage = _messages.StringField(21)
-  tags = _messages.MessageField('Tags', 22)
-  zone = _messages.StringField(23)
+  deletionProtection = _messages.BooleanField(4)
+  description = _messages.StringField(5)
+  disks = _messages.MessageField('AttachedDisk', 6, repeated=True)
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 7, repeated=True)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default=u'compute#instance')
+  labelFingerprint = _messages.BytesField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  machineType = _messages.StringField(12)
+  metadata = _messages.MessageField('Metadata', 13)
+  minCpuPlatform = _messages.StringField(14)
+  name = _messages.StringField(15)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 16, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 17)
+  selfLink = _messages.StringField(18)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 19, repeated=True)
+  startRestricted = _messages.BooleanField(20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  statusMessage = _messages.StringField(22)
+  tags = _messages.MessageField('Tags', 23)
+  zone = _messages.StringField(24)
 
 
 class InstanceAggregatedList(_messages.Message):

@@ -91,34 +91,47 @@ class PropertyFallthrough(Fallthrough):
 
   @property
   def hint(self):
-    return 'Set the property [{}]'.format(self.property)
+    hint = 'Set the property [{}]'.format(self.property)
+    # Special messaging for the project property, which can be modified by the
+    # global --project flag.
+    if self.property == properties.VALUES.core.project:
+      hint += ' or provide the flag [--project] at the command line'
+    return hint
+
+  def __eq__(self, other):
+    if not isinstance(other, self.__class__):
+      return False
+    return other.property == self.property
 
 
 class ArgFallthrough(Fallthrough):
   """Gets an attribute from the argparse parsed values for that arg."""
 
-  def __init__(self, arg_name, arg_values):
+  def __init__(self, arg_name, arg_value):
     """Initializes a fallthrough for the argument associated with the attribute.
 
     Args:
       arg_name: str, the name of the flag or positional.
-      arg_values: [str], a list of parsed values (usually string, for resource
-        argument flags) provided by argparse.
+      arg_value: a parsed value (usually string, for resource argument flags)
+        provided by argparse.
     """
     self.arg_name = arg_name
-    self.arg_values = arg_values
+    self.arg_value = arg_value
 
   def GetValue(self):
-    # Argparse gives a list of values, but there should only be one
-    # value per flag for a resource attribute.
-    assert len(self.arg_values) <= 1, 'More than one value found for attribute.'
-    if self.arg_values:
-      return self.arg_values[0]
+    if self.arg_value:
+      return self.arg_value
     raise FallthroughNotFoundError
 
   @property
   def hint(self):
     return 'Provide the flag [{}] at the command line'.format(self.arg_name)
+
+  def __eq__(self, other):
+    if not isinstance(other, self.__class__):
+      return False
+    return (other.arg_name == self.arg_name
+            and other.arg_value == self.arg_value)
 
 
 class Deps(object):
@@ -173,3 +186,9 @@ class Deps(object):
         'Failed to find attribute [{}]. The attribute can be set in the '
         'following ways: \n'
         '{}'.format(attribute, fallthroughs_summary))
+
+  def __eq__(self, other):
+    if not isinstance(other, self.__class__):
+      return False
+    return (other.attribute_to_fallthroughs_map ==
+            self.attribute_to_fallthroughs_map)

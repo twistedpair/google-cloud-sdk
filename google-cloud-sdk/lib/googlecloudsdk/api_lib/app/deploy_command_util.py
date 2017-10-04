@@ -16,7 +16,6 @@
 
 import json
 import os
-import posixpath
 import re
 import enum
 
@@ -358,6 +357,33 @@ def _GetImageName(project, service, version, gcr_domain):
               version=version)
 
 
+def _GetYamlPath(source_dir, service_path, skip_files, gen_files):
+  """Returns the yaml path, optionally updating gen_files.
+
+  Args:
+    source_dir: str, the absolute path to the root of the application directory.
+    service_path: str, the absolute path to the service YAML file
+    skip_files: appengine.api.Validation._RegexStr, the validated regex object
+      from the service info file.
+    gen_files: dict, the dict of files to generate. May be updated if a file
+      needs to be generated.
+
+  Returns:
+    str, the relative path to the service YAML file that should be used for
+      build.
+  """
+  if files.IsDirAncestorOf(source_dir, service_path):
+    rel_path = os.path.relpath(service_path, start=source_dir)
+    if not util.ShouldSkip(skip_files, rel_path):
+      return rel_path
+  yaml_contents = files.GetFileContents(service_path)
+  # Use a checksum to ensure file uniqueness, not for security reasons.
+  checksum = files.Checksum().AddContents(yaml_contents).HexDigest()
+  generated_path = '_app_{}.yaml'.format(checksum)
+  gen_files[generated_path] = yaml_contents
+  return generated_path
+
+
 def BuildAndPushDockerImage(
     project,
     service,
@@ -421,14 +447,8 @@ def BuildAndPushDockerImage(
 
   metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD_START)
   object_ref = storage_util.ObjectReference(code_bucket_ref, image.tagged_repo)
-
-  if files.IsDirAncestorOf(source_dir, service.file):
-    relative_yaml_path = os.path.relpath(service.file, source_dir)
-  else:
-    yaml_contents = files.GetFileContents(service.file)
-    checksum = files.Checksum().AddContents(yaml_contents).HexDigest()
-    relative_yaml_path = checksum + '.yaml'
-    gen_files[relative_yaml_path] = yaml_contents
+  relative_yaml_path = _GetYamlPath(source_dir, service.file,
+                                    service.parsed.skip_files, gen_files)
 
   try:
     cloud_build.UploadSource(image.dockerfile_dir, object_ref,
@@ -445,7 +465,7 @@ def BuildAndPushDockerImage(
     builder_reference = runtime_builders.FromServiceInfo(service, source_dir)
     log.info('Using runtime builder [%s]', builder_reference.build_file_uri)
     builder_reference.WarnIfDeprecated()
-    yaml_path = posixpath.join(*relative_yaml_path.split(os.sep))
+    yaml_path = util.ConvertToPosixPath(relative_yaml_path)
     build = builder_reference.LoadCloudBuild(
         {'_OUTPUT_IMAGE': image.tagged_repo,
          '_GAE_APPLICATION_YAML_PATH': yaml_path})

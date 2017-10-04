@@ -510,3 +510,49 @@ def AddProtocol(parser, default='HTTP'):
       default=default,
       type=lambda x: x.upper(),
       help='The protocol for incoming requests.')
+
+
+def AddCdnSignedUrlKeyName(parser, required=True):
+  """Adds the Cloud CDN Signed URL key name argument to the argparse."""
+  parser.add_argument(
+      '--key-name',
+      required=required,
+      help='Name of the Cloud CDN Signed URL key.')
+
+
+def AddCdnSignedUrlKeyFile(parser, required=True):
+  """Adds the Cloud CDN Signed URL key file argument to the argparse."""
+  parser.add_argument(
+      '--key-file',
+      required=required,
+      metavar='LOCAL_FILE_PATH',
+      help="""\
+      The file containing the base64 encoded 128-bit secret key for Cloud CDN
+      Signed URL. It is vital that the key is strongly random. One way to
+      generate such a key is with the following command:
+
+          head -c 16 /dev/random | base64 | tr +/ -_ > [KEY_FILE_NAME]
+
+      """)
+
+
+def AddSignedUrlCacheMaxAge(
+    parser, unspecified_help=' If unspecified, the default value is 3600s.'):
+  """Adds the Cloud CDN Signed URL cache max age argument to the argparse."""
+  parser.add_argument(
+      '--signed-url-cache-max-age',
+      type=arg_parsers.Duration(),
+      help="""\
+      The amount of time up to which the response to a signed URL request
+      will be cached in the CDN. After this time period, the Signed URL will
+      be revalidated before being served. Cloud CDN will internally act as
+      though all responses from this backend had a
+      `Cache-Control: public, max-age=[TTL]` header, regardless of any
+      existing Cache-Control header. The actual headers served in responses
+      will not be altered.{}
+
+      For example, specifying `12h` will cause the responses to signed URL
+      requests to be cached in the CDN up to 12 hours. Valid units for this flag
+      are `s` for seconds, `m` for minutes, `h` for hours, and `d` for
+      days.
+      """.format(unspecified_help))

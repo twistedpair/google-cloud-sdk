@@ -34,6 +34,8 @@ from googlecloudsdk.core.util import files as file_utils
 def CleanOldSourceInfo(function):
   function.sourceArchiveUrl = None
   function.sourceRepositoryUrl = None
+  function.sourceRepository = None
+  function.sourceUploadUrl = None
 
 
 def GetLocalPath(args):
@@ -108,6 +110,7 @@ def UploadFile(source, function_name, stage_bucket):
 
 def AddSourceToFunction(function, source_arg, include_ignored_files,
                         function_name, stage_bucket):
+  """Add sources to function."""
   CleanOldSourceInfo(function)
   if source_arg.startswith('gs://'):
     function.sourceArchiveUrl = source_arg
@@ -115,6 +118,11 @@ def AddSourceToFunction(function, source_arg, include_ignored_files,
   if source_arg.startswith('https://'):
     function.sourceRepositoryUrl = source_arg
     return
+  if not stage_bucket:
+    raise exceptions.FunctionsError(
+        'argument --stage-bucket: required when the function is deployed '
+        'from a local directory.')
+
   with file_utils.TemporaryDirectory() as tmp_dir:
     zip_file = CreateSourcesZipFile(tmp_dir, source_arg, include_ignored_files)
     function.sourceArchiveUrl = UploadFile(

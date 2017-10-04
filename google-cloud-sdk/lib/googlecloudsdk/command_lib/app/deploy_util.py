@@ -411,11 +411,20 @@ class ServiceDeployer(object):
                                          code_bucket_ref,
                                          flex_image_build_option)
 
+    extra_config_settings = None
+    if flex_image_build_option == FlexImageBuildOptions.ON_SERVER:
+      extra_config_settings = {
+          'cloud_build_timeout':
+              properties.VALUES.app.cloud_build_timeout.Get(),
+          'runtime_root':
+              properties.VALUES.app.runtime_root.Get(),
+      }
+
     # Actually create the new version of the service.
     metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)
     self.api_client.DeployService(new_version.service, new_version.id,
-                                  service_info, manifest, build,
-                                  endpoints_info)
+                                  service_info, manifest, build, endpoints_info,
+                                  extra_config_settings)
     metrics.CustomTimedEvent(metric_names.DEPLOY_API)
     message = 'Updating service [{service}]'.format(
         service=new_version.service)

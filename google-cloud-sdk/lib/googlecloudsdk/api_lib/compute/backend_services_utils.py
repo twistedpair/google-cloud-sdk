@@ -270,7 +270,11 @@ def GetCacheKeyPolicy(client, args, backend_service):
   return cache_key_policy
 
 
-def ApplyCdnPolicyArgs(client, args, backend_service, is_update=False):
+def ApplyCdnPolicyArgs(client,
+                       args,
+                       backend_service,
+                       is_update=False,
+                       apply_signed_url_cache_max_age=False):
   """Applies the CdnPolicy arguments to the specified backend service.
 
   If there are no arguments related to CdnPolicy, the backend service remains
@@ -282,10 +286,21 @@ def ApplyCdnPolicyArgs(client, args, backend_service, is_update=False):
     backend_service: The backend service object.
     is_update: True if this is called on behalf of an update command instead
     of a create command, False otherwise.
+    apply_signed_url_cache_max_age: If True, also adds the
+    signedUrlCacheMaxAgeSec parameter to the CdnPolicy if present in the input
+    arguments.
   """
+  cdn_policy_args = {}
+
   add_cache_key_policy = (HasCacheKeyPolicyArgsForUpdate(args) if is_update else
                           HasCacheKeyPolicyArgsForCreate(args))
-
   if add_cache_key_policy:
+    cdn_policy_args['cacheKeyPolicy'] = GetCacheKeyPolicy(
+        client, args, backend_service)
+  if apply_signed_url_cache_max_age and args.IsSpecified(
+      'signed_url_cache_max_age'):
+    cdn_policy_args['signedUrlCacheMaxAgeSec'] = args.signed_url_cache_max_age
+
+  if cdn_policy_args:
     backend_service.cdnPolicy = client.messages.BackendServiceCdnPolicy(
-        cacheKeyPolicy=GetCacheKeyPolicy(client, args, backend_service))
+        **cdn_policy_args)

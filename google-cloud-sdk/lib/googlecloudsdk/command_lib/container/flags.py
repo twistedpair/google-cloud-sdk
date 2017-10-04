@@ -157,6 +157,17 @@ Interactions with the Kubernetes API will be logged to Cloud Audit Logging."""
       hidden=hidden)
 
 
+def AddEnableBinAuthzFlag(parser, hidden=True):
+  """Adds a --enable-binauthz flag to parser."""
+  help_text = """Enable Binary Authorization for this cluster."""
+  parser.add_argument(
+      '--enable-binauthz',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=hidden,)
+
+
 def AddZoneFlag(parser):
   # TODO(b/33343238): Remove the short form of the zone flag.
   # TODO(b/18105938): Add zone prompting

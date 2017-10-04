@@ -16,7 +16,6 @@
 
 import argparse
 import os
-import random
 import re
 import sys
 import types
@@ -35,8 +34,6 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_attr
-from googlecloudsdk.core.console import console_attr_os
-from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import session_capturer
 from googlecloudsdk.core.util import pkg_resources
 
@@ -781,14 +778,7 @@ class CLI(object):
       if properties.VALUES.core.capture_session_file.Get() is not None:
         capturer = session_capturer.SessionCapturer()
         capturer.CaptureArgs(args)
-        # Create a new unique random seed: the state is different each run and
-        # hashes will be different with high probability
-        random_seed = hash(random.getstate())
-        random.seed(random_seed)
-        capturer.CaptureState(
-            interactive_console=console_io.IsInteractive(),
-            random_seed=random_seed,
-            term_size=console_attr_os.GetTermSize())
+        capturer.CaptureState()
         capturer.CaptureProperties(properties.VALUES.AllValues())
         session_capturer.SessionCapturer.capturer = capturer
 

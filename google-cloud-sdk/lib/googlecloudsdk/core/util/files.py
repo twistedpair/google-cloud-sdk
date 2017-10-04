@@ -345,12 +345,11 @@ def IsDirAncestorOf(ancestor_directory, path):
   path = encoding.Decode(os.path.realpath(path))
   ancestor_directory = encoding.Decode(os.path.realpath(ancestor_directory))
 
-  # This works on *nix, because os.path.splitdrive always returns '' as the
-  # first component
-  if os.path.splitdrive(path)[0] != os.path.splitdrive(ancestor_directory)[0]:
+  try:
+    rel = os.path.relpath(path, ancestor_directory)
+  except ValueError:  # On Windows, relpath raises for paths on different drives
     return False
 
-  rel = os.path.relpath(path, ancestor_directory)
   # rel can be just '..' if path is a child of ancestor_directory
   return not rel.startswith(u'..' + os.path.sep) and rel != '..'
 

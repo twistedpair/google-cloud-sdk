@@ -85,9 +85,8 @@ class ArgAdder(object):
   def AddClusterZone(self, in_instance=False):
     self.parser.add_argument(
         '--cluster-zone' if in_instance else '--zone',
-        help='ID of the zone where the cluster is located. As of this release '
-        'supported zones are: asia-east1-a, asia-east1-b, europe-west1-b, '
-        'europe-west1-c, us-central1-b, us-central1-c, us-east1-b, us-east1-c',
+        help='ID of the zone where the cluster is located. Supported zones '
+        'are listed at https://cloud.google.com/bigtable/docs/locations.',
         required=True)
     return self
 

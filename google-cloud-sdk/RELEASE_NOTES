@@ -2,6 +2,48 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 174.0.0 (2017-10-04)
+
+### Google App Engine
+
+*   App Engine components updated to 1.9.61. Please visit the following release
+    notes for details:
+    https://cloud.google.com/appengine/docs/python/release-notes
+*   The App Engine flexible environment now defaults to Python 3.6 when Python
+    3 is requested. To revert to Python 3.5, specify `python_version: 3.5` in
+    the `runtime_config` element of your
+    [`app.yaml` configuration file](https://cloud.google.com/appengine/docs/flexible/python/configuring-your-app-with-app-yaml)
+*   The `aspnetcore` runtime is now available using `gcloud app deploy` in the
+    GA track. It remains available via the beta track as well. See
+    https://cloud.google.com/appengine/docs/flexible/dotnet/ for more
+    details.
+*   Auto-generated app.yaml for Go under Flexible no longer contains
+    `api_version` (which is for the Standard only).
+
+### Google Compute Engine
+
+*   Adding/Removing IP alias ranges are now supported in `gcloud beta compute
+    instances network-interfaces update`. Subnetwork secondary ranges can be
+    modified using `gcloud beta compute networks subnets update`.
+*   Add `gcloud alpha compute sign-url` for generating Cloud CDN Signed URLs.
+*   Add *--signed-url-cache-max-age* flag to the following alpha commands
+    related to Cloud CDN Signed URL:
+    *   `gcloud alpha compute backend-buckets create`
+    *   `gcloud alpha compute backend-buckets update`
+    *   `gcloud alpha compute backend-services create
+    *   `gcloud alpha compute backend-services update`
+*   Add alpha commands for adding and deleting Cloud CDN Signed URL keys to
+    backend buckets and services:
+    *   `gcloud alpha compute backend-buckets add-signed-url-key`
+    *   `gcloud alpha compute backend-buckets delete-signed-url-key`
+    *   `gcloud alpha compute backend-services add-signed-url-key`
+    *   `gcloud alpha compute backend-services delete-signed-url-key`
+
+### Google Cloud Dataproc
+
+*   Added `gcloud beta dataproc workflow-templates` group for managing Dataproc
+    Workflow Templates.
+
 ## 173.0.0 (2017-09-27)
 
 ### Google App Engine

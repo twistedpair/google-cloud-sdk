@@ -288,6 +288,16 @@ def PositionalDisplayString(arg, markdown=False):
   return WrapMessageInNargs(msg, arg.nargs)
 
 
+def _QuoteValue(value):
+  """Returns value quoted, with preference for "..."."""
+  quoted = repr(value)
+  if quoted.startswith('u'):
+    quoted = quoted[1:]
+  if quoted.startswith("'") and '"' not in value:
+    quoted = '"' + quoted[1:-1] + '"'
+  return quoted
+
+
 def FlagDisplayString(arg, brief=False, markdown=False, inverted=False):
   """Create the display help string for a flag arg.
 
@@ -340,7 +350,7 @@ def FlagDisplayString(arg, brief=False, markdown=False, inverted=False):
                             for k, v in sorted(arg.default.iteritems())])
       else:
         default = arg.default
-      display_string += '; default="{0}"'.format(default)
+      display_string += '; default={0}'.format(_QuoteValue(default))
   return display_string
 
 

@@ -37,10 +37,18 @@ _SPIN_MARKS = [
 class ProgressTracker(object):
   """A context manager for telling the user about long-running progress."""
 
-  def __init__(self, message, autotick=True, detail_message_callback=None,
+  def __init__(self, message=None, autotick=True, detail_message_callback=None,
                tick_delay=1):
-    self._message = message
-    self._prefix = message + '...'
+    if message is None:
+      self._spinner_only = True
+      self._message = ''
+      self._prefix = ''
+      self._suffix = ''
+    else:
+      self._spinner_only = False
+      self._message = message
+      self._prefix = message + '...'
+      self._suffix = 'done.'
     self._ticks = 0
     self._done = False
     self._lock = threading.Lock()
@@ -49,6 +57,7 @@ class ProgressTracker(object):
     self._last_display_message = ''
     self._tick_delay = tick_delay
     self._is_tty = console_io.IsInteractive(error=True)
+    self._ticker = None
     self.__autotick = autotick
 
   @property
@@ -71,7 +80,8 @@ class ProgressTracker(object):
           _SleepSecs(self._tick_delay)
           if self.Tick():
             return
-      threading.Thread(target=Ticker).start()
+      self._ticker = threading.Thread(target=Ticker)
+      self._ticker.start()
 
     return self
 
@@ -107,6 +117,8 @@ class ProgressTracker(object):
     Args:
       message: str, suffix of message
     """
+    if self._spinner_only:
+      return
     display_message = self._GetPrefix()
 
     # If we are not in a tty, _Print() is called exactly twice.  The first time
@@ -177,7 +189,10 @@ class ProgressTracker(object):
         # (ex. 'message...failed' instead of 'message.../failed.')
         self._Print('failed.\n')
         return False
-      self._Print('done.\n')
+      if not self._spinner_only:
+        self._Print('done.\n')
+    if self._ticker:
+      self._ticker.join()
 
 
 def _SleepSecs(seconds):

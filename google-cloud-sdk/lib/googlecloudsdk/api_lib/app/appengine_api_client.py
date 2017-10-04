@@ -131,9 +131,14 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     return operations_util.WaitForOperation(self.client.apps_operations,
                                             operation, message=message)
 
-  def DeployService(
-      self, service_name, version_id, service_config, manifest, build,
-      endpoints_info=None):
+  def DeployService(self,
+                    service_name,
+                    version_id,
+                    service_config,
+                    manifest,
+                    build,
+                    endpoints_info=None,
+                    extra_config_settings=None):
     """Updates and deploys new app versions based on given config.
 
     Args:
@@ -149,11 +154,14 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       endpoints_info: EndpointsServiceInfo, Endpoints service info to be added
         to the AppInfoExternal configuration. Only provided when Endpoints API
         Management feature is enabled.
+      extra_config_settings: dict, client config settings to pass to the server
+        as beta settings.
     Returns:
       A Version resource representing the deployed version.
     """
     version_resource = self._CreateVersionResource(
-        service_config, manifest, version_id, build, endpoints_info)
+        service_config, manifest, version_id, build, endpoints_info,
+        extra_config_settings)
     create_request = self.messages.AppengineAppsServicesVersionsCreateRequest(
         parent=self._GetServiceRelativeName(service_name=service_name),
         version=version_resource)
@@ -538,8 +546,8 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         batch_size=100, batch_size_attribute='pageSize')
     return [operations_util.Operation(op) for op in operations]
 
-  def _CreateVersionResource(
-      self, service_config, manifest, version_id, build, endpoints_info):
+  def _CreateVersionResource(self, service_config, manifest, version_id, build,
+                             endpoints_info, extra_config_settings):
     """Constructs a Version resource for deployment.
 
     Args:
@@ -553,6 +561,8 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       endpoints_info: EndpointsServiceInfo, Endpoints service info to be added
         to the AppInfoExternal configuration. Only provided when Endpoints API
         Management feature is enabled.
+      extra_config_settings: dict, client config settings to pass to the server
+        as beta settings.
 
     Returns:
       A Version resource whose Deployment includes either a container pointing
@@ -593,6 +603,12 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         }
     version_resource = encoding.PyValueToMessage(self.messages.Version,
                                                  json_version_resource)
+
+    # We need to pipe some settings to the server as beta settings.
+    if extra_config_settings:
+      if 'betaSettings' not in json_version_resource:
+        json_version_resource['betaSettings'] = {}
+      json_version_resource['betaSettings'].update(extra_config_settings)
 
     # In the JSON representation, BetaSettings are a dict of key-value pairs.
     # In the Message representation, BetaSettings are an ordered array of

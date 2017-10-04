@@ -79,7 +79,7 @@ class ParameterInfoByConvention(resource_cache.ParameterInfo):
     super(ParameterInfoByConvention, self).__init__(**kwargs)
     self._parsed_args = parsed_args
     self._argument = argument
-    self._prefix = argument.dest
+    self._prefix = argument.dest if argument else None
     self._api = collection.split('.')[0] if collection else None
 
   @property

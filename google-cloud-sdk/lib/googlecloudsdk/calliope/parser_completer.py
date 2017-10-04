@@ -14,6 +14,7 @@
 
 """Calliope argparse argument completer objects."""
 
+import os
 import sys
 
 from googlecloudsdk.core.cache import resource_cache
@@ -27,11 +28,19 @@ class ArgumentCompleter(object):
   Attributes:
     _argument: The argparse argument object.
     _completer_class: The uninstantiated completer class.
+    _parsed_args: argparse parsed_args, used here if not known at __call__ time.
   """
 
-  def __init__(self, completer_class, argument):
+  def __init__(self, completer_class, parsed_args=None, argument=None):
     self._completer_class = completer_class
     self._argument = argument
+    self._parsed_args = parsed_args
+    if '_ARGCOMPLETE' in os.environ:
+      # This progress tracker lets long completions run in a separate process.
+      # That can only happen when calliope is in argcomplete mode.
+      self._progress_tracker = progress_tracker.CompletionProgressTracker
+    else:
+      self._progress_tracker = progress_tracker.ProgressTracker
 
   @property
   def completer_class(self):
@@ -46,8 +55,10 @@ class ArgumentCompleter(object):
     return [msg + (width / 2 - len(msg)) * ' ' for msg in msgs]
 
   def __call__(self, prefix='', parsed_args=None, **kwargs):
-    """A completer function called by argparse in arg_complete mode."""
-    with progress_tracker.CompletionProgressTracker():
+    """A completer function suitable for argparse."""
+    if not parsed_args:
+      parsed_args = self._parsed_args
+    with self._progress_tracker():
       with resource_cache.ResourceCache() as cache:
         if len(parsed_args._GetCommand().ai.positional_completers) > 1:  # pylint: disable=protected-access
           qualified_parameter_names = {'collection'}

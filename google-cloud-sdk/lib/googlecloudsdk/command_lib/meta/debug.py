@@ -27,6 +27,7 @@ import pdb
 import site  # pylint: disable=unused-import
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.third_party.apis import apis_map
 
 
@@ -100,8 +101,9 @@ from googlecloudsdk.core import properties  # pylint: disable=unused-import
 def LoadApis():
   """Populate the global module namespace with API clients."""
   for api_name in apis_map.MAP:
+    # pylint:disable=protected-access
     globals()[api_name] = apis.GetClientInstance(
-        api_name, apis.GetDefaultVersion(api_name))
+        api_name, apis_internal._GetDefaultVersion(api_name))
 
 
 def _PopulateApiNamesWithLoadMessage():

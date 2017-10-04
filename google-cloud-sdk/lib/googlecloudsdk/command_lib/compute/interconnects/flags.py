@@ -23,7 +23,7 @@ _INTERCONNECT_TYPE_CHOICES = {
 
 _INTERCONNECT_TYPE_CHOICES_ALPHA = {
     'IT_PRIVATE': 'Dedicated private interconnect.',
-    'IT_PARTNER': 'Partner interconnect. Only available to approved partners.',
+    'PARTNER': 'Partner interconnect. Only available to approved partners.',
 }
 
 

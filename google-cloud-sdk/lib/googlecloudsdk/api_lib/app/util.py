@@ -16,6 +16,7 @@
 
 import datetime
 import os
+import posixpath
 import sys
 import time
 import urllib2
@@ -116,6 +117,33 @@ def GenerateVersionId(datetime_getter=datetime.datetime.now):
   return datetime_getter().isoformat().lower().translate(None, ':-')[:15]
 
 
+def ConvertToPosixPath(path):
+  """Converts a native-OS path to /-separated: os.path.join('a', 'b')->'a/b'."""
+  return posixpath.join(*path.split(os.path.sep))
+
+
+def ShouldSkip(skip_files, path):
+  """Returns whether the given path should be skipped by the skip_files field.
+
+  A user can specify a `skip_files` field in their .yaml file, which is a list
+  of regular expressions matching files that should be skipped. By this point in
+  the code, it's been turned into one mega-regex that matches any file to skip.
+
+  Args:
+    skip_files: A regular expression object for files/directories to skip.
+    path: str, the path to the file/directory which might be skipped (relative
+      to the application root)
+
+  Returns:
+    bool, whether the file/dir should be skipped.
+  """
+  # On Windows, os.path.join uses the path separator '\' instead of '/'.
+  # However, the skip_files regular expression always uses '/'.
+  # To handle this, we'll replace '\' characters with '/' characters.
+  path = ConvertToPosixPath(path)
+  return skip_files.match(path)
+
+
 def FileIterator(base, skip_files):
   """Walks a directory tree, returning all the files. Follows symlinks.
 
@@ -133,30 +161,22 @@ def FileIterator(base, skip_files):
     current_dir = dirs.pop()
     entries = set(os.listdir(os.path.join(base, current_dir)))
     for entry in sorted(entries):
-      true_name = os.path.join(current_dir, entry)
-      fullname = os.path.join(base, true_name)
-
-      # On Windows, os.path.join uses the path separator '\' instead of '/'.
-      # However, the skip_files regular expression always uses '/'.
-      # To handle this, we'll replace '\' characters with '/' characters.
-      if os.path.sep == '\\':
-        name = true_name.replace('\\', '/')
-      else:
-        name = true_name
+      name = os.path.join(current_dir, entry)
+      fullname = os.path.join(base, name)
 
       if os.path.isfile(fullname):
-        if skip_files.match(name):
-          log.info('Ignoring file [%s]: File matches ignore regex.', true_name)
+        if ShouldSkip(skip_files, name):
+          log.info('Ignoring file [%s]: File matches ignore regex.', name)
           contains_skipped_modules = True
         else:
-          yield true_name
+          yield name
       elif os.path.isdir(fullname):
-        if skip_files.match(name):
+        if ShouldSkip(skip_files, name):
           log.info('Ignoring directory [%s]: Directory matches ignore regex.',
-                   true_name)
+                   name)
           contains_skipped_modules = True
         else:
-          dirs.append(true_name)
+          dirs.append(name)
 
   if contains_skipped_modules:
     log.status.Print(

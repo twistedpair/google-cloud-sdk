@@ -145,6 +145,10 @@ class Application(object):
         text = self.Prompt()
         if text is None:
           break
+        # `alpha shell` only works for gcloud commands!
+        text = text.strip()
+        if not text.startswith('gcloud'):
+          text = 'gcloud ' + text
         self.Run(text)
       except EOFError:
         # ctrl-d

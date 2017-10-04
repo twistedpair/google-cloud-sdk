@@ -23,10 +23,14 @@ from googlecloudsdk.core.console import console_io
 FAMILY_PREFIX = 'family/'
 GUEST_OS_FEATURES = []
 GUEST_OS_FEATURES_BETA = ['MULTI_IP_SUBNET',
+                          'SECURE_BOOT',
+                          'UEFI_COMPATIBLE',
                           'VIRTIO_SCSI_MULTIQUEUE',
                           'WINDOWS',
                          ]
 GUEST_OS_FEATURES_ALPHA = ['MULTI_IP_SUBNET',
+                           'SECURE_BOOT',
+                           'UEFI_COMPATIBLE',
                            'VIRTIO_SCSI_MULTIQUEUE',
                            'WINDOWS',
                           ]

@@ -146,6 +146,18 @@ def _FullyqualifiedDigest(digest):
   return 'https://{digest}'.format(digest=digest)
 
 
+def _MakeSummaryRequest(project_id, url_filter):
+  """Helper function to make Summary request."""
+  client = apis.GetClientInstance('containeranalysis', 'v1alpha1')
+  messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
+  project_ref = resources.REGISTRY.Parse(
+      project_id, collection='cloudresourcemanager.projects')
+
+  req = messages.ContaineranalysisProjectsGetVulnzsummaryRequest(
+      parent=project_ref.RelativeName(), filter=url_filter)
+  return client.projects.GetVulnzsummary(req)
+
+
 def _MakeOccurrenceRequest(
     project_id, resource_filter, occurrence_filter=None, resource_urls=None):
   """Helper function to make Fetch Occurrence Request."""
@@ -212,6 +224,22 @@ def TransformContainerAnalysisData(image_name, occurrence_filter=None):
   return analysis_obj
 
 
+def FetchSummary(repository, resource_url):
+  """Fetches the summary of vulnerability occurrences for some resource.
+
+  Args:
+    repository: A parsed docker_name.Repository object.
+    resource_url: The URL identifying the resource.
+
+  Returns:
+    A GetVulnzOccurrencesSummaryResponse.
+  """
+  project_id = RecoverProjectId(repository)
+  url_filter = 'resource_url = "{resource_url}"'.format(
+      resource_url=resource_url)
+  return _MakeSummaryRequest(project_id, url_filter)
+
+
 def FetchOccurrences(repository, occurrence_filter=None, resource_urls=None):
   """Fetches the occurrences attached to the list of manifests."""
   project_id = RecoverProjectId(repository)
@@ -231,7 +259,7 @@ def FetchOccurrences(repository, occurrence_filter=None, resource_urls=None):
 
 
 def TransformManifests(
-    manifests, repository, show_occurrences=True, occurrence_filter=None,
+    manifests, repository, show_occurrences=False, occurrence_filter=None,
     resource_urls=None):
   """Transforms the manifests returned from the server."""
   if not manifests:
@@ -251,11 +279,26 @@ def TransformManifests(
               'tags': v.get('tag', []),
               'timestamp': _TimeCreatedToDateTime(v.get('timeCreatedMs'))}
 
-    # Partition occurrences into different columns by kind.
+    # Partition the (non-PACKAGE_VULNERABILITY) occurrences into different
+    # columns by kind.
     for occ in occurrences.get(_ResourceUrl(repository, k), []):
       if occ.kind not in result:
         result[occ.kind] = []
       result[occ.kind].append(occ)
+
+    if show_occurrences and resource_urls:
+      result['vuln_counts'] = {}
+      # If this manifest is in the list of resource urls for which to show
+      # summaries, query the API for the summary.
+      resource_url = _ResourceUrl(repository, k)
+      if resource_url not in resource_urls:
+        continue
+
+      summary = FetchSummary(repository, resource_url)
+      for severity_count in summary.counts:
+        if severity_count.severity:
+          result['vuln_counts'][str(severity_count.severity)] = (
+              severity_count.count)
 
     results.append(result)
   return results

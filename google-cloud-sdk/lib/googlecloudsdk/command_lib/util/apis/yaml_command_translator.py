@@ -53,7 +53,7 @@ class CommandBuilder(object):
         self.spec.request.collection, self.spec.request.method,
         self.spec.request.api_version)
     resource_args = (self.spec.arguments.resource.params
-                     if self.spec.arguments.resource else None)
+                     if self.spec.arguments.resource else [])
     self.arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
         self.method,
         self.spec.arguments.params + self.spec.arguments.mutex_group_params,
@@ -76,11 +76,12 @@ class CommandBuilder(object):
       command = self._GenerateListCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.DELETE:
       command = self._GenerateDeleteCommand()
+    elif self.spec.command_type == yaml_command_schema.CommandType.CREATE:
+      command = self._GenerateCreateCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
       command = self._GenerateGenericCommand()
     else:
       raise ValueError('Unknown command type')
-
     self._ConfigureGlobalAttributes(command)
     return command
 
@@ -184,6 +185,48 @@ class CommandBuilder(object):
 
         response = self._HandleResponse(response)
         log.DeletedResource(ref.Name(), kind=self.resource_type)
+        return response
+
+    return Command
+
+  def _GenerateCreateCommand(self):
+    """Generates a Create command.
+
+    A create command has a single resource argument and an API to call to
+    perform the creation. If the async section is given in the spec, an --async
+    flag is added and polling is automatically done on the response. For APIs
+    that adhere to standards, no further configuration is necessary. If the API
+    uses custom operations, you may need to provide extra configuration to
+    describe how to poll the operation.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.CreateCommand):
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        if self.spec.async:
+          base.ASYNC_FLAG.AddToParser(parser)
+
+      def Run(self_, args):
+        ref, response = self._CommonRun(args)
+        if self.spec.async:
+          response = self._HandleAsync(
+              args, ref, response,
+              request_string='Create request issued for: [{{{}}}]'
+              .format(yaml_command_schema.NAME_FORMAT_KEY))
+          if args.async:
+            return self._HandleResponse(response)
+
+        response = self._HandleResponse(response)
+        log.CreatedResource(ref.Name(), kind=self.resource_type)
         return response
 
     return Command

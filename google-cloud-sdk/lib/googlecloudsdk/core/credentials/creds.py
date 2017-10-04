@@ -87,6 +87,9 @@ class _SqlCursor(object):
         isolation_level=None,  # Use autocommit mode.
         check_same_thread=True  # Only creating thread may use the connection.
     )
+    # Wait up to 1 second for any locks to clear up.
+    # https://sqlite.org/pragma.html#pragma_busy_timeout
+    self._connection.execute('PRAGMA busy_timeout = 1000')
     self._cursor = self._connection.cursor()
     return self
 

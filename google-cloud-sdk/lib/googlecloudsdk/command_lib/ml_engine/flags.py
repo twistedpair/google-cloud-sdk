@@ -325,7 +325,7 @@ def GetSummarizeFlag():
       action='store_true',
       required=False,
       help="""\
-      Summarize job output in a set of human readable read tables instead of
+      Summarize job output in a set of human readable tables instead of
       rendering the entire resource as json or yaml. The tables currently rendered
       are:
 
@@ -334,11 +334,11 @@ def GetSummarizeFlag():
          region, main training python module and scale tier.
       * `Training Output Summary`: Summary of output for a training job including
          the amount of ML units consumed by the job.
-      * `Training Output Trials`: Summary of hyper parameter trials run for a
+      * `Training Output Trials`: Summary of hyperparameter trials run for a
          hyperparameter tuning training job.
       * `Predict Input Summary`: Summary of input for a prediction job including
          region, model verion and output path.
-      * `Predict Output Summary`: Summary of output for a prediction job. Includes
+      * `Predict Output Summary`: Summary of output for a prediction job including
          prediction count and output path.
 
       This flag overrides the `--format` flag. If
