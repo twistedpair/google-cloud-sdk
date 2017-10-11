@@ -14,6 +14,7 @@
 """Utilities for `gcloud app firewall-rules`."""
 
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import resources
 
 # The default rule is placed at MaxInt32 - 1 and is always evaluated last
 DEFAULT_RULE_PRIORITY = 2**31 - 1
@@ -27,22 +28,33 @@ LIST_FORMAT = """
   )
   """
 
+registry = resources.REGISTRY
 
-def ParseFirewallRule(registry, project, priority):
+
+def GetRegistry(version):
+  global registry
+  try:
+    resources.REGISTRY.GetCollectionInfo('appengine', version)
+  except resources.InvalidCollectionException:
+    registry = resources.REGISTRY.Clone()
+    registry.RegisterApiByName('appengine', version)
+  return registry
+
+
+def ParseFirewallRule(client, priority):
   """Creates a resource path given a firewall rule priority.
 
   Args:
-    registry: str, the resource registry for this API version
-    project: str, the cloud project name gcloud is operating on
+    client: AppengineFirewallApiClient, the API client for this release track.
     priority: str, the priority of the rule.
 
   Returns:
     The resource for the rule.
 
   """
-  res = registry.Parse(
+  res = GetRegistry(client.ApiVersion()).Parse(
       str(ParsePriority(priority)),
-      params={'appsId': project},
+      params={'appsId': client.project},
       collection='appengine.apps.firewall.ingressRules')
   return res
 

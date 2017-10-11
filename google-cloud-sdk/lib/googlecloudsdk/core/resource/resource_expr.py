@@ -26,6 +26,26 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import times
 
 
+def _ReCompile(pattern, flags=0):
+  """Returns a compiled RE pattern.
+
+  Args:
+    pattern: The RE pattern string.
+    flags: Optional RE flags.
+
+  Raises:
+    ExpressionSyntaxError: RE pattern error.
+
+  Returns:
+    The compiled RE.
+  """
+  try:
+    return re.compile(pattern, flags)
+  except re.error as e:
+    raise resource_exceptions.ExpressionSyntaxError(
+        u'Filter expression RE pattern [{}]: {}'.format(pattern, e))
+
+
 def _Stringize(value):
   """Returns the unicode string representation for value."""
   if value is None:
@@ -671,9 +691,9 @@ class _ExprHAS(_ExprWordMatchBase):
         deprecated_pattern = None
 
     reflags = re.IGNORECASE|re.MULTILINE|re.UNICODE
-    standard_regex = re.compile(standard_pattern, reflags)
+    standard_regex = _ReCompile(standard_pattern, reflags)
     if deprecated_pattern:
-      deprecated_regex = re.compile(deprecated_pattern, reflags)
+      deprecated_regex = _ReCompile(deprecated_pattern, reflags)
     else:
       deprecated_regex = None
     self._patterns.append((pattern, standard_regex, deprecated_regex))
@@ -711,8 +731,8 @@ class _ExprEQ(_ExprWordMatchBase):
     deprecated_pattern = u'^' + word + u'$'
 
     reflags = re.IGNORECASE|re.MULTILINE|re.UNICODE
-    standard_regex = re.compile(standard_pattern, reflags)
-    deprecated_regex = re.compile(deprecated_pattern, reflags)
+    standard_regex = _ReCompile(standard_pattern, reflags)
+    deprecated_regex = _ReCompile(deprecated_pattern, reflags)
     self._patterns.append((pattern, standard_regex, deprecated_regex))
 
 
@@ -745,7 +765,7 @@ class _ExprRE(_ExprOperator):
 
   def __init__(self, backend, key, operand, transform):
     super(_ExprRE, self).__init__(backend, key, operand, transform)
-    self.pattern = re.compile(self._operand.string_value)
+    self.pattern = _ReCompile(self._operand.string_value)
 
   def Apply(self, value, unused_operand):
     if not isinstance(value, basestring):
@@ -759,7 +779,7 @@ class _ExprNotRE(_ExprOperator):
 
   def __init__(self, backend, key, operand, transform):
     super(_ExprNotRE, self).__init__(backend, key, operand, transform)
-    self.pattern = re.compile(self._operand.string_value)
+    self.pattern = _ReCompile(self._operand.string_value)
 
   def Apply(self, value, unused_operand):
     if not isinstance(value, basestring):

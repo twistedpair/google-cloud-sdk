@@ -15,6 +15,11 @@
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib import tasks
+from googlecloudsdk.core import exceptions
+
+
+class ModifyingPullAndAppEngineTaskError(exceptions.InternalError):
+  """Error for when attempt to create a queue as both pull and App Engine."""
 
 
 class Tasks(object):
@@ -39,6 +44,23 @@ class Tasks(object):
             name=task_ref.RelativeName()))
     return self.api.tasks_service.Get(request)
 
+  def Create(self, parent_ref, task_ref=None, schedule_time=None,
+             pull_message=None, app_engine_http_request=None):
+    """Prepares and sends a Create request for creating a task."""
+    if pull_message and app_engine_http_request:
+      raise ModifyingPullAndAppEngineTaskError(
+          'Attempting to send PullMessage and AppEngineHttpRequest '
+          'simultaneously')
+    name = task_ref.RelativeName() if task_ref else None
+    task = self.api.messages.Task(
+        name=name, scheduleTime=schedule_time, pullMessage=pull_message,
+        appEngineHttpRequest=app_engine_http_request)
+    request = (
+        self.api.messages.CloudtasksProjectsLocationsQueuesTasksCreateRequest(
+            createTaskRequest=self.api.messages.CreateTaskRequest(task=task),
+            parent=parent_ref.RelativeName()))
+    return self.api.tasks_service.Create(request)
+
   def Delete(self, task_ref):
     request = (
         self.api.messages.CloudtasksProjectsLocationsQueuesTasksDeleteRequest(
@@ -50,3 +72,91 @@ class Tasks(object):
         self.api.messages.CloudtasksProjectsLocationsQueuesTasksRunRequest(
             name=task_ref.RelativeName()))
     return self.api.tasks_service.Run(request)
+
+  def RenewLease(self, task_ref, schedule_time, new_lease_duration):
+    """Constructs and sends a tasks RenewLease request to the Cloud Tasks API.
+
+    Args:
+      task_ref: A cloudtasks.projects.locations.queues.tasks resource reference
+      schedule_time: string formatted as an ISO 8601 datetime with timezone
+      new_lease_duration: string of an integer followed by 's', (e.g. '10s') for
+                          the number of seconds for the new lease
+    Returns:
+      The response of the tasks RenewLease request
+    """
+    renew_lease_request = self.api.messages.RenewLeaseRequest(
+        scheduleTime=schedule_time, newLeaseDuration=new_lease_duration)
+    request_cls = (self.api.messages.
+                   CloudtasksProjectsLocationsQueuesTasksRenewLeaseRequest)
+    request = request_cls(renewLeaseRequest=renew_lease_request,
+                          name=task_ref.RelativeName())
+    return self.api.tasks_service.RenewLease(request)
+
+  def CancelLease(self, task_ref, schedule_time):
+    """Constructs and sends a tasks CancelLease request to the Cloud Tasks API.
+
+    Args:
+      task_ref: A cloudtasks.projects.locations.queues.tasks resource reference
+      schedule_time: string formatted as an ISO 8601 datetime with timezone
+
+    Returns:
+      The response of the tasks CancelLease request
+    """
+    cancel_lease_request = self.api.messages.CancelLeaseRequest(
+        scheduleTime=schedule_time)
+    request_cls = (self.api.messages.
+                   CloudtasksProjectsLocationsQueuesTasksCancelLeaseRequest)
+    request = request_cls(cancelLeaseRequest=cancel_lease_request,
+                          name=task_ref.RelativeName())
+    return self.api.tasks_service.CancelLease(request)
+
+  def Pull(self, queue_ref, lease_duration, filter_string=None, max_tasks=None):
+    """Constructs and sends a PullTasks request to the Cloud Tasks API.
+
+    Args:
+      queue_ref: A cloudtasks.projects.locations.queues resource reference
+      lease_duration: string of an integer followed by 's', (e.g. '10s') for the
+                      number of seconds for the new leases
+      filter_string: string with an expression to filter which tasks are pulled
+      max_tasks: the maximum number of tasks to pull
+
+    Returns:
+      The response of the PullTasks request
+    """
+    pull_tasks_request = self.api.messages.PullTasksRequest(
+        filter=filter_string, leaseDuration=lease_duration, maxTasks=max_tasks)
+    request = (
+        self.api.messages.CloudtasksProjectsLocationsQueuesTasksPullRequest(
+            pullTasksRequest=pull_tasks_request, name=queue_ref.RelativeName()))
+    return self.api.tasks_service.Pull(request)
+
+  def Acknowledge(self, task_ref, schedule_time):
+    """Constructs and sends a tasks Acknowledge request to the Cloud Tasks API.
+
+    Args:
+      task_ref: A cloudtasks.projects.locations.queues.tasks resource reference
+      schedule_time: string formatted as an ISO 8601 datetime with timezone
+
+    Returns:
+      The response of the tasks Acknowledge request
+    """
+    acknowledge_task_request = self.api.messages.AcknowledgeTaskRequest(
+        scheduleTime=schedule_time)
+    request_cls = (self.api.messages.
+                   CloudtasksProjectsLocationsQueuesTasksAcknowledgeRequest)
+    request = request_cls(acknowledgeTaskRequest=acknowledge_task_request,
+                          name=task_ref.RelativeName())
+    return self.api.tasks_service.Acknowledge(request)
+
+
+def ConstructHeadersValueMessageFromListOfDicts(headers_dicts, messages):
+  if headers_dicts is None:
+    return
+
+  additional_property_cls = (
+      messages.AppEngineHttpRequest.HeadersValue.AdditionalProperty)
+  additional_properties = [additional_property_cls(key=k, value=v)
+                           for h in headers_dicts
+                           for k, v in h.iteritems()]
+  return messages.AppEngineHttpRequest.HeadersValue(
+      additionalProperties=additional_properties)

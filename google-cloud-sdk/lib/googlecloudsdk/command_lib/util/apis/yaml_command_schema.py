@@ -186,34 +186,55 @@ class MutexGroup(object):
 class Argument(object):
   """Encapsulates data used to generate arguments."""
 
+  STATIC_ACTIONS = {'store', 'store_true'}
+
   @classmethod
   def FromData(cls, data, group=None):
-    deprecation = data.get('deprecated', None)
+    """Gets the arg definition from the spec data.
+
+    Args:
+      data: The spec data.
+      group: MutexGroup, The group this arg is in or None.
+
+    Returns:
+      Argument, the parsed argument.
+    """
     api_field = data['api_field']
     arg_name = data.get('arg_name', api_field)
+    is_positional = data.get('is_positional', False)
+
+    action = data.get('action', None)
+    if action and action not in Argument.STATIC_ACTIONS:
+      action = Hook.FromPath(action)
+    if not action:
+      deprecation = data.get('deprecated', None)
+      if deprecation:
+        flag_name = arg_name if is_positional else '--' + arg_name
+        action = actions.DeprecationAction(flag_name, **deprecation)
+
     return Argument(
         api_field,
         arg_name,
         data['help_text'],
-        data.get('metavar', None),
-        Hook.FromData(data, 'completer'),
-        data.get('is_positional', False),
-        Hook.FromData(data, 'type'),
-        data.get('choices', None),
-        data.get('default', None),
-        Hook.FromData(data, 'processor'),
-        data.get('required', False),
-        data.get('hidden', False),
-        (actions.DeprecationAction(arg_name, **deprecation)
-         if deprecation else None),
-        group
+        metavar=data.get('metavar', None),
+        completer=Hook.FromData(data, 'completer'),
+        is_positional=is_positional,
+        type=Hook.FromData(data, 'type'),
+        choices=data.get('choices', None),
+        default=data.get('default', None),
+        processor=Hook.FromData(data, 'processor'),
+        required=data.get('required', False),
+        hidden=data.get('hidden', False),
+        action=action,
+        repeated=data.get('repeated', None),
+        group=group
     )
 
   # pylint:disable=redefined-builtin, type param needs to match the schema.
   def __init__(self, api_field, arg_name, help_text, metavar=None,
                completer=None, is_positional=False, type=None, choices=None,
                default=None, processor=None, required=False, hidden=False,
-               action=None, group=None, generate=True):
+               action=None, repeated=None, group=None, generate=True):
     self.api_field = api_field
     self.arg_name = arg_name
     self.help_text = help_text
@@ -227,6 +248,7 @@ class Argument(object):
     self.required = required
     self.hidden = hidden
     self.action = action
+    self.repeated = repeated
     self.group = group
     self.generate = generate
 
@@ -272,8 +294,20 @@ class Hook(object):
     """
     path = data.get(key, None)
     if path:
-      return _ImportPythonHook(path).GetHook()
+      return cls.FromPath(path)
     return None
+
+  @classmethod
+  def FromPath(cls, path):
+    """Gets the hook from the function path.
+
+    Args:
+      path: str, The module path to the hook function.
+
+    Returns:
+      The Python element to call.
+    """
+    return _ImportPythonHook(path).GetHook()
 
   def __init__(self, attribute, kwargs=None):
     self.attribute = attribute

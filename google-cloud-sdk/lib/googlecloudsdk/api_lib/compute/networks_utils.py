@@ -16,9 +16,9 @@
 
 def GetSubnetMode(network):
   """Returns the subnet mode of the input network."""
-  if getattr(network, 'IPv4Range', None) is not None:
+  if network.get('IPv4Range') is not None:
     return 'LEGACY'
-  elif getattr(network, 'autoCreateSubnetworks', False):
+  elif network.get('autoCreateSubnetworks'):
     return 'AUTO'
   else:
     return 'CUSTOM'
@@ -26,26 +26,15 @@ def GetSubnetMode(network):
 
 def GetBgpRoutingMode(network):
   """Returns the BGP routing mode of the input network."""
-  if getattr(network, 'routingConfig', None) is not None:
-    return network.routingConfig.routingMode
-  else:
-    return None
+  return network.get('routingConfig', {}).get('routingMode')
 
 
-def _GetNetworkMode(network):
-  """Takes a network resource and returns the "mode" of the network."""
-  if network.get('IPv4Range', None) is not None:
-    return 'legacy'
-  if network.get('autoCreateSubnetworks', False):
-    return 'auto'
-  else:
-    return 'custom'
-
-
-def AddMode(items):
-  for resource in items:
-    resource['x_gcloud_mode'] = _GetNetworkMode(resource)
-    yield resource
+# TODO(b/67060825): Replace with a resource transform function.
+def AddModesForListFormat(resource):
+  return dict(
+      resource,
+      x_gcloud_subnet_mode=GetSubnetMode(resource),
+      x_gcloud_bgp_routing_mode=GetBgpRoutingMode(resource))
 
 
 def CreateNetworkResourceFromArgs(messages, network_ref, network_args):
@@ -55,15 +44,19 @@ def CreateNetworkResourceFromArgs(messages, network_ref, network_args):
       name=network_ref.Name(),
       description=network_args.description)
 
-  if network_args.subnet_mode == 'LEGACY':
+  # TODO(b/64980447): Clean up the --mode flag after 3 months of deprecation.
+  if network_args.subnet_mode == 'legacy' or network_args.mode == 'legacy':
     network.IPv4Range = network_args.range
+  elif network_args.subnet_mode == 'custom' or network_args.mode == 'custom':
+    network.autoCreateSubnetworks = False
   else:
-    network.autoCreateSubnetworks = (network_args.subnet_mode == 'AUTO')
+    # If no subnet mode is specified, default to AUTO.
+    network.autoCreateSubnetworks = True
 
   if network_args.bgp_routing_mode:
     network.routingConfig = messages.NetworkRoutingConfig()
-    network.routingConfig.routingMode = (messages.NetworkRoutingConfig.
-                                         RoutingModeValueValuesEnum(
-                                             network_args.bgp_routing_mode))
+    network.routingConfig.routingMode = (
+        messages.NetworkRoutingConfig.RoutingModeValueValuesEnum(
+            network_args.bgp_routing_mode.upper()))
 
   return network

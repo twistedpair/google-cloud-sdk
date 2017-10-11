@@ -23,6 +23,21 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_property
 
 
+class Error(Exception):
+  """Base exception for this module."""
+  pass
+
+
+class UnknownFieldError(Error):
+  """The referenced field could not be found in the message object."""
+
+  def __init__(self, field_name, message):
+    super(UnknownFieldError, self).__init__(
+        'Field [{}] not found in message [{}]. Available fields: [{}]'
+        .format(field_name, message.__name__,
+                ', '.join(f.name for f in message.all_fields())))
+
+
 def GetFieldFromMessage(message, field_path):
   """Digs into the given message to extract the dotted field.
 
@@ -33,12 +48,12 @@ def GetFieldFromMessage(message, field_path):
     field_path: str, The dotted path of attributes and sub-attributes.
 
   Returns:
-    The Field type or None if that attribute does not exist.
+    The Field type.
   """
   fields = field_path.split('.')
   for f in fields[:-1]:
-    message = message.field_by_name(f).type
-  return message.field_by_name(fields[-1])
+    message = _GetField(message, f).type
+  return _GetField(message, fields[-1])
 
 
 def SetFieldInMessage(message, field_path, value):
@@ -52,14 +67,21 @@ def SetFieldInMessage(message, field_path, value):
   fields = field_path.split('.')
   for f in fields[:-1]:
     sub_message = getattr(message, f)
-    is_repeated = message.field_by_name(f).repeated
+    is_repeated = _GetField(message, f).repeated
     if not sub_message:
-      sub_message = message.field_by_name(f).type()
+      sub_message = _GetField(message, f).type()
       if is_repeated:
         sub_message = [sub_message]
       setattr(message, f, sub_message)
     message = sub_message[0] if is_repeated else sub_message
   setattr(message, fields[-1], value)
+
+
+def _GetField(message, field_name):
+  try:
+    return message.field_by_name(field_name)
+  except KeyError:
+    raise UnknownFieldError(field_name, message)
 
 
 # TODO(b/64147277): Pass this down from the generator, don't hard code.
@@ -118,7 +140,9 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
     action = 'store_true'
 
   # Note that a field will never be a message at this point, always a scalar.
-  if field.repeated:
+  # pylint: disable=g-explicit-bool-comparison, only an explicit False should
+  # override this, None just means to do the default.
+  if field.repeated and attributes.repeated != False:
     t = arg_parsers.ArgList(element_type=t, choices=choices)
   name = attributes.arg_name
   arg = base.Argument(
@@ -165,20 +189,30 @@ def ConvertValue(field, value, attributes=None):
   Returns:
     The value to insert into the message.
   """
+  # pylint: disable=g-explicit-bool-comparison, only an explicit False should
+  # override this, None just means to do the default.
+  arg_repeated = field.repeated and (not attributes or
+                                     attributes.repeated != False)
+
   if attributes and attributes.processor:
-    return attributes.processor(value)
+    value = attributes.processor(value)
+  else:
+    if attributes and attributes.choices:
+      if arg_repeated:
+        value = [attributes.choices.get(v, v) for v in value]
+      else:
+        value = attributes.choices.get(value, value)
+    if field.variant == messages.Variant.ENUM:
+      t = field.type
+      if arg_repeated:
+        value = [ChoiceToEnum(v, t) for v in value]
+      else:
+        value = ChoiceToEnum(value, t)
 
-  if attributes and attributes.choices:
-    if field.repeated:
-      value = [attributes.choices.get(v, v) for v in value]
-    else:
-      value = attributes.choices.get(value, value)
-
-  if field.variant == messages.Variant.ENUM:
-    t = field.type
-    if field.repeated:
-      return [ChoiceToEnum(v, t) for v in value]
-    return ChoiceToEnum(value, t)
+  if field.repeated and not arg_repeated:
+    # If we manually made this arg singular, but it is actually a repeated field
+    # wrap it in a list.
+    value = [value]
   return value
 
 

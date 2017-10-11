@@ -1212,6 +1212,10 @@ def AddPublicDnsArgs(parser, instance=True):
       action='store_true',
       help=public_dns_help)
 
+
+def AddPublicPtrArgs(parser, instance=True):
+  """Adds public PTR arguments for instance or access configuration."""
+
   public_ptr_args = parser.add_mutually_exclusive_group()
   if instance:
     no_public_ptr_help = """\
@@ -1281,12 +1285,25 @@ def ValidatePublicDnsFlags(args):
 
   network_interface = getattr(args, 'network_interface', None)
   public_dns = getattr(args, 'public_dns', None)
-  public_ptr = getattr(args, 'public_ptr', None)
-  if public_dns is True or public_ptr is True:
+  if public_dns is True:
     if (network_interface is not None and
         network_interface != constants.DEFAULT_NETWORK_INTERFACE):
       raise exceptions.ToolException(
           'Public DNS can only be enabled for default network interface '
+          '\'{0}\' rather than \'{1}\'.'.format(
+              constants.DEFAULT_NETWORK_INTERFACE, network_interface))
+
+
+def ValidatePublicPtrFlags(args):
+  """Validates the values of public PTR related flags."""
+
+  network_interface = getattr(args, 'network_interface', None)
+  public_ptr = getattr(args, 'public_ptr', None)
+  if public_ptr is True:
+    if (network_interface is not None and
+        network_interface != constants.DEFAULT_NETWORK_INTERFACE):
+      raise exceptions.ToolException(
+          'Public PTR can only be enabled for default network interface '
           '\'{0}\' rather than \'{1}\'.'.format(
               constants.DEFAULT_NETWORK_INTERFACE, network_interface))
 

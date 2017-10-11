@@ -2,6 +2,65 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 175.0.0 (2017-10-11)
+
+### Breaking Changes
+
+*   Behavior of `--segments` flag for all `gcloud ml video detect-*` commands
+    changed. The flag now accepts a list of duration pair strings
+    (e.g. 0:1m40s,3m50s:5m10.232265s) instead of pairs of microseconds.
+    Microseconds can still be specified using fractional seconds. For example,
+    0.000569s represents 569 microseconds.
+*   The `--mode` flag for the `gcloud compute networks create` command has been
+    deprecated. Please use the `--subnet-mode` flag instead.
+*   The output of the `gcloud container images describe` command has been
+    updated to be more consistent with other commands.
+
+### Google Compute Engine
+
+*   `gcloud compute networks update` is now generally available.
+*   `--bgp-routing-mode` and `--subnet-mode` flags added to
+    `gcloud compute networks create`.
+*   Ability to configure reverse DNS (PTR) records for instances through the
+    `gcloud beta compute instances create --public-ptr-*` flags and the
+    `gcloud beta compute instances update-access-config` command now available.
+
+### Google App Engine
+
+*   `gcloud app firewall-rules` is now generally available.
+
+### Google Cloud Resource Manager
+
+*   `gcloud projects create --folder` is now generally available. This command
+    enables creation of projects within folders.
+
+### Google Cloud KMS
+
+*   `gcloud kms update` is now generally available.
+
+### Google Cloud Video Intelligence
+
+*   `gcloud beta ml video detect-explicit-content` is now available.
+
+### Google Cloud Datalab
+
+*   Updated the `datalab` component to the 20171003 release. Changes in that
+    release are documented
+    [here](https://github.com/googledatalab/datalab/issues/1716).
+
+### Google Cloud Deployment Manager
+
+*   The `--credential` flag for
+    `gcloud alpha deployment-manager deployments create/update` commands is now
+    available. Using this flag, a custom service account can be provided as the
+    deployment credential.
+
+### Google Cloud SDK
+
+*   Nested command line argument groups have been enabled. The groups are
+    clearly labelled and indented in `--help` documents. Also, argument group
+    conflict error messaging is uniform across all `gcloud` commands.
+
 ## 174.0.0 (2017-10-04)
 
 ### Google App Engine

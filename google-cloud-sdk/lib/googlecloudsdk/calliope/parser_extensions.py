@@ -37,6 +37,20 @@ The parser and intercepts are in these modules:
     Error/exception classes for all Calliope arg parse errors. Errors derived
     from ArgumentError have a payload used for metrics reporting.
 
+Intercepted argument definitions for a command and all its ancestor command
+groups are kept in a tree of ArgumentInterceptor nodes. Inner nodes have
+is_group==True and an arguments list of child nodes. Leaf nodes have
+is_group==False. ArgumentInterceptor keeps track of the arguments and flags
+specified on the command line in a set that is queried to verify the specified
+arguments against their definitions. For example, that a required argument has
+been specified, or that at most one flag in a mutually exclusive group has been
+specified.
+
+The collected info is also used to generate help markdown documents. The
+markdown is annotated with extra text that collates and describes argument
+attributes and groupings. For example, mutually exclusive, required, and nested
+groups.
+
 The intercepted args namespace object passed to the Command.Run() method adds
 methods to access/modify info collected during the parse.
 """
@@ -65,6 +79,7 @@ class Namespace(argparse.Namespace):
   Attributes:
     _deepest_parser: ArgumentParser, The deepest parser for the last command
       part.
+    _parsers: ArgumentParser, The list of all parsers for the command.
     _specified_args: {dest: arg-name}, A map of dest names for known args
       specified on the command line to arg names that have been scrubbed for
       metrics. This dict accumulate across all subparsers.
@@ -72,6 +87,7 @@ class Namespace(argparse.Namespace):
 
   def __init__(self, **kwargs):
     self._deepest_parser = None
+    self._parsers = []
     self._specified_args = {}
     super(Namespace, self).__init__(**kwargs)
 
@@ -182,6 +198,8 @@ class Namespace(argparse.Namespace):
     dest = name.replace('-', '_').lower()
     meta = name.replace('_', '-').upper()
     for arg in self._GetCommand().ai.positional_args:
+      if isinstance(arg, type):
+        continue
       if dest == arg.dest or meta == arg.metavar:
         return arg
     raise parser_errors.UnknownDestinationException(
@@ -230,7 +248,7 @@ class Namespace(argparse.Namespace):
       flag_name: str, The flag_name name for the arg to check.
 
     Raises:
-      parser_errors.RequiredArgumentError: if flag is not specified.
+      parser_errors.RequiredError: if flag is not specified.
       UnknownDestinationException: If there is no registered arg for flag_name.
 
     Returns:
@@ -240,7 +258,7 @@ class Namespace(argparse.Namespace):
       flag = flag_name[2:] if flag_name.startswith('--') else flag_name
       flag_value = getattr(self, flag)
       if flag_value is None and not self.IsSpecified(flag):
-        raise parser_errors.RequiredArgumentError('is required', flag_name)
+        raise parser_errors.RequiredError(argument=flag_name)
       return flag_value
 
     return _Func
@@ -284,6 +302,7 @@ class ArgumentParser(argparse.ArgumentParser):
       metrics. This value is initialized and propagated to the deepest parser
       namespace in parse_known_args() from specified args collected in
       _get_values().
+    _too_few_arguments: True if argparse hit a 'too few arguments' error.
   """
 
   def __init__(self, *args, **kwargs):
@@ -295,6 +314,7 @@ class ArgumentParser(argparse.ArgumentParser):
     self._specified_args = {}
     self._error_context = None
     self._probe_error = False
+    self._too_few_arguments = False
     super(ArgumentParser, self).__init__(*args, **kwargs)
 
   def AddRemainderArgument(self, *args, **kwargs):
@@ -410,6 +430,100 @@ class ArgumentParser(argparse.ArgumentParser):
     self._probe_error = False
     context.parser.error(context=context)
 
+  @staticmethod
+  def GetDestinations(args):
+    """Returns the set of 'dest' attributes (or the arg if no dest)."""
+    return set([getattr(a, 'dest', a) for a in args])
+
+  # pylint: disable=invalid-name, argparse style
+  def validate_specified_args(self, ai, specified_args, top=True):
+    """Validate specified args against the arg group constraints.
+
+    Each group may be mutually exclusive and/or required. Each argument may be
+    required.
+
+    Args:
+      ai: ArgumentInterceptor, The argument interceptor containing the
+        ai.arguments argument group.
+      specified_args: set, The dests of the specified args.
+      top: bool, True if ai.arguments is the top level group.
+
+    Raises:
+      ModalGroupError: If modal arg not specified.
+      OptionalMutexError: On optional mutex group conflict.
+      RequiredError: If required arg not specified.
+      RequiredMutexError: On required mutex group conflict.
+
+    Returns:
+      True if the subgroup was specified.
+    """
+    also_optional = []  # The optional args in group that were not specified.
+    have_optional = []  # The specified optional (not required) args.
+    have_required = []  # The specified required args.
+    need_required = []  # The required args in group that must be specified.
+    for arg in sorted(ai.arguments, key=usage_text.GetArgSortKey):
+      if arg.is_group:
+        arg_was_specified = self.validate_specified_args(arg, specified_args,
+                                                         top=False)
+      else:
+        arg_was_specified = arg.dest in specified_args
+      if arg_was_specified:
+        if arg.is_required:
+          have_required.append(arg)
+        else:
+          have_optional.append(arg)
+      elif arg.is_required:
+        if not isinstance(arg, DynamicPositionalAction):
+          need_required.append(arg)
+      else:
+        also_optional.append(arg)
+
+    if need_required:
+      if top or not have_optional and not also_optional:
+        ai = parser_arguments.ArgumentInterceptor(self, arguments=need_required)
+        raise parser_errors.RequiredError(
+            parser=self,
+            argument=usage_text.GetArgUsage(
+                ai, value=False, hidden=True, top=top))
+      if have_optional:
+        have_ai = parser_arguments.ArgumentInterceptor(
+            self, arguments=have_optional)
+        need_ai = parser_arguments.ArgumentInterceptor(
+            self, arguments=need_required)
+        raise parser_errors.ModalGroupError(
+            parser=self,
+            argument=usage_text.GetArgUsage(
+                have_ai, value=False, hidden=True, top=top),
+            conflict=usage_text.GetArgUsage(
+                need_ai, value=False, hidden=True, top=top))
+
+    # Multiple args with the same dest are counted as 1 arg.
+    count = (len(self.GetDestinations(have_required)) +
+             len(self.GetDestinations(have_optional)))
+
+    if ai.is_mutex:
+      conflict = usage_text.GetArgUsage(ai, value=False, hidden=True, top=top)
+      if ai.is_required:
+        if count != 1:
+          if count:
+            argument = usage_text.GetArgUsage(
+                sorted(have_required + have_optional,
+                       key=usage_text.GetArgSortKey)[0],
+                value=False, hidden=True, top=top)
+          else:
+            argument = None
+          raise parser_errors.RequiredMutexError(
+              parser=self, argument=argument, conflict=conflict)
+      elif count > 1:
+        argument = usage_text.GetArgUsage(
+            sorted(have_required + have_optional,
+                   key=usage_text.GetArgSortKey)[0],
+            value=False, hidden=True, top=top)
+        raise parser_errors.OptionalMutexError(
+            parser=self, argument=argument, conflict=conflict)
+
+    return bool(count)
+
   def parse_known_args(self, args=None, namespace=None):
     """Overrides argparse.ArgumentParser's .parse_known_args method."""
     if args is None:
@@ -423,7 +537,8 @@ class ArgumentParser(argparse.ArgumentParser):
         self._actions.remove(self._remainder_action)
         # Split on first -- if it exists
         namespace, args = self._remainder_action.ParseKnownArgs(args, namespace)
-      self._specified_args = {}
+      # _get_values() updates self._specified_args.
+      self._specified_args = namespace._specified_args  # pylint: disable=protected-access
       namespace, unknown_args = (
           super(ArgumentParser, self).parse_known_args(args, namespace) or
           (namespace, []))
@@ -433,10 +548,7 @@ class ArgumentParser(argparse.ArgumentParser):
         if self._probe_error:
           return
         self._DeduceBetterError(args, namespace)
-      # Update the namespace _specified_args with the specified arg dests and
-      # names for this subparser.
-      # pylint: disable=protected-access
-      namespace._specified_args.update(self._specified_args)
+      namespace._parsers.append(self)  # pylint: disable=protected-access
     finally:
       # Replace action for help message and ArgumentErrors.
       if self._remainder_action:
@@ -447,13 +559,27 @@ class ArgumentParser(argparse.ArgumentParser):
     """Overrides argparse.ArgumentParser's .parse_args method."""
     namespace, unknown_args = (self.parse_known_args(args, namespace) or
                                (namespace, []))
+
+    # pylint:disable=protected-access
+    deepest_parser = namespace._GetParser()
+    deepest_parser._specified_args = namespace._specified_args
+
     if not unknown_args:
+      # All of the specified args from all of the subparsers are now known.
+      # Check for argument/group conflicts and error out from the deepest
+      # parser so the resulting error message has the correct command context.
+      for parser in namespace._parsers:
+        try:
+          # pylint: disable=protected-access
+          parser.validate_specified_args(parser.ai, namespace._specified_args)
+        except argparse.ArgumentError as e:
+          deepest_parser.error(e.message)
+      if deepest_parser._too_few_arguments:
+        deepest_parser.error('Command name argument expected.')
+
+      # No argument/group conflicts.
       return namespace
 
-    # Content of these lines differs from argparser's parse_args().
-    deepest_parser = namespace._GetParser()  # pylint: disable=protected-access
-    # pylint:disable=protected-access
-    deepest_parser._specified_args = namespace._specified_args
     if deepest_parser._remainder_action:
       # Assume the user wanted to pass all arguments after last recognized
       # arguments into _remainder_action. Either do this with a warning or
@@ -655,24 +781,6 @@ class ArgumentParser(argparse.ArgumentParser):
                                      parser_errors.TooFewArgumentsError)
       return
 
-    re_result = re.search('argument (.+?) is required', message)
-    if re_result:
-      req_argument = re_result.group(1)
-      self._ReportErrorMetricsHelper(
-          dotted_command_path,
-          parser_errors.RequiredArgumentError,
-          {'required': req_argument})
-      return
-
-    re_result = re.search('one of the arguments (.+?) is required', message)
-    if re_result:
-      req_argument = re_result.group(1)
-      self._ReportErrorMetricsHelper(
-          dotted_command_path,
-          parser_errors.RequiredArgumentGroupError,
-          {'required': req_argument})
-      return
-
     # Catchall for any error we didn't explicitly detect.
     self._ReportErrorMetricsHelper(dotted_command_path,
                                    parser_errors.OtherParsingError)
@@ -709,14 +817,26 @@ class ArgumentParser(argparse.ArgumentParser):
       if '_ARGCOMPLETE' not in os.environ and (
           self._probe_error or
           'too few arguments' in message or
-          'Invalid choice' in message):
-        # Save this context for later. We may be able to decuce a better error
-        # message. For instance, argparse might complain about an invalid
-        # command choice 'flag-value' for '--unknown-flag flag-value', but
-        # with a little finagling in parse_known_args() we can verify that
-        # '--unknown-flag' is in fact an unknown flag and error out on that.
-        self._error_context = _ErrorContext(message, parser, error)
+          'Invalid choice' in message or
+          message.startswith('argument') and message.endswith('required')):
+        if not self._probe_error or 'expected one argument' not in message:
+          # Save this context for later. We may be able to deduce a better error
+          # message. For instance, argparse might complain about an invalid
+          # command choice 'flag-value' for '--unknown-flag flag-value', but
+          # with a little finagling in parse_known_args() we can verify that
+          # '--unknown-flag' is in fact an unknown flag and error out on that.
+          self._error_context = _ErrorContext(message, parser, error)
         return
+
+    # Ignore errors better handled by validate_specified_args().
+    if '_ARGCOMPLETE' not in os.environ:
+      if re.search('arguments? (.+?) required$', message):
+        return
+      if re.search('too few arguments', message):
+        # validate_specified_args() could miss these errors.
+        self._too_few_arguments = True
+        return
+
     parser.ReportErrorMetrics(error, message)
 
     # No need to output help/usage text if we are in completion mode. However,
@@ -947,7 +1067,7 @@ class DynamicPositionalAction(CloudSDKSubParsersAction):
     # help is always run on the parent ArgumentInterceptor and we want it to
     # show the full set of args.
     ai = parser_arguments.ArgumentInterceptor(
-        sub_parser, is_root=False, cli_generator=None,
+        sub_parser, is_global=False, cli_generator=None,
         allow_positional=True, data=self._parent_ai.data)
 
     for flag in itertools.chain(self._parent_ai.flag_args,
@@ -955,7 +1075,7 @@ class DynamicPositionalAction(CloudSDKSubParsersAction):
       # Propagate the flags down except the ones we are not supposed to. Note
       # that we *do* copy the help action unlike we usually do because this
       # subparser is going to share the help action of the parent.
-      if flag.do_not_propagate or flag.required:
+      if flag.do_not_propagate or flag.is_required:
         continue
       # We add the flags directly to the parser instead of the
       # ArgumentInterceptor because if we didn't the flags would be duplicated

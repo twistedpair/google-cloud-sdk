@@ -195,7 +195,7 @@ class ArgumentGroup(Action):
     return group
 
   def _CreateGroup(self, parser):
-    return parser.add_argument_group(*self.args, **self.kwargs)
+    return parser.add_group(*self.args, **self.kwargs)
 
 
 class MutuxArgumentGroup(ArgumentGroup):
@@ -254,6 +254,8 @@ class Argument(Action):
           parser.dests.remove(flag.dest)
         if flag in parser.flag_args:
           parser.flag_args.remove(flag)
+        if flag in parser.arguments:
+          parser.arguments.remove(flag)
 
   def SetDefault(self, parser, default):
     """Sets the default value for this flag in the given parser.
@@ -372,8 +374,9 @@ class _Common(object):
   _valid_release_tracks = None
   _notices = None
 
-  def __init__(self):
+  def __init__(self, is_group=False):
     self.exit_code = 0
+    self.is_group = is_group
 
   @staticmethod
   def Args(parser):
@@ -484,7 +487,7 @@ class Group(_Common):
   _command_suggestions = {}
 
   def __init__(self):
-    super(Group, self).__init__()
+    super(Group, self).__init__(is_group=True)
 
   def Filter(self, context, args):
     """Modify the context that will be given to this group's commands when run.
@@ -517,7 +520,7 @@ class Command(_Common):
   __metaclass__ = abc.ABCMeta
 
   def __init__(self, cli, context):
-    super(Command, self).__init__()
+    super(Command, self).__init__(is_group=False)
     self._cli_do_not_use_directly = cli
     self.context = context
     self._uri_cache_enabled = False

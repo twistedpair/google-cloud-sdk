@@ -68,6 +68,7 @@ class ConceptArgActionGetter(object):
       """An action that registers the arg in the runtime handler."""
 
       def __init__(self, *args, **kwargs):
+        kwargs.pop('completer', None)
         super(AttributeAction, self).__init__(*args, **kwargs)
 
       def __call__(self, parser, namespace, value, option_string=None):
@@ -171,18 +172,9 @@ class ConceptInfo(object):
     """
     self.arg_info_map[attribute] = value
 
-  def GetDeps(self):
-    """Builds the deps.Deps object to get attribute values.
-
-    Gets a set of fallthroughs for each attribute of the handler's concept spec,
-    including any argument values that were registered through RegisterArg.
-    Then initializes the deps object.
-
-    Returns:
-      (deps_lib.Deps) the deps object representing all data dependencies.
-    """
+  def _BuildFinalFallthroughsMap(self):
+    """Helper method to build all fallthroughs including arg names."""
     final_fallthroughs_map = {}
-
     for attribute in self.concept_spec.attributes:
       attribute_name = attribute.name
       attribute_fallthroughs = []
@@ -197,8 +189,35 @@ class ConceptInfo(object):
 
       attribute_fallthroughs += self.fallthroughs_map.get(attribute_name, [])
       final_fallthroughs_map[attribute_name] = attribute_fallthroughs
+    return final_fallthroughs_map
 
+  def GetDeps(self):
+    """Builds the deps.Deps object to get attribute values.
+
+    Gets a set of fallthroughs for each attribute of the handler's concept spec,
+    including any argument values that were registered through RegisterArg.
+    Then initializes the deps object.
+
+    Returns:
+      (deps_lib.Deps) the deps object representing all data dependencies.
+    """
+    final_fallthroughs_map = self._BuildFinalFallthroughsMap()
     return deps_lib.Deps(final_fallthroughs_map)
+
+  def GetHints(self, attribute_name):
+    """Gets a list of string hints for how to set an attribute.
+
+    Given the attribute name, gets a list of hints corresponding to the
+    attribute's fallthroughs.
+
+    Args:
+      attribute_name: str, the name of the attribute.
+
+    Returns:
+      A list of hints for its fallthroughs, including its primary arg if any.
+    """
+    fallthroughs = self._BuildFinalFallthroughsMap().get(attribute_name, [])
+    return [f.hint for f in fallthroughs]
 
 
 def Parse(concept_spec, concept_info):

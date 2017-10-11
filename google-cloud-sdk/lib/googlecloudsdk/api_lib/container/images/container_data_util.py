@@ -14,19 +14,24 @@
 """Utilities for the container data model."""
 
 
-class ContainerData(object):
-  """Class defining container data."""
+class ImageSummary(object):
+  """ImageSummary is a container class whose structure creates command output.
+  """
 
   def __init__(self, registry, repository, digest):
+    self.fully_qualified_digest = (
+        '{registry}/{repository}@{digest}'.format(
+            registry=registry,
+            repository=repository,
+            digest=digest))
     self.registry = registry
     self.repository = repository
     self.digest = digest
-    self.fully_qualified_digest = '{registry}/{repository}@{digest}'.format(
-        registry=registry, repository=repository, digest=digest)
 
-  def __str__(self):
-    obj_str = [
-        'Image: ' + self.fully_qualified_digest,
-        ''  # Trailing newline.
-    ]
-    return '\n'.join(obj_str)
+
+class ContainerData(object):
+  """ContainerData objects get returned from a command for formatted output.
+  """
+
+  def __init__(self, registry, repository, digest):
+    self.image_summary = ImageSummary(registry, repository, digest)

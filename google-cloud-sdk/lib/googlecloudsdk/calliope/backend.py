@@ -108,6 +108,8 @@ class CommandCommon(object):
     self._common_type._cli_generator = cli_generator
     self._common_type._release_track = release_track
 
+    self.is_group = any([t == base.Group for t in common_type.__mro__])
+
     if parent_group:
       # Propagate down the hidden attribute.
       if parent_group.IsHidden():
@@ -213,7 +215,7 @@ class CommandCommon(object):
         self.long_help = _InsertTag(self.long_help)
 
       # No need to tag DESCRIPTION if it starts with {description} or {index}
-      # becase they are already tagged.
+      # because they are already tagged.
       description = self.detailed_help.get('DESCRIPTION')
       if description and not re.match(r'^[ \n]*\{(description|index)\}',
                                       description):
@@ -272,7 +274,7 @@ class CommandCommon(object):
 
     self.ai = parser_arguments.ArgumentInterceptor(
         parser=self._parser,
-        is_root=not parser_group,
+        is_global=not parser_group,
         cli_generator=self._cli_generator,
         allow_positional=allow_positional_args)
 
@@ -395,6 +397,9 @@ class CommandCommon(object):
     self._common_type.Args(self.ai)
 
     if self._parent_group:
+      # Add parent arguments to the list of all arguments.
+      for arg in self._parent_group.ai.arguments:
+        self.ai.arguments.append(arg)
       # Add parent flags to children, if they aren't represented already
       for flag in self._parent_group.GetAllAvailableFlags():
         if flag.is_replicated:
@@ -404,7 +409,7 @@ class CommandCommon(object):
           # Don't propagate down flags that only apply to the group but not to
           # subcommands.
           continue
-        if flag.required:
+        if flag.is_required:
           # It is not easy to replicate required flags to subgroups and
           # subcommands, since then there would be two+ identical required
           # flags, and we'd want only one of them to be necessary.

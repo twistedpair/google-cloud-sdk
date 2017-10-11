@@ -68,13 +68,20 @@ definitions:
       # parsed string value of the argument and returns the converted
       # parsed value.
       type: { $ref: "#/definitions/python_hook" }
+      # The argparse action to use for this argument. It can be either 'store',
+      # 'store_true', or the module path to a class that implements argparse's
+      # Action class. If specified, this takes precedence over the 'deprecated'
+      # attribute below.
+      action: { type: string }
+      # Can be set to False if you want to accept a single value even though the
+      # API field is repeated. If the API field is not repeated, this attribute
+      # has no effect.
+      repeated: { type: boolean }
       # Overrides the choices that are generated for the argument. Each key
       # is one choice and the value is the value that is returned when that
       # choice is selected.
       choices:
         type: object
-        patternProperties:
-          .*: { type: string }
       # The default value of the argument when not provided.
       default: { type: [ string, number, boolean, array ] }
       # The module path to a function to process the parsed value

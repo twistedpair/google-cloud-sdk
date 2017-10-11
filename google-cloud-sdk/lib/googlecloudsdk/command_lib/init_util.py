@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Contains utilities to support the `gcloud init` command."""
-import itertools
-
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 from googlecloudsdk.calliope import usage_text
@@ -29,9 +27,7 @@ Project IDs must be 6-30 characters (lowercase ASCII, digits, or
 hyphens) in length and start with a lowercase letter. \
 """
 _CREATE_PROJECT_SENTINEL = object()
-# The numbers below are a bit arbitrary but work well in practice.
-# The batch size is the empirical max that CloudResourceManager accepts.
-_PROJECT_LIST_BATCH_SIZE = 2000
+
 # At around 200 projects, being able to list them out becomes less useful.
 _PROJECT_LIST_LIMIT = 200
 
@@ -46,15 +42,7 @@ def _GetProjectIds(limit=None):
     list of str, project IDs, or None (if the command fails).
   """
   try:
-    # We do limiting here because apitools.base.py.list_pager.YieldFromList
-    # will keep decreasing the batch size as it gets more items if we pass it
-    # a limit argument (It uses limit as a counter and sets the request batch
-    # size to min(batch_size, limit)). So using limit from YieldFromList would
-    # nullify the effect of setting a large batch size and could even make this
-    # step even slower.
-    projects = projects_api.List(batch_size=_PROJECT_LIST_BATCH_SIZE)
-    if limit is not None:
-      projects = itertools.islice(projects, limit)
+    projects = projects_api.List(limit=limit)
     return sorted([project.projectId for project in projects])
   except Exception as err:  # pylint: disable=broad-except
     log.warn('Listing available projects failed: %s', str(err))

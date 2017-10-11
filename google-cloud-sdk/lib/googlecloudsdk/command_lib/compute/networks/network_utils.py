@@ -13,7 +13,7 @@
 # limitations under the License.
 """Code that's shared between multiple networks subcommands."""
 
-from googlecloudsdk.calliope import exceptions as exceptions
+from googlecloudsdk.calliope import actions as calliope_actions
 from googlecloudsdk.calliope import parser_errors
 
 
@@ -31,30 +31,25 @@ RANGE_HELP_TEXT = """\
     """
 
 
-class CancelledException(exceptions.ToolException):
-  """Exception raised when a networks command is cancelled by the user."""
-
-
 _RANGE_NON_LEGACY_MODE_ERROR = (
-    '--range can only be used with --subnet-mode=LEGACY.')
-
+    '--range can only be used with --subnet-mode=legacy.')
 
 _BGP_ROUTING_MODE_CHOICES = {
-    'GLOBAL': 'Cloud Routers in this network advertise subnetworks from all '
+    'global': 'Cloud Routers in this network advertise subnetworks from all '
               'regions to their BGP peers, and program instances in all '
               'regions with the router\'s best learned BGP routes.',
-    'REGIONAL': 'Cloud Routers in this network advertise subnetworks from '
+    'regional': 'Cloud Routers in this network advertise subnetworks from '
                 'their local region only to their BGP peers, and program '
                 'instances in their local region only with the router\'s best '
                 'learned BGP routes.',
 }
 
 _CREATE_SUBNET_MODE_CHOICES = {
-    'AUTO': 'Subnets are created automatically.  This is the recommended '
+    'auto': 'Subnets are created automatically.  This is the recommended '
             'selection.',
-    'CUSTOM': 'Create subnets manually.',
-    'LEGACY': 'Create an old style network that has a range and cannot have '
-              'subnets.  This is not recommended for new networks.'
+    'custom': 'Create subnets manually.',
+    'legacy': 'Create an old style network that has a range and cannot have '
+              'subnets.  This is not recommended for new networks.',
 }
 
 
@@ -68,10 +63,27 @@ def AddCreateBaseArgs(parser):
   parser.add_argument('--range', help=RANGE_HELP_TEXT)
 
 
-# TODO(b/64980447): Deprecate this arg and use --subnet-mode instead.
-def AddCreateModeArg(parser):
-  parser.add_argument(
+def AddCreateSubnetModeArg(parser):
+  """Adds the --subnet-mode and deprecated --mode flags."""
+  mode_args = parser.add_mutually_exclusive_group(required=False)
+
+  mode_args.add_argument(
+      '--subnet-mode',
+      choices=_CREATE_SUBNET_MODE_CHOICES,
+      type=lambda mode: mode.lower(),
+      metavar='MODE',
+      help="""The subnet mode of the network. If not specified, defaults to
+              AUTO.""")
+
+  # TODO(b/64980447): Clean up the --mode flag after 3 months of deprecation.
+  mode_args.add_argument(
       '--mode',
+      action=calliope_actions.DeprecationAction(
+          'mode',
+          removed=False,
+          warn='{flag_name} is deprecated. Please use subnet-mode instead.',
+          error='{flag_name} has been removed. Please use subnet-mode instead.'
+      ),
       metavar='NETWORK_TYPE',
       choices={
           'auto': ('Subnets are created automatically. This is the recommended '
@@ -86,29 +98,20 @@ def AddCreateModeArg(parser):
       help='The network type.')
 
 
-def AddCreateSubnetModeArg(parser):
-  parser.add_argument(
-      '--subnet-mode',
-      choices=_CREATE_SUBNET_MODE_CHOICES,
-      default='AUTO',
-      type=lambda mode: mode.upper(),
-      metavar='MODE',
-      help="""The subnet mode of the network. If not specified, defaults to
-              AUTO.""")
-
-
 def AddCreateBgpRoutingModeArg(parser):
+  """Adds the --bgp-routing-mode flag."""
   parser.add_argument(
       '--bgp-routing-mode',
       choices=_BGP_ROUTING_MODE_CHOICES,
-      type=lambda mode: mode.upper(),
+      default='regional',
+      type=lambda mode: mode.lower(),
       metavar='MODE',
       help="""The BGP routing mode for this network. If not specified, defaults
-              to REGIONAL.""")
+              to regional.""")
 
 
-def AddUpdateBetaArgs(parser):
-  """Adds alpha-specific arguments for updating a network."""
+def AddUpdateArgs(parser):
+  """Adds arguments for updating a network."""
 
   mode_args = parser.add_mutually_exclusive_group(required=False)
 
@@ -120,12 +123,14 @@ def AddUpdateBetaArgs(parser):
   mode_args.add_argument(
       '--bgp-routing-mode',
       choices=_BGP_ROUTING_MODE_CHOICES,
-      type=lambda mode: mode.upper(),
+      type=lambda mode: mode.lower(),
       metavar='MODE',
       help="""The target BGP routing mode for this network.""")
 
 
 def CheckRangeLegacyModeOrRaise(args):
   """Checks for range being used with incompatible mode and raises an error."""
-  if args.range is not None and args.subnet_mode != 'LEGACY':
-    raise parser_errors.ArgumentError(_RANGE_NON_LEGACY_MODE_ERROR)
+  if args.range is not None:
+    if ((args.subnet_mode and args.subnet_mode != 'legacy') or
+        (args.mode and args.mode != 'legacy')):
+      raise parser_errors.ArgumentError(_RANGE_NON_LEGACY_MODE_ERROR)

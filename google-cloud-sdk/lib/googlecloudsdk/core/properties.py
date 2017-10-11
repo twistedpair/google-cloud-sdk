@@ -560,6 +560,12 @@ class _SectionCompute(_Section):
         'gce_metadata_read_timeout_sec',
         default=1,
         hidden=True)
+    self.use_new_list_usable_subnets_api = self._AddBool(
+        'use_new_list_usable_subnets_api',
+        default=False,
+        help_text=(
+            'If True, use the new API for listing usable subnets which only '
+            'returns subnets in the current project.'))
 
 
 class _SectionFunctions(_Section):

@@ -68,12 +68,43 @@ class ArgumentError(argparse.ArgumentError):
     return message
 
 
-class RequiredArgumentError(ArgumentError):
-  """Arparse required actions were not all present."""
+class ModalGroupError(ArgumentError):
+  """Modal group conflict error."""
+
+  def __init__(self, conflict, **kwargs):
+    super(ModalGroupError, self).__init__(
+        '{conflict} must be specified.',
+        conflict=conflict,
+        **kwargs)
 
 
-class RequiredArgumentGroupError(ArgumentError):
-  """Command has a group of arguments with none of the options present."""
+class OptionalMutexError(ArgumentError):
+  """Optional mutex conflict error."""
+
+  def __init__(self, conflict, **kwargs):
+    super(OptionalMutexError, self).__init__(
+        'At most one of {conflict} may be specified.',
+        conflict=conflict,
+        **kwargs)
+
+
+class RequiredError(ArgumentError):
+  """Required error."""
+
+  def __init__(self, **kwargs):
+    super(RequiredError, self).__init__(
+        'Must be specified.',
+        **kwargs)
+
+
+class RequiredMutexError(ArgumentError):
+  """Required mutex conflict error."""
+
+  def __init__(self, conflict, **kwargs):
+    super(RequiredMutexError, self).__init__(
+        'Exactly one of {conflict} must be specified.',
+        conflict=conflict,
+        **kwargs)
 
 
 class TooFewArgumentsError(ArgumentError):

@@ -59,11 +59,14 @@ def GetIamPolicy(folder_id):
   return FoldersService().GetIamPolicy(request)
 
 
-def SetIamPolicy(folder_id, policy):
+def SetIamPolicy(folder_id, policy, update_mask=None):
+  """Calls /google.cloud.resourcemanager.v2beta1.Folders.SetIamPolicy."""
   messages = FoldersMessages()
+  set_iam_policy_request = messages.SetIamPolicyRequest(
+      policy=policy, updateMask=update_mask)
   request = messages.CloudresourcemanagerFoldersSetIamPolicyRequest(
-      foldersId=folder_id,
-      setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy))
+      foldersId=folder_id, setIamPolicyRequest=set_iam_policy_request)
+
   return FoldersService().SetIamPolicy(request)
 
 

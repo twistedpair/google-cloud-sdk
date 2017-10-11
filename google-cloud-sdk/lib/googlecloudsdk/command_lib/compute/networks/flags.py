@@ -20,15 +20,6 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 DEFAULT_LIST_FORMAT = """\
     table(
       name,
-      x_gcloud_mode:label=MODE,
-      IPv4Range:label=IPV4_RANGE,
-      gatewayIPv4
-    )"""
-
-
-BETA_LIST_FORMAT = """\
-    table(
-      name,
       x_gcloud_subnet_mode:label=SUBNET_MODE,
       x_gcloud_bgp_routing_mode:label=BGP_ROUTING_MODE,
       IPv4Range:label=IPV4_RANGE,

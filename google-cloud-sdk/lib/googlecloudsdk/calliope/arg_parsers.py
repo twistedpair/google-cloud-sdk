@@ -1038,7 +1038,7 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
         'the left and {metavar} on the right.'
     ).format(metavar=kwargs['metavar'])
     if 'help' in kwargs:
-      kwargs['help'] += '\n\n' + self.explanation
+      kwargs['help'] += '\n+\n' + self.explanation
       if example:
         kwargs['help'] += ' Example:\n\n' + example
     super(RemainderAction, self).__init__(*args, **kwargs)
@@ -1082,7 +1082,7 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
     # Strip out everything after '--'
     if '--' in original_args:
       original_args, _ = self._SplitOnDash(original_args)
-    # Find common suffix between remaining_args and orginal_args
+    # Find common suffix between remaining_args and original_args
     split_index = 0
     for i, (arg1, arg2) in enumerate(
         zip(reversed(remaining_args), reversed(original_args))):

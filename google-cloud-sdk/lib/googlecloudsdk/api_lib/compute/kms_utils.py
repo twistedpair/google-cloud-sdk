@@ -125,7 +125,7 @@ def _DictToKmsKey(args, resource_project):
       val = args[key] if key in args else None
       if val:
         return val
-      raise parser_errors.RequiredArgumentError('is required', key)
+      raise parser_errors.RequiredError(argument=key)
     return GetValueFunc
 
   return resources.REGISTRY.Parse(

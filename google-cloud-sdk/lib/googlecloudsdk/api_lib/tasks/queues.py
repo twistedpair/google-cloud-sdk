@@ -49,7 +49,7 @@ class Queues(object):
   def Create(self, parent_ref, queue_ref, retry_config=None,
              throttle_config=None, pull_target=None,
              app_engine_http_target=None):
-    """Prepares and sends a Patch request for creating a queue."""
+    """Prepares and sends a Create request for creating a queue."""
     if pull_target and app_engine_http_target:
       raise ModifyingPullAndAppEngineQueueError(
           'Attempting to send PullTarget and AppEngineHttpTarget '
@@ -126,5 +126,3 @@ def _IsEmptyConfig(config):
 
   config_dict = encoding.MessageToDict(config)
   return not any(config_dict.values())
-
-

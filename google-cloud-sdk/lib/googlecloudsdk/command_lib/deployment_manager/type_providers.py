@@ -15,7 +15,6 @@
 """type-provider command basics."""
 
 from googlecloudsdk.api_lib.deployment_manager import exceptions
-from googlecloudsdk.command_lib.deployment_manager import dm_v2beta_base
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 import yaml
@@ -72,25 +71,26 @@ def AddApiOptionsFileFlag(parser):
                             'options and collection overrides.'))
 
 
-def _OptionsFrom(options_data):
+def _OptionsFrom(messages, options_data):
   """Translate a dict of options data into a message object.
 
   Args:
+    messages: The API message to use.
     options_data: A dict containing options data.
   Returns:
     An Options message object derived from options_data.
   """
-  options = dm_v2beta_base.GetMessages().Options()
+  options = messages.Options()
   if 'virtualProperties' in options_data:
     options.virtualProperties = options_data['virtualProperties']
 
   if 'inputMappings' in options_data:
-    options.inputMappings = [_InputMappingFrom(im_data)
+    options.inputMappings = [_InputMappingFrom(messages, im_data)
                              for im_data in options_data['inputMappings']]
 
   if 'validationOptions' in options_data:
     validation_options_data = options_data['validationOptions']
-    validation_options = dm_v2beta_base.GetMessages().ValidationOptions()
+    validation_options = messages.ValidationOptions()
     if 'schemaValidation' in validation_options_data:
       validation_options.schemaValidation = (
           validation_options_data['schemaValidation'])
@@ -102,39 +102,42 @@ def _OptionsFrom(options_data):
   return options
 
 
-def _InputMappingFrom(input_mapping_data):
+def _InputMappingFrom(messages, input_mapping_data):
   """Translate a dict of input mapping data into a message object.
 
   Args:
+    messages: The API message to use.
     input_mapping_data: A dict containing input mapping data.
   Returns:
     An InputMapping message object derived from options_data.
   """
-  return dm_v2beta_base.GetMessages().InputMapping(
+  return messages.InputMapping(
       fieldName=input_mapping_data.get('fieldName', None),
       location=input_mapping_data.get('location', None),
       methodMatch=input_mapping_data.get('methodMatch', None),
       value=input_mapping_data.get('value', None))
 
 
-def _CredentialFrom(credential_data):
+def _CredentialFrom(messages, credential_data):
   """Translate a dict of credential data into a message object.
 
   Args:
+    messages: The API message to use.
     credential_data: A dict containing credential data.
   Returns:
     An Credential message object derived from credential_data.
   """
-  basic_auth = dm_v2beta_base.GetMessages().BasicAuth(
+  basic_auth = messages.BasicAuth(
       password=credential_data['basicAuth']['password'],
       user=credential_data['basicAuth']['user'])
-  return dm_v2beta_base.GetMessages().Credential(basicAuth=basic_auth)
+  return messages.Credential(basicAuth=basic_auth)
 
 
-def AddOptions(options_file, type_provider):
+def AddOptions(messages, options_file, type_provider):
   """Parse api options from the file and add them to type_provider.
 
   Args:
+    messages: The API message to use.
     options_file: String path expression pointing to a type-provider options
         file.
     type_provider: A TypeProvider message on which the options will be set.
@@ -159,26 +162,27 @@ def AddOptions(options_file, type_provider):
       type_provider.collectionOverrides = []
 
       for collection_override_data in yaml_content['collectionOverrides']:
-        collection_override = dm_v2beta_base.GetMessages().CollectionOverride(
+        collection_override = messages.CollectionOverride(
             collection=collection_override_data['collection'])
 
         if 'options' in collection_override_data:
           collection_override.options = _OptionsFrom(
-              collection_override_data['options'])
+              messages, collection_override_data['options'])
 
         type_provider.collectionOverrides.append(collection_override)
 
     if 'options' in yaml_content:
-      type_provider.options = _OptionsFrom(yaml_content['options'])
+      type_provider.options = _OptionsFrom(messages, yaml_content['options'])
 
     if 'credential' in yaml_content:
-      type_provider.credential = _CredentialFrom(yaml_content['credential'])
+      type_provider.credential = _CredentialFrom(
+          messages, yaml_content['credential'])
 
   return type_provider
 
 
-def GetReference(name):
-  return dm_v2beta_base.GetResources().Parse(
+def GetReference(resources, name):
+  return resources.Parse(
       name,
       params={'project': properties.VALUES.core.project.GetOrFail},
       collection='deploymentmanager.typeProviders')

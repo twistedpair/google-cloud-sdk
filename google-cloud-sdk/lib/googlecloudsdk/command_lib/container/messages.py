@@ -13,8 +13,6 @@
 # limitations under the License.
 """Helper methods for constructing messages for the container CLI."""
 
-from googlecloudsdk.calliope import exceptions
-
 
 def AutoUpdateUpgradeRepairMessage(value, flag_name):
   """Messaging for when auto-upgrades or node auto-repairs.
@@ -28,10 +26,6 @@ def AutoUpdateUpgradeRepairMessage(value, flag_name):
     the formatted message string.
   """
   action = 'enable' if value else 'disable'
-  if flag_name != 'autoupgrade' and flag_name != 'autorepair':
-    raise exceptions.InvalidArgumentException(
-        'Invalid value for flag_name: ' + flag_name +
-        '. Must be either autorepair or autoupgrade')
   plural = flag_name + 's'
   link = 'node-management' if flag_name == 'autoupgrade' else 'node-auto-repair'
   return ('This will {0} the {1} feature for nodes. Please see\n'

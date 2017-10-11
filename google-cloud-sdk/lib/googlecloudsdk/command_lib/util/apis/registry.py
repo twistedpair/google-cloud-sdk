@@ -21,6 +21,7 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import resource
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.apis import apis_map
@@ -177,6 +178,23 @@ class APIMethod(object):
   def GetResponseType(self):
     """Gets the apitools response class for this method."""
     return self._service.GetResponseType(self._method_name)
+
+  def GetEffectiveResponseType(self):
+    """Gets the effective apitools response class for this method.
+
+    This will be different from GetResponseType for List methods if we are
+    extracting the list of response items from the overall response. This will
+    always match the type of response that Call() returns.
+
+    Returns:
+      The apitools Message object.
+    """
+    response_type = self.GetResponseType()
+    item_field = self.ListItemField()
+    if item_field:
+      response_type = arg_utils.GetFieldFromMessage(
+          response_type, item_field).type
+    return response_type
 
   def IsList(self):
     """Determines whether this is a List method."""
@@ -389,8 +407,6 @@ def _ValidateAndGetDefaultVersion(api_name, api_version):
 
   for version, api_def in api_vers.iteritems():
     if api_def.default_version:
-      log.warning('Using default version [{}] for api [{}].'
-                  .format(version, api_name))
       return version
   raise NoDefaultVersionError(api_name)
 

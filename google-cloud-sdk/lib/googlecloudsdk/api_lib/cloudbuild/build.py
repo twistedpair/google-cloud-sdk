@@ -18,6 +18,7 @@ import json
 import time
 
 from apitools.base.py import encoding
+import enum
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
 from googlecloudsdk.core import exceptions
@@ -59,6 +60,96 @@ def _ExtractErrorMessage(error_details):
   return error_message.getvalue()
 
 
+def _GetBuildProp(build_op, prop_key):
+  """Extract the value of a build's prop_key from a build operation."""
+  if build_op.metadata is not None:
+    for prop in build_op.metadata.additionalProperties:
+      if prop.key == 'build':
+        for build_prop in prop.value.object_value.properties:
+          if build_prop.key == prop_key:
+            string_value = build_prop.value.string_value
+            return string_value or build_prop.value
+
+
+def _GetStatusFromOp(op):
+  """Get the Cloud Build Status from an Operation object.
+
+  The op.response field is supposed to have a copy of the build object; however,
+  the wire JSON from the server doesn't get deserialized into an actual build
+  object. Instead, it is stored as a generic ResponseValue object, so we have
+  to root around a bit.
+
+  Args:
+    op: the Operation object from a CloudBuild build request.
+
+  Returns:
+    string status, likely "SUCCESS" or "ERROR".
+  """
+  if op.response and op.response.additionalProperties:
+    for prop in op.response.additionalProperties:
+      if prop.key == 'status':
+        return prop.value.string_value
+  return 'UNKNOWN'
+
+
+class BuildArtifact(object):
+  """Represents a build of a flex container, either in-progress or completed.
+
+  A build artifact is either a build_id for an in-progress build, or the image
+  name for a completed container build. If a build_id is used in a depoloyment,
+  Flex serving infrastructure is brought up in parallel with the container
+  build. When an image name is used instead, flex serving infrastructure is
+  brought up in serial after the build has completed.
+  """
+
+  class BuildType(enum.Enum):
+    IMAGE = 1
+    BUILD_ID = 2
+
+  def __init__(self, build_type, identifier, build_op=None):
+    self.build_type = build_type
+    self.identifier = identifier
+    self.build_op = build_op
+
+  def IsImage(self):
+    return self.build_type == self.BuildType.IMAGE
+
+  def IsBuildId(self):
+    return self.build_type == self.BuildType.BUILD_ID
+
+  @classmethod
+  def MakeBuildIdArtifact(cls, build_id):
+    return cls(cls.BuildType.BUILD_ID, build_id)
+
+  @classmethod
+  def MakeImageArtifact(cls, image_name):
+    return cls(cls.BuildType.IMAGE, image_name)
+
+  @classmethod
+  def MakeBuildIdArtifactFromOp(cls, build_op):
+    build_id = _GetBuildProp(build_op, 'id')
+
+    if build_id is None:
+      log.debug('Could not determine build ID')
+      raise BuildFailedError('Cloud build failed. Check logs for details')
+    return cls(cls.BuildType.BUILD_ID, build_id, build_op)
+
+  @classmethod
+  def MakeImageArtifactFromOp(cls, build_op):
+    """Create Image BuildArtifact from build operation."""
+    source = _GetBuildProp(build_op, 'source')
+    for prop in source.object_value.properties:
+      if prop.key == 'storageSource':
+        for storage_prop in prop.value.object_value.properties:
+          if storage_prop.key == 'object':
+            image_name = storage_prop.value.string_value
+
+    if image_name is None:
+      raise BuildFailedError('Could not determine image name')
+
+    return cls(cls.BuildType.IMAGE, image_name, build_op)
+
+
 class BuildFailedError(exceptions.Error):
   """Raised when a Google Cloud Builder build fails."""
 
@@ -84,15 +175,6 @@ class CloudBuildClient(object):
   def __init__(self, client=None, messages=None):
     self.client = client or cloudbuild_util.GetClientInstance()
     self.messages = messages or cloudbuild_util.GetMessagesModule()
-
-  def _GetBuildProp(self, build_op, prop_key):
-    """Extract the value of a build's prop_key from a build operation."""
-    if build_op.metadata is not None:
-      for prop in build_op.metadata.additionalProperties:
-        if prop.key == 'build':
-          for build_prop in prop.value.object_value.properties:
-            if build_prop.key == prop_key:
-              return build_prop.value.string_value
 
   def _StartBuild(self, build, project):
     """Constructs and submits the CloudbuildProjectsBuildsCreateRequest."""
@@ -122,10 +204,11 @@ class CloudBuildClient(object):
       build_id, str: The ID for an in-progress build.
     """
     build_op = self._StartBuild(build, project)
-    build_id = self._GetBuildProp(build_op, 'id')
+    build_id = _GetBuildProp(build_op, 'id')
 
     if build_id is None:
-      raise BuildFailedError('Could not determine build ID')
+      log.debug('Could not determine build ID')
+      raise BuildFailedError('Cloud build failed. Check logs for details')
 
     return build_id
 
@@ -143,11 +226,12 @@ class CloudBuildClient(object):
     """
 
     build_op = self._StartBuild(build, project)
-    build_id = self._GetBuildProp(build_op, 'id')
-    logs_uri = self._GetBuildProp(build_op, 'logUrl')
+    build_id = _GetBuildProp(build_op, 'id')
+    logs_uri = _GetBuildProp(build_op, 'logUrl')
 
     if build_id is None:
-      raise BuildFailedError('Could not determine build ID')
+      log.debug('Could not determine build ID')
+      raise BuildFailedError('Cloud build failed. Check logs for details')
 
     self._WaitAndStreamLogs(build_op, build.logsBucket, build_id, logs_uri)
 
@@ -237,24 +321,3 @@ class CloudBuildClient(object):
         retry_callback()
 
     return None
-
-
-def _GetStatusFromOp(op):
-  """Get the Cloud Build Status from an Operation object.
-
-  The op.response field is supposed to have a copy of the build object; however,
-  the wire JSON from the server doesn't get deserialized into an actual build
-  object. Instead, it is stored as a generic ResponseValue object, so we have
-  to root around a bit.
-
-  Args:
-    op: the Operation object from a CloudBuild build request.
-
-  Returns:
-    string status, likely "SUCCESS" or "ERROR".
-  """
-  if op.response and op.response.additionalProperties:
-    for prop in op.response.additionalProperties:
-      if prop.key == 'status':
-        return prop.value.string_value
-  return 'UNKNOWN'

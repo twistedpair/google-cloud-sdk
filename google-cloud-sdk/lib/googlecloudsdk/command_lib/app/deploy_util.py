@@ -20,6 +20,7 @@ import argparse
 import re
 import enum
 
+
 from googlecloudsdk.api_lib.app import appengine_client
 from googlecloudsdk.api_lib.app import cloud_endpoints
 from googlecloudsdk.api_lib.app import deploy_app_command_util
@@ -31,6 +32,7 @@ from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.api_lib.app.appinfo import appinfo
+from googlecloudsdk.api_lib.cloudbuild import build as cloud_build
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.calliope import actions
@@ -297,7 +299,7 @@ class ServiceDeployer(object):
         log.warning('Deployment of service [{0}] will ignore the skip_files '
                     'field in the configuration file, because the image has '
                     'already been built.'.format(new_version.service))
-      return deploy_command_util.BuildArtifact.MakeImageArtifact(image)
+      return cloud_build.BuildArtifact.MakeImageArtifact(image)
     elif service.RequiresImage():
       build = deploy_command_util.BuildAndPushDockerImage(
           new_version.project, service, source_dir, new_version.id,

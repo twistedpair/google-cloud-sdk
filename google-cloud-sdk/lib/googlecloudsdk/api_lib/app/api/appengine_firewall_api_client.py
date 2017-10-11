@@ -17,6 +17,19 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
 from googlecloudsdk.api_lib.app.api import requests
+from googlecloudsdk.calliope import base as calliope_base
+
+
+VERSION_MAP = {
+    calliope_base.ReleaseTrack.GA: 'v1',
+    calliope_base.ReleaseTrack.ALPHA: 'v1alpha',
+    calliope_base.ReleaseTrack.BETA: 'v1beta'
+}
+
+
+def GetApiClientForTrack(release_track):
+  api_version = VERSION_MAP[release_track]
+  return AppengineFirewallApiClient.GetApiClient(api_version)
 
 
 class AppengineFirewallApiClient(base.AppengineApiClientBase):

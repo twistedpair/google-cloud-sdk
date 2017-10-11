@@ -95,7 +95,7 @@ class PropertyFallthrough(Fallthrough):
     # Special messaging for the project property, which can be modified by the
     # global --project flag.
     if self.property == properties.VALUES.core.project:
-      hint += ' or provide the flag [--project] at the command line'
+      hint += ' or provide the flag [--project] on the command line'
     return hint
 
   def __eq__(self, other):
@@ -125,7 +125,7 @@ class ArgFallthrough(Fallthrough):
 
   @property
   def hint(self):
-    return 'Provide the flag [{}] at the command line'.format(self.arg_name)
+    return 'Provide the flag [{}] on the command line'.format(self.arg_name)
 
   def __eq__(self, other):
     if not isinstance(other, self.__class__):
@@ -180,8 +180,8 @@ class Deps(object):
         return fallthrough.GetValue()
       except FallthroughNotFoundError:
         continue
-    fallthroughs_summary = '\n'.join(['- {}'.format(f.hint)
-                                      for f in fallthroughs])
+    fallthroughs_summary = '\n'.join(
+        ['- {}'.format(fallthrough.hint) for fallthrough in fallthroughs])
     raise AttributeNotFoundError(
         'Failed to find attribute [{}]. The attribute can be set in the '
         'following ways: \n'

@@ -191,6 +191,10 @@ class Projector(object):
     if not obj:
       return obj
     res = {}
+    try:
+      obj.iteritems()
+    except ValueError:
+      return None
     for key, val in obj.iteritems():
       f = flag
       if key in projection.tree:
@@ -207,7 +211,10 @@ class Projector(object):
       if (val is not None or self._retain_none_values or
           f >= self._projection.PROJECT and self._columns):
         # Explicit projection paths always show none values.
-        res[unicode(key)] = val
+        try:
+          res[unicode(key)] = val
+        except UnicodeError:
+          res[key] = val
     return res or None
 
   def _ProjectList(self, obj, projection, flag):
@@ -235,7 +242,10 @@ class Projector(object):
         # Convert a set like object to an ordered list.
         obj = sorted(obj)
     except TypeError:
-      obj = list(obj)
+      try:
+        obj = list(obj)
+      except TypeError:
+        return None
 
     # Determine the explicit indices or slice.
     # If there is a slice index then every index is projected.
@@ -387,9 +397,15 @@ class Projector(object):
       elif ((flag >= self._projection.PROJECT or projection and projection.tree)
             and hasattr(obj, '__iter__')):
         if hasattr(obj, 'iteritems'):
-          obj = self._ProjectDict(obj, projection, flag)
+          try:
+            obj = self._ProjectDict(obj, projection, flag)
+          except (IOError, TypeError):
+            obj = None
         else:
-          obj = self._ProjectList(obj, projection, flag)
+          try:
+            obj = self._ProjectList(obj, projection, flag)
+          except (IOError, TypeError):
+            obj = None
       self._been_here_done_that.pop()
       return obj
     # _ProjectAttribute() may apply transforms functions on obj, even if it is

@@ -17,7 +17,6 @@
 import json
 import os
 import re
-import enum
 
 from gae_ext_runtime import ext_runtime
 
@@ -134,39 +133,6 @@ class NoDockerfileError(exceptions.Error):
 
 class UnsatisfiedRequirementsError(exceptions.Error):
   """Raised if we are unable to detect the runtime."""
-
-
-class BuildArtifact(object):
-  """Represents a build of a flex container, either in-progress or completed.
-
-  A build artifact is either a build_id for an in-progress build, or the image
-  name for a completed container build. If a build_id is used in a depoloyment,
-  Flex serving infrastructure is brought up in parallel with the container
-  build. When an image name is used instead, flex serving infrastructure is
-  brought up in serial after the build has completed.
-  """
-
-  class BuildType(enum.Enum):
-    IMAGE = 1
-    BUILD_ID = 2
-
-  def __init__(self, build_type, identifier):
-    self.build_type = build_type
-    self.identifier = identifier
-
-  def IsImage(self):
-    return self.build_type == self.BuildType.IMAGE
-
-  def IsBuildId(self):
-    return self.build_type == self.BuildType.BUILD_ID
-
-  @classmethod
-  def MakeBuildIdArtifact(cls, build_id):
-    return cls(cls.BuildType.BUILD_ID, build_id)
-
-  @classmethod
-  def MakeImageArtifact(cls, image_name):
-    return cls(cls.BuildType.IMAGE, image_name)
 
 
 def _NeedsDockerfile(info, source_dir):
@@ -501,13 +467,13 @@ def _SubmitBuild(build, image, project, parallel_build):
     metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE_ASYNC_START)
     build_id = cloudbuild_build.CloudBuildClient().ExecuteCloudBuildAsync(
         build, project=project)
-    return BuildArtifact.MakeBuildIdArtifact(build_id)
+    return cloudbuild_build.BuildArtifact.MakeBuildIdArtifact(build_id)
   else:
     metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE_START)
     cloudbuild_build.CloudBuildClient().ExecuteCloudBuild(
         build, project=project)
     metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
-    return BuildArtifact.MakeImageArtifact(image.tagged_repo)
+    return cloudbuild_build.BuildArtifact.MakeImageArtifact(image.tagged_repo)
 
 
 def DoPrepareManagedVms(gae_client):

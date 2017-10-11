@@ -22,7 +22,7 @@ from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util import labels_util
 
 
-def List(limit=None, filter=None, batch_size=100):  # pylint: disable=redefined-builtin
+def List(limit=None, filter=None, batch_size=500):  # pylint: disable=redefined-builtin
   """Make API calls to List active projects.
 
   Args:
@@ -38,13 +38,18 @@ def List(limit=None, filter=None, batch_size=100):  # pylint: disable=redefined-
   messages = projects_util.GetMessages()
   return list_pager.YieldFromList(
       client.projects,
-      messages.CloudresourcemanagerProjectsListRequest(filter=filter),
+      messages.CloudresourcemanagerProjectsListRequest(
+          filter=_AddActiveProjectFilter(filter)),
       batch_size=batch_size,
       limit=limit,
       field='projects',
-      predicate=
-      projects_util.IsActive,
       batch_size_attribute='pageSize')
+
+
+def _AddActiveProjectFilter(filter_expr):
+  if not filter_expr:
+    return 'lifecycleState:ACTIVE'
+  return 'lifecycleState:ACTIVE AND ({})'.format(filter_expr)
 
 
 def Get(project_ref):

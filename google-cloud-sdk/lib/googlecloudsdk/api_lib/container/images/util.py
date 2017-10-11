@@ -221,6 +221,7 @@ def TransformContainerAnalysisData(image_name, occurrence_filter=None):
       image_name)
   for occurrence in occurrences:
     analysis_obj.add_record(occurrence)
+  analysis_obj.resolveSummaries()
   return analysis_obj
 
 

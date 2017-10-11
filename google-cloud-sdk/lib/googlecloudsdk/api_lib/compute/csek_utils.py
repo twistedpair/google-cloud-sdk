@@ -20,6 +20,7 @@ import re
 
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files
 
 CSEK_HELP_URL = ('https://cloud.google.com/compute/docs/disks/'
@@ -249,11 +250,12 @@ class UriPattern(object):
   def __init__(self, path_as_string):
     if not path_as_string.startswith('http'):
       raise BadPatternException('uri', path_as_string)
-    self._path_as_string = path_as_string
+    self._path_as_string = resources.REGISTRY.ParseURL(
+        path_as_string).RelativeName()
 
   def Matches(self, resource):
     """Tests if its argument matches the pattern."""
-    return self._path_as_string == resource.SelfLink()
+    return self._path_as_string == resource.RelativeName()
 
   def __str__(self):
     return 'Uri Pattern: ' + self._path_as_string
@@ -421,13 +423,14 @@ def MaybeLookupKeyMessage(csek_keys_or_none, resource, compute_client):
   return MaybeToMessage(maybe_key, compute_client)
 
 
-def MaybeLookupKeys(csek_keys_or_none, resources):
-  return [MaybeLookupKey(csek_keys_or_none, r) for r in resources]
+def MaybeLookupKeys(csek_keys_or_none, resource_collection):
+  return [MaybeLookupKey(csek_keys_or_none, r) for r in resource_collection]
 
 
-def MaybeLookupKeyMessages(csek_keys_or_none, resources, compute_client):
+def MaybeLookupKeyMessages(
+    csek_keys_or_none, resource_collection, compute_client):
   return [MaybeToMessage(k, compute_client) for k in
-          MaybeLookupKeys(csek_keys_or_none, resources)]
+          MaybeLookupKeys(csek_keys_or_none, resource_collection)]
 
 
 def MaybeLookupKeysByUri(csek_keys_or_none, parser, uris):

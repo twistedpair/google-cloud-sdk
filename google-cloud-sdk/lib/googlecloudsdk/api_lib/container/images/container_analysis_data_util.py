@@ -13,9 +13,7 @@
 # limitations under the License.
 """Utilities for the container analysis data model."""
 
-import abc
 import collections
-
 from googlecloudsdk.api_lib.container.images import container_data_util
 from googlecloudsdk.api_lib.util import apis
 
@@ -23,167 +21,67 @@ _INDENT = '  '
 _NULL_SEVERITY = 'UNKNOWN'
 
 
-class BaseCollection(collections.deque):
-  """Base collection for different types of analysis results."""
+class SummaryResolver(object):
+  """SummaryResolver is a base class for occurrence summary objects."""
 
-  __metaclass__ = abc.ABCMeta
+  def resolve(self):
+    """resolve is called after all records are added to the summary.
 
-  def add(self, element):
-    self.append(element)
-
-  @abc.abstractmethod
-  def __str__(self):
+    In this function, aggregate data can be calculated for display.
+    """
     pass
 
 
-class PackageVulnerability(object):
-  """Class defining vulnerability."""
+class PackageVulnerabilitiesSummary(SummaryResolver):
+  """PackageVulnerabilitiesSummary has information about vulnerabilities."""
 
-  class Collection(BaseCollection):
+  def __init__(self):
+    self.__messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
+    self.vulnerabilities = collections.defaultdict(list)
 
-    def __init__(self, *args, **kwargs):
-      super(PackageVulnerability.Collection, self).__init__(*args, **kwargs)
+  def add_record(self, occ):
+    sev = str(occ.vulnerabilityDetails.severity)
+    self.vulnerabilities[sev].append(occ)
 
-    def __str__(self):
-      if not self:
-        return 'No known vulnerabilities at this time.'
+  def resolve(self):
+    self.total_vulnerability_found = 0
+    self.not_fixed_vulnerability_count = 0
 
-      severities = collections.defaultdict(list)
-      for x in list(self):
-        sev = str(x.severity) if x.severity else _NULL_SEVERITY
-        severities[sev].append(x)
-
-      output = ['Vulnerabilities:']
-      for sev in ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', _NULL_SEVERITY]:
-        vulnz = severities[sev]
-        if not vulnz:
-          continue
-        output.append('{0} ({1}):'.format(sev.capitalize(), len(vulnz)))
-        for v in vulnz:
-          output.append(str(v))
-        # Line breaks between sections.
-        output.append('')
-
-      return ('\n' + _INDENT).join(output)
-
-  class PackageVersion(object):
-    """Helper class for Package name version."""
-
-    def __init__(self, affected_location, fixed_location, not_fixed):
-      self.affected_package = self._get_package_name(affected_location)
-      if not_fixed:
-        self.fixed_package = 'Not Fixed'
-      else:
-        self.fixed_package = self._get_package_name(fixed_location)
-
-    def _get_package_name(self, package):
-      if package.version.epoch:
-        return '{name} ({epoch}:{version}-{rev})'.format(
-            name=package.package,
-            version=package.version.name,
-            epoch=package.version.epoch,
-            rev=package.version.revision)
-      else:
-        return '{name} ({version}-{rev})'.format(
-            name=package.package,
-            version=package.version.name,
-            rev=package.version.revision)
-
-  def __init__(self, occurrence):
-    self.vulnerability = occurrence.noteName
-    self.severity = occurrence.vulnerabilityDetails.severity
-    self.pkg_vulnerabilities = []
-    self.patch_not_available = False
-    messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
-    for package_issue in occurrence.vulnerabilityDetails.packageIssue:
-      current_issue_not_fixed = (package_issue.fixedLocation.version.kind ==
-                                 messages.Version.KindValueValuesEnum.MAXIMUM)
-
-      self.pkg_vulnerabilities.append(PackageVulnerability.PackageVersion(
-          package_issue.affectedLocation, package_issue.fixedLocation,
-          not_fixed=current_issue_not_fixed))
-      self.patch_not_available = (current_issue_not_fixed or
-                                  self.patch_not_available)
-
-  def __str__(self):
-    repr_str = ['', 'Vulnerability: {0}'.format(self.vulnerability)]
-    for pkg_vuln in self.pkg_vulnerabilities:
-      repr_str.append('Affected Package: {affected}'.format(
-          affected=pkg_vuln.affected_package))
-      repr_str.append('Fixed Package: {fixed}'.format(
-          fixed=pkg_vuln.fixed_package))
-    # TODO(b/36050346) Display related url after b/32774264 is fixed.
-    return ('\n' + _INDENT + _INDENT).join(repr_str)
+    for occs in self.vulnerabilities.values():
+      for occ in occs:
+        for package_issue in occ.vulnerabilityDetails.packageIssue:
+          self.total_vulnerability_found += 1
+          if (package_issue.fixedLocation.version.kind ==
+              self.__messages.Version.KindValueValuesEnum.MAXIMUM):
+            self.not_fixed_vulnerability_count += 1
+    # The gcloud encoder gets confused unless we turn this back into a dict.
+    self.vulnerabilities = dict(self.vulnerabilities)
 
 
-class BaseImage(object):
-  """Class defining Base image Analysis Data."""
+class ImageBasesSummary(SummaryResolver):
+  """PackageVulnerabilitiesSummary has information about image basis."""
 
-  class Collection(BaseCollection):
+  def __init__(self):
+    self.base_images = []
 
-    def __str__(self):
-      if not self:
-        return 'No base image information is available for this image.'
-
-      base_images = list(sorted(self, key=lambda x: x.distance, reverse=True))
-      last_basis = base_images[-1]
-      dockerfile = [
-          'FROM {0}\t# +{1} layers'.format(x.base_image_url[8:], x.distance)
-          for x in base_images
-      ]
-      for layer in reversed(last_basis.layer_info):
-        if layer.directive and layer.arguments:
-          dockerfile.append('{0} {1}'.format(layer.directive, layer.arguments))
-        else:
-          dockerfile.append('Could not recover information.')
-      return ('\n' + _INDENT).join(['Image Basis:'] + dockerfile)
-
-  def __init__(self, occurrence):
-    self.base_image_url = occurrence.derivedImage.baseResourceUrl
-    self.distance = occurrence.derivedImage.distance
-    self.layer_info = occurrence.derivedImage.layerInfo
+  def add_record(self, occ):
+    self.base_images.append(occ)
 
 
-class BuildDetails(object):
-  """Class Defining Build Details."""
+class BuildsSummary(SummaryResolver):
+  """PackageVulnerabilitiesSummary has information about builds."""
 
-  class Collection(BaseCollection):
+  def __init__(self):
+    self.build_details = []
 
-    def __str__(self):
-      if not self:
-        return 'No build details are available for this image.'
-      return '\n'.join(['Build Details:'] + map(str, self))
-
-  def __init__(self, occurrence):
-    self.create_time = occurrence.buildDetails.provenance.createTime
-    provenance = occurrence.buildDetails.provenance
-    self.creator = provenance.creator
-    self.logs_bucket = provenance.logsBucket
-    self.git_sha = None
-    self.repo_name = None
-    if (provenance.sourceProvenance and
-        provenance.sourceProvenance.sourceContext):
-      context = provenance.sourceProvenance.sourceContext.context
-      self.git_sha = context.cloudRepo.revisionId
-      self.repo_name = context.cloudRepo.repoId.projectRepoId.repoName
-
-  def __str__(self):
-    output = [
-        'Create Time: {create_time}'.format(create_time=self.create_time),
-        'Creator: {creator}'.format(creator=self.creator),
-        'Logs Bucket: {bucket}'.format(bucket=self.logs_bucket),
-    ]
-    if self.git_sha and self.repo_name:
-      output.append('Repository: {repo_name}@{git_sha}'.format(
-          repo_name=self.repo_name, git_sha=self.git_sha))
-
-    return ('\n' + _INDENT).join(output)
+  def add_record(self, occ):
+    self.build_details.append(occ)
 
 
 class ContainerAndAnalysisData(container_data_util.ContainerData):
   """Class defining container and analysis data.
 
-  ContainerAndAnalysisData superclasses ContainerData because we want it to
+  ContainerAndAnalysisData subclasses ContainerData because we want it to
   contain a superset of the attributes, particularly when `--format=json`,
   `format=value(digest)`, etc. is used with `container images describe`.
   """
@@ -191,36 +89,25 @@ class ContainerAndAnalysisData(container_data_util.ContainerData):
   def __init__(self, name):
     super(ContainerAndAnalysisData, self).__init__(
         registry=name.registry, repository=name.repository, digest=name.digest)
-    self.vulz_analysis = PackageVulnerability.Collection()
-    self.image_analysis = BaseImage.Collection()
-    self.build_details = BuildDetails.Collection()
-    # These should be a part of PackageVulnerability.Collection
-    self.total_vulnerability_found = 0
-    self.not_fixed_vulnerability_count = 0
+    self.package_vulnerability_summary = PackageVulnerabilitiesSummary()
+    self.image_basis_summary = ImageBasesSummary()
+    self.build_details_summary = BuildsSummary()
 
   def add_record(self, occurrence):
     messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
     if (occurrence.kind ==
         messages.Occurrence.KindValueValuesEnum.PACKAGE_VULNERABILITY):
-      vulz = PackageVulnerability(occurrence)
-      self.vulz_analysis.add(vulz)
-      self.total_vulnerability_found += len(vulz.pkg_vulnerabilities)
-      if vulz.patch_not_available:
-        self.not_fixed_vulnerability_count += len(vulz.pkg_vulnerabilities)
+      self.package_vulnerability_summary.add_record(occurrence)
     elif occurrence.kind == messages.Occurrence.KindValueValuesEnum.IMAGE_BASIS:
-      self.image_analysis.add(BaseImage(occurrence))
+      self.image_basis_summary.add_record(occurrence)
     elif (occurrence.kind ==
           messages.Occurrence.KindValueValuesEnum.BUILD_DETAILS):
-      self.build_details.add(BuildDetails(occurrence))
+      self.build_details_summary.add_record(occurrence)
 
-  def __str__(self):
-    analysis_str = [
-        str(self.build_details),
-        '',
-        str(self.image_analysis),
-        '',
-        str(self.vulz_analysis),
-        ''  # Trailing newline.
-    ]
-    return (super(ContainerAndAnalysisData, self).__str__() +
-            '\n'.join(analysis_str))
+  def resolveSummaries(self):
+    self.package_vulnerability_summary.resolve()
+    self.image_basis_summary.resolve()
+    self.build_details_summary.resolve()
+
+
+

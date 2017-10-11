@@ -488,7 +488,7 @@ class AutoArgumentGenerator(object):
         sub_args = self._GenerateArguments(name + '.', field.type)
         if sub_args:
           help_text = (name + ': ' + field_help) if field_help else ''
-          group = base.ArgumentGroup(name, description=help_text)
+          group = base.ArgumentGroup(help=help_text)
           args[name] = group
           for arg in sub_args.values():
             group.AddArgument(arg)

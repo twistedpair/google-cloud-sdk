@@ -93,18 +93,22 @@ class Attribute(object):
       attribute if not given on the command line. These should only be sources
       inherent to the attribute, such as associated properties, not command-
       specific sources.
+    completer: core.cache.completion_cache.Completer, the completer associated
+      with the attribute.
   """
 
-  def __init__(self, name, help_text=None, required=False, fallthroughs=None):
+  def __init__(self, name, help_text=None, required=False, fallthroughs=None,
+               completer=None):
     self.name = name
     self.help_text = help_text
     self.required = required
     self.fallthroughs = fallthroughs or []
+    self.completer = completer
 
   def __eq__(self, other):
     if not isinstance(other, self.__class__):
       return False
-    for attribute_name in ['name', 'help_text', 'required']:
+    for attribute_name in ['name', 'help_text', 'required', 'completer']:
       if (getattr(other, attribute_name, '') !=
           getattr(self, attribute_name, '')):
         return False
@@ -167,7 +171,8 @@ class ResourceSpec(ConceptSpec):
           name=attribute_name,
           help_text=attribute_config.help_text,
           required=True,
-          fallthroughs=fallthroughs)
+          fallthroughs=fallthroughs,
+          completer=attribute_config.completer)
       self._attributes.append(new_attribute)
       # Keep a map from attribute names to param names. While attribute names
       # are used for error messaging and arg creation/parsing, resource parsing
@@ -254,16 +259,21 @@ class ResourceSpec(ConceptSpec):
 class ResourceParameterAttributeConfig(object):
   """Configuration used to create attributes from resource parameters."""
 
-  def __init__(self, name=None, help_text=None, prop=None):
+  def __init__(self, name=None, help_text=None, prop=None, completer=None):
     """Create a resource attribute.
 
     Args:
       name: str, the name of the attribute. This controls the naming of flags
         based on the attribute.
-      help_text: str, generic help text for any flag based on the attribute.
+      help_text: str, generic help text for any flag based on the attribute. One
+        special expansion is available to convert "{resource}" to the name of
+        the resource.
       prop: core.properties._Property, the property object to read as a
         fallthrough for the attribute.
+      completer: core.cache.completion_cache.Completer, the completer
+        associated with the attribute.
     """
     self.attribute_name = name
     self.help_text = help_text
     self.prop = prop
+    self.completer = completer

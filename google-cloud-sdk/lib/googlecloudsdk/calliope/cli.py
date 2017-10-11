@@ -122,7 +122,7 @@ class CLILoader(object):
 
     self.__logs_dir = logs_dir
     self.__version_func = version_func
-    self.__known_errror_handler = known_error_handler
+    self.__known_error_handler = known_error_handler
     self.__yaml_command_translator = yaml_command_translator
 
     self.__pre_run_hooks = []
@@ -513,7 +513,7 @@ class CLILoader(object):
       top_element.LoadAllSubElements(recursive=True)
 
     cli = CLI(self.__name, top_element, self.__pre_run_hooks,
-              self.__post_run_hooks, self.__known_errror_handler)
+              self.__post_run_hooks, self.__known_error_handler)
     return cli
 
 
@@ -753,8 +753,9 @@ class CLI(object):
     old_verbosity = None
     try:
       args = self.__parser.parse_args(argv)
-      command_path_string = '.'.join(args.command_path)
-      if not args.calliope_command.IsUnicodeSupported():
+      calliope_command = args._GetCommand()  # pylint: disable=protected-access
+      command_path_string = '.'.join(calliope_command.GetPath())
+      if not calliope_command.IsUnicodeSupported():
         self._EnforceAsciiArgs(argv)
       specified_arg_names = args.GetSpecifiedArgNames()
 
@@ -785,7 +786,7 @@ class CLI(object):
       for hook in self.__pre_run_hooks:
         hook.Run(command_path_string)
 
-      resources = args.calliope_command.Run(cli=self, args=args)
+      resources = calliope_command.Run(cli=self, args=args)
 
       for hook in self.__post_run_hooks:
         hook.Run(command_path_string)

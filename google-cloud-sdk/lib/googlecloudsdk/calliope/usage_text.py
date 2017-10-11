@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generate usage text for displaying to the user.
-"""
+"""Generate usage text for displaying to the user."""
 
 import argparse
+import copy
 import difflib
 import re
 import StringIO
@@ -24,19 +24,10 @@ import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import parser_arguments
 
 LINE_WIDTH = 80
 HELP_INDENT = 25
-
-
-def IsSuppressed(arg):
-  """Returns True if arg is suppressed."""
-  return arg.help == argparse.SUPPRESS
-
-
-def FilterOutSuppressed(args):
-  """Returns a copy of args containing only non-suppressed arguments."""
-  return [a for a in args if not IsSuppressed(a)]
 
 
 class HelpInfo(object):
@@ -134,50 +125,118 @@ class TextChoiceSuggester(object):
     return self._choices[match[0]] if match else None
 
 
-def WrapMessageInNargs(msg, nargs):
-  """Create the display help string for a positional arg.
+def _ApplyMarkdownItalic(msg):
+  return re.sub(r'(\b[a-zA-Z][-a-zA-Z_0-9]*)',
+                base.MARKDOWN_ITALIC + r'\1' + base.MARKDOWN_ITALIC, msg)
+
+
+def GetPositionalUsage(arg, markdown=False):
+  """Create the usage help string for a positional arg.
 
   Args:
-    msg: [str] The possibly repeated text.
-    nargs: The repetition operator.
+    arg: parser_arguments.Argument, The argument object to be displayed.
+    markdown: bool, If true add markdowns.
 
   Returns:
     str, The string representation for printing.
   """
-  if nargs == '+':
-    return '{msg} [{msg} ...]'.format(msg=msg)
-  elif nargs == '*':
-    return '[{msg} ...]'.format(msg=msg)
-  elif nargs == argparse.REMAINDER:
-    return '[-- {msg} ...]'.format(msg=msg)
-  elif nargs == '?':
-    return '[{msg}]'.format(msg=msg)
+  var = arg.metavar or arg.dest.upper()
+  if markdown:
+    var = _ApplyMarkdownItalic(var)
+  if arg.nargs == '+':
+    return u'{var} [{var} ...]'.format(var=var)
+  elif arg.nargs == '*':
+    return u'[{var} ...]'.format(var=var)
+  elif arg.nargs == argparse.REMAINDER:
+    return u'[-- {var} ...]'.format(var=var)
+  elif arg.nargs == '?':
+    return u'[{var}]'.format(var=var)
   else:
-    return msg
+    return var
 
 
-def FlagGroupSortKey(flags):
-  """Returns a flag group sort key for sorted().
-
-  This orders individual flags before mutually exclusive groups.
-
-  Args:
-    flags: A list of flags in the group.
-
-  Returns:
-    A sort key for the sorted() builtin where singletons sort before groups.
-  """
-  return [len(flags) > 1] + sorted([flag.option_strings for flag in flags])
-
-
-def GetFlagMetavar(name, metavar, flag):
-  separator = '=' if name.startswith('--') else ' '
+def _GetFlagMetavar(flag, metavar=None, name=None):
+  """Returns a usage-separator + metavar for flag."""
+  if metavar is None:
+    metavar = flag.metavar or flag.dest.upper()
+  separator = '=' if name and name.startswith('--') else ' '
   if isinstance(flag.type, arg_parsers.ArgList):
     msg = flag.type.GetUsageMsg(bool(flag.metavar), metavar)
     return separator + msg
   if metavar == ' ':
     return ''
   return separator + metavar
+
+
+def _QuoteValue(value):
+  """Returns value quoted, with preference for "..."."""
+  quoted = repr(value)
+  if quoted.startswith('u'):
+    quoted = quoted[1:]
+  if quoted.startswith("'") and '"' not in value:
+    quoted = '"' + quoted[1:-1] + '"'
+  return quoted
+
+
+def GetFlagUsage(arg, brief=False, markdown=False, inverted=False, value=True):
+  """Returns the usage string for a flag arg.
+
+  Args:
+    arg: parser_arguments.Argument, The argument object to be displayed.
+    brief: bool, If true, only display one version of a flag that has
+        multiple versions, and do not display the default value.
+    markdown: bool, If true add markdowns.
+    inverted: bool, If true display the --no-* inverted name.
+    value: bool, If true display flag name=value for non-Boolean flags.
+
+  Returns:
+    str, The string representation for printing.
+  """
+  if inverted:
+    names = [x.replace('--', '--no-', 1) for x in sorted(arg.option_strings)]
+  else:
+    names = sorted(arg.option_strings)
+  metavar = arg.metavar or arg.dest.upper()
+  if not value or brief:
+    try:
+      long_string = names[0]
+    except IndexError:
+      long_string = ''
+    if not value or arg.nargs == 0:
+      return long_string
+    return u'{flag}{metavar}'.format(
+        flag=long_string,
+        metavar=_GetFlagMetavar(arg, metavar, name=long_string))
+  if arg.nargs == 0:
+    if markdown:
+      usage = ', '.join([base.MARKDOWN_BOLD + x + base.MARKDOWN_BOLD
+                         for x in names])
+    else:
+      usage = ', '.join(names)
+  else:
+    usage_list = []
+    for name in names:
+      flag_metavar = _GetFlagMetavar(arg, metavar, name=name)
+      if markdown:
+        flag_metavar = _ApplyMarkdownItalic(flag_metavar)
+      usage_list.append(
+          u'{bb}{flag}{be}{flag_metavar}'.format(
+              bb=base.MARKDOWN_BOLD if markdown else '',
+              flag=name,
+              be=base.MARKDOWN_BOLD if markdown else '',
+              flag_metavar=flag_metavar))
+    usage = ', '.join(usage_list)
+    if arg.default and not getattr(arg, 'is_required',
+                                   getattr(arg, 'required', False)):
+      if isinstance(arg.default, list):
+        default = ','.join(arg.default)
+      elif isinstance(arg.default, dict):
+        default = ','.join([u'{0}={1}'.format(k, v)
+                            for k, v in sorted(arg.default.iteritems())])
+      else:
+        default = arg.default
+      usage += u'; default={0}'.format(_QuoteValue(default))
+  return usage
 
 
 def _GetInvertedFlagName(flag):
@@ -189,14 +248,10 @@ def GetArgDetails(arg):
   """Returns the help message with autogenerated details for arg."""
   help_message = arg.help() if callable(arg.help) else arg.help
   help_message = textwrap.dedent(help_message) if help_message else ''
-  if IsSuppressed(arg):
+  if arg.is_hidden:
     return help_message
-  positional = False
-  if (not arg.option_strings or
-      not arg.option_strings[0].startswith('-') or
-      arg.metavar == ' '):
+  if arg.is_group or arg.is_positional:
     choices = None
-    positional = True
   elif arg.choices:
     choices = arg.choices
   else:
@@ -205,7 +260,19 @@ def GetArgDetails(arg):
     except AttributeError:
       choices = None
   extra_help = []
-  if choices:
+  if hasattr(arg, 'store_property'):
+    prop, _, _ = arg.store_property
+    # Don't add help if there's already explicit help.
+    if str(prop) not in help_message:
+      extra_help.append('Overrides the default *{0}* property value'
+                        ' for this command invocation.'.format(prop))
+      # '?' in Boolean flag check to cover legacy choices={'true', 'false'}
+      # flags. They are the only flags with nargs='?'. This would have been
+      # much easier if argparse had a first class Boolean flag attribute.
+      if prop.default and arg.nargs in (0, '?'):
+        extra_help.append('Use *{}* to disable.'.format(
+            _GetInvertedFlagName(arg)))
+  elif choices:
     metavar = arg.metavar or arg.dest.upper()
     choices = getattr(arg, 'choices_help', choices)
     if len(choices) > 1:
@@ -226,19 +293,7 @@ def GetArgDetails(arg):
           metavar=metavar,
           one_of=one_of,
           choices=', '.join(['*{0}*'.format(x) for x in choices])))
-  elif hasattr(arg, 'store_property'):
-    prop, _, _ = arg.store_property
-    # Don't add help if there's already explicit help.
-    if str(prop) not in help_message:
-      extra_help.append('Overrides the default *{0}* property value'
-                        ' for this command invocation.'.format(prop))
-      # '?' in Boolean flag check to cover legacy choices={'true', 'false'}
-      # flags. They are the only flags with nargs='?'. This would have been
-      # much easier if argparse had a first class Boolean flag attribute.
-      if prop.default and arg.nargs in (0, '?'):
-        extra_help.append('Use *{}* to disable.'.format(
-            _GetInvertedFlagName(arg)))
-  elif arg.nargs or positional:
+  elif arg.is_group or arg.is_positional or arg.nargs:
     # Not a Boolean flag.
     pass
   elif arg.default is True:
@@ -267,95 +322,328 @@ def GetArgDetails(arg):
   return help_message.replace('\n\n', '\n+\n').strip()
 
 
-def _ApplyMarkdownItalic(msg):
-  return re.sub(r'(\b[a-zA-Z][-a-zA-Z_0-9]*)',
-                base.MARKDOWN_ITALIC + r'\1' + base.MARKDOWN_ITALIC, msg)
+def _IsPositional(arg):
+  """Returns True if arg is a positional or group that contains a positional."""
+  if arg.is_hidden:
+    return False
+  if arg.is_positional:
+    return True
+  if arg.is_group:
+    for a in arg.arguments:
+      if _IsPositional(a):
+        return True
+  return False
 
 
-def PositionalDisplayString(arg, markdown=False):
-  """Create the display help string for a positional arg.
+def _GetArgUsageSortKey(name):
+  """Arg name usage string key function for sorted."""
+  if not name:
+    return 0, ''  # paranoid fail safe check -- should not happen
+  elif name.startswith('--no-'):
+    return 3, name[5:], 'x'  # --abc --no-abc
+  elif name.startswith('--'):
+    return 3, name[2:]
+  elif name.startswith('-'):
+    return 4, name[1:]
+  elif name[0].isalpha():
+    return 1, ''  # stable sort for positionals
+  else:
+    return 5, name
+
+
+def GetSingleton(args):
+  """Returns the single non-hidden arg in args.arguments or None."""
+  singleton = None
+  for arg in args.arguments:
+    if arg.is_hidden:
+      continue
+    if arg.is_group:
+      arg = GetSingleton(arg)
+      if not arg:
+        return None
+    if singleton:
+      return None
+    singleton = arg
+  if args.is_required and not singleton.is_required:
+    singleton = copy.copy(singleton)
+    singleton.is_required = True
+  return singleton
+
+
+def GetArgSortKey(arg):
+  """Arg key function for sorted."""
+  name = re.sub(' +', ' ',
+                re.sub('[](){}|[]', '',
+                       GetArgUsage(arg, value=False, hidden=True) or ''))
+  if arg.is_group:
+    singleton = GetSingleton(arg)
+    if singleton:
+      arg = singleton
+  if arg.is_group:
+    if _IsPositional(arg):
+      return 1, ''  # stable sort for positionals
+    if arg.is_required:
+      return 6, name
+    return 7, name
+  elif arg.nargs == argparse.REMAINDER:
+    return 8, name
+  if arg.is_positional:
+    return 1, ''  # stable sort for positionals
+  if arg.is_required:
+    return 2, name
+  return _GetArgUsageSortKey(name)
+
+
+def GetArgUsage(arg, brief=False, definition=False, markdown=False,
+                optional=True, top=False, remainder_usage=None, value=True,
+                hidden=False):
+  """Returns the argument usage string for arg or all nested groups in arg.
+
+  Mutually exclusive args names are separated by ' | ', otherwise ' '.
+  Required groups are enclosed in '(...)', otherwise '[...]'. Required args
+  in a group are separated from the optional args by ' : '.
 
   Args:
-    arg: argparse.Argument, The argument object to be displayed.
-    markdown: bool, If true add markdowns.
-
-  Returns:
-    str, The string representation for printing.
-  """
-  msg = arg.metavar or arg.dest.upper()
-  if markdown:
-    msg = _ApplyMarkdownItalic(msg)
-  return WrapMessageInNargs(msg, arg.nargs)
-
-
-def _QuoteValue(value):
-  """Returns value quoted, with preference for "..."."""
-  quoted = repr(value)
-  if quoted.startswith('u'):
-    quoted = quoted[1:]
-  if quoted.startswith("'") and '"' not in value:
-    quoted = '"' + quoted[1:-1] + '"'
-  return quoted
-
-
-def FlagDisplayString(arg, brief=False, markdown=False, inverted=False):
-  """Create the display help string for a flag arg.
-
-  Args:
-    arg: argparse.Argument, The argument object to be displayed.
-    brief: bool, If true, only display one version of a flag that has
+    arg: The argument to get usage from.
+    brief: bool, If True, only display one version of a flag that has
         multiple versions, and do not display the default value.
-    markdown: bool, If true add markdowns.
-    inverted: bool, If true display the --no-* inverted name.
+    definition: bool, Definition list usage if True.
+    markdown: bool, Add markdown if True.
+    optional: bool, Include optional flags if True.
+    top: bool, True if args is the top level group.
+    remainder_usage: [str], Append REMAINDER usage here instead of the return.
+    value: bool, If true display flag name=value for non-Boolean flags.
+    hidden: bool, Include hidden args if True.
 
   Returns:
-    str, The string representation for printing.
+    The argument usage string for arg or all nested groups in arg.
   """
-  if inverted:
-    names = [x.replace('--', '--no-', 1) for x in sorted(arg.option_strings)]
-  else:
-    names = sorted(arg.option_strings)
-  metavar = arg.metavar or arg.dest.upper()
-  if brief:
-    long_name = names[0]
-    if arg.nargs == 0:
-      return long_name
-    return '{flag}{metavar}'.format(
-        flag=long_name,
-        metavar=GetFlagMetavar(long_name, metavar, arg))
-  if arg.nargs == 0:
-    if markdown:
-      display_string = ', '.join(
-          [base.MARKDOWN_BOLD + x + base.MARKDOWN_BOLD for x in names])
+  if arg.is_hidden and not hidden:
+    return ''
+  if arg.is_group:
+    singleton = GetSingleton(arg)
+    if singleton and (singleton.is_group or
+                      singleton.nargs != argparse.REMAINDER):
+      arg = singleton
+  if not arg.is_group:
+    # A single argument.
+    if arg.is_positional:
+      usage = GetPositionalUsage(arg, markdown=markdown)
     else:
-      display_string = ', '.join(names)
+      inverted = not definition and getattr(arg, 'inverted_synopsis', False)
+      usage = GetFlagUsage(arg, brief=brief, markdown=markdown,
+                           inverted=inverted, value=value)
+    if usage and top and not arg.is_required and not usage.startswith('['):
+      usage = u'[{}]'.format(usage)
+    return usage
+
+  # An argument group.
+  sep = ' | ' if arg.is_mutex else ' '
+  positional_args = []
+  required_usage = []
+  optional_usage = []
+  if remainder_usage is None:
+    include_remainder_usage = True
+    remainder_usage = []
   else:
-    display_list = []
-    for name in names:
-      flag_metavar = GetFlagMetavar(name, metavar, arg)
-      if markdown:
-        flag_metavar = _ApplyMarkdownItalic(flag_metavar)
-      display_list.append(
-          '{bb}{flag}{be}{flag_metavar}'.format(
-              bb=base.MARKDOWN_BOLD if markdown else '',
-              flag=name,
-              be=base.MARKDOWN_BOLD if markdown else '',
-              flag_metavar=flag_metavar))
-    display_string = ', '.join(display_list)
-    if not arg.required and arg.default:
-      if isinstance(arg.default, list):
-        default = ','.join(arg.default)
-      elif isinstance(arg.default, dict):
-        default = ','.join(['{0}={1}'.format(k, v)
-                            for k, v in sorted(arg.default.iteritems())])
+    include_remainder_usage = False
+  for a in sorted(arg.arguments, key=GetArgSortKey):
+    if (a.is_hidden or a.help == argparse.SUPPRESS) and not hidden:
+      continue
+    if a.is_group:
+      singleton = GetSingleton(a)
+      if singleton:
+        a = singleton
+    if not a.is_group and a.nargs == argparse.REMAINDER:
+      remainder_usage.append(
+          GetArgUsage(a, markdown=markdown, value=value, hidden=hidden))
+    elif _IsPositional(a):
+      positional_args.append(a)
+    else:
+      usage = GetArgUsage(a, markdown=markdown, value=value, hidden=hidden)
+      if not usage:
+        continue
+      if a.is_required:
+        if usage not in required_usage:
+          required_usage.append(usage)
       else:
-        default = arg.default
-      display_string += '; default={0}'.format(_QuoteValue(default))
-  return display_string
+        if top:
+          usage = u'[{}]'.format(usage)
+        if usage not in optional_usage:
+          optional_usage.append(usage)
+  all_usage = []
+  if positional_args:
+    nesting = 0
+    for a in positional_args:
+      usage = GetArgUsage(a, markdown=markdown, hidden=hidden)
+      if not usage:
+        continue
+      if not a.is_required and not usage.startswith('['):
+        usage = u'[{}'.format(usage)
+        nesting += 1
+      all_usage.append(usage)
+    if nesting:
+      all_usage[-1] = u'{}{}'.format(all_usage[-1], ']' * nesting)
+  if required_usage:
+    all_usage.append(sep.join(required_usage))
+  if optional_usage:
+    if optional:
+      if not top and required_usage:
+        all_usage.append(':')
+      all_usage.append(sep.join(optional_usage))
+    elif brief and top:
+      all_usage.append('[optional flags]')
+  if brief:
+    all_usage = sorted(all_usage, key=_GetArgUsageSortKey)
+  if remainder_usage and include_remainder_usage:
+    all_usage.append(' '.join(remainder_usage))
+  usage = ' '.join(all_usage)
+  if arg.is_required:
+    return u'({})'.format(usage)
+  if top or len(all_usage) <= 1:
+    return usage
+  return u'[{}]'.format(usage)
 
 
-def WrapWithPrefix(prefix, message, indent, length, spacing,
-                   writer=sys.stdout):
+def GetFlags(arg, optional=False):
+  """Returns the list of all flags in arg.
+
+  Args:
+    arg: The argument to get flags from.
+    optional: Do not include required flags if True.
+
+  Returns:
+    The list of all/optional flags in arg.
+  """
+  flags = set()
+  if optional:
+    flags.add('--help')
+
+  def _GetFlagsHelper(arg):
+    """GetFlags() helper that adds to flags."""
+    if arg.is_hidden:
+      return
+    if arg.is_group:
+      for arg in arg.arguments:
+        _GetFlagsHelper(arg)
+    else:
+      show_inverted = getattr(arg, 'show_inverted', None)
+      if show_inverted:
+        arg = show_inverted
+      if (arg.option_strings and
+          not arg.is_positional and
+          not arg.is_global and
+          (not optional or (
+              not getattr(arg, 'is_required', False) and
+              not getattr(arg, 'required', False)))):
+        flags.add(sorted(arg.option_strings)[0])
+
+  _GetFlagsHelper(arg)
+  return sorted(flags, key=_GetArgUsageSortKey)
+
+
+def _GetArgHeading(category):
+  """Returns the arg section heading for an arg category."""
+  if category is None:
+    category = 'OTHER'
+  elif 'ARGUMENTS' in category or 'FLAGS' in category:
+    return category
+  return category + ' FLAGS'
+
+
+class Section(object):
+  """A positional/flag section.
+
+  Attribute:
+    heading: str, The section heading.
+    args: [Argument], The sorted list of args in the section.
+  """
+
+  def __init__(self, heading, args):
+    self.heading = heading
+    self.args = args
+
+
+def GetArgSections(arguments, is_root):
+  """Returns the positional/flag sections in document order.
+
+  Args:
+    arguments: [Flag|Positional], The list of arguments for this command or
+      group.
+    is_root: bool, True if arguments are for the CLI root command.
+
+  Returns:
+    ([Section] global_flags)
+      global_flags - The sorted list of global flags if command is not the root.
+  """
+  categories = {}
+  dests = set()
+  global_flags = set()
+  for arg in arguments:
+    if arg.is_hidden:
+      continue
+    if _IsPositional(arg):
+      category = 'POSITIONAL ARGUMENTS'
+      if category not in categories:
+        categories[category] = []
+      categories[category].append(arg)
+      continue
+    if arg.is_global and not arg.is_hidden and not is_root:
+      for a in arg.arguments if arg.is_group else [arg]:
+        if a.option_strings and not a.is_hidden:
+          flag = a.option_strings[0]
+          if flag.startswith('--'):
+            global_flags.add(flag)
+      continue
+    if arg.is_required:
+      category = 'REQUIRED'
+    else:
+      category = getattr(arg, 'category', None) or 'OTHER'
+    if hasattr(arg, 'dest'):
+      if arg.dest in dests:
+        continue
+      dests.add(arg.dest)
+    if category not in categories:
+      categories[category] = set()
+    categories[category].add(arg)
+
+  # Collect the priority sections first in order:
+  #   POSITIONAL ARGUMENTS, REQUIRED, COMMON, OTHER, and categorized.
+  sections = []
+  if is_root:
+    common = 'GLOBAL'
+  else:
+    common = base.COMMONLY_USED_FLAGS
+  other_flags_heading = 'FLAGS'
+  for category, other in (('POSITIONAL ARGUMENTS', ''),
+                          ('REQUIRED', 'OPTIONAL'),
+                          (common, 'OTHER'),
+                          ('OTHER', None)):
+    if category not in categories:
+      continue
+    if other is not None:
+      if other:
+        other_flags_heading = other
+      heading = category
+    elif len(categories) > 1:
+      heading = 'FLAGS'
+    else:
+      heading = other_flags_heading
+    sections.append(Section(_GetArgHeading(heading),
+                            parser_arguments.Argument(
+                                arguments=categories[category])))
+    # This prevents the category from being re-added in the loop below.
+    del categories[category]
+
+  # Add the remaining categories in sorted order.
+  for category, args in sorted(categories.iteritems()):
+    sections.append(Section(_GetArgHeading(category),
+                            parser_arguments.Argument(arguments=args)))
+
+  return sections, global_flags
+
+
+def WrapWithPrefix(prefix, message, indent, length, spacing, writer=sys.stdout):
   """Helper function that does two-column writing.
 
   If the first column is too long, the second column begins on the next line.
@@ -396,91 +684,31 @@ def WrapWithPrefix(prefix, message, indent, length, spacing,
         % (' ', message))
 
 
-def TextIfExists(title, messages):
-  """Generates the text for the given section.
-
-  This printing is done by collecting a list of rows. If the row is just a
-  string, that means print it without decoration. If the row is a tuple, use
-  WrapWithPrefix to print that tuple in aligned columns.
-
-  Args:
-    title: str, The name of this section.
-    messages: str or [(str, str)], The item or items to print in this section.
-
-  Returns:
-    str, The generated text.
-  """
-  if not messages:
-    return None
-  textbuf = StringIO.StringIO()
-  textbuf.write('%s\n' % title)
-  if isinstance(messages, str):
-    textbuf.write('  ' + messages + '\n')
-  else:
-    for (arg, helptxt) in messages:
-      WrapWithPrefix(arg, helptxt, HELP_INDENT, LINE_WIDTH,
-                     spacing='  ', writer=textbuf)
-  return textbuf.getvalue()
-
-
 def GetUsage(command, argument_interceptor):
   """Return the command Usage string.
 
   Args:
     command: calliope._CommandCommon, The command object that we're helping.
-    argument_interceptor: calliope._ArgumentInterceptor, the object that tracks
-        all of the flags for this command or group.
+    argument_interceptor: parser_arguments.ArgumentInterceptor, the object that
+      tracks all of the flags for this command or group.
 
   Returns:
     str, The command usage string.
   """
   command.LoadAllSubElements()
+  command_path = ' '.join(command.GetPath())
   topic = len(command.GetPath()) >= 2 and command.GetPath()[1] == 'topic'
+  command_id = 'topic' if topic else 'command'
 
   buf = StringIO.StringIO()
 
   buf.write('Usage: ')
 
-  command_path = ' '.join(command.GetPath())
-  command_id = 'topic' if topic else 'command'
-  usage_parts = [command_path]
-  optional_flags = []
+  usage_parts = []
 
   if not topic:
-    # Do positional args first, since flag args taking lists can mess them
-    # up otherwise.
-    # Explicitly not sorting here - order matters.
-    # Make a copy, and we'll pop items off. Once we get to a REMAINDER, that
-    # goes after the flags so we'll stop and finish later.
-    positional_args = FilterOutSuppressed(
-        argument_interceptor.positional_args[:])
-    while positional_args:
-      arg = positional_args[0]
-      if arg.nargs == argparse.REMAINDER:
-        break
-      positional_args.pop(0)
-      usage_parts.append(PositionalDisplayString(arg))
-
-    flag_messages = []
-    for arg in argument_interceptor.flag_args:
-      if IsSuppressed(arg):
-        continue
-      if not arg.required:
-        if arg.option_strings:
-          optional_flags.append(sorted(arg.option_strings)[0])
-        continue
-      # and add it to the usage
-      msg = FlagDisplayString(arg, brief=True)
-      flag_messages.append(msg)
-    usage_parts.extend(sorted(flag_messages))
-
-    if optional_flags:
-      # If there are any optional flags, add a simple message to the usage.
-      usage_parts.append('[optional flags]')
-
-    # positional_args will only be non-empty if we had some REMAINDER left.
-    for arg in positional_args:
-      usage_parts.append(PositionalDisplayString(arg))
+    usage_parts.append(GetArgUsage(argument_interceptor, brief=True,
+                                   optional=False, top=True))
 
   group_helps = command.GetSubGroupHelps()
   command_helps = command.GetSubCommandHelps()
@@ -498,20 +726,26 @@ def GetUsage(command, argument_interceptor):
   if groups or commands:
     usage_parts.append('<%s>' % ' | '.join(all_subtypes))
     optional_flags = None
+  else:
+    optional_flags = GetFlags(argument_interceptor, optional=True)
 
-  buf.write(' '.join(usage_parts) + '\n')
+  usage_msg = ' '.join(usage_parts)
+
+  non_option = u'{command} '.format(command=command_path)
+
+  buf.write(non_option + usage_msg + '\n')
 
   if groups:
-    WrapWithPrefix('group may be', ' | '.join(groups),
-                   HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
+    WrapWithPrefix('group may be', ' | '.join(
+        groups), HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
   if commands:
-    WrapWithPrefix('%s may be' % command_id, ' | '.join(commands),
-                   HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
+    WrapWithPrefix('%s may be' % command_id, ' | '.join(
+        commands), HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
   if optional_flags:
-    WrapWithPrefix('optional flags may be', ' | '.join(sorted(optional_flags)),
+    WrapWithPrefix('optional flags may be', ' | '.join(optional_flags),
                    HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
 
-  buf.write("""
+  buf.write(u"""
 For detailed information on this command and its flags, run:
   {command_path} --help
 """.format(command_path=' '.join(command.GetPath())))

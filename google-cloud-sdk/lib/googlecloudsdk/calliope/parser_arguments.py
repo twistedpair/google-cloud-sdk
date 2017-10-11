@@ -19,26 +19,44 @@ Refer to the calliope.parser_extensions module for a detailed overview.
 
 import argparse
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import display_info
 from googlecloudsdk.calliope import parser_completer
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core.cache import completion_cache
 
 
-_MUTEX_GROUP_REQUIRED_DESCRIPTION = 'Exactly one of these must be specified:'
-_MUTEX_GROUP_OPTIONAL_DESCRIPTION = 'At most one of these may be specified:'
+class Argument(object):
+  """Parsed argument base class with help generation attributess.
+
+  Attributes:
+    arguments: [ArgumentInterceptor], The group argument list if is_group is
+      true.
+    category: str, The argument help category name.
+    help: str, The argument help text.
+    is_global: bool, The argument is global to all commands.
+    is_group: bool, The argument is a group with arguments in self.arguments.
+    is_mutex: bool, This is a mutex argument group; at most one argument in
+      arguments may be specified.
+    is_required: bool, The argument is required.
+  """
+
+  # pylint: disable=redefined-builtin, Python can't keep help to itself
+  def __init__(self, arguments=None, hidden=False, is_group=False,
+               is_global=False, mutex=False, required=False,
+               help=None, category=None):
+    self.arguments = arguments or []
+    self.is_group = is_group or arguments
+    self.is_global = is_global
+    self.is_hidden = hidden
+    self.is_mutex = mutex
+    self.is_positional = False
+    self.is_required = required
+    self.help = help
+    self.category = category
 
 
-class ArgumentGroupAttr(object):
-  """Argument group attributes."""
-
-  def __init__(self, description=None, is_mutex=False, is_required=False):
-    self.description = description
-    self.is_mutex = is_mutex
-    self.is_required = is_required
-
-
-class ArgumentInterceptor(object):
+class ArgumentInterceptor(Argument):
   """ArgumentInterceptor intercepts calls to argparse parsers.
 
   The argparse module provides no public way to access the arguments that were
@@ -66,47 +84,42 @@ class ArgumentInterceptor(object):
       allow_positional: bool, Allow positional arguments if True.
       ancestor_flag_args: [argparse.Action], The flags for all ancestor groups
         in the cli tree.
-      argument_groups: {dest: group-id}, Maps dests to argument group ids.
       cli_generator: cli.CLILoader, The builder used to generate this CLI.
       command_name: str, The dotted command name path.
       defaults: {dest: default}, For all registered arguments.
       dests: [str], A list of the dests for all arguments.
       display_info: [display_info.DisplayInfo], The command display info object.
       flag_args: [ArgumentInterceptor], The flag arguments.
-      group_attr: {dest: ArgumentGroupAttr}, Maps dests to ArgumentGroupAttr.
-      groups: [ArgumentInterceptor], The arg groups.
-      mutex_groups: {dest: mutex_group_id}, Maps dests to mutex group ids.
       positional_args: [ArgumentInterceptor], The positional args.
       positional_completers: {Completer}, The set of completers for positionals.
       required: [str], The dests for all required arguments.
-      required_mutex_groups: set(id), Set of mutex group ids that are required.
     """
 
-    def __init__(self, command_name, is_root, cli_generator, allow_positional):
+    def __init__(self, command_name, cli_generator, allow_positional):
       self.command_name = command_name
-      self.is_root = is_root
       self.cli_generator = cli_generator
       self.allow_positional = allow_positional
-      self.is_root = is_root
 
       self.ancestor_flag_args = []
-      self.argument_groups = {}
       self.defaults = {}
       self.dests = []
       self.display_info = display_info.DisplayInfo()
       self.flag_args = []
-      self.group_attr = {}
-      self.groups = {}
-      self.mutex_groups = {}
       self.positional_args = []
       self.positional_completers = set()
       self.required = []
-      self.required_mutex_groups = set()
 
-  def __init__(self, parser, is_root=False, cli_generator=None,
-               allow_positional=True, data=None, mutex_group_id=None,
-               argument_group_id=None):
+  def __init__(self, parser, cli_generator=None, allow_positional=True,
+               data=None, **kwargs):
+    super(ArgumentInterceptor, self).__init__(is_group=True, **kwargs)
+    self.is_mutex = kwargs.pop('mutex', False)
+    self.help = kwargs.pop('help', None)
     self.parser = parser
+    if parser:
+      # validate_specified_args() needs access to this argument interceptor,
+      # but it is called from parse_args() by argparse which passes the argparse
+      # internal "parser". We add parser.ai here to make it available.
+      parser.ai = self
     # If this is an argument group within a command, use the data from the
     # parser for the entire command.  If it is the command itself, create a new
     # data object and extract the command name from the parser.
@@ -116,11 +129,8 @@ class ArgumentInterceptor(object):
       self.data = ArgumentInterceptor.ParserData(
           # pylint: disable=protected-access
           command_name=self.parser._calliope_command.GetPath(),
-          is_root=is_root,
           cli_generator=cli_generator,
           allow_positional=allow_positional)
-    self.mutex_group_id = mutex_group_id
-    self.argument_group_id = argument_group_id
 
   @property
   def allow_positional(self):
@@ -129,6 +139,10 @@ class ArgumentInterceptor(object):
   @property
   def cli_generator(self):
     return self.data.cli_generator
+
+  @property
+  def command_name(self):
+    return self.data.command_name
 
   @property
   def defaults(self):
@@ -143,28 +157,8 @@ class ArgumentInterceptor(object):
     return self.data.required
 
   @property
-  def group_attr(self):
-    return self.data.group_attr
-
-  @property
-  def is_root(self):
-    return self.data.is_root
-
-  @property
   def dests(self):
     return self.data.dests
-
-  @property
-  def argument_groups(self):
-    return self.data.argument_groups
-
-  @property
-  def mutex_groups(self):
-    return self.data.mutex_groups
-
-  @property
-  def required_mutex_groups(self):
-    return self.data.required_mutex_groups
 
   @property
   def positional_args(self):
@@ -185,40 +179,48 @@ class ArgumentInterceptor(object):
   # pylint: disable=g-bad-name
   def add_argument(self, *args, **kwargs):
     """add_argument intercepts calls to the parser to track arguments."""
-    # TODO(b/36050238): do not allow short-options without long-options.
-
-    # we will choose the first option as the name
     name = args[0]
+
+    # The flag category name, None for no category. This is also used for help
+    # printing. Flags in the same category are grouped together in a section
+    # named "{category} FLAGS".
+    category = kwargs.pop('category', None)
+    # The unbound completer object or raw argcomplete completer function).
+    completer = kwargs.pop('completer', None)
+    # The default value.
+    default = kwargs.get('default')
+    # The namespace destination attribute name.
     dest = kwargs.get('dest')
     if not dest:
-      # this is exactly what happens in argparse
       dest = name.lstrip(self.parser.prefix_chars).replace('-', '_')
-
-    default = kwargs.get('default')
-    required = kwargs.get('required', False)
-
     # A flag that can only be supplied where it is defined and not propagated to
     # subcommands.
     do_not_propagate = kwargs.pop('do_not_propagate', False)
+    # hidden=True => help=argparse.SUPPRESS, but retains help in the source.
+    hidden = kwargs.pop('hidden', False)
+    if hidden:
+      kwargs['help'] = argparse.SUPPRESS
+    elif kwargs.get('help') == argparse.SUPPRESS:
+      hidden = True
     # A global flag that is added at each level explicitly because each command
     # has a different behavior (like -h).
     is_replicated = kwargs.pop('is_replicated', False)
     # This is used for help printing.  A flag is considered global if it is
     # added at the root of the CLI tree, or if it is explicitly added to every
     # command level.
-    is_global = self.is_root or is_replicated
-    # The flag category name, None for no category. This is also used for help
-    # printing. Flags in the same category are grouped together in a section
-    # named "{category} FLAGS".
-    category = kwargs.pop('category', None)
+    is_global = self.is_global or is_replicated
+    # The number positional args.
+    nargs = kwargs.get('nargs')
+    # The argument is required if True.
+    required = kwargs.get('required', False)
     # Any alias this flag has for the purposes of the "did you mean"
     # suggestions.
-    suggestion_aliases = kwargs.pop('suggestion_aliases', [])
-    # The unbound completer object or raw argcomplete completer function).
-    completer = kwargs.pop('completer', None)
-    # hidden=True => help=argparse.SUPPRESS, but retains help in the source.
-    if kwargs.pop('hidden', False):
-      kwargs['help'] = argparse.SUPPRESS
+    suggestion_aliases = kwargs.pop('suggestion_aliases', None)
+    if suggestion_aliases is None:
+      suggestion_aliases = []
+
+    if self.is_global and category == base.COMMONLY_USED_FLAGS:
+      category = 'GLOBAL'
 
     positional = not name.startswith('-')
     if positional:
@@ -242,34 +244,6 @@ class ArgumentInterceptor(object):
             'command [{1}]'.format(name, self.data.command_name))
 
     self.defaults[dest] = default
-    if self.mutex_group_id:
-      self.mutex_groups[dest] = self.mutex_group_id
-      if self.parser.required:
-        self.required_mutex_groups.add(self.mutex_group_id)
-        self.group_attr[self.mutex_group_id] = ArgumentGroupAttr(
-            description=_MUTEX_GROUP_REQUIRED_DESCRIPTION,
-            is_mutex=True,
-            is_required=True,
-        )
-      else:
-        self.group_attr[self.mutex_group_id] = ArgumentGroupAttr(
-            description=_MUTEX_GROUP_OPTIONAL_DESCRIPTION,
-            is_mutex=True,
-            is_required=False,
-        )
-    elif self.argument_group_id:
-      self.argument_groups[dest] = self.argument_group_id
-      if self.parser.description:
-        description = self.parser.description
-      elif self.parser.title:
-        description = self.parser.title.rstrip('.') + ':'
-      else:
-        description = None
-      self.group_attr[self.argument_group_id] = ArgumentGroupAttr(
-          description=description,
-          is_mutex=False,
-          is_required=False,
-      )
     if required:
       self.required.append(dest)
     self.dests.append(dest)
@@ -281,11 +255,20 @@ class ArgumentInterceptor(object):
     else:
       added_argument = self.parser.add_argument(*args, **kwargs)
     self._AttachCompleter(added_argument, completer, positional)
+    added_argument.is_global = is_global
+    added_argument.is_group = False
+    added_argument.is_hidden = hidden
+    added_argument.is_required = required
+    added_argument.is_positional = positional
     if positional:
       if category:
         raise parser_errors.ArgumentException(
             'Positional argument [{0}] cannot have a category in '
             'command [{1}]'.format(name, self.data.command_name))
+      if (nargs is None or
+          nargs == '+' or
+          isinstance(nargs, int) and nargs > 0):
+        added_argument.is_required = True
       self.positional_args.append(added_argument)
     else:
       if category and required:
@@ -299,8 +282,6 @@ class ArgumentInterceptor(object):
       added_argument.category = category
       added_argument.do_not_propagate = do_not_propagate
       added_argument.is_replicated = is_replicated
-      added_argument.is_global = is_global
-      added_argument.required = required
       added_argument.suggestion_aliases = suggestion_aliases
       if isinstance(added_argument.choices, dict):
         # choices is a name: description dict. Set the choices attribute to the
@@ -321,6 +302,9 @@ class ArgumentInterceptor(object):
         # to one or the other.
         self.flag_args.append(inverted_flag)
 
+    if (not getattr(added_argument, 'is_replicated', False) or
+        len(self.command_name) == 1):
+      self.arguments.append(added_argument)
     return added_argument
 
   # pylint: disable=redefined-builtin
@@ -337,17 +321,42 @@ class ArgumentInterceptor(object):
     """Hooks ArgumentInterceptor into the argcomplete monkeypatch."""
     return self.parser.parse_known_args(args=args, namespace=namespace)
 
-  def add_argument_group(self, *args, **kwargs):
-    new_parser = self.parser.add_argument_group(*args, **kwargs)
-    return ArgumentInterceptor(parser=new_parser,
-                               data=self.data,
-                               argument_group_id=id(new_parser))
+  def add_group(self, help=None, category=None, mutex=False, required=False,
+                **kwargs):
+    """Adds an argument group with mutex/required attributes to the parser.
 
-  def add_mutually_exclusive_group(self, **kwargs):
-    new_parser = self.parser.add_mutually_exclusive_group(**kwargs)
-    return ArgumentInterceptor(parser=new_parser,
-                               data=self.data,
-                               mutex_group_id=id(new_parser))
+    Args:
+      help: str, The group help text description.
+      category: str, The group flag category name, None for no category.
+      mutex: bool, A mutually exclusive group if True.
+      required: bool, A required group if True.
+      **kwargs: Passed verbatim to ArgumentInterceptor().
+
+    Returns:
+      The added argument object.
+    """
+    if 'description' in kwargs or 'title' in kwargs:
+      raise parser_errors.ArgumentException(
+          'parser.add_group(): description or title kwargs not supported '
+          '-- use help=... instead.')
+    new_parser = self.parser.add_argument_group(**kwargs)
+    group = ArgumentInterceptor(parser=new_parser,
+                                is_global=self.is_global,
+                                cli_generator=self.cli_generator,
+                                allow_positional=self.allow_positional,
+                                data=self.data,
+                                help=help,
+                                category=category,
+                                mutex=mutex,
+                                required=required)
+    self.arguments.append(group)
+    return group
+
+  def add_argument_group(self, help=None, **kwargs):
+    return self.add_group(help=help, **kwargs)
+
+  def add_mutually_exclusive_group(self, help=None, **kwargs):
+    return self.add_group(help=help, mutex=True, **kwargs)
 
   def AddDynamicPositional(self, name, action, **kwargs):
     """Add a positional argument that adds new args on the fly when called.
@@ -369,7 +378,12 @@ class ArgumentInterceptor(object):
 
     action = self.parser.add_subparsers(action=action, **kwargs)
     action.completer = action.Completions
+    action.is_group = False
+    action.is_hidden = kwargs.get('hidden', False)
+    action.is_positional = True
+    action.is_required = True
     self.positional_args.append(action)
+    self.arguments.append(action)
     return action
 
   def AddFlagActionFromAncestors(self, action):
@@ -461,6 +475,8 @@ class ArgumentInterceptor(object):
     if inverted_synopsis:
       # flag.inverted_synopsis means display the inverted flag in the SYNOPSIS.
       setattr(added_argument, 'inverted_synopsis', True)
+    inverted_argument.is_hidden = True
+    inverted_argument.is_required = added_argument.is_required
     return inverted_argument
 
   def _ShouldInvertBooleanFlag(self, name, action):

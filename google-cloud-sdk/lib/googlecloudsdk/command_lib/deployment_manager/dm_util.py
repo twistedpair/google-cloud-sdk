@@ -20,7 +20,7 @@ from googlecloudsdk.core import log
 
 
 def PrintFingerprint(fingerprint):
-  """Print the fingerprint for user reference."""
+  """Prints the fingerprint for user reference."""
 
   log.status.Print('The fingerprint of the deployment is %s'
                    % (base64.urlsafe_b64encode(fingerprint)))
@@ -34,3 +34,25 @@ def DecodeFingerprint(fingerprint):
     raise calliope_exceptions.InvalidArgumentException(
         '--fingerprint', 'fingerprint cannot be decoded.')
   return decoded_fingerprint
+
+
+def CredentialFrom(message, principal):
+  """Translates a dict of credential data into a message object.
+
+  Args:
+    message: The API message to use.
+    principal: A string contains service account data.
+  Returns:
+    An ServiceAccount message object derived from credential_string.
+  Raises:
+    InvalidArgumentException: principal string unexpected format.
+  """
+  if principal == 'PROJECT_DEFAULT':
+    return message.Credential(useProjectDefault=True)
+  if principal.startswith('serviceAccount:'):
+    service_account = message.ServiceAccount(
+        email=principal[len('serviceAccount:'):])
+    return message.Credential(serviceAccount=service_account)
+  raise calliope_exceptions.InvalidArgumentException(
+      '--credential',
+      'credential must start with serviceAccount: or use PROJECT_DEFAULT.')

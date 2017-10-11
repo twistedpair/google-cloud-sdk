@@ -13,14 +13,12 @@
 # limitations under the License.
 """Utilities for parsing arguments to `gcloud tasks` commands."""
 
-import sys
-
-from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
+from googlecloudsdk.api_lib.tasks import tasks as tasks_api
 from googlecloudsdk.command_lib.tasks import app
 from googlecloudsdk.command_lib.tasks import constants
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import files
 
 
 _PROJECT = properties.VALUES.core.project.GetOrFail
@@ -34,7 +32,17 @@ def ParseLocation(location):
 
 
 def ParseQueue(queue):
-  """Parses an id or uri for a queue."""
+  """Parses an id or uri for a queue.
+
+  Args:
+    queue: An id, self-link, or relative path of a queue resource.
+
+  Returns:
+    A queue resource reference, or None if passed-in queue is Falsy.
+  """
+  if not queue:
+    return None
+
   queue_ref = None
   try:
     queue_ref = resources.REGISTRY.Parse(queue,
@@ -48,20 +56,12 @@ def ParseQueue(queue):
   return queue_ref
 
 
-def ParseTask(task, queue):
+def ParseTask(task, queue_ref=None):
   """Parses an id or uri for a task."""
-  task_ref = None
-  try:
-    task_ref = resources.REGISTRY.Parse(task,
-                                        collection=constants.TASKS_COLLECTION,
-                                        params={'queuesId': queue})
-  except resources.RequiredFieldOmittedException:
-    location_ref = ParseLocation(app.ResolveAppLocation())
-    task_ref = resources.REGISTRY.Parse(
-        task, params={'projectsId': location_ref.projectsId,
-                      'locationsId': location_ref.locationsId,
-                      'queuesId': queue},
-        collection=constants.TASKS_COLLECTION)
+  params = queue_ref.AsDict() if queue_ref else None
+  task_ref = resources.REGISTRY.Parse(task,
+                                      collection=constants.TASKS_COLLECTION,
+                                      params=params)
   return task_ref
 
 
@@ -74,37 +74,43 @@ def ExtractLocationRefFromQueueRef(queue_ref):
 
 
 def ParseCreateOrUpdateQueueArgs(args, queue_type, messages):
-  retry_config = _ParseRetryConfigArgs(args, queue_type, messages)
-  throttle_config = _ParseThrottleConfigArgs(args, queue_type, messages)
-  pull_target = _ParsePullTargetArgs(args, queue_type, messages)
-  app_engine_http_target = _ParseAppEngineHttpTargetArgs(args, queue_type,
-                                                         messages)
-  return (retry_config, throttle_config, pull_target,
-          app_engine_http_target)
+  return messages.Queue(
+      retryConfig=_ParseRetryConfigArgs(args, queue_type, messages),
+      throttleConfig=_ParseThrottleConfigArgs(args, queue_type, messages),
+      pullTarget=_ParsePullTargetArgs(args, queue_type, messages),
+      appEngineHttpTarget=_ParseAppEngineHttpTargetArgs(args, queue_type,
+                                                        messages))
+
+
+def ParseCreateTaskArgs(args, task_type, messages):
+  return messages.Task(
+      scheduleTime=args.schedule_time,
+      pullMessage=_ParsePullMessageArgs(args, task_type, messages),
+      appEngineHttpRequest=_ParseAppEngineHttpRequestArgs(args, task_type,
+                                                          messages))
+
+
+def _AnyArgsSpecified(specified_args_object, args_list):
+  return any(filter(specified_args_object.IsSpecified, args_list))
 
 
 def _ParseRetryConfigArgs(args, queue_type, messages):
   """Parses the attributes of 'args' for Queue.retryConfig."""
-  if queue_type not in constants.VALID_QUEUE_TYPES:
-    return None
+  if (queue_type == constants.PULL_QUEUE and
+      _AnyArgsSpecified(args, ['max_attempts', 'task_age_limit'])):
+    retry_config = messages.RetryConfig(taskAgeLimit=args.task_age_limit)
+    _AddMaxAttemptsFieldsFromArgs(args, retry_config)
+    return retry_config
 
-  retry_config = messages.RetryConfig()
-  if queue_type == constants.PULL_QUEUE:
-    if not any(filter(args.IsSpecified, ['max_attempts', 'task_age_limit'])):
-      return None
+  if (queue_type == constants.APP_ENGINE_QUEUE and
+      _AnyArgsSpecified(args, ['task_age_limit', 'max_doublings',
+                               'min_backoff', 'max_backoff'])):
+    retry_config = messages.RetryConfig(taskAgeLimit=args.task_age_limit,
+                                        maxDoublings=args.max_doublings,
+                                        minBackoff=args.min_backoff,
+                                        maxBackoff=args.max_backoff)
     _AddMaxAttemptsFieldsFromArgs(args, retry_config)
-    retry_config.taskAgeLimit = args.task_age_limit
-  if queue_type == constants.APP_ENGINE_QUEUE:
-    if not any(filter(args.IsSpecified, ['max_attempts', 'task_age_limit',
-                                         'max_doublings', 'min_backoff',
-                                         'max_backoff'])):
-      return None
-    _AddMaxAttemptsFieldsFromArgs(args, retry_config)
-    retry_config.taskAgeLimit = args.task_age_limit
-    retry_config.maxDoublings = args.max_doublings
-    retry_config.minBackoff = args.min_backoff
-    retry_config.maxBackoff = args.max_backoff
-  return retry_config
+    return retry_config
 
 
 def _AddMaxAttemptsFieldsFromArgs(args, config_object):
@@ -117,154 +123,69 @@ def _AddMaxAttemptsFieldsFromArgs(args, config_object):
 
 def _ParseThrottleConfigArgs(args, queue_type, messages):
   """Parses the attributes of 'args' for Queue.throttleConfig."""
-  if queue_type != constants.APP_ENGINE_QUEUE:
-    return None
-  if not any(filter(args.IsSpecified, ['max_tasks_dispatched_per_second',
-                                       'max_outstanding_tasks'])):
-    return None
-
-  throttle_config = messages.ThrottleConfig()
-  throttle_config.maxTasksDispatchedPerSecond = (
-      args.max_tasks_dispatched_per_second)
-  throttle_config.maxOutstandingTasks = args.max_outstanding_tasks
-  return throttle_config
+  if (queue_type == constants.APP_ENGINE_QUEUE and
+      _AnyArgsSpecified(args, ['max_tasks_dispatched_per_second',
+                               'max_outstanding_tasks'])):
+    return messages.ThrottleConfig(
+        maxTasksDispatchedPerSecond=args.max_tasks_dispatched_per_second,
+        maxOutstandingTasks=args.max_outstanding_tasks)
 
 
 def _ParsePullTargetArgs(unused_args, queue_type, messages):
   """Parses the attributes of 'args' for Queue.pullTarget."""
-  if queue_type != constants.PULL_QUEUE:
-    return None
-
-  pull_target = messages.PullTarget()
-  return pull_target
+  if queue_type == constants.PULL_QUEUE:
+    return messages.PullTarget()
 
 
 def _ParseAppEngineHttpTargetArgs(args, queue_type, messages):
   """Parses the attributes of 'args' for Queue.appEngineHttpTarget."""
-  if queue_type != constants.APP_ENGINE_QUEUE:
-    return None
-
-  app_engine_http_target = messages.AppEngineHttpTarget()
-  app_engine_http_target.appEngineRoutingOverride = args.routing_override
-  return app_engine_http_target
-
-
-def AddQueueResourceArg(parser, verb):
-  base.Argument('queue', help='The queue {}.\n\n'.format(verb)).AddToParser(
-      parser)
+  if queue_type == constants.APP_ENGINE_QUEUE:
+    routing_override = (messages.AppEngineRouting(**args.routing_override)
+                        if args.routing_override else None)
+    return messages.AppEngineHttpTarget(
+        appEngineRoutingOverride=routing_override)
 
 
-def AddQueueResourceFlag(parser, required=True, plural_tasks=False):
-  description = ('The queue the tasks belong to.' if plural_tasks else
-                 'The queue the task belongs to.')
-  argument = base.Argument('--queue', help=description, required=required)
-  argument.AddToParser(parser)
+def _ParsePullMessageArgs(args, task_type, messages):
+  if task_type == constants.PULL_QUEUE:
+    return messages.PullMessage(payload=_ParsePayloadArgs(args), tag=args.tag)
 
 
-def AddTaskResourceArgs(parser, verb):
-  base.Argument('task', help='The task {}.\n\n'.format(verb)).AddToParser(
-      parser)
-  AddQueueResourceFlag(parser, required=False)
+def _ParseAppEngineHttpRequestArgs(args, task_type, messages):
+  """Parses the attributes of 'args' for Task.appEngineHttpRequest."""
+  if task_type == constants.APP_ENGINE_QUEUE:
+    routing = (
+        messages.AppEngineRouting(**args.routing) if args.routing else None)
+    http_method = (messages.AppEngineHttpRequest.HttpMethodValueValuesEnum(
+        args.method.upper()) if args.IsSpecified('method') else None)
+    return messages.AppEngineHttpRequest(
+        appEngineRouting=routing, headers=_ParseHeaderArg(args, messages),
+        httpMethod=http_method, payload=_ParsePayloadArgs(args),
+        relativeUrl=args.url)
 
 
-def AddIdArg(parser, noun, verb, metavar=None):
-  metavar = metavar or '{}_ID'.format(noun.replace(' ', '_').upper())
-  argument = base.Argument('id', metavar=metavar,
-                           help='ID of the {} {}.\n\n'.format(noun, verb))
-  argument.AddToParser(parser)
+def _ParsePayloadArgs(args):
+  if args.IsSpecified('payload_file'):
+    return files.GetFileOrStdinContents(args.payload_file, binary=False)
+  elif args.IsSpecified('payload_content'):
+    return args.payload_content
 
 
-def _PullQueueFlags():
-  return [
-      base.Argument(
-          '--max-attempts',
-          type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
-          help="""\
-          The maximum number of attempts per task in the queue.
-          """),
-      base.Argument(
-          '--task-age-limit',
-          help="""\
-          The time limit for retrying a failed task, measured from when the task
-          was first run. If specified with `--max-attempts`, the task will be
-          retried until both limits are reached. Must be a string that ends in
-          's', such as "5s".
-          """),
-  ]
+def _ParseHeaderArg(args, messages):
+  if args.header:
+    header_tuples = map(_SplitHeaderArgValue, args.header)
+    headers_dicts = [{h[0]: h[1]} for h in header_tuples]
+    return tasks_api.ConstructHeadersValueMessageFromListOfDicts(
+        headers_dicts, messages)
 
 
-def _AppEngineQueueFlags():
-  return _PullQueueFlags() + [
-      base.Argument(
-          '--max-tasks-dispatched-per-second',
-          type=float,
-          help="""\
-          The maximum rate at which tasks are dispatched from this queue. This
-          also determines "max burst size" for App Engine queues: if
-          `--max-tasks-dispatched-per-second` is 1, then max burst size is 10;
-          otherwise it is `max-tasks-dispatched-per-second` / 5.
-          """),
-      base.Argument(
-          '--max-outstanding-tasks',
-          type=int,
-          help="""\
-          The maximum number of outstanding tasks that Cloud Tasks allows to
-          be dispatched for this queue. After this threshold has been reached,
-          Cloud Tasks stops dispatching tasks until the number of outstanding
-          requests decreases.
-          """),
-      base.Argument(
-          '--max-doublings',
-          type=int,
-          help="""\
-          The maximum number of times that the interval between failed task
-          retries will be doubled before the increase becomes constant. The
-          constant is: min-backoff * 2 ** (max-doublings - 1).
-          """),
-      base.Argument(
-          '--min-backoff',
-          help="""\
-          The minimum amount of time to wait before retrying a task after it
-          fails. Must be a string that ends in 's', such as "5s".
-          """),
-      base.Argument(
-          '--max-backoff',
-          help="""\
-          The maximum amount of time to wait before retrying a task after it
-          fails. Must be a string that ends in 's', such as "5s".
-          """),
-      base.Argument(
-          '--routing-override',
-          type=arg_parsers.ArgDict(key_type=_AppEngineRoutingKeysValidator,
-                                   min_length=1, max_length=3,
-                                   operators={':': None}),
-          metavar='KEY:VALUE',
-          help="""\
-          If provided, the specified route is used for all tasks in the queue,
-          no matter what is set is at the task-level.
-
-          KEY must be at least one of: [{}]. Any missing keys will use the
-          default for the app.
-          """.format(', '.join(constants.APP_ENGINE_ROUTING_KEYS))),
-  ]
+def _SplitHeaderArgValue(header_arg_value):
+  key, value = header_arg_value.split(':', 1)
+  return key, value.lstrip()
 
 
-def _AppEngineRoutingKeysValidator(key):
-  if key not in constants.APP_ENGINE_ROUTING_KEYS:
-    raise arg_parsers.ArgumentTypeError(
-        'Only the following keys are valid for override: [{}].'.format(
-            ', '.join(constants.APP_ENGINE_ROUTING_KEYS)))
-  return key
-
-
-def AddPullQueueFlags(parser):
-  for flag in _PullQueueFlags():
-    flag.AddToParser(parser)
-
-
-def AddAppEngineQueueFlags(parser):
-  for flag in _AppEngineQueueFlags():
-    flag.AddToParser(parser)
+def FormatLeaseDuration(lease_duration):
+  return '{}s'.format(lease_duration)
 
 
 def QueuesUriFunc(queue):

@@ -23,6 +23,7 @@ of all resources needed for the command, and they should be added all at once
 during calliope's Args method.
 """
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import handlers
 
 _PREFIX = '--'
@@ -38,6 +39,36 @@ def _NamespaceFormat(arg_name):
   if arg_name.startswith(_PREFIX):
     return arg_name[len(_PREFIX):].lower().replace('-', '_')
   return arg_name.lower()
+
+
+def _GetFlagName(attribute_name, resource_name, flag_name_overrides=None,
+                 prefixes=False):
+  """Gets the flag name for a given attribute name.
+
+  Returns a flag name for an attribute, adding prefixes as necessary or using
+  overrides if an override map is provided.
+
+  Args:
+    attribute_name: str, the name of the attribute to base the flag name on.
+    resource_name: str, the name of the resource the attribute belongs to (e.g.
+      '--instance')
+    flag_name_overrides: {str: str}, a dict of attribute names to exact string
+      of the flag name to use for the attribute. None if no overrides.
+    prefixes: bool, whether to use the resource name as a prefix for the flag.
+
+  Returns:
+    (str) the name of the flag.
+  """
+  flag_name_overrides = flag_name_overrides or {}
+  if attribute_name in flag_name_overrides:
+    return flag_name_overrides.get(attribute_name)
+  prefix = _PREFIX
+  if prefixes or attribute_name == 'project':
+    if resource_name.startswith(_PREFIX):
+      prefix += resource_name[len(_PREFIX):] + '-'
+    else:
+      prefix += resource_name.lower().replace('_', '-') + '-'
+  return prefix + attribute_name
 
 
 class PresentationSpec(object):
@@ -96,7 +127,7 @@ class ResourcePresentationSpec(object):
   """
 
   def __init__(self, name, concept_spec, group_help, prefixes=True,
-               required=False):
+               required=False, flag_name_overrides=None):
     """Initializes a ResourcePresentationSpec.
 
     Args:
@@ -107,6 +138,8 @@ class ResourcePresentationSpec(object):
       prefixes: bool, whether to use prefixes before the attribute flags, such
         as `--myresource-project`. Defaults to True.
       required: bool, whether the anchor argument should be required.
+      flag_name_overrides: {str: str}, dict of attribute names to the desired
+        flag name. To remove a flag altogether, use '' as its rename value.
     """
     self.name = name
     self.concept_spec = concept_spec
@@ -116,9 +149,14 @@ class ResourcePresentationSpec(object):
 
     # Create a rename map for the attributes to their flags.
     self.attribute_to_args_map = {}
+    self._skip_flags = []
     for attribute in self.concept_spec.attributes[:-1]:
-      name = self._FlagName(attribute)
-      self.attribute_to_args_map[attribute.name] = name
+      name = _GetFlagName(attribute.name, self.name, flag_name_overrides,
+                          prefixes)
+      if name:
+        self.attribute_to_args_map[attribute.name] = name
+      else:
+        self._skip_flags.append(attribute.name)
     anchor = self.concept_spec.attributes[-1]
     self.attribute_to_args_map[anchor.name] = self.name
 
@@ -143,21 +181,14 @@ class ResourcePresentationSpec(object):
         self.attribute_to_args_map,
         fallthroughs_map)
 
-  def _FlagName(self, attribute):
-    """Gets the flag name for a given attribute name."""
-    prefix = _PREFIX
-    if self.prefixes or attribute.name == 'project':
-      if self.name.startswith(_PREFIX):
-        prefix += self.name[len(_PREFIX):] + '-'
-      else:
-        prefix += self.name.lower().replace('_', '-') + '-'
-    return prefix + attribute.name
-
   def _KwargsForAttribute(self, name, attribute, required=False):
     """Constructs the kwargs for adding an attribute to argparse."""
+    # Expand the help text.
+    help_text = attribute.help_text.format(resource=self.concept_spec.name)
     kwargs_dict = {
-        'help': attribute.help_text,
-        'type': str}
+        'help': help_text,
+        'type': str,
+        'completer': attribute.completer}
     if _IsPositional(name):
       if required:
         kwargs_dict.update({'nargs': 1})
@@ -167,14 +198,43 @@ class ResourcePresentationSpec(object):
         kwargs_dict.update({'required': True})
     return kwargs_dict
 
-  def _AddAttributeToParser(self, attribute, group, actions, required=False):
+  def _GetAttributeArg(self, attribute, actions, required=False):
     """Adds argument for a specific attribute to an argparse group."""
-    name = self.attribute_to_args_map[attribute.name]
+    name = self.attribute_to_args_map.get(attribute.name, None)
+    # Return None for any false value.
+    if not name:
+      return None
     action = actions.Get(_NamespaceFormat(self.name), attribute.name)
-    group.add_argument(
+    return base.Argument(
         name,
         action=action,
         **self._KwargsForAttribute(name, attribute, required=required))
+
+  def GetAttributeArgs(self, actions):
+    """Generate args to add to the argument group."""
+    for attribute in self.concept_spec.attributes[:-1]:
+      arg = self._GetAttributeArg(attribute, actions)
+      if arg:
+        yield arg
+    # If the group is optional, the anchor arg is "modal": it is required only
+    # if another argument in the group is specified.
+    yield self._GetAttributeArg(
+        self.concept_spec.anchor, actions, required=True)
+
+  def GetGroupHelp(self):
+    """Build group help for the argument group."""
+    description = ['{} - {} The arguments in this group can be used to specify '
+                   'the attributes of this resource.'.format(self.title,
+                                                             self.group_help)]
+    if self._skip_flags:
+      description.append('(NOTE) Some attributes are not given arguments in '
+                         'this group but can be set in other ways.')
+      for attr_name in self._skip_flags:
+        hint = 'To set the [{}] attribute: {}.'.format(
+            attr_name,
+            '; '.join(self.GetInfo().GetHints(attr_name)))
+        description.append(hint)
+    return ' '.join(description)
 
   def AddConceptToParser(self, parser, actions):
     """Adds all attributes of the concept to argparse.
@@ -188,13 +248,11 @@ class ResourcePresentationSpec(object):
       actions: googlecloudsdk.calliope.concepts.handlers.ConceptArgActionGetter,
         object to build actions for adding attributes to argparse.
     """
-    group = parser.add_argument_group(
-        self.title,
-        description=self.group_help)
-    for attribute in self.concept_spec.attributes[:-1]:
-      self._AddAttributeToParser(attribute, group, actions)
-    self._AddAttributeToParser(
-        self.concept_spec.anchor, group, actions, required=self.required)
+    group = parser.add_group(
+        help=self.GetGroupHelp(),
+        required=self.required)
+    for arg in self.GetAttributeArgs(actions):
+      arg.AddToParser(group)
 
 
 class ConceptParser(object):
@@ -218,7 +276,8 @@ class ConceptParser(object):
       self._AddSpec(spec)
 
   @classmethod
-  def ForResource(cls, name, resource_spec, group_help, required=False):
+  def ForResource(cls, name, resource_spec, group_help, required=False,
+                  flag_name_overrides=None):
     """Constructs a ConceptParser for a single resource argument.
 
     Automatically sets prefixes to False.
@@ -230,6 +289,8 @@ class ConceptParser(object):
       group_help: str, the help text for the entire arg group.
       required: bool, whether the main argument should be required for the
         command.
+      flag_name_overrides: {str: str}, dict of attribute names to the desired
+        flag name. To remove a flag altogether, use '' as its rename value.
 
     Returns:
       (googlecloudsdk.calliope.concepts.concept_parsers.ConceptParser) The fully
@@ -240,7 +301,8 @@ class ConceptParser(object):
         resource_spec,
         group_help,
         prefixes=False,
-        required=required)
+        required=required,
+        flag_name_overrides=flag_name_overrides or {})
     return cls([presentation_spec])
 
   def _ArgNameMatches(self, name, other_name):

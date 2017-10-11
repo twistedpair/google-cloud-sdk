@@ -249,10 +249,15 @@ def CreateYamlLoader(impl_path):
     def construct_mapping(self, *args, **kwargs):
       data = super(Loader, self).construct_mapping(*args, **kwargs)
       attribute_path = data.pop(Loader.MERGE_MACRO, None)
-      if attribute_path:
-        for path in attribute_path.split(','):
-          data.update(self._GetData(path))
-      return data
+      if not attribute_path:
+        return data
+
+      modified_data = {}
+      for path in attribute_path.split(','):
+        modified_data.update(self._GetData(path))
+      # Add the explicit data last so it can override the imports.
+      modified_data.update(data)
+      return modified_data
 
     def construct_sequence(self, *args, **kwargs):
       data = super(Loader, self).construct_sequence(*args, **kwargs)
