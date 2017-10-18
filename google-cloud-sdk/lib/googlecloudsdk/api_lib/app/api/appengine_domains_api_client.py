@@ -15,7 +15,6 @@
 
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
-from googlecloudsdk.api_lib.app.api import requests
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import resources
@@ -63,8 +62,7 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
     request = self.messages.AppengineAppsDomainMappingsCreateRequest(
         parent=self._FormatApp(), domainMapping=domain_mapping)
 
-    operation = requests.MakeRequest(self.client.apps_domainMappings.Create,
-                                     request)
+    operation = self.client.apps_domainMappings.Create(request)
 
     return operations_util.WaitForOperation(self.client.apps_operations,
                                             operation).response
@@ -78,8 +76,7 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
     request = self.messages.AppengineAppsDomainMappingsDeleteRequest(
         name=self._FormatDomainMapping(domain))
 
-    operation = requests.MakeRequest(self.client.apps_domainMappings.Delete,
-                                     request)
+    operation = self.client.apps_domainMappings.Delete(request)
 
     operations_util.WaitForOperation(self.client.apps_operations, operation)
 
@@ -95,7 +92,7 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
     request = self.messages.AppengineAppsDomainMappingsGetRequest(
         name=self._FormatDomainMapping(domain))
 
-    return requests.MakeRequest(self.client.apps_domainMappings.Get, request)
+    return self.client.apps_domainMappings.Get(request)
 
   def ListDomainMappings(self):
     """Lists all domain mappings for the given application.
@@ -106,8 +103,7 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
     request = self.messages.AppengineAppsDomainMappingsListRequest(
         parent=self._FormatApp())
 
-    response = requests.MakeRequest(self.client.apps_domainMappings.List,
-                                    request)
+    response = self.client.apps_domainMappings.List(request)
 
     return response.domainMappings
 
@@ -140,8 +136,7 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
         domainMapping=domain_mapping,
         updateMask=','.join(mask_fields))
 
-    operation = requests.MakeRequest(self.client.apps_domainMappings.Patch,
-                                     request)
+    operation = self.client.apps_domainMappings.Patch(request)
 
     return operations_util.WaitForOperation(self.client.apps_operations,
                                             operation).response
@@ -155,8 +150,7 @@ class AppengineDomainsApiClient(base.AppengineApiClientBase):
     request = self.messages.AppengineAppsAuthorizedDomainsListRequest(
         parent=self._FormatApp())
 
-    response = requests.MakeRequest(self.client.apps_authorizedDomains.List,
-                                    request)
+    response = self.client.apps_authorizedDomains.List(request)
 
     return response.domains
 
@@ -192,8 +186,7 @@ class AppengineDomainsApiBetaClient(AppengineDomainsApiClient):
         parent=self._FormatApp(),
         domainMapping=domain_mapping)
 
-    operation = requests.MakeRequest(self.client.apps_domainMappings.Create,
-                                     request)
+    operation = self.client.apps_domainMappings.Create(request)
 
     return operations_util.WaitForOperation(self.client.apps_operations,
                                             operation).response
@@ -236,8 +229,7 @@ class AppengineDomainsApiBetaClient(AppengineDomainsApiClient):
         domainMapping=domain_mapping,
         updateMask=','.join(mask_fields))
 
-    operation = requests.MakeRequest(self.client.apps_domainMappings.Patch,
-                                     request)
+    operation = self.client.apps_domainMappings.Patch(request)
 
     return operations_util.WaitForOperation(self.client.apps_operations,
                                             operation).response

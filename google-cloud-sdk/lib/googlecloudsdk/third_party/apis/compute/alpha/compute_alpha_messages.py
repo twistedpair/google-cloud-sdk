@@ -136,7 +136,9 @@ class AcceleratorTypeAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -158,25 +160,27 @@ class AcceleratorTypeAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -257,7 +261,9 @@ class AcceleratorTypeList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -279,25 +285,27 @@ class AcceleratorTypeList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -372,7 +380,9 @@ class AcceleratorTypesScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -394,25 +404,27 @@ class AcceleratorTypesScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -769,7 +781,9 @@ class AddressAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -791,25 +805,27 @@ class AddressAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -890,7 +906,9 @@ class AddressList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -912,25 +930,27 @@ class AddressList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -1004,7 +1024,9 @@ class AddressesScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -1026,25 +1048,27 @@ class AddressesScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -1159,10 +1183,11 @@ class AttachedDisk(_messages.Message):
       READ_WRITE mode.
     source: Specifies a valid partial or full URL to an existing Persistent
       Disk resource. When creating a new instance, one of
-      initializeParams.sourceImage or disks.source is required.  If desired,
-      you can also attach existing non-root persistent disks using this
-      property. This field is only applicable for persistent disks.  Note that
-      for InstanceTemplate, specify the disk name, not the URL for the disk.
+      initializeParams.sourceImage or disks.source is required except for
+      local SSD.  If desired, you can also attach existing non-root persistent
+      disks using this property. This field is only applicable for persistent
+      disks.  Note that for InstanceTemplate, specify the disk name, not the
+      URL for the disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
   """
@@ -1245,11 +1270,11 @@ class AttachedDiskInitializeParams(_messages.Message):
       the name of the disk type, not URL.
     sourceImage: The source image to create this disk. When creating a new
       instance, one of initializeParams.sourceImage or disks.source is
-      required.  To create a disk with one of the public operating system
-      images, specify the image by its family name. For example, specify
-      family/debian-8 to use the latest Debian 8 image:  projects/debian-
-      cloud/global/images/family/debian-8   Alternatively, use a specific
-      version of a public operating system image:  projects/debian-
+      required except for local SSD.  To create a disk with one of the public
+      operating system images, specify the image by its family name. For
+      example, specify family/debian-8 to use the latest Debian 8 image:
+      projects/debian-cloud/global/images/family/debian-8   Alternatively, use
+      a specific version of a public operating system image:  projects/debian-
       cloud/global/images/debian-8-jessie-vYYYYMMDD   To create a disk with a
       private image that you created, specify the image name in the following
       format:  global/images/my-private-image   You can also specify a private
@@ -1524,7 +1549,9 @@ class AutoscalerAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -1546,25 +1573,27 @@ class AutoscalerAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -1645,7 +1674,9 @@ class AutoscalerList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -1667,25 +1698,27 @@ class AutoscalerList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -1810,7 +1843,9 @@ class AutoscalersScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -1832,25 +1867,27 @@ class AutoscalersScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -2291,7 +2328,9 @@ class BackendBucketList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -2313,25 +2352,27 @@ class BackendBucketList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -2613,7 +2654,9 @@ class BackendServiceAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -2635,25 +2678,27 @@ class BackendServiceAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -2846,7 +2891,9 @@ class BackendServiceList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -2868,25 +2915,27 @@ class BackendServiceList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -2970,7 +3019,9 @@ class BackendServicesScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -2992,25 +3043,27 @@ class BackendServicesScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -3282,7 +3335,9 @@ class CommitmentAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -3304,25 +3359,27 @@ class CommitmentAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -3403,7 +3460,9 @@ class CommitmentList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -3425,25 +3484,27 @@ class CommitmentList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -3517,7 +3578,9 @@ class CommitmentsScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -3539,25 +3602,27 @@ class CommitmentsScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -12806,6 +12871,21 @@ class ComputeRoutesTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeSecurityPoliciesAddRuleRequest(_messages.Message):
+  """A ComputeSecurityPoliciesAddRuleRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  securityPolicy = _messages.StringField(2, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 3)
+
+
 class ComputeSecurityPoliciesDeleteRequest(_messages.Message):
   """A ComputeSecurityPoliciesDeleteRequest object.
 
@@ -12839,6 +12919,21 @@ class ComputeSecurityPoliciesGetRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   securityPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeSecurityPoliciesGetRuleRequest(_messages.Message):
+  """A ComputeSecurityPoliciesGetRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to get from the security policy.
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to which the queried rule
+      belongs.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  securityPolicy = _messages.StringField(3, required=True)
 
 
 class ComputeSecurityPoliciesInsertRequest(_messages.Message):
@@ -12938,6 +13033,37 @@ class ComputeSecurityPoliciesPatchRequest(_messages.Message):
   requestId = _messages.StringField(2)
   securityPolicy = _messages.StringField(3, required=True)
   securityPolicyResource = _messages.MessageField('SecurityPolicy', 4)
+
+
+class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
+  """A ComputeSecurityPoliciesPatchRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to patch.
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 4)
+
+
+class ComputeSecurityPoliciesRemoveRuleRequest(_messages.Message):
+  """A ComputeSecurityPoliciesRemoveRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to remove from the security policy.
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to update.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  securityPolicy = _messages.StringField(3, required=True)
 
 
 class ComputeSecurityPoliciesTestIamPermissionsRequest(_messages.Message):
@@ -16072,6 +16198,14 @@ class Disk(_messages.Message):
       the disk.  If you do not provide an encryption key when creating the
       disk, then the disk will be encrypted using an automatically generated
       key and you do not need to provide a key to use the disk later.
+    guestOsFeatures: A list of features to enable on the guest OS. Applicable
+      for bootable disks only. Currently, only one feature can be enabled,
+      VIRTIO_SCSI_MULTIQUEUE, which allows each virtual CPU to have its own
+      queue. For Windows disks, you can only enable VIRTIO_SCSI_MULTIQUEUE on
+      images with driver version 1.2.0.1621 or higher. Linux disks with kernel
+      versions 3.17 and higher will support VIRTIO_SCSI_MULTIQUEUE.  For newer
+      Windows images, the server might also populate this property with the
+      value WINDOWS to indicate that this is a Windows image.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#disk for disks.
@@ -16214,32 +16348,33 @@ class Disk(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#disk')
-  labelFingerprint = _messages.BytesField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  lastAttachTimestamp = _messages.StringField(8)
-  lastDetachTimestamp = _messages.StringField(9)
-  licenseCodes = _messages.IntegerField(10, repeated=True)
-  licenses = _messages.StringField(11, repeated=True)
-  name = _messages.StringField(12)
-  options = _messages.StringField(13)
-  physicalBlockSizeBytes = _messages.IntegerField(14)
-  region = _messages.StringField(15)
-  replicaZones = _messages.StringField(16, repeated=True)
-  selfLink = _messages.StringField(17)
-  sizeGb = _messages.IntegerField(18)
-  sourceImage = _messages.StringField(19)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
-  sourceImageId = _messages.StringField(21)
-  sourceSnapshot = _messages.StringField(22)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
-  sourceSnapshotId = _messages.StringField(24)
-  status = _messages.EnumField('StatusValueValuesEnum', 25)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 26)
-  type = _messages.StringField(27)
-  users = _messages.StringField(28, repeated=True)
-  zone = _messages.StringField(29)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 4, repeated=True)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#disk')
+  labelFingerprint = _messages.BytesField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  lastAttachTimestamp = _messages.StringField(9)
+  lastDetachTimestamp = _messages.StringField(10)
+  licenseCodes = _messages.IntegerField(11, repeated=True)
+  licenses = _messages.StringField(12, repeated=True)
+  name = _messages.StringField(13)
+  options = _messages.StringField(14)
+  physicalBlockSizeBytes = _messages.IntegerField(15)
+  region = _messages.StringField(16)
+  replicaZones = _messages.StringField(17, repeated=True)
+  selfLink = _messages.StringField(18)
+  sizeGb = _messages.IntegerField(19)
+  sourceImage = _messages.StringField(20)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceImageId = _messages.StringField(22)
+  sourceSnapshot = _messages.StringField(23)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
+  sourceSnapshotId = _messages.StringField(25)
+  status = _messages.EnumField('StatusValueValuesEnum', 26)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 27)
+  type = _messages.StringField(28)
+  users = _messages.StringField(29, repeated=True)
+  zone = _messages.StringField(30)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -16317,7 +16452,9 @@ class DiskAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -16339,25 +16476,27 @@ class DiskAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -16484,7 +16623,9 @@ class DiskList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -16506,25 +16647,27 @@ class DiskList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -16684,7 +16827,9 @@ class DiskTypeAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -16706,25 +16851,27 @@ class DiskTypeAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -16805,7 +16952,9 @@ class DiskTypeList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -16827,25 +16976,27 @@ class DiskTypeList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -16919,7 +17070,9 @@ class DiskTypesScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -16941,25 +17094,27 @@ class DiskTypesScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -17039,7 +17194,9 @@ class DisksScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -17061,25 +17218,27 @@ class DisksScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -17381,7 +17540,9 @@ class FirewallList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -17403,25 +17564,27 @@ class FirewallList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -17819,7 +17982,9 @@ class ForwardingRuleAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -17841,25 +18006,27 @@ class ForwardingRuleAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -17939,7 +18106,9 @@ class ForwardingRuleList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -17961,25 +18130,27 @@ class ForwardingRuleList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -18063,7 +18234,9 @@ class ForwardingRulesScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -18085,25 +18258,27 @@ class ForwardingRulesScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -18630,7 +18805,9 @@ class HealthCheckList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -18652,25 +18829,27 @@ class HealthCheckList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -18965,7 +19144,9 @@ class HostAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -18987,25 +19168,27 @@ class HostAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -19086,7 +19269,9 @@ class HostList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -19108,25 +19293,27 @@ class HostList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -19294,7 +19481,9 @@ class HostTypeAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -19316,25 +19505,27 @@ class HostTypeAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -19415,7 +19606,9 @@ class HostTypeList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -19437,25 +19630,27 @@ class HostTypeList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -19529,7 +19724,9 @@ class HostTypesScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -19551,25 +19748,27 @@ class HostTypesScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -19639,7 +19838,9 @@ class HostsScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -19661,25 +19862,27 @@ class HostsScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -19809,7 +20012,9 @@ class HttpHealthCheckList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -19831,25 +20036,27 @@ class HttpHealthCheckList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -19982,7 +20189,9 @@ class HttpsHealthCheckList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -20004,25 +20213,27 @@ class HttpsHealthCheckList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -20313,7 +20524,9 @@ class ImageList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -20335,25 +20548,27 @@ class ImageList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -20455,6 +20670,7 @@ class Instance(_messages.Message):
       zones/zone/machineTypes/custom-CPUS-MEMORY   For example: zones/us-
       central1-f/machineTypes/custom-4-5120   For a full list of restrictions,
       read the Specifications for custom machine types.
+    maintenancePolicies: Maintenance policies applied to this instance.
     metadata: The metadata key/value pairs assigned to this instance. This
       includes custom metadata and predefined keys.
     minCpuPlatform: Specifies a minimum CPU platform for the VM instance.
@@ -20555,18 +20771,19 @@ class Instance(_messages.Message):
   labelFingerprint = _messages.BytesField(12)
   labels = _messages.MessageField('LabelsValue', 13)
   machineType = _messages.StringField(14)
-  metadata = _messages.MessageField('Metadata', 15)
-  minCpuPlatform = _messages.StringField(16)
-  name = _messages.StringField(17)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 18, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 19)
-  selfLink = _messages.StringField(20)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 21, repeated=True)
-  startRestricted = _messages.BooleanField(22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  statusMessage = _messages.StringField(24)
-  tags = _messages.MessageField('Tags', 25)
-  zone = _messages.StringField(26)
+  maintenancePolicies = _messages.StringField(15, repeated=True)
+  metadata = _messages.MessageField('Metadata', 16)
+  minCpuPlatform = _messages.StringField(17)
+  name = _messages.StringField(18)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 19, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 20)
+  selfLink = _messages.StringField(21)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 22, repeated=True)
+  startRestricted = _messages.BooleanField(23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  statusMessage = _messages.StringField(25)
+  tags = _messages.MessageField('Tags', 26)
+  zone = _messages.StringField(27)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -20645,7 +20862,9 @@ class InstanceAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -20667,25 +20886,27 @@ class InstanceAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -20843,7 +21064,9 @@ class InstanceGroupAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -20865,25 +21088,27 @@ class InstanceGroupAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -20964,7 +21189,9 @@ class InstanceGroupList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -20986,25 +21213,27 @@ class InstanceGroupList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -21376,7 +21605,9 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -21398,25 +21629,27 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -21521,7 +21754,9 @@ class InstanceGroupManagerList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -21543,25 +21778,27 @@ class InstanceGroupManagerList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -21870,7 +22107,9 @@ class InstanceGroupManagersListPerInstanceConfigsResp(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -21892,25 +22131,27 @@ class InstanceGroupManagersListPerInstanceConfigsResp(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -22023,7 +22264,9 @@ class InstanceGroupManagersScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -22045,25 +22288,27 @@ class InstanceGroupManagersScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -22204,7 +22449,9 @@ class InstanceGroupsListInstances(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -22226,25 +22473,27 @@ class InstanceGroupsListInstances(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -22359,7 +22608,9 @@ class InstanceGroupsScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -22381,25 +22632,27 @@ class InstanceGroupsScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -22493,7 +22746,9 @@ class InstanceList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -22515,25 +22770,27 @@ class InstanceList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -22614,7 +22871,9 @@ class InstanceListReferrers(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -22636,25 +22895,27 @@ class InstanceListReferrers(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -22892,7 +23153,9 @@ class InstanceTemplateList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -22914,25 +23177,27 @@ class InstanceTemplateList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -23046,7 +23311,9 @@ class InstancesScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -23068,25 +23335,27 @@ class InstancesScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -23239,10 +23508,6 @@ class Interconnect(_messages.Message):
       it. By default, it is set to ?true?.
     circuitInfos: [Output Only] List of CircuitInfo objects, that describe the
       individual circuits in this LAG.
-    connectionAuthorization: [Output Only] URL to retrieve the Letter Of
-      Authority and Customer Facility Assignment (LOA-CFA) documentation
-      relating to this Interconnect. This documentation authorizes the
-      facility provider to connect to the specified crossconnect ports.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customerName: Customer name, to put in the Letter of Authorization as the
@@ -23294,11 +23559,13 @@ class Interconnect(_messages.Message):
     """InterconnectTypeValueValuesEnum enum type.
 
     Values:
+      DEDICATED: <no description>
       IT_PRIVATE: <no description>
       PARTNER: <no description>
     """
-    IT_PRIVATE = 0
-    PARTNER = 1
+    DEDICATED = 0
+    IT_PRIVATE = 1
+    PARTNER = 2
 
   class LinkTypeValueValuesEnum(_messages.Enum):
     """LinkTypeValueValuesEnum enum type.
@@ -23313,34 +23580,37 @@ class Interconnect(_messages.Message):
     functional.
 
     Values:
+      ACTIVE: <no description>
       OS_ACTIVE: <no description>
       OS_UNPROVISIONED: <no description>
+      UNPROVISIONED: <no description>
     """
-    OS_ACTIVE = 0
-    OS_UNPROVISIONED = 1
+    ACTIVE = 0
+    OS_ACTIVE = 1
+    OS_UNPROVISIONED = 2
+    UNPROVISIONED = 3
 
   adminEnabled = _messages.BooleanField(1)
   circuitInfos = _messages.MessageField('InterconnectCircuitInfo', 2, repeated=True)
-  connectionAuthorization = _messages.StringField(3)
-  creationTimestamp = _messages.StringField(4)
-  customerName = _messages.StringField(5)
-  description = _messages.StringField(6)
-  expectedOutages = _messages.MessageField('InterconnectOutageNotification', 7, repeated=True)
-  googleIpAddress = _messages.StringField(8)
-  googleReferenceId = _messages.StringField(9)
-  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  interconnectAttachments = _messages.StringField(11, repeated=True)
-  interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 12)
-  kind = _messages.StringField(13, default=u'compute#interconnect')
-  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 14)
-  location = _messages.StringField(15)
-  name = _messages.StringField(16)
-  nocContactEmail = _messages.StringField(17)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 18)
-  peerIpAddress = _messages.StringField(19)
-  provisionedLinkCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  requestedLinkCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(22)
+  creationTimestamp = _messages.StringField(3)
+  customerName = _messages.StringField(4)
+  description = _messages.StringField(5)
+  expectedOutages = _messages.MessageField('InterconnectOutageNotification', 6, repeated=True)
+  googleIpAddress = _messages.StringField(7)
+  googleReferenceId = _messages.StringField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  interconnectAttachments = _messages.StringField(10, repeated=True)
+  interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 11)
+  kind = _messages.StringField(12, default=u'compute#interconnect')
+  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 13)
+  location = _messages.StringField(14)
+  name = _messages.StringField(15)
+  nocContactEmail = _messages.StringField(16)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 17)
+  peerIpAddress = _messages.StringField(18)
+  provisionedLinkCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  requestedLinkCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(21)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -23396,11 +23666,15 @@ class InterconnectAttachment(_messages.Message):
     attachment is functional.
 
     Values:
+      ACTIVE: <no description>
       OS_ACTIVE: <no description>
       OS_UNPROVISIONED: <no description>
+      UNPROVISIONED: <no description>
     """
-    OS_ACTIVE = 0
-    OS_UNPROVISIONED = 1
+    ACTIVE = 0
+    OS_ACTIVE = 1
+    OS_UNPROVISIONED = 2
+    UNPROVISIONED = 3
 
   cloudRouterIpAddress = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
@@ -23494,7 +23768,9 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -23516,25 +23792,27 @@ class InterconnectAttachmentAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -23617,7 +23895,9 @@ class InterconnectAttachmentList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -23639,25 +23919,27 @@ class InterconnectAttachmentList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -23745,7 +24027,9 @@ class InterconnectAttachmentsScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -23767,25 +24051,27 @@ class InterconnectAttachmentsScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -23882,7 +24168,9 @@ class InterconnectList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -23904,25 +24192,27 @@ class InterconnectList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -23997,17 +24287,27 @@ class InterconnectLocation(_messages.Message):
     Interconnect UI.
 
     Values:
+      AFRICA: <no description>
+      ASIA_PAC: <no description>
       C_AFRICA: <no description>
       C_ASIA_PAC: <no description>
       C_EUROPE: <no description>
       C_NORTH_AMERICA: <no description>
       C_SOUTH_AMERICA: <no description>
+      EUROPE: <no description>
+      NORTH_AMERICA: <no description>
+      SOUTH_AMERICA: <no description>
     """
-    C_AFRICA = 0
-    C_ASIA_PAC = 1
-    C_EUROPE = 2
-    C_NORTH_AMERICA = 3
-    C_SOUTH_AMERICA = 4
+    AFRICA = 0
+    ASIA_PAC = 1
+    C_AFRICA = 2
+    C_ASIA_PAC = 3
+    C_EUROPE = 4
+    C_NORTH_AMERICA = 5
+    C_SOUTH_AMERICA = 6
+    EUROPE = 7
+    NORTH_AMERICA = 8
+    SOUTH_AMERICA = 9
 
   address = _messages.StringField(1)
   availabilityZone = _messages.StringField(2)
@@ -24075,7 +24375,9 @@ class InterconnectLocationList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -24097,25 +24399,27 @@ class InterconnectLocationList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -24161,23 +24465,25 @@ class InterconnectLocationRegionInfo(_messages.Message):
       InterconnectLocation to a VM in this region.
     locationPresence: Identifies the network presence of this location.
     region: URL for the region of this location.
-    regionKey: Scope key for the region of this location.
   """
 
   class LocationPresenceValueValuesEnum(_messages.Enum):
     """Identifies the network presence of this location.
 
     Values:
+      GLOBAL: <no description>
+      LOCAL_REGION: <no description>
       LP_GLOBAL: <no description>
       LP_LOCAL_REGION: <no description>
     """
-    LP_GLOBAL = 0
-    LP_LOCAL_REGION = 1
+    GLOBAL = 0
+    LOCAL_REGION = 1
+    LP_GLOBAL = 2
+    LP_LOCAL_REGION = 3
 
   expectedRttMs = _messages.IntegerField(1)
   locationPresence = _messages.EnumField('LocationPresenceValueValuesEnum', 2)
   region = _messages.StringField(3)
-  regionKey = _messages.StringField(4)
 
 
 class InterconnectOutageNotification(_messages.Message):
@@ -24207,27 +24513,37 @@ class InterconnectOutageNotification(_messages.Message):
     Values:
       IT_OUTAGE: <no description>
       IT_PARTIAL_OUTAGE: <no description>
+      OUTAGE: <no description>
+      PARTIAL_OUTAGE: <no description>
     """
     IT_OUTAGE = 0
     IT_PARTIAL_OUTAGE = 1
+    OUTAGE = 2
+    PARTIAL_OUTAGE = 3
 
   class SourceValueValuesEnum(_messages.Enum):
     """SourceValueValuesEnum enum type.
 
     Values:
+      GOOGLE: <no description>
       NSRC_GOOGLE: <no description>
     """
-    NSRC_GOOGLE = 0
+    GOOGLE = 0
+    NSRC_GOOGLE = 1
 
   class StateValueValuesEnum(_messages.Enum):
     """StateValueValuesEnum enum type.
 
     Values:
+      ACTIVE: <no description>
+      CANCELLED: <no description>
       NS_ACTIVE: <no description>
       NS_CANCELED: <no description>
     """
-    NS_ACTIVE = 0
-    NS_CANCELED = 1
+    ACTIVE = 0
+    CANCELLED = 1
+    NS_ACTIVE = 2
+    NS_CANCELED = 3
 
   affectedCircuits = _messages.StringField(1, repeated=True)
   description = _messages.StringField(2)
@@ -24302,7 +24618,9 @@ class IpOwnerList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -24324,25 +24642,27 @@ class IpOwnerList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -24535,7 +24855,9 @@ class LicensesListResponse(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -24557,25 +24879,27 @@ class LicensesListResponse(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -24819,7 +25143,9 @@ class MachineTypeAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -24841,25 +25167,27 @@ class MachineTypeAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -24940,7 +25268,9 @@ class MachineTypeList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -24962,25 +25292,27 @@ class MachineTypeList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -25054,7 +25386,9 @@ class MachineTypesScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -25076,25 +25410,27 @@ class MachineTypesScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -25697,7 +26033,9 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -25719,25 +26057,27 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -25840,7 +26180,9 @@ class NetworkEndpointGroupList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -25862,25 +26204,27 @@ class NetworkEndpointGroupList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -26012,7 +26356,9 @@ class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -26034,25 +26380,27 @@ class NetworkEndpointGroupsListNetworkEndpoints(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -26126,7 +26474,9 @@ class NetworkEndpointGroupsScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -26148,25 +26498,27 @@ class NetworkEndpointGroupsScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -26307,7 +26659,9 @@ class NetworkList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -26329,25 +26683,27 @@ class NetworkList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -26622,7 +26978,9 @@ class Operation(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -26644,25 +27002,27 @@ class Operation(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -26786,7 +27146,9 @@ class OperationAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -26808,25 +27170,27 @@ class OperationAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -26907,7 +27271,9 @@ class OperationList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -26929,25 +27295,27 @@ class OperationList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -27021,7 +27389,9 @@ class OperationsScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -27043,25 +27413,27 @@ class OperationsScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -27583,7 +27955,9 @@ class RegionAutoscalerList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -27605,25 +27979,27 @@ class RegionAutoscalerList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -27704,7 +28080,9 @@ class RegionDiskTypeList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -27726,25 +28104,27 @@ class RegionDiskTypeList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -27835,7 +28215,9 @@ class RegionInstanceGroupList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -27857,25 +28239,27 @@ class RegionInstanceGroupList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -27968,7 +28352,9 @@ class RegionInstanceGroupManagerList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -27990,25 +28376,27 @@ class RegionInstanceGroupManagerList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -28171,7 +28559,9 @@ class RegionInstanceGroupManagersListInstanceConfigsResp(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -28193,25 +28583,27 @@ class RegionInstanceGroupManagersListInstanceConfigsResp(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -28353,7 +28745,9 @@ class RegionInstanceGroupsListInstances(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -28375,25 +28769,27 @@ class RegionInstanceGroupsListInstances(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -28521,7 +28917,9 @@ class RegionList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -28543,25 +28941,27 @@ class RegionList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -28776,7 +29176,9 @@ class Route(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -28798,25 +29200,27 @@ class Route(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -28907,7 +29311,9 @@ class RouteList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -28929,25 +29335,27 @@ class RouteList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -29124,7 +29532,9 @@ class RouterAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -29146,25 +29556,27 @@ class RouterAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -29398,7 +29810,9 @@ class RouterList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -29420,25 +29834,27 @@ class RouterList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -29730,7 +30146,9 @@ class RoutersScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -29752,25 +30170,27 @@ class RoutersScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -30062,7 +30482,9 @@ class SecurityPolicyList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -30084,25 +30506,27 @@ class SecurityPolicyList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -30479,7 +30903,9 @@ class SnapshotList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -30501,25 +30927,27 @@ class SnapshotList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -30652,7 +31080,9 @@ class SslCertificateList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -30674,25 +31104,27 @@ class SslCertificateList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -30773,7 +31205,9 @@ class SslPoliciesList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -30795,25 +31229,27 @@ class SslPoliciesList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -30971,7 +31407,9 @@ class SslPolicy(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -30993,25 +31431,27 @@ class SslPolicy(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -31287,7 +31727,9 @@ class SubnetworkAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -31309,25 +31751,27 @@ class SubnetworkAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -31408,7 +31852,9 @@ class SubnetworkList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -31430,25 +31876,27 @@ class SubnetworkList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -31553,7 +32001,9 @@ class SubnetworksScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -31575,25 +32025,27 @@ class SubnetworksScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -31811,7 +32263,9 @@ class TargetHttpProxyList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -31833,25 +32287,27 @@ class TargetHttpProxyList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -32053,7 +32509,9 @@ class TargetHttpsProxyList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -32075,25 +32533,27 @@ class TargetHttpsProxyList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -32256,7 +32716,9 @@ class TargetInstanceAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -32278,25 +32740,27 @@ class TargetInstanceAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -32376,7 +32840,9 @@ class TargetInstanceList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -32398,25 +32864,27 @@ class TargetInstanceList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -32490,7 +32958,9 @@ class TargetInstancesScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -32512,25 +32982,27 @@ class TargetInstancesScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -32739,7 +33211,9 @@ class TargetPoolAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -32761,25 +33235,27 @@ class TargetPoolAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -32874,7 +33350,9 @@ class TargetPoolList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -32896,25 +33374,27 @@ class TargetPoolList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -33037,7 +33517,9 @@ class TargetPoolsScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -33059,25 +33541,27 @@ class TargetPoolsScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -33274,7 +33758,9 @@ class TargetSslProxyList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -33296,25 +33782,27 @@ class TargetSslProxyList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -33482,7 +33970,9 @@ class TargetTcpProxyList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -33504,25 +33994,27 @@ class TargetTcpProxyList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -33735,7 +34227,9 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -33757,25 +34251,27 @@ class TargetVpnGatewayAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -33856,7 +34352,9 @@ class TargetVpnGatewayList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -33878,25 +34376,27 @@ class TargetVpnGatewayList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -33971,7 +34471,9 @@ class TargetVpnGatewaysScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -33993,25 +34495,27 @@ class TargetVpnGatewaysScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -34192,7 +34696,9 @@ class UrlMapList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -34214,25 +34720,27 @@ class UrlMapList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -34395,7 +34903,9 @@ class UsableSubnetworksAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -34417,25 +34927,27 @@ class UsableSubnetworksAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -34703,7 +35215,9 @@ class VpnTunnelAggregatedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -34725,25 +35239,27 @@ class VpnTunnelAggregatedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -34824,7 +35340,9 @@ class VpnTunnelList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -34846,25 +35364,27 @@ class VpnTunnelList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -34938,7 +35458,9 @@ class VpnTunnelsScopedList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -34960,25 +35482,27 @@ class VpnTunnelsScopedList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -35055,7 +35579,9 @@ class XpnHostList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -35077,25 +35603,27 @@ class XpnHostList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.
@@ -35249,7 +35777,9 @@ class ZoneList(_messages.Message):
       Values:
         CLEANUP_FAILED: <no description>
         DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
         DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
         EXTERNAL_API_WARNING: <no description>
         FIELD_VALUE_OVERRIDEN: <no description>
         INJECTED_KERNELS_DEPRECATED: <no description>
@@ -35271,25 +35801,27 @@ class ZoneList(_messages.Message):
       """
       CLEANUP_FAILED = 0
       DEPRECATED_RESOURCE_USED = 1
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 2
-      EXTERNAL_API_WARNING = 3
-      FIELD_VALUE_OVERRIDEN = 4
-      INJECTED_KERNELS_DEPRECATED = 5
-      MISSING_TYPE_DEPENDENCY = 6
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 7
-      NEXT_HOP_CANNOT_IP_FORWARD = 8
-      NEXT_HOP_INSTANCE_NOT_FOUND = 9
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 10
-      NEXT_HOP_NOT_RUNNING = 11
-      NOT_CRITICAL_ERROR = 12
-      NO_RESULTS_ON_PAGE = 13
-      REQUIRED_TOS_AGREEMENT = 14
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 15
-      RESOURCE_NOT_DELETED = 16
-      SCHEMA_VALIDATION_IGNORED = 17
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 18
-      UNDECLARED_PROPERTIES = 19
-      UNREACHABLE = 20
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
 
     class DataValueListEntry(_messages.Message):
       """A DataValueListEntry object.

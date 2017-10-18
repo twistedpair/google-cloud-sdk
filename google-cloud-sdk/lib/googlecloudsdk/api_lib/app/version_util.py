@@ -16,11 +16,10 @@
 
 import re
 
-from googlecloudsdk.api_lib.app import exceptions as app_exceptions
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app import util
-from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -206,9 +205,9 @@ def DeleteVersions(api_client, versions):
   for version in versions:
     version_path = '{0}/{1}'.format(version.service, version.id)
     try:
-      api_client.DeleteVersion(version.service, version.id)
-    except (core_api_exceptions.HttpException, operations_util.OperationError,
-            operations_util.OperationTimeoutError, app_exceptions.Error) as err:
+      operations_util.CallAndCollectOpErrors(
+          api_client.DeleteVersion, version.service, version.id)
+    except operations_util.MiscOperationError as err:
       errors[version_path] = str(err)
 
   if errors:
@@ -250,6 +249,10 @@ def PromoteVersion(all_services, new_version, api_client,
     _StopPreviousVersionIfApplies(old_default_version, api_client)
 
 
+def GetUri(version):
+  return version.version.versionUrl
+
+
 def _GetPreviousVersion(all_services, new_version, api_client):
   """Get the previous default version of which new_version is replacing.
 
@@ -288,7 +291,7 @@ def _SetDefaultVersion(new_version, api_client):
   # TODO(b/31824825): It sometimes takes a while for a new service to show up.
   # Retry it if we get a service not found error.
   def ShouldRetry(exc_type, unused_exc_value, unused_traceback, unused_state):
-    return issubclass(exc_type, core_api_exceptions.HttpException)
+    return issubclass(exc_type, apitools_exceptions.HttpError)
 
   try:
     retryer = retry.Retryer(max_retrials=3, exponential_sleep_multiplier=2)
@@ -343,13 +346,12 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
     # (reports of 2.5 minutes) to deployment. The risk is that if we don't wait,
     # the operation might fail and leave an old version running. But the time
     # savings is substantial.
-    api_client.StopVersion(
+    operations_util.CallAndCollectOpErrors(
+        api_client.StopVersion,
         service_name=old_default_version.service,
         version_id=old_default_version.id,
         block=False)
-  except (core_api_exceptions.HttpException,
-          operations_util.OperationError,
-          operations_util.OperationTimeoutError) as err:
+  except operations_util.MiscOperationError as err:
     log.warn('Error stopping version [{0}]: {1}'.format(old_default_version,
                                                         str(err)))
     log.warn('Version [{0}] is still running and you must stop or delete it '

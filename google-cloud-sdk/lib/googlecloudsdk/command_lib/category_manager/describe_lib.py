@@ -37,14 +37,11 @@ def DescribeTaxonomy(taxonomy_id):
     print '{0}: {1}'.format(pol_taxonomy.name, pol_taxonomy.description)
     # TODO(b/32858676): Print ACL and (annotations, descriptions) in the
     # taxonomy.
+  except apitools_exceptions.HttpNotFoundError as e:
+    raise exceptions.HttpException(
+        e, error_format='{api_name}: {resource_name} not found.')
   except apitools_exceptions.HttpError as e:
-    exc = exceptions.HttpException(e)
-    if exc.payload.status_code == 404:
-      # status_code specific error message
-      exc.error_format = '{api_name}: {resource_name} not found.'
-    else:
-      # override default error message
-      exc.error_format = 'Unknown error. Status code {status_code}.'
-    raise exc
+    raise exceptions.HttpException(
+        e, error_format='Unknown error. Status code {status_code}.')
 
   return 0

@@ -391,18 +391,16 @@ def CreateServiceIfNew(service_name, project):
   )
   try:
     client.services.Get(get_request)
-  except apitools_exceptions.HttpError as error:
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError):
     # Older versions of service management backend return a 404 when service is
     # new, but more recent versions return a 403. Check for either one for now.
-    if error.status_code in [403, 404]:
-      # create service
-      create_request = messages.ManagedService(
-          serviceName=service_name,
-          producerProjectId=project,
-      )
-      client.services.Create(create_request)
-    else:
-      raise error
+    # create service
+    create_request = messages.ManagedService(
+        serviceName=service_name,
+        producerProjectId=project,
+    )
+    client.services.Create(create_request)
 
 
 def GetByteStringFromFingerprint(fingerprint):

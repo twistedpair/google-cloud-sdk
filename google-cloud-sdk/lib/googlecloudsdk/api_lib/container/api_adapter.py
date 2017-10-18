@@ -1162,10 +1162,10 @@ class APIAdapter(object):
     clus = None
     try:
       clus = self.GetCluster(cluster_ref)
+    except apitools_exceptions.HttpNotFoundError:
+      pass
     except apitools_exceptions.HttpError as error:
-      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
-      if api_error.payload.status_code != 404:
-        raise api_error
+      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
 
     labels = self.messages.SetLabelsRequest.ResourceLabelsValue()
     props = []
@@ -1189,10 +1189,10 @@ class APIAdapter(object):
     clus = None
     try:
       clus = self.GetCluster(cluster_ref)
+    except apitools_exceptions.HttpNotFoundError:
+      pass
     except apitools_exceptions.HttpError as error:
-      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
-      if api_error.payload.status_code != 404:
-        raise api_error
+      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
 
     clus_labels = {}
     if clus.resourceLabels:
@@ -1323,12 +1323,12 @@ class V1Adapter(APIAdapter):
               projectId=cluster_ref.projectId,
               zone=cluster_ref.zone,
               clusterId=cluster_ref.clusterId))
-    except apitools_exceptions.HttpError as error:
+    except apitools_exceptions.HttpNotFoundError as error:
       api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
-      if api_error.payload.status_code != 404:
-        raise api_error
-    # Cluster couldn't be found, maybe user got zone wrong?
-    self.TryToGetCluster(cluster_ref, api_error)
+      # Cluster couldn't be found, maybe user got zone wrong?
+      self.TryToGetCluster(cluster_ref, api_error)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
 
   def DeleteCluster(self, cluster_ref):
     operation = self.client.projects_zones_clusters.Delete(
@@ -1592,12 +1592,12 @@ class V1Beta1Adapter(APIAdapter):
               name=ProjectLocationCluster(cluster_ref.projectId,
                                           cluster_ref.zone,
                                           cluster_ref.clusterId)))
-    except apitools_exceptions.HttpError as error:
+    except apitools_exceptions.HttpNotFoundError as error:
       api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
-      if api_error.payload.status_code != 404:
-        raise api_error
-    # Cluster couldn't be found, maybe user got zone wrong?
-    self.TryToGetCluster(cluster_ref, api_error)
+      # Cluster couldn't be found, maybe user got zone wrong?
+      self.TryToGetCluster(cluster_ref, api_error)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
 
   def DeleteCluster(self, cluster_ref):
     operation = self.client.projects_locations_clusters.Delete(

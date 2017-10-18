@@ -16,7 +16,6 @@
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
-from googlecloudsdk.api_lib.app.api import requests
 from googlecloudsdk.calliope import base as calliope_base
 
 
@@ -61,8 +60,7 @@ class AppengineFirewallApiClient(base.AppengineApiClientBase):
     request = self.messages.AppengineAppsFirewallIngressRulesCreateRequest(
         parent=self._FormatApp(), firewallRule=rule)
 
-    return requests.MakeRequest(self.client.apps_firewall_ingressRules.Create,
-                                request)
+    return self.client.apps_firewall_ingressRules.Create(request)
 
   def Delete(self, resource):
     """Deletes a firewall rule for the given application.
@@ -73,7 +71,7 @@ class AppengineFirewallApiClient(base.AppengineApiClientBase):
     request = self.messages.AppengineAppsFirewallIngressRulesDeleteRequest(
         name=resource.RelativeName())
 
-    requests.MakeRequest(self.client.apps_firewall_ingressRules.Delete, request)
+    self.client.apps_firewall_ingressRules.Delete(request)
 
   def List(self, matching_address=None):
     """Lists all ingress firewall rules for the given application.
@@ -106,8 +104,7 @@ class AppengineFirewallApiClient(base.AppengineApiClientBase):
     request = self.messages.AppengineAppsFirewallIngressRulesGetRequest(
         name=resource.RelativeName())
 
-    response = requests.MakeRequest(self.client.apps_firewall_ingressRules.Get,
-                                    request)
+    response = self.client.apps_firewall_ingressRules.Get(request)
 
     return response
 
@@ -157,5 +154,4 @@ class AppengineFirewallApiClient(base.AppengineApiClientBase):
         firewallRule=rule,
         updateMask=','.join(mask_fields))
 
-    return requests.MakeRequest(self.client.apps_firewall_ingressRules.Patch,
-                                request)
+    return self.client.apps_firewall_ingressRules.Patch(request)

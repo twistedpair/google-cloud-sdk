@@ -269,6 +269,15 @@ class Argument(Action):
       kwargs = {flag.dest: default}
       parser.set_defaults(**kwargs)
 
+      # Update the flag's help text.
+      original_help = flag.help
+      match = re.search(r'(.*The default is ).*?(\.([ \t\n].*))',
+                        original_help, re.DOTALL)
+      if match:
+        new_help = '{}*{}*{}'.format(match.group(1), default, match.group(2))
+      else:
+        new_help = original_help + ' The default is *{}*.'.format(default)
+      flag.help = new_help
 
 # Common flag definitions for consistency.
 
@@ -286,7 +295,7 @@ FLATTEN_FLAG = Argument(
         Flatten _name_[] output resource slices in _KEY_ into separate records
         for each item in each slice. Multiple keys and slices may be specified.
         This also flattens keys for *--format* and *--filter*. For example,
-        *--flatten=abc.def[]* flattens *abc.def[].ghi* references to
+        *--flatten=abc.def* flattens *abc.def[].ghi* references to
         *abc.def.ghi*. A resource record containing *abc.def[]* with N elements
         will expand to N records in the flattened output. This flag interacts
         with other flags that are applied in this order: *--flatten*,

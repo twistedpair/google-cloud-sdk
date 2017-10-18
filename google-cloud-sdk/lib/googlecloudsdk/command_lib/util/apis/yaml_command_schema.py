@@ -47,7 +47,7 @@ class CommandData(object):
     self.help_text = data['help_text']
     self.request = Request(self.command_type, data['request'])
     self.response = Response(data.get('response', {}))
-    async_data = data.get('async', None)
+    async_data = data.get('async')
     self.async = Async(async_data) if async_data else None
     self.arguments = Arguments(data['arguments'])
     self.input = Input(self.command_type, data.get('input', {}))
@@ -84,7 +84,7 @@ class Request(object):
 
   def __init__(self, command_type, data):
     self.collection = data['collection']
-    self.api_version = data.get('api_version', None)
+    self.api_version = data.get('api_version')
     self.method = data.get('method', command_type.default_method)
     if not self.method:
       raise InvalidSchemaError(
@@ -92,7 +92,8 @@ class Request(object):
           'command type.')
     self.resource_method_params = data.get('resource_method_params', {})
     self.static_fields = data.get('static_fields', {})
-    self.modify_request_hook = Hook.FromData(data, 'modify_request_hook')
+    self.modify_request_hooks = [
+        Hook.FromPath(p) for p in data.get('modify_request_hooks', [])]
     self.create_request_hook = Hook.FromData(data, 'create_request_hook')
     self.issue_request_hook = Hook.FromData(data, 'issue_request_hook')
 
@@ -100,6 +101,7 @@ class Request(object):
 class Response(object):
 
   def __init__(self, data):
+    self.result_attribute = data.get('result_attribute')
     self.error = ResponseError(data['error']) if 'error' in data else None
 
 
@@ -107,26 +109,26 @@ class ResponseError(object):
 
   def __init__(self, data):
     self.field = data.get('field', 'error')
-    self.code = data.get('code', None)
-    self.message = data.get('message', None)
+    self.code = data.get('code')
+    self.message = data.get('message')
 
 
 class Async(object):
 
   def __init__(self, data):
     self.collection = data['collection']
-    self.api_version = data.get('api_version', None)
+    self.api_version = data.get('api_version')
     self.method = data.get('method', 'get')
     self.response_name_field = data.get('response_name_field', 'name')
     self.extract_resource_result = data.get('extract_resource_result', True)
-    resource_get_method = data.get('resource_get_method', None)
+    resource_get_method = data.get('resource_get_method')
     if not self.extract_resource_result and resource_get_method:
       raise InvalidSchemaError(
           'async.resource_get_method was specified but extract_resource_result '
           'is False')
     self.resource_get_method = resource_get_method or 'get'
     self.resource_get_method_params = data.get('resource_get_method_params', {})
-    self.result_attribute = data.get('result_attribute', None)
+    self.result_attribute = data.get('result_attribute')
     self.state = AsyncStateField(data.get('state', {}))
     self.error = AsyncErrorField(data.get('error', {}))
 
@@ -149,7 +151,7 @@ class Arguments(object):
   """Everything about cli arguments are registered in this section."""
 
   def __init__(self, data):
-    resource = data.get('resource', None)
+    resource = data.get('resource')
     self.resource = Resource(resource) if resource else None
     self.additional_arguments_hook = Hook.FromData(
         data, 'additional_arguments_hook')
@@ -167,7 +169,7 @@ class Resource(object):
 
   def __init__(self, data):
     self.help_text = data['help_text']
-    self.response_id_field = data.get('response_id_field', None)
+    self.response_id_field = data.get('response_id_field')
     self.params = [
         Argument.FromData(param_data) for param_data in data.get('params', [])]
 
@@ -184,7 +186,36 @@ class MutexGroup(object):
 
 
 class Argument(object):
-  """Encapsulates data used to generate arguments."""
+  """Encapsulates data used to generate arguments.
+
+  Most of the attributes of this object correspond directly to the schema and
+  have more complete docs there.
+
+  Attributes:
+    api_field: The name of the field in the request that this argument values
+      goes.
+    arg_name: The name of the argument that will be generated. Defaults to the
+      api_field if not set.
+    help_text: The help text for the generated argument.
+    metavar: The metavar for the generated argument. This will be generated
+      automatically if not provided.
+    completer: A completer for this argument.
+    is_positional: Whether to make the argument positional or a flag.
+    type: The type to use on the argparse argument.
+    choices: A static map of choice to value the user types.
+    default: The default for the argument.
+    processor: A function to call to process the value of the argument before
+      inserting it into the request.
+    required: True to make this a required flag.
+    hidden: True to make the argument hidden.
+    action: An override for the argparse action to use for this argument.
+    repeated: False to accept only one value when the request field is actually
+      repeated.
+    group: The MutexGroup that this argument is a part of.
+    generate: False to not generate this argument. This can be used to create
+      placeholder arg specs for defaults that don't actually need to be
+      generated.
+  """
 
   STATIC_ACTIONS = {'store', 'store_true'}
 
@@ -201,13 +232,13 @@ class Argument(object):
     """
     api_field = data['api_field']
     arg_name = data.get('arg_name', api_field)
-    is_positional = data.get('is_positional', False)
+    is_positional = data.get('is_positional')
 
     action = data.get('action', None)
     if action and action not in Argument.STATIC_ACTIONS:
       action = Hook.FromPath(action)
     if not action:
-      deprecation = data.get('deprecated', None)
+      deprecation = data.get('deprecated')
       if deprecation:
         flag_name = arg_name if is_positional else '--' + arg_name
         action = actions.DeprecationAction(flag_name, **deprecation)
@@ -216,23 +247,23 @@ class Argument(object):
         api_field,
         arg_name,
         data['help_text'],
-        metavar=data.get('metavar', None),
+        metavar=data.get('metavar'),
         completer=Hook.FromData(data, 'completer'),
         is_positional=is_positional,
         type=Hook.FromData(data, 'type'),
-        choices=data.get('choices', None),
-        default=data.get('default', None),
+        choices=data.get('choices'),
+        default=data.get('default'),
         processor=Hook.FromData(data, 'processor'),
         required=data.get('required', False),
         hidden=data.get('hidden', False),
         action=action,
-        repeated=data.get('repeated', None),
+        repeated=data.get('repeated'),
         group=group
     )
 
   # pylint:disable=redefined-builtin, type param needs to match the schema.
   def __init__(self, api_field, arg_name, help_text, metavar=None,
-               completer=None, is_positional=False, type=None, choices=None,
+               completer=None, is_positional=None, type=None, choices=None,
                default=None, processor=None, required=False, hidden=False,
                action=None, repeated=None, group=None, generate=True):
     self.api_field = api_field
@@ -256,7 +287,7 @@ class Argument(object):
 class Input(object):
 
   def __init__(self, command_type, data):
-    self.confirmation_prompt = data.get('confirmation_prompt', None)
+    self.confirmation_prompt = data.get('confirmation_prompt')
     if not self.confirmation_prompt and command_type is CommandType.DELETE:
       self.confirmation_prompt = (
           'You are about to delete {{{}}} [{{{}}}]'.format(
@@ -292,7 +323,7 @@ class Hook(object):
     Returns:
       The Python element to call.
     """
-    path = data.get(key, None)
+    path = data.get(key)
     if path:
       return cls.FromPath(path)
     return None

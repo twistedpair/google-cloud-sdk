@@ -14,14 +14,11 @@
 
 """A module to get an unauthenticated gRPC stub."""
 
-import json
-
 from googlecloudsdk.core import http
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import store as cred_store
 
 import grpc
-from google.protobuf import json_format
 
 
 class _MetadataPlugin(object):
@@ -85,7 +82,7 @@ def YieldFromList(list_method, request, items_field):
   while True:
     response = list_method(request)
     for r in getattr(response, items_field):
-      yield json.loads(json_format.MessageToJson(r))
+      yield r
     request.page_token = response.next_page_token
     if not request.page_token:
       break

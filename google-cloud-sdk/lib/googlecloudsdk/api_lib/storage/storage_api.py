@@ -263,10 +263,8 @@ class StorageClient(object):
               bucket=self.messages.Bucket(
                   name=bucket,
               )))
-    except api_exceptions.HttpError as e:
+    except api_exceptions.HttpConflictError:
       # It's ok if the error was 409, which means the resource already exists.
-      if e.status_code != 409:
-        raise
       # Make sure we have access to the bucket.  Storage returns a 409 whether
       # the already-existing bucket is owned by you or by someone else, so we
       # do a quick test to figure out which it was.

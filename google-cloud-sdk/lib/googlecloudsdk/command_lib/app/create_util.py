@@ -14,7 +14,7 @@
 
 """Utilities for app creation."""
 
-from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
@@ -47,7 +47,7 @@ def CheckAppNotExists(api_client, project):
   """
   try:
     app = api_client.GetApplication()  # Should raise NotFoundError
-  except api_lib_exceptions.NotFoundError:
+  except apitools_exceptions.HttpNotFoundError:
     pass
   else:
     region = ' in region [{}]'.format(app.locationId) if app.locationId else ''
@@ -78,7 +78,7 @@ def CreateApp(api_client, project, region, suppress_warning=False):
     log.warn(APP_CREATE_WARNING)
   try:
     api_client.CreateApp(region)
-  except api_lib_exceptions.ConflictError:
+  except apitools_exceptions.HttpConflictError:
     raise AppAlreadyExistsError(
         'The project [{project}] already contains an App Engine application. '
         'You can deploy your application using `gcloud app deploy`.'.format(

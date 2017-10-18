@@ -26,48 +26,6 @@ def GetIdFlag(noun, action, metavar=None):
       help='ID of the {} {}.\n\n'.format(noun, action))
 
 
-def _GetFlag(flag, noun=None, required=True, description=''):
-  if description:
-    description = ' ' + description
-  return base.Argument(
-      '--' + flag,
-      required=required,
-      help='The {}{}.'.format(noun or flag, description))
-
-
-def GetRegionFlag(description='', required=True):
-  return _GetFlag('region', noun='Cloud region', description=description,
-                  required=required)
-
-
-def _GetRegistryFlag(description='', required=True):
-  return _GetFlag('registry', noun='device registry', description=description,
-                  required=required)
-
-
-def _GetDeviceFlag(description='', required=True):
-  return _GetFlag('device', description=description, required=required)
-
-
-def AddRegistryResourceFlags(parser, verb, positional=True):
-  noun = 'device registry'
-  if positional:
-    GetIdFlag(noun, verb, 'REGISTRY_ID').AddToParser(parser)
-  else:
-    _GetRegistryFlag(verb).AddToParser(parser)
-  GetRegionFlag('for the ' + noun, required=False).AddToParser(parser)
-
-
-def AddDeviceResourceFlags(parser, verb, positional=True):
-  noun = 'device'
-  if positional:
-    GetIdFlag(noun, verb).AddToParser(parser)
-  else:
-    _GetDeviceFlag(verb).AddToParser(parser)
-  GetRegionFlag('for the ' + noun, required=False).AddToParser(parser)
-  _GetRegistryFlag('for the ' + noun, required=False).AddToParser(parser)
-
-
 def GetIndexFlag(noun, action):
   return base.Argument(
       'index',

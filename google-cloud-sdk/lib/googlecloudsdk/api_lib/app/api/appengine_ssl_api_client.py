@@ -14,7 +14,6 @@
 """Functions for creating a client to talk to the App Engine Admin SSL APIs."""
 
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
-from googlecloudsdk.api_lib.app.api import requests
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import resources
@@ -81,8 +80,7 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
     request = self.messages.AppengineAppsAuthorizedCertificatesCreateRequest(
         parent=self._FormatApp(), authorizedCertificate=auth_cert)
 
-    return requests.MakeRequest(self.client.apps_authorizedCertificates.Create,
-                                request)
+    return self.client.apps_authorizedCertificates.Create(request)
 
   def DeleteSslCertificate(self, cert_id):
     """Deletes an authorized certificate for the given application.
@@ -93,8 +91,7 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
     request = self.messages.AppengineAppsAuthorizedCertificatesDeleteRequest(
         name=self._FormatSslCert(cert_id))
 
-    requests.MakeRequest(self.client.apps_authorizedCertificates.Delete,
-                         request)
+    self.client.apps_authorizedCertificates.Delete(request)
 
   def GetSslCertificate(self, cert_id):
     """Gets a certificate for the given application.
@@ -110,8 +107,7 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
         view=(self.messages.AppengineAppsAuthorizedCertificatesGetRequest.
               ViewValueValuesEnum.FULL_CERTIFICATE))
 
-    return requests.MakeRequest(self.client.apps_authorizedCertificates.Get,
-                                request)
+    return self.client.apps_authorizedCertificates.Get(request)
 
   def ListSslCertificates(self):
     """Lists all authorized certificates for the given application.
@@ -122,8 +118,7 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
     request = self.messages.AppengineAppsAuthorizedCertificatesListRequest(
         parent=self._FormatApp())
 
-    response = requests.MakeRequest(
-        self.client.apps_authorizedCertificates.List, request)
+    response = self.client.apps_authorizedCertificates.List(request)
 
     return response.certificates
 
@@ -179,8 +174,7 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
         authorizedCertificate=auth_cert,
         updateMask=','.join(mask_fields))
 
-    return requests.MakeRequest(self.client.apps_authorizedCertificates.Patch,
-                                request)
+    return self.client.apps_authorizedCertificates.Patch(request)
 
   def _FormatSslCert(self, cert_id):
     res = self._registry.Parse(

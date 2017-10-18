@@ -14,7 +14,7 @@
 
 """Utilities for `app instances *` commands using SSH."""
 
-from googlecloudsdk.api_lib.app import exceptions as api_exceptions
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.command_lib.app import exceptions as command_exceptions
@@ -95,7 +95,7 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
   try:
     version = api_client.GetVersionResource(
         service=service_id, version=version_id)
-  except api_exceptions.NotFoundError:
+  except apitools_exceptions.HttpNotFoundError:
     raise command_exceptions.MissingVersionError(
         '{}/{}'.format(service_id, version_id))
   version = version_util.Version.FromVersionResource(version, None)
@@ -119,7 +119,7 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
   rel_name = res.RelativeName()
   try:
     instance = api_client.GetInstanceResource(res)
-  except api_exceptions.NotFoundError:
+  except apitools_exceptions.HttpNotFoundError:
     raise command_exceptions.MissingInstanceError(rel_name)
 
   if not instance.vmDebugEnabled:

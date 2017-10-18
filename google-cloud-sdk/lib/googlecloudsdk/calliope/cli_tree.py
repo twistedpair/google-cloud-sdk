@@ -27,15 +27,17 @@ from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.calliope import walker
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import module_util
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_projector
+from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files
 
 
 # This module is the CLI tree generator. VERSION is a stamp that is used to
-# detect breaking changes. If an external CLI tree version does not exaclty
+# detect breaking changes. If an external CLI tree version does not exactly
 # match VERSION then it is incompatible and must be regenerated or ignored.
 # Any changes to the serialized CLI dict attribute names or value semantics
 # must increment VERSION. For this reason it's a monotonically increasing
@@ -82,12 +84,49 @@ class Error(exceptions.Error):
   """Base exception for this module."""
 
 
+class CliCommandVersionError(Error):
+  """Loaded CLI tree CLI command version mismatch."""
+
+
 class SdkRootNotFoundError(Error):
   """Raised if no SDK root can be found."""
 
 
 class CliTreeVersionError(Error):
   """Loaded CLI tree version mismatch."""
+
+
+def _IsRunningUnderTest():
+  """Mock function that returns True if running under test."""
+  return False
+
+
+def _GetDefaultCliCommandVersion():
+  """Return the default CLI command version."""
+  if _IsRunningUnderTest():
+    # test installation - return a constant version for reproducability
+    return 'TEST'
+  version = config.CLOUD_SDK_VERSION
+  if version != 'HEAD':
+    # normal installation
+    return version
+  try:
+    manager = update_manager.UpdateManager()
+    components = manager.GetCurrentVersionsInformation()
+    # personal installation
+    version = components['core']  # YYYY.MM.DD more informative than HEAD
+  except (KeyError, exceptions.Error):
+    # HEAD will have to do
+    pass
+  return version
+
+
+def _ParameterizePath(path):
+  """Return path with $HOME prefix replaced by ~."""
+  home = os.path.expanduser('~') + os.path.sep
+  if path.startswith(home):
+    return '~' + os.path.sep + path[len(home):]
+  return path
 
 
 def _GetDescription(arg):
@@ -576,7 +615,7 @@ def _Serialize(tree):
 
   # Order the dict into the ordered tree _LOOKUP_SERIALIZED_FLAG_LIST list and
   # assign ordered indices to the all_flags dict entry. The indices are ordered
-  # for reproducable serializations for testing.
+  # for reproducible serializations for testing.
   all_flags_list = []
   for index, key in enumerate(sorted(all_flags)):
     fi = all_flags[key]
@@ -612,7 +651,6 @@ def _Serialize(tree):
   _ReplaceFlagWithIndex(tree)
 
   setattr(tree, _LOOKUP_SERIALIZED_FLAG_LIST, all_flags_list)
-  setattr(tree, LOOKUP_VERSION, VERSION)
 
   return tree
 
@@ -746,7 +784,10 @@ def _GenerateRoot(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
     message = 'Generating the {} CLI for one-time use (no SDK root)'.format(
         name)
   with progress_tracker.ProgressTracker(message):
-    return CliTreeGenerator(cli, branch=branch).Walk(hidden=True)
+    tree = CliTreeGenerator(cli, branch=branch).Walk(hidden=True)
+    setattr(tree, LOOKUP_VERSION, VERSION)
+    setattr(tree, LOOKUP_CLI_VERSION, _GetDefaultCliCommandVersion())
+    return tree
 
 
 def Dump(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
@@ -777,8 +818,48 @@ def Dump(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
   return resource_projector.MakeSerializable(tree)
 
 
-def Load(path=None, cli=None, one_time_use_ok=False):
-  """Loads a CLI tree from the Python file path.
+def _IsValidCliTreeVersion(tree, path, version, cli_version, ignore_errors,
+                           verbose):
+  """Validates the CLI tree on path.
+
+  Args:
+    tree: The loaded CLI tree.
+    path: The path tree was loaded from.
+    version: The expected tree version.
+    cli_version: The expected CLI command version.
+    ignore_errors: If True then return True if tree versions match. Otherwise
+      raise exceptions on version mismatch.
+    verbose: Display a status line for up to date CLI trees if True.
+
+  Raises:
+    CliTreeVersionError: tree version mismatch.
+    CliCommandVersionError: CLI command version mismatch.
+
+  Returns:
+    True if tree versions match.
+  """
+  v = tree.get(LOOKUP_VERSION)
+  if v != version:
+    if not ignore_errors:
+      raise CliTreeVersionError(
+          'CLI tree [{}] version is [{}], expected [{}]'.format(
+              path, v, version))
+    return False
+  v = tree.get(LOOKUP_CLI_VERSION)
+  if v != cli_version and cli_version != 'TEST':
+    if not ignore_errors:
+      raise CliCommandVersionError(
+          'CLI tree [{}] command version is [{}], expected [{}]'.format(
+              path, v, cli_version))
+    return False
+  if verbose:
+    log.status.Print('[{}] CLI tree version [{}] is up to date.'.format(
+        DEFAULT_CLI_NAME, cli_version))
+  return True
+
+
+def Load(path=None, cli=None, one_time_use_ok=False, verbose=False):
+  """Loads the defdault CLI tree from the Python file path.
 
   Args:
     path: The path name of the Python file the CLI tree was dumped to. None
@@ -787,6 +868,7 @@ def Load(path=None, cli=None, one_time_use_ok=False):
       generated, written to path, and returned.
     one_time_use_ok: If True and the load fails then the CLI tree is generated
       on the fly for one time use.
+    verbose: Display a status line for up to date CLI trees if True.
 
   Raises:
     CliTreeVersionError: loaded tree version mismatch
@@ -801,7 +883,6 @@ def Load(path=None, cli=None, one_time_use_ok=False):
     except SdkRootNotFoundError:
       if cli and one_time_use_ok:
         tree = _GenerateRoot(cli)
-        setattr(tree, LOOKUP_VERSION, VERSION)
         return resource_projector.MakeSerializable(tree)
       raise
   while True:
@@ -809,14 +890,11 @@ def Load(path=None, cli=None, one_time_use_ok=False):
     # loading the newly created CLI tree or fails with an import exception.
     try:
       tree = module_util.ImportPath(path).TREE
-      version = tree.get(LOOKUP_VERSION)
-      if version == VERSION:
+      if _IsValidCliTreeVersion(
+          tree, path, VERSION, _GetDefaultCliCommandVersion(), bool(cli),
+          verbose):
         return tree
       del tree
-      if not cli:
-        raise CliTreeVersionError(
-            'CLI tree [{}] version is [{}], expected [{}]'.format(
-                path, version, VERSION))
       # The CLI tree exists but doesn't match VERSION. Clobber path to make
       # sure it's regenerated.
       try:
@@ -859,7 +937,7 @@ def LoadAll(directory=None, root=None, cli=None):
     directory: The config directory containing the CLI tree modules.
     root: dict, The CLI root to update. A new root is created if None.
     cli: The CLI. If not None and DEFAULT_CLI_NAME fails to import, a new CLI
-    tree is generated, written to path, and added to clis.
+      tree is generated, written to path, and added to clis.
 
   Raises:
     CliTreeVersionError: loaded tree version mismatch
@@ -886,7 +964,7 @@ def LoadAll(directory=None, root=None, cli=None):
       CliTreeDir(),  # Installation dir controlled by the updater
   ]
 
-  loaded = {DEFAULT_CLI_NAME}  # Already loaded this above.
+  loaded = {DEFAULT_CLI_NAME, '__init__'}  # Already loaded this above.
   for directory in directories:
     if not directory or not os.path.exists(directory):
       continue
@@ -914,3 +992,84 @@ def LoadAll(directory=None, root=None, cli=None):
       break
 
   return root
+
+
+class CliTreeInfo(object):
+  """Info for one CLI tree. A list of these is returned by ListAll()."""
+
+  def __init__(self, command, path, version, cli_version, command_installed,
+               error):
+    self.command = command
+    self.path = path
+    self.version = version
+    self.cli_version = cli_version
+    self.command_installed = command_installed
+    self.error = error
+
+
+def ListAll(directory=None):
+  """Returns the CliTreeInfo list of all available CLI trees.
+
+  Args:
+    directory: The config directory containing the CLI tree modules.
+
+  Raises:
+    CliTreeVersionError: loaded tree version mismatch
+    ImportModuleError: import errors
+
+  Returns:
+    The CLI tree.
+  """
+  # List all CLIs by searching directories in order. .py, .pyc, and .json
+  # files are treated as CLI modules/data, where the file base name is the name
+  # of the CLI root command.
+  directories = [
+      directory,  # Explicit caller override dir
+      CliTreeConfigDir(),  # User config dir shared across installations
+      CliTreeDir(),  # Installation dir controlled by the updater
+  ]
+
+  trees = []
+  for directory in directories:
+    if not directory or not os.path.exists(directory):
+      continue
+    for (dirpath, _, filenames) in os.walk(directory):
+      for filename in sorted(filenames):  # For stability across runs.
+        base, extension = os.path.splitext(filename)
+        if base == '__init__':
+          continue
+        path = os.path.join(dirpath, filename)
+        error = ''
+        tree = None
+        if extension in ('.py', '.pyc'):
+          try:
+            module = module_util.ImportPath(path)
+          except module_util.ImportModuleError as e:
+            error = unicode(e)
+          try:
+            tree = module.TREE
+          except AttributeError:
+            tree = None
+        elif extension == '.json':
+          with open(path, 'r') as f:
+            try:
+              tree = json.loads(f.read())
+            except Exception as e:  # pylint: disable=broad-except, record all errors
+              error = unicode(e)
+        if tree:
+          version = tree.get(LOOKUP_VERSION, 'UNKNOWN')
+          cli_version = tree.get(LOOKUP_CLI_VERSION, 'UNKNOWN')
+          del tree
+        else:
+          version = 'UNKNOWN'
+          cli_version = 'UNKNOWN'
+        trees.append(CliTreeInfo(
+            command=base,
+            path=_ParameterizePath(path),
+            version=version,
+            cli_version=cli_version,
+            command_installed=bool(files.FindExecutableOnPath(base)),
+            error=error))
+      # Don't search subdirectories.
+      break
+  return trees

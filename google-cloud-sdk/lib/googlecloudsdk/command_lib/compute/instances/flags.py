@@ -970,6 +970,8 @@ def AddMinCpuPlatformArgs(parser, track, required=False):
 
           $ gcloud {} compute zones describe ZONE --format="value(availableCpuPlatforms)"
 
+      Default setting is "AUTOMATIC".
+
       CPU platform selection is available only in selected zones.
 
       You can find more information on-line:

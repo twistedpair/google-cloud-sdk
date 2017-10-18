@@ -29,12 +29,11 @@ def ListTaxonomies(limit=None):
   """
   try:
     return taxonomy.List(limit)
+  except apitools_exceptions.HttpNotFoundError as e:
+    # status_code specific error message
+    raise exceptions.HttpException(
+        e, error_format='{api_name}: {resource_name} not found.')
   except apitools_exceptions.HttpError as e:
-    exc = exceptions.HttpException(e)
-    if exc.payload.status_code == 404:
-      # status_code specific error message
-      exc.error_format = '{api_name}: {resource_name} not found.'
-    else:
-      # override default error message
-      exc.error_format = 'Unknown error. Status code {status_code}.'
-    raise exc
+    # override default error message
+    raise exceptions.HttpException(
+        e, error_format='Unknown error. Status code {status_code}.')

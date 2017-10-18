@@ -74,7 +74,7 @@ def RouterArgumentForOtherResources(required=True):
       plural=False,
       required=required,
       regional_collection='compute.routers',
-      short_help='The Router to use for dynamic routing.',
+      short_help='The Google Cloud Router to use for dynamic routing.',
       region_explanation='Should be the same as --region, if not specified, '
       'it will be inherited from --region.')
 

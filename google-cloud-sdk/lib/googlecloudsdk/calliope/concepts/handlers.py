@@ -73,6 +73,9 @@ class ConceptArgActionGetter(object):
 
       def __call__(self, parser, namespace, value, option_string=None):
         del parser, option_string
+        if isinstance(value, list):
+          if value:
+            value = value[0]
         RegisterHandlerIn(namespace)
         Register(value)
 

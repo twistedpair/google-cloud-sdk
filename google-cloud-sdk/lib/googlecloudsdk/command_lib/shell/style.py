@@ -27,6 +27,7 @@ PURPLE = '#FF00FF'
 
 BOLD = 'bold'
 ITALIC = 'underline'  # there is no italic
+REVERSE = 'reverse'
 
 
 def Color(foreground=None, background=None, bold=False):
@@ -56,7 +57,7 @@ def GetDocumentStyle():
       Token.Markdown.Section: BOLD,
       Token.Markdown.Definition: BOLD,
       Token.Markdown.Value: ITALIC,
-      Token.Markdown.Truncated: Color(background=DARK_GRAY),
+      Token.Markdown.Truncated: REVERSE,
       Token.Purple: BOLD,
   })
   return styles.PygmentsStyle.from_defaults(style_dict=prompt_styles)

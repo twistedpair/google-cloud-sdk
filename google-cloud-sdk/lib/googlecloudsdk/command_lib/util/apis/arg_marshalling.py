@@ -312,7 +312,13 @@ class DeclarativeArgumentGenerator(object):
       if not attributes.generate:
         continue
       is_anchor = attributes.api_field == anchor_field
-      is_positional = is_anchor and not self.method.IsList()
+      # pylint: disable=g-explicit-bool-comparison, only an explicit False
+      # should, None just means to do the default.
+      # The anchor arg is positional unless explicitly overridden by the
+      # attributes or for list commands (where everything should be a flag since
+      # the parent resource collection is being used).
+      is_positional = (is_anchor and not (attributes.is_positional == False or
+                                          self.method.IsList()))
 
       arg_name = attributes.arg_name
       arg = base.Argument(

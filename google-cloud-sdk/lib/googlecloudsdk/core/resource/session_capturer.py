@@ -273,6 +273,29 @@ class classproperty(object):  # pylint: disable=invalid-name
     return self.fget(typ)
 
 
+def GetHttpRequestDict(uri, method, body, headers):
+  return {
+      'uri': uri,
+      'method': method,
+      'body': body,
+      'headers': _FilterHeaders(headers)
+  }
+
+
+def _FilterHeaders(headers):
+  return {
+      k: v for k, v in headers.iteritems() if _KeepHeader(k)
+  }
+
+
+def _KeepHeader(header):
+  if header.startswith('x-google'):
+    return False
+  if header in ('user-agent', 'Authorization', 'content-length',):
+    return False
+  return True
+
+
 class SessionCapturer(object):
   """Captures the session to file."""
   capturer = None  # is SessionCapturer if session is being captured
@@ -295,17 +318,13 @@ class SessionCapturer(object):
 
   def CaptureHttpRequest(self, uri, method, body, headers):
     self._records.append({
-        'request': {
-            'uri': uri,
-            'method': method,
-            'body': body,
-            'headers': self._FilterHeaders(headers)
-        }})
+        'request': GetHttpRequestDict(uri, method, body, headers)
+    })
 
   def CaptureHttpResponse(self, response, content):
     self._records.append({
         'response': {
-            'response': self._FilterHeaders(response),
+            'response': _FilterHeaders(response),
             'content': self._ToList(content)
         }})
 
@@ -469,15 +488,3 @@ class SessionCapturer(object):
       result += parts
       response = response[json_end_idx:]
     return result
-
-  def _FilterHeaders(self, headers):
-    return {
-        k: v for k, v in headers.iteritems() if self._KeepHeader(k)
-    }
-
-  def _KeepHeader(self, header):
-    if header.startswith('x-google'):
-      return False
-    if header in ('user-agent', 'Authorization', 'content-length',):
-      return False
-    return True

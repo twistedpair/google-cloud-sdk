@@ -409,11 +409,13 @@ class FailureDetail(_messages.Message):
   """A FailureDetail object.
 
   Fields:
-    crashed: If the failure was severe because the system under test crashed.
+    crashed: If the failure was severe because the system (app) under test
+      crashed.
     notInstalled: If an app is not installed and thus no test can be run with
       the app. This might be caused by trying to run a test on an unsupported
       platform.
-    otherNativeCrash: If a native process other than the app crashed.
+    otherNativeCrash: If a native process (including any other than the app)
+      crashed.
     timedOut: If the test overran some time limit, and that is why it failed.
     unableToCrawl: If the robo was unable to crawl the app; perhaps because
       the app did not start.
@@ -439,6 +441,55 @@ class FileReference(_messages.Message):
   """
 
   fileUri = _messages.StringField(1)
+
+
+class GraphicsStats(_messages.Message):
+  """Graphics statistics for the App. The information is collected from 'adb
+  shell dumpsys graphicsstats'. For more info see:
+  https://developer.android.com/training/testing/performance.html Statistics
+  will only be present for API 23+.
+
+  Fields:
+    buckets: Histogram of frame render times. There should be 154 buckets
+      ranging from [5ms, 6ms) to [4950ms, infinity)
+    highInputLatencyCount: Total "high input latency" events.
+    jankyFrames: Total frames with slow render time. Should be <=
+      total_frames.
+    missedVsyncCount: Total "missed vsync" events.
+    p50Millis: 50th percentile frame render time in milliseconds.
+    p90Millis: 90th percentile frame render time in milliseconds.
+    p95Millis: 95th percentile frame render time in milliseconds.
+    p99Millis: 99th percentile frame render time in milliseconds.
+    slowBitmapUploadCount: Total "slow bitmap upload" events.
+    slowDrawCount: Total "slow draw" events.
+    slowUiThreadCount: Total "slow UI thread" events.
+    totalFrames: Total frames rendered by package.
+  """
+
+  buckets = _messages.MessageField('GraphicsStatsBucket', 1, repeated=True)
+  highInputLatencyCount = _messages.IntegerField(2)
+  jankyFrames = _messages.IntegerField(3)
+  missedVsyncCount = _messages.IntegerField(4)
+  p50Millis = _messages.IntegerField(5)
+  p90Millis = _messages.IntegerField(6)
+  p95Millis = _messages.IntegerField(7)
+  p99Millis = _messages.IntegerField(8)
+  slowBitmapUploadCount = _messages.IntegerField(9)
+  slowDrawCount = _messages.IntegerField(10)
+  slowUiThreadCount = _messages.IntegerField(11)
+  totalFrames = _messages.IntegerField(12)
+
+
+class GraphicsStatsBucket(_messages.Message):
+  """A GraphicsStatsBucket object.
+
+  Fields:
+    frameCount: Number of frames in the bucket.
+    renderMillis: Lower bound of render time in milliseconds.
+  """
+
+  frameCount = _messages.IntegerField(1)
+  renderMillis = _messages.IntegerField(2)
 
 
 class History(_messages.Message):
@@ -679,6 +730,8 @@ class PerfMetricsSummary(_messages.Message):
   Fields:
     appStartTime: A AppStartTime attribute.
     executionId: A tool results execution ID.
+    graphicsStats: Graphics statistics for the entire run. Statistics are
+      reset at the beginning of the run and collected at the end of the run.
     historyId: A tool results history ID.
     perfEnvironment: Describes the environment in which the performance
       metrics were collected
@@ -705,11 +758,12 @@ class PerfMetricsSummary(_messages.Message):
 
   appStartTime = _messages.MessageField('AppStartTime', 1)
   executionId = _messages.StringField(2)
-  historyId = _messages.StringField(3)
-  perfEnvironment = _messages.MessageField('PerfEnvironment', 4)
-  perfMetrics = _messages.EnumField('PerfMetricsValueListEntryValuesEnum', 5, repeated=True)
-  projectId = _messages.StringField(6)
-  stepId = _messages.StringField(7)
+  graphicsStats = _messages.MessageField('GraphicsStats', 3)
+  historyId = _messages.StringField(4)
+  perfEnvironment = _messages.MessageField('PerfEnvironment', 5)
+  perfMetrics = _messages.EnumField('PerfMetricsValueListEntryValuesEnum', 6, repeated=True)
+  projectId = _messages.StringField(7)
+  stepId = _messages.StringField(8)
 
 
 class PerfSample(_messages.Message):

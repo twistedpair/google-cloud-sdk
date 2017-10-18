@@ -245,7 +245,7 @@ class _UnixCoshell(_UnixCoshellBase):
     os.close(w)
 
     self._shell = subprocess.Popen(
-        [self.SHELL_PATH], stdin=subprocess.PIPE, close_fds=False)
+        [self.SHELL_PATH, '--posix'], stdin=subprocess.PIPE, close_fds=False)
 
     if caller_shell_status_fd >= 0:
       os.dup2(caller_shell_status_fd, self.SHELL_STATUS_FD)

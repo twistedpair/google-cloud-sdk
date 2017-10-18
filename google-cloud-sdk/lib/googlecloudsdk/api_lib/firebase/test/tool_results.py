@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """A utility library to support interaction with the Tool Results service."""
 
 import collections
@@ -24,7 +23,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
 
 import uritemplate
-
 
 _STATUS_INTERVAL_SECS = 3
 
@@ -54,14 +52,16 @@ def CreateToolResultsUiUrl(project_id, tool_results_ids):
     url_base = 'https://console.firebase.google.com'
 
   url_end = uritemplate.expand(
-      'project/{project}/testlab/histories/{history}/matrices/{execution}',
-      {'project': project_id,
-       'history': tool_results_ids.history_id,
-       'execution': tool_results_ids.execution_id})
+      'project/{project}/testlab/histories/{history}/matrices/{execution}', {
+          'project': project_id,
+          'history': tool_results_ids.history_id,
+          'execution': tool_results_ids.execution_id
+      })
   return urlparse.urljoin(url_base, url_end)
 
 
-def GetToolResultsIds(matrix, matrix_monitor,
+def GetToolResultsIds(matrix,
+                      matrix_monitor,
                       status_interval=_STATUS_INTERVAL_SECS):
   """Gets the Tool Results history ID and execution ID for a test matrix.
 
@@ -142,7 +142,10 @@ def _ErrorFromInvalidMatrix(matrix):
       enum_values.SCENARIO_NOT_DECLARED:
           'A scenario-number was not declared in the manifest file',
       enum_values.TEST_ONLY_APK:
-          '"testOnly" found in the Manifest. testOnly APKs are not allowed'
+          '"testOnly" found in the Manifest. testOnly APKs are not allowed',
+      enum_values.NO_SIGNATURE:
+          'There is a problem with signature of at least one of the supplied '
+          'APK(s)'
   }
   details_enum = matrix.invalidMatrixDetails
   if details_enum in error_dict:

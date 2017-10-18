@@ -276,21 +276,30 @@ class Displayer(object):
 
   def _AddFlattenTap(self):
     """Taps one or more resource flatteners into self.resources if needed."""
+
+    def _Slice(key):
+      """Helper to add one flattened slice tap."""
+      tap = display_taps.Flattener(key)
+      # Apply the flatteners from left to right so the innermost flattener
+      # flattens the leftmost slice. The outer flatteners can then access
+      # the flattened keys to the left.
+      self._resources = peek_iterable.Tapper(self._resources, tap)
+
     keys = self._GetFlag('flatten')
     if not keys:
       return
     for key in keys:
       flattened_key = []
+      sliced = False
       for k in resource_lex.Lexer(key).Key():
         if k is None:
-          # None represents a [] slice in resource keys.
-          tap = display_taps.Flattener(flattened_key)
-          # Apply the flatteners from left to right so the innermost flattener
-          # flattens the leftmost slice. The outer flatteners can then access
-          # the flattened keys to the left.
-          self._resources = peek_iterable.Tapper(self._resources, tap)
+          sliced = True
+          _Slice(flattened_key)
         else:
+          sliced = False
           flattened_key.append(k)
+      if not sliced:
+        _Slice(flattened_key)
 
   def _AddLimitTap(self):
     """Taps a resource limit into self.resources if needed."""

@@ -143,6 +143,25 @@ class Collections(enum.Enum):
       {},
       [u'project', u'zone', u'instance']
   )
+  INTERCONNECTATTACHMENTS = (
+      'interconnectAttachments',
+      'projects/{project}/regions/{region}/interconnectAttachments/'
+      '{interconnectAttachment}',
+      {},
+      [u'project', u'region', u'interconnectAttachment']
+  )
+  INTERCONNECTLOCATIONS = (
+      'interconnectLocations',
+      'projects/{project}/global/interconnectLocations/{interconnectLocation}',
+      {},
+      [u'project', u'interconnectLocation']
+  )
+  INTERCONNECTS = (
+      'interconnects',
+      'projects/{project}/global/interconnects/{interconnect}',
+      {},
+      [u'project', u'interconnect']
+  )
   LICENSES = (
       'licenses',
       'projects/{project}/global/licenses/{license}',

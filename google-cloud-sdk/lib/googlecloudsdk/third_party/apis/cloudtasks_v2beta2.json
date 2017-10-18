@@ -212,9 +212,9 @@
           "description": "Deprecated. Use Queue.pull_target.",
           "$ref": "PullQueueConfig"
         },
-        "throttleConfig": {
-          "description": "Config for throttling task dispatches.",
-          "$ref": "ThrottleConfig"
+        "rateLimits": {
+          "description": "Rate limits for task dispatches.\n\nQueue.rate_limits and Queue.retry_config are related because they\nboth control task attempts however they control how tasks are attempted in\ndifferent ways:\n\n* Queue.rate_limits controls the total rate of dispatches from a queue\n  (i.e. all traffic dispatched from the queue, regardless of whether the\n  dispatch is from a first attempt or a retry).\n* Queue.retry_config controls what happens to particular a task after\n  its first attempt fails. That is, Queue.retry_config controls task\n  retries (the second attempt, third attempt, etc).",
+          "$ref": "RateLimits"
         },
         "retryConfig": {
           "description": "Settings that determine the retry behavior.\n\n* For tasks created using Cloud Tasks: the queue-level retry settings\n  apply to all tasks in the queue that were created using Cloud Tasks.\n  Retry settings cannot be set on individual tasks.\n* For tasks created using the App Engine SDK: the queue-level retry\n  settings apply to all tasks in the queue which do not have retry settings\n  explicitly set on the task and were created by the App Engine SDK. See\n  [App Engine documentation](\/appengine\/docs\/standard\/python\/taskqueue\/push\/retrying-tasks).",
@@ -302,9 +302,9 @@
       "properties": {
       }
     },
-    "ThrottleConfig": {
-      "id": "ThrottleConfig",
-      "description": "Throttle config.\n\nThese settings determine the throttling behavior.",
+    "RateLimits": {
+      "id": "RateLimits",
+      "description": "Rate limits.\n\nThis message determines the maximum rate that tasks can be dispatched by a\nqueue, regardless of whether the dispatch is a first task attempt or a retry.",
       "type": "object",
       "properties": {
         "maxTasksDispatchedPerSecond": {
@@ -313,12 +313,12 @@
           "format": "double"
         },
         "maxBurstSize": {
-          "description": "Output only.\n\nThe max burst size limits how fast the queue is processed when\nmany tasks are in the queue and the rate is high. This field\nallows the queue to have a high rate so processing starts shortly\nafter a task is enqueued, but still limits resource usage when\nmany tasks are enqueued in a short period of time.\n\n* For App Engine queues, if\n  ThrottleConfig.max_tasks_dispatched_per_second is 1, this\n  field is 10; otherwise this field is\n  ThrottleConfig.max_tasks_dispatched_per_second \/ 5.\n* For pull queues, this field is output only and always 10,000.\n\nNote: For App Engine queues that were created through\n`queue.yaml\/xml`, `max_burst_size` might not have the same\nsettings as specified above; CloudTasks.UpdateQueue can be\nused to set `max_burst_size` only to the values specified above.\n\nThis field has the same meaning as\n[bucket_size in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#bucket_size).",
+          "description": "Output only.\n\nThe max burst size limits how fast the queue is processed when\nmany tasks are in the queue and the rate is high. This field\nallows the queue to have a high rate so processing starts shortly\nafter a task is enqueued, but still limits resource usage when\nmany tasks are enqueued in a short period of time.\n\n* For App Engine queues, if\n  RateLimits.max_tasks_dispatched_per_second is 1, this\n  field is 10; otherwise this field is\n  RateLimits.max_tasks_dispatched_per_second \/ 5.\n* For pull queues, this field is output only and always 10,000.\n\nNote: For App Engine queues that were created through\n`queue.yaml\/xml`, `max_burst_size` might not have the same\nsettings as specified above; CloudTasks.UpdateQueue can be\nused to set `max_burst_size` only to the values specified above.\n\nThis field has the same meaning as\n[bucket_size in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#bucket_size).",
           "type": "integer",
           "format": "int32"
         },
-        "maxOutstandingTasks": {
-          "description": "The maximum number of outstanding tasks that Cloud Tasks allows\nto be dispatched for this queue. After this threshold has been\nreached, Cloud Tasks stops dispatching tasks until the number of\noutstanding requests decreases.\n\nThe maximum allowed value is 5,000.\n\n* For App Engine queues, this field is 10 by default.\n* For pull queues, this field is output only and always -1, which\n  indicates no limit.\n\nThis field has the same meaning as\n[max_concurrent_requests in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#max_concurrent_requests).",
+        "maxConcurrentTasks": {
+          "description": "The maximum number of concurrent tasks that Cloud Tasks allows\nto be dispatched for this queue. After this threshold has been\nreached, Cloud Tasks stops dispatching tasks until the number of\nconcurrent requests decreases.\n\nThe maximum allowed value is 5,000.\n\n* For App Engine queues, this field is 10 by default.\n* For pull queues, this field is output only and always -1, which\n  indicates no limit.\n\nThis field has the same meaning as\n[max_concurrent_requests in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#max_concurrent_requests).",
           "type": "integer",
           "format": "int32"
         }
@@ -326,7 +326,7 @@
     },
     "RetryConfig": {
       "id": "RetryConfig",
-      "description": "Retry config.\n\nThese settings determine retry behavior.\n\nIf a task does not complete successfully, meaning that an\nacknowledgement is not received from the handler before the\n[deadline](\/appengine\/docs\/python\/taskqueue\/push\/#the_task_deadline),\nthen it will be retried with exponential backoff according to the\nsettings in RetryConfig.",
+      "description": "Retry config.\n\nThese settings determine how a failed task attempt is retried.",
       "type": "object",
       "properties": {
         "maxAttempts": {
@@ -338,23 +338,23 @@
           "description": "If true, then the number of attempts is unlimited.",
           "type": "boolean"
         },
-        "taskAgeLimit": {
-          "description": "If positive, task_age_limit specifies the time limit for retrying a failed\ntask, measured from when the task was first run. If specified with\nRetryConfig.max_attempts, the task will be retried until both\nlimits are reached.\n\nIf zero, then the task age is unlimited. This field is zero by default.\n\n`task_age_limit` will be truncated to the nearest second.",
+        "maxRetryDuration": {
+          "description": "If positive, `max_retry_duration` specifies the time limit for retrying a\nfailed task, measured from when the task was first attempted. Once\n`max_retry_duration` time has passed *and* the task has been attempted\nRetryConfig.max_attempts times, no further attempts will be made and\nthe task will be deleted.\n\nIf zero, then the task age is unlimited.\n\n* For [App Engine queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),\n  this field is 0 seconds by default.\n* For [pull queues](google.cloud.tasks.v2beta2.PullTarget), this\n  field is output only and always 0.\n\n`max_retry_duration` will be truncated to the nearest second.\n\nThis field has the same meaning as\n[task_age_limit in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#retry_parameters).",
           "type": "string",
           "format": "google-duration"
         },
         "minBackoff": {
-          "description": "The minimum amount of time to wait before retrying a task after\nit fails.\n\n* For [App Engine queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),\n  this field is 0.1 seconds by default.\n* For [pull queues](google.cloud.tasks.v2beta2.PullTarget), this\n  field is output only and always 0.\n\n`min_backoff` will be truncated to the nearest second.",
+          "description": "The minimum amount of time to wait before retrying a task after\nit fails.\n\n* For [App Engine queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),\n  this field is 0.1 seconds by default.\n* For [pull queues](google.cloud.tasks.v2beta2.PullTarget), this\n  field is output only and always 0.\n\n`min_backoff` will be truncated to the nearest second.\n\nThis field has the same meaning as\n[min_backoff_seconds in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#retry_parameters).",
           "type": "string",
           "format": "google-duration"
         },
         "maxBackoff": {
-          "description": "The maximum amount of time to wait before retrying a task after\nit fails. The default is 1 hour.\n\n* For [App Engine queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),\n  this field is 1 hour by default.\n* For [pull queues](google.cloud.tasks.v2beta2.PullTarget), this field\n  is output only and always 0.\n\n`max_backoff` will be truncated to the nearest second.",
+          "description": "The maximum amount of time to wait before retrying a task after\nit fails. The default is 1 hour.\n\n* For [App Engine queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),\n  this field is 1 hour by default.\n* For [pull queues](google.cloud.tasks.v2beta2.PullTarget), this field\n  is output only and always 0.\n\n`max_backoff` will be truncated to the nearest second.\n\nThis field has the same meaning as\n[max_backoff_seconds in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#retry_parameters).",
           "type": "string",
           "format": "google-duration"
         },
         "maxDoublings": {
-          "description": "The maximum number of times that the interval between failed task\nretries will be doubled before the increase becomes constant. The\nconstant is: 2**(max_doublings - 1) *\nRetryConfig.min_backoff.\n\n* For [App Engine queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),\n  this field is 16 by default.\n* For [pull queues](google.cloud.tasks.v2beta2.PullTarget), this field\n  is output only and always 0.",
+          "description": "The time between retries increases exponentially `max_doublings` times.\n`max_doublings` is maximum number of times that the interval between failed\ntask retries will be doubled before the interval increases linearly.\nAfter max_doublings intervals, the retry interval will be\n2^(max_doublings - 1) * RetryConfig.min_backoff.\n\n* For [App Engine queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),\n  this field is 16 by default.\n* For [pull queues](google.cloud.tasks.v2beta2.PullTarget), this field\n  is output only and always 0.\n\nThis field has the same meaning as\n[max_doublings in queue.yaml](\/appengine\/docs\/standard\/python\/config\/queueref#retry_parameters).",
           "type": "integer",
           "format": "int32"
         }
@@ -556,7 +556,7 @@
       "type": "object",
       "properties": {
         "httpMethod": {
-          "description": "The HTTP method to use for the request. The default is POST.\n\nThe app's request handler for the task's target URL must be able to handle\nHTTP requests with this http_method, otherwise the task attempt will fail\nwith error code 405 \"Method Not Allowed\" because \"the method specified in\nthe Request-Line is not allowed for the resource identified by the\nRequest-URI\". See\n[Writing a push task request handler](\/appengine\/docs\/java\/taskqueue\/push\/creating-handlers#writing_a_push_task_request_handler)\nand the documentation for the request handlers in the language your app is\nwritten in e.g.\n[python RequestHandler](\/appengine\/docs\/python\/tools\/webapp\/requesthandlerclass).",
+          "description": "The HTTP method to use for the request. The default is POST.\n\nThe app's request handler for the task's target URL must be able to handle\nHTTP requests with this http_method, otherwise the task attempt will fail\nwith error code 405 (Method Not Allowed). See\nthe Request-Line is not allowed for the resource identified by the\nRequest-URI\". See\n[Writing a push task request handler](\/appengine\/docs\/java\/taskqueue\/push\/creating-handlers#writing_a_push_task_request_handler)\nand the documentation for the request handlers in the language your app is\nwritten in e.g.\n[python RequestHandler](\/appengine\/docs\/python\/tools\/webapp\/requesthandlerclass).",
           "enumDescriptions": [
             "HTTP method unspecified",
             "HTTP Post",
@@ -580,7 +580,7 @@
           "$ref": "AppEngineRouting"
         },
         "relativeUrl": {
-          "description": "The relative URL.\n\nThe relative URL must begin with \"\/\" and must be a valid HTTP relative URL.\nIt can contain a path, query string arguments, and `#` fragments.\nIf the relative URL is empty, then the root path \"\/\" will be used.\nNo spaces are allowed, and the maximum length allowed is 2083 characters.",
+          "description": "The relative URL.\n\nThe relative URL must begin with \"\/\" and must be a valid HTTP relative URL.\nIt can contain a path and query string arguments.\nIf the relative URL is empty, then the root path \"\/\" will be used.\nNo spaces are allowed, and the maximum length allowed is 2083 characters.",
           "type": "string"
         },
         "headers": {
@@ -762,7 +762,7 @@
       "type": "object",
       "properties": {
         "task": {
-          "description": "Required.\n\nThe task to add.\n\nTask names have the following format:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`.\nThe user can optionally specify a name for the task in\nTask.name. If a name is not specified then the system will\ngenerate a random unique task id, which will be returned in the\nresponse's Task.name.\n\nExplicitly specifying a Task.name enables task\nde-duplication. If a task's name is identical to the name of an\nexisting task or a task that was deleted or completed within the\nlast ~10 days then the call to CloudTasks.CreateTask will\nfail with google.rpc.Code.ALREADY_EXISTS. Because there is an\nextra lookup cost to identify duplicate task names, these\nCloudTasks.CreateTask calls have significantly increased\nlatency. Using hashed strings for the task id or for the prefix\nof the task id is recommended. Choosing task ids that are\nsequential or have sequential prefixes, for example using a\ntimestamp, causes an increase in latency and error rates in all\ntask commands. The infrastructure relies on an approximately\nuniform distribution of task ids to store and serve tasks\nefficiently.\n\nIf Task.schedule_time is not set or is in the past then Cloud\nTasks will set it to the current time.",
+          "description": "Required.\n\nThe task to add.\n\nTask names have the following format:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`.\nThe user can optionally specify a name for the task in\nTask.name. If a name is not specified then the system will\ngenerate a random unique task id, which will be returned in the\nresponse's Task.name.\n\nIf Task.schedule_time is not set or is in the past then Cloud\nTasks will set it to the current time.\n\nTask De-duplication:\n\nExplicitly specifying a task ID enables task de-duplication.  If\na task's ID is identical to that of an existing task or a task\nthat was deleted or completed recently then the call will fail\nwith google.rpc.Code.ALREADY_EXISTS. If the task's queue was\ncreated using Cloud Tasks, then another task with the same name\ncan't be created for ~1hour after the original task was deleted\nor completed. If the task's queue was created using queue.yaml or\nqueue.xml, then another task with the same name can't be created\nfor ~9days after the original task was deleted or completed.\n\nBecause there is an extra lookup cost to identify duplicate task\nnames, these CloudTasks.CreateTask calls have significantly\nincreased latency. Using hashed strings for the task id or for\nthe prefix of the task id is recommended. Choosing task ids that\nare sequential or have sequential prefixes, for example using a\ntimestamp, causes an increase in latency and error rates in all\ntask commands. The infrastructure relies on an approximately\nuniform distribution of task ids to store and serve tasks\nefficiently.",
           "$ref": "Task"
         },
         "responseView": {
@@ -811,7 +811,7 @@
           ]
         },
         "filter": {
-          "description": "`filter` can be used to specify a subset of tasks to lease.\n\nWhen `filter` is set to `tag=<my-tag>` then the\nPullTasksResponse will contain only tasks whose\nPullMessage.tag is equal to `<my-tag>`. `<my-tag>` can be\na bytes encoded as a string and must be less than 500 bytes.\nIf `<my-tag>` includes whitespace or special characters (characters which\naren't letters, numbers, or underscores), then it must be double-quoted.\nDouble quotes and backslashes in quoted strings must be escaped by\npreceding it with a backslash (`\\`).\n\nWhen `filter` is set to `tag=oldest_tag()`, only tasks which have the same\ntag as the task with the oldest schedule_time will be returned.\n\nGrammar Syntax:\n\n* `filter = \"tag=\" comparable`\n\n*  `comparable = tag | function`\n\n* `tag = string | bytes`\n\n* `function = \"oldest_tag()\"`\n\n\n\nThe `oldest_tag()` function returns tasks which have the same tag as the\noldest task (ordered by schedule time).",
+          "description": "`filter` can be used to specify a subset of tasks to lease.\n\nWhen `filter` is set to `tag=<my-tag>` then the\nPullTasksResponse will contain only tasks whose\nPullMessage.tag is equal to `<my-tag>`. `<my-tag>` must be less than\n500 bytes.\n\nWhen `filter` is set to `tag_function=oldest_tag()`, only tasks which have\nthe same tag as the task with the oldest schedule_time will be returned.\n\nGrammar Syntax:\n\n* `filter = \"tag=\" tag | \"tag_function=\" function`\n\n* `tag = string | bytes`\n\n* `function = \"oldest_tag()\"`\n\nThe `oldest_tag()` function returns tasks which have the same tag as the\noldest task (ordered by schedule time).",
           "type": "string"
         }
       }
@@ -1416,7 +1416,7 @@
                       "path": "v2beta2/{+parent}/tasks",
                       "flatPath": "v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks",
                       "httpMethod": "POST",
-                      "description": "Creates a task and adds it to a queue.\n\nTo add multiple tasks at the same time, use\n[HTTP batching](\/storage\/docs\/json_api\/v1\/how-tos\/batch)\nor the batching documentation for your client library, for example\nhttps:\/\/developers.google.com\/api-client-library\/python\/guide\/batch.\n\nTasks cannot be updated after creation; there is no UpdateTask command.",
+                      "description": "Creates a task and adds it to a queue.\n\nTo add multiple tasks at the same time, use\n[HTTP batching](\/storage\/docs\/json_api\/v1\/how-tos\/batch)\nor the batching documentation for your client library, for example\nhttps:\/\/developers.google.com\/api-client-library\/python\/guide\/batch.\n\nTasks cannot be updated after creation; there is no UpdateTask command.\n\n* For [App Engine queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),\n  the maximum task size is 100KB.\n* For [pull queues](google.cloud.tasks.v2beta2.PullTarget), this\n  the maximum task size is 1MB.",
                       "parameters": {
                         "parent": {
                           "description": "Required.\n\nThe queue name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`\n\nThe queue must already exist.",
@@ -1469,7 +1469,7 @@
                       "path": "v2beta2/{+name}/tasks:pull",
                       "flatPath": "v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks:pull",
                       "httpMethod": "POST",
-                      "description": "Pulls tasks from a pull queue and acquires a lease on them for a\nspecified PullTasksRequest.lease_duration.\n\nThis method is invoked by the lease holder to obtain the\nlease. The lease holder must acknowledge the task via\nCloudTasks.AcknowledgeTask after they have performed the work\nassociated with the task.\n\nThe payload is intended to store data that the lease holder needs\nto perform the work associated with the task. To return the\npayloads in the PullTasksResponse, set\nPullTasksRequest.response_view to Task.View.FULL.",
+                      "description": "Pulls tasks from a pull queue and acquires a lease on them for a\nspecified PullTasksRequest.lease_duration.\n\nThis method is invoked by the lease holder to obtain the\nlease. The lease holder must acknowledge the task via\nCloudTasks.AcknowledgeTask after they have performed the work\nassociated with the task.\n\nThe payload is intended to store data that the lease holder needs\nto perform the work associated with the task. To return the\npayloads in the PullTasksResponse, set\nPullTasksRequest.response_view to Task.View.FULL.\n\nA maximum of 10 qps of CloudTasks.PullTasks requests are allowed per\nqueue. google.rpc.Code.RESOURCE_EXHAUSTED is returned when this limit\nis exceeded. google.rpc.Code.RESOURCE_EXHAUSTED is also returned when\nRateLimits.max_tasks_dispatched_per_second is exceeded.",
                       "parameters": {
                         "name": {
                           "description": "Required.\n\nThe queue name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`",

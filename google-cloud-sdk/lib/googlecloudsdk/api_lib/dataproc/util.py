@@ -61,10 +61,10 @@ def WaitForResourceDeletion(
     while timeout_s > (time.time() - start_time):
       try:
         request_method(resource_ref)
+      except apitools_exceptions.HttpNotFoundError:
+        # Object deleted
+        return
       except apitools_exceptions.HttpError as error:
-        if error.status_code == 404:
-          # Object deleted
-          return
         log.debug('Get request for [{0}] failed:\n{1}', resource_ref, error)
 
         # Do not retry on 4xx errors

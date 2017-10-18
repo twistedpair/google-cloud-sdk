@@ -41,7 +41,7 @@ class IamRolesCompleter(completers.ListCommandCompleter):
         default_resolver=parameter_info.GetValue)
     resource_uri = resource_ref.SelfLink()
     return ['beta', 'iam', 'list-grantable-roles', '--quiet',
-            '--flatten=name[]', '--format=disable', resource_uri]
+            '--flatten=name', '--format=disable', resource_uri]
 
   def Complete(self, prefix, parameter_info):
     """Bypasses the cache and returns completions matching prefix."""
@@ -55,5 +55,5 @@ class IamServiceAccountCompleter(completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(IamServiceAccountCompleter, self).__init__(
         list_command=('iam service-accounts list --quiet '
-                      '--flatten=email[] --format=disable'),
+                      '--flatten=email --format=disable'),
         **kwargs)

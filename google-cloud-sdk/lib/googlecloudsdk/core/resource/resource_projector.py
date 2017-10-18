@@ -25,11 +25,14 @@ Example usage:
 import datetime
 import json
 
-from apitools.base.protorpclite import messages
-from apitools.base.py import encoding
+from apitools.base.protorpclite import messages as protorpc_message
+from apitools.base.py import encoding as protorpc_encoding
 
 from googlecloudsdk.core.resource import resource_projection_parser
 from googlecloudsdk.core.resource import resource_property
+
+from google.protobuf import json_format as protobuf_encoding
+from google.protobuf import message as protobuf_message
 
 
 def MakeSerializable(resource):
@@ -380,10 +383,13 @@ class Projector(object):
       obj = unicode(obj)
     else:
       self._been_here_done_that.append(obj)
-      if isinstance(obj, messages.Message):
-        # protorpc message.
-        obj = encoding.MessageToDict(obj)
-      elif isinstance(obj, messages.Enum):
+      if isinstance(obj, protorpc_message.Message):
+        # protorpc message
+        obj = protorpc_encoding.MessageToDict(obj)
+      elif isinstance(obj, protobuf_message.Message):
+        # protobuf message
+        obj = protobuf_encoding.MessageToDict(obj)
+      elif isinstance(obj, protorpc_message.Enum):
         # protorpc enum
         obj = obj.name
       elif not hasattr(obj, '__iter__') or hasattr(obj, '_fields'):

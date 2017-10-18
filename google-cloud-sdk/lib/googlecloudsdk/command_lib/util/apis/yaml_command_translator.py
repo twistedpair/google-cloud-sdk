@@ -317,8 +317,8 @@ class CommandBuilder(object):
       request = self.arg_generator.CreateRequest(
           args, self.spec.request.static_fields,
           self.spec.request.resource_method_params)
-      if self.spec.request.modify_request_hook:
-        request = self.spec.request.modify_request_hook(ref, args, request)
+      for hook in self.spec.request.modify_request_hooks:
+        request = hook(ref, args, request)
 
     response = self.method.Call(request,
                                 limit=self.arg_generator.Limit(args),
@@ -391,6 +391,8 @@ class CommandBuilder(object):
         if messages:
           raise exceptions.Error(' '.join(messages))
         raise exceptions.Error(str(error))
+    if self.spec.response.result_attribute:
+      response = _GetAttribute(response, self.spec.response.result_attribute)
     return response
 
   def _FindPopulatedAttribute(self, obj, attributes):
@@ -555,9 +557,23 @@ class AsyncOperationPoller(waiter.OperationPoller):
 
 
 def _GetAttribute(obj, attr_path):
+  """Gets attributes and sub-attributes out of an object.
+
+  Args:
+    obj: The object to extract the attributes from.
+    attr_path: str, The dotted path of attributes to extract.
+
+  Raises:
+    AttributeError: If the attribute doesn't exist on the object.
+
+  Returns:
+    The desired attribute or None if any of the parent attributes were None.
+  """
   if attr_path:
     for attr in attr_path.split('.'):
       try:
+        if obj is None:
+          return None
         obj = getattr(obj, attr)
       except AttributeError:
         raise AttributeError(

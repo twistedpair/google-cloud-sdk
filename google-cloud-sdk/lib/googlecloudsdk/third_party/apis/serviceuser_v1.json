@@ -273,6 +273,10 @@
             "$ref": "MonitoredResourceDescriptor"
           }
         },
+        "billing": {
+          "description": "Billing configuration.",
+          "$ref": "Billing"
+        },
         "logging": {
           "description": "Logging configuration.",
           "$ref": "Logging"
@@ -878,21 +882,6 @@
           "items": {
             "$ref": "HttpRule"
           }
-        },
-        "restCollection": {
-          "description": "DO NOT USE. This is an experimental field.\n\nOptional. The REST collection name is by default derived from the URL\npattern. If specified, this field overrides the default collection name.\nExample:\n\n    rpc AddressesAggregatedList(AddressesAggregatedListRequest)\n        returns (AddressesAggregatedListResponse) {\n      option (google.api.http) = {\n        get: \"\/v1\/projects\/{project_id}\/aggregated\/addresses\"\n        rest_collection: \"projects.addresses\"\n      };\n    }\n\nThis method has the automatically derived collection name\n\"projects.aggregated\". Because, semantically, this rpc is actually an\noperation on the \"projects.addresses\" collection, the `rest_collection`\nfield is configured to override the derived collection name.",
-          "type": "string"
-        },
-        "restMethodName": {
-          "description": "DO NOT USE. This is an experimental field.\n\nOptional. The rest method name is by default derived from the URL\npattern. If specified, this field overrides the default method name.\nExample:\n\n    rpc CreateResource(CreateResourceRequest)\n        returns (CreateResourceResponse) {\n      option (google.api.http) = {\n        post: \"\/v1\/resources\",\n        body: \"resource\",\n        rest_method_name: \"insert\"\n      };\n    }\n\nThis method has the automatically derived rest method name\n\"create\", but for backwards compatibility with apiary, it is specified as\ninsert.",
-          "type": "string"
-        },
-        "authorizations": {
-          "description": "Specifies the permission(s) required for an API element for the overall\nAPI request to succeed. It is typically used to mark request message fields\nthat contain the name of the resource and indicates the permissions that\nwill be checked on that resource.",
-          "type": "array",
-          "items": {
-            "$ref": "AuthorizationRule"
-          }
         }
       }
     },
@@ -986,21 +975,6 @@
         }
       }
     },
-    "AuthorizationRule": {
-      "id": "AuthorizationRule",
-      "description": "Authorization rule for API services.\n\nIt specifies the permission(s) required for an API element for the overall\nAPI request to succeed. It is typically used to mark request message fields\nthat contain the name of the resource and indicates the permissions that\nwill be checked on that resource.\n\nFor example:\n\n    package google.storage.v1;\n\n    message CopyObjectRequest {\n      string source = 1 [\n        (google.api.authz).permissions = \"storage.objects.get\"];\n\n      string destination = 2 [\n        (google.api.authz).permissions =\n            \"storage.objects.create,storage.objects.update\"];\n    }",
-      "type": "object",
-      "properties": {
-        "selector": {
-          "description": "Selects the API elements to which this rule applies.\n\nRefer to selector for syntax details.",
-          "type": "string"
-        },
-        "permissions": {
-          "description": "The required permissions. The acceptable values vary depend on the\nauthorization system used. For Google APIs, it should be a comma-separated\nGoogle IAM permission values. When multiple permissions are listed, the\nsemantics is not defined by the system. Additional documentation must\nbe provided manually.",
-          "type": "string"
-        }
-      }
-    },
     "Quota": {
       "id": "Quota",
       "description": "Quota configuration helps to achieve fairness and budgeting in service\nusage.\n\nThe quota configuration works this way:\n- The service configuration defines a set of metrics.\n- For API calls, the quota.metric_rules maps methods to metrics with\n  corresponding costs.\n- The quota.limits defines limits on the metrics, which will be used for\n  quota checks at runtime.\n\nAn example quota configuration in yaml format:\n\n   quota:\n\n     - name: apiWriteQpsPerProject\n       metric: library.googleapis.com\/write_calls\n       unit: \"1\/min\/{project}\"  # rate limit for consumer projects\n       values:\n         STANDARD: 10000\n\n\n     # The metric rules bind all methods to the read_calls metric,\n     # except for the UpdateBook and DeleteBook methods. These two methods\n     # are mapped to the write_calls metric, with the UpdateBook method\n     # consuming at twice rate as the DeleteBook method.\n     metric_rules:\n     - selector: \"*\"\n       metric_costs:\n         library.googleapis.com\/read_calls: 1\n     - selector: google.example.library.v1.LibraryService.UpdateBook\n       metric_costs:\n         library.googleapis.com\/write_calls: 2\n     - selector: google.example.library.v1.LibraryService.DeleteBook\n       metric_costs:\n         library.googleapis.com\/write_calls: 1\n\n Corresponding Metric definition:\n\n     metrics:\n     - name: library.googleapis.com\/read_calls\n       display_name: Read requests\n       metric_kind: DELTA\n       value_type: INT64\n\n     - name: library.googleapis.com\/write_calls\n       display_name: Write requests\n       metric_kind: DELTA\n       value_type: INT64",
@@ -1028,7 +1002,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the quota limit. The name is used to refer to the limit when\noverriding the default limit on per-consumer basis.\n\nFor metric-based quota limits, the name must be provided, and it must be\nunique within the service. The name can only include alphanumeric\ncharacters as well as '-'.\n\nThe maximum length of the limit name is 64 characters.\n\nThe name of a limit is used as a unique identifier for this limit.\nTherefore, once a limit has been put into use, its name should be\nimmutable. You can use the display_name field to provide a user-friendly\nname for the limit. The display name can be evolved over time without\naffecting the identity of the limit.",
+          "description": "Name of the quota limit.\n\nThe name must be provided, and it must be unique within the service. The\nname can only include alphanumeric characters as well as '-'.\n\nThe maximum length of the limit name is 64 characters.",
           "type": "string"
         },
         "description": {
@@ -1055,15 +1029,15 @@
           "type": "string"
         },
         "metric": {
-          "description": "The name of the metric this quota limit applies to. The quota limits with\nthe same metric will be checked together during runtime. The metric must be\ndefined within the service config.\n\nUsed by metric-based quotas only.",
+          "description": "The name of the metric this quota limit applies to. The quota limits with\nthe same metric will be checked together during runtime. The metric must be\ndefined within the service config.",
           "type": "string"
         },
         "unit": {
-          "description": "Specify the unit of the quota limit. It uses the same syntax as\nMetric.unit. The supported unit kinds are determined by the quota\nbackend system.\n\nThe [Google Service Control](https:\/\/cloud.google.com\/service-control)\nsupports the following unit components:\n* One of the time intevals:\n  * \"\/min\"  for quota every minute.\n  * \"\/d\"  for quota every 24 hours, starting 00:00 US Pacific Time.\n  * Otherwise the quota won't be reset by time, such as storage limit.\n* One and only one of the granted containers:\n  * \"\/{project}\" quota for a project\n\nHere are some examples:\n* \"1\/min\/{project}\" for quota per minute per project.\n\nNote: the order of unit components is insignificant.\nThe \"1\" at the beginning is required to follow the metric unit syntax.\n\nUsed by metric-based quotas only.",
+          "description": "Specify the unit of the quota limit. It uses the same syntax as\nMetric.unit. The supported unit kinds are determined by the quota\nbackend system.\n\nHere are some examples:\n* \"1\/min\/{project}\" for quota per minute per project.\n\nNote: the order of unit components is insignificant.\nThe \"1\" at the beginning is required to follow the metric unit syntax.",
           "type": "string"
         },
         "values": {
-          "description": "Tiered limit values, currently only STANDARD is supported.",
+          "description": "Tiered limit values. You must specify this as a key:value pair, with an\ninteger value that is the maximum number of requests allowed for the\nspecified unit. Currently only STANDARD is supported.",
           "type": "object",
           "additionalProperties": {
             "type": "string",
@@ -1288,7 +1262,7 @@
           "type": "boolean"
         },
         "skipServiceControl": {
-          "description": "True, if the method should skip service control. If so, no control plane\nfeature (like quota and billing) will be enabled.",
+          "description": "True, if the method should skip service control. If so, no control plane\nfeature (like quota and billing) will be enabled.\nThis flag is used by ESP to allow some Endpoints customers to bypass\nGoogle internal checks.",
           "type": "boolean"
         }
       }
@@ -1441,7 +1415,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the metric descriptor. Depending on the\nimplementation, the name typically includes: (1) the parent resource name\nthat defines the scope of the metric type or of its data; and (2) the\nmetric's URL-encoded type, which also appears in the `type` field of this\ndescriptor. For example, following is the resource name of a custom\nmetric within the GCP project `my-project-id`:\n\n    \"projects\/my-project-id\/metricDescriptors\/custom.googleapis.com%2Finvoice%2Fpaid%2Famount\"",
+          "description": "The resource name of the metric descriptor.",
           "type": "string"
         },
         "type": {
@@ -1502,7 +1476,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "A concise name for the metric, which can be displayed in user interfaces.\nUse sentence case without an ending period, for example \"Request count\".",
+          "description": "A concise name for the metric, which can be displayed in user interfaces.\nUse sentence case without an ending period, for example \"Request count\".\nThis field is optional but it is recommended to be set for any metrics\nassociated with user-visible concepts, such as Quota.",
           "type": "string"
         }
       }
@@ -1533,6 +1507,38 @@
           "type": "array",
           "items": {
             "$ref": "LabelDescriptor"
+          }
+        }
+      }
+    },
+    "Billing": {
+      "id": "Billing",
+      "description": "Billing related configuration of the service.\n\nThe following example shows how to configure monitored resources and metrics\nfor billing:\n\n    monitored_resources:\n    - type: library.googleapis.com\/branch\n      labels:\n      - key: \/city\n        description: The city where the library branch is located in.\n      - key: \/name\n        description: The name of the branch.\n    metrics:\n    - name: library.googleapis.com\/book\/borrowed_count\n      metric_kind: DELTA\n      value_type: INT64\n    billing:\n      consumer_destinations:\n      - monitored_resource: library.googleapis.com\/branch\n        metrics:\n        - library.googleapis.com\/book\/borrowed_count",
+      "type": "object",
+      "properties": {
+        "consumerDestinations": {
+          "description": "Billing configurations for sending metrics to the consumer project.\nThere can be multiple consumer destinations per service, each one must have\na different monitored resource type. A metric can be used in at most\none consumer destination.",
+          "type": "array",
+          "items": {
+            "$ref": "BillingDestination"
+          }
+        }
+      }
+    },
+    "BillingDestination": {
+      "id": "BillingDestination",
+      "description": "Configuration of a specific billing destination (Currently only support\nbill against consumer project).",
+      "type": "object",
+      "properties": {
+        "monitoredResource": {
+          "description": "The monitored resource type. The type must be defined in\nService.monitored_resources section.",
+          "type": "string"
+        },
+        "metrics": {
+          "description": "Names of the metrics to report to this billing destination.\nEach name must be defined in Service.metrics section.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

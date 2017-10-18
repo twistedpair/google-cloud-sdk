@@ -120,6 +120,20 @@ SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     zone_explanation=_SOURCE_DISK_ZONE_EXPLANATION,
     required=False)
 
+SOURCE_IMAGE_ARG = compute_flags.ResourceArgument(
+    resource_name='imported image',
+    name='--source-image',
+    completer=ImagesCompleter,
+    global_collection='compute.images',
+    required=True)
+
+DESTINATION_IMAGE_ARG = compute_flags.ResourceArgument(
+    resource_name='translated image',
+    name='--destination-image',
+    completer=ImagesCompleter,
+    global_collection='compute.images',
+    required=True)
+
 
 def AddCommonArgs(parser):
   """Add common image creation args."""

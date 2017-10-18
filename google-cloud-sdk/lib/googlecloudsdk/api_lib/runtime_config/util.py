@@ -164,14 +164,6 @@ def Project(required=True):
   return properties.VALUES.core.project.Get(required=required)
 
 
-def IsNotFoundError(error):
-  return getattr(error, 'status_code', None) == 404
-
-
-def IsAlreadyExistsError(error):
-  return getattr(error, 'status_code', None) == 409
-
-
 def IsBadGatewayError(error):
   return getattr(error, 'status_code', None) == 502
 

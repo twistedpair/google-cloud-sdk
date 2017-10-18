@@ -20,7 +20,7 @@ from googlecloudsdk.api_lib import tasks
 from googlecloudsdk.core import exceptions
 
 
-class ModifyingPullAndAppEngineQueueError(exceptions.InternalError):
+class CreatingPullAndAppEngineQueueError(exceptions.InternalError):
   """Error for when attempt to create a queue as both pull and App Engine."""
 
 
@@ -47,31 +47,26 @@ class Queues(object):
         field='queues', batch_size_attribute='pageSize')
 
   def Create(self, parent_ref, queue_ref, retry_config=None,
-             throttle_config=None, pull_target=None,
+             rate_limits=None, pull_target=None,
              app_engine_http_target=None):
     """Prepares and sends a Create request for creating a queue."""
     if pull_target and app_engine_http_target:
-      raise ModifyingPullAndAppEngineQueueError(
+      raise CreatingPullAndAppEngineQueueError(
           'Attempting to send PullTarget and AppEngineHttpTarget '
           'simultaneously')
     queue = self.api.messages.Queue(
         name=queue_ref.RelativeName(), retryConfig=retry_config,
-        throttleConfig=throttle_config, pullTarget=pull_target,
+        rateLimits=rate_limits, pullTarget=pull_target,
         appEngineHttpTarget=app_engine_http_target)
     request = self.api.messages.CloudtasksProjectsLocationsQueuesCreateRequest(
         parent=parent_ref.RelativeName(), queue=queue)
     return self.api.queues_service.Create(request)
 
-  def Patch(self, queue_ref, retry_config=None, throttle_config=None,
-            pull_target=None, app_engine_http_target=None):
+  def Patch(self, queue_ref, retry_config=None, rate_limits=None,
+            app_engine_routing_override=None):
     """Prepares and sends a Patch request for modifying a queue."""
-    if pull_target and app_engine_http_target:
-      raise ModifyingPullAndAppEngineQueueError(
-          'Attempting to send PullTarget and AppEngineHttpTarget '
-          'simultaneously')
 
-    if _AllEmptyConfigs([retry_config, throttle_config, pull_target,
-                         app_engine_http_target]):
+    if not any([retry_config, rate_limits, app_engine_routing_override]):
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
 
     queue = self.api.messages.Queue(name=queue_ref.RelativeName())
@@ -80,15 +75,16 @@ class Queues(object):
     if retry_config is not None:
       queue.retryConfig = retry_config
       updated_fields.append('retryConfig')
-    if throttle_config is not None:
-      queue.throttleConfig = throttle_config
-      updated_fields.append('throttleConfig')
-    if pull_target is not None:
-      queue.pullTarget = pull_target
-      updated_fields.append('pullTarget')
-    if app_engine_http_target is not None:
-      queue.appEngineHttpTarget = app_engine_http_target
-      updated_fields.append('appEngineHttpTarget')
+    if rate_limits is not None:
+      queue.rateLimits = rate_limits
+      updated_fields.append('rateLimits')
+    if app_engine_routing_override is not None:
+      if _IsEmptyConfig(app_engine_routing_override):
+        queue.appEngineHttpTarget = self.api.messages.AppEngineHttpTarget()
+      else:
+        queue.appEngineHttpTarget = self.api.messages.AppEngineHttpTarget(
+            appEngineRoutingOverride=app_engine_routing_override)
+      updated_fields.append('appEngineHttpTarget.appEngineRoutingOverride')
     update_mask = ','.join(updated_fields)
 
     request = self.api.messages.CloudtasksProjectsLocationsQueuesPatchRequest(
@@ -114,10 +110,6 @@ class Queues(object):
     request = self.api.messages.CloudtasksProjectsLocationsQueuesResumeRequest(
         name=queue_ref.RelativeName())
     return self.api.queues_service.Resume(request)
-
-
-def _AllEmptyConfigs(configs):
-  return all(map(_IsEmptyConfig, configs))
 
 
 def _IsEmptyConfig(config):

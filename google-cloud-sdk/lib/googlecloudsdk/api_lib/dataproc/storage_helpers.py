@@ -79,11 +79,9 @@ class StorageClient(object):
         bucket=object_ref.bucket, object=object_ref.name)
     try:
       return self.client.objects.Get(request=request, download=download)
-    except apitools_exceptions.HttpError as error:
+    except apitools_exceptions.HttpNotFoundError:
       # TODO(b/36052479): Clean up error handling. Handle 403s.
-      if error.status_code == 404:
-        return None
-      raise error
+      return None
 
   def GetObject(self, object_ref):
     """Get the object metadata of a GCS object.

@@ -183,8 +183,13 @@ class ResourcePresentationSpec(object):
 
   def _KwargsForAttribute(self, name, attribute, required=False):
     """Constructs the kwargs for adding an attribute to argparse."""
-    # Expand the help text.
-    help_text = attribute.help_text.format(resource=self.concept_spec.name)
+    # If this is the only argument in the group, the help text should be the
+    # "group" help.
+    if len(filter(bool, self.attribute_to_args_map.values())) == 1:
+      help_text = self.group_help
+    else:
+      # Expand the help text.
+      help_text = attribute.help_text.format(resource=self.concept_spec.name)
     kwargs_dict = {
         'help': help_text,
         'type': str,

@@ -20,7 +20,7 @@ from googlecloudsdk.command_lib.util import completers
 
 
 _SERVICES_LIST_COMMAND = ('service-management list --format=disable '
-                          '--flatten=serviceName[]')
+                          '--flatten=serviceName')
 
 
 class ConsumerServiceCompleter(completers.ListCommandCompleter):

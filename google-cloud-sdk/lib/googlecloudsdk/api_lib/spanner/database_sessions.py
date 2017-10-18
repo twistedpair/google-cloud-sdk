@@ -15,6 +15,7 @@
 
 from apitools.base.py import encoding
 from apitools.base.py import extra_types
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -36,11 +37,43 @@ def Create(instance, database):
   return client.projects_instances_databases_sessions.Create(req)
 
 
-def Delete(session):
+def List(instance, database, server_filter=None):
+  """Lists all active sessions on the given database."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
+  ref = resources.REGISTRY.Parse(
+      database,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance,
+      },
+      collection='spanner.projects.instances.databases')
+  req = msgs.SpannerProjectsInstancesDatabasesSessionsListRequest(
+      database=ref.RelativeName(), filter=server_filter)
+
+  return list_pager.YieldFromList(
+      client.projects_instances_databases_sessions,
+      req,
+      # There is a batch_size_attribute ('pageSize') but we want to yield as
+      # many results as possible per request.
+      batch_size_attribute=None,
+      field='sessions')
+
+
+def Delete(instance, database, session):
+  """Delete a database session."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  ref = resources.REGISTRY.Parse(
+      session,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance,
+          'databasesId': database,
+      },
+      collection='spanner.projects.instances.databases.sessions')
   req = msgs.SpannerProjectsInstancesDatabasesSessionsDeleteRequest(
-      name=session.name)
+      name=ref.RelativeName())
   return client.projects_instances_databases_sessions.Delete(req)
 
 

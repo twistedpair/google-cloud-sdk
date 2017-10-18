@@ -29,6 +29,7 @@ class DisplayInfo(object):
     state: string representing the current job status
     creationTime: in the form yyyy-mm-dd hh:mm:ss
     stateTime: in the form yyyy-mm-dd hh:mm:ss
+    location: the job's regional endpoint
   """
 
   def __init__(self, job):
@@ -36,11 +37,12 @@ class DisplayInfo(object):
     self.name = job.name
     self.type = DisplayInfo._JobTypeForJob(job.type)
     self.state = DisplayInfo._StatusForJob(job.currentState)
+    self.location = job.location
 
     # We ignore these errors to make the field names more consistent across
     # commands using the --filter argument. This is because most commands are
     # more or less a straight dump of the API response which has camel-case
-    # naming conventions. This class is only used for formmating jobs for
+    # naming conventions. This class is only used for formatting jobs for
     # display purposes.
     #
     # Don't worry, be happy.

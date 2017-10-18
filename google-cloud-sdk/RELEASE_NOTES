@@ -2,6 +2,90 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 176.0.0 (2017-10-18)
+
+### Breaking Changes
+
+*   (DEPRECATED) Deprecated the `switch-mode` command from
+    `gcloud compute networks`, replaced by the
+    `update --switch-to-custom-subnet-mode` command.
+*   The `--force` flag is removed from `gcloud source repos delete`.
+
+### Google Cloud SDK
+
+*   On 64-bit Windows platforms Google Cloud SDK will use 64-bit python version
+    2.7.13. Previously it was using 32-bit version. Existing Windows
+    installations using Cloud SDK with included python will see their python
+    swapped for new version when upgrading to this release.
+
+### Google Compute Engine
+
+*   CPU Platform Selection is now generally available. The `--min-cpu-platform`
+    flag can now be used in the following commands to set the minimum desired
+    CPU Platform of the virtual machine instance.
+    *   `gcloud compute instances create`
+    *   `gcloud compute instances update`
+    *   `gcloud compute instance-templates create`
+*   `gcloud beta compute os-login` commands are now available for using Google
+    Compute Engine OS Login.
+*   `gcloud compute images create` now has a `--guest-os-features` flag for
+    enabling specific OS supported features.
+*   Added alpha support for labels for the
+    `gcloud compute target-vpn-gateways update` command.
+*   Added static internal IP reservation to `gcloud compute addresses create`.
+    Users can now:
+    *   reserve a specific address and then associate it with a specific
+        resource
+    *   specify an ephemeral internal IP address for a resource and then promote
+        the address
+
+### Google App Engine
+
+*   Components updated to 1.9.58. Please visit the following release notes
+    for details:
+    *   Java - https://cloud.google.com/appengine/docs/java/release-notes
+
+### Google Container Engine
+
+*   Added the `--node-taints` flag to `gcloud container clusters create` and
+    `gcloud container node-pools create` in beta to support Kubernetes taints.
+
+### Firebase Test Lab
+
+*   The `--use-orchestrator` flag for `gcloud firebase test android run` is now
+    generally available.
+
+### Google Cloud Spanner
+
+*   The following commands are now available in beta:
+    *   `gcloud spanner databases sessions list` (to list active sessions in a
+        Spanner database)
+    *   `gcloud spanner databases sessions delete` (to delete an active session
+        in a Spanner database)
+
+### Google Cloud Dataflow
+
+*   The `--region` flag has been added to all `gcloud dataflow` commands to
+    support Dataflow Regional Endpoints.
+    *   Most commands will function without the `--region` flag, and will
+        continue to default to `us-central1` without the flag.
+    *   The `jobs list` command will default to listing jobs from all regions
+        unless the `--region` flag is specified, at which point it will only
+        query that regional endpoint.
+    *   Added a `--staging-location` flag to the `jobs run` command to permit
+        running of templates where the template is location-only readable, not
+        writeable.
+
+### Google Cloud Container Builder Local Builder
+
+*   Updated container-builder-local to version 0.2.5. This:
+    *  Adds a flag to export workspace to host
+
+### Google Cloud Datastore Emulator
+
+*   Updated cloud-datastore-emulator to version 1.3. Cloud Datastore emulator
+    now supports ID reservation in the Cloud Datastore V1 API.
+
 ## 175.0.0 (2017-10-11)
 
 ### Breaking Changes

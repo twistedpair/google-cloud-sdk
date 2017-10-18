@@ -18,6 +18,7 @@ tracks.
 """
 import argparse
 import re
+from apitools.base.py import exceptions as apitools_exceptions
 import enum
 
 
@@ -25,7 +26,6 @@ from googlecloudsdk.api_lib.app import appengine_client
 from googlecloudsdk.api_lib.app import cloud_endpoints
 from googlecloudsdk.api_lib.app import deploy_app_command_util
 from googlecloudsdk.api_lib.app import deploy_command_util
-from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import runtime_builders
 from googlecloudsdk.api_lib.app import util
@@ -58,7 +58,7 @@ class Error(core_exceptions.Error):
 
 class VersionPromotionError(Error):
 
-  def __init__(self, err):
+  def __init__(self, err_str):
     super(VersionPromotionError, self).__init__(
         'Your deployment has succeeded, but promoting the new version to '
         'default failed. '
@@ -68,7 +68,7 @@ class VersionPromotionError(Error):
         'Please contact your project owner and use the '
         '`gcloud app services set-traffic --splits <version>=1` command to '
         'redirect traffic to your newly deployed version.\n\n'
-        'Original error: ' + str(err))
+        'Original error: ' + err_str)
 
 
 class StoppedApplicationError(Error):
@@ -326,8 +326,9 @@ class ServiceDeployer(object):
         version_util.PromoteVersion(
             all_services, new_version, self.api_client,
             self.deploy_options.stop_previous_version)
-      except core_api_exceptions.HttpException as err:
-        raise VersionPromotionError(err)
+      except apitools_exceptions.HttpError as err:
+        err_str = str(core_api_exceptions.HttpException(err))
+        raise VersionPromotionError(err_str)
     elif self.deploy_options.stop_previous_version:
       log.info('Not stopping previous version because new version was '
                'not promoted.')
@@ -475,13 +476,7 @@ def ArgsDeploy(parser):
       '--promote',
       action=actions.StoreBooleanProperty(
           properties.VALUES.app.promote_by_default),
-      help="""\
-      Promote the deployed version to receive all traffic.
-
-      True by default. To change the default behavior for your current
-      environment, run:
-
-          $ gcloud config set app/promote_by_default false""")
+      help='Promote the deployed version to receive all traffic.')
   staging_group = parser.add_mutually_exclusive_group()
   staging_group.add_argument(
       '--skip-staging',
@@ -719,7 +714,7 @@ def _PossiblyCreateApp(api_client, project):
   """
   try:
     return api_client.GetApplication()
-  except api_lib_exceptions.NotFoundError:
+  except apitools_exceptions.HttpNotFoundError:
     # Invariant: GCP Project does exist but (singleton) GAE app is not yet
     # created.
     #
@@ -735,14 +730,12 @@ def _PossiblyCreateApp(api_client, project):
       # App resource must be fetched again
       return api_client.GetApplication()
     raise exceptions.MissingApplicationError(project)
-  except core_api_exceptions.HttpException as e:
-    if e.payload.status_code == 403:
-      raise core_api_exceptions.HttpException(
-          ('Permissions error fetching application [{}]. Please '
-           'make sure you are using the correct project ID and that '
-           'you have permission to view applications on the project.'.format(
-               api_client._FormatApp())))  # pylint: disable=protected-access
-    raise
+  except apitools_exceptions.HttpForbiddenError:
+    raise core_api_exceptions.HttpException(
+        ('Permissions error fetching application [{}]. Please '
+         'make sure you are using the correct project ID and that '
+         'you have permission to view applications on the project.'.format(
+             api_client._FormatApp())))  # pylint: disable=protected-access
 
 
 def _PossiblyRepairApp(api_client, app):

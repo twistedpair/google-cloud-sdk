@@ -16,12 +16,17 @@
 from googlecloudsdk.api_lib.tasks import tasks as tasks_api
 from googlecloudsdk.command_lib.tasks import app
 from googlecloudsdk.command_lib.tasks import constants
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files
 
 
 _PROJECT = properties.VALUES.core.project.GetOrFail
+
+
+class NoFieldsSpecifiedError(exceptions.Error):
+  """Error for when calling an update method with no fields specified."""
 
 
 def ParseLocation(location):
@@ -73,13 +78,13 @@ def ExtractLocationRefFromQueueRef(queue_ref):
   return location_ref
 
 
-def ParseCreateOrUpdateQueueArgs(args, queue_type, messages):
+def ParseCreateOrUpdateQueueArgs(args, queue_type, messages, is_update=False):
   return messages.Queue(
-      retryConfig=_ParseRetryConfigArgs(args, queue_type, messages),
-      throttleConfig=_ParseThrottleConfigArgs(args, queue_type, messages),
-      pullTarget=_ParsePullTargetArgs(args, queue_type, messages),
+      retryConfig=_ParseRetryConfigArgs(args, queue_type, messages, is_update),
+      rateLimits=_ParseRateLimitsArgs(args, queue_type, messages, is_update),
+      pullTarget=_ParsePullTargetArgs(args, queue_type, messages, is_update),
       appEngineHttpTarget=_ParseAppEngineHttpTargetArgs(args, queue_type,
-                                                        messages))
+                                                        messages, is_update))
 
 
 def ParseCreateTaskArgs(args, task_type, messages):
@@ -90,58 +95,87 @@ def ParseCreateTaskArgs(args, task_type, messages):
                                                           messages))
 
 
-def _AnyArgsSpecified(specified_args_object, args_list):
-  return any(filter(specified_args_object.IsSpecified, args_list))
+def CheckUpdateArgsSpecified(args, queue_type):
+  if queue_type == constants.PULL_QUEUE:
+    if not _AnyArgsSpecified(args, ['max_attempts', 'max_retry_duration'],
+                             clear_args=True):
+      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+  if queue_type == constants.APP_ENGINE_QUEUE:
+    if not _AnyArgsSpecified(args, [
+        'max_attempts', 'max_retry_duration', 'max_doublings', 'min_backoff',
+        'max_backoff', 'max_tasks_dispatched_per_second',
+        'max_concurrent_tasks', 'routing_override'], clear_args=True):
+      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
 
 
-def _ParseRetryConfigArgs(args, queue_type, messages):
+def _AnyArgsSpecified(specified_args_object, args_list, clear_args=False):
+  clear_args_list = []
+  if clear_args:
+    clear_args_list = [_EquivalentClearArg(a) for a in args_list]
+  return any(
+      filter(specified_args_object.IsSpecified, args_list + clear_args_list))
+
+
+def _EquivalentClearArg(arg):
+  return 'clear_{}'.format(arg)
+
+
+def _ParseRetryConfigArgs(args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.retryConfig."""
   if (queue_type == constants.PULL_QUEUE and
-      _AnyArgsSpecified(args, ['max_attempts', 'task_age_limit'])):
-    retry_config = messages.RetryConfig(taskAgeLimit=args.task_age_limit)
+      _AnyArgsSpecified(args, ['max_attempts', 'max_retry_duration'],
+                        clear_args=is_update)):
+    retry_config = messages.RetryConfig(
+        maxRetryDuration=args.max_retry_duration)
     _AddMaxAttemptsFieldsFromArgs(args, retry_config)
     return retry_config
 
   if (queue_type == constants.APP_ENGINE_QUEUE and
-      _AnyArgsSpecified(args, ['task_age_limit', 'max_doublings',
-                               'min_backoff', 'max_backoff'])):
-    retry_config = messages.RetryConfig(taskAgeLimit=args.task_age_limit,
-                                        maxDoublings=args.max_doublings,
-                                        minBackoff=args.min_backoff,
-                                        maxBackoff=args.max_backoff)
+      _AnyArgsSpecified(args, ['max_attempts', 'max_retry_duration',
+                               'max_doublings', 'min_backoff', 'max_backoff'],
+                        clear_args=is_update)):
+    retry_config = messages.RetryConfig(
+        maxRetryDuration=args.max_retry_duration,
+        maxDoublings=args.max_doublings, minBackoff=args.min_backoff,
+        maxBackoff=args.max_backoff)
     _AddMaxAttemptsFieldsFromArgs(args, retry_config)
     return retry_config
 
 
 def _AddMaxAttemptsFieldsFromArgs(args, config_object):
-  # args.max_attempts is a BoundedInt and so None means unlimited
-  if args.IsSpecified('max_attempts') and args.max_attempts is None:
-    config_object.unlimitedAttempts = True
-  else:
-    config_object.maxAttempts = args.max_attempts
+  if args.IsSpecified('max_attempts'):
+    # args.max_attempts is a BoundedInt and so None means unlimited
+    if args.max_attempts is None:
+      config_object.unlimitedAttempts = True
+    else:
+      config_object.maxAttempts = args.max_attempts
 
 
-def _ParseThrottleConfigArgs(args, queue_type, messages):
-  """Parses the attributes of 'args' for Queue.throttleConfig."""
+def _ParseRateLimitsArgs(args, queue_type, messages, is_update):
+  """Parses the attributes of 'args' for Queue.rateLimits."""
   if (queue_type == constants.APP_ENGINE_QUEUE and
       _AnyArgsSpecified(args, ['max_tasks_dispatched_per_second',
-                               'max_outstanding_tasks'])):
-    return messages.ThrottleConfig(
+                               'max_concurrent_tasks'],
+                        clear_args=is_update)):
+    return messages.RateLimits(
         maxTasksDispatchedPerSecond=args.max_tasks_dispatched_per_second,
-        maxOutstandingTasks=args.max_outstanding_tasks)
+        maxConcurrentTasks=args.max_concurrent_tasks)
 
 
-def _ParsePullTargetArgs(unused_args, queue_type, messages):
+def _ParsePullTargetArgs(unused_args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.pullTarget."""
-  if queue_type == constants.PULL_QUEUE:
+  if queue_type == constants.PULL_QUEUE and not is_update:
     return messages.PullTarget()
 
 
-def _ParseAppEngineHttpTargetArgs(args, queue_type, messages):
+def _ParseAppEngineHttpTargetArgs(args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.appEngineHttpTarget."""
   if queue_type == constants.APP_ENGINE_QUEUE:
-    routing_override = (messages.AppEngineRouting(**args.routing_override)
-                        if args.routing_override else None)
+    routing_override = None
+    if args.IsSpecified('routing_override'):
+      routing_override = messages.AppEngineRouting(**args.routing_override)
+    elif is_update and args.IsSpecified('clear_routing_override'):
+      routing_override = messages.AppEngineRouting()
     return messages.AppEngineHttpTarget(
         appEngineRoutingOverride=routing_override)
 
@@ -186,6 +220,13 @@ def _SplitHeaderArgValue(header_arg_value):
 
 def FormatLeaseDuration(lease_duration):
   return '{}s'.format(lease_duration)
+
+
+def ParseTasksPullFilterFlags(args):
+  if args.oldest_tag:
+    return 'tag_function=oldest_tag()'
+  if args.IsSpecified('tag'):
+    return 'tag="{}"'.format(args.tag)
 
 
 def QueuesUriFunc(queue):

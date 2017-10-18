@@ -9440,6 +9440,32 @@ If the group is part of a backend service that has enabled connection draining, 
       self._upload_configs = {
           }
 
+    def AddRule(self, request, global_params=None):
+      """Inserts a rule into a security policy.
+
+      Args:
+        request: (ComputeSecurityPoliciesAddRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.securityPolicies.addRule',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/addRule',
+        request_field=u'securityPolicyRule',
+        request_type_name=u'ComputeSecurityPoliciesAddRuleRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the specified policy.
 
@@ -9489,6 +9515,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeSecurityPoliciesGetRequest',
         response_type_name=u'SecurityPolicy',
+        supports_download=False,
+    )
+
+    def GetRule(self, request, global_params=None):
+      """Gets a rule at the specified priority.
+
+      Args:
+        request: (ComputeSecurityPoliciesGetRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicyRule) The response message.
+      """
+      config = self.GetMethodConfig('GetRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.securityPolicies.getRule',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[u'priority'],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/getRule',
+        request_field='',
+        request_type_name=u'ComputeSecurityPoliciesGetRuleRequest',
+        response_type_name=u'SecurityPolicyRule',
         supports_download=False,
     )
 
@@ -9566,6 +9618,58 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}',
         request_field=u'securityPolicyResource',
         request_type_name=u'ComputeSecurityPoliciesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def PatchRule(self, request, global_params=None):
+      """Patches a rule at the specified priority.
+
+      Args:
+        request: (ComputeSecurityPoliciesPatchRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.securityPolicies.patchRule',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[u'priority'],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/patchRule',
+        request_field=u'securityPolicyRule',
+        request_type_name=u'ComputeSecurityPoliciesPatchRuleRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def RemoveRule(self, request, global_params=None):
+      """Deletes a rule at the specified priority.
+
+      Args:
+        request: (ComputeSecurityPoliciesRemoveRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.securityPolicies.removeRule',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[u'priority'],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/removeRule',
+        request_field='',
+        request_type_name=u'ComputeSecurityPoliciesRemoveRuleRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

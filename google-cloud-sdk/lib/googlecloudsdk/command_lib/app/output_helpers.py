@@ -16,6 +16,7 @@
 
 from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.api_lib.app import yaml_parsing
+from googlecloudsdk.api_lib.service_management import enable_api
 from googlecloudsdk.core import log
 
 
@@ -52,6 +53,12 @@ PROMOTE_MESSAGE_TEMPLATE = u"""\
 RUNTIME_MISMATCH_MSG = (u"You've generated a Dockerfile that may be customized "
                         u'for your application.  To use this Dockerfile, '
                         u'the runtime field in [{0}] must be set to custom.')
+
+QUEUE_TASKS_WARNING = u"""\
+Caution: You are updating queue configuration. This will override any changes
+performed using 'gcloud tasks'. More details at
+https://cloud.google.com/cloud-tasks/docs/queue-yaml
+"""
 
 
 def DisplayProposedDeployment(app, project, services, configs, version,
@@ -113,3 +120,7 @@ def DisplayProposedConfigDeployments(project, configs):
   for c in configs:
     log.status.Print(DEPLOY_CONFIG_MESSAGE_TEMPLATE.format(
         project=project, type=CONFIG_TYPES[c.config], descriptor=c.file))
+
+    if (c.name == yaml_parsing.ConfigYamlInfo.QUEUE and
+        enable_api.IsServiceEnabled(project, 'cloudtasks.googleapis.com')):
+      log.warn(QUEUE_TASKS_WARNING)

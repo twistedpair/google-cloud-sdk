@@ -203,31 +203,6 @@ class AuthorizationConfig(_messages.Message):
   provider = _messages.StringField(1)
 
 
-class AuthorizationRule(_messages.Message):
-  """Authorization rule for API services.  It specifies the permission(s)
-  required for an API element for the overall API request to succeed. It is
-  typically used to mark request message fields that contain the name of the
-  resource and indicates the permissions that will be checked on that
-  resource.  For example:      package google.storage.v1;      message
-  CopyObjectRequest {       string source = 1 [
-  (google.api.authz).permissions = "storage.objects.get"];        string
-  destination = 2 [         (google.api.authz).permissions =
-  "storage.objects.create,storage.objects.update"];     }
-
-  Fields:
-    permissions: The required permissions. The acceptable values vary depend
-      on the authorization system used. For Google APIs, it should be a comma-
-      separated Google IAM permission values. When multiple permissions are
-      listed, the semantics is not defined by the system. Additional
-      documentation must be provided manually.
-    selector: Selects the API elements to which this rule applies.  Refer to
-      selector for syntax details.
-  """
-
-  permissions = _messages.StringField(1)
-  selector = _messages.StringField(2)
-
-
 class Backend(_messages.Message):
   """`Backend` defines the backend configuration for a service.
 
@@ -257,6 +232,43 @@ class BackendRule(_messages.Message):
   deadline = _messages.FloatField(2)
   minDeadline = _messages.FloatField(3)
   selector = _messages.StringField(4)
+
+
+class Billing(_messages.Message):
+  """Billing related configuration of the service.  The following example
+  shows how to configure monitored resources and metrics for billing:
+  monitored_resources:     - type: library.googleapis.com/branch       labels:
+  - key: /city         description: The city where the library branch is
+  located in.       - key: /name         description: The name of the branch.
+  metrics:     - name: library.googleapis.com/book/borrowed_count
+  metric_kind: DELTA       value_type: INT64     billing:
+  consumer_destinations:       - monitored_resource:
+  library.googleapis.com/branch         metrics:         -
+  library.googleapis.com/book/borrowed_count
+
+  Fields:
+    consumerDestinations: Billing configurations for sending metrics to the
+      consumer project. There can be multiple consumer destinations per
+      service, each one must have a different monitored resource type. A
+      metric can be used in at most one consumer destination.
+  """
+
+  consumerDestinations = _messages.MessageField('BillingDestination', 1, repeated=True)
+
+
+class BillingDestination(_messages.Message):
+  """Configuration of a specific billing destination (Currently only support
+  bill against consumer project).
+
+  Fields:
+    metrics: Names of the metrics to report to this billing destination. Each
+      name must be defined in Service.metrics section.
+    monitoredResource: The monitored resource type. The type must be defined
+      in Service.monitored_resources section.
+  """
+
+  metrics = _messages.StringField(1, repeated=True)
+  monitoredResource = _messages.StringField(2)
 
 
 class Context(_messages.Message):
@@ -774,10 +786,6 @@ class HttpRule(_messages.Message):
     additionalBindings: Additional HTTP bindings for the selector. Nested
       bindings must not contain an `additional_bindings` field themselves
       (that is, the nesting may only be one level deep).
-    authorizations: Specifies the permission(s) required for an API element
-      for the overall API request to succeed. It is typically used to mark
-      request message fields that contain the name of the resource and
-      indicates the permissions that will be checked on that resource.
     body: The name of the request field whose value is mapped to the HTTP
       body, or `*` for mapping all fields not captured by the path pattern to
       the HTTP body. NOTE: the referred field must not be a repeated field and
@@ -803,46 +811,22 @@ class HttpRule(_messages.Message):
       optional. When not set, the response message will be used as HTTP body
       of response. NOTE: the referred field must be not a repeated field and
       must be present at the top-level of response message type.
-    restCollection: DO NOT USE. This is an experimental field.  Optional. The
-      REST collection name is by default derived from the URL pattern. If
-      specified, this field overrides the default collection name. Example:
-      rpc AddressesAggregatedList(AddressesAggregatedListRequest)
-      returns (AddressesAggregatedListResponse) {       option
-      (google.api.http) = {         get:
-      "/v1/projects/{project_id}/aggregated/addresses"
-      rest_collection: "projects.addresses"       };     }  This method has
-      the automatically derived collection name "projects.aggregated".
-      Because, semantically, this rpc is actually an operation on the
-      "projects.addresses" collection, the `rest_collection` field is
-      configured to override the derived collection name.
-    restMethodName: DO NOT USE. This is an experimental field.  Optional. The
-      rest method name is by default derived from the URL pattern. If
-      specified, this field overrides the default method name. Example:
-      rpc CreateResource(CreateResourceRequest)         returns
-      (CreateResourceResponse) {       option (google.api.http) = {
-      post: "/v1/resources",         body: "resource",
-      rest_method_name: "insert"       };     }  This method has the
-      automatically derived rest method name "create", but for backwards
-      compatibility with apiary, it is specified as insert.
     selector: Selects methods to which this rule applies.  Refer to selector
       for syntax details.
   """
 
   additionalBindings = _messages.MessageField('HttpRule', 1, repeated=True)
-  authorizations = _messages.MessageField('AuthorizationRule', 2, repeated=True)
-  body = _messages.StringField(3)
-  custom = _messages.MessageField('CustomHttpPattern', 4)
-  delete = _messages.StringField(5)
-  get = _messages.StringField(6)
-  mediaDownload = _messages.MessageField('MediaDownload', 7)
-  mediaUpload = _messages.MessageField('MediaUpload', 8)
-  patch = _messages.StringField(9)
-  post = _messages.StringField(10)
-  put = _messages.StringField(11)
-  responseBody = _messages.StringField(12)
-  restCollection = _messages.StringField(13)
-  restMethodName = _messages.StringField(14)
-  selector = _messages.StringField(15)
+  body = _messages.StringField(2)
+  custom = _messages.MessageField('CustomHttpPattern', 3)
+  delete = _messages.StringField(4)
+  get = _messages.StringField(5)
+  mediaDownload = _messages.MessageField('MediaDownload', 6)
+  mediaUpload = _messages.MessageField('MediaUpload', 7)
+  patch = _messages.StringField(8)
+  post = _messages.StringField(9)
+  put = _messages.StringField(10)
+  responseBody = _messages.StringField(11)
+  selector = _messages.StringField(12)
 
 
 class LabelDescriptor(_messages.Message):
@@ -1078,7 +1062,8 @@ class MetricDescriptor(_messages.Message):
       documentation.
     displayName: A concise name for the metric, which can be displayed in user
       interfaces. Use sentence case without an ending period, for example
-      "Request count".
+      "Request count". This field is optional but it is recommended to be set
+      for any metrics associated with user-visible concepts, such as Quota.
     labels: The set of labels that can be used to describe a specific instance
       of this metric type. For example, the
       `appengine.googleapis.com/http/server/response_latencies` metric type
@@ -1087,14 +1072,7 @@ class MetricDescriptor(_messages.Message):
     metricKind: Whether the metric records instantaneous values, changes to a
       value, etc. Some combinations of `metric_kind` and `value_type` might
       not be supported.
-    name: The resource name of the metric descriptor. Depending on the
-      implementation, the name typically includes: (1) the parent resource
-      name that defines the scope of the metric type or of its data; and (2)
-      the metric's URL-encoded type, which also appears in the `type` field of
-      this descriptor. For example, following is the resource name of a custom
-      metric within the GCP project `my-project-id`:      "projects/my-
-      project-
-      id/metricDescriptors/custom.googleapis.com%2Finvoice%2Fpaid%2Famount"
+    name: The resource name of the metric descriptor.
     type: The metric type, including its DNS name prefix. The type is not URL-
       encoded.  All user-defined custom metric types have the DNS name
       `custom.googleapis.com`.  Metric types should use a natural hierarchical
@@ -1659,7 +1637,9 @@ class QuotaLimit(_messages.Message):
   limit type combination defined within a `QuotaGroup`.
 
   Messages:
-    ValuesValue: Tiered limit values, currently only STANDARD is supported.
+    ValuesValue: Tiered limit values. You must specify this as a key:value
+      pair, with an integer value that is the maximum number of requests
+      allowed for the specified unit. Currently only STANDARD is supported.
 
   Fields:
     defaultLimit: Default number of tokens that can be consumed during the
@@ -1698,36 +1678,27 @@ class QuotaLimit(_messages.Message):
       group-based quotas only.
     metric: The name of the metric this quota limit applies to. The quota
       limits with the same metric will be checked together during runtime. The
-      metric must be defined within the service config.  Used by metric-based
-      quotas only.
-    name: Name of the quota limit. The name is used to refer to the limit when
-      overriding the default limit on per-consumer basis.  For metric-based
-      quota limits, the name must be provided, and it must be unique within
-      the service. The name can only include alphanumeric characters as well
-      as '-'.  The maximum length of the limit name is 64 characters.  The
-      name of a limit is used as a unique identifier for this limit.
-      Therefore, once a limit has been put into use, its name should be
-      immutable. You can use the display_name field to provide a user-friendly
-      name for the limit. The display name can be evolved over time without
-      affecting the identity of the limit.
+      metric must be defined within the service config.
+    name: Name of the quota limit.  The name must be provided, and it must be
+      unique within the service. The name can only include alphanumeric
+      characters as well as '-'.  The maximum length of the limit name is 64
+      characters.
     unit: Specify the unit of the quota limit. It uses the same syntax as
       Metric.unit. The supported unit kinds are determined by the quota
-      backend system.  The [Google Service Control](https://cloud.google.com
-      /service-control) supports the following unit components: * One of the
-      time intevals:   * "/min"  for quota every minute.   * "/d"  for quota
-      every 24 hours, starting 00:00 US Pacific Time.   * Otherwise the quota
-      won't be reset by time, such as storage limit. * One and only one of the
-      granted containers:   * "/{project}" quota for a project  Here are some
-      examples: * "1/min/{project}" for quota per minute per project.  Note:
-      the order of unit components is insignificant. The "1" at the beginning
-      is required to follow the metric unit syntax.  Used by metric-based
-      quotas only.
-    values: Tiered limit values, currently only STANDARD is supported.
+      backend system.  Here are some examples: * "1/min/{project}" for quota
+      per minute per project.  Note: the order of unit components is
+      insignificant. The "1" at the beginning is required to follow the metric
+      unit syntax.
+    values: Tiered limit values. You must specify this as a key:value pair,
+      with an integer value that is the maximum number of requests allowed for
+      the specified unit. Currently only STANDARD is supported.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ValuesValue(_messages.Message):
-    """Tiered limit values, currently only STANDARD is supported.
+    """Tiered limit values. You must specify this as a key:value pair, with an
+    integer value that is the maximum number of requests allowed for the
+    specified unit. Currently only STANDARD is supported.
 
     Messages:
       AdditionalProperty: An additional property for a ValuesValue object.
@@ -1798,6 +1769,7 @@ class Service(_messages.Message):
       files.
     authentication: Auth configuration.
     backend: API backend configuration.
+    billing: Billing configuration.
     configVersion: The semantic version of the service configuration. The
       config version affects the interpretation of the service configuration.
       For example, certain features are enabled by default for certain config
@@ -1851,31 +1823,32 @@ class Service(_messages.Message):
   apis = _messages.MessageField('Api', 1, repeated=True)
   authentication = _messages.MessageField('Authentication', 2)
   backend = _messages.MessageField('Backend', 3)
-  configVersion = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
-  context = _messages.MessageField('Context', 5)
-  control = _messages.MessageField('Control', 6)
-  customError = _messages.MessageField('CustomError', 7)
-  documentation = _messages.MessageField('Documentation', 8)
-  endpoints = _messages.MessageField('Endpoint', 9, repeated=True)
-  enums = _messages.MessageField('Enum', 10, repeated=True)
-  experimental = _messages.MessageField('Experimental', 11)
-  http = _messages.MessageField('Http', 12)
-  id = _messages.StringField(13)
-  logging = _messages.MessageField('Logging', 14)
-  logs = _messages.MessageField('LogDescriptor', 15, repeated=True)
-  metrics = _messages.MessageField('MetricDescriptor', 16, repeated=True)
-  monitoredResources = _messages.MessageField('MonitoredResourceDescriptor', 17, repeated=True)
-  monitoring = _messages.MessageField('Monitoring', 18)
-  name = _messages.StringField(19)
-  producerProjectId = _messages.StringField(20)
-  quota = _messages.MessageField('Quota', 21)
-  sourceInfo = _messages.MessageField('SourceInfo', 22)
-  systemParameters = _messages.MessageField('SystemParameters', 23)
-  systemTypes = _messages.MessageField('Type', 24, repeated=True)
-  title = _messages.StringField(25)
-  types = _messages.MessageField('Type', 26, repeated=True)
-  usage = _messages.MessageField('Usage', 27)
-  visibility = _messages.MessageField('Visibility', 28)
+  billing = _messages.MessageField('Billing', 4)
+  configVersion = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
+  context = _messages.MessageField('Context', 6)
+  control = _messages.MessageField('Control', 7)
+  customError = _messages.MessageField('CustomError', 8)
+  documentation = _messages.MessageField('Documentation', 9)
+  endpoints = _messages.MessageField('Endpoint', 10, repeated=True)
+  enums = _messages.MessageField('Enum', 11, repeated=True)
+  experimental = _messages.MessageField('Experimental', 12)
+  http = _messages.MessageField('Http', 13)
+  id = _messages.StringField(14)
+  logging = _messages.MessageField('Logging', 15)
+  logs = _messages.MessageField('LogDescriptor', 16, repeated=True)
+  metrics = _messages.MessageField('MetricDescriptor', 17, repeated=True)
+  monitoredResources = _messages.MessageField('MonitoredResourceDescriptor', 18, repeated=True)
+  monitoring = _messages.MessageField('Monitoring', 19)
+  name = _messages.StringField(20)
+  producerProjectId = _messages.StringField(21)
+  quota = _messages.MessageField('Quota', 22)
+  sourceInfo = _messages.MessageField('SourceInfo', 23)
+  systemParameters = _messages.MessageField('SystemParameters', 24)
+  systemTypes = _messages.MessageField('Type', 25, repeated=True)
+  title = _messages.StringField(26)
+  types = _messages.MessageField('Type', 27, repeated=True)
+  usage = _messages.MessageField('Usage', 28)
+  visibility = _messages.MessageField('Visibility', 29)
 
 
 class ServiceuserProjectsServicesDisableRequest(_messages.Message):
@@ -2314,6 +2287,8 @@ class UsageRule(_messages.Message):
       indicate all methods in all APIs.  Refer to selector for syntax details.
     skipServiceControl: True, if the method should skip service control. If
       so, no control plane feature (like quota and billing) will be enabled.
+      This flag is used by ESP to allow some Endpoints customers to bypass
+      Google internal checks.
   """
 
   allowUnregisteredCalls = _messages.BooleanField(1)

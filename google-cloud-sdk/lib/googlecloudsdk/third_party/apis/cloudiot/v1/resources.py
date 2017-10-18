@@ -22,11 +22,17 @@ BASE_URL = 'https://cloudiot.googleapis.com/v1/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId']
+  )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      ['projectsId', 'locationsId']
+      [u'projectsId', u'locationsId']
   )
   PROJECTS_LOCATIONS_REGISTRIES = (
       'projects.locations.registries',
@@ -51,9 +57,16 @@ class Collections(enum.Enum):
   PROJECTS_LOCATIONS_REGISTRIES_DEVICES_CONFIGVERSIONS = (
       'projects.locations.registries.devices.configVersions',
       'projects/{projectsId}/locations/{locationsId}/registries/'
-      '{registriesId}/devices/{devicesId}/configVersions',
+      '{registriesId}/devices/{devicesId}/configVersions/{configVersion}',
       {},
-      ['projectsId', 'locationsId', 'registriesId', 'devicesId']
+      ['projectsId', 'locationsId', 'registriesId', 'devicesId', 'configVersion']
+  )
+  PROJECTS_LOCATIONS_REGISTRIES_DEVICES_STATES = (
+      'projects.locations.registries.devices.states',
+      'projects/{projectsId}/locations/{locationsId}/registries/'
+      '{registriesId}/devices/{devicesId}/states/{statesId}',
+      {},
+      ['projectsId', 'locationsId', 'registriesId', 'devicesId', 'statesId']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

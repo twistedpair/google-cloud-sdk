@@ -170,6 +170,18 @@ def AddAndroidTestArgs(parser):
       '* "package package_name"\n'
       '* "class package_name.class_name"\n'
       '* "class package_name.class_name#method_name".')
+  parser.add_argument(
+      '--use-orchestrator',
+      category=ANDROID_INSTRUMENTATION_TEST,
+      action='store_true',
+      default=None,
+      help='Whether each test runs in its own Instrumentation instance with '
+      'the Android Test Orchestrator (default: Orchestrator is not used, same '
+      'as specifying --no-use-orchestrator). Orchestrator is only compatible '
+      'with AndroidJUnitRunner v1.0 or higher. See '
+      'https://developer.android.com/training/testing/junit-runner.html'
+      '#using-android-test-orchestrator for more information about Android '
+      'Test Orchestrator.')
 
   # The following args are specific to Android Robo tests.
 
@@ -281,19 +293,6 @@ def AddBetaArgs(parser):
       'see available profiles listed by the `$ gcloud beta firebase test '
       'network-profiles list` command). This feature only works on physical '
       'devices.')
-
-  parser.add_argument(
-      '--use-orchestrator',
-      category=ANDROID_INSTRUMENTATION_TEST,
-      action='store_true',
-      default=None,
-      help='Whether each test runs in its own Instrumentation instance with '
-      'the Android Test Orchestrator (default: Orchestrator is not used, same '
-      'as specifying --no-use-orchestrator). Orchestrator is only compatible '
-      'with AndroidJUnitRunner v1.0 or higher. See '
-      'https://developer.android.com/training/testing/junit-runner.html'
-      '#using-android-test-orchestrator for more information about Android '
-      'Test Orchestrator.')
 
 
 def AddMatrixArgs(parser):

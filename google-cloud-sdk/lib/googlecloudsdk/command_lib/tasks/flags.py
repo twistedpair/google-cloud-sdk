@@ -45,14 +45,39 @@ def AddIdArg(parser, noun, verb, metavar=None):
   argument.AddToParser(parser)
 
 
-def AddPullQueueFlags(parser):
+def AddCreatePullQueueFlags(parser):
   for flag in _PullQueueFlags():
     flag.AddToParser(parser)
 
 
-def AddAppEngineQueueFlags(parser):
+def AddCreateAppEngineQueueFlags(parser):
   for flag in _AppEngineQueueFlags():
     flag.AddToParser(parser)
+
+
+def AddUpdatePullQueueFlags(parser):
+  for flag in _PullQueueFlags():
+    _AddFlagAndItsClearEquivalent(flag, parser)
+
+
+def AddUpdateAppEngineQueueFlags(parser):
+  for flag in _AppEngineQueueFlags():
+    _AddFlagAndItsClearEquivalent(flag, parser)
+
+
+def _AddFlagAndItsClearEquivalent(flag, parser):
+  update_group = base.MutuxArgumentGroup()
+  update_group.AddArgument(flag)
+  update_group.AddArgument(_EquivalentClearFlag(flag))
+  update_group.AddToParser(parser)
+
+
+def _EquivalentClearFlag(flag):
+  name = flag.name.replace('--', '--clear-')
+  clear_flag = base.Argument(
+      name, action='store_true', help="""\
+      Clear the field corresponding to `{}`.""".format(flag.name))
+  return clear_flag
 
 
 def AddTaskLeaseScheduleTimeFlag(parser, verb):
@@ -70,6 +95,28 @@ def AddTaskLeaseDurationFlag(parser, helptext=None):
                 'starting from now. The maximum lease duration is 1 week.')
   base.Argument('--lease-duration', required=True, type=int,
                 help=helptext).AddToParser(parser)
+
+
+def AddMaxTasksToPullFlag(parser):
+  # Default help for base.LIMIT_FLAG is inaccurate and confusing in this case
+  base.Argument(
+      '--limit', type=int, default=1000, category=base.LIST_COMMAND_FLAGS,
+      help="""\
+      The maximum number of tasks to lease. The maximum that can be requested is
+      1000.
+      """).AddToParser(parser)
+
+
+def AddFilterPulledTasksFlag(parser):
+  tag_filter_group = parser.add_mutually_exclusive_group()
+  tag_filter_group.add_argument('--tag', help="""\
+      A tag to filter each task to be pulled. If a task has the tag and the
+      task is available to be pulled, then it is listed and leased.
+      """)
+  tag_filter_group.add_argument('--oldest-tag', action='store_true', help="""\
+      Only pull tasks which have the same tag as the task with the oldest
+      schedule time.
+      """)
 
 
 def AddCreatePullTaskFlags(parser):
@@ -97,12 +144,14 @@ def _PullQueueFlags():
           The maximum number of attempts per task in the queue.
           """),
       base.Argument(
-          '--task-age-limit',
+          '--max-retry-duration',
           help="""\
           The time limit for retrying a failed task, measured from when the task
-          was first run. If specified with `--max-attempts`, the task will be
-          retried until both limits are reached. Must be a string that ends in
-          's', such as "5s".
+          was first run. Once the `--max-retry-duration` time has passed and the
+          task has been attempted --max-attempts times, no further attempts will
+          be made and the task will be deleted.
+
+          Must be a string that ends in 's', such as "5s".
           """),
   ]
 
@@ -119,10 +168,10 @@ def _AppEngineQueueFlags():
           otherwise it is `max-tasks-dispatched-per-second` / 5.
           """),
       base.Argument(
-          '--max-outstanding-tasks',
+          '--max-concurrent-tasks',
           type=int,
           help="""\
-          The maximum number of outstanding tasks that Cloud Tasks allows to
+          The maximum number of concurrent tasks that Cloud Tasks allows to
           be dispatched for this queue. After this threshold has been reached,
           Cloud Tasks stops dispatching tasks until the number of outstanding
           requests decreases.

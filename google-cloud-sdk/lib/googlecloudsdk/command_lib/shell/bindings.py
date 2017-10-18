@@ -47,6 +47,8 @@ class _KeyBinding(object):
 
   def GetLabel(self):
     """Returns the key binding display label containing the name and value."""
+    if self.label is None and self.status is None:
+      return None
     label = [self.GetName(), ':']
     if self.label:
       label.append(self.label)
@@ -110,6 +112,30 @@ class _QuitKeyBinding(_KeyBinding):
     sys.exit(1)
 
 
+class _InterruptKeyBinding(_KeyBinding):
+  """The interrupt (^C) key binding.
+
+  Catches control-C and clears the prompt input buffer.
+  """
+
+  def __init__(self, key):
+    super(_InterruptKeyBinding, self).__init__(key=key)
+
+  def Handle(self, event):
+    event.cli.current_buffer.reset()
+
+
+class _StopKeyBinding(_KeyBinding):
+  """The stop (^Z) key binding.
+
+  This binding's sole purpose is to ignore ^Z and prevent it from echoing
+  in the prompt window.
+  """
+
+  def __init__(self, key):
+    super(_StopKeyBinding, self).__init__(key=key)
+
+
 class KeyBindings(object):
   """All key bindings.
 
@@ -129,15 +155,21 @@ class KeyBindings(object):
 
     # The actual key bindings. Changing keys.Keys.* here automatically
     # propagates to the bottom toolbar labels.
-    self.help_key = _HelpKeyBinding(keys.Keys.ControlT, toggle=help_mode)
+    self.help_key = _HelpKeyBinding(keys.Keys.F2, toggle=help_mode)
     self.edit_key = _EditKeyBinding(keys.Keys.F3, toggle=edit_mode)
     self.browse_key = _BrowseKeyBinding(keys.Keys.F8)
-    self.quit_key = _QuitKeyBinding(keys.Keys.ControlQ)
+    self.quit_key = _QuitKeyBinding(keys.Keys.F9)
+    self.interrupt_signal = _InterruptKeyBinding(keys.Keys.ControlC)
+    self.stop_signal = _StopKeyBinding(keys.Keys.ControlZ)
 
     # This is the order of binding label appearance in the bottom toolbar.
     self.bindings = [
-        self.quit_key,
         self.help_key,
+        self.edit_key,
+        self.browse_key,
+        self.quit_key,
+        self.interrupt_signal,
+        self.stop_signal,
     ]
 
   def MakeRegistry(self):

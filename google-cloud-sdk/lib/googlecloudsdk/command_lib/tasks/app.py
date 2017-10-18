@@ -13,8 +13,8 @@
 # limitations under the License.
 """Utilities for App Engine apps for `gcloud tasks` commands."""
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.app import appengine_api_client as app_engine_api
-from googlecloudsdk.api_lib.app import exceptions as app_api_exceptions
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.command_lib.app import create_util
 from googlecloudsdk.command_lib.tasks import constants
@@ -60,7 +60,7 @@ def ResolveAppLocation():
 def _GetApp(app_engine_api_client):
   try:
     return app_engine_api_client.GetApplication()
-  except app_api_exceptions.NotFoundError:
+  except apitools_exceptions.HttpNotFoundError:
     return None
 
 

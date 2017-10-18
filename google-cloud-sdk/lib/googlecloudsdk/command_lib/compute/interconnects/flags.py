@@ -13,17 +13,36 @@
 # limitations under the License.
 """Flags and helpers for the compute interconnects commands."""
 
+from googlecloudsdk.calliope import actions as calliope_actions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
-_INTERCONNECT_TYPE_CHOICES = {
-    'IT_PRIVATE': 'Dedicated private interconnect.',
+_INTERCONNECT_TYPE_CHOICES_GA = {
+    'DEDICATED': 'Dedicated private interconnect.',
+}
+
+_INTERCONNECT_TYPE_CHOICES_BETA = {
+    'IT_PRIVATE':
+        'Dedicated private interconnect. (Warning: IT_PRIVATE is deprecated, '
+        'use DEDICATED instead.)',
+    'DEDICATED':
+        'Dedicated private interconnect.',
 }
 
 _INTERCONNECT_TYPE_CHOICES_ALPHA = {
-    'IT_PRIVATE': 'Dedicated private interconnect.',
-    'PARTNER': 'Partner interconnect. Only available to approved partners.',
+    'IT_PRIVATE':
+        'Dedicated private interconnect. (Warning: IT_PRIVATE is deprecated, '
+        'use DEDICATED instead.)',
+    'DEDICATED':
+        'Dedicated private interconnect.',
+    'PARTNER':
+        'Partner interconnect. Only available to approved partners.',
+}
+
+_LINK_TYPE_CHOICES = {
+    'LINK_TYPE_ETHERNET_10G_LR':
+        '10Gbps Ethernet, LR Optics.'
 }
 
 
@@ -101,10 +120,16 @@ def AddCreateCommonArgs(parser):
   AddRequestedLinkCount(parser)
 
 
+def AddCreateGaArgs(parser):
+  """Adds GA flags for create command to the argparse.ArgumentParser."""
+  AddCreateCommonArgs(parser)
+  AddInterconnectTypeGA(parser)
+
+
 def AddCreateBetaArgs(parser):
   """Adds beta flags for create command to the argparse.ArgumentParser."""
   AddCreateCommonArgs(parser)
-  AddInterconnectType(parser)
+  AddInterconnectTypeBeta(parser)
 
 
 def AddCreateAlphaArgs(parser):
@@ -120,11 +145,35 @@ def AddDescription(parser):
       help='An optional, textual description for the interconnect.')
 
 
-def AddInterconnectType(parser):
+def AddInterconnectTypeGA(parser):
   """Adds interconnect-type flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--interconnect-type',
-      choices=_INTERCONNECT_TYPE_CHOICES,
+      choices=_INTERCONNECT_TYPE_CHOICES_GA,
+      required=True,
+      help="""\
+      Type of the interconnect.
+      """)
+
+
+def _ShouldShowDeprecatedWarning(value):
+  return value and value.upper() == 'IT_PRIVATE'
+
+
+def AddInterconnectTypeBeta(parser):
+  """Adds interconnect-type flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--interconnect-type',
+      choices=_INTERCONNECT_TYPE_CHOICES_BETA,
+      action=calliope_actions.DeprecationAction(
+          'interconnect-type',
+          removed=False,
+          show_message=_ShouldShowDeprecatedWarning,
+          warn=('IT_PRIVATE will be deprecated '
+                'for {flag_name}. '
+                'Please use DEDICATED instead.'),
+          error='Value IT_PRIVATE for {flag_name} has been removed. '
+                'Please use DEDICATED instead.'),
       required=True,
       help="""\
       Type of the interconnect.
@@ -136,6 +185,15 @@ def AddInterconnectTypeAlpha(parser):
   parser.add_argument(
       '--interconnect-type',
       choices=_INTERCONNECT_TYPE_CHOICES_ALPHA,
+      action=calliope_actions.DeprecationAction(
+          'interconnect-type',
+          removed=False,
+          show_message=_ShouldShowDeprecatedWarning,
+          warn=('IT_PRIVATE will be deprecated '
+                'for {flag_name}. '
+                'Please use DEDICATED instead.'),
+          error='Value IT_PRIVATE for {flag_name} has been removed. '
+                'Please use DEDICATED instead.'),
       required=True,
       help="""\
       Type of the interconnect.
@@ -146,7 +204,7 @@ def AddLinkType(parser):
   """Adds link-type flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--link-type',
-      choices=['LINK_TYPE_ETHERNET_10G_LR'],
+      choices=_LINK_TYPE_CHOICES,
       required=True,
       help="""\
       Type of the link for the interconnect.
@@ -205,6 +263,21 @@ def AddAdminEnabled(parser):
       help="""\
       Administrative status of the interconnect. If not provided on creation,
       defaults to enabled.
+      When this is enabled, the interconnect is operational and will carry
+      traffic across any functioning linked interconnect attachments. Use
+      --no-admin-enabled to disable it.
+      """)
+
+
+def AddAdminEnabledForPatch(parser):
+  """Adds adminEnabled flag to the argparse.ArgumentParser."""
+  admin_enabled_args = parser.add_mutually_exclusive_group()
+  admin_enabled_args.add_argument(
+      '--admin-enabled',
+      action='store_true',
+      default=None,
+      help="""\
+      Administrative status of the interconnect.
       When this is enabled, the interconnect is operational and will carry
       traffic across any functioning linked interconnect attachments. Use
       --no-admin-enabled to disable it.

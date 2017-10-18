@@ -17,10 +17,6 @@
 
 import io
 
-from apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.api_lib.app import exceptions as api_lib_exceptions
-from googlecloudsdk.api_lib.util import exceptions as http_exception
-from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_printer
 
 
@@ -52,15 +48,3 @@ def ExtractErrorMessage(error_details):
   return error_message.getvalue()
 
 
-def MakeRequest(service_method, request_message):
-  """Makes a request using the given client method and handles HTTP errors."""
-  try:
-    return service_method(request_message)
-  except apitools_exceptions.HttpError as error:
-    log.debug(error)
-    exc = http_exception.HttpException(error)
-    # Make it easier to switch on certain common error codes.
-    err = api_lib_exceptions.STATUS_CODE_TO_ERROR.get(exc.payload.status_code)
-    if err:
-      raise err
-    raise exc

@@ -363,6 +363,12 @@ MAP = {
             messages_modulepath='dns_v1_messages',
             default_version=True
         ),
+        'v1alpha2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.dns.v1alpha2',
+            client_classpath='dns_v1alpha2_client.DnsV1alpha2',
+            messages_modulepath='dns_v1alpha2_messages',
+            default_version=False
+        ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.dns.v1beta1',
             client_classpath='dns_v1beta1_client.DnsV1beta1',
@@ -439,6 +445,12 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.oslogin.v1alpha',
             client_classpath='oslogin_v1alpha_client.OsloginV1alpha',
             messages_modulepath='oslogin_v1alpha_messages',
+            default_version=False
+        ),
+        'v1beta': APIDef(
+            class_path='googlecloudsdk.third_party.apis.oslogin.v1beta',
+            client_classpath='oslogin_v1beta_client.OsloginV1beta',
+            messages_modulepath='oslogin_v1beta_messages',
             default_version=True
         ),
     },

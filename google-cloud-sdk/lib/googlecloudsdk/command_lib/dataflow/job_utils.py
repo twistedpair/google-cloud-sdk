@@ -14,8 +14,12 @@
 """Helpers for writing commands interacting with jobs and their IDs.
 """
 
+from googlecloudsdk.api_lib.dataflow import apis
+
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+
+DATAFLOW_API_DEFAULT_REGION = apis.DATAFLOW_API_DEFAULT_REGION
 
 
 def ArgsForJobRef(parser):
@@ -25,6 +29,10 @@ def ArgsForJobRef(parser):
     parser: The argparse.ArgParser to configure with job-filtering arguments.
   """
   parser.add_argument('job', metavar='JOB_ID', help='The job ID to operate on.')
+  parser.add_argument(
+      '--region',
+      metavar='REGION_ID',
+      help='The region ID of the job\'s regional endpoint.')
 
 
 def ArgsForJobRefs(parser, **kwargs):
@@ -36,31 +44,47 @@ def ArgsForJobRefs(parser, **kwargs):
   """
   parser.add_argument(
       'jobs', metavar='JOB_ID', help='The job IDs to operate on.', **kwargs)
+  parser.add_argument(
+      '--region',
+      metavar='REGION_ID',
+      help='The region ID of the jobs\' regional endpoint.')
 
 
-def ExtractJobRef(job):
+def ExtractJobRef(args):
   """Extract the Job Ref for a command. Used with ArgsForJobRef.
 
   Args:
-    job: The parsed job id that was provided to this invocation.
+    args: The command line arguments.
   Returns:
     A Job resource.
   """
+  job = args.job
+  region = args.region or DATAFLOW_API_DEFAULT_REGION
   return resources.REGISTRY.Parse(
       job,
-      params={'projectId': properties.VALUES.core.project.GetOrFail},
-      collection='dataflow.projects.jobs')
+      params={
+          'projectId': properties.VALUES.core.project.GetOrFail,
+          'location': region
+      },
+      collection='dataflow.projects.locations.jobs')
 
 
-def ExtractJobRefs(jobs):
+def ExtractJobRefs(args):
   """Extract the Job Refs for a command. Used with ArgsForJobRefs.
 
   Args:
-    jobs: The parsed list of job ids that were provided to this invocation.
+    args: The command line arguments that were provided to this invocation.
   Returns:
     A list of job resources.
   """
-  return [resources.REGISTRY.Parse(
-      job,
-      params={'projectId': properties.VALUES.core.project.GetOrFail},
-      collection='dataflow.projects.jobs') for job in jobs]
+  jobs = args.jobs
+  region = args.region or DATAFLOW_API_DEFAULT_REGION
+  return [
+      resources.REGISTRY.Parse(
+          job,
+          params={
+              'projectId': properties.VALUES.core.project.GetOrFail,
+              'location': region
+          },
+          collection='dataflow.projects.locations.jobs') for job in jobs
+  ]

@@ -44,6 +44,10 @@ definitions:
       # The module path to a class that implements remote completion
       # for this argument.
       completer: { type: string }
+      # Set to False on the anchor resource argument to force it to be a flag
+      # even though it would normally be a positional. This should normally not
+      # be required for well formed API methods.
+      is_positional: { type: boolean }
 
   argument:
     required: [ api_field, help_text ]
@@ -137,11 +141,11 @@ properties:
     additionalProperties: false
     required: [ collection ]
     oneOf:
-      - required: [ modify_request_hook ]
+      - required: [ modify_request_hooks ]
       - required: [ create_request_hook ]
       - required: [ issue_request_hook ]
       - allOf:
-        - not: { required: [modify_request_hook]}
+        - not: { required: [modify_request_hooks]}
         - not: { required: [create_request_hook]}
         - not: { required: [issue_request_hook]}
     properties:
@@ -171,7 +175,9 @@ properties:
       # the parsed args namespace, and the created request. It must return
       # an apitools request message that will be passed to the API method
       # defined in this section.
-      modify_request_hook: { $ref: "#/definitions/python_hook" }
+      modify_request_hooks:
+        type: array
+        items: { $ref: "#/definitions/python_hook" }
       # The module path to a function to call to create the API request
       # rather than having it done automatically. This is a function
       # that takes 2 arguments: a resource ref to the parsed resource, and
@@ -191,6 +197,9 @@ properties:
     type: object
     additionalProperties: false
     properties:
+      # The attribute of the API response to return (instead of the entire
+      # response.
+      result_attribute: { $ref: "#/definitions/attribute" }
       # If given, the response will be searched for error information and an
       # exception raised if found. This is useful for batch request methods
       # that return 200 even though something may have failed.
@@ -278,7 +287,7 @@ properties:
       # takes no arguments and returns a list of calliope.base.Action
       # objects that will be added to the parser. These arguments will not
       # be processed automatically so you will need to implement
-      # request.modify_request_hook to insert something into the request based
+      # request.modify_request_hooks to insert something into the request based
       # on these arguments.
       additional_arguments_hook: { $ref: "#/definitions/python_hook" }
       # This section declares how to generate the arguments and flags that

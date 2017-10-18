@@ -54,6 +54,9 @@ class ComputeV1(base_api.BaseApiClient):
     self.instanceGroups = self.InstanceGroupsService(self)
     self.instanceTemplates = self.InstanceTemplatesService(self)
     self.instances = self.InstancesService(self)
+    self.interconnectAttachments = self.InterconnectAttachmentsService(self)
+    self.interconnectLocations = self.InterconnectLocationsService(self)
+    self.interconnects = self.InterconnectsService(self)
     self.licenses = self.LicensesService(self)
     self.machineTypes = self.MachineTypesService(self)
     self.networks = self.NetworksService(self)
@@ -3912,6 +3915,348 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/stop',
         request_field='',
         request_type_name=u'ComputeInstancesStopRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class InterconnectAttachmentsService(base_api.BaseApiService):
+    """Service class for the interconnectAttachments resource."""
+
+    _NAME = u'interconnectAttachments'
+
+    def __init__(self, client):
+      super(ComputeV1.InterconnectAttachmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      """Retrieves an aggregated list of interconnect attachments.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectAttachmentAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnectAttachments.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/interconnectAttachments',
+        request_field='',
+        request_type_name=u'ComputeInterconnectAttachmentsAggregatedListRequest',
+        response_type_name=u'InterconnectAttachmentAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified interconnect attachment.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.interconnectAttachments.delete',
+        ordered_params=[u'project', u'region', u'interconnectAttachment'],
+        path_params=[u'interconnectAttachment', u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{interconnectAttachment}',
+        request_field='',
+        request_type_name=u'ComputeInterconnectAttachmentsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified interconnect attachment.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectAttachment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnectAttachments.get',
+        ordered_params=[u'project', u'region', u'interconnectAttachment'],
+        path_params=[u'interconnectAttachment', u'project', u'region'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{interconnectAttachment}',
+        request_field='',
+        request_type_name=u'ComputeInterconnectAttachmentsGetRequest',
+        response_type_name=u'InterconnectAttachment',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates an InterconnectAttachment in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnectAttachments.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments',
+        request_field=u'interconnectAttachment',
+        request_type_name=u'ComputeInterconnectAttachmentsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of interconnect attachments contained within the specified region.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectAttachmentList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnectAttachments.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments',
+        request_field='',
+        request_type_name=u'ComputeInterconnectAttachmentsListRequest',
+        response_type_name=u'InterconnectAttachmentList',
+        supports_download=False,
+    )
+
+  class InterconnectLocationsService(base_api.BaseApiService):
+    """Service class for the interconnectLocations resource."""
+
+    _NAME = u'interconnectLocations'
+
+    def __init__(self, client):
+      super(ComputeV1.InterconnectLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Returns the details for the specified interconnect location. Get a list of available interconnect locations by making a list() request.
+
+      Args:
+        request: (ComputeInterconnectLocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectLocation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnectLocations.get',
+        ordered_params=[u'project', u'interconnectLocation'],
+        path_params=[u'interconnectLocation', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/interconnectLocations/{interconnectLocation}',
+        request_field='',
+        request_type_name=u'ComputeInterconnectLocationsGetRequest',
+        response_type_name=u'InterconnectLocation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of interconnect locations available to the specified project.
+
+      Args:
+        request: (ComputeInterconnectLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectLocationList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnectLocations.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/interconnectLocations',
+        request_field='',
+        request_type_name=u'ComputeInterconnectLocationsListRequest',
+        response_type_name=u'InterconnectLocationList',
+        supports_download=False,
+    )
+
+  class InterconnectsService(base_api.BaseApiService):
+    """Service class for the interconnects resource."""
+
+    _NAME = u'interconnects'
+
+    def __init__(self, client):
+      super(ComputeV1.InterconnectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified interconnect.
+
+      Args:
+        request: (ComputeInterconnectsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.interconnects.delete',
+        ordered_params=[u'project', u'interconnect'],
+        path_params=[u'interconnect', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/interconnects/{interconnect}',
+        request_field='',
+        request_type_name=u'ComputeInterconnectsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Returns the specified interconnect. Get a list of available interconnects by making a list() request.
+
+      Args:
+        request: (ComputeInterconnectsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Interconnect) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnects.get',
+        ordered_params=[u'project', u'interconnect'],
+        path_params=[u'interconnect', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/interconnects/{interconnect}',
+        request_field='',
+        request_type_name=u'ComputeInterconnectsGetRequest',
+        response_type_name=u'Interconnect',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Creates a Interconnect in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeInterconnectsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnects.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/interconnects',
+        request_field=u'interconnect',
+        request_type_name=u'ComputeInterconnectsInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of interconnect available to the specified project.
+
+      Args:
+        request: (ComputeInterconnectsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnects.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/interconnects',
+        request_field='',
+        request_type_name=u'ComputeInterconnectsListRequest',
+        response_type_name=u'InterconnectList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeInterconnectsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.interconnects.patch',
+        ordered_params=[u'project', u'interconnect'],
+        path_params=[u'interconnect', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/interconnects/{interconnect}',
+        request_field=u'interconnectResource',
+        request_type_name=u'ComputeInterconnectsPatchRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

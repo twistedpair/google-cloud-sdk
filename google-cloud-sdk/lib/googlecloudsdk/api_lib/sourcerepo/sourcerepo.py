@@ -175,10 +175,8 @@ class Source(object):
         name=repo_resource.RelativeName())
     try:
       return self._client.projects_repos.Get(request)
-    except exceptions.HttpError as e:
+    except exceptions.HttpNotFoundError:
       # If the repo does not exist, we get an HTTP 404
-      if e.status_code != 404:
-        raise e
       return None
 
   def CreateRepo(self, repo_resource):

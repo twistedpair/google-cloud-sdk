@@ -60,7 +60,8 @@ class ArgumentCompleter(object):
       parsed_args = self._parsed_args
     with self._progress_tracker():
       with resource_cache.ResourceCache() as cache:
-        if len(parsed_args._GetCommand().ai.positional_completers) > 1:  # pylint: disable=protected-access
+        if parsed_args and len(
+            parsed_args._GetCommand().ai.positional_completers) > 1:  # pylint: disable=protected-access
           qualified_parameter_names = {'collection'}
         else:
           qualified_parameter_names = set()

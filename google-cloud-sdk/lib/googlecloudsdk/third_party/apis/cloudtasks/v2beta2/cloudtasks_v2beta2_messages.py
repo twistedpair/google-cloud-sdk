@@ -59,10 +59,10 @@ class AppEngineHttpRequest(_messages.Message):
     HttpMethodValueValuesEnum: The HTTP method to use for the request. The
       default is POST.  The app's request handler for the task's target URL
       must be able to handle HTTP requests with this http_method, otherwise
-      the task attempt will fail with error code 405 "Method Not Allowed"
-      because "the method specified in the Request-Line is not allowed for the
-      resource identified by the Request-URI". See [Writing a push task
-      request handler](/appengine/docs/java/taskqueue/push/creating-
+      the task attempt will fail with error code 405 (Method Not Allowed). See
+      the Request-Line is not allowed for the resource identified by the
+      Request-URI". See [Writing a push task request
+      handler](/appengine/docs/java/taskqueue/push/creating-
       handlers#writing_a_push_task_request_handler) and the documentation for
       the request handlers in the language your app is written in e.g. [python
       RequestHandler](/appengine/docs/python/tools/webapp/requesthandlerclass)
@@ -124,9 +124,9 @@ class AppEngineHttpRequest(_messages.Message):
     httpMethod: The HTTP method to use for the request. The default is POST.
       The app's request handler for the task's target URL must be able to
       handle HTTP requests with this http_method, otherwise the task attempt
-      will fail with error code 405 "Method Not Allowed" because "the method
-      specified in the Request-Line is not allowed for the resource identified
-      by the Request-URI". See [Writing a push task request
+      will fail with error code 405 (Method Not Allowed). See the Request-Line
+      is not allowed for the resource identified by the Request-URI". See
+      [Writing a push task request
       handler](/appengine/docs/java/taskqueue/push/creating-
       handlers#writing_a_push_task_request_handler) and the documentation for
       the request handlers in the language your app is written in e.g. [python
@@ -137,20 +137,19 @@ class AppEngineHttpRequest(_messages.Message):
       POST or PUT. It is an error to set a data payload on a task with an
       incompatible HttpMethod.
     relativeUrl: The relative URL.  The relative URL must begin with "/" and
-      must be a valid HTTP relative URL. It can contain a path, query string
-      arguments, and `#` fragments. If the relative URL is empty, then the
-      root path "/" will be used. No spaces are allowed, and the maximum
-      length allowed is 2083 characters.
+      must be a valid HTTP relative URL. It can contain a path and query
+      string arguments. If the relative URL is empty, then the root path "/"
+      will be used. No spaces are allowed, and the maximum length allowed is
+      2083 characters.
   """
 
   class HttpMethodValueValuesEnum(_messages.Enum):
     """The HTTP method to use for the request. The default is POST.  The app's
     request handler for the task's target URL must be able to handle HTTP
     requests with this http_method, otherwise the task attempt will fail with
-    error code 405 "Method Not Allowed" because "the method specified in the
-    Request-Line is not allowed for the resource identified by the Request-
-    URI". See [Writing a push task request
-    handler](/appengine/docs/java/taskqueue/push/creating-
+    error code 405 (Method Not Allowed). See the Request-Line is not allowed
+    for the resource identified by the Request-URI". See [Writing a push task
+    request handler](/appengine/docs/java/taskqueue/push/creating-
     handlers#writing_a_push_task_request_handler) and the documentation for
     the request handlers in the language your app is written in e.g. [python
     RequestHandler](/appengine/docs/python/tools/webapp/requesthandlerclass).
@@ -938,20 +937,25 @@ class CreateTaskRequest(_messages.Message):
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID
       `. The user can optionally specify a name for the task in Task.name. If
       a name is not specified then the system will generate a random unique
-      task id, which will be returned in the response's Task.name.  Explicitly
-      specifying a Task.name enables task de-duplication. If a task's name is
-      identical to the name of an existing task or a task that was deleted or
-      completed within the last ~10 days then the call to
-      CloudTasks.CreateTask will fail with google.rpc.Code.ALREADY_EXISTS.
-      Because there is an extra lookup cost to identify duplicate task names,
-      these CloudTasks.CreateTask calls have significantly increased latency.
-      Using hashed strings for the task id or for the prefix of the task id is
+      task id, which will be returned in the response's Task.name.  If
+      Task.schedule_time is not set or is in the past then Cloud Tasks will
+      set it to the current time.  Task De-duplication:  Explicitly specifying
+      a task ID enables task de-duplication.  If a task's ID is identical to
+      that of an existing task or a task that was deleted or completed
+      recently then the call will fail with google.rpc.Code.ALREADY_EXISTS. If
+      the task's queue was created using Cloud Tasks, then another task with
+      the same name can't be created for ~1hour after the original task was
+      deleted or completed. If the task's queue was created using queue.yaml
+      or queue.xml, then another task with the same name can't be created for
+      ~9days after the original task was deleted or completed.  Because there
+      is an extra lookup cost to identify duplicate task names, these
+      CloudTasks.CreateTask calls have significantly increased latency. Using
+      hashed strings for the task id or for the prefix of the task id is
       recommended. Choosing task ids that are sequential or have sequential
       prefixes, for example using a timestamp, causes an increase in latency
       and error rates in all task commands. The infrastructure relies on an
       approximately uniform distribution of task ids to store and serve tasks
-      efficiently.  If Task.schedule_time is not set or is in the past then
-      Cloud Tasks will set it to the current time.
+      efficiently.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
@@ -1207,17 +1211,13 @@ class PullTasksRequest(_messages.Message):
     filter: `filter` can be used to specify a subset of tasks to lease.  When
       `filter` is set to `tag=<my-tag>` then the PullTasksResponse will
       contain only tasks whose PullMessage.tag is equal to `<my-tag>`. `<my-
-      tag>` can be a bytes encoded as a string and must be less than 500
-      bytes. If `<my-tag>` includes whitespace or special characters
-      (characters which aren't letters, numbers, or underscores), then it must
-      be double-quoted. Double quotes and backslashes in quoted strings must
-      be escaped by preceding it with a backslash (`\`).  When `filter` is set
-      to `tag=oldest_tag()`, only tasks which have the same tag as the task
-      with the oldest schedule_time will be returned.  Grammar Syntax:  *
-      `filter = "tag=" comparable`  *  `comparable = tag | function`  * `tag =
-      string | bytes`  * `function = "oldest_tag()"`    The `oldest_tag()`
-      function returns tasks which have the same tag as the oldest task
-      (ordered by schedule time).
+      tag>` must be less than 500 bytes.  When `filter` is set to
+      `tag_function=oldest_tag()`, only tasks which have the same tag as the
+      task with the oldest schedule_time will be returned.  Grammar Syntax:  *
+      `filter = "tag=" tag | "tag_function=" function`  * `tag = string |
+      bytes`  * `function = "oldest_tag()"`  The `oldest_tag()` function
+      returns tasks which have the same tag as the oldest task (ordered by
+      schedule time).
     leaseDuration: The duration of the lease.  Each task returned in the
       PullTasksResponse will have its Task.schedule_time set to the current
       time plus the `lease_duration`. A task that has been returned in a
@@ -1322,6 +1322,15 @@ class Queue(_messages.Message):
       be changed by called CloudTasks.PauseQueue, CloudTasks.ResumeQueue, or
       uploading [queue.yaml](/appengine/docs/python/config/queueref).
       CloudTasks.UpdateQueue cannot be used to change `queue_state`.
+    rateLimits: Rate limits for task dispatches.  Queue.rate_limits and
+      Queue.retry_config are related because they both control task attempts
+      however they control how tasks are attempted in different ways:  *
+      Queue.rate_limits controls the total rate of dispatches from a queue
+      (i.e. all traffic dispatched from the queue, regardless of whether the
+      dispatch is from a first attempt or a retry). * Queue.retry_config
+      controls what happens to particular a task after   its first attempt
+      fails. That is, Queue.retry_config controls task   retries (the second
+      attempt, third attempt, etc).
     retryConfig: Settings that determine the retry behavior.  * For tasks
       created using Cloud Tasks: the queue-level retry settings   apply to all
       tasks in the queue that were created using Cloud Tasks.   Retry settings
@@ -1331,7 +1340,6 @@ class Queue(_messages.Message):
       were created by the App Engine SDK. See   [App Engine
       documentation](/appengine/docs/standard/python/taskqueue/push/retrying-
       tasks).
-    throttleConfig: Config for throttling task dispatches.
   """
 
   class QueueStateValueValuesEnum(_messages.Enum):
@@ -1368,8 +1376,50 @@ class Queue(_messages.Message):
   pullTarget = _messages.MessageField('PullTarget', 5)
   purgeTime = _messages.StringField(6)
   queueState = _messages.EnumField('QueueStateValueValuesEnum', 7)
-  retryConfig = _messages.MessageField('RetryConfig', 8)
-  throttleConfig = _messages.MessageField('ThrottleConfig', 9)
+  rateLimits = _messages.MessageField('RateLimits', 8)
+  retryConfig = _messages.MessageField('RetryConfig', 9)
+
+
+class RateLimits(_messages.Message):
+  """Rate limits.  This message determines the maximum rate that tasks can be
+  dispatched by a queue, regardless of whether the dispatch is a first task
+  attempt or a retry.
+
+  Fields:
+    maxBurstSize: Output only.  The max burst size limits how fast the queue
+      is processed when many tasks are in the queue and the rate is high. This
+      field allows the queue to have a high rate so processing starts shortly
+      after a task is enqueued, but still limits resource usage when many
+      tasks are enqueued in a short period of time.  * For App Engine queues,
+      if   RateLimits.max_tasks_dispatched_per_second is 1, this   field is
+      10; otherwise this field is   RateLimits.max_tasks_dispatched_per_second
+      / 5. * For pull queues, this field is output only and always 10,000.
+      Note: For App Engine queues that were created through `queue.yaml/xml`,
+      `max_burst_size` might not have the same settings as specified above;
+      CloudTasks.UpdateQueue can be used to set `max_burst_size` only to the
+      values specified above.  This field has the same meaning as [bucket_size
+      in queue.yaml](/appengine/docs/standard/python/config/queueref#bucket_si
+      ze).
+    maxConcurrentTasks: The maximum number of concurrent tasks that Cloud
+      Tasks allows to be dispatched for this queue. After this threshold has
+      been reached, Cloud Tasks stops dispatching tasks until the number of
+      concurrent requests decreases.  The maximum allowed value is 5,000.  *
+      For App Engine queues, this field is 10 by default. * For pull queues,
+      this field is output only and always -1, which   indicates no limit.
+      This field has the same meaning as [max_concurrent_requests in queue.yam
+      l](/appengine/docs/standard/python/config/queueref#max_concurrent_reques
+      ts).
+    maxTasksDispatchedPerSecond: The maximum rate at which tasks are
+      dispatched from this queue.  The maximum allowed value is 500.  * For
+      App Engine queues, this field is 1 by default. * For pull queues, this
+      field is output only and always 10,000.  This field has the same meaning
+      as [rate in
+      queue.yaml](/appengine/docs/standard/python/config/queueref#rate).
+  """
+
+  maxBurstSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxConcurrentTasks = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxTasksDispatchedPerSecond = _messages.FloatField(3)
 
 
 class RenewLeaseRequest(_messages.Message):
@@ -1435,12 +1485,8 @@ class ResumeQueueRequest(_messages.Message):
 
 
 class RetryConfig(_messages.Message):
-  """Retry config.  These settings determine retry behavior.  If a task does
-  not complete successfully, meaning that an acknowledgement is not received
-  from the handler before the
-  [deadline](/appengine/docs/python/taskqueue/push/#the_task_deadline), then
-  it will be retried with exponential backoff according to the settings in
-  RetryConfig.
+  """Retry config.  These settings determine how a failed task attempt is
+  retried.
 
   Fields:
     maxAttempts: The maximum number of attempts for a task.  Cloud Tasks will
@@ -1452,35 +1498,50 @@ class RetryConfig(_messages.Message):
       1 hour by default. * For [pull
       queues](google.cloud.tasks.v2beta2.PullTarget), this field   is output
       only and always 0.  `max_backoff` will be truncated to the nearest
-      second.
-    maxDoublings: The maximum number of times that the interval between failed
-      task retries will be doubled before the increase becomes constant. The
-      constant is: 2**(max_doublings - 1) * RetryConfig.min_backoff.  * For
+      second.  This field has the same meaning as [max_backoff_seconds in queu
+      e.yaml](/appengine/docs/standard/python/config/queueref#retry_parameters
+      ).
+    maxDoublings: The time between retries increases exponentially
+      `max_doublings` times. `max_doublings` is maximum number of times that
+      the interval between failed task retries will be doubled before the
+      interval increases linearly. After max_doublings intervals, the retry
+      interval will be 2^(max_doublings - 1) * RetryConfig.min_backoff.  * For
       [App Engine queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),
       this field is 16 by default. * For [pull
       queues](google.cloud.tasks.v2beta2.PullTarget), this field   is output
-      only and always 0.
+      only and always 0.  This field has the same meaning as [max_doublings in
+      queue.yaml](/appengine/docs/standard/python/config/queueref#retry_parame
+      ters).
+    maxRetryDuration: If positive, `max_retry_duration` specifies the time
+      limit for retrying a failed task, measured from when the task was first
+      attempted. Once `max_retry_duration` time has passed *and* the task has
+      been attempted RetryConfig.max_attempts times, no further attempts will
+      be made and the task will be deleted.  If zero, then the task age is
+      unlimited.  * For [App Engine
+      queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),   this field is
+      0 seconds by default. * For [pull
+      queues](google.cloud.tasks.v2beta2.PullTarget), this   field is output
+      only and always 0.  `max_retry_duration` will be truncated to the
+      nearest second.  This field has the same meaning as [task_age_limit in q
+      ueue.yaml](/appengine/docs/standard/python/config/queueref#retry_paramet
+      ers).
     minBackoff: The minimum amount of time to wait before retrying a task
       after it fails.  * For [App Engine
       queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),   this field is
       0.1 seconds by default. * For [pull
       queues](google.cloud.tasks.v2beta2.PullTarget), this   field is output
       only and always 0.  `min_backoff` will be truncated to the nearest
-      second.
-    taskAgeLimit: If positive, task_age_limit specifies the time limit for
-      retrying a failed task, measured from when the task was first run. If
-      specified with RetryConfig.max_attempts, the task will be retried until
-      both limits are reached.  If zero, then the task age is unlimited. This
-      field is zero by default.  `task_age_limit` will be truncated to the
-      nearest second.
+      second.  This field has the same meaning as [min_backoff_seconds in queu
+      e.yaml](/appengine/docs/standard/python/config/queueref#retry_parameters
+      ).
     unlimitedAttempts: If true, then the number of attempts is unlimited.
   """
 
   maxAttempts = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   maxBackoff = _messages.StringField(2)
   maxDoublings = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minBackoff = _messages.StringField(4)
-  taskAgeLimit = _messages.StringField(5)
+  maxRetryDuration = _messages.StringField(4)
+  minBackoff = _messages.StringField(5)
   unlimitedAttempts = _messages.BooleanField(6)
 
 
@@ -1810,47 +1871,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class ThrottleConfig(_messages.Message):
-  """Throttle config.  These settings determine the throttling behavior.
-
-  Fields:
-    maxBurstSize: Output only.  The max burst size limits how fast the queue
-      is processed when many tasks are in the queue and the rate is high. This
-      field allows the queue to have a high rate so processing starts shortly
-      after a task is enqueued, but still limits resource usage when many
-      tasks are enqueued in a short period of time.  * For App Engine queues,
-      if   ThrottleConfig.max_tasks_dispatched_per_second is 1, this   field
-      is 10; otherwise this field is
-      ThrottleConfig.max_tasks_dispatched_per_second / 5. * For pull queues,
-      this field is output only and always 10,000.  Note: For App Engine
-      queues that were created through `queue.yaml/xml`, `max_burst_size`
-      might not have the same settings as specified above;
-      CloudTasks.UpdateQueue can be used to set `max_burst_size` only to the
-      values specified above.  This field has the same meaning as [bucket_size
-      in queue.yaml](/appengine/docs/standard/python/config/queueref#bucket_si
-      ze).
-    maxOutstandingTasks: The maximum number of outstanding tasks that Cloud
-      Tasks allows to be dispatched for this queue. After this threshold has
-      been reached, Cloud Tasks stops dispatching tasks until the number of
-      outstanding requests decreases.  The maximum allowed value is 5,000.  *
-      For App Engine queues, this field is 10 by default. * For pull queues,
-      this field is output only and always -1, which   indicates no limit.
-      This field has the same meaning as [max_concurrent_requests in queue.yam
-      l](/appengine/docs/standard/python/config/queueref#max_concurrent_reques
-      ts).
-    maxTasksDispatchedPerSecond: The maximum rate at which tasks are
-      dispatched from this queue.  The maximum allowed value is 500.  * For
-      App Engine queues, this field is 1 by default. * For pull queues, this
-      field is output only and always 10,000.  This field has the same meaning
-      as [rate in
-      queue.yaml](/appengine/docs/standard/python/config/queueref#rate).
-  """
-
-  maxBurstSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  maxOutstandingTasks = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  maxTasksDispatchedPerSecond = _messages.FloatField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

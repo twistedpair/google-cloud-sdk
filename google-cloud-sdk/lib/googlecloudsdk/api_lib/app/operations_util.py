@@ -16,10 +16,16 @@
 """
 
 import json
+import sys
+
 from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
+
 import enum
 
+from googlecloudsdk.api_lib.app import exceptions as app_exceptions
 from googlecloudsdk.api_lib.app.api import requests
+from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -28,6 +34,38 @@ from googlecloudsdk.core import resources
 # Default is to retry every 5 seconds for 1 hour.
 DEFAULT_OPERATION_RETRY_INTERVAL = 5
 DEFAULT_OPERATION_MAX_TRIES = (60 / DEFAULT_OPERATION_RETRY_INTERVAL) * 60
+
+
+def CallAndCollectOpErrors(method, *args, **kwargs):
+  """Wrapper for method(...) which re-raises operation-style errors.
+
+  Args:
+    method: Original method to call.
+    *args: Positional arguments to method.
+    **kwargs: Keyword arguments to method.
+
+  Raises:
+    MiscOperationError: If the method call itself raises one of the exceptions
+      listed below. Otherwise, the original exception is raised. Preserves
+      stack trace. Re-uses the error string from original error or in the case
+      of HttpError, we synthesize human-friendly string from HttpException.
+      However, HttpException is neither raised nor part of the stack trace.
+
+  Returns:
+    Result of calling method(*args, **kwargs).
+  """
+  try:
+    return method(*args, **kwargs)
+  except apitools_exceptions.HttpError as http_err:
+    # Create HttpException locally only to get its human friendly string
+    err_str = str(api_exceptions.HttpException(http_err))
+    raise MiscOperationError, err_str, sys.exc_info()[2]
+  except (OperationError, OperationTimeoutError, app_exceptions.Error) as err:
+    raise MiscOperationError, str(err), sys.exc_info()[2]
+
+
+class MiscOperationError(exceptions.Error):
+  """Wrapper exception for errors treated as operation failures."""
 
 
 class OperationError(exceptions.Error):
@@ -145,7 +183,7 @@ class AppEngineOperationPoller(waiter.OperationPoller):
     """
     request_type = self.operation_service.GetRequestType('Get')
     request = request_type(name=operation_ref.RelativeName())
-    return requests.MakeRequest(self.operation_service.Get, request)
+    return self.operation_service.Get(request)
 
   def GetResult(self, operation):
     """Simply returns the operation.

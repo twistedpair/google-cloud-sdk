@@ -512,8 +512,12 @@ def AddEnableLegacyAuthorizationFlag(parser, hidden=False):
   """Adds a --enable-legacy-authorization flag to parser."""
   help_text = """\
 Enables the legacy ABAC authentication for the cluster.
-See https://cloud.google.com/container-engine/docs/legacyabac for more \
-info."""
+User rights are granted through the use of policies which combine attributes
+together. For a detailed look at these properties and related formats, see
+https://kubernetes.io/docs/admin/authorization/abac/. To use RBAC permissions
+instead, create or update your cluster with the option
+`--no-enable-legacy-authorization`.
+"""
   parser.add_argument(
       '--enable-legacy-authorization',
       action='store_true',

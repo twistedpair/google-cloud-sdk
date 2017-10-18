@@ -15,7 +15,6 @@
 
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
-from googlecloudsdk.api_lib.app.api import requests
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -70,8 +69,7 @@ class AppengineAppUpdateApiClient(base.AppengineApiClientBase):
         application=application_update,
         updateMask=update_mask)
 
-    operation = requests.MakeRequest(
-        self.client.apps.Patch, update_request)
+    operation = self.client.apps.Patch(update_request)
 
     log.debug('Received operation: [{operation}]'.format(
         operation=operation.name))

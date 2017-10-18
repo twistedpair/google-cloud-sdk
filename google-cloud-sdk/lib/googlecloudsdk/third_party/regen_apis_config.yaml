@@ -105,8 +105,8 @@ apis:
       discovery_doc: cloudiot_v1.json
       default: true
       resources:
-        projects.locations: "projects/{projectsId}/locations/{locationsId}"
-        projects.locations.registries.devices.configVersions: "projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/configVersions"
+        projects.locations.registries.devices.states: "projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/states/{statesId}"
+        projects.locations.registries.devices.configVersions: "projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/configVersions/{configVersion}"
   cloudkms:
     v1:
       discovery_doc: cloudkms_v1.json
@@ -213,6 +213,8 @@ apis:
     v1:
       discovery_doc: dns_v1.json
       default: true
+    v1alpha2:
+      discovery_doc: dns_v1alpha2.json
     v1beta1:
       discovery_doc: dns_v1beta1.json
     v1beta2:
@@ -228,6 +230,8 @@ apis:
   oslogin:
     v1alpha:
       discovery_doc: oslogin_v1alpha.json
+    v1beta:
+      discovery_doc: oslogin_v1beta.json
       default: true
   iam:
     v1:
