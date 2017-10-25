@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Common flags for some of the SQL commands."""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.util import completers
@@ -53,6 +56,14 @@ def AddInstance(parser):
       '--instance',
       '-i',
       required=True,
+      completer=InstanceCompleter,
+      help='Cloud SQL instance ID.')
+
+
+def AddInstanceArgument(parser):
+  """Add the 'instance' argument to the parser."""
+  parser.add_argument(
+      'instance',
       completer=InstanceCompleter,
       help='Cloud SQL instance ID.')
 
@@ -302,6 +313,27 @@ def AddOperationArgument(parser):
       'operation',
       nargs='+',
       help='An identifier that uniquely identifies the operation.')
+
+
+# Instance export / import flags.
+
+
+def AddUriArgument(parser, help_text):
+  """Add the 'uri' argument to the parser, with help text help_text."""
+  parser.add_argument(
+      'uri',
+      help=help_text)
+
+
+def AddDatabase(parser, help_text):
+  """Add the '--database' flag to the parser, with help text help_text."""
+  parser.add_argument(
+      '--database',
+      '-d',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='DATABASE',
+      required=False,
+      help=help_text)
 
 
 INSTANCES_FORMAT = """

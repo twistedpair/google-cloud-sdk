@@ -282,17 +282,17 @@ def GetArgDetails(arg):
       one_of = '(currently only one value is supported)'
     if isinstance(choices, dict):
       extra_help.append(
-          '_{metavar}_ must be {one_of}:\n\n{choices}\n\n'.format(
+          u'_{metavar}_ must be {one_of}:\n\n{choices}\n\n'.format(
               metavar=metavar,
               one_of=one_of,
               choices='\n'.join(
-                  ['*{name}*::: {desc}'.format(name=name, desc=desc)
+                  [u'*{name}*::: {desc}'.format(name=name, desc=desc)
                    for name, desc in sorted(choices.iteritems())])))
     else:
-      extra_help.append('_{metavar}_ must be {one_of}: {choices}.'.format(
+      extra_help.append(u'_{metavar}_ must be {one_of}: {choices}.'.format(
           metavar=metavar,
           one_of=one_of,
-          choices=', '.join(['*{0}*'.format(x) for x in choices])))
+          choices=', '.join([u'*{0}*'.format(x) for x in choices])))
   elif arg.is_group or arg.is_positional or arg.nargs:
     # Not a Boolean flag.
     pass

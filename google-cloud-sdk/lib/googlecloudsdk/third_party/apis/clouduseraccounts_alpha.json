@@ -5,7 +5,7 @@
  "name": "clouduseraccounts",
  "canonicalName": "Cloud User Accounts",
  "version": "alpha",
- "revision": "20170908",
+ "revision": "20171013",
  "title": "Cloud User Accounts API",
  "description": "Creates and manages users and groups for accessing Google Compute Engine virtual machines.",
  "ownerDomain": "google.com",
@@ -729,9 +729,13 @@
         "enum": [
          "CLEANUP_FAILED",
          "DEPRECATED_RESOURCE_USED",
+         "DEPRECATED_TYPE_USED",
          "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+         "EXPERIMENTAL_TYPE_USED",
+         "EXTERNAL_API_WARNING",
          "FIELD_VALUE_OVERRIDEN",
          "INJECTED_KERNELS_DEPRECATED",
+         "MISSING_TYPE_DEPENDENCY",
          "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
          "NEXT_HOP_CANNOT_IP_FORWARD",
          "NEXT_HOP_INSTANCE_NOT_FOUND",
@@ -742,10 +746,18 @@
          "REQUIRED_TOS_AGREEMENT",
          "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
          "RESOURCE_NOT_DELETED",
+         "SCHEMA_VALIDATION_IGNORED",
          "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+         "UNDECLARED_PROPERTIES",
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
+         "",
+         "",
+         "",
+         "",
+         "",
          "",
          "",
          "",
@@ -834,9 +846,13 @@
        "enum": [
         "CLEANUP_FAILED",
         "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
         "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
         "NEXT_HOP_INSTANCE_NOT_FOUND",
@@ -847,10 +863,18 @@
         "REQUIRED_TOS_AGREEMENT",
         "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
         "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
         "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
         "",
         "",
         "",
@@ -991,7 +1015,7 @@
     },
     "conditions": {
      "type": "array",
-     "description": "Additional restrictions that must be met",
+     "description": "Additional restrictions that must be met. All conditions must pass for the rule to match.",
      "items": {
       "$ref": "Condition"
      }

@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """API Library for gcloud tasks queues."""
-# TODO(b/36865670): Add GetLocation, ListLocation, SetIamPolicy,
-#    GetIamPolicy, and TestIamPermissions
+# TODO(b/36865670): Add GetLocation, ListLocation, and TestIamPermissions
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib import tasks
@@ -110,6 +109,21 @@ class Queues(object):
     request = self.api.messages.CloudtasksProjectsLocationsQueuesResumeRequest(
         name=queue_ref.RelativeName())
     return self.api.queues_service.Resume(request)
+
+  def GetIamPolicy(self, queue_ref):
+    request = (
+        self.api.messages.CloudtasksProjectsLocationsQueuesGetIamPolicyRequest(
+            resource=queue_ref.RelativeName(),
+            getIamPolicyRequest=self.api.messages.GetIamPolicyRequest()))
+    return self.api.queues_service.GetIamPolicy(request)
+
+  def SetIamPolicy(self, queue_ref, policy):
+    request = (
+        self.api.messages.CloudtasksProjectsLocationsQueuesSetIamPolicyRequest(
+            resource=queue_ref.RelativeName(),
+            setIamPolicyRequest=self.api.messages.SetIamPolicyRequest(
+                policy=policy)))
+    return self.api.queues_service.SetIamPolicy(request)
 
 
 def _IsEmptyConfig(config):

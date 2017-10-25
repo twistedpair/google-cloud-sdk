@@ -388,6 +388,35 @@ be retrieved in batches (called pages):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates the specified Version resource.
+
+Currently the only supported field to update is `description`.
+
+      Args:
+        request: (MlProjectsModelsVersionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}',
+        http_method=u'PATCH',
+        method_id=u'ml.projects.models.versions.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/{+name}',
+        request_field=u'googleCloudMlV1Version',
+        request_type_name=u'MlProjectsModelsVersionsPatchRequest',
+        response_type_name=u'GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def SetDefault(self, request, global_params=None):
       """Designates a version to be the default for the model.
 
@@ -579,6 +608,36 @@ versions.
         request_field='',
         request_type_name=u'MlProjectsModelsListRequest',
         response_type_name=u'GoogleCloudMlV1ListModelsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates a specific model resource.
+
+Currently the only supported fields to update are `description` and
+`default_version.name`.
+
+      Args:
+        request: (MlProjectsModelsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/models/{modelsId}',
+        http_method=u'PATCH',
+        method_id=u'ml.projects.models.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/{+name}',
+        request_field=u'googleCloudMlV1Model',
+        request_type_name=u'MlProjectsModelsPatchRequest',
+        response_type_name=u'GoogleLongrunningOperation',
         supports_download=False,
     )
 

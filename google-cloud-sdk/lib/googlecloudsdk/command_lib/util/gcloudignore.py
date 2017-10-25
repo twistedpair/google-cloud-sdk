@@ -39,7 +39,7 @@ from googlecloudsdk.core.util import files
 
 IGNORE_FILE_NAME = '.gcloudignore'
 GIT_FILES = ['.git', '.gitignore']
-_DEFAULT_IGNORE_FILE = """\
+DEFAULT_IGNORE_FILE = """\
 # This file specifies files that are *not* uploaded to Google Cloud Platform
 # using gcloud. It follows the same syntax as .gitignore, with the addition of
 # "#!include" directives (which insert the entries of the given .gitignore-style
@@ -164,8 +164,11 @@ def _GetPathPrefixes(path):
     list of str, the prefixes.
   """
   path_prefixes = [path]
-  while path:
-    path, _ = os.path.split(path)
+  path_reminder = True
+  # Apparently which one is empty when operating on top-level directory depends
+  # on your configuration.
+  while path and path_reminder:
+    path, path_reminder = os.path.split(path)
     path_prefixes.insert(0, path)
   return path_prefixes
 
@@ -479,6 +482,8 @@ class FileChooser(object):
 
 def _GitFilesExist(directory):
   git_files = [os.path.join(directory, name) for name in GIT_FILES]
+  print -2, git_files
+  print -1, map(os.path.exists, git_files)
   return any(map(os.path.exists, git_files))
 
 
@@ -489,7 +494,7 @@ def _GetIgnoreFileContents(default_ignore_file, directory):
   return ignore_file_contents
 
 
-def GetFileChooserForDir(directory, default_ignore_file=_DEFAULT_IGNORE_FILE,
+def GetFileChooserForDir(directory, default_ignore_file=DEFAULT_IGNORE_FILE,
                          write_on_disk=True):
   """Gets the FileChooser object for the given directory.
 
@@ -498,7 +503,7 @@ def GetFileChooserForDir(directory, default_ignore_file=_DEFAULT_IGNORE_FILE,
   - Generates Git-centric .gcloudignore file if Git files are found but no
     .gcloudignore exists. (If the directory is not writable, the file chooser
     corresponding to the ignore file that would have been generated is used).
-  - If neither is found, return None.
+  - If neither is found the returned FileChooser will choose all files.
 
   Args:
     directory: str, the path of the top-level directory to upload
@@ -511,8 +516,8 @@ def GetFileChooserForDir(directory, default_ignore_file=_DEFAULT_IGNORE_FILE,
       the same directory.
 
   Returns:
-    FileChooser: the FileChooser for the directory, or None if no default one is
-    found.
+    FileChooser: the FileChooser for the directory. If there is no .gcloudignore
+    file and it can't be created the returned FileChooser will choose all files.
   """
   gcloudignore_path = os.path.join(directory, IGNORE_FILE_NAME)
   try:
@@ -520,7 +525,7 @@ def GetFileChooserForDir(directory, default_ignore_file=_DEFAULT_IGNORE_FILE,
   except BadFileError:
     pass
   if not _GitFilesExist(directory):
-    return None
+    return FileChooser([])
 
   ignore_contents = _GetIgnoreFileContents(default_ignore_file, directory)
   if write_on_disk:
@@ -529,4 +534,7 @@ def GetFileChooserForDir(directory, default_ignore_file=_DEFAULT_IGNORE_FILE,
                               overwrite=False)
     except files.Error as err:
       log.info('Could not write .gcloudignore file: {}'.format(err))
+    else:
+      log.status.Print('Created .gcloudignore file. See `gcloud topic '
+                       'gcloudignore` for details.')
   return FileChooser.FromString(ignore_contents, recurse=1, dirname=directory)

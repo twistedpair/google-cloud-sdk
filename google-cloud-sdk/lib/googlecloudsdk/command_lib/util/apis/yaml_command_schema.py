@@ -48,6 +48,8 @@ class CommandData(object):
     self.request = Request(self.command_type, data['request'])
     self.response = Response(data.get('response', {}))
     async_data = data.get('async')
+    if self.command_type == CommandType.WAIT and not async_data:
+      raise InvalidSchemaError('Wait commands must include an async section.')
     self.async = Async(async_data) if async_data else None
     self.arguments = Arguments(data['arguments'])
     self.input = Input(self.command_type, data.get('input', {}))
@@ -65,11 +67,15 @@ class CommandType(Enum):
   LIST = 'list'
   DELETE = 'delete'
   CREATE = 'create'
+  WAIT = 'get'
   # Generic commands are those that don't extend a specific calliope command
   # base class.
   GENERIC = None
 
   def __init__(self, default_method):
+    # Set the value to a unique object so multiple enums can have the same
+    # default method.
+    self._value_ = object()
     self.default_method = default_method
 
   @classmethod
@@ -127,7 +133,8 @@ class Async(object):
           'async.resource_get_method was specified but extract_resource_result '
           'is False')
     self.resource_get_method = resource_get_method or 'get'
-    self.resource_get_method_params = data.get('resource_get_method_params', {})
+    self.operation_get_method_params = data.get(
+        'operation_get_method_params', {})
     self.result_attribute = data.get('result_attribute')
     self.state = AsyncStateField(data.get('state', {}))
     self.error = AsyncErrorField(data.get('error', {}))

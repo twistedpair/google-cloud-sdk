@@ -511,7 +511,6 @@ class BaseSSHHelper(object):
       bool, True if the key was newly added.
     """
     if use_account_service:
-      log.status.Print('using accounts service')
       fetcher = user_client.UserResourceFetcher(
           cua_client,
           properties.VALUES.core.project.GetOrFail(),
@@ -702,7 +701,7 @@ class BaseSSHCLIHelper(BaseSSHHelper):
       self.keys.EnsureKeysExist(args.force_key_file_overwrite,
                                 allow_passphrase=True)
 
-  def PreliminarylyVerifyInstance(self, instance_id, remote, identity_file,
+  def PreliminarilyVerifyInstance(self, instance_id, remote, identity_file,
                                   options):
     """Verify the instance's identity by connecting and running a command.
 

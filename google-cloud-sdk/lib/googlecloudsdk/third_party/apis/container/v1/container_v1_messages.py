@@ -548,8 +548,9 @@ class Cluster(_messages.Message):
     maintenancePolicy: Configure the maintenance policy for this cluster.
     masterAuth: The authentication information for accessing the master
       endpoint.
-    masterAuthorizedNetworks: Deprecated. The configuration options for master
-      authorized networks feature.
+    masterAuthorizedNetworks: The configuration options for master authorized
+      networks feature. This field is deprecated, use
+      master_authorized_networks_config instead.
     masterAuthorizedNetworksConfig: Master authorized networks is a Beta
       feature. The configuration options for master authorized networks
       feature.
@@ -699,11 +700,15 @@ class ClusterUpdate(_messages.Message):
       nodes being either created or removed from the cluster, depending on
       whether locations are being added or removed.  This list must always
       include the cluster's primary zone.
-    desiredMasterAuthorizedNetworks: Deprecated. The desired configuration
-      options for master authorized networks feature.
+    desiredMasterAuthorizedNetworks: The desired configuration options for
+      master authorized networks feature. This field is deprecated, use
+      desired_master_authorized_networks_config instead.
     desiredMasterAuthorizedNetworksConfig: Master authorized networks is a
       Beta feature. The desired configuration options for master authorized
       networks feature.
+    desiredMasterId: An id of master replica to be updated. Can be set only
+      when desired_master_version is set. If not set, all replicas will be
+      updated.
     desiredMasterMachineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
       master to.
@@ -732,12 +737,13 @@ class ClusterUpdate(_messages.Message):
   desiredLocations = _messages.StringField(3, repeated=True)
   desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 4)
   desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 5)
-  desiredMasterMachineType = _messages.StringField(6)
-  desiredMasterVersion = _messages.StringField(7)
-  desiredMonitoringService = _messages.StringField(8)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 9)
-  desiredNodePoolId = _messages.StringField(10)
-  desiredNodeVersion = _messages.StringField(11)
+  desiredMasterId = _messages.StringField(6)
+  desiredMasterMachineType = _messages.StringField(7)
+  desiredMasterVersion = _messages.StringField(8)
+  desiredMonitoringService = _messages.StringField(9)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 10)
+  desiredNodePoolId = _messages.StringField(11)
+  desiredNodeVersion = _messages.StringField(12)
 
 
 class ClusterUpdateOptions(_messages.Message):
@@ -2005,10 +2011,11 @@ class MasterAuth(_messages.Message):
 
 
 class MasterAuthorizedNetworks(_messages.Message):
-  """Deprecated. Configuration options for the master authorized networks
-  feature. Enabled master authorized networks will disallow all external
-  traffic to access Kubernetes master through HTTPS except traffic from the
-  given CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.
+  """Configuration options for the master authorized networks feature. Enabled
+  master authorized networks will disallow all external traffic to access
+  Kubernetes master through HTTPS except traffic from the given CIDR blocks,
+  Google Compute Engine Public IPs and Google Prod IPs. This message is
+  deprecated, use MasterAuthorizedNetworksConfig instead.
 
   Fields:
     cidrs: Network CIDRs define up to 10 external networks that could access
@@ -2390,13 +2397,15 @@ class NodeTaint(_messages.Message):
     """Effect for taint.
 
     Values:
+      EFFECT_UNSPECIFIED: Not set
       NO_SCHEDULE: NoSchedule
       PREFER_NO_SCHEDULE: PreferNoSchedule
       NO_EXECUTE: NoExecute
     """
-    NO_SCHEDULE = 0
-    PREFER_NO_SCHEDULE = 1
-    NO_EXECUTE = 2
+    EFFECT_UNSPECIFIED = 0
+    NO_SCHEDULE = 1
+    PREFER_NO_SCHEDULE = 2
+    NO_EXECUTE = 3
 
   effect = _messages.EnumField('EffectValueValuesEnum', 1)
   key = _messages.StringField(2)

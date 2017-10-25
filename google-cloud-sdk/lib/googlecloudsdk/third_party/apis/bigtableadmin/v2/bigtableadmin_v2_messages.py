@@ -41,8 +41,8 @@ class BigtableadminOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class BigtableadminOperationsListRequest(_messages.Message):
-  """A BigtableadminOperationsListRequest object.
+class BigtableadminOperationsProjectsOperationsListRequest(_messages.Message):
+  """A BigtableadminOperationsProjectsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.

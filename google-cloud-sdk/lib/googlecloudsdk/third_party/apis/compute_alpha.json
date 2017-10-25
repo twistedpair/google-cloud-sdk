@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20171009",
+ "revision": "20171013",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -543,7 +543,7 @@
     },
     "addressType": {
      "type": "string",
-     "description": "The type of address to reserve. If unspecified, defaults to EXTERNAL.",
+     "description": "The type of address to reserve, either INTERNAL or EXTERNAL. If unspecified, defaults to EXTERNAL.",
      "enum": [
       "DNS_FORWARDING",
       "EXTERNAL",
@@ -7982,6 +7982,18 @@
     "maxUnavailable": {
      "$ref": "FixedOrPercent",
      "description": "Maximum number of instances that can be unavailable when autohealing. The instance is considered available if all of the following conditions are satisfied: 1. Instance's status is RUNNING. 2. Instance's liveness health check result was observed to be HEALTHY at least once. By default, a percent value of 100% is used."
+    },
+    "mode": {
+     "type": "string",
+     "description": "Defines operating mode for this policy.",
+     "enum": [
+      "OFF",
+      "ON"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     }
    }
   },
@@ -9542,7 +9554,7 @@
   "Interconnect": {
    "id": "Interconnect",
    "type": "object",
-   "description": "Protocol definitions for Mixer API to support Interconnect. Next available tag: 25",
+   "description": "Protocol definitions for Mixer API to support Interconnect. Next available tag: 26",
    "properties": {
     "adminEnabled": {
      "type": "boolean",
@@ -9643,14 +9655,10 @@
      "type": "string",
      "description": "[Output Only] The current status of whether or not this Interconnect is functional.",
      "enum": [
-      "ACTIVE",
       "OS_ACTIVE",
-      "OS_UNPROVISIONED",
-      "UNPROVISIONED"
+      "OS_UNPROVISIONED"
      ],
      "enumDescriptions": [
-      "",
-      "",
       "",
       ""
      ]
@@ -9678,7 +9686,7 @@
   "InterconnectAttachment": {
    "id": "InterconnectAttachment",
    "type": "object",
-   "description": "Protocol definitions for Mixer API to support InterconnectAttachment. Next available tag: 23",
+   "description": "Protocol definitions for Mixer API to support InterconnectAttachment. Next available tag: 25",
    "properties": {
     "cloudRouterIpAddress": {
      "type": "string",
@@ -9723,14 +9731,10 @@
      "type": "string",
      "description": "[Output Only] The current status of whether or not this interconnect attachment is functional.",
      "enum": [
-      "ACTIVE",
       "OS_ACTIVE",
-      "OS_UNPROVISIONED",
-      "UNPROVISIONED"
+      "OS_UNPROVISIONED"
      ],
      "enumDescriptions": [
-      "",
-      "",
       "",
       ""
      ]

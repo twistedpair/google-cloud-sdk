@@ -383,11 +383,11 @@ class BuildSignature(_messages.Message):
     `key_id`
 
     Values:
-      UNSET: KeyType is not set.
+      KEY_TYPE_UNSPECIFIED: KeyType is not set.
       PGP_ASCII_ARMORED: PGP ASCII Armored public key.
       PKIX_PEM: PKIX PEM public key.
     """
-    UNSET = 0
+    KEY_TYPE_UNSPECIFIED = 0
     PGP_ASCII_ARMORED = 1
     PKIX_PEM = 2
 
@@ -847,6 +847,21 @@ class ContaineranalysisProjectsNotesOccurrencesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class ContaineranalysisProjectsNotesPatchRequest(_messages.Message):
+  """A ContaineranalysisProjectsNotesPatchRequest object.
+
+  Fields:
+    name: The name of the note. Should be of the form
+      "projects/{provider_id}/notes/{note_id}".
+    note: A Note resource to be passed as the request body.
+    updateMask: A string attribute.
+  """
+
+  name = _messages.StringField(1, required=True)
+  note = _messages.MessageField('Note', 2)
+  updateMask = _messages.StringField(3)
+
+
 class ContaineranalysisProjectsNotesSetIamPolicyRequest(_messages.Message):
   """A ContaineranalysisProjectsNotesSetIamPolicyRequest object.
 
@@ -958,6 +973,21 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class ContaineranalysisProjectsOccurrencesPatchRequest(_messages.Message):
+  """A ContaineranalysisProjectsOccurrencesPatchRequest object.
+
+  Fields:
+    name: The name of the occurrence. Should be of the form
+      "projects/{project_id}/occurrences/{occurrence_id}".
+    occurrence: A Occurrence resource to be passed as the request body.
+    updateMask: A string attribute.
+  """
+
+  name = _messages.StringField(1, required=True)
+  occurrence = _messages.MessageField('Occurrence', 2)
+  updateMask = _messages.StringField(3)
 
 
 class ContaineranalysisProjectsOccurrencesSetIamPolicyRequest(_messages.Message):
@@ -1082,6 +1112,21 @@ class ContaineranalysisProvidersNotesOccurrencesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class ContaineranalysisProvidersNotesPatchRequest(_messages.Message):
+  """A ContaineranalysisProvidersNotesPatchRequest object.
+
+  Fields:
+    name: The name of the note. Should be of the form
+      "projects/{provider_id}/notes/{note_id}".
+    note: A Note resource to be passed as the request body.
+    updateMask: A string attribute.
+  """
+
+  name = _messages.StringField(1, required=True)
+  note = _messages.MessageField('Note', 2)
+  updateMask = _messages.StringField(3)
+
+
 class ContaineranalysisProvidersNotesSetIamPolicyRequest(_messages.Message):
   """A ContaineranalysisProvidersNotesSetIamPolicyRequest object.
 
@@ -1125,6 +1170,9 @@ class Deployable(_messages.Message):
 class Deployment(_messages.Message):
   """The period during which some deployable was active in a runtime.
 
+  Enums:
+    PlatformValueValuesEnum: Platform hosting this deployment.
+
   Messages:
     ConfigValue: Configuration used to create this deployment.
 
@@ -1132,11 +1180,26 @@ class Deployment(_messages.Message):
     address: Address of the runtime element hosting this deployment.
     config: Configuration used to create this deployment.
     deployTime: Beginning of the lifetime of this deployment.
-    resourceUri: Resource URI for the artifact being deployed. Taken from the
-      Deployable field with the same name. @OutputOnly
+    platform: Platform hosting this deployment.
+    resourceUri: Output only. Resource URI for the artifact being deployed.
+      Taken from the Deployable field with the same name.
     undeployTime: End of the lifetime of this deployment.
     userEmail: Identity of the user that triggered this deployment.
   """
+
+  class PlatformValueValuesEnum(_messages.Enum):
+    """Platform hosting this deployment.
+
+    Values:
+      PLATFORM_UNSPECIFIED: Unknown
+      GKE: Google Container Engine
+      FLEX: Google App Engine: Flexible Environment
+      CUSTOM: Custom user-defined platform
+    """
+    PLATFORM_UNSPECIFIED = 0
+    GKE = 1
+    FLEX = 2
+    CUSTOM = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ConfigValue(_messages.Message):
@@ -1166,9 +1229,10 @@ class Deployment(_messages.Message):
   address = _messages.StringField(1)
   config = _messages.MessageField('ConfigValue', 2)
   deployTime = _messages.StringField(3)
-  resourceUri = _messages.StringField(4, repeated=True)
-  undeployTime = _messages.StringField(5)
-  userEmail = _messages.StringField(6)
+  platform = _messages.EnumField('PlatformValueValuesEnum', 4)
+  resourceUri = _messages.StringField(5, repeated=True)
+  undeployTime = _messages.StringField(6)
+  userEmail = _messages.StringField(7)
 
 
 class Derived(_messages.Message):
@@ -1212,6 +1276,8 @@ class Detail(_messages.Message):
       vulnerability exists.
     package: The name of the package where the vulnerability was found. This
       field can be used as a filter in list requests.
+    packageType: The type of package; whether native or non native(ruby gems,
+      node.js packages etc)
     severityName: The severity (eg: distro assigned severity) for this
       vulnerability.
   """
@@ -1222,15 +1288,16 @@ class Detail(_messages.Message):
   maxAffectedVersion = _messages.MessageField('Version', 4)
   minAffectedVersion = _messages.MessageField('Version', 5)
   package = _messages.StringField(6)
-  severityName = _messages.StringField(7)
+  packageType = _messages.StringField(7)
+  severityName = _messages.StringField(8)
 
 
 class Discovered(_messages.Message):
   """Provides information about the scan status of a discovered resource.
 
   Fields:
-    operation: An operation that indicates the status of the current scan.
-      @OutputOnly
+    operation: Output only. An operation that indicates the status of the
+      current scan.
   """
 
   operation = _messages.MessageField('Operation', 1)
@@ -1262,11 +1329,11 @@ class Distribution(_messages.Message):
     were built
 
     Values:
-      UNKNOWN: Unknown architecture
+      ARCHITECTURE_UNSPECIFIED: Unknown architecture
       X86: X86 architecture
       X64: x64 architecture
     """
-    UNKNOWN = 0
+    ARCHITECTURE_UNSPECIFIED = 0
     X86 = 1
     X64 = 2
 
@@ -1885,7 +1952,7 @@ class Layer(_messages.Message):
     """The recovered Dockerfile directive used to construct this layer.
 
     Values:
-      UNKNOWN_DIRECTIVE: Default value for unsupported/missing directive
+      DIRECTIVE_UNSPECIFIED: Default value for unsupported/missing directive
       MAINTAINER: https://docs.docker.com/reference/builder/#maintainer
       RUN: https://docs.docker.com/reference/builder/#run
       CMD: https://docs.docker.com/reference/builder/#cmd
@@ -1904,7 +1971,7 @@ class Layer(_messages.Message):
       HEALTHCHECK: https://docs.docker.com/reference/builder/#healthcheck
       SHELL: https://docs.docker.com/reference/builder/#shell
     """
-    UNKNOWN_DIRECTIVE = 0
+    DIRECTIVE_UNSPECIFIED = 0
     MAINTAINER = 1
     RUN = 2
     CMD = 3
@@ -2046,37 +2113,36 @@ class Note(_messages.Message):
   provider of the note.
 
   Enums:
-    KindValueValuesEnum: This explicitly denotes which kind of note is
-      specified. This field can be used as a filter in list requests.
-      @OutputOnly
+    KindValueValuesEnum: Output only. This explicitly denotes which kind of
+      note is specified. This field can be used as a filter in list requests.
 
   Fields:
     baseImage: A note describing a base image.
     buildType: Build provenance type for a verifiable build.
-    createTime: The time this note was created. This field can be used as a
-      filter in list requests. @OutputOnly
+    createTime: Output only. The time this note was created. This field can be
+      used as a filter in list requests.
     deployable: A note describing something that can be deployed.
-    expirationTime: Time of expiration for this Note, null if Note currently
+    expirationTime: Time of expiration for this note, null if note currently
       does not expire.
-    kind: This explicitly denotes which kind of note is specified. This field
-      can be used as a filter in list requests. @OutputOnly
+    kind: Output only. This explicitly denotes which kind of note is
+      specified. This field can be used as a filter in list requests.
     longDescription: A detailed description of this note
     name: The name of the note in the form
       "providers/{provider_id}/notes/{note_id}"
     package: A note describing a package hosted by various package managers.
     relatedUrl: Urls associated with this note
     shortDescription: A one sentence description of this note
-    updateTime: The time this note was last updated. This field can be used as
-      a filter in list requests. @OutputOnly
+    updateTime: Output only. The time this note was last updated. This field
+      can be used as a filter in list requests.
     vulnerabilityType: A package vulnerability type of note.
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """This explicitly denotes which kind of note is specified. This field can
-    be used as a filter in list requests. @OutputOnly
+    """Output only. This explicitly denotes which kind of note is specified.
+    This field can be used as a filter in list requests.
 
     Values:
-      UNKNOWN: Unknown
+      KIND_UNSPECIFIED: Unknown
       PACKAGE_VULNERABILITY: The note and occurrence represent a package
         vulnerability.
       BUILD_DETAILS: The note and occurrence assert build provenance.
@@ -2085,7 +2151,7 @@ class Note(_messages.Message):
         manager.
       DEPLOYABLE: The note and occurrence track deployment events.
     """
-    UNKNOWN = 0
+    KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
     BUILD_DETAILS = 2
     IMAGE_BASIS = 3
@@ -2125,24 +2191,23 @@ class Occurrence(_messages.Message):
   ``
 
   Enums:
-    KindValueValuesEnum: This explicitly denotes which of the occurrence
-      details is specified. This field can be used as a filter in list
-      requests. @OutputOnly
+    KindValueValuesEnum: Output only. This explicitly denotes which of the
+      occurrence details is specified. This field can be used as a filter in
+      list requests.
 
   Fields:
     buildDetails: Build details for a verifiable build.
-    createTime: The time this occurrence was created. @OutputOnly
+    createTime: Output only. The time this occurrence was created.
     deployment: Describes the deployment of an artifact on a runtime.
     derivedImage: Describes how this resource derives from the basis in the
       associated note.
     discovered: Describes the initial scan status for this resource.
     installation: Describes the installation of a package on the linked
       resource.
-    kind: This explicitly denotes which of the occurrence details is
-      specified. This field can be used as a filter in list requests.
-      @OutputOnly
-    name: The name of the occurrence in the form
-      "projects/{project_id}/occurrences/{occurrence_id}" @OutputOnly
+    kind: Output only. This explicitly denotes which of the occurrence details
+      is specified. This field can be used as a filter in list requests.
+    name: Output only. The name of the occurrence in the form
+      "projects/{project_id}/occurrences/{occurrence_id}"
     noteName: An analysis note associated with this image, in the form
       "providers/{provider_id}/notes/{note_id}" This field can be used as a
       filter in list requests.
@@ -2150,16 +2215,16 @@ class Occurrence(_messages.Message):
     resourceUrl: The unique url of the image or container for which the
       occurrence applies. Example: https://gcr.io/project/image@sha256:foo
       This field can be used as a filter in list requests.
-    updateTime: The time this occurrence was last updated. @OutputOnly
+    updateTime: Output only. The time this occurrence was last updated.
     vulnerabilityDetails: Details of a security vulnerability note.
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """This explicitly denotes which of the occurrence details is specified.
-    This field can be used as a filter in list requests. @OutputOnly
+    """Output only. This explicitly denotes which of the occurrence details is
+    specified. This field can be used as a filter in list requests.
 
     Values:
-      UNKNOWN: Unknown
+      KIND_UNSPECIFIED: Unknown
       PACKAGE_VULNERABILITY: The note and occurrence represent a package
         vulnerability.
       BUILD_DETAILS: The note and occurrence assert build provenance.
@@ -2168,7 +2233,7 @@ class Occurrence(_messages.Message):
         manager.
       DEPLOYABLE: The note and occurrence track deployment events.
     """
-    UNKNOWN = 0
+    KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
     BUILD_DETAILS = 2
     IMAGE_BASIS = 3
@@ -2295,6 +2360,20 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class OperationMetadata(_messages.Message):
+  """OperationMetadata will be used and required as metadata for all
+  operations that created by Container Analysis Providers
+
+  Fields:
+    createTime: Output only. The time this operation was created.
+    endTime: Output only. The time that this operation was marked completed or
+      failed.
+  """
+
+  createTime = _messages.StringField(1)
+  endTime = _messages.StringField(2)
 
 
 class Package(_messages.Message):
@@ -2986,14 +3065,14 @@ class SeverityCount(_messages.Message):
     """The severity of the occurrences.
 
     Values:
-      UNKNOWN: Unknown Impact
+      SEVERITY_UNSPECIFIED: Unknown Impact
       MINIMAL: Minimal Impact
       LOW: Low Impact
       MEDIUM: Medium Impact
       HIGH: High Impact
       CRITICAL: Critical Impact
     """
-    UNKNOWN = 0
+    SEVERITY_UNSPECIFIED = 0
     MINIMAL = 1
     LOW = 2
     MEDIUM = 3
@@ -3499,14 +3578,14 @@ class VulnerabilityDetails(_messages.Message):
     """The note provider assigned Severity of the vulnerability. @OutputOnly
 
     Values:
-      UNKNOWN: Unknown Impact
+      SEVERITY_UNSPECIFIED: Unknown Impact
       MINIMAL: Minimal Impact
       LOW: Low Impact
       MEDIUM: Medium Impact
       HIGH: High Impact
       CRITICAL: Critical Impact
     """
-    UNKNOWN = 0
+    SEVERITY_UNSPECIFIED = 0
     MINIMAL = 1
     LOW = 2
     MEDIUM = 3
@@ -3555,14 +3634,14 @@ class VulnerabilityType(_messages.Message):
     """Note provider assigned impact of the vulnerability
 
     Values:
-      UNKNOWN: Unknown Impact
+      SEVERITY_UNSPECIFIED: Unknown Impact
       MINIMAL: Minimal Impact
       LOW: Low Impact
       MEDIUM: Medium Impact
       HIGH: High Impact
       CRITICAL: Critical Impact
     """
-    UNKNOWN = 0
+    SEVERITY_UNSPECIFIED = 0
     MINIMAL = 1
     LOW = 2
     MEDIUM = 3

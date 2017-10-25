@@ -125,7 +125,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the occurrence in the form\n\"projects\/{project_id}\/occurrences\/{occurrence_id}\"\n@OutputOnly",
+          "description": "Output only. The name of the occurrence in the form\n\"projects\/{project_id}\/occurrences\/{occurrence_id}\"",
           "type": "string"
         },
         "resourceUrl": {
@@ -137,7 +137,7 @@
           "type": "string"
         },
         "kind": {
-          "description": "This explicitly denotes which of the occurrence details is specified.\nThis field can be used as a filter in list requests.\n@OutputOnly",
+          "description": "Output only. This explicitly denotes which of the occurrence details is\nspecified. This field can be used as a filter in list requests.",
           "enumDescriptions": [
             "Unknown",
             "The note and occurrence represent a package vulnerability.",
@@ -148,7 +148,7 @@
           ],
           "type": "string",
           "enum": [
-            "UNKNOWN",
+            "KIND_UNSPECIFIED",
             "PACKAGE_VULNERABILITY",
             "BUILD_DETAILS",
             "IMAGE_BASIS",
@@ -185,12 +185,12 @@
           "type": "string"
         },
         "createTime": {
-          "description": "The time this occurrence was created.\n@OutputOnly",
+          "description": "Output only. The time this occurrence was created.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "The time this occurrence was last updated.\n@OutputOnly",
+          "description": "Output only. The time this occurrence was last updated.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -217,7 +217,7 @@
           ],
           "type": "string",
           "enum": [
-            "UNKNOWN",
+            "SEVERITY_UNSPECIFIED",
             "MINIMAL",
             "LOW",
             "MEDIUM",
@@ -856,7 +856,7 @@
           ],
           "type": "string",
           "enum": [
-            "UNKNOWN_DIRECTIVE",
+            "DIRECTIVE_UNSPECIFIED",
             "MAINTAINER",
             "RUN",
             "CMD",
@@ -951,11 +951,27 @@
           "type": "string"
         },
         "resourceUri": {
-          "description": "Resource URI for the artifact being deployed. Taken from the Deployable\nfield with the same name.\n@OutputOnly",
+          "description": "Output only. Resource URI for the artifact being deployed. Taken from the\nDeployable field with the same name.",
           "type": "array",
           "items": {
             "type": "string"
           }
+        },
+        "platform": {
+          "description": "Platform hosting this deployment.",
+          "enumDescriptions": [
+            "Unknown",
+            "Google Container Engine",
+            "Google App Engine: Flexible Environment",
+            "Custom user-defined platform"
+          ],
+          "type": "string",
+          "enum": [
+            "PLATFORM_UNSPECIFIED",
+            "GKE",
+            "FLEX",
+            "CUSTOM"
+          ]
         }
       }
     },
@@ -965,7 +981,7 @@
       "type": "object",
       "properties": {
         "operation": {
-          "description": "An operation that indicates the status of the current scan.\n@OutputOnly",
+          "description": "Output only. An operation that indicates the status of the current scan.",
           "$ref": "Operation"
         }
       }
@@ -1075,7 +1091,7 @@
           "type": "string"
         },
         "kind": {
-          "description": "This explicitly denotes which kind of note is specified.\nThis field can be used as a filter in list requests.\n@OutputOnly",
+          "description": "Output only. This explicitly denotes which kind of note is specified. This\nfield can be used as a filter in list requests.",
           "enumDescriptions": [
             "Unknown",
             "The note and occurrence represent a package vulnerability.",
@@ -1086,7 +1102,7 @@
           ],
           "type": "string",
           "enum": [
-            "UNKNOWN",
+            "KIND_UNSPECIFIED",
             "PACKAGE_VULNERABILITY",
             "BUILD_DETAILS",
             "IMAGE_BASIS",
@@ -1122,17 +1138,17 @@
           }
         },
         "expirationTime": {
-          "description": "Time of expiration for this Note, null if Note currently does not\nexpire.",
+          "description": "Time of expiration for this note, null if note currently does not expire.",
           "type": "string",
           "format": "google-datetime"
         },
         "createTime": {
-          "description": "The time this note was created.\nThis field can be used as a filter in list requests.\n@OutputOnly",
+          "description": "Output only. The time this note was created. This field can be used as a\nfilter in list requests.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "The time this note was last updated.\nThis field can be used as a filter in list requests.\n@OutputOnly",
+          "description": "Output only. The time this note was last updated. This field can be used as\na filter in list requests.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -1160,7 +1176,7 @@
           ],
           "type": "string",
           "enum": [
-            "UNKNOWN",
+            "SEVERITY_UNSPECIFIED",
             "MINIMAL",
             "LOW",
             "MEDIUM",
@@ -1209,6 +1225,10 @@
         "fixedLocation": {
           "description": "The fix for this specific package version.",
           "$ref": "VulnerabilityLocation"
+        },
+        "packageType": {
+          "description": "The type of package; whether native or non native(ruby gems,\nnode.js packages etc)",
+          "type": "string"
         }
       }
     },
@@ -1253,7 +1273,7 @@
           ],
           "type": "string",
           "enum": [
-            "UNSET",
+            "KEY_TYPE_UNSPECIFIED",
             "PGP_ASCII_ARMORED",
             "PKIX_PEM"
           ]
@@ -1311,7 +1331,7 @@
           ],
           "type": "string",
           "enum": [
-            "UNKNOWN",
+            "ARCHITECTURE_UNSPECIFIED",
             "X86",
             "X64"
           ]
@@ -1430,7 +1450,7 @@
           ],
           "type": "string",
           "enum": [
-            "UNKNOWN",
+            "SEVERITY_UNSPECIFIED",
             "MINIMAL",
             "LOW",
             "MEDIUM",
@@ -2951,6 +2971,23 @@
           "format": "int64"
         }
       }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "OperationMetadata will be used and required as metadata for all operations\nthat created by Container Analysis Providers",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time this operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time that this operation was marked completed or failed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
     }
   },
   "resources": {
@@ -3092,11 +3129,11 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
             },
-            "update": {
-              "id": "containeranalysis.providers.notes.update",
+            "patch": {
+              "id": "containeranalysis.providers.notes.patch",
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/providers/{providersId}/notes/{notesId}",
-              "httpMethod": "PUT",
+              "httpMethod": "PATCH",
               "description": "Updates an existing note.",
               "parameters": {
                 "name": {
@@ -3105,6 +3142,11 @@
                   "required": true,
                   "pattern": "^providers\/[^\/]+\/notes\/[^\/]+$",
                   "type": "string"
+                },
+                "updateMask": {
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
                 }
               },
               "parameterOrder": [
@@ -3214,7 +3256,7 @@
                   "path": "v1alpha1/{+name}/occurrences",
                   "flatPath": "v1alpha1/providers/{providersId}/notes/{notesId}/occurrences",
                   "httpMethod": "GET",
-                  "description": "Lists the names of Occurrences linked to a particular Note.",
+                  "description": "Lists the names of occurrences linked to a particular note.",
                   "parameters": {
                     "name": {
                       "description": "The name field will contain the note name for example:\n  \"provider\/{provider_id}\/notes\/{note_id}\"",
@@ -3263,7 +3305,7 @@
           "path": "v1alpha1/{+parent}/vulnzsummary",
           "flatPath": "v1alpha1/projects/{projectsId}/vulnzsummary",
           "httpMethod": "GET",
-          "description": "Lists the number and severity of Occurrences matching some filters.",
+          "description": "Gets a summary of the number and severity of occurrences.",
           "parameters": {
             "parent": {
               "description": "This contains the projectId for example: projects\/{project_id}",
@@ -3298,7 +3340,7 @@
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}",
               "httpMethod": "GET",
-              "description": "Returns the requested occurrence",
+              "description": "Returns the requested occurrence.",
               "parameters": {
                 "name": {
                   "description": "The name of the occurrence in the form\n\"projects\/{project_id}\/occurrences\/{occurrence_id}\"",
@@ -3422,11 +3464,11 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
             },
-            "update": {
-              "id": "containeranalysis.projects.occurrences.update",
+            "patch": {
+              "id": "containeranalysis.projects.occurrences.patch",
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}",
-              "httpMethod": "PUT",
+              "httpMethod": "PATCH",
               "description": "Updates an existing occurrence.",
               "parameters": {
                 "name": {
@@ -3435,6 +3477,11 @@
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
                   "type": "string"
+                },
+                "updateMask": {
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
                 }
               },
               "parameterOrder": [
@@ -3697,11 +3744,11 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
             },
-            "update": {
-              "id": "containeranalysis.projects.notes.update",
+            "patch": {
+              "id": "containeranalysis.projects.notes.patch",
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/projects/{projectsId}/notes/{notesId}",
-              "httpMethod": "PUT",
+              "httpMethod": "PATCH",
               "description": "Updates an existing note.",
               "parameters": {
                 "name": {
@@ -3710,6 +3757,11 @@
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/notes\/[^\/]+$",
                   "type": "string"
+                },
+                "updateMask": {
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
                 }
               },
               "parameterOrder": [
@@ -3819,7 +3871,7 @@
                   "path": "v1alpha1/{+name}/occurrences",
                   "flatPath": "v1alpha1/projects/{projectsId}/notes/{notesId}/occurrences",
                   "httpMethod": "GET",
-                  "description": "Lists the names of Occurrences linked to a particular Note.",
+                  "description": "Lists the names of occurrences linked to a particular note.",
                   "parameters": {
                     "name": {
                       "description": "The name field will contain the note name for example:\n  \"provider\/{provider_id}\/notes\/{note_id}\"",

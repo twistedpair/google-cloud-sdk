@@ -21,6 +21,7 @@
   "baseUrl": "https://logging.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -744,7 +745,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the metric descriptor. Depending on the implementation, the name typically includes: (1) the parent resource name that defines the scope of the metric type or of its data; and (2) the metric's URL-encoded type, which also appears in the type field of this descriptor. For example, following is the resource name of a custom metric within the GCP project my-project-id:\n\"projects\/my-project-id\/metricDescriptors\/custom.googleapis.com%2Finvoice%2Fpaid%2Famount\"\n",
+          "description": "The resource name of the metric descriptor.",
           "type": "string"
         },
         "type": {
@@ -805,7 +806,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "A concise name for the metric, which can be displayed in user interfaces. Use sentence case without an ending period, for example \"Request count\".",
+          "description": "A concise name for the metric, which can be displayed in user interfaces. Use sentence case without an ending period, for example \"Request count\". This field is optional but it is recommended to be set for any metrics associated with user-visible concepts, such as Quota.",
           "type": "string"
         }
       }

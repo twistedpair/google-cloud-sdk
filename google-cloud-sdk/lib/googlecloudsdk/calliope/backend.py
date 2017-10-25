@@ -120,7 +120,7 @@ class CommandCommon(object):
       # Propagate down notices from the deprecation decorator.
       if parent_group.Notices():
         for tag, msg in parent_group.Notices().iteritems():
-          self._common_type.AddNotice(tag, msg)
+          self._common_type.AddNotice(tag, msg, preserve_existing=True)
 
     self.detailed_help = getattr(self._common_type, 'detailed_help', {})
     self._ExtractHelpStrings(self._common_type.__doc__)

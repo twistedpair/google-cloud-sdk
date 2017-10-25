@@ -494,8 +494,8 @@ class Address(_messages.Message):
   """A reserved address resource.
 
   Enums:
-    AddressTypeValueValuesEnum: The type of address to reserve. If
-      unspecified, defaults to EXTERNAL.
+    AddressTypeValueValuesEnum: The type of address to reserve, either
+      INTERNAL or EXTERNAL. If unspecified, defaults to EXTERNAL.
     IpVersionValueValuesEnum: The IP Version that will be used by this
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
@@ -507,8 +507,8 @@ class Address(_messages.Message):
 
   Fields:
     address: The static IP address represented by this resource.
-    addressType: The type of address to reserve. If unspecified, defaults to
-      EXTERNAL.
+    addressType: The type of address to reserve, either INTERNAL or EXTERNAL.
+      If unspecified, defaults to EXTERNAL.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -542,7 +542,8 @@ class Address(_messages.Message):
   """
 
   class AddressTypeValueValuesEnum(_messages.Enum):
-    """The type of address to reserve. If unspecified, defaults to EXTERNAL.
+    """The type of address to reserve, either INTERNAL or EXTERNAL. If
+    unspecified, defaults to EXTERNAL.
 
     Values:
       EXTERNAL: <no description>
@@ -17146,7 +17147,7 @@ class InstancesStartWithEncryptionKeyRequest(_messages.Message):
 
 class Interconnect(_messages.Message):
   """Protocol definitions for Mixer API to support Interconnect. Next
-  available tag: 25
+  available tag: 26
 
   Enums:
     InterconnectTypeValueValuesEnum:
@@ -17233,15 +17234,11 @@ class Interconnect(_messages.Message):
     functional.
 
     Values:
-      ACTIVE: <no description>
       OS_ACTIVE: <no description>
       OS_UNPROVISIONED: <no description>
-      UNPROVISIONED: <no description>
     """
-    ACTIVE = 0
-    OS_ACTIVE = 1
-    OS_UNPROVISIONED = 2
-    UNPROVISIONED = 3
+    OS_ACTIVE = 0
+    OS_UNPROVISIONED = 1
 
   adminEnabled = _messages.BooleanField(1)
   circuitInfos = _messages.MessageField('InterconnectCircuitInfo', 2, repeated=True)
@@ -17268,7 +17265,7 @@ class Interconnect(_messages.Message):
 
 class InterconnectAttachment(_messages.Message):
   """Protocol definitions for Mixer API to support InterconnectAttachment.
-  Next available tag: 23
+  Next available tag: 25
 
   Enums:
     OperationalStatusValueValuesEnum: [Output Only] The current status of
@@ -17319,15 +17316,11 @@ class InterconnectAttachment(_messages.Message):
     attachment is functional.
 
     Values:
-      ACTIVE: <no description>
       OS_ACTIVE: <no description>
       OS_UNPROVISIONED: <no description>
-      UNPROVISIONED: <no description>
     """
-    ACTIVE = 0
-    OS_ACTIVE = 1
-    OS_UNPROVISIONED = 2
-    UNPROVISIONED = 3
+    OS_ACTIVE = 0
+    OS_UNPROVISIONED = 1
 
   cloudRouterIpAddress = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)

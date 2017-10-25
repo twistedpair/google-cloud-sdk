@@ -1106,6 +1106,12 @@ class _SectionMlEngine(_Section):
         help_text=('The interval (in seconds) at which to poll logs from your '
                    'Cloud ML Engine jobs. Note that making it much faster than '
                    'the default (60) will quickly use all of your quota.'))
+    self.local_python = self._Add(
+        'local_python', default=None,
+        help_text=('The full path to the Python interpreter to use for '
+                   'Cloud ML Engine local predict/train jobs. If not '
+                   'specified, will default to using the Python interpreter '
+                   'found on system PATH.'))
 
 
 class _SectionDataproc(_Section):

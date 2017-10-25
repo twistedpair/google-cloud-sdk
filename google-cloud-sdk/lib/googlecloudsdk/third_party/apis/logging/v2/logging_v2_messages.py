@@ -2117,7 +2117,8 @@ class MetricDescriptor(_messages.Message):
       documentation.
     displayName: A concise name for the metric, which can be displayed in user
       interfaces. Use sentence case without an ending period, for example
-      "Request count".
+      "Request count". This field is optional but it is recommended to be set
+      for any metrics associated with user-visible concepts, such as Quota.
     labels: The set of labels that can be used to describe a specific instance
       of this metric type. For example, the
       appengine.googleapis.com/http/server/response_latencies metric type has
@@ -2126,13 +2127,7 @@ class MetricDescriptor(_messages.Message):
     metricKind: Whether the metric records instantaneous values, changes to a
       value, etc. Some combinations of metric_kind and value_type might not be
       supported.
-    name: The resource name of the metric descriptor. Depending on the
-      implementation, the name typically includes: (1) the parent resource
-      name that defines the scope of the metric type or of its data; and (2)
-      the metric's URL-encoded type, which also appears in the type field of
-      this descriptor. For example, following is the resource name of a custom
-      metric within the GCP project my-project-id: "projects/my-project-
-      id/metricDescriptors/custom.googleapis.com%2Finvoice%2Fpaid%2Famount"
+    name: The resource name of the metric descriptor.
     type: The metric type, including its DNS name prefix. The type is not URL-
       encoded. All user-defined custom metric types have the DNS name
       custom.googleapis.com. Metric types should use a natural hierarchical

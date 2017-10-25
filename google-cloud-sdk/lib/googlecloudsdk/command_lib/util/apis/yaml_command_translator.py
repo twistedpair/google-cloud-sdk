@@ -78,6 +78,8 @@ class CommandBuilder(object):
       command = self._GenerateDeleteCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.CREATE:
       command = self._GenerateCreateCommand()
+    elif self.spec.command_type == yaml_command_schema.CommandType.WAIT:
+      command = self._GenerateWaitCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
       command = self._GenerateGenericCommand()
     else:
@@ -231,6 +233,39 @@ class CommandBuilder(object):
 
     return Command
 
+  def _GenerateWaitCommand(self):
+    """Generates a wait command for polling operations.
+
+    A wait command takes an operation reference and polls the status until it
+    is finished or errors out. This follows the exact same spec as in other
+    async commands except the primary operation (create, delete, etc) has
+    already been done. For APIs that adhere to standards, no further async
+    configuration is necessary. If the API uses custom operations, you may need
+    to provide extra configuration to describe how to poll the operation.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.Command):
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+
+      def Run(self_, args):
+        ref = self.arg_generator.GetRequestResourceRef(args)
+        response = self._WaitForOperation(
+            ref, resource_ref=None, extract_resource_result=False)
+        response = self._HandleResponse(response)
+        return response
+
+    return Command
+
   def _GenerateGenericCommand(self):
     """Generates a generic command.
 
@@ -355,6 +390,11 @@ class CommandBuilder(object):
           .format(yaml_command_schema.NAME_FORMAT_KEY), operation_ref))
       return operation
 
+    return self._WaitForOperation(
+        operation_ref, resource_ref, extract_resource_result)
+
+  def _WaitForOperation(self, operation_ref, resource_ref,
+                        extract_resource_result):
     poller = AsyncOperationPoller(
         self.spec, resource_ref if extract_resource_result else None)
     progress_string = self._Format(
@@ -529,7 +569,7 @@ class AsyncOperationPoller(waiter.OperationPoller):
     fields = {
         f.name: getattr(
             operation_ref,
-            self.spec.async.resource_get_method_params.get(f.name, f.name),
+            self.spec.async.operation_get_method_params.get(f.name, f.name),
             relative_name)
         for f in request_type.all_fields()}
     return self.method.Call(request_type(**fields))

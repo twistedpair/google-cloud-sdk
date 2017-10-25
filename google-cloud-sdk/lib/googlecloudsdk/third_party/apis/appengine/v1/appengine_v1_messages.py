@@ -227,13 +227,34 @@ class AppengineAppsAuthorizedDomainsListRequest(_messages.Message):
 class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
   """A AppengineAppsDomainMappingsCreateRequest object.
 
+  Enums:
+    OverrideStrategyValueValuesEnum: Whether the domain creation should
+      override any existing mappings for this domain. By default, overrides
+      are rejected.
+
   Fields:
     domainMapping: A DomainMapping resource to be passed as the request body.
+    overrideStrategy: Whether the domain creation should override any existing
+      mappings for this domain. By default, overrides are rejected.
     parent: Name of the parent Application resource. Example: apps/myapp.
   """
 
+  class OverrideStrategyValueValuesEnum(_messages.Enum):
+    """Whether the domain creation should override any existing mappings for
+    this domain. By default, overrides are rejected.
+
+    Values:
+      UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY: <no description>
+      STRICT: <no description>
+      OVERRIDE: <no description>
+    """
+    UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY = 0
+    STRICT = 1
+    OVERRIDE = 2
+
   domainMapping = _messages.MessageField('DomainMapping', 1)
-  parent = _messages.StringField(2, required=True)
+  overrideStrategy = _messages.EnumField('OverrideStrategyValueValuesEnum', 2)
+  parent = _messages.StringField(3, required=True)
 
 
 class AppengineAppsDomainMappingsDeleteRequest(_messages.Message):
@@ -675,7 +696,7 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
 
 class Application(_messages.Message):
   """An Application resource contains the top-level configuration of an App
-  Engine application. Next tag: 20
+  Engine application.
 
   Enums:
     ServingStatusValueValuesEnum: Serving status of this application.
@@ -1723,27 +1744,6 @@ class OperationMetadata(_messages.Message):
   operationType = _messages.StringField(4)
   target = _messages.StringField(5)
   user = _messages.StringField(6)
-
-
-class OperationMetadataExperimental(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
-
-  Fields:
-    endTime: Time that this operation completed.@OutputOnly
-    insertTime: Time that this operation was created.@OutputOnly
-    method: API method that initiated this operation. Example:
-      google.appengine.experimental.CustomDomains.CreateCustomDomain.@OutputOn
-      ly
-    target: Name of the resource that this operation is acting on. Example:
-      apps/myapp/customDomains/example.com.@OutputOnly
-    user: User who requested this operation.@OutputOnly
-  """
-
-  endTime = _messages.StringField(1)
-  insertTime = _messages.StringField(2)
-  method = _messages.StringField(3)
-  target = _messages.StringField(4)
-  user = _messages.StringField(5)
 
 
 class OperationMetadataV1(_messages.Message):

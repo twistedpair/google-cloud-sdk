@@ -27,6 +27,11 @@ _NATIVE_CRASH = 'Native crash'
 _NATIVE_CRASH_DETAILED_FORMAT = '''\
 For test execution [{0}], a native process crashed on the device. This could \
 be caused by your app, by an app dependency, or by an unrelated cause.'''
+_INFRASTRUCTURE_FAILURE = 'Infrastructure failure'
+_INFRASTRUCTURE_FAILURE_DETAILED_FORMAT = '''\
+Need help for test execution [{0}]? Please join the #test-lab Slack channel \
+at https://firebase.community/ and include execution ID [{1}] with your \
+question.'''
 
 
 class TestOutcome(collections.namedtuple(
@@ -144,6 +149,10 @@ class ToolResultsSummaryFetcher(object):
         details = self._GetStepOutcomeDetails(step)
         if _NATIVE_CRASH in details:
           log.warning(_NATIVE_CRASH_DETAILED_FORMAT.format(axis_value))
+        if _INFRASTRUCTURE_FAILURE in details:
+          log.warning(
+              _INFRASTRUCTURE_FAILURE_DETAILED_FORMAT.format(
+                  axis_value, self._execution_id))
         outcome_str = self._GetOutcomeSummaryDisplayName(step.outcome.summary)
         outcomes.append(
             TestOutcome(outcome=outcome_str,
@@ -245,7 +254,7 @@ class ToolResultsSummaryFetcher(object):
     elif outcome.summary == summary_enum.inconclusive:
       if outcome.inconclusiveDetail:
         if outcome.inconclusiveDetail.infrastructureFailure:
-          return 'Infrastructure failure'
+          return _INFRASTRUCTURE_FAILURE
         if outcome.inconclusiveDetail.abortedByUser:
           return 'Test run aborted by user'
       return 'Unknown reason'

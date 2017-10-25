@@ -314,9 +314,7 @@ Applies the given kubernetes taints on all nodes in default node-pool(s) in new 
   $ {command} example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
 """
   help_text += """
-New nodes, including ones created by resize or recreate, will have these taints
-on the kubernetes API node object and can be used with tolerations for pod scheduling.
-See https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ for examples.
+Please see https://cloud.google.com/container-engine/docs/node-taints for more details.
 """
 
   parser.add_argument(
@@ -692,8 +690,6 @@ Enable use of alias IPs (https://cloud.google.com/compute/docs/alias-ip/)
 for pod IPs. This will create two new subnetworks, one for the
 instance and pod IPs, and another to reserve space for the services
 range.
-
-Can not be specified unless '--enable-kubernetes-alpha' is also specified.
 """)
   parser.add_argument(
       '--services-ipv4-cidr',

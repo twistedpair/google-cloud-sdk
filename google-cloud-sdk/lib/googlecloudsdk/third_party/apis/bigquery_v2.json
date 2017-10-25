@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20170920",
+ "revision": "20171013",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -896,7 +896,7 @@
     },
     "schemaUpdateOptions": {
      "type": "array",
-     "description": "[Experimental] Allows the schema of the desitination table to be updated as a side effect of the load job if a schema is autodetected or supplied in the job configuration. Schema update options are supported in two cases: when writeDisposition is WRITE_APPEND; when writeDisposition is WRITE_TRUNCATE and the destination table is a partition of a table, specified by partition decorators. For normal tables, WRITE_TRUNCATE will always overwrite the schema. One or more of the following values are specified: ALLOW_FIELD_ADDITION: allow adding a nullable field to the schema. ALLOW_FIELD_RELAXATION: allow relaxing a required field in the original schema to nullable.",
+     "description": "Allows the schema of the desitination table to be updated as a side effect of the load job if a schema is autodetected or supplied in the job configuration. Schema update options are supported in two cases: when writeDisposition is WRITE_APPEND; when writeDisposition is WRITE_TRUNCATE and the destination table is a partition of a table, specified by partition decorators. For normal tables, WRITE_TRUNCATE will always overwrite the schema. One or more of the following values are specified: ALLOW_FIELD_ADDITION: allow adding a nullable field to the schema. ALLOW_FIELD_RELAXATION: allow relaxing a required field in the original schema to nullable.",
      "items": {
       "type": "string"
      }
@@ -919,7 +919,7 @@
     },
     "timePartitioning": {
      "$ref": "TimePartitioning",
-     "description": "[Experimental] If specified, configures time-based partitioning for the destination table."
+     "description": "If specified, configures time-based partitioning for the destination table."
     },
     "writeDisposition": {
      "type": "string",
@@ -993,7 +993,7 @@
     },
     "schemaUpdateOptions": {
      "type": "array",
-     "description": "[Experimental] Allows the schema of the destination table to be updated as a side effect of the query job. Schema update options are supported in two cases: when writeDisposition is WRITE_APPEND; when writeDisposition is WRITE_TRUNCATE and the destination table is a partition of a table, specified by partition decorators. For normal tables, WRITE_TRUNCATE will always overwrite the schema. One or more of the following values are specified: ALLOW_FIELD_ADDITION: allow adding a nullable field to the schema. ALLOW_FIELD_RELAXATION: allow relaxing a required field in the original schema to nullable.",
+     "description": "Allows the schema of the destination table to be updated as a side effect of the query job. Schema update options are supported in two cases: when writeDisposition is WRITE_APPEND; when writeDisposition is WRITE_TRUNCATE and the destination table is a partition of a table, specified by partition decorators. For normal tables, WRITE_TRUNCATE will always overwrite the schema. One or more of the following values are specified: ALLOW_FIELD_ADDITION: allow adding a nullable field to the schema. ALLOW_FIELD_RELAXATION: allow relaxing a required field in the original schema to nullable.",
      "items": {
       "type": "string"
      }
@@ -1007,7 +1007,7 @@
     },
     "timePartitioning": {
      "$ref": "TimePartitioning",
-     "description": "[Experimental] If specified, configures time-based partitioning for the destination table."
+     "description": "If specified, configures time-based partitioning for the destination table."
     },
     "useLegacySql": {
      "type": "boolean",
@@ -1711,7 +1711,7 @@
     },
     "timePartitioning": {
      "$ref": "TimePartitioning",
-     "description": "[Experimental] If specified, configures time-based partitioning for this table."
+     "description": "If specified, configures time-based partitioning for this table."
     },
     "type": {
      "type": "string",
@@ -1887,6 +1887,16 @@
      "items": {
       "type": "object",
       "properties": {
+       "creationTime": {
+        "type": "string",
+        "description": "The time when this table was created, in milliseconds since the epoch.",
+        "format": "int64"
+       },
+       "expirationTime": {
+        "type": "string",
+        "description": "[Optional] The time when this table expires, in milliseconds since the epoch. If not present, the table will persist indefinitely. Expired tables will be deleted and their storage reclaimed.",
+        "format": "int64"
+       },
        "friendlyName": {
         "type": "string",
         "description": "The user-friendly name for this table."
@@ -1913,7 +1923,7 @@
        },
        "timePartitioning": {
         "$ref": "TimePartitioning",
-        "description": "[Experimental] The time-based partitioning for this table."
+        "description": "The time-based partitioning for this table."
        },
        "type": {
         "type": "string",

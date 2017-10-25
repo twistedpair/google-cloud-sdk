@@ -249,9 +249,9 @@ class ClusterOperation(_messages.Message):
   """A ClusterOperation object.
 
   Fields:
-    done: Output-only Indicates the operation is done.
-    error: Output-only Error, if operation failed.
-    operationId: Output-only The id of the cluster operation.
+    done: Output only. Indicates the operation is done.
+    error: Output only. Error, if operation failed.
+    operationId: Output only. The id of the cluster operation.
   """
 
   done = _messages.BooleanField(1)
@@ -349,18 +349,20 @@ class ClusterSelector(_messages.Message):
   """A selector that chooses target cluster for jobs based on metadata.
 
   Messages:
-    ClusterLabelsValue: Required The cluster labels. Cluster must have all
+    ClusterLabelsValue: Required. The cluster labels. Cluster must have all
       labels to match.
 
   Fields:
-    clusterLabels: Required The cluster labels. Cluster must have all labels
+    clusterLabels: Required. The cluster labels. Cluster must have all labels
       to match.
-    zone: Required The cluster target zone.
+    zone: Optional. The zone where workflow process executes. This parameter
+      does not affect the selection of the cluster.If unspecified, the zone of
+      the first cluster matching the selector is used.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ClusterLabelsValue(_messages.Message):
-    """Required The cluster labels. Cluster must have all labels to match.
+    """Required. The cluster labels. Cluster must have all labels to match.
 
     Messages:
       AdditionalProperty: An additional property for a ClusterLabelsValue
@@ -451,7 +453,7 @@ class DataprocProjectsLocationsWorkflowTemplatesCreateRequest(_messages.Message)
   """A DataprocProjectsLocationsWorkflowTemplatesCreateRequest object.
 
   Fields:
-    parent: Required The "resource name" of the region, as described in
+    parent: Required. The "resource name" of the region, as described in
       https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}
     workflowTemplate: A WorkflowTemplate resource to be passed as the request
@@ -466,10 +468,10 @@ class DataprocProjectsLocationsWorkflowTemplatesDeleteRequest(_messages.Message)
   """A DataprocProjectsLocationsWorkflowTemplatesDeleteRequest object.
 
   Fields:
-    name: Required The "resource name" of the workflow template, as described
+    name: Required. The "resource name" of the workflow template, as described
       in https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
-    version: Optional The version of workflow template to delete. If
+    version: Optional. The version of workflow template to delete. If
       specified, will only delete the template if the current server version
       matches specified version.
   """
@@ -482,10 +484,10 @@ class DataprocProjectsLocationsWorkflowTemplatesGetRequest(_messages.Message):
   """A DataprocProjectsLocationsWorkflowTemplatesGetRequest object.
 
   Fields:
-    name: Required The "resource name" of the workflow template, as described
+    name: Required. The "resource name" of the workflow template, as described
       in https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
-    version: Optional The version of workflow template to retrieve. Only
+    version: Optional. The version of workflow template to retrieve. Only
       previously instatiated versions can be retrieved.If unspecified,
       retrieves the current version.
   """
@@ -500,7 +502,7 @@ class DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest(_messages.Mes
   Fields:
     instantiateWorkflowTemplateRequest: A InstantiateWorkflowTemplateRequest
       resource to be passed as the request body.
-    name: Required The "resource name" of the workflow template, as described
+    name: Required. The "resource name" of the workflow template, as described
       in https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
   """
@@ -513,11 +515,11 @@ class DataprocProjectsLocationsWorkflowTemplatesListRequest(_messages.Message):
   """A DataprocProjectsLocationsWorkflowTemplatesListRequest object.
 
   Fields:
-    pageSize: Optional The maximum number of results to return in each
+    pageSize: Optional. The maximum number of results to return in each
       response.
-    pageToken: Optional The page token, returned by a previous call, to
+    pageToken: Optional. The page token, returned by a previous call, to
       request the next page of results.
-    parent: Required The "resource name" of the region, as described in
+    parent: Required. The "resource name" of the region, as described in
       https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}
   """
@@ -548,6 +550,9 @@ class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
 
   Fields:
     clusterName: Required. The cluster name.
+    clusterUuid: Optional. Specifying the cluster_uuid means the RPC should
+      fail (with error NOT_FOUND) if cluster with specified UUID does not
+      exist.
     projectId: Required. The ID of the Google Cloud Platform project that the
       cluster belongs to.
     region: Required. The Cloud Dataproc region in which to handle the
@@ -555,8 +560,9 @@ class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
   """
 
   clusterName = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
+  clusterUuid = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
 
 
 class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
@@ -905,7 +911,7 @@ class DataprocProjectsRegionsWorkflowTemplatesCreateRequest(_messages.Message):
   """A DataprocProjectsRegionsWorkflowTemplatesCreateRequest object.
 
   Fields:
-    parent: Required The "resource name" of the region, as described in
+    parent: Required. The "resource name" of the region, as described in
       https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}
     workflowTemplate: A WorkflowTemplate resource to be passed as the request
@@ -920,10 +926,10 @@ class DataprocProjectsRegionsWorkflowTemplatesDeleteRequest(_messages.Message):
   """A DataprocProjectsRegionsWorkflowTemplatesDeleteRequest object.
 
   Fields:
-    name: Required The "resource name" of the workflow template, as described
+    name: Required. The "resource name" of the workflow template, as described
       in https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
-    version: Optional The version of workflow template to delete. If
+    version: Optional. The version of workflow template to delete. If
       specified, will only delete the template if the current server version
       matches specified version.
   """
@@ -936,10 +942,10 @@ class DataprocProjectsRegionsWorkflowTemplatesGetRequest(_messages.Message):
   """A DataprocProjectsRegionsWorkflowTemplatesGetRequest object.
 
   Fields:
-    name: Required The "resource name" of the workflow template, as described
+    name: Required. The "resource name" of the workflow template, as described
       in https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
-    version: Optional The version of workflow template to retrieve. Only
+    version: Optional. The version of workflow template to retrieve. Only
       previously instatiated versions can be retrieved.If unspecified,
       retrieves the current version.
   """
@@ -954,7 +960,7 @@ class DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest(_messages.Messa
   Fields:
     instantiateWorkflowTemplateRequest: A InstantiateWorkflowTemplateRequest
       resource to be passed as the request body.
-    name: Required The "resource name" of the workflow template, as described
+    name: Required. The "resource name" of the workflow template, as described
       in https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
   """
@@ -967,11 +973,11 @@ class DataprocProjectsRegionsWorkflowTemplatesListRequest(_messages.Message):
   """A DataprocProjectsRegionsWorkflowTemplatesListRequest object.
 
   Fields:
-    pageSize: Optional The maximum number of results to return in each
+    pageSize: Optional. The maximum number of results to return in each
       response.
-    pageToken: Optional The page token, returned by a previous call, to
+    pageToken: Optional. The page token, returned by a previous call, to
       request the next page of results.
-    parent: Required The "resource name" of the region, as described in
+    parent: Required. The "resource name" of the region, as described in
       https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}
   """
@@ -1340,14 +1346,14 @@ class InstantiateWorkflowTemplateRequest(_messages.Message):
   """A request to instantiate a workflow template.
 
   Fields:
-    instanceId: Optional A tag that prevents multiple concurrent workflow
+    instanceId: Optional. A tag that prevents multiple concurrent workflow
       instances with the same tag from running. This mitigates risk of
       concurrent instances started due to retries.It is recommended to always
       set this value to a UUID
       (https://en.wikipedia.org/wiki/Universally_unique_identifier).The tag
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
-    version: Optional The version of workflow template to instantiate. If
+    version: Optional. The version of workflow template to instantiate. If
       specified, the workflow will be instantiated only if the current version
       of the workflow template has the supplied version.This option cannot be
       used to instantiate a previous version of workflow template.
@@ -1632,11 +1638,11 @@ class ListWorkflowTemplatesResponse(_messages.Message):
   """A response to a request to list workflow templates in a project.
 
   Fields:
-    nextPageToken: Output-only This token is included in the response if there
-      are more results to fetch. To fetch additional results, provide this
-      value as the page_token in a subsequent
+    nextPageToken: Output only. This token is included in the response if
+      there are more results to fetch. To fetch additional results, provide
+      this value as the page_token in a subsequent
       <code>ListWorkflowTemplatesRequest</code>.
-    templates: Output-only WorkflowTemplates list.
+    templates: Output only. WorkflowTemplates list.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1718,28 +1724,28 @@ class ManagedCluster(_messages.Message):
   """Cluster that is managed by the workflow.
 
   Messages:
-    LabelsValue: Optional The labels to associate with this cluster.Label keys
-      must be between 1 and 63 characters long, and must conform to the
+    LabelsValue: Optional. The labels to associate with this cluster.Label
+      keys must be between 1 and 63 characters long, and must conform to the
       following PCRE regular expression: \p{Ll}\p{Lo}{0,62}Label values must
       be between 1 and 63 characters long, and must conform to the following
       PCRE regular expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels
       can be associated with a given cluster.
 
   Fields:
-    clusterName: Required The cluster name. Cluster names within a project
+    clusterName: Required. The cluster name. Cluster names within a project
       must be unique. Names from deleted clusters can be reused.
-    config: Required The cluster configuration.
-    labels: Optional The labels to associate with this cluster.Label keys must
+    config: Required. The cluster configuration.
+    labels: Optional. The labels to associate with this cluster.Label keys
+      must be between 1 and 63 characters long, and must conform to the
+      following PCRE regular expression: \p{Ll}\p{Lo}{0,62}Label values must
       be between 1 and 63 characters long, and must conform to the following
-      PCRE regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between
-      1 and 63 characters long, and must conform to the following PCRE regular
-      expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels can be
-      associated with a given cluster.
+      PCRE regular expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels
+      can be associated with a given cluster.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional The labels to associate with this cluster.Label keys must be
+    """Optional. The labels to associate with this cluster.Label keys must be
     between 1 and 63 characters long, and must conform to the following PCRE
     regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between 1 and
     63 characters long, and must conform to the following PCRE regular
@@ -1913,7 +1919,7 @@ class OrderedJob(_messages.Message):
   """A OrderedJob object.
 
   Messages:
-    LabelsValue: Optional The labels to associate with this job.Label keys
+    LabelsValue: Optional. The labels to associate with this job.Label keys
       must be between 1 and 63 characters long, and must conform to the
       following regular expression: \p{Ll}\p{Lo}{0,62}Label values must be
       between 1 and 63 characters long, and must conform to the following
@@ -1923,28 +1929,28 @@ class OrderedJob(_messages.Message):
   Fields:
     hadoopJob: Job is a Hadoop job.
     hiveJob: Job is a Hive job.
-    labels: Optional The labels to associate with this job.Label keys must be
+    labels: Optional. The labels to associate with this job.Label keys must be
       between 1 and 63 characters long, and must conform to the following
       regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between 1 and
       63 characters long, and must conform to the following regular
       expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels can be
       associated with a given job.
     pigJob: Job is a Pig job.
-    prerequisiteStepIds: Optional The optional list of prerequisite job
+    prerequisiteStepIds: Optional. The optional list of prerequisite job
       step_ids. If not specified, the job will start at the beginning of
       workflow.
     pysparkJob: Job is a Pyspark job.
-    scheduling: Optional Job scheduling configuration.
+    scheduling: Optional. Job scheduling configuration.
     sparkJob: Job is a Spark job.
     sparkSqlJob: Job is a SparkSql job.
-    stepId: Required The step id. The id must be unique among all jobs within
+    stepId: Required. The step id. The id must be unique among all jobs within
       the template.The step id is used as prefix for job id, as job workflow-
       step-id label, and in prerequisite_step_ids field from other steps.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional The labels to associate with this job.Label keys must be
+    """Optional. The labels to associate with this job.Label keys must be
     between 1 and 63 characters long, and must conform to the following
     regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between 1 and
     63 characters long, and must conform to the following regular expression:
@@ -2603,7 +2609,7 @@ class WorkflowGraph(_messages.Message):
   """The workflow graph.
 
   Fields:
-    nodes: Output-only The workflow nodes.
+    nodes: Output only. The workflow nodes.
   """
 
   nodes = _messages.MessageField('WorkflowNode', 1, repeated=True)
@@ -2613,21 +2619,21 @@ class WorkflowMetadata(_messages.Message):
   """A Cloud Dataproc workflow template resource.
 
   Enums:
-    StateValueValuesEnum: Output-only The workflow state.
+    StateValueValuesEnum: Output only. The workflow state.
 
   Fields:
-    clusterName: Output-only The name of the managed cluster.
-    createCluster: Output-only The create cluster operation metadata.
-    deleteCluster: Output-only The delete cluster operation metadata.
-    graph: Output-only The workflow graph.
-    state: Output-only The workflow state.
-    template: Output-only The "resource name" of the template.
-    version: Output-only The version of template at the time of workflow
+    clusterName: Output only. The name of the managed cluster.
+    createCluster: Output only. The create cluster operation metadata.
+    deleteCluster: Output only. The delete cluster operation metadata.
+    graph: Output only. The workflow graph.
+    state: Output only. The workflow state.
+    template: Output only. The "resource name" of the template.
+    version: Output only. The version of template at the time of workflow
       instantiation.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output-only The workflow state.
+    """Output only. The workflow state.
 
     Values:
       UNKNOWN: Unused.
@@ -2653,19 +2659,19 @@ class WorkflowNode(_messages.Message):
   """The workflow node.
 
   Enums:
-    StateValueValuesEnum: Output-only The node state.
+    StateValueValuesEnum: Output only. The node state.
 
   Fields:
-    error: Output-only The error detail.
-    jobId: Output-only The job id; populated after the node enters RUNNING
+    error: Output only. The error detail.
+    jobId: Output only. The job id; populated after the node enters RUNNING
       state.
-    prerequisiteStepIds: Output-only Node's prerequisite nodes.
-    state: Output-only The node state.
-    stepId: Output-only The name of the node.
+    prerequisiteStepIds: Output only. Node's prerequisite nodes.
+    state: Output only. The node state.
+    stepId: Output only. The name of the node.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output-only The node state.
+    """Output only. The node state.
 
     Values:
       NODE_STATUS_UNSPECIFIED: <no description>
@@ -2694,7 +2700,7 @@ class WorkflowTemplate(_messages.Message):
   """A Cloud Dataproc workflow template resource.
 
   Messages:
-    LabelsValue: Optional The labels to associate with this template. These
+    LabelsValue: Optional. The labels to associate with this template. These
       labels will be propagated to all jobs and clusters created by the
       workflow instance.Label keys must contain 1 to 63 characters, and must
       conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).Label values
@@ -2703,22 +2709,22 @@ class WorkflowTemplate(_messages.Message):
       32 labels can be associated with a template.
 
   Fields:
-    createTime: Output-only The time template was created.
-    id: Required The template id.
-    jobs: Required The Directed Acyclic Graph of Jobs to submit.
-    labels: Optional The labels to associate with this template. These labels
+    createTime: Output only. The time template was created.
+    id: Required. The template id.
+    jobs: Required. The Directed Acyclic Graph of Jobs to submit.
+    labels: Optional. The labels to associate with this template. These labels
       will be propagated to all jobs and clusters created by the workflow
       instance.Label keys must contain 1 to 63 characters, and must conform to
       RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).Label values may be
       empty, but, if present, must contain 1 to 63 characters, and must
       conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).No more than
       32 labels can be associated with a template.
-    name: Output-only The "resource name" of the template, as described in
+    name: Output only. The "resource name" of the template, as described in
       https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
-    placement: Required WorkflowTemplate scheduling information.
-    updateTime: Output-only The time template was last updated.
-    version: Optional Used to perform a consistent read-modify-write.This
+    placement: Required. WorkflowTemplate scheduling information.
+    updateTime: Output only. The time template was last updated.
+    version: Optional. Used to perform a consistent read-modify-write.This
       field should be left blank for a CreateWorkflowTemplate request. It is
       required for an UpdateWorkflowTemplate request, and must match the
       current server version. A typical update template flow would fetch the
@@ -2730,7 +2736,7 @@ class WorkflowTemplate(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional The labels to associate with this template. These labels will
+    """Optional. The labels to associate with this template. These labels will
     be propagated to all jobs and clusters created by the workflow
     instance.Label keys must contain 1 to 63 characters, and must conform to
     RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt).Label values may be empty,
@@ -2773,10 +2779,10 @@ class WorkflowTemplatePlacement(_messages.Message):
   cluster_selector is required.
 
   Fields:
-    clusterSelector: Optional A selector that chooses target cluster for jobs
+    clusterSelector: Optional. A selector that chooses target cluster for jobs
       based on metadata.The selector is evaluated at the time each job is
       submitted.
-    managedCluster: Optional A cluster that is managed by the workflow.
+    managedCluster: Optional. A cluster that is managed by the workflow.
   """
 
   clusterSelector = _messages.MessageField('ClusterSelector', 1)

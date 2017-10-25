@@ -205,7 +205,7 @@
     },
     "Application": {
       "id": "Application",
-      "description": "An Application resource contains the top-level configuration of an App Engine application. Next tag: 20",
+      "description": "An Application resource contains the top-level configuration of an App Engine application.",
       "type": "object",
       "properties": {
         "name": {
@@ -1714,7 +1714,9 @@
             "Certificate was successfully obtained and inserted into the serving system.",
             "Certificate is under active attempts to acquire or renew.",
             "Most recent renewal failed due to an invalid DNS setup and will be retried. Renewal attempts will continue to fail until the certificate domain's DNS configuration is fixed. The last successfully provisioned certificate may still be serving.",
-            "All renewal attempts have been exhausted, likely due to an invalid DNS setup."
+            "All renewal attempts have been exhausted, likely due to an invalid DNS setup.",
+            "Most recent renewal failed due to an explicit CAA record that does not include the in-use CA, Let's Encrypt. Renewals will continue to fail until the CAA is reconfigured. The last successfully provisioned certificate may still be serving.",
+            "Most recent renewal failed due to a CAA retrieval failure. This means that the domain's DNS provider does not properly handle CAA records, failing requests for CAA records when no CAA records are defined. Renewals will continue to fail until the DNS provider is changed or a CAA record is added for the given domain. The last successfully provisioned certificate may still be serving."
           ],
           "type": "string",
           "enum": [
@@ -1722,7 +1724,9 @@
             "OK",
             "PENDING",
             "FAILED_RETRYING_NOT_VISIBLE",
-            "FAILED_PERMANENT"
+            "FAILED_PERMANENT",
+            "FAILED_RETRYING_CAA_FORBIDDEN",
+            "FAILED_RETRYING_CAA_CHECKING"
           ]
         }
       }
@@ -1872,35 +1876,6 @@
             "type": "any",
             "description": "Properties of the object. Contains field @type with type URL."
           }
-        }
-      }
-    },
-    "OperationMetadataExperimental": {
-      "id": "OperationMetadataExperimental",
-      "description": "Metadata for the given google.longrunning.Operation.",
-      "type": "object",
-      "properties": {
-        "method": {
-          "description": "API method that initiated this operation. Example: google.appengine.experimental.CustomDomains.CreateCustomDomain.@OutputOnly",
-          "type": "string"
-        },
-        "insertTime": {
-          "description": "Time that this operation was created.@OutputOnly",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Time that this operation completed.@OutputOnly",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "user": {
-          "description": "User who requested this operation.@OutputOnly",
-          "type": "string"
-        },
-        "target": {
-          "description": "Name of the resource that this operation is acting on. Example: apps\/myapp\/customDomains\/example.com.@OutputOnly",
-          "type": "string"
         }
       }
     },
@@ -3215,6 +3190,16 @@
                   "required": true,
                   "pattern": "^apps\/[^\/]+$",
                   "type": "string"
+                },
+                "overrideStrategy": {
+                  "description": "Whether the domain creation should override any existing mappings for this domain. By default, overrides are rejected.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY",
+                    "STRICT",
+                    "OVERRIDE"
+                  ]
                 }
               },
               "parameterOrder": [

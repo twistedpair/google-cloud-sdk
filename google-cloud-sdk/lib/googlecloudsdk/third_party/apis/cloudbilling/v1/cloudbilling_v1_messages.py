@@ -194,9 +194,10 @@ class CloudbillingServicesSkusListRequest(_messages.Message):
       If not specified USD will be used.
     endTime: Optional exclusive end time of the time range for which the
       pricing versions will be returned. Timestamps in the future are not
-      allowed. Maximum allowable time range is 1 month (31 days). Time range
-      as a whole is optional. If not specified, the latest pricing will be
-      returned (up to 12 hours old at most).
+      allowed. The time range has to be within a single calendar month in
+      America/Los_Angeles timezone. Time range as a whole is optional. If not
+      specified, the latest pricing will be returned (up to 12 hours old at
+      most).
     pageSize: Requested page size. Defaults to 5000.
     pageToken: A token identifying a page of results to return. This should be
       a `next_page_token` value returned from a previous `ListSkus` call. If
@@ -204,9 +205,10 @@ class CloudbillingServicesSkusListRequest(_messages.Message):
     parent: The name of the service. Example: "services/DA34-426B-A397"
     startTime: Optional inclusive start time of the time range for which the
       pricing versions will be returned. Timestamps in the future are not
-      allowed. Maximum allowable time range is 1 month (31 days). Time range
-      as a whole is optional. If not specified, the latest pricing will be
-      returned (up to 12 hours old at most).
+      allowed. The time range has to be within a single calendar month in
+      America/Los_Angeles timezone. Time range as a whole is optional. If not
+      specified, the latest pricing will be returned (up to 12 hours old at
+      most).
   """
 
   currencyCode = _messages.StringField(1)

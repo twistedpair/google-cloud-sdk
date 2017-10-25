@@ -228,23 +228,24 @@ properties:
     properties:
       # The full collection name of the operation collection for this API.
       collection: { type: string }
-      # The API version to use, defaults to API set as gcloud default.
+      # The API version to use, defaults to API version specified in the request
+      # section.
       api_version: { type: string }
       # The API method to call to get the operation ('get' by default).
       method: { type: string }
       # The field in the operation message that corresponds to the operation's
-      # full name ('name' by default).
+      # full name ('name' by default). Not used by Wait commands.
       response_name_field: { type: string }
       # Override whether the command should get the resulting resource after
       # the operation is done, or just return the operation result. This is
-      # True by default (except for Delete commands).
+      # True by default (except for Delete and Wait commands).
       extract_resource_result: { type: boolean }
       # The API method to call to get the updated state of the resource being
       # operated on ('get' by default).
       resource_get_method: { type: string }
       # A mapping of method parameter to operation reference field for
       # references or APIs that use non-standard naming.
-      resource_get_method_params:
+      operation_get_method_params:
         type: object
         patternProperties:
           .*: { type: string }

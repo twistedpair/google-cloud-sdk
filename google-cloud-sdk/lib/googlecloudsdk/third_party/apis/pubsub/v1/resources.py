@@ -28,6 +28,12 @@ class Collections(enum.Enum):
       {},
       [u'projectsId']
   )
+  PROJECTS_SNAPSHOTS = (
+      'projects.snapshots',
+      'projects/{projectsId}/snapshots/{snapshotsId}',
+      {},
+      ['projectsId', 'snapshotsId']
+  )
   PROJECTS_SUBSCRIPTIONS = (
       'projects.subscriptions',
       '{+subscription}',

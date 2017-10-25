@@ -1211,10 +1211,10 @@ class JobConfigurationLoad(_messages.Message):
       "Field1:Type1[,Field2:Type2]*". For example, "foo:STRING, bar:INTEGER,
       baz:FLOAT".
     schemaInlineFormat: [Deprecated] The format of the schemaInline property.
-    schemaUpdateOptions: [Experimental] Allows the schema of the desitination
-      table to be updated as a side effect of the load job if a schema is
-      autodetected or supplied in the job configuration. Schema update options
-      are supported in two cases: when writeDisposition is WRITE_APPEND; when
+    schemaUpdateOptions: Allows the schema of the desitination table to be
+      updated as a side effect of the load job if a schema is autodetected or
+      supplied in the job configuration. Schema update options are supported
+      in two cases: when writeDisposition is WRITE_APPEND; when
       writeDisposition is WRITE_TRUNCATE and the destination table is a
       partition of a table, specified by partition decorators. For normal
       tables, WRITE_TRUNCATE will always overwrite the schema. One or more of
@@ -1237,8 +1237,8 @@ class JobConfigurationLoad(_messages.Message):
       fully specified and valid HTTPS URL for a Google Cloud Bigtable table.
       For Google Cloud Datastore backups: Exactly one URI can be specified.
       Also, the '*' wildcard character is not allowed.
-    timePartitioning: [Experimental] If specified, configures time-based
-      partitioning for the destination table.
+    timePartitioning: If specified, configures time-based partitioning for the
+      destination table.
     writeDisposition: [Optional] Specifies the action that occurs if the
       destination table already exists. The following values are supported:
       WRITE_TRUNCATE: If the table already exists, BigQuery overwrites the
@@ -1326,22 +1326,21 @@ class JobConfigurationQuery(_messages.Message):
     query: [Required] SQL query text to execute. The useLegacySql field can be
       used to indicate whether the query uses legacy SQL or standard SQL.
     queryParameters: Query parameters for standard SQL queries.
-    schemaUpdateOptions: [Experimental] Allows the schema of the destination
-      table to be updated as a side effect of the query job. Schema update
-      options are supported in two cases: when writeDisposition is
-      WRITE_APPEND; when writeDisposition is WRITE_TRUNCATE and the
-      destination table is a partition of a table, specified by partition
-      decorators. For normal tables, WRITE_TRUNCATE will always overwrite the
-      schema. One or more of the following values are specified:
-      ALLOW_FIELD_ADDITION: allow adding a nullable field to the schema.
-      ALLOW_FIELD_RELAXATION: allow relaxing a required field in the original
-      schema to nullable.
+    schemaUpdateOptions: Allows the schema of the destination table to be
+      updated as a side effect of the query job. Schema update options are
+      supported in two cases: when writeDisposition is WRITE_APPEND; when
+      writeDisposition is WRITE_TRUNCATE and the destination table is a
+      partition of a table, specified by partition decorators. For normal
+      tables, WRITE_TRUNCATE will always overwrite the schema. One or more of
+      the following values are specified: ALLOW_FIELD_ADDITION: allow adding a
+      nullable field to the schema. ALLOW_FIELD_RELAXATION: allow relaxing a
+      required field in the original schema to nullable.
     tableDefinitions: [Optional] If querying an external data source outside
       of BigQuery, describes the data format, location and other properties of
       the data source. By defining these properties, the data source can then
       be queried as if it were a standard BigQuery table.
-    timePartitioning: [Experimental] If specified, configures time-based
-      partitioning for the destination table.
+    timePartitioning: If specified, configures time-based partitioning for the
+      destination table.
     useLegacySql: Specifies whether to use BigQuery's legacy SQL dialect for
       this query. The default value is true. If set to false, the query will
       use BigQuery's standard SQL: https://cloud.google.com/bigquery/sql-
@@ -2022,8 +2021,8 @@ class Table(_messages.Message):
       table is not being streamed to or if there is no data in the streaming
       buffer.
     tableReference: [Required] Reference describing the ID of this table.
-    timePartitioning: [Experimental] If specified, configures time-based
-      partitioning for this table.
+    timePartitioning: If specified, configures time-based partitioning for
+      this table.
     type: [Output-only] Describes the table type. The following values are
       supported: TABLE: A normal BigQuery table. VIEW: A virtual table defined
       by a SQL query. EXTERNAL: A table that references data stored in an
@@ -2235,14 +2234,19 @@ class TableList(_messages.Message):
       ViewValue: Additional details for a view.
 
     Fields:
+      creationTime: The time when this table was created, in milliseconds
+        since the epoch.
+      expirationTime: [Optional] The time when this table expires, in
+        milliseconds since the epoch. If not present, the table will persist
+        indefinitely. Expired tables will be deleted and their storage
+        reclaimed.
       friendlyName: The user-friendly name for this table.
       id: An opaque ID of the table
       kind: The resource type.
       labels: [Experimental] The labels associated with this table. You can
         use these to organize and group your tables.
       tableReference: A reference uniquely identifying the table.
-      timePartitioning: [Experimental] The time-based partitioning for this
-        table.
+      timePartitioning: The time-based partitioning for this table.
       type: The type of table. Possible values are: TABLE, VIEW.
       view: Additional details for a view.
     """
@@ -2282,14 +2286,16 @@ class TableList(_messages.Message):
 
       useLegacySql = _messages.BooleanField(1)
 
-    friendlyName = _messages.StringField(1)
-    id = _messages.StringField(2)
-    kind = _messages.StringField(3, default=u'bigquery#table')
-    labels = _messages.MessageField('LabelsValue', 4)
-    tableReference = _messages.MessageField('TableReference', 5)
-    timePartitioning = _messages.MessageField('TimePartitioning', 6)
-    type = _messages.StringField(7)
-    view = _messages.MessageField('ViewValue', 8)
+    creationTime = _messages.IntegerField(1)
+    expirationTime = _messages.IntegerField(2)
+    friendlyName = _messages.StringField(3)
+    id = _messages.StringField(4)
+    kind = _messages.StringField(5, default=u'bigquery#table')
+    labels = _messages.MessageField('LabelsValue', 6)
+    tableReference = _messages.MessageField('TableReference', 7)
+    timePartitioning = _messages.MessageField('TimePartitioning', 8)
+    type = _messages.StringField(9)
+    view = _messages.MessageField('ViewValue', 10)
 
   etag = _messages.StringField(1)
   kind = _messages.StringField(2, default=u'bigquery#tableList')

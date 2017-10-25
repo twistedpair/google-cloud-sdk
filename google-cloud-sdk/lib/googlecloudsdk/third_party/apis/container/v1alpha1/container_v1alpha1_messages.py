@@ -164,6 +164,7 @@ class Cluster(_messages.Message):
     addonsConfig: Configurations for the various addons available to run in
       the cluster.
     auditConfig: Configuration for audit logging.
+    autoscaling: Cluster-level autoscaling configuration.
     binaryAuthorization: Configuration for Binary Authorization.
     clusterIpv4Cidr: The IP address range of the container pods in this
       cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
@@ -224,8 +225,9 @@ class Cluster(_messages.Message):
     maintenancePolicy: Configure the maintenance policy for this cluster.
     masterAuth: The authentication information for accessing the master
       endpoint.
-    masterAuthorizedNetworks: Deprecated. The configuration options for master
-      authorized networks feature.
+    masterAuthorizedNetworks: The configuration options for master authorized
+      networks feature. This field is deprecated, use
+      master_authorized_networks_config instead.
     masterAuthorizedNetworksConfig: The configuration options for master
       authorized networks feature.
     monitoringService: The monitoring service the cluster should use to write
@@ -240,6 +242,7 @@ class Cluster(_messages.Message):
     network: The name of the Google Compute Engine [network](/compute/docs
       /networks-and-firewalls#networks) to which the cluster is connected. If
       left unspecified, the `default` network will be used.
+    networkConfig: Configuration for cluster networking.
     networkPolicy: Configuration options for the NetworkPolicy feature.
     nodeConfig: Parameters used in creating the cluster's nodes. See
       `nodeConfig` for the description of its properties. For requests, this
@@ -254,6 +257,7 @@ class Cluster(_messages.Message):
       `container_ipv4_cidr` range.
     nodePools: The node pools associated with this cluster. This field should
       not be set if "node_config" or "initial_node_count" are specified.
+    podSecurityPolicyConfig: Configuration for the PodSecurityPolicy feature.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related GCE resources.
     selfLink: [Output only] Server-defined URL for the resource.
@@ -323,43 +327,62 @@ class Cluster(_messages.Message):
 
   addonsConfig = _messages.MessageField('AddonsConfig', 1)
   auditConfig = _messages.MessageField('AuditConfig', 2)
-  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 3)
-  clusterIpv4Cidr = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  currentMasterVersion = _messages.StringField(6)
-  currentNodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  currentNodeVersion = _messages.StringField(8)
-  description = _messages.StringField(9)
-  enableKubernetesAlpha = _messages.BooleanField(10)
-  endpoint = _messages.StringField(11)
-  expireTime = _messages.StringField(12)
-  initialClusterVersion = _messages.StringField(13)
-  initialNodeCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(15, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 16)
-  labelFingerprint = _messages.StringField(17)
-  legacyAbac = _messages.MessageField('LegacyAbac', 18)
-  location = _messages.StringField(19)
-  locations = _messages.StringField(20, repeated=True)
-  loggingService = _messages.StringField(21)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 22)
-  masterAuth = _messages.MessageField('MasterAuth', 23)
-  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 24)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 25)
-  monitoringService = _messages.StringField(26)
-  name = _messages.StringField(27)
-  network = _messages.StringField(28)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 29)
-  nodeConfig = _messages.MessageField('NodeConfig', 30)
-  nodeIpv4CidrSize = _messages.IntegerField(31, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 32, repeated=True)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 33)
-  selfLink = _messages.StringField(34)
-  servicesIpv4Cidr = _messages.StringField(35)
-  status = _messages.EnumField('StatusValueValuesEnum', 36)
-  statusMessage = _messages.StringField(37)
-  subnetwork = _messages.StringField(38)
-  zone = _messages.StringField(39)
+  autoscaling = _messages.MessageField('ClusterAutoscaling', 3)
+  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 4)
+  clusterIpv4Cidr = _messages.StringField(5)
+  createTime = _messages.StringField(6)
+  currentMasterVersion = _messages.StringField(7)
+  currentNodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  currentNodeVersion = _messages.StringField(9)
+  description = _messages.StringField(10)
+  enableKubernetesAlpha = _messages.BooleanField(11)
+  endpoint = _messages.StringField(12)
+  expireTime = _messages.StringField(13)
+  initialClusterVersion = _messages.StringField(14)
+  initialNodeCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(16, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 17)
+  labelFingerprint = _messages.StringField(18)
+  legacyAbac = _messages.MessageField('LegacyAbac', 19)
+  location = _messages.StringField(20)
+  locations = _messages.StringField(21, repeated=True)
+  loggingService = _messages.StringField(22)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 23)
+  masterAuth = _messages.MessageField('MasterAuth', 24)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 25)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 26)
+  monitoringService = _messages.StringField(27)
+  name = _messages.StringField(28)
+  network = _messages.StringField(29)
+  networkConfig = _messages.MessageField('NetworkConfig', 30)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 31)
+  nodeConfig = _messages.MessageField('NodeConfig', 32)
+  nodeIpv4CidrSize = _messages.IntegerField(33, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 34, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 35)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 36)
+  selfLink = _messages.StringField(37)
+  servicesIpv4Cidr = _messages.StringField(38)
+  status = _messages.EnumField('StatusValueValuesEnum', 39)
+  statusMessage = _messages.StringField(40)
+  subnetwork = _messages.StringField(41)
+  zone = _messages.StringField(42)
+
+
+class ClusterAutoscaling(_messages.Message):
+  """ClusterAutoscaling contains global, per-cluster information required by
+  Cluster Autoscaler to automatically adjust the size of the cluster and
+  create/delete node pools based on the current needs.
+
+  Fields:
+    nodeAutoprovisioningEnabled: Enables automatic node pool creation and
+      deletion.
+    resourceLimits: Contains global constraints regarding minimum and maximum
+      amount of resources in the cluster.
+  """
+
+  nodeAutoprovisioningEnabled = _messages.BooleanField(1)
+  resourceLimits = _messages.MessageField('ResourceLimit', 2, repeated=True)
 
 
 class ClusterUpdate(_messages.Message):
@@ -370,7 +393,9 @@ class ClusterUpdate(_messages.Message):
   Fields:
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
-    desiredAuditConfig: Whether to enable execve audit logging on the nodes.
+    desiredAuditConfig: The desired configuration for audit logging.
+    desiredClusterAutoscaling: The desired cluster-level autoscaling
+      configuration.
     desiredImageType: The desired image type for the node pool. NOTE: Set the
       "desired_node_pool" field as well.
     desiredLocations: The desired list of Google Compute Engine
@@ -379,10 +404,14 @@ class ClusterUpdate(_messages.Message):
       nodes being either created or removed from the cluster, depending on
       whether locations are being added or removed.  This list must always
       include the cluster's primary zone.
-    desiredMasterAuthorizedNetworks: Deprecated. The desired configuration
-      options for master authorized networks feature.
+    desiredMasterAuthorizedNetworks: The desired configuration options for
+      master authorized networks feature. This field is deprecated, use
+      desired_master_authorized_networks_config instead.
     desiredMasterAuthorizedNetworksConfig: The desired configuration options
       for master authorized networks feature.
+    desiredMasterId: An id of master replica to be updated. Can be set only
+      when desired_master_version is set. If not set, all replicas will be
+      updated.
     desiredMasterMachineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
       master to.
@@ -404,20 +433,25 @@ class ClusterUpdate(_messages.Message):
     desiredNodeVersion: The Kubernetes version to change the nodes to
       (typically an upgrade). Use `-` to upgrade to the latest version
       supported by the server.
+    desiredPodSecurityPolicyConfig: The desired configuration options for the
+      PodSecurityPolicy feature.
   """
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
   desiredAuditConfig = _messages.MessageField('AuditConfig', 2)
-  desiredImageType = _messages.StringField(3)
-  desiredLocations = _messages.StringField(4, repeated=True)
-  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 5)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 6)
-  desiredMasterMachineType = _messages.StringField(7)
-  desiredMasterVersion = _messages.StringField(8)
-  desiredMonitoringService = _messages.StringField(9)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 10)
-  desiredNodePoolId = _messages.StringField(11)
-  desiredNodeVersion = _messages.StringField(12)
+  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 3)
+  desiredImageType = _messages.StringField(4)
+  desiredLocations = _messages.StringField(5, repeated=True)
+  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 6)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 7)
+  desiredMasterId = _messages.StringField(8)
+  desiredMasterMachineType = _messages.StringField(9)
+  desiredMasterVersion = _messages.StringField(10)
+  desiredMonitoringService = _messages.StringField(11)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 12)
+  desiredNodePoolId = _messages.StringField(13)
+  desiredNodeVersion = _messages.StringField(14)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 15)
 
 
 class ClusterUpdateOptions(_messages.Message):
@@ -1007,6 +1041,13 @@ class IPAllocationPolicy(_messages.Message):
   """Configuration for controlling how IPs are allocated in the cluster.
 
   Fields:
+    allowRouteOverlap: Whether to allow certain existing routes to overlap
+      with the CIDRs provided at cluster creation time. When this flag is
+      enabled, the requested routes will only be checked for overlap with
+      routes with smaller netmasks and routes whose next hop is a VM instance.
+      If this field is set to true, then the cluster_ipv4_cidr_block and
+      services_ipv4_cidr_block fields must be populated with a fully-specified
+      CIDR (e.g. `10.96.0.0/14`, but not `/14`).
     clusterIpv4Cidr: This field is deprecated, use cluster_ipv4_cidr_block.
     clusterIpv4CidrBlock: The IP address range for the cluster pod IPs. If
       this field is set, then `cluster.cluster_ipv4_cidr` must be left blank.
@@ -1055,17 +1096,18 @@ class IPAllocationPolicy(_messages.Message):
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
   """
 
-  clusterIpv4Cidr = _messages.StringField(1)
-  clusterIpv4CidrBlock = _messages.StringField(2)
-  clusterSecondaryRangeName = _messages.StringField(3)
-  createSubnetwork = _messages.BooleanField(4)
-  nodeIpv4Cidr = _messages.StringField(5)
-  nodeIpv4CidrBlock = _messages.StringField(6)
-  servicesIpv4Cidr = _messages.StringField(7)
-  servicesIpv4CidrBlock = _messages.StringField(8)
-  servicesSecondaryRangeName = _messages.StringField(9)
-  subnetworkName = _messages.StringField(10)
-  useIpAliases = _messages.BooleanField(11)
+  allowRouteOverlap = _messages.BooleanField(1)
+  clusterIpv4Cidr = _messages.StringField(2)
+  clusterIpv4CidrBlock = _messages.StringField(3)
+  clusterSecondaryRangeName = _messages.StringField(4)
+  createSubnetwork = _messages.BooleanField(5)
+  nodeIpv4Cidr = _messages.StringField(6)
+  nodeIpv4CidrBlock = _messages.StringField(7)
+  servicesIpv4Cidr = _messages.StringField(8)
+  servicesIpv4CidrBlock = _messages.StringField(9)
+  servicesSecondaryRangeName = _messages.StringField(10)
+  subnetworkName = _messages.StringField(11)
+  useIpAliases = _messages.BooleanField(12)
 
 
 class KubernetesDashboard(_messages.Message):
@@ -1190,10 +1232,11 @@ class MasterAuth(_messages.Message):
 
 
 class MasterAuthorizedNetworks(_messages.Message):
-  """Deprecated. Configuration options for the master authorized networks
-  feature. Enabled master authorized networks will disallow all external
-  traffic to access Kubernetes master through HTTPS except traffic from the
-  given CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.
+  """Configuration options for the master authorized networks feature. Enabled
+  master authorized networks will disallow all external traffic to access
+  Kubernetes master through HTTPS except traffic from the given CIDR blocks,
+  Google Compute Engine Public IPs and Google Prod IPs. This message is
+  deprecated, use MasterAuthorizedNetworksConfig instead.
 
   Fields:
     cidrs: Network CIDRs define up to 10 external networks that could access
@@ -1219,6 +1262,23 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
 
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
   enabled = _messages.BooleanField(2)
+
+
+class NetworkConfig(_messages.Message):
+  """Parameters for cluster networking.
+
+  Fields:
+    enableSharedNetwork: Enable the ability to reference subnets belonging to
+      other projects.
+    network: Output only. The name of the Google Compute Engine
+      network(/compute/docs/networks-and-firewalls#networks).
+    subnetwork: Output only. The name of the Google Compute Engine
+      [subnetwork](/compute/docs/vpc).
+  """
+
+  enableSharedNetwork = _messages.BooleanField(1)
+  network = _messages.StringField(2)
+  subnetwork = _messages.StringField(3)
 
 
 class NetworkPolicy(_messages.Message):
@@ -1527,6 +1587,7 @@ class NodePoolAutoscaling(_messages.Message):
   to adjust the size of the node pool to the current cluster usage.
 
   Fields:
+    autoprovisioned: Is autosprovisoning enabled for this node pool.
     enabled: Is autoscaling enabled for this node pool.
     maxNodeCount: Maximum number of nodes in the NodePool. Must be >=
       min_node_count. There has to enough quota to scale up the cluster.
@@ -1534,9 +1595,10 @@ class NodePoolAutoscaling(_messages.Message):
       max_node_count.
   """
 
-  enabled = _messages.BooleanField(1)
-  maxNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  autoprovisioned = _messages.BooleanField(1)
+  enabled = _messages.BooleanField(2)
+  maxNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class NodeTaint(_messages.Message):
@@ -1558,13 +1620,15 @@ class NodeTaint(_messages.Message):
     """Effect for taint.
 
     Values:
+      EFFECT_UNSPECIFIED: Not set
       NO_SCHEDULE: NoSchedule
       PREFER_NO_SCHEDULE: PreferNoSchedule
       NO_EXECUTE: NoExecute
     """
-    NO_SCHEDULE = 0
-    PREFER_NO_SCHEDULE = 1
-    NO_EXECUTE = 2
+    EFFECT_UNSPECIFIED = 0
+    NO_SCHEDULE = 1
+    PREFER_NO_SCHEDULE = 2
+    NO_EXECUTE = 3
 
   effect = _messages.EnumField('EffectValueValuesEnum', 1)
   key = _messages.StringField(2)
@@ -1668,6 +1732,31 @@ class Operation(_messages.Message):
   statusMessage = _messages.StringField(9)
   targetLink = _messages.StringField(10)
   zone = _messages.StringField(11)
+
+
+class PodSecurityPolicyConfig(_messages.Message):
+  """Configuration for the PodSecurityPolicy feature.
+
+  Fields:
+    enabled: Enable the PodSecurityPolicy controller for this cluster. If
+      enabled, pods must be valid under a PodSecurityPolicy to be created.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
+class ResourceLimit(_messages.Message):
+  """Contains information about amount of some resource in the cluster.
+
+  Fields:
+    maximum: Maximum amount of the resource in the cluster.
+    minimum: Minimum amount of the resource in the cluster.
+    name: Resource name "cpu", "memory" or gpu-specific string.
+  """
+
+  maximum = _messages.IntegerField(1)
+  minimum = _messages.IntegerField(2)
+  name = _messages.StringField(3)
 
 
 class RollbackNodePoolUpgradeRequest(_messages.Message):

@@ -311,6 +311,61 @@ class DatabasesListResponse(_messages.Message):
   kind = _messages.StringField(2, default=u'sql#databasesList')
 
 
+class DemoteMasterConfiguration(_messages.Message):
+  """Read-replica configuration for connecting to the on-premises master.
+
+  Fields:
+    kind: This is always sql#demoteMasterConfiguration.
+    mysqlReplicaConfiguration: MySQL specific configuration when replicating
+      from a MySQL on-premises master. Replication configuration information
+      such as the username, password, certificates, and keys are not stored in
+      the instance metadata. The configuration information is used only to set
+      up the replication connection and is stored by MySQL in a file named
+      master.info in the data directory.
+  """
+
+  kind = _messages.StringField(1, default=u'sql#demoteMasterConfiguration')
+  mysqlReplicaConfiguration = _messages.MessageField('DemoteMasterMySqlReplicaConfiguration', 2)
+
+
+class DemoteMasterContext(_messages.Message):
+  """Database instance demote master context.
+
+  Fields:
+    kind: This is always sql#demoteMasterContext.
+    masterInstanceName: The name of the instance which will act as on-premises
+      master in the replication setup.
+    replicaConfiguration: Configuration specific to read-replicas replicating
+      from the on-premises master.
+  """
+
+  kind = _messages.StringField(1, default=u'sql#demoteMasterContext')
+  masterInstanceName = _messages.StringField(2)
+  replicaConfiguration = _messages.MessageField('DemoteMasterConfiguration', 3)
+
+
+class DemoteMasterMySqlReplicaConfiguration(_messages.Message):
+  """Read-replica configuration specific to MySQL databases.
+
+  Fields:
+    caCertificate: PEM representation of the trusted CA's x509 certificate.
+    clientCertificate: PEM representation of the slave's x509 certificate.
+    clientKey: PEM representation of the slave's private key. The
+      corresponsing public key is encoded in the client's certificate. The
+      format of the slave's private key can be either PKCS #1 or PKCS #8.
+    kind: This is always sql#demoteMasterMysqlReplicaConfiguration.
+    password: The password for the replication connection.
+    username: The username for the replication connection.
+  """
+
+  caCertificate = _messages.StringField(1)
+  clientCertificate = _messages.StringField(2)
+  clientKey = _messages.StringField(3)
+  kind = _messages.StringField(4, default=u'sql#demoteMasterMysqlReplicaConfiguration')
+  password = _messages.StringField(5)
+  username = _messages.StringField(6)
+
+
 class ExportContext(_messages.Message):
   """Database instance export context.
 
@@ -471,6 +526,16 @@ class InstancesCloneRequest(_messages.Message):
   """
 
   cloneContext = _messages.MessageField('CloneContext', 1)
+
+
+class InstancesDemoteMasterRequest(_messages.Message):
+  """Database demote master request.
+
+  Fields:
+    demoteMasterContext: Contains details about the demoteMaster operation.
+  """
+
+  demoteMasterContext = _messages.MessageField('DemoteMasterContext', 1)
 
 
 class InstancesExportRequest(_messages.Message):
@@ -1080,6 +1145,21 @@ class SqlInstancesDeleteRequest(_messages.Message):
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+
+
+class SqlInstancesDemoteMasterRequest(_messages.Message):
+  """A SqlInstancesDemoteMasterRequest object.
+
+  Fields:
+    instance: Cloud SQL instance name.
+    instancesDemoteMasterRequest: A InstancesDemoteMasterRequest resource to
+      be passed as the request body.
+    project: ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesDemoteMasterRequest = _messages.MessageField('InstancesDemoteMasterRequest', 2)
+  project = _messages.StringField(3, required=True)
 
 
 class SqlInstancesExportRequest(_messages.Message):

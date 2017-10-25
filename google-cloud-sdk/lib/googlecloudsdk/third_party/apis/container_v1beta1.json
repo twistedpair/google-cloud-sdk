@@ -224,7 +224,7 @@
           "type": "string"
         },
         "masterAuthorizedNetworks": {
-          "description": "Deprecated. The configuration options for master authorized networks\nfeature.",
+          "description": "The configuration options for master authorized networks\nfeature.\nThis field is deprecated, use master_authorized_networks_config instead.",
           "$ref": "MasterAuthorizedNetworks"
         },
         "legacyAbac": {
@@ -250,6 +250,10 @@
         "maintenancePolicy": {
           "description": "Configure the maintenance policy for this cluster.",
           "$ref": "MaintenancePolicy"
+        },
+        "podSecurityPolicyConfig": {
+          "description": "Configuration for the PodSecurityPolicy feature.",
+          "$ref": "PodSecurityPolicyConfig"
         },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
@@ -453,12 +457,14 @@
         "effect": {
           "description": "Effect for taint.",
           "enumDescriptions": [
+            "Not set",
             "NoSchedule",
             "PreferNoSchedule",
             "NoExecute"
           ],
           "type": "string",
           "enum": [
+            "EFFECT_UNSPECIFIED",
             "NO_SCHEDULE",
             "PREFER_NO_SCHEDULE",
             "NO_EXECUTE"
@@ -705,7 +711,7 @@
     },
     "MasterAuthorizedNetworks": {
       "id": "MasterAuthorizedNetworks",
-      "description": "Deprecated. Configuration options for the master authorized networks\nfeature. Enabled master authorized networks will disallow all external\ntraffic to access Kubernetes master through HTTPS except traffic from the\ngiven CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.",
+      "description": "Configuration options for the master authorized networks\nfeature. Enabled master authorized networks will disallow all external\ntraffic to access Kubernetes master through HTTPS except traffic from the\ngiven CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.\nThis message is deprecated, use MasterAuthorizedNetworksConfig instead.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -904,6 +910,17 @@
         "duration": {
           "description": "[Output only] Duration of the time window, automatically chosen to be\nsmallest possible in the given scenario.",
           "type": "string"
+        }
+      }
+    },
+    "PodSecurityPolicyConfig": {
+      "id": "PodSecurityPolicyConfig",
+      "description": "Configuration for the PodSecurityPolicy feature.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable the PodSecurityPolicy controller for this cluster. If enabled, pods\nmust be valid under a PodSecurityPolicy to be created.",
+          "type": "boolean"
         }
       }
     },
@@ -1109,12 +1126,20 @@
           }
         },
         "desiredMasterAuthorizedNetworks": {
-          "description": "Deprecated. The desired configuration options for master authorized\nnetworks feature.",
+          "description": "The desired configuration options for master authorized\nnetworks feature.\nThis field is deprecated, use desired_master_authorized_networks_config\ninstead.",
           "$ref": "MasterAuthorizedNetworks"
         },
         "desiredMasterAuthorizedNetworksConfig": {
           "description": "The desired configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
+        },
+        "desiredAuditConfig": {
+          "description": "The desired configuration for audit logging.",
+          "$ref": "AuditConfig"
+        },
+        "desiredPodSecurityPolicyConfig": {
+          "description": "The desired configuration options for the PodSecurityPolicy feature.",
+          "$ref": "PodSecurityPolicyConfig"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. The only valid value is the\nlatest supported version. Use \"-\" to have the server automatically select\nthe latest version.",
@@ -1122,6 +1147,10 @@
         },
         "desiredMasterMachineType": {
           "description": "The name of a Google Compute Engine [machine\ntype](\/compute\/docs\/machine-types)\n(e.g. `n1-standard-8`) to change the master to.",
+          "type": "string"
+        },
+        "desiredMasterId": {
+          "description": "An id of master replica to be updated.\nCan be set only when desired_master_version is set.\nIf not set, all replicas will be updated.",
           "type": "string"
         }
       }

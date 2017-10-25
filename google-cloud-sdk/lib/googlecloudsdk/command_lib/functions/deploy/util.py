@@ -11,11 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """'functions deploy' utilities."""
 import os
 import random
-import re
 import string
 
 from googlecloudsdk.api_lib.functions import cloud_storage as storage
@@ -23,8 +21,8 @@ from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.api_lib.functions import util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import archive
@@ -42,16 +40,19 @@ def GetLocalPath(args):
   return args.local_path or '.'
 
 
-def GetIgnoreFilesRegex(include_ignored_files):
-  if include_ignored_files:
-    return None
-  else:
-    return r'(node_modules{}.*)|(node_modules)'.format(re.escape(os.sep))
+def _GetChooser(path):
+  default_ignore_file = gcloudignore.DEFAULT_IGNORE_FILE + '\nnode_modules\n'
+  return gcloudignore.GetFileChooserForDir(
+      path, default_ignore_file=default_ignore_file)
 
 
 def _ValidateUnpackedSourceSize(path, include_ignored_files):
-  ignore_regex = GetIgnoreFilesRegex(include_ignored_files)
-  size_b = file_utils.GetTreeSizeBytes(path, ignore_regex)
+  if include_ignored_files:
+    predicate = None
+  else:
+    chooser = _GetChooser(path)
+    predicate = chooser.IsIncluded
+  size_b = file_utils.GetTreeSizeBytes(path, predicate=predicate)
   size_limit_mb = 512
   size_limit_b = size_limit_mb * 2 ** 20
   if size_b > size_limit_b:
@@ -78,13 +79,11 @@ def CreateSourcesZipFile(zip_dir, source_path, include_ignored_files):
   zip_file_name = os.path.join(zip_dir, 'fun.zip')
   try:
     if include_ignored_files:
-      log.info('Not including node_modules in deployed code. To include '
-               'node_modules in uploaded code use --include-ignored-files '
-               'flag.')
-    archive.MakeZipFromDir(
-        zip_file_name,
-        source_path,
-        skip_file_regex=GetIgnoreFilesRegex(include_ignored_files))
+      predicate = None
+    else:
+      chooser = _GetChooser(source_path)
+      predicate = chooser.IsIncluded
+    archive.MakeZipFromDir(zip_file_name, source_path, predicate=predicate)
   except ValueError as e:
     raise exceptions.FunctionsError(
         'Error creating a ZIP archive with the source code '

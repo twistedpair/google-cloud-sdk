@@ -227,13 +227,34 @@ class AppengineAppsAuthorizedDomainsListRequest(_messages.Message):
 class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
   """A AppengineAppsDomainMappingsCreateRequest object.
 
+  Enums:
+    OverrideStrategyValueValuesEnum: Whether the domain creation should
+      override any existing mappings for this domain. By default, overrides
+      are rejected.
+
   Fields:
     domainMapping: A DomainMapping resource to be passed as the request body.
+    overrideStrategy: Whether the domain creation should override any existing
+      mappings for this domain. By default, overrides are rejected.
     parent: Name of the parent Application resource. Example: apps/myapp.
   """
 
+  class OverrideStrategyValueValuesEnum(_messages.Enum):
+    """Whether the domain creation should override any existing mappings for
+    this domain. By default, overrides are rejected.
+
+    Values:
+      UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY: <no description>
+      STRICT: <no description>
+      OVERRIDE: <no description>
+    """
+    UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY = 0
+    STRICT = 1
+    OVERRIDE = 2
+
   domainMapping = _messages.MessageField('DomainMapping', 1)
-  parent = _messages.StringField(2, required=True)
+  overrideStrategy = _messages.EnumField('OverrideStrategyValueValuesEnum', 2)
+  parent = _messages.StringField(3, required=True)
 
 
 class AppengineAppsDomainMappingsDeleteRequest(_messages.Message):
@@ -675,7 +696,7 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
 
 class Application(_messages.Message):
   """An Application resource contains the top-level configuration of an App
-  Engine application. Next tag: 20
+  Engine application.
 
   Enums:
     ServingStatusValueValuesEnum: Serving status of this application.
@@ -1582,12 +1603,24 @@ class ManagedCertificate(_messages.Message):
         last successfully provisioned certificate may still be serving.
       FAILED_PERMANENT: All renewal attempts have been exhausted, likely due
         to an invalid DNS setup.
+      FAILED_RETRYING_CAA_FORBIDDEN: Most recent renewal failed due to an
+        explicit CAA record that does not include the in-use CA, Let's
+        Encrypt. Renewals will continue to fail until the CAA is reconfigured.
+        The last successfully provisioned certificate may still be serving.
+      FAILED_RETRYING_CAA_CHECKING: Most recent renewal failed due to a CAA
+        retrieval failure. This means that the domain's DNS provider does not
+        properly handle CAA records, failing requests for CAA records when no
+        CAA records are defined. Renewals will continue to fail until the DNS
+        provider is changed or a CAA record is added for the given domain. The
+        last successfully provisioned certificate may still be serving.
     """
     MANAGEMENT_STATUS_UNSPECIFIED = 0
     OK = 1
     PENDING = 2
     FAILED_RETRYING_NOT_VISIBLE = 3
     FAILED_PERMANENT = 4
+    FAILED_RETRYING_CAA_FORBIDDEN = 5
+    FAILED_RETRYING_CAA_CHECKING = 6
 
   lastRenewalTime = _messages.StringField(1)
   status = _messages.EnumField('StatusValueValuesEnum', 2)
@@ -1786,27 +1819,6 @@ class OperationMetadata(_messages.Message):
   operationType = _messages.StringField(4)
   target = _messages.StringField(5)
   user = _messages.StringField(6)
-
-
-class OperationMetadataExperimental(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
-
-  Fields:
-    endTime: Time that this operation completed.@OutputOnly
-    insertTime: Time that this operation was created.@OutputOnly
-    method: API method that initiated this operation. Example:
-      google.appengine.experimental.CustomDomains.CreateCustomDomain.@OutputOn
-      ly
-    target: Name of the resource that this operation is acting on. Example:
-      apps/myapp/customDomains/example.com.@OutputOnly
-    user: User who requested this operation.@OutputOnly
-  """
-
-  endTime = _messages.StringField(1)
-  insertTime = _messages.StringField(2)
-  method = _messages.StringField(3)
-  target = _messages.StringField(4)
-  user = _messages.StringField(5)
 
 
 class OperationMetadataV1(_messages.Message):

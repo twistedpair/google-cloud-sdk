@@ -409,10 +409,13 @@ def ToJson(credentials):
     }
     # These fields are optionally serialized as they are not required for
     # credentials to be usable, these are used by Oauth2client.
-    for field in ('id_token', 'invalid', 'revoke_uri', 'token_response',
-                  'token_uri', 'user_agent', 'rapt_token'):
+    for field in ('id_token', 'invalid', 'revoke_uri', 'scopes',
+                  'token_response', 'token_uri', 'user_agent', 'rapt_token'):
       value = getattr(credentials, field, None)
       if value:
+        # Sets are not json serializable as is, so encode as a list.
+        if isinstance(value, set):
+          value = list(value)
         creds_dict[field] = value
 
   elif creds_type == CredentialType.SERVICE_ACCOUNT:

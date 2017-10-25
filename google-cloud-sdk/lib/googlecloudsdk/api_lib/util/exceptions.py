@@ -293,7 +293,7 @@ class HttpException(core_exceptions.Error):
     return False
 
 
-def CatchHTTPErrorRaiseHTTPException(format_str):
+def CatchHTTPErrorRaiseHTTPException(format_str=None):
   """Decorator that catches an HttpError and returns a custom error message.
 
   It catches the raw Http Error and runs it through the given format string to

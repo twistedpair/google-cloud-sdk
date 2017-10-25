@@ -224,7 +224,7 @@
           "type": "string"
         },
         "masterAuthorizedNetworks": {
-          "description": "Deprecated. The configuration options for master authorized networks\nfeature.",
+          "description": "The configuration options for master authorized networks\nfeature.\nThis field is deprecated, use master_authorized_networks_config instead.",
           "$ref": "MasterAuthorizedNetworks"
         },
         "legacyAbac": {
@@ -254,6 +254,18 @@
         "binaryAuthorization": {
           "description": "Configuration for Binary Authorization.",
           "$ref": "BinaryAuthorization"
+        },
+        "podSecurityPolicyConfig": {
+          "description": "Configuration for the PodSecurityPolicy feature.",
+          "$ref": "PodSecurityPolicyConfig"
+        },
+        "autoscaling": {
+          "description": "Cluster-level autoscaling configuration.",
+          "$ref": "ClusterAutoscaling"
+        },
+        "networkConfig": {
+          "description": "Configuration for cluster networking.",
+          "$ref": "NetworkConfig"
         },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
@@ -482,12 +494,14 @@
         "effect": {
           "description": "Effect for taint.",
           "enumDescriptions": [
+            "Not set",
             "NoSchedule",
             "PreferNoSchedule",
             "NoExecute"
           ],
           "type": "string",
           "enum": [
+            "EFFECT_UNSPECIFIED",
             "NO_SCHEDULE",
             "PREFER_NO_SCHEDULE",
             "NO_EXECUTE"
@@ -691,6 +705,10 @@
           "description": "Maximum number of nodes in the NodePool. Must be >= min_node_count. There\nhas to enough quota to scale up the cluster.",
           "type": "integer",
           "format": "int32"
+        },
+        "autoprovisioned": {
+          "description": "Is autosprovisoning enabled for this node pool.",
+          "type": "boolean"
         }
       }
     },
@@ -734,7 +752,7 @@
     },
     "MasterAuthorizedNetworks": {
       "id": "MasterAuthorizedNetworks",
-      "description": "Deprecated. Configuration options for the master authorized networks\nfeature. Enabled master authorized networks will disallow all external\ntraffic to access Kubernetes master through HTTPS except traffic from the\ngiven CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.",
+      "description": "Configuration options for the master authorized networks\nfeature. Enabled master authorized networks will disallow all external\ntraffic to access Kubernetes master through HTTPS except traffic from the\ngiven CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.\nThis message is deprecated, use MasterAuthorizedNetworksConfig instead.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -847,6 +865,10 @@
         "servicesIpv4CidrBlock": {
           "description": "The IP address range of the services IPs in this cluster. If blank, a range\nwill be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nSet to blank to have a range chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
           "type": "string"
+        },
+        "allowRouteOverlap": {
+          "description": "Whether to allow certain existing routes to overlap with the CIDRs\nprovided at cluster creation time. When this flag is enabled, the requested\nroutes will only be checked for overlap with routes with smaller netmasks\nand routes whose next hop is a VM instance.\n\nIf this field is set to true, then the cluster_ipv4_cidr_block and\nservices_ipv4_cidr_block fields must be populated with a fully-specified\nCIDR (e.g. `10.96.0.0\/14`, but not `\/14`).",
+          "type": "boolean"
         }
       }
     },
@@ -943,6 +965,75 @@
       "properties": {
         "enabled": {
           "description": "Enable Binary Authorization for this cluster. If enabled, all container\nimages will be validated by Google Binauthz.",
+          "type": "boolean"
+        }
+      }
+    },
+    "PodSecurityPolicyConfig": {
+      "id": "PodSecurityPolicyConfig",
+      "description": "Configuration for the PodSecurityPolicy feature.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable the PodSecurityPolicy controller for this cluster. If enabled, pods\nmust be valid under a PodSecurityPolicy to be created.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ClusterAutoscaling": {
+      "id": "ClusterAutoscaling",
+      "description": "ClusterAutoscaling contains global, per-cluster information\nrequired by Cluster Autoscaler to automatically adjust\nthe size of the cluster and create\/delete\nnode pools based on the current needs.",
+      "type": "object",
+      "properties": {
+        "nodeAutoprovisioningEnabled": {
+          "description": "Enables automatic node pool creation and deletion.",
+          "type": "boolean"
+        },
+        "resourceLimits": {
+          "description": "Contains global constraints regarding minimum and maximum\namount of resources in the cluster.",
+          "type": "array",
+          "items": {
+            "$ref": "ResourceLimit"
+          }
+        }
+      }
+    },
+    "ResourceLimit": {
+      "id": "ResourceLimit",
+      "description": "Contains information about amount of some resource in the cluster.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name \"cpu\", \"memory\" or gpu-specific string.",
+          "type": "string"
+        },
+        "minimum": {
+          "description": "Minimum amount of the resource in the cluster.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maximum": {
+          "description": "Maximum amount of the resource in the cluster.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "NetworkConfig": {
+      "id": "NetworkConfig",
+      "description": "Parameters for cluster networking.",
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "Output only. The name of the Google Compute Engine\nnetwork(\/compute\/docs\/networks-and-firewalls#networks).",
+          "type": "string"
+        },
+        "subnetwork": {
+          "description": "Output only. The name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/vpc).",
+          "type": "string"
+        },
+        "enableSharedNetwork": {
+          "description": "Enable the ability to reference subnets belonging to other projects.",
           "type": "boolean"
         }
       }
@@ -1149,7 +1240,7 @@
           }
         },
         "desiredMasterAuthorizedNetworks": {
-          "description": "Deprecated. The desired configuration options for master authorized\nnetworks feature.",
+          "description": "The desired configuration options for master authorized\nnetworks feature.\nThis field is deprecated, use desired_master_authorized_networks_config\ninstead.",
           "$ref": "MasterAuthorizedNetworks"
         },
         "desiredMasterAuthorizedNetworksConfig": {
@@ -1157,8 +1248,16 @@
           "$ref": "MasterAuthorizedNetworksConfig"
         },
         "desiredAuditConfig": {
-          "description": "Whether to enable execve audit logging on the nodes.",
+          "description": "The desired configuration for audit logging.",
           "$ref": "AuditConfig"
+        },
+        "desiredPodSecurityPolicyConfig": {
+          "description": "The desired configuration options for the PodSecurityPolicy feature.",
+          "$ref": "PodSecurityPolicyConfig"
+        },
+        "desiredClusterAutoscaling": {
+          "description": "The desired cluster-level autoscaling configuration.",
+          "$ref": "ClusterAutoscaling"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. The only valid value is the\nlatest supported version. Use \"-\" to have the server automatically select\nthe latest version.",
@@ -1166,6 +1265,10 @@
         },
         "desiredMasterMachineType": {
           "description": "The name of a Google Compute Engine [machine\ntype](\/compute\/docs\/machine-types)\n(e.g. `n1-standard-8`) to change the master to.",
+          "type": "string"
+        },
+        "desiredMasterId": {
+          "description": "An id of master replica to be updated.\nCan be set only when desired_master_version is set.\nIf not set, all replicas will be updated.",
           "type": "string"
         }
       }

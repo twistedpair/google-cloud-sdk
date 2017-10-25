@@ -2,6 +2,54 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 177.0.0 (2017-10-25)
+
+### Breaking Changes
+
+*   **(BETA - DEPRECATED)** The `--include-ignored-file` flag of `gcloud beta
+    functions deploy` is now deprecated. Added support for using a
+    `.gcloudignore` file instead.
+*   The `gcloud pubsub <snapshots|subscriptions|topics> <create|update>` and
+    `gcloud pubsub subscriptions update` commands have been updated:
+      *   These now throw an exception when any of the API requests fail. The
+          exception contains the list of failed requests.
+      *   These now only output the resources corresponding to successful
+          requests.
+      *   The `success` and `reason` fields have been removed from the output of
+          these commands.
+
+### Google Cloud Endpoints
+
+*   `gcloud endpoints` and `gcloud services` are now generally available.
+
+### Google App Engine
+
+*   `gcloud app deploy` now uses a new runtime build pipeline to deploy apps for
+    Python. This enables more robust and flexible deployments in some cases. To
+    revert to the legacy builder, run `gcloud config set
+    app/use_runtime_builders false` from the command line.
+*   Go 1.8 is now generally available and the default Go runtime.
+*   Google App Engine components have been updated to 1.9.62.
+    Please visit the following release notes for details:
+      *   Python - https://cloud.google.com/appengine/docs/python/release-notes
+
+### Google Compute Engine
+
+*   (ALPHA) Added support to update the default network tier on a Compute Engine
+    project: `gcloud alpha compute project-info update --default-network-tier
+    DEFAULT_NETWORK_TIER`.
+
+### Google Cloud SQL
+
+*   (BETA) Added `gcloud beta sql export csv` to support exporting data from a
+    Cloud SQL instance to a CSV file.
+*   (BETA) Added `gcloud beta sql export sql` with the eventual goal of
+    replacing `gcloud sql instances export`.
+
+### Google Cloud Storage
+
+*   Updated gsutil component to 4.28
+
 ## 176.0.0 (2017-10-18)
 
 ### Breaking Changes

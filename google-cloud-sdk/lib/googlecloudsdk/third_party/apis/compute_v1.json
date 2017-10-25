@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20171009",
+ "revision": "20171013",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -513,7 +513,7 @@
     },
     "addressType": {
      "type": "string",
-     "description": "The type of address to reserve. If unspecified, defaults to EXTERNAL.",
+     "description": "The type of address to reserve, either INTERNAL or EXTERNAL. If unspecified, defaults to EXTERNAL.",
      "enum": [
       "EXTERNAL",
       "INTERNAL",
@@ -7323,7 +7323,7 @@
   "Interconnect": {
    "id": "Interconnect",
    "type": "object",
-   "description": "Protocol definitions for Mixer API to support Interconnect. Next available tag: 25",
+   "description": "Protocol definitions for Mixer API to support Interconnect. Next available tag: 26",
    "properties": {
     "adminEnabled": {
      "type": "boolean",
@@ -7422,14 +7422,10 @@
      "type": "string",
      "description": "[Output Only] The current status of whether or not this Interconnect is functional.",
      "enum": [
-      "ACTIVE",
       "OS_ACTIVE",
-      "OS_UNPROVISIONED",
-      "UNPROVISIONED"
+      "OS_UNPROVISIONED"
      ],
      "enumDescriptions": [
-      "",
-      "",
       "",
       ""
      ]
@@ -7457,7 +7453,7 @@
   "InterconnectAttachment": {
    "id": "InterconnectAttachment",
    "type": "object",
-   "description": "Protocol definitions for Mixer API to support InterconnectAttachment. Next available tag: 23",
+   "description": "Protocol definitions for Mixer API to support InterconnectAttachment. Next available tag: 25",
    "properties": {
     "cloudRouterIpAddress": {
      "type": "string",
@@ -7502,14 +7498,10 @@
      "type": "string",
      "description": "[Output Only] The current status of whether or not this interconnect attachment is functional.",
      "enum": [
-      "ACTIVE",
       "OS_ACTIVE",
-      "OS_UNPROVISIONED",
-      "UNPROVISIONED"
+      "OS_UNPROVISIONED"
      ],
      "enumDescriptions": [
-      "",
-      "",
       "",
       ""
      ]

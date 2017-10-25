@@ -451,9 +451,11 @@ class _Common(object):
     return cls._notices
 
   @classmethod
-  def AddNotice(cls, tag, msg):
+  def AddNotice(cls, tag, msg, preserve_existing=False):
     if not cls._notices:
       cls._notices = {}
+    if tag in cls._notices and preserve_existing:
+      return
     cls._notices[tag] = msg
 
   @classmethod

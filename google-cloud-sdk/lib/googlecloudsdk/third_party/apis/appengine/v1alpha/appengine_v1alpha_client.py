@@ -252,7 +252,7 @@ class AppengineV1alpha(base_api.BaseApiClient):
         method_id=u'appengine.apps.domainMappings.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'noManagedCertificate'],
+        query_params=[u'noManagedCertificate', u'overrideStrategy'],
         relative_path=u'v1alpha/{+parent}/domainMappings',
         request_field=u'domainMapping',
         request_type_name=u'AppengineAppsDomainMappingsCreateRequest',

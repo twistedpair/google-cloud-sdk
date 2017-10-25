@@ -1014,7 +1014,7 @@
       "type": "object",
       "properties": {
         "adult": {
-          "description": "Represents the adult content likelihood for the image.",
+          "description": "Represents the adult content likelihood for the image. Adult content may\ncontain elements such as nudity, pornographic images or cartoons, or\nsexual activities.",
           "enumDescriptions": [
             "Unknown likelihood.",
             "It is very unlikely that the image belongs to the specified vertical.",
@@ -1074,7 +1074,7 @@
           ]
         },
         "violence": {
-          "description": "Violence likelihood.",
+          "description": "Likelihood that this image contains violent content.",
           "enumDescriptions": [
             "Unknown likelihood.",
             "It is very unlikely that the image belongs to the specified vertical.",

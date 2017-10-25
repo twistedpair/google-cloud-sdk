@@ -57,6 +57,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.interconnectAttachments = self.InterconnectAttachmentsService(self)
     self.interconnectLocations = self.InterconnectLocationsService(self)
     self.interconnects = self.InterconnectsService(self)
+    self.licenseCodes = self.LicenseCodesService(self)
     self.licenses = self.LicensesService(self)
     self.machineTypes = self.MachineTypesService(self)
     self.networks = self.NetworksService(self)
@@ -5046,6 +5047,42 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+  class LicenseCodesService(base_api.BaseApiService):
+    """Service class for the licenseCodes resource."""
+
+    _NAME = u'licenseCodes'
+
+    def __init__(self, client):
+      super(ComputeBeta.LicenseCodesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.
+
+      Args:
+        request: (ComputeLicenseCodesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LicenseCode) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.licenseCodes.get',
+        ordered_params=[u'project', u'licenseCode'],
+        path_params=[u'licenseCode', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/licenseCodes/{licenseCode}',
+        request_field='',
+        request_type_name=u'ComputeLicenseCodesGetRequest',
+        response_type_name=u'LicenseCode',
+        supports_download=False,
+    )
+
   class LicensesService(base_api.BaseApiService):
     """Service class for the licenses resource."""
 
@@ -5055,6 +5092,32 @@ If the group is part of a backend service that has enabled connection draining, 
       super(ComputeBeta.LicensesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified license.
+
+      Args:
+        request: (ComputeLicensesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.licenses.delete',
+        ordered_params=[u'project', u'license'],
+        path_params=[u'license', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/licenses/{license}',
+        request_field='',
+        request_type_name=u'ComputeLicensesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       """Returns the specified License resource.
@@ -5079,6 +5142,58 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeLicensesGetRequest',
         response_type_name=u'License',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Create a License resource in the specified project.
+
+      Args:
+        request: (ComputeLicensesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.licenses.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/licenses',
+        request_field=u'license',
+        request_type_name=u'ComputeLicensesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 8. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
+
+      Args:
+        request: (ComputeLicensesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LicensesListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.licenses.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/licenses',
+        request_field='',
+        request_type_name=u'ComputeLicensesListRequest',
+        response_type_name=u'LicensesListResponse',
         supports_download=False,
     )
 

@@ -206,7 +206,7 @@
     },
     "Application": {
       "id": "Application",
-      "description": "An Application resource contains the top-level configuration of an App Engine application. Next tag: 20",
+      "description": "An Application resource contains the top-level configuration of an App Engine application.",
       "type": "object",
       "properties": {
         "name": {
@@ -1782,35 +1782,6 @@
         }
       }
     },
-    "OperationMetadataExperimental": {
-      "id": "OperationMetadataExperimental",
-      "description": "Metadata for the given google.longrunning.Operation.",
-      "type": "object",
-      "properties": {
-        "method": {
-          "description": "API method that initiated this operation. Example: google.appengine.experimental.CustomDomains.CreateCustomDomain.@OutputOnly",
-          "type": "string"
-        },
-        "insertTime": {
-          "description": "Time that this operation was created.@OutputOnly",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Time that this operation completed.@OutputOnly",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "user": {
-          "description": "User who requested this operation.@OutputOnly",
-          "type": "string"
-        },
-        "target": {
-          "description": "Name of the resource that this operation is acting on. Example: apps\/myapp\/customDomains\/example.com.@OutputOnly",
-          "type": "string"
-        }
-      }
-    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "Metadata for the given google.longrunning.Operation.",
@@ -3122,6 +3093,16 @@
                   "required": true,
                   "pattern": "^apps\/[^\/]+$",
                   "type": "string"
+                },
+                "overrideStrategy": {
+                  "description": "Whether the domain creation should override any existing mappings for this domain. By default, overrides are rejected.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY",
+                    "STRICT",
+                    "OVERRIDE"
+                  ]
                 }
               },
               "parameterOrder": [

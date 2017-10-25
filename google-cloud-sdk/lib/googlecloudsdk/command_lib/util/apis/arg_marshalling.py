@@ -139,16 +139,11 @@ class DeclarativeArgumentGenerator(object):
     if (self.method.resource_argument_collection.detailed_params !=
         self.method.request_collection.detailed_params):
       # Sets the name of the resource in the message object body.
-      name_param = self.method.resource_argument_collection.detailed_params[-1]
-      name = getattr(ref, name_param)
       arg_utils.SetFieldInMessage(
-          message, self.resource_arg_info[-1].api_field, name)
-
+          message, self.resource_arg_info[-1].api_field, ref.Name())
       # Create a reference for the parent resource to put in the API params.
-      params = ref.AsDict()
-      del params[name_param]
-      ref = resources.REGISTRY.Parse(
-          None, params, collection=self.method.request_collection.full_name)
+      ref = ref.Parent(
+          parent_collection=self.method.request_collection.full_name)
 
     # For each method path field, get the value from the resource reference.
     relative_name = ref.RelativeName()

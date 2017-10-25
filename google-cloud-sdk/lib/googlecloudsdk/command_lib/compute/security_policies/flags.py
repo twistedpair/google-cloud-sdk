@@ -46,3 +46,14 @@ def SecurityPolicyArgumentForTargetResource(resource, required=False):
       global_collection='compute.securityPolicies',
       short_help=('The security policy that will be set for this {0}.'
                   .format(resource)))
+
+
+def SecurityPolicyArgumentForRules(required=False):
+  return compute_flags.ResourceArgument(
+      resource_name='security policy',
+      name='--security-policy',
+      completer=SecurityPoliciesCompleter,
+      plural=False,
+      required=required,
+      global_collection='compute.securityPolicies',
+      short_help='The security policy that this rule belongs to.')

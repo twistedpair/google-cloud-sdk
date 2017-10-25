@@ -377,8 +377,8 @@ class SpeechRecognitionAlternative(_messages.Message):
       recognized words are correct. This field is typically provided only for
       the top hypothesis, and only for `is_final=true` results. Clients should
       not rely on the `confidence` field as it is not guaranteed to be
-      accurate or consistent. The default of 0.0 is a sentinel value
-      indicating `confidence` was not set.
+      accurate, or even set, in any of the results. The default of 0.0 is a
+      sentinel value indicating `confidence` was not set.
     transcript: *Output-only* Transcript text representing the words that the
       user spoke.
     words: *Output-only* A list of word-specific information for each

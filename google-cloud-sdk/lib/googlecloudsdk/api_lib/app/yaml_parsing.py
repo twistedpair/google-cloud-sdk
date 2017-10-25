@@ -175,7 +175,8 @@ class ConfigYamlInfo(_YamlInfo):
       A ConfigYamlInfo object for the parsed file.
     """
     (base, _) = os.path.splitext(os.path.basename(file_path))
-    parser = ConfigYamlInfo.CONFIG_YAML_PARSERS.get(base)
+    parser = (ConfigYamlInfo.CONFIG_YAML_PARSERS.get(base)
+              if os.path.isfile(file_path) else None)
     if not parser:
       return None
     try:

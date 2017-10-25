@@ -362,7 +362,7 @@
       "type": "object",
       "properties": {
         "eventType": {
-          "description": "`event_type` names contain the service that is sending an event and the\nkind of event that was fired. Must be of the form\n`providers\/*\/eventTypes\/*` e.g. Directly handle a Message published to\nGoogle Cloud Pub\/Sub `providers\/cloud.pubsub\/eventTypes\/topic.publish`\n\n     Handle an object changing in Google Cloud Storage\n     `providers\/cloud.storage\/eventTypes\/object.change`\n\n     Handle a write to the Firebase Realtime Database\n     `providers\/firebase.database\/eventTypes\/data.write`",
+          "description": "`event_type` names contain the service that is sending an event and the\nkind of event that was fired. Must be of the form\n`providers\/*\/eventTypes\/*` e.g. Directly handle a Message published to\nGoogle Cloud Pub\/Sub `providers\/cloud.pubsub\/eventTypes\/topic.publish`\n\n     Handle an object changing in Google Cloud Storage\n     `providers\/cloud.storage\/eventTypes\/object.change`\n\n     Handle a write to the Firebase Realtime Database\n     `providers\/google.firebase.database\/eventTypes\/ref.write`",
           "type": "string"
         },
         "resource": {

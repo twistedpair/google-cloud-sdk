@@ -141,7 +141,7 @@ projects/{projectid}/notes/{noteid} for notes
           }
 
     def List(self, request, global_params=None):
-      """Lists the names of Occurrences linked to a particular Note.
+      """Lists the names of occurrences linked to a particular note.
 
       Args:
         request: (ContaineranalysisProjectsNotesOccurrencesListRequest) input message
@@ -323,6 +323,33 @@ projects/{projectid}/notes/{noteid} for notes
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates an existing note.
+
+      Args:
+        request: (ContaineranalysisProjectsNotesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Note) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/notes/{notesId}',
+        http_method=u'PATCH',
+        method_id=u'containeranalysis.projects.notes.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'note',
+        request_type_name=u'ContaineranalysisProjectsNotesPatchRequest',
+        response_type_name=u'Note',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on the specified note or occurrence.
 resource.
@@ -395,33 +422,6 @@ projects/{projectid}/notes/{noteid} for notes
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'ContaineranalysisProjectsNotesTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-    def Update(self, request, global_params=None):
-      """Updates an existing note.
-
-      Args:
-        request: (Note) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Note) The response message.
-      """
-      config = self.GetMethodConfig('Update')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/notes/{notesId}',
-        http_method=u'PUT',
-        method_id=u'containeranalysis.projects.notes.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}',
-        request_field='<request>',
-        request_type_name=u'Note',
-        response_type_name=u'Note',
         supports_download=False,
     )
 
@@ -608,6 +608,33 @@ projects/{projectid}/notes/{noteid} for notes
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates an existing occurrence.
+
+      Args:
+        request: (ContaineranalysisProjectsOccurrencesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Occurrence) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}',
+        http_method=u'PATCH',
+        method_id=u'containeranalysis.projects.occurrences.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'occurrence',
+        request_type_name=u'ContaineranalysisProjectsOccurrencesPatchRequest',
+        response_type_name=u'Occurrence',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on the specified note or occurrence.
 resource.
@@ -683,33 +710,6 @@ projects/{projectid}/notes/{noteid} for notes
         supports_download=False,
     )
 
-    def Update(self, request, global_params=None):
-      """Updates an existing occurrence.
-
-      Args:
-        request: (Occurrence) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Occurrence) The response message.
-      """
-      config = self.GetMethodConfig('Update')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}',
-        http_method=u'PUT',
-        method_id=u'containeranalysis.projects.occurrences.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}',
-        request_field='<request>',
-        request_type_name=u'Occurrence',
-        response_type_name=u'Occurrence',
-        supports_download=False,
-    )
-
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -721,7 +721,7 @@ projects/{projectid}/notes/{noteid} for notes
           }
 
     def GetVulnzsummary(self, request, global_params=None):
-      """Lists the number and severity of Occurrences matching some filters.
+      """Gets a summary of the number and severity of occurrences.
 
       Args:
         request: (ContaineranalysisProjectsGetVulnzsummaryRequest) input message
@@ -758,7 +758,7 @@ projects/{projectid}/notes/{noteid} for notes
           }
 
     def List(self, request, global_params=None):
-      """Lists the names of Occurrences linked to a particular Note.
+      """Lists the names of occurrences linked to a particular note.
 
       Args:
         request: (ContaineranalysisProvidersNotesOccurrencesListRequest) input message
@@ -940,6 +940,33 @@ projects/{projectid}/notes/{noteid} for notes
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates an existing note.
+
+      Args:
+        request: (ContaineranalysisProvidersNotesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Note) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/providers/{providersId}/notes/{notesId}',
+        http_method=u'PATCH',
+        method_id=u'containeranalysis.providers.notes.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'note',
+        request_type_name=u'ContaineranalysisProvidersNotesPatchRequest',
+        response_type_name=u'Note',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on the specified note or occurrence.
 resource.
@@ -1012,33 +1039,6 @@ projects/{projectid}/notes/{noteid} for notes
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'ContaineranalysisProvidersNotesTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-    def Update(self, request, global_params=None):
-      """Updates an existing note.
-
-      Args:
-        request: (Note) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Note) The response message.
-      """
-      config = self.GetMethodConfig('Update')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Update.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/providers/{providersId}/notes/{notesId}',
-        http_method=u'PUT',
-        method_id=u'containeranalysis.providers.notes.update',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}',
-        request_field='<request>',
-        request_type_name=u'Note',
-        response_type_name=u'Note',
         supports_download=False,
     )
 

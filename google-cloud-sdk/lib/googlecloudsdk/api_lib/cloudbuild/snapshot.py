@@ -66,13 +66,18 @@ class Snapshot(object):
     self._client = core_apis.GetClientInstance('storage', 'v1')
     self._messages = core_apis.GetMessagesModule('storage', 'v1')
     for (dirpath, dirnames, filenames) in os.walk(self.src_dir):
+      relpath = os.path.relpath(dirpath, self.src_dir)
       for fname in filenames:
-        fpath = os.path.relpath(os.path.join(dirpath, fname), self.src_dir)
+        # Join file paths with Linux path separators, avoiding ./ prefix.
+        # GCB workers are Linux VMs so os.path.join produces incorrect output.
+        fpath = '/'.join([relpath, fname]) if relpath != '.' else fname
         fm = FileMetadata(self.src_dir, fpath)
         self.files[fpath] = fm
         self.uncompressed_size += fm.size
       for dname in dirnames:
-        dpath = os.path.relpath(os.path.join(dirpath, dname), self.src_dir)
+        # Join dir paths with Linux path separators, avoiding ./ prefix.
+        # GCB workers are Linux VMs so os.path.join produces incorrect output.
+        dpath = '/'.join([relpath, dname]) if relpath != '.' else dname
         self.dirs.append(dpath)
 
   def _MakeTarball(self, archive_path):

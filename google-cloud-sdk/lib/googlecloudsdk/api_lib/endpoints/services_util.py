@@ -37,7 +37,7 @@ import yaml
 EMAIL_REGEX = re.compile(r'^.+@([^.@][^@]+)$')
 FINGERPRINT_REGEX = re.compile(
     r'^([a-f0-9][a-f0-9]:){19}[a-f0-9][a-f0-9]$', re.IGNORECASE)
-OP_BASE_CMD = 'gcloud beta endpoints operations '
+OP_BASE_CMD = 'gcloud endpoints operations '
 OP_DESCRIBE_CMD = OP_BASE_CMD + 'describe {0}'
 OP_WAIT_CMD = OP_BASE_CMD + 'wait {0}'
 SERVICES_COLLECTION = 'servicemanagement.services'
@@ -506,16 +506,6 @@ def RaiseIfResultNotTypeOf(test_object, expected_type, nonetype_ok=False):
     return
   if not isinstance(test_object, expected_type):
     raise TypeError('result must be of type %s' % expected_type)
-
-
-def GetCallerViews():
-  messages = GetMessagesModule()
-  get_request = messages.ServicemanagementServicesProjectSettingsGetRequest
-  return {
-      'CONSUMER': get_request.ViewValueValuesEnum.CONSUMER_VIEW,
-      'PRODUCER': get_request.ViewValueValuesEnum.PRODUCER_VIEW,
-      'ALL': get_request.ViewValueValuesEnum.ALL,
-  }
 
 
 def WaitForOperation(operation_ref, client):

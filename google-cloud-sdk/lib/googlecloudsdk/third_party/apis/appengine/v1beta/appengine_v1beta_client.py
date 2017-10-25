@@ -257,7 +257,7 @@ class AppengineV1beta(base_api.BaseApiClient):
         method_id=u'appengine.apps.domainMappings.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[],
+        query_params=[u'overrideStrategy'],
         relative_path=u'v1beta/{+parent}/domainMappings',
         request_field=u'domainMapping',
         request_type_name=u'AppengineAppsDomainMappingsCreateRequest',

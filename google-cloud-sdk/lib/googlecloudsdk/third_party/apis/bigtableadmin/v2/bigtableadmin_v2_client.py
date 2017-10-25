@@ -34,11 +34,69 @@ class BigtableadminV2(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.operations_projects_operations = self.OperationsProjectsOperationsService(self)
+    self.operations_projects = self.OperationsProjectsService(self)
     self.operations = self.OperationsService(self)
     self.projects_instances_clusters = self.ProjectsInstancesClustersService(self)
     self.projects_instances_tables = self.ProjectsInstancesTablesService(self)
     self.projects_instances = self.ProjectsInstancesService(self)
     self.projects = self.ProjectsService(self)
+
+  class OperationsProjectsOperationsService(base_api.BaseApiService):
+    """Service class for the operations_projects_operations resource."""
+
+    _NAME = u'operations_projects_operations'
+
+    def __init__(self, client):
+      super(BigtableadminV2.OperationsProjectsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists operations that match the specified filter in the request. If the.
+server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+NOTE: the `name` binding allows API services to override the binding
+to use different resource name schemes, such as `users/*/operations`. To
+override the binding, API services can add a binding such as
+`"/v1/{name=users/*}/operations"` to their service configuration.
+For backwards compatibility, the default name includes the operations
+collection id, however overriding users must ensure the name binding
+is the parent resource, without the operations collection id.
+
+      Args:
+        request: (BigtableadminOperationsProjectsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/operations/projects/{projectsId}/operations',
+        http_method=u'GET',
+        method_id=u'bigtableadmin.operations.projects.operations.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+name}/operations',
+        request_field='',
+        request_type_name=u'BigtableadminOperationsProjectsOperationsListRequest',
+        response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class OperationsProjectsService(base_api.BaseApiService):
+    """Service class for the operations_projects resource."""
+
+    _NAME = u'operations_projects'
+
+    def __init__(self, client):
+      super(BigtableadminV2.OperationsProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
@@ -142,42 +200,6 @@ service.
         request_field='',
         request_type_name=u'BigtableadminOperationsGetRequest',
         response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
-
-      Args:
-        request: (BigtableadminOperationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListOperationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v2/operations',
-        http_method=u'GET',
-        method_id=u'bigtableadmin.operations.list',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v2/{+name}',
-        request_field='',
-        request_type_name=u'BigtableadminOperationsListRequest',
-        response_type_name=u'ListOperationsResponse',
         supports_download=False,
     )
 

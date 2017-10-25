@@ -392,7 +392,7 @@ class MarkdownGenerator(object):
 
   def _PrintArgDefinition(self, arg, depth=0):
     """Prints a positional or flag arg definition list item at depth."""
-    self._out('\n{usage}{depth}\n'.format(
+    self._out(u'\n{usage}{depth}\n'.format(
         usage=usage_text.GetArgUsage(arg, definition=True, markdown=True),
         depth=':' * (depth + 2)))
     if arg.is_required and depth:
@@ -401,8 +401,8 @@ class MarkdownGenerator(object):
                    arg_type=self._ArgTypeName(arg))
     else:
       modal = ''
-    self._out('\n{details}{modal}\n'.format(details=self.GetArgDetails(arg),
-                                            modal=modal))
+    self._out(u'\n{details}{modal}\n'.format(details=self.GetArgDetails(arg),
+                                             modal=modal))
 
   def _PrintArgGroup(self, arg, depth=0):
     """Prints an arg group definition list at depth."""
@@ -454,7 +454,7 @@ class MarkdownGenerator(object):
       self._out('\n')
     self._out('{0}::\n'.format(
         usage_text.GetFlagUsage(flag, markdown=True)))
-    self._out('\n{arghelp}\n'.format(arghelp=self.GetArgDetails(flag)))
+    self._out(u'\n{arghelp}\n'.format(arghelp=self.GetArgDetails(flag)))
 
   def PrintFlagSection(self, heading, arg, disable_header=False):
     """Prints a flag section.

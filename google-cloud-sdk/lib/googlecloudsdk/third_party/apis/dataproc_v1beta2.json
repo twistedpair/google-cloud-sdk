@@ -1182,41 +1182,41 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "Required The template id.",
+          "description": "Required. The template id.",
           "type": "string"
         },
         "name": {
-          "description": "Output-only The \"resource name\" of the template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
+          "description": "Output only. The \"resource name\" of the template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
           "type": "string"
         },
         "version": {
-          "description": "Optional Used to perform a consistent read-modify-write.This field should be left blank for a CreateWorkflowTemplate request. It is required for an UpdateWorkflowTemplate request, and must match the current server version. A typical update template flow would fetch the current template with a GetWorkflowTemplate request, which will return the current template with the version field filled in with the current server version. The user updates other fields in the template, then returns it as part of the UpdateWorkflowTemplate request.",
+          "description": "Optional. Used to perform a consistent read-modify-write.This field should be left blank for a CreateWorkflowTemplate request. It is required for an UpdateWorkflowTemplate request, and must match the current server version. A typical update template flow would fetch the current template with a GetWorkflowTemplate request, which will return the current template with the version field filled in with the current server version. The user updates other fields in the template, then returns it as part of the UpdateWorkflowTemplate request.",
           "type": "integer",
           "format": "int32"
         },
         "createTime": {
-          "description": "Output-only The time template was created.",
+          "description": "Output only. The time template was created.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output-only The time template was last updated.",
+          "description": "Output only. The time template was last updated.",
           "type": "string",
           "format": "google-datetime"
         },
         "labels": {
-          "description": "Optional The labels to associate with this template. These labels will be propagated to all jobs and clusters created by the workflow instance.Label keys must contain 1 to 63 characters, and must conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt).Label values may be empty, but, if present, must contain 1 to 63 characters, and must conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt).No more than 32 labels can be associated with a template.",
+          "description": "Optional. The labels to associate with this template. These labels will be propagated to all jobs and clusters created by the workflow instance.Label keys must contain 1 to 63 characters, and must conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt).Label values may be empty, but, if present, must contain 1 to 63 characters, and must conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt).No more than 32 labels can be associated with a template.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "placement": {
-          "description": "Required WorkflowTemplate scheduling information.",
+          "description": "Required. WorkflowTemplate scheduling information.",
           "$ref": "WorkflowTemplatePlacement"
         },
         "jobs": {
-          "description": "Required The Directed Acyclic Graph of Jobs to submit.",
+          "description": "Required. The Directed Acyclic Graph of Jobs to submit.",
           "type": "array",
           "items": {
             "$ref": "OrderedJob"
@@ -1230,11 +1230,11 @@
       "type": "object",
       "properties": {
         "managedCluster": {
-          "description": "Optional A cluster that is managed by the workflow.",
+          "description": "Optional. A cluster that is managed by the workflow.",
           "$ref": "ManagedCluster"
         },
         "clusterSelector": {
-          "description": "Optional A selector that chooses target cluster for jobs based on metadata.The selector is evaluated at the time each job is submitted.",
+          "description": "Optional. A selector that chooses target cluster for jobs based on metadata.The selector is evaluated at the time each job is submitted.",
           "$ref": "ClusterSelector"
         }
       }
@@ -1245,15 +1245,15 @@
       "type": "object",
       "properties": {
         "clusterName": {
-          "description": "Required The cluster name. Cluster names within a project must be unique. Names from deleted clusters can be reused.",
+          "description": "Required. The cluster name. Cluster names within a project must be unique. Names from deleted clusters can be reused.",
           "type": "string"
         },
         "config": {
-          "description": "Required The cluster configuration.",
+          "description": "Required. The cluster configuration.",
           "$ref": "ClusterConfig"
         },
         "labels": {
-          "description": "Optional The labels to associate with this cluster.Label keys must be between 1 and 63 characters long, and must conform to the following PCRE regular expression: \\p{Ll}\\p{Lo}{0,62}Label values must be between 1 and 63 characters long, and must conform to the following PCRE regular expression: \\p{Ll}\\p{Lo}\\p{N}_-{0,63}No more than 64 labels can be associated with a given cluster.",
+          "description": "Optional. The labels to associate with this cluster.Label keys must be between 1 and 63 characters long, and must conform to the following PCRE regular expression: \\p{Ll}\\p{Lo}{0,62}Label values must be between 1 and 63 characters long, and must conform to the following PCRE regular expression: \\p{Ll}\\p{Lo}\\p{N}_-{0,63}No more than 64 labels can be associated with a given cluster.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1267,11 +1267,11 @@
       "type": "object",
       "properties": {
         "zone": {
-          "description": "Required The cluster target zone.",
+          "description": "Optional. The zone where workflow process executes. This parameter does not affect the selection of the cluster.If unspecified, the zone of the first cluster matching the selector is used.",
           "type": "string"
         },
         "clusterLabels": {
-          "description": "Required The cluster labels. Cluster must have all labels to match.",
+          "description": "Required. The cluster labels. Cluster must have all labels to match.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1281,11 +1281,10 @@
     },
     "OrderedJob": {
       "id": "OrderedJob",
-
       "type": "object",
       "properties": {
         "stepId": {
-          "description": "Required The step id. The id must be unique among all jobs within the template.The step id is used as prefix for job id, as job workflow-step-id label, and in prerequisite_step_ids field from other steps.",
+          "description": "Required. The step id. The id must be unique among all jobs within the template.The step id is used as prefix for job id, as job workflow-step-id label, and in prerequisite_step_ids field from other steps.",
           "type": "string"
         },
         "hadoopJob": {
@@ -1313,18 +1312,18 @@
           "$ref": "SparkSqlJob"
         },
         "labels": {
-          "description": "Optional The labels to associate with this job.Label keys must be between 1 and 63 characters long, and must conform to the following regular expression: \\p{Ll}\\p{Lo}{0,62}Label values must be between 1 and 63 characters long, and must conform to the following regular expression: \\p{Ll}\\p{Lo}\\p{N}_-{0,63}No more than 64 labels can be associated with a given job.",
+          "description": "Optional. The labels to associate with this job.Label keys must be between 1 and 63 characters long, and must conform to the following regular expression: \\p{Ll}\\p{Lo}{0,62}Label values must be between 1 and 63 characters long, and must conform to the following regular expression: \\p{Ll}\\p{Lo}\\p{N}_-{0,63}No more than 64 labels can be associated with a given job.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "scheduling": {
-          "description": "Optional Job scheduling configuration.",
+          "description": "Optional. Job scheduling configuration.",
           "$ref": "JobScheduling"
         },
         "prerequisiteStepIds": {
-          "description": "Optional The optional list of prerequisite job step_ids. If not specified, the job will start at the beginning of workflow.",
+          "description": "Optional. The optional list of prerequisite job step_ids. If not specified, the job will start at the beginning of workflow.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1338,12 +1337,12 @@
       "type": "object",
       "properties": {
         "version": {
-          "description": "Optional The version of workflow template to instantiate. If specified, the workflow will be instantiated only if the current version of the workflow template has the supplied version.This option cannot be used to instantiate a previous version of workflow template.",
+          "description": "Optional. The version of workflow template to instantiate. If specified, the workflow will be instantiated only if the current version of the workflow template has the supplied version.This option cannot be used to instantiate a previous version of workflow template.",
           "type": "integer",
           "format": "int32"
         },
         "instanceId": {
-          "description": "Optional A tag that prevents multiple concurrent workflow instances with the same tag from running. This mitigates risk of concurrent instances started due to retries.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The tag must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+          "description": "Optional. A tag that prevents multiple concurrent workflow instances with the same tag from running. This mitigates risk of concurrent instances started due to retries.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The tag must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
           "type": "string"
         }
       }
@@ -1354,14 +1353,14 @@
       "type": "object",
       "properties": {
         "templates": {
-          "description": "Output-only WorkflowTemplates list.",
+          "description": "Output only. WorkflowTemplates list.",
           "type": "array",
           "items": {
             "$ref": "WorkflowTemplate"
           }
         },
         "nextPageToken": {
-          "description": "Output-only This token is included in the response if there are more results to fetch. To fetch additional results, provide this value as the page_token in a subsequent <code>ListWorkflowTemplatesRequest<\/code>.",
+          "description": "Output only. This token is included in the response if there are more results to fetch. To fetch additional results, provide this value as the page_token in a subsequent <code>ListWorkflowTemplatesRequest<\/code>.",
           "type": "string"
         }
       }
@@ -1548,28 +1547,28 @@
       "type": "object",
       "properties": {
         "template": {
-          "description": "Output-only The \"resource name\" of the template.",
+          "description": "Output only. The \"resource name\" of the template.",
           "type": "string"
         },
         "version": {
-          "description": "Output-only The version of template at the time of workflow instantiation.",
+          "description": "Output only. The version of template at the time of workflow instantiation.",
           "type": "integer",
           "format": "int32"
         },
         "createCluster": {
-          "description": "Output-only The create cluster operation metadata.",
+          "description": "Output only. The create cluster operation metadata.",
           "$ref": "ClusterOperation"
         },
         "graph": {
-          "description": "Output-only The workflow graph.",
+          "description": "Output only. The workflow graph.",
           "$ref": "WorkflowGraph"
         },
         "deleteCluster": {
-          "description": "Output-only The delete cluster operation metadata.",
+          "description": "Output only. The delete cluster operation metadata.",
           "$ref": "ClusterOperation"
         },
         "state": {
-          "description": "Output-only The workflow state.",
+          "description": "Output only. The workflow state.",
           "enumDescriptions": [
             "Unused.",
             "The operation has been created.",
@@ -1585,26 +1584,25 @@
           ]
         },
         "clusterName": {
-          "description": "Output-only The name of the managed cluster.",
+          "description": "Output only. The name of the managed cluster.",
           "type": "string"
         }
       }
     },
     "ClusterOperation": {
       "id": "ClusterOperation",
-
       "type": "object",
       "properties": {
         "operationId": {
-          "description": "Output-only The id of the cluster operation.",
+          "description": "Output only. The id of the cluster operation.",
           "type": "string"
         },
         "error": {
-          "description": "Output-only Error, if operation failed.",
+          "description": "Output only. Error, if operation failed.",
           "type": "string"
         },
         "done": {
-          "description": "Output-only Indicates the operation is done.",
+          "description": "Output only. Indicates the operation is done.",
           "type": "boolean"
         }
       }
@@ -1615,7 +1613,7 @@
       "type": "object",
       "properties": {
         "nodes": {
-          "description": "Output-only The workflow nodes.",
+          "description": "Output only. The workflow nodes.",
           "type": "array",
           "items": {
             "$ref": "WorkflowNode"
@@ -1629,22 +1627,22 @@
       "type": "object",
       "properties": {
         "stepId": {
-          "description": "Output-only The name of the node.",
+          "description": "Output only. The name of the node.",
           "type": "string"
         },
         "prerequisiteStepIds": {
-          "description": "Output-only Node's prerequisite nodes.",
+          "description": "Output only. Node's prerequisite nodes.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "jobId": {
-          "description": "Output-only The job id; populated after the node enters RUNNING state.",
+          "description": "Output only. The job id; populated after the node enters RUNNING state.",
           "type": "string"
         },
         "state": {
-          "description": "Output-only The node state.",
+          "description": "Output only. The node state.",
           "enumDescriptions": [
             "",
             "The node is awaiting prerequisite node to finish.",
@@ -1664,7 +1662,7 @@
           ]
         },
         "error": {
-          "description": "Output-only The error detail.",
+          "description": "Output only. The error detail.",
           "type": "string"
         }
       }
@@ -1907,6 +1905,11 @@
                       "description": "Required. The cluster name.",
                       "location": "path",
                       "required": true,
+                      "type": "string"
+                    },
+                    "clusterUuid": {
+                      "description": "Optional. Specifying the cluster_uuid means the RPC should fail (with error NOT_FOUND) if cluster with specified UUID does not exist.",
+                      "location": "query",
                       "type": "string"
                     }
                   },
@@ -2405,7 +2408,7 @@
                   "description": "Creates new workflow template.",
                   "parameters": {
                     "parent": {
-                      "description": "Required The \"resource name\" of the region, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}",
+                      "description": "Required. The \"resource name\" of the region, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
@@ -2433,14 +2436,14 @@
                   "description": "Retrieves the latest workflow template.Can retrieve previously instantiated template by specifying optional version parameter.",
                   "parameters": {
                     "name": {
-                      "description": "Required The \"resource name\" of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
+                      "description": "Required. The \"resource name\" of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     },
                     "version": {
-                      "description": "Optional The version of workflow template to retrieve. Only previously instatiated versions can be retrieved.If unspecified, retrieves the current version.",
+                      "description": "Optional. The version of workflow template to retrieve. Only previously instatiated versions can be retrieved.If unspecified, retrieves the current version.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -2464,7 +2467,7 @@
                   "description": "Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling google.cloud.dataproc.v1beta2.OperationService.GetOperation. The Operation will complete when entire workflow is finished.The running workflow can be aborted via google.cloud.dataproc.v1beta2.OperationService.CancelOperation.The google.cloud.dataproc.v1beta2.Operation.metadata will always be google.cloud.dataproc.v1beta2.WorkflowMetadata.The google.cloud.dataproc.v1beta2.Operation.result will always be google.protobuf.Empty.",
                   "parameters": {
                     "name": {
-                      "description": "Required The \"resource name\" of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
+                      "description": "Required. The \"resource name\" of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
@@ -2492,7 +2495,7 @@
                   "description": "Updates (replaces) workflow template. The updated template must contain version that matches the current server version.",
                   "parameters": {
                     "name": {
-                      "description": "Output-only The \"resource name\" of the template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
+                      "description": "Output only. The \"resource name\" of the template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
@@ -2520,20 +2523,20 @@
                   "description": "Lists workflows that match the specified filter in the request.",
                   "parameters": {
                     "parent": {
-                      "description": "Required The \"resource name\" of the region, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}",
+                      "description": "Required. The \"resource name\" of the region, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Optional The maximum number of results to return in each response.",
+                      "description": "Optional. The maximum number of results to return in each response.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "Optional The page token, returned by a previous call, to request the next page of results.",
+                      "description": "Optional. The page token, returned by a previous call, to request the next page of results.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2556,14 +2559,14 @@
                   "description": "Deletes a workflow template. It does not cancel in-progress workflows.",
                   "parameters": {
                     "name": {
-                      "description": "Required The \"resource name\" of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
+                      "description": "Required. The \"resource name\" of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     },
                     "version": {
-                      "description": "Optional The version of workflow template to delete. If specified, will only delete the template if the current server version matches specified version.",
+                      "description": "Optional. The version of workflow template to delete. If specified, will only delete the template if the current server version matches specified version.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -2595,7 +2598,7 @@
                   "description": "Creates new workflow template.",
                   "parameters": {
                     "parent": {
-                      "description": "Required The \"resource name\" of the region, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}",
+                      "description": "Required. The \"resource name\" of the region, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -2623,14 +2626,14 @@
                   "description": "Retrieves the latest workflow template.Can retrieve previously instantiated template by specifying optional version parameter.",
                   "parameters": {
                     "name": {
-                      "description": "Required The \"resource name\" of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
+                      "description": "Required. The \"resource name\" of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     },
                     "version": {
-                      "description": "Optional The version of workflow template to retrieve. Only previously instatiated versions can be retrieved.If unspecified, retrieves the current version.",
+                      "description": "Optional. The version of workflow template to retrieve. Only previously instatiated versions can be retrieved.If unspecified, retrieves the current version.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -2654,7 +2657,7 @@
                   "description": "Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling google.cloud.dataproc.v1beta2.OperationService.GetOperation. The Operation will complete when entire workflow is finished.The running workflow can be aborted via google.cloud.dataproc.v1beta2.OperationService.CancelOperation.The google.cloud.dataproc.v1beta2.Operation.metadata will always be google.cloud.dataproc.v1beta2.WorkflowMetadata.The google.cloud.dataproc.v1beta2.Operation.result will always be google.protobuf.Empty.",
                   "parameters": {
                     "name": {
-                      "description": "Required The \"resource name\" of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
+                      "description": "Required. The \"resource name\" of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
@@ -2682,7 +2685,7 @@
                   "description": "Updates (replaces) workflow template. The updated template must contain version that matches the current server version.",
                   "parameters": {
                     "name": {
-                      "description": "Output-only The \"resource name\" of the template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
+                      "description": "Output only. The \"resource name\" of the template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
@@ -2710,20 +2713,20 @@
                   "description": "Lists workflows that match the specified filter in the request.",
                   "parameters": {
                     "parent": {
-                      "description": "Required The \"resource name\" of the region, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}",
+                      "description": "Required. The \"resource name\" of the region, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Optional The maximum number of results to return in each response.",
+                      "description": "Optional. The maximum number of results to return in each response.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "Optional The page token, returned by a previous call, to request the next page of results.",
+                      "description": "Optional. The page token, returned by a previous call, to request the next page of results.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2746,14 +2749,14 @@
                   "description": "Deletes a workflow template. It does not cancel in-progress workflows.",
                   "parameters": {
                     "name": {
-                      "description": "Required The \"resource name\" of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
+                      "description": "Required. The \"resource name\" of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id}",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflowTemplates\/[^\/]+$",
                       "type": "string"
                     },
                     "version": {
-                      "description": "Optional The version of workflow template to delete. If specified, will only delete the template if the current server version matches specified version.",
+                      "description": "Optional. The version of workflow template to delete. If specified, will only delete the template if the current server version matches specified version.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"

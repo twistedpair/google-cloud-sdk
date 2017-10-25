@@ -212,8 +212,9 @@ class Cluster(_messages.Message):
     maintenancePolicy: Configure the maintenance policy for this cluster.
     masterAuth: The authentication information for accessing the master
       endpoint.
-    masterAuthorizedNetworks: Deprecated. The configuration options for master
-      authorized networks feature.
+    masterAuthorizedNetworks: The configuration options for master authorized
+      networks feature. This field is deprecated, use
+      master_authorized_networks_config instead.
     masterAuthorizedNetworksConfig: The configuration options for master
       authorized networks feature.
     monitoringService: The monitoring service the cluster should use to write
@@ -242,6 +243,7 @@ class Cluster(_messages.Message):
       `container_ipv4_cidr` range.
     nodePools: The node pools associated with this cluster. This field should
       not be set if "node_config" or "initial_node_count" are specified.
+    podSecurityPolicyConfig: Configuration for the PodSecurityPolicy feature.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related GCE resources.
     selfLink: [Output only] Server-defined URL for the resource.
@@ -340,13 +342,14 @@ class Cluster(_messages.Message):
   nodeConfig = _messages.MessageField('NodeConfig', 29)
   nodeIpv4CidrSize = _messages.IntegerField(30, variant=_messages.Variant.INT32)
   nodePools = _messages.MessageField('NodePool', 31, repeated=True)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 32)
-  selfLink = _messages.StringField(33)
-  servicesIpv4Cidr = _messages.StringField(34)
-  status = _messages.EnumField('StatusValueValuesEnum', 35)
-  statusMessage = _messages.StringField(36)
-  subnetwork = _messages.StringField(37)
-  zone = _messages.StringField(38)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 32)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 33)
+  selfLink = _messages.StringField(34)
+  servicesIpv4Cidr = _messages.StringField(35)
+  status = _messages.EnumField('StatusValueValuesEnum', 36)
+  statusMessage = _messages.StringField(37)
+  subnetwork = _messages.StringField(38)
+  zone = _messages.StringField(39)
 
 
 class ClusterUpdate(_messages.Message):
@@ -357,6 +360,7 @@ class ClusterUpdate(_messages.Message):
   Fields:
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
+    desiredAuditConfig: The desired configuration for audit logging.
     desiredImageType: The desired image type for the node pool. NOTE: Set the
       "desired_node_pool" field as well.
     desiredLocations: The desired list of Google Compute Engine
@@ -365,10 +369,14 @@ class ClusterUpdate(_messages.Message):
       nodes being either created or removed from the cluster, depending on
       whether locations are being added or removed.  This list must always
       include the cluster's primary zone.
-    desiredMasterAuthorizedNetworks: Deprecated. The desired configuration
-      options for master authorized networks feature.
+    desiredMasterAuthorizedNetworks: The desired configuration options for
+      master authorized networks feature. This field is deprecated, use
+      desired_master_authorized_networks_config instead.
     desiredMasterAuthorizedNetworksConfig: The desired configuration options
       for master authorized networks feature.
+    desiredMasterId: An id of master replica to be updated. Can be set only
+      when desired_master_version is set. If not set, all replicas will be
+      updated.
     desiredMasterMachineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
       master to.
@@ -390,19 +398,24 @@ class ClusterUpdate(_messages.Message):
     desiredNodeVersion: The Kubernetes version to change the nodes to
       (typically an upgrade). Use `-` to upgrade to the latest version
       supported by the server.
+    desiredPodSecurityPolicyConfig: The desired configuration options for the
+      PodSecurityPolicy feature.
   """
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
-  desiredImageType = _messages.StringField(2)
-  desiredLocations = _messages.StringField(3, repeated=True)
-  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 4)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 5)
-  desiredMasterMachineType = _messages.StringField(6)
-  desiredMasterVersion = _messages.StringField(7)
-  desiredMonitoringService = _messages.StringField(8)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 9)
-  desiredNodePoolId = _messages.StringField(10)
-  desiredNodeVersion = _messages.StringField(11)
+  desiredAuditConfig = _messages.MessageField('AuditConfig', 2)
+  desiredImageType = _messages.StringField(3)
+  desiredLocations = _messages.StringField(4, repeated=True)
+  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 5)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 6)
+  desiredMasterId = _messages.StringField(7)
+  desiredMasterMachineType = _messages.StringField(8)
+  desiredMasterVersion = _messages.StringField(9)
+  desiredMonitoringService = _messages.StringField(10)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 11)
+  desiredNodePoolId = _messages.StringField(12)
+  desiredNodeVersion = _messages.StringField(13)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 14)
 
 
 class ClusterUpdateOptions(_messages.Message):
@@ -1175,10 +1188,11 @@ class MasterAuth(_messages.Message):
 
 
 class MasterAuthorizedNetworks(_messages.Message):
-  """Deprecated. Configuration options for the master authorized networks
-  feature. Enabled master authorized networks will disallow all external
-  traffic to access Kubernetes master through HTTPS except traffic from the
-  given CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.
+  """Configuration options for the master authorized networks feature. Enabled
+  master authorized networks will disallow all external traffic to access
+  Kubernetes master through HTTPS except traffic from the given CIDR blocks,
+  Google Compute Engine Public IPs and Google Prod IPs. This message is
+  deprecated, use MasterAuthorizedNetworksConfig instead.
 
   Fields:
     cidrs: Network CIDRs define up to 10 external networks that could access
@@ -1541,13 +1555,15 @@ class NodeTaint(_messages.Message):
     """Effect for taint.
 
     Values:
+      EFFECT_UNSPECIFIED: Not set
       NO_SCHEDULE: NoSchedule
       PREFER_NO_SCHEDULE: PreferNoSchedule
       NO_EXECUTE: NoExecute
     """
-    NO_SCHEDULE = 0
-    PREFER_NO_SCHEDULE = 1
-    NO_EXECUTE = 2
+    EFFECT_UNSPECIFIED = 0
+    NO_SCHEDULE = 1
+    PREFER_NO_SCHEDULE = 2
+    NO_EXECUTE = 3
 
   effect = _messages.EnumField('EffectValueValuesEnum', 1)
   key = _messages.StringField(2)
@@ -1651,6 +1667,17 @@ class Operation(_messages.Message):
   statusMessage = _messages.StringField(9)
   targetLink = _messages.StringField(10)
   zone = _messages.StringField(11)
+
+
+class PodSecurityPolicyConfig(_messages.Message):
+  """Configuration for the PodSecurityPolicy feature.
+
+  Fields:
+    enabled: Enable the PodSecurityPolicy controller for this cluster. If
+      enabled, pods must be valid under a PodSecurityPolicy to be created.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class RollbackNodePoolUpgradeRequest(_messages.Message):

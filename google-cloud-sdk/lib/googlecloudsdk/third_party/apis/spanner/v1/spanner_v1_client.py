@@ -585,6 +585,74 @@ alive.
         supports_download=False,
     )
 
+    def PartitionQuery(self, request, global_params=None):
+      """Creates a set of partition tokens that can be used to execute a query.
+operation in parallel.  Each of the returned partition tokens can be used
+by ExecuteStreamingSql to specify a subset
+of the query result to read.  The same session and read-only transaction
+must be used by the PartitionQueryRequest used to create the
+partition tokens and the ExecuteSqlRequests that use the partition tokens.
+Partition tokens become invalid when the session used to create them
+is deleted or begins a new transaction.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesSessionsPartitionQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PartitionResponse) The response message.
+      """
+      config = self.GetMethodConfig('PartitionQuery')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PartitionQuery.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:partitionQuery',
+        http_method=u'POST',
+        method_id=u'spanner.projects.instances.databases.sessions.partitionQuery',
+        ordered_params=[u'session'],
+        path_params=[u'session'],
+        query_params=[],
+        relative_path=u'v1/{+session}:partitionQuery',
+        request_field=u'partitionQueryRequest',
+        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsPartitionQueryRequest',
+        response_type_name=u'PartitionResponse',
+        supports_download=False,
+    )
+
+    def PartitionRead(self, request, global_params=None):
+      """Creates a set of partition tokens that can be used to execute a read.
+operation in parallel.  Each of the returned partition tokens can be used
+by StreamingRead to specify a subset of the read
+result to read.  The same session and read-only transaction must be used by
+the PartitionReadRequest used to create the partition tokens and the
+ReadRequests that use the partition tokens.
+Partition tokens become invalid when the session used to create them
+is deleted or begins a new transaction.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesSessionsPartitionReadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PartitionResponse) The response message.
+      """
+      config = self.GetMethodConfig('PartitionRead')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PartitionRead.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:partitionRead',
+        http_method=u'POST',
+        method_id=u'spanner.projects.instances.databases.sessions.partitionRead',
+        ordered_params=[u'session'],
+        path_params=[u'session'],
+        query_params=[],
+        relative_path=u'v1/{+session}:partitionRead',
+        request_field=u'partitionReadRequest',
+        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsPartitionReadRequest',
+        response_type_name=u'PartitionResponse',
+        supports_download=False,
+    )
+
     def Read(self, request, global_params=None):
       """Reads rows from the database using key lookups and scans, as a.
 simple key/value style alternative to

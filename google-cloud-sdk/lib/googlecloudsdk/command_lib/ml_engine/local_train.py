@@ -16,11 +16,11 @@ import atexit
 import json
 import os
 import subprocess
-import sys
-
 
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import files
 
 
 def MakeProcess(module_name,
@@ -54,9 +54,11 @@ def MakeProcess(module_name,
   """
   if args is None:
     args = []
-  if not sys.executable:
+  exe_override = properties.VALUES.ml_engine.local_python.Get()
+  python_executable = exe_override or files.FindExecutableOnPath('python')
+  if not python_executable:
     raise RuntimeError('No python interpreter found on local machine')
-  cmd = [sys.executable, '-m', module_name] + args
+  cmd = [python_executable, '-m', module_name] + args
   config = {
       'job': {'job_name': module_name, 'args': args},
       'task': {'type': task_type, 'index': index} if cluster else {},

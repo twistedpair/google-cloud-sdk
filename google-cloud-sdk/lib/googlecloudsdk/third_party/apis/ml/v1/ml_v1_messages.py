@@ -1445,6 +1445,31 @@ class MlProjectsModelsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class MlProjectsModelsPatchRequest(_messages.Message):
+  """A MlProjectsModelsPatchRequest object.
+
+  Fields:
+    googleCloudMlV1Model: A GoogleCloudMlV1Model resource to be passed as the
+      request body.
+    name: Required. The project name.
+    updateMask: Required. Specifies the path, relative to `Model`, of the
+      field to update.  For example, to change the description of a model to
+      "foo" and set its default version to "version_1", the `update_mask`
+      parameter would be specified as `description`, `default_version.name`,
+      and the `PATCH` request body would specify the new value, as follows:
+      {       "description": "foo",       "defaultVersion": {
+      "name":"version_1"       }     } In this example, the model is blindly
+      overwritten since no etag is given.  To adopt etag mechanism, include
+      `etag` field in the mask, and include the `etag` value in your model
+      resource.  Currently the supported update masks are `description`,
+      `default_version.name`, `labels`, and `etag`.
+  """
+
+  googleCloudMlV1Model = _messages.MessageField('GoogleCloudMlV1Model', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class MlProjectsModelsSetIamPolicyRequest(_messages.Message):
   """A MlProjectsModelsSetIamPolicyRequest object.
 
@@ -1528,6 +1553,29 @@ class MlProjectsModelsVersionsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class MlProjectsModelsVersionsPatchRequest(_messages.Message):
+  """A MlProjectsModelsVersionsPatchRequest object.
+
+  Fields:
+    googleCloudMlV1Version: A GoogleCloudMlV1Version resource to be passed as
+      the request body.
+    name: Required. The name of the model.
+    updateMask: Required. Specifies the path, relative to `Version`, of the
+      field to update. Must be present and non-empty.  For example, to change
+      the description of a version to "foo", the `update_mask` parameter would
+      be specified as `description`, and the `PATCH` request body would
+      specify the new value, as follows:     {       "description": "foo"
+      } In this example, the version is blindly overwritten since no etag is
+      given.  To adopt etag mechanism, include `etag` field in the mask, and
+      include the `etag` value in your version resource.  Currently the only
+      supported update masks are `description`, `labels`, and `etag`.
+  """
+
+  googleCloudMlV1Version = _messages.MessageField('GoogleCloudMlV1Version', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class MlProjectsModelsVersionsSetDefaultRequest(_messages.Message):

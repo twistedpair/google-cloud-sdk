@@ -630,41 +630,6 @@ class TpuProjectsLocationsNodesStopRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class TpuProjectsLocationsNodesUpdateStateRequest(_messages.Message):
-  """A TpuProjectsLocationsNodesUpdateStateRequest object.
-
-  Enums:
-    StateValueValuesEnum: The state the node should be in after update.
-
-  Fields:
-    name: The resource name.
-    state: The state the node should be in after update.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    """The state the node should be in after update.
-
-    Values:
-      STATE_UNSPECIFIED: <no description>
-      CREATING: <no description>
-      READY: <no description>
-      RESTARTING: <no description>
-      REIMAGING: <no description>
-      DELETING: <no description>
-      REPAIRING: <no description>
-    """
-    STATE_UNSPECIFIED = 0
-    CREATING = 1
-    READY = 2
-    RESTARTING = 3
-    REIMAGING = 4
-    DELETING = 5
-    REPAIRING = 6
-
-  name = _messages.StringField(1, required=True)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-
-
 class TpuProjectsLocationsOperationsDeleteRequest(_messages.Message):
   """A TpuProjectsLocationsOperationsDeleteRequest object.
 

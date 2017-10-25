@@ -70,6 +70,12 @@ apis:
     v1:
       discovery_doc: bio_v1.json
       default: true
+  categorymanager:
+    v1alpha1:
+      discovery_doc: categorymanager_v1alpha1.json
+      resources:
+         assets: "assets/{assetId}"
+         assets.tag: "assets/{assetId}/annotationTag"
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json
@@ -142,6 +148,7 @@ apis:
       discovery_doc: compute_alpha.json
       resources:
         nextHopGateways: projects/{project}/global/gateways/{nextHopGateway}
+        securityPolicyRules: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
     beta:
       discovery_doc: compute_beta.json
       unelidable_request_methods:
@@ -171,12 +178,6 @@ apis:
   dataflow:
     v1b3:
       discovery_doc: dataflow_v1b3.json
-  datapol:
-    v1alpha1:
-      discovery_doc: datapol_v1alpha1.json
-      resources:
-         data.taxonomy: "data/{data}/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}"
-         data.tag: "data/{data}/taxonomyStores/{taxonomyStoresId}/dataTaxonomies/{dataTaxonomiesId}/annotationTag"
   dataproc:
     v1:
       discovery_doc: dataproc_v1.json
@@ -256,6 +257,8 @@ apis:
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json
+      resources:
+        projects.snapshots: "projects/{projectsId}/snapshots/{snapshotsId}"
   replicapoolupdater:
     v1beta1:
       discovery_doc: replicapoolupdater_v1beta1.json

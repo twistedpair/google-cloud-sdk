@@ -1614,6 +1614,40 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
             },
+            "patch": {
+              "id": "ml.projects.models.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/models/{modelsId}",
+              "httpMethod": "PATCH",
+              "description": "Updates a specific model resource.\n\nCurrently the only supported fields to update are `description` and\n`default_version.name`.",
+              "parameters": {
+                "name": {
+                  "description": "Required. The project name.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/models\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Required. Specifies the path, relative to `Model`, of the field to update.\n\nFor example, to change the description of a model to \"foo\" and set its\ndefault version to \"version_1\", the `update_mask` parameter would be\nspecified as `description`, `default_version.name`, and the `PATCH`\nrequest body would specify the new value, as follows:\n    {\n      \"description\": \"foo\",\n      \"defaultVersion\": {\n        \"name\":\"version_1\"\n      }\n    }\nIn this example, the model is blindly overwritten since no etag is given.\n\nTo adopt etag mechanism, include `etag` field in the mask, and include the\n`etag` value in your model resource.\n\nCurrently the supported update masks are `description`,\n`default_version.name`, `labels`, and `etag`.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudMlV1__Model"
+              },
+              "response": {
+                "$ref": "GoogleLongrunning__Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
             "setIamPolicy": {
               "id": "ml.projects.models.setIamPolicy",
               "path": "v1/{+resource}:setIamPolicy",
@@ -1717,6 +1751,40 @@
                   },
                   "parameterOrder": [
                     "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudMlV1__Version"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunning__Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
+                },
+                "patch": {
+                  "id": "ml.projects.models.versions.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
+                  "httpMethod": "PATCH",
+                  "description": "Updates the specified Version resource.\n\nCurrently the only supported field to update is `description`.",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the model.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/models\/[^\/]+\/versions\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Specifies the path, relative to `Version`, of the field to\nupdate. Must be present and non-empty.\n\nFor example, to change the description of a version to \"foo\", the\n`update_mask` parameter would be specified as `description`, and the\n`PATCH` request body would specify the new value, as follows:\n    {\n      \"description\": \"foo\"\n    }\nIn this example, the version is blindly overwritten since no etag is given.\n\nTo adopt etag mechanism, include `etag` field in the mask, and include the\n`etag` value in your version resource.\n\nCurrently the only supported update masks are `description`, `labels`, and\n`etag`.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
                   ],
                   "request": {
                     "$ref": "GoogleCloudMlV1__Version"

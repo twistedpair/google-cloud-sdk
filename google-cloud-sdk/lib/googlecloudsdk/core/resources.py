@@ -81,6 +81,31 @@ class AmbiguousResourcePath(Error):
         'can not register another one {1}'.format(parser1, parser2))
 
 
+class ParentCollectionResolutionException(Error):
+  """Exception for when the parent collection cannot be computed automatically.
+  """
+
+  def __init__(self, collection, params):
+    super(ParentCollectionResolutionException, self).__init__(
+        'Could not resolve the parent collection of collection [{collection}]. '
+        'No collections found with parameters [{params}]'.format(
+            collection=collection, params=', '.join(params)))
+
+
+class ParentCollectionMismatchException(Error):
+  """Exception when the parent collection does not have the expected params."""
+
+  def __init__(self, collection, parent_collection, expected_params,
+               actual_params):
+    super(ParentCollectionMismatchException, self).__init__(
+        'The parent collection [{parent_collection}] of collection '
+        '[{collection}] does have have the expected parameters. Expected '
+        '[{expected_params}], found [{actual_params}].'.format(
+            parent_collection=parent_collection, collection=collection,
+            expected_params=', '.join(expected_params),
+            actual_params=', '.join(actual_params)))
+
+
 class UserError(exceptions.Error, Error):
   """Exceptions that are caused by user input."""
 
@@ -136,12 +161,14 @@ class InvalidCollectionException(UserError):
 class _ResourceParser(object):
   """Class that turns command-line arguments into a cloud resource message."""
 
-  def __init__(self, collection_info):
+  def __init__(self, registry, collection_info):
     """Create a _ResourceParser for a given collection.
 
     Args:
+      registry: Registry, The resource registry this parser belongs to.
       collection_info: resource_util.CollectionInfo, description for collection.
     """
+    self.registry = registry
     self.collection_info = collection_info
 
   def ParseRelativeName(
@@ -174,7 +201,7 @@ class _ResourceParser(object):
     if url_unescape:
       fields = map(urllib.unquote, fields)
 
-    return Resource(self.collection_info, subcollection,
+    return Resource(self.registry, self.collection_info, subcollection,
                     param_values=dict(zip(params, fields)),
                     endpoint_url=base_url)
 
@@ -269,8 +296,8 @@ class _ResourceParser(object):
       elif default_resolver:
         param_values[param] = default_resolver(param)
 
-    ref = Resource(self.collection_info, subcollection, param_values,
-                   base_url)
+    ref = Resource(self.registry, self.collection_info, subcollection,
+                   param_values, base_url)
     return ref
 
   def __str__(self):
@@ -284,7 +311,7 @@ class _ResourceParser(object):
 class Resource(object):
   """Information about a Cloud resource."""
 
-  def __init__(self, collection_info, subcollection, param_values,
+  def __init__(self, registry, collection_info, subcollection, param_values,
                endpoint_url):
     """Create a Resource object that may be partially resolved.
 
@@ -293,6 +320,7 @@ class Resource(object):
     class.
 
     Args:
+      registry: Registry, The resource registry this parser belongs to.
       collection_info: resource_util.CollectionInfo, The collection description
           for this resource.
       subcollection: str, id for subcollection of this collection.
@@ -302,6 +330,7 @@ class Resource(object):
     Raises:
       RequiredFieldOmittedException: if param_values have None value.
     """
+    self._registry = registry
     self._collection_info = collection_info
     self._endpoint_url = endpoint_url or collection_info.base_url
     self._subcollection = subcollection
@@ -384,6 +413,59 @@ class Resource(object):
   def SelfLink(self):
     """Returns URI for this resource."""
     return self._self_link
+
+  def Parent(self, parent_collection=None):
+    """Gets a reference to the parent of this resource.
+
+    If parent_collection is not given, we attempt to automatically determine it
+    by finding the collection within the same API that has the correct set of
+    URI parameters for what we expect. If the parent collection cannot be
+    automatically determined, it can be specified manually.
+
+    Args:
+      parent_collection: str, The full collection name of the parent resource.
+        Only required if it cannot be automatically determined.
+
+    Raises:
+      ParentCollectionResolutionException: If the parent collection cannot be
+        determined or doesn't exist.
+      ParentCollectionMismatchException: If the given or auto-resolved parent
+       collection does not have the expected URI parameters.
+
+    Returns:
+      Resource, The reference to the parent resource.
+    """
+    parent_params = self._params[:-1]
+    all_collections = self._registry.parsers_by_collection[
+        self._collection_info.api_name][self._collection_info.api_version]
+
+    if parent_collection:
+      # Parent explicitly provided. Make sure it exists and that the params
+      # match what we would expect the parent to have.
+      try:
+        parent_parser = all_collections[parent_collection]
+      except KeyError:
+        raise UnknownCollectionException(parent_collection)
+      actual_parent_params = parent_parser.collection_info.GetParams('')
+      if actual_parent_params != parent_params:
+        raise ParentCollectionMismatchException(
+            self.Collection(), parent_collection, parent_params,
+            actual_parent_params)
+    else:
+      # Auto resolve the parent collection by finding the collection with
+      # matching parameters.
+      for collection, parser in all_collections.iteritems():
+        if parser.collection_info.GetParams('') == parent_params:
+          parent_collection = collection
+          break
+      if not parent_collection:
+        raise ParentCollectionResolutionException(
+            self.Collection(), parent_params)
+
+    parent_param_values = {k: getattr(self, k) for k in parent_params}
+    ref = self._registry.Parse(None, parent_param_values,
+                               collection=parent_collection)
+    return ref
 
   def __str__(self):
     return self._self_link
@@ -709,7 +791,7 @@ class Registry(object):
     """
     api_name = collection_info.api_name
     api_version = collection_info.api_version
-    parser = _ResourceParser(collection_info)
+    parser = _ResourceParser(self, collection_info)
 
     collection_parsers = (self.parsers_by_collection.setdefault(api_name, {})
                           .setdefault(api_version, {}))

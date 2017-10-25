@@ -421,6 +421,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DemoteMaster(self, request, global_params=None):
+      """Demotes the standalone instance to be a read replica Cloud SQL instance of an on-premises master.
+
+      Args:
+        request: (SqlInstancesDemoteMasterRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DemoteMaster')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DemoteMaster.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'sql.instances.demoteMaster',
+        ordered_params=[u'project', u'instance'],
+        path_params=[u'instance', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/instances/{instance}/demoteMaster',
+        request_field=u'instancesDemoteMasterRequest',
+        request_type_name=u'SqlInstancesDemoteMasterRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Export(self, request, global_params=None):
       """Exports data from a Cloud SQL instance to a Google Cloud Storage bucket as a MySQL dump file.
 

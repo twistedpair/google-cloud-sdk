@@ -335,14 +335,15 @@ class CounterStructuredName(_messages.Message):
     origin: One of the standard Origins defined above.
     originNamespace: A string containing a more specific namespace of the
       counter's origin.
-    originalShuffleStepName: The GroupByKey step name from the original graph.
+    originalRequestingStepName: The step name requesting an operation, such as
+      GBK. I.e. the ParDo causing a read/write from shuffle to occur.
     originalStepName: System generated name of the original step in the user's
       graph, before optimization.
     portion: Portion of this counter, either key or value.
     sideInput: ID of a side input being read from/written to. Side inputs are
       identified by a pair of (reader, input_index). The reader is usually
       equal to the original name, but it may be different, if a ParDo emits
-      it's Iterator / Map side input object.
+      its Iterator / Map side input object.
     workerId: ID of a particular worker.
   """
 
@@ -373,7 +374,7 @@ class CounterStructuredName(_messages.Message):
   name = _messages.StringField(3)
   origin = _messages.EnumField('OriginValueValuesEnum', 4)
   originNamespace = _messages.StringField(5)
-  originalShuffleStepName = _messages.StringField(6)
+  originalRequestingStepName = _messages.StringField(6)
   originalStepName = _messages.StringField(7)
   portion = _messages.EnumField('PortionValueValuesEnum', 8)
   sideInput = _messages.MessageField('SideInputId', 9)
@@ -1391,6 +1392,7 @@ class DistributionUpdate(_messages.Message):
 
   Fields:
     count: The count of the number of elements present in the distribution.
+    histogram: (Optional) Histogram of value counts for the distribution.
     max: The maximum value present in the distribution.
     min: The minimum value present in the distribution.
     sum: Use an int64 since we'd prefer the added precision. If overflow is a
@@ -1400,10 +1402,11 @@ class DistributionUpdate(_messages.Message):
   """
 
   count = _messages.MessageField('SplitInt64', 1)
-  max = _messages.MessageField('SplitInt64', 2)
-  min = _messages.MessageField('SplitInt64', 3)
-  sum = _messages.MessageField('SplitInt64', 4)
-  sumOfSquares = _messages.FloatField(5)
+  histogram = _messages.MessageField('Histogram', 2)
+  max = _messages.MessageField('SplitInt64', 3)
+  min = _messages.MessageField('SplitInt64', 4)
+  sum = _messages.MessageField('SplitInt64', 5)
+  sumOfSquares = _messages.FloatField(6)
 
 
 class DynamicSourceSplit(_messages.Message):
@@ -1793,6 +1796,27 @@ class GetTemplateResponse(_messages.Message):
 
   metadata = _messages.MessageField('TemplateMetadata', 1)
   status = _messages.MessageField('Status', 2)
+
+
+class Histogram(_messages.Message):
+  """Histogram of value counts for a distribution.  Buckets have an inclusive
+  lower bound and exclusive upper bound and use "1,2,5 bucketing": The first
+  bucket range is from [0,1) and all subsequent bucket boundaries are powers
+  of ten multiplied by 1, 2, or 5. Thus, bucket boundaries are 0, 1, 2, 5, 10,
+  20, 50, 100, 200, 500, 1000, ... Negative values are not supported.
+
+  Fields:
+    bucketCounts: Counts of values in each bucket. For efficiency, prefix and
+      trailing buckets with count = 0 are elided. Buckets can store the full
+      range of values of an unsigned long, with ULLONG_MAX falling into the
+      59th bucket with range [1e19, 2e19).
+    firstBucketOffset: Starting index of first stored bucket. The non-
+      inclusive upper-bound of the ith bucket is given by:
+      pow(10,(i-first_bucket_offset)/3) * (1,2,5)[(i-first_bucket_offset)%3]
+  """
+
+  bucketCounts = _messages.IntegerField(1, repeated=True)
+  firstBucketOffset = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class InstructionInput(_messages.Message):
@@ -3489,11 +3513,22 @@ class SourceOperationRequest(_messages.Message):
 
   Fields:
     getMetadata: Information about a request to get metadata about a source.
+    name: User-provided name of the Read instruction for this source.
+    originalName: System-defined name for the Read instruction for this source
+      in the original workflow graph.
     split: Information about a request to split a source.
+    stageName: System-defined name of the stage containing the source
+      operation. Unique across the workflow.
+    systemName: System-defined name of the Read instruction for this source.
+      Unique across the workflow.
   """
 
   getMetadata = _messages.MessageField('SourceGetMetadataRequest', 1)
-  split = _messages.MessageField('SourceSplitRequest', 2)
+  name = _messages.StringField(2)
+  originalName = _messages.StringField(3)
+  split = _messages.MessageField('SourceSplitRequest', 4)
+  stageName = _messages.StringField(5)
+  systemName = _messages.StringField(6)
 
 
 class SourceOperationResponse(_messages.Message):
@@ -4915,9 +4950,9 @@ class WorkerShutdownNotice(_messages.Message):
   down.
 
   Fields:
-    reason: Optional reason to be attached for the shutdown notice. For
-      example: "PREEMPTION" would indicate the VM is being shut down because
-      of preemption. Other possible reasons may be added in the future.
+    reason: The reason for the worker shutdown. Current possible values are:
+      "UNKNOWN": shutdown reason is unknown.   "PREEMPTION": shutdown reason
+      is preemption. Other possible reasons may be added in the future.
   """
 
   reason = _messages.StringField(1)

@@ -304,7 +304,7 @@ class EventTrigger(_messages.Message):
       Handle an object changing in Google Cloud Storage
       `providers/cloud.storage/eventTypes/object.change`       Handle a write
       to the Firebase Realtime Database
-      `providers/firebase.database/eventTypes/data.write`
+      `providers/google.firebase.database/eventTypes/ref.write`
     failurePolicy: Specifies policy for failed executions.
     resource: Which instance of the source's service should send events. E.g.
       for Pub/Sub this would be a Pub/Sub topic at `projects/*/topics/*`. For

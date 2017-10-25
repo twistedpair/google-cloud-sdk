@@ -115,6 +115,13 @@ def AddDeviceFlagsToParser(parser, default_for_blocked_flags=True):
     default_for_blocked_flags: bool, whether to populate default values for
         device blocked state flags.
   """
+  for f in _GetDeviceFlags(default_for_blocked_flags):
+    f.AddToParser(parser)
+
+
+def _GetDeviceFlags(default_for_blocked_flags=True):
+  """Generates the flags for device commands."""
+  flags = []
   blocked_state_help_text = (
       'If {0}, connections from this device will fail.\n\n'
       'Can be used to temporarily prevent the device from '
@@ -133,10 +140,10 @@ def AddDeviceFlagsToParser(parser, default_for_blocked_flags=True):
         '+\n\n'
         'Connections to device is not blocked by default.')
 
-  blocked_state_args = parser.add_mutually_exclusive_group()
+  blocked_state_args = base.MutuxArgumentGroup()
   # Defaults are set to None because with nested groups, help text isn't being
   # generated correctly.
-  blocked_state_args.add_argument(
+  blocked_state_args.AddArgument(base.Argument(
       '--enable-device',
       default=None,
       action=actions.DeprecationAction('--[no-]enable-device',
@@ -144,19 +151,20 @@ def AddDeviceFlagsToParser(parser, default_for_blocked_flags=True):
                                              'Use --[no-]blocked instead.'),
                                        action='store_true'),
       help=blocked_state_help_text.format(*enable_device_format_args)
-  )
-  blocked_state_args.add_argument(
+  ))
+  blocked_state_args.AddArgument(base.Argument(
       '--blocked',
       default=None,
       action='store_true',
       help=blocked_state_help_text.format(*blocked_format_args)
-  )
+  ))
+  flags.append(blocked_state_args)
 
   metadata_key_validator = arg_parsers.RegexpValidator(
       r'[a-zA-Z0-9-_]{1,127}',
       'Invalid metadata key. Keys should only contain the following characters '
       '[a-zA-Z0-9-_] and be fewer than 128 bytes in length.')
-  base.Argument(
+  flags.append(base.Argument(
       '--metadata',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(key_type=metadata_key_validator),
@@ -171,15 +179,16 @@ be fewer than or equal to 32 KB in size.
 
 The total size of all keys and values must be less than 256 KB, and the
 maximum number of key-value pairs is 500.
-""").AddToParser(parser)
+"""))
 
-  base.Argument(
+  flags.append(base.Argument(
       '--metadata-from-file',
       metavar='KEY=PATH',
       type=arg_parsers.ArgDict(key_type=metadata_key_validator),
       help=('Same as --metadata, but the metadata values will be read from the '
             'file specified by path.')
-  ).AddToParser(parser)
+  ))
+  return flags
 
 
 class KeyTypes(enum.Enum):
@@ -245,6 +254,12 @@ def AddDeviceCredentialFlagsToParser(parser, combine_flags=True,
     only_modifiable: bool, whether to include all flags or just those that can
       be modified after creation.
   """
+  for f in _GetDeviceCredentialFlags(combine_flags, only_modifiable):
+    f.AddToParser(parser)
+
+
+def _GetDeviceCredentialFlags(combine_flags=True, only_modifiable=False):
+  """"Generates credentials-related flags."""
   flags = []
   if not only_modifiable:
     flags.extend([
@@ -257,33 +272,35 @@ def AddDeviceCredentialFlagsToParser(parser, combine_flags=True,
       base.Argument('--expiration-time', type=arg_parsers.Datetime.Parse,
                     help=('The expiration time for the key in ISO 8601 '
                           '(ex. `2017-01-01T00:00Z`) format.')))
-  if combine_flags:
-    sub_argument_help = []
-    spec = {}
-    for flag in flags:
-      name = flag.name.lstrip('-')
-      required = flag.kwargs.get('required')
-      choices = flag.kwargs.get('choices')
-      choices_str = ''
-      if choices:
-        choices_str = ', '.join(map('`{}`'.format, sorted(choices)))
-        choices_str = ' One of [{}].'.format(choices_str)
-      help_ = flag.kwargs['help']
-      spec[name] = flag.kwargs['type']
-      sub_argument_help.append(
-          '* *{name}*: {required}.{choices} {help}'.format(
-              name=name, required=('Required' if required else 'Optional'),
-              choices=choices_str, help=help_))
-    key_type_help = []
-    for key_type, description in reversed(sorted(_VALID_KEY_TYPES.items())):
-      key_type_help.append('* `{}`: {}'.format(key_type, description))
-    base.Argument(
-        '--public-key',
-        dest='public_keys',
-        metavar='path=PATH,type=TYPE,[expiration-time=EXPIRATION-TIME]',
-        type=arg_parsers.ArgDict(spec=spec),
-        action='append',
-        help="""\
+  if not combine_flags:
+    return flags
+
+  sub_argument_help = []
+  spec = {}
+  for flag in flags:
+    name = flag.name.lstrip('-')
+    required = flag.kwargs.get('required')
+    choices = flag.kwargs.get('choices')
+    choices_str = ''
+    if choices:
+      choices_str = ', '.join(map('`{}`'.format, sorted(choices)))
+      choices_str = ' One of [{}].'.format(choices_str)
+    help_ = flag.kwargs['help']
+    spec[name] = flag.kwargs['type']
+    sub_argument_help.append(
+        '* *{name}*: {required}.{choices} {help}'.format(
+            name=name, required=('Required' if required else 'Optional'),
+            choices=choices_str, help=help_))
+  key_type_help = []
+  for key_type, description in reversed(sorted(_VALID_KEY_TYPES.items())):
+    key_type_help.append('* `{}`: {}'.format(key_type, description))
+  flag = base.Argument(
+      '--public-key',
+      dest='public_keys',
+      metavar='path=PATH,type=TYPE,[expiration-time=EXPIRATION-TIME]',
+      type=arg_parsers.ArgDict(spec=spec),
+      action='append',
+      help="""\
 Specify a public key.
 
 Supports four key types:
@@ -296,15 +313,18 @@ The key specification is given via the following sub-arguments:
 
 For example:
 
-    --public-key \\
-        path=/path/to/id_rsa.pem,type=RSA_PEM,expiration-time=2017-01-01T00:00-05
+  --public-key \\
+      path=/path/to/id_rsa.pem,type=RSA_PEM,expiration-time=2017-01-01T00:00-05
 
 This flag may be provide multiple times to provide multiple keys (maximum 3).
 """.format(key_type_help='\n'.join(key_type_help),
-           sub_argument_help='\n'.join(sub_argument_help))).AddToParser(parser)
-  else:
-    for flag in flags:
-      flag.AddToParser(parser)
+           sub_argument_help='\n'.join(sub_argument_help)))
+  return [flag]
+
+
+def _GetCreateFlags():
+  """Generates all the flags for the create command."""
+  return _GetDeviceFlags() + _GetDeviceCredentialFlags()
 
 
 def AddDeviceConfigFlagsToParser(parser):

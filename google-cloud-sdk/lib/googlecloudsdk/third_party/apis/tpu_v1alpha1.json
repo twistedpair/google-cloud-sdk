@@ -290,7 +290,6 @@
           "type": "string"
         },
         "machineType": {
-
           "type": "string"
         },
         "ipAddress": {
@@ -349,31 +348,25 @@
           "format": "google-datetime"
         },
         "schedulingConfig": {
-
           "$ref": "SchedulingConfig"
         },
         "greenVmSelflink": {
-
           "type": "string"
         },
         "greenVmInstanceId": {
-
           "type": "string",
           "format": "uint64"
         },
         "tensorFlowUrlOverride": {
-
           "type": "string"
         }
       }
     },
     "SchedulingConfig": {
       "id": "SchedulingConfig",
-
       "type": "object",
       "properties": {
         "preemptible": {
-
           "type": "boolean"
         }
       }
@@ -754,45 +747,6 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
                       "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ]
-                },
-                "updateState": {
-                  "id": "tpu.projects.locations.nodes.updateState",
-                  "path": "v1alpha1/{+name}:updateState",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:updateState",
-                  "httpMethod": "POST",
-                  "description": "Update the state on a node.",
-                  "parameters": {
-                    "name": {
-                      "description": "The resource name.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "state": {
-                      "description": "The state the node should be in after update.",
-                      "location": "query",
-                      "type": "string",
-                      "enum": [
-                        "STATE_UNSPECIFIED",
-                        "CREATING",
-                        "READY",
-                        "RESTARTING",
-                        "REIMAGING",
-                        "DELETING",
-                        "REPAIRING"
-                      ]
                     }
                   },
                   "parameterOrder": [

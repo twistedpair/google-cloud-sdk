@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20171009",
+ "revision": "20171013",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -521,7 +521,7 @@
     },
     "addressType": {
      "type": "string",
-     "description": "The type of address to reserve. If unspecified, defaults to EXTERNAL.",
+     "description": "The type of address to reserve, either INTERNAL or EXTERNAL. If unspecified, defaults to EXTERNAL.",
      "enum": [
       "EXTERNAL",
       "INTERNAL",
@@ -3107,6 +3107,14 @@
      "type": "string",
      "description": "[Output Only] Last detach timestamp in RFC3339 text format."
     },
+    "licenseCodes": {
+     "type": "array",
+     "description": "Integer license codes indicating which licenses are attached to this disk.",
+     "items": {
+      "type": "string",
+      "format": "int64"
+     }
+    },
     "licenses": {
      "type": "array",
      "description": "Any applicable publicly visible licenses.",
@@ -5509,6 +5517,14 @@
      "description": "Labels to apply to this image. These can be later modified by the setLabels method.",
      "additionalProperties": {
       "type": "string"
+     }
+    },
+    "licenseCodes": {
+     "type": "array",
+     "description": "Integer license codes indicating which licenses are attached to this image.",
+     "items": {
+      "type": "string",
+      "format": "int64"
      }
     },
     "licenses": {
@@ -7969,7 +7985,7 @@
   "Interconnect": {
    "id": "Interconnect",
    "type": "object",
-   "description": "Protocol definitions for Mixer API to support Interconnect. Next available tag: 25",
+   "description": "Protocol definitions for Mixer API to support Interconnect. Next available tag: 26",
    "properties": {
     "adminEnabled": {
      "type": "boolean",
@@ -8068,14 +8084,10 @@
      "type": "string",
      "description": "[Output Only] The current status of whether or not this Interconnect is functional.",
      "enum": [
-      "ACTIVE",
       "OS_ACTIVE",
-      "OS_UNPROVISIONED",
-      "UNPROVISIONED"
+      "OS_UNPROVISIONED"
      ],
      "enumDescriptions": [
-      "",
-      "",
       "",
       ""
      ]
@@ -8103,7 +8115,7 @@
   "InterconnectAttachment": {
    "id": "InterconnectAttachment",
    "type": "object",
-   "description": "Protocol definitions for Mixer API to support InterconnectAttachment. Next available tag: 23",
+   "description": "Protocol definitions for Mixer API to support InterconnectAttachment. Next available tag: 25",
    "properties": {
     "cloudRouterIpAddress": {
      "type": "string",
@@ -8148,14 +8160,10 @@
      "type": "string",
      "description": "[Output Only] The current status of whether or not this interconnect attachment is functional.",
      "enum": [
-      "ACTIVE",
       "OS_ACTIVE",
-      "OS_UNPROVISIONED",
-      "UNPROVISIONED"
+      "OS_UNPROVISIONED"
      ],
      "enumDescriptions": [
-      "",
-      "",
       "",
       ""
      ]
@@ -8956,10 +8964,28 @@
      "type": "boolean",
      "description": "[Output Only] Deprecated. This field no longer reflects whether a license charges a usage fee."
     },
+    "creationTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+    },
+    "description": {
+     "type": "string",
+     "description": "An optional textual description of the resource; provided by the client when the resource is created."
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "format": "uint64"
+    },
     "kind": {
      "type": "string",
      "description": "[Output Only] Type of resource. Always compute#license for licenses.",
      "default": "compute#license"
+    },
+    "licenseCode": {
+     "type": "string",
+     "description": "[Output Only] The unique code used to attach this license to images, snapshots, and disks.",
+     "format": "uint64"
     },
     "name": {
      "type": "string",
@@ -8971,9 +8997,219 @@
       ]
      }
     },
+    "resourceRequirements": {
+     "$ref": "LicenseResourceRequirements"
+    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "transferable": {
+     "type": "boolean",
+     "description": "If false, licenses will not be copied from the source resource when creating an image from a disk, disk from snapshot, or snapshot from disk."
+    }
+   }
+  },
+  "LicenseCode": {
+   "id": "LicenseCode",
+   "type": "object",
+   "properties": {
+    "creationTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+    },
+    "description": {
+     "type": "string",
+     "description": "[Output Only] Description of this License Code."
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "format": "uint64"
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource. Always compute#licenseCode for licenses.",
+     "default": "compute#licenseCode"
+    },
+    "licenseAlias": {
+     "type": "array",
+     "description": "[Output Only] URL and description aliases of Licenses with the same License Code.",
+     "items": {
+      "$ref": "LicenseCodeLicenseAlias"
+     }
+    },
+    "name": {
+     "type": "string",
+     "description": "[Output Only] Name of the resource. The name is 1-20 characters long and must be a valid 64 bit integer.",
+     "pattern": "[0-9]{0,20}?",
+     "annotations": {
+      "required": [
+       "compute.licenses.insert"
+      ]
+     }
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "state": {
+     "type": "string",
+     "description": "[Output Only] Current state of this License Code.",
+     "enum": [
+      "DISABLED",
+      "ENABLED",
+      "RESTRICTED",
+      "STATE_UNSPECIFIED",
+      "TERMINATED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "transferable": {
+     "type": "boolean",
+     "description": "[Output Only] If true, the license will remain attached when creating images or snapshots from disks. Otherwise, the license is not transferred."
+    }
+   }
+  },
+  "LicenseCodeLicenseAlias": {
+   "id": "LicenseCodeLicenseAlias",
+   "type": "object",
+   "properties": {
+    "description": {
+     "type": "string",
+     "description": "[Output Only] Description of this License Code."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] URL of license corresponding to this License Code."
+    }
+   }
+  },
+  "LicenseResourceRequirements": {
+   "id": "LicenseResourceRequirements",
+   "type": "object",
+   "properties": {
+    "minGuestCpuCount": {
+     "type": "integer",
+     "description": "Minimum number of guest cpus required to use the Instance. Enforced at Instance creation and Instance start.",
+     "format": "int32"
+    },
+    "minMemoryMb": {
+     "type": "integer",
+     "description": "Minimum memory required to use the Instance. Enforced at Instance creation and Instance start.",
+     "format": "int32"
+    }
+   }
+  },
+  "LicensesListResponse": {
+   "id": "LicensesListResponse",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the resource; defined by the server."
+    },
+    "items": {
+     "type": "array",
+     "description": "A list of License resources.",
+     "items": {
+      "$ref": "License"
+     }
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning message.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
     }
    }
   },
@@ -12918,6 +13154,14 @@
      "description": "Labels to apply to this snapshot. These can be later modified by the setLabels method. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
+     }
+    },
+    "licenseCodes": {
+     "type": "array",
+     "description": "Integer license codes indicating which licenses are attached to this snapshot.",
+     "items": {
+      "type": "string",
+      "format": "int64"
      }
     },
     "licenses": {
@@ -24899,8 +25143,84 @@
     }
    }
   },
+  "licenseCodes": {
+   "methods": {
+    "get": {
+     "id": "compute.licenseCodes.get",
+     "path": "{project}/global/licenseCodes/{licenseCode}",
+     "httpMethod": "GET",
+     "description": "Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.",
+     "parameters": {
+      "licenseCode": {
+       "type": "string",
+       "description": "Number corresponding to the License code resource to return.",
+       "required": true,
+       "pattern": "[0-9]{0,61}?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "licenseCode"
+     ],
+     "response": {
+      "$ref": "LicenseCode"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    }
+   }
+  },
   "licenses": {
    "methods": {
+    "delete": {
+     "id": "compute.licenses.delete",
+     "path": "{project}/global/licenses/{license}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified license.",
+     "parameters": {
+      "license": {
+       "type": "string",
+       "description": "Name of the license resource to delete.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "license"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "get": {
      "id": "compute.licenses.get",
      "path": "{project}/global/licenses/{license}",
@@ -24928,6 +25248,91 @@
      ],
      "response": {
       "$ref": "License"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.licenses.insert",
+     "path": "{project}/global/licenses",
+     "httpMethod": "POST",
+     "description": "Create a License resource in the specified project.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "License"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/devstorage.full_control",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/devstorage.read_write"
+     ]
+    },
+    "list": {
+     "id": "compute.licenses.list",
+     "path": "{project}/global/licenses",
+     "httpMethod": "GET",
+     "description": "Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 8. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "Sets a filter {expression} for filtering listed resources. Your {expression} must be in the format: field_name comparison_string literal_string.\n\nThe field_name is the name of the field you want to compare. Only atomic field types are supported (string, number, boolean). The comparison_string must be either eq (equals) or ne (not equals). The literal_string is the string value to filter to. The literal value must be valid for the type of field you are filtering by (string, number, boolean). For string fields, the literal value is interpreted as a regular expression using RE2 syntax. The literal value must match the entire field.\n\nFor example, to filter for instances that do not have a name of example-instance, you would use name ne example-instance.\n\nYou can filter on nested fields. For example, you could filter on instances that have set the scheduling.automaticRestart field to true. Use filtering on nested fields to take advantage of labels to organize and search for results based on label values.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart eq true) (zone eq us-central1-f). Multiple expressions are treated as AND expressions, meaning that resources must match all expressions to pass the filters.",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "LicensesListResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

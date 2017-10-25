@@ -272,6 +272,12 @@ class ConfigInfo(object):
     if self.properties.get('core', {}).get('project'):
       self.properties['core']['project'] = anonymizer.ProcessProject(
           self.properties['core']['project'])
+    if self.properties.get('proxy', {}).get('username'):
+      self.properties['proxy']['username'] = anonymizer.ProcessUsername(
+          self.properties['proxy']['username'])
+    if self.properties.get('proxy', {}).get('password'):
+      self.properties['proxy']['password'] = anonymizer.ProcessPassword(
+          self.properties['proxy']['password'])
 
   def __str__(self):
     out = StringIO.StringIO()

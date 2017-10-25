@@ -60,8 +60,20 @@ def _ExtractErrorMessage(error_details):
   return error_message.getvalue()
 
 
-def _GetBuildProp(build_op, prop_key):
-  """Extract the value of a build's prop_key from a build operation."""
+def _GetBuildProp(build_op, prop_key, required=False):
+  """Extract the value of a build's prop_key from a build operation.
+
+  Args:
+    build_op: A Google Cloud Builder build operation.
+    prop_key: str, The property name.
+    required: If True, raise an OperationError if prop_key isn't present.
+
+  Returns:
+    The corresponding build operation value indexed by prop_key.
+
+  Raises:
+    OperationError: The required prop_key was not found.
+  """
   if build_op.metadata is not None:
     for prop in build_op.metadata.additionalProperties:
       if prop.key == 'build':
@@ -69,6 +81,9 @@ def _GetBuildProp(build_op, prop_key):
           if build_prop.key == prop_key:
             string_value = build_prop.value.string_value
             return string_value or build_prop.value
+  if required:
+    raise OperationError('Build operation does not contain required '
+                         'property [{}]'.format(prop_key))
 
 
 def _GetStatusFromOp(op):
@@ -127,11 +142,7 @@ class BuildArtifact(object):
 
   @classmethod
   def MakeBuildIdArtifactFromOp(cls, build_op):
-    build_id = _GetBuildProp(build_op, 'id')
-
-    if build_id is None:
-      log.debug('Could not determine build ID')
-      raise BuildFailedError('Cloud build failed. Check logs for details')
+    build_id = _GetBuildProp(build_op, 'id', required=True)
     return cls(cls.BuildType.BUILD_ID, build_id, build_op)
 
   @classmethod
@@ -176,20 +187,8 @@ class CloudBuildClient(object):
     self.client = client or cloudbuild_util.GetClientInstance()
     self.messages = messages or cloudbuild_util.GetMessagesModule()
 
-  def _StartBuild(self, build, project):
-    """Constructs and submits the CloudbuildProjectsBuildsCreateRequest."""
-
-    if project is None:
-      project = properties.VALUES.core.project.Get(required=True)
-
-    build_op = self.client.projects_builds.Create(
-        self.messages.CloudbuildProjectsBuildsCreateRequest(
-            projectId=project,
-            build=build,))
-    return build_op
-
   def ExecuteCloudBuildAsync(self, build, project=None):
-    """Execute a call to CloudBuild service and return the in-progress build ID.
+    """Execute a call to CloudBuild service and return the build operation.
 
 
     Args:
@@ -201,16 +200,16 @@ class CloudBuildClient(object):
       BuildFailedError: when the build fails.
 
     Returns:
-      build_id, str: The ID for an in-progress build.
+      build_op, an in-progress build operation.
     """
-    build_op = self._StartBuild(build, project)
-    build_id = _GetBuildProp(build_op, 'id')
+    if project is None:
+      project = properties.VALUES.core.project.Get(required=True)
 
-    if build_id is None:
-      log.debug('Could not determine build ID')
-      raise BuildFailedError('Cloud build failed. Check logs for details')
-
-    return build_id
+    build_op = self.client.projects_builds.Create(
+        self.messages.CloudbuildProjectsBuildsCreateRequest(
+            projectId=project,
+            build=build,))
+    return build_op
 
   def ExecuteCloudBuild(self, build, project=None):
     """Execute a call to CloudBuild service and wait for it to finish.
@@ -225,18 +224,14 @@ class CloudBuildClient(object):
       BuildFailedError: when the build fails.
     """
 
-    build_op = self._StartBuild(build, project)
-    build_id = _GetBuildProp(build_op, 'id')
+    build_op = self.ExecuteCloudBuildAsync(build, project)
+    self.WaitAndStreamLogs(build_op)
+
+  def WaitAndStreamLogs(self, build_op):
+    """Wait for a Cloud Build to finish, streaming logs if possible."""
+    build_id = _GetBuildProp(build_op, 'id', required=True)
     logs_uri = _GetBuildProp(build_op, 'logUrl')
-
-    if build_id is None:
-      log.debug('Could not determine build ID')
-      raise BuildFailedError('Cloud build failed. Check logs for details')
-
-    self._WaitAndStreamLogs(build_op, build.logsBucket, build_id, logs_uri)
-
-  def _WaitAndStreamLogs(self, build_op, logs_bucket, build_id, logs_uri):
-    """Wait for a Cloud Build to finish, optionally streaming logs."""
+    logs_bucket = _GetBuildProp(build_op, 'logsBucket')
     log.status.Print(
         'Started cloud build [{build_id}].'.format(build_id=build_id))
     log_loc = 'in the Cloud Console.'

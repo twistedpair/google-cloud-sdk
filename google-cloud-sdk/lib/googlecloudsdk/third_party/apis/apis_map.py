@@ -124,6 +124,14 @@ MAP = {
             default_version=True
         ),
     },
+    'categorymanager': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.categorymanager.v1alpha1',
+            client_classpath='categorymanager_v1alpha1_client.CategorymanagerV1alpha1',
+            messages_modulepath='categorymanager_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'cloudbilling': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.cloudbilling.v1',
@@ -289,14 +297,6 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.dataflow.v1b3',
             client_classpath='dataflow_v1b3_client.DataflowV1b3',
             messages_modulepath='dataflow_v1b3_messages',
-            default_version=True
-        ),
-    },
-    'datapol': {
-        'v1alpha1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.datapol.v1alpha1',
-            client_classpath='datapol_v1alpha1_client.DatapolV1alpha1',
-            messages_modulepath='datapol_v1alpha1_messages',
             default_version=True
         ),
     },

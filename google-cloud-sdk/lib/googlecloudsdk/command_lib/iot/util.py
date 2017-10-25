@@ -114,6 +114,16 @@ def ParseDeviceBlocked(blocked, enable_device):
     return not enable_device or blocked
 
 
+def AddBlockedToRequest(ref, args, req):
+  """Python hook for yaml commands to process the blocked flag."""
+  del ref
+  args_blocked = False if args.blocked is None else args.blocked
+  args_enabled = True if args.enable_device is None else args.enable_device
+  blocked = ParseDeviceBlocked(args_blocked, args_enabled)
+  req.device.blocked = blocked
+  return req
+
+
 _ALLOWED_KEYS = ['type', 'path', 'expiration-time']
 _REQUIRED_KEYS = ['type', 'path']
 
@@ -221,6 +231,13 @@ def ParseCredentials(public_keys, messages=None):
         ParseCredential(key.get('path'), key.get('type'),
                         key.get('expiration-time'), messages=messages))
   return credentials
+
+
+def AddCredentialsToRequest(ref, args, req):
+  """Python hook for yaml commands to process the credential flag."""
+  del ref
+  req.device.credentials = ParseCredentials(args.public_keys)
+  return req
 
 
 def ParseRegistryCredential(path, messages=None):
@@ -377,3 +394,11 @@ def ParseMetadata(metadata, metadata_from_file, messages=None):
 
   return messages.Device.MetadataValue(
       additionalProperties=additional_properties)
+
+
+def AddMetadataToRequest(ref, args, req):
+  """Python hook for yaml commands to process the metadata flags."""
+  del ref
+  metadata = ParseMetadata(args.metadata, args.metadata_from_file)
+  req.device.metadata = metadata
+  return req

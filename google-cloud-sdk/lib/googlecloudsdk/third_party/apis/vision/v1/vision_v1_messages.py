@@ -943,23 +943,29 @@ class SafeSearchAnnotation(_messages.Message):
 
   Enums:
     AdultValueValuesEnum: Represents the adult content likelihood for the
-      image.
+      image. Adult content may contain elements such as nudity, pornographic
+      images or cartoons, or sexual activities.
     MedicalValueValuesEnum: Likelihood that this is a medical image.
     SpoofValueValuesEnum: Spoof likelihood. The likelihood that an
       modification was made to the image's canonical version to make it appear
       funny or offensive.
-    ViolenceValueValuesEnum: Violence likelihood.
+    ViolenceValueValuesEnum: Likelihood that this image contains violent
+      content.
 
   Fields:
-    adult: Represents the adult content likelihood for the image.
+    adult: Represents the adult content likelihood for the image. Adult
+      content may contain elements such as nudity, pornographic images or
+      cartoons, or sexual activities.
     medical: Likelihood that this is a medical image.
     spoof: Spoof likelihood. The likelihood that an modification was made to
       the image's canonical version to make it appear funny or offensive.
-    violence: Violence likelihood.
+    violence: Likelihood that this image contains violent content.
   """
 
   class AdultValueValuesEnum(_messages.Enum):
-    """Represents the adult content likelihood for the image.
+    """Represents the adult content likelihood for the image. Adult content
+    may contain elements such as nudity, pornographic images or cartoons, or
+    sexual activities.
 
     Values:
       UNKNOWN: Unknown likelihood.
@@ -1026,7 +1032,7 @@ class SafeSearchAnnotation(_messages.Message):
     VERY_LIKELY = 5
 
   class ViolenceValueValuesEnum(_messages.Enum):
-    """Violence likelihood.
+    """Likelihood that this image contains violent content.
 
     Values:
       UNKNOWN: Unknown likelihood.

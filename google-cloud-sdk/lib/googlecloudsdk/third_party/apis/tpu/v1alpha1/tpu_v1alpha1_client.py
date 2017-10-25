@@ -265,33 +265,6 @@ class TpuV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def UpdateState(self, request, global_params=None):
-      """Update the state on a node.
-
-      Args:
-        request: (TpuProjectsLocationsNodesUpdateStateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('UpdateState')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateState.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:updateState',
-        http_method=u'POST',
-        method_id=u'tpu.projects.locations.nodes.updateState',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[u'state'],
-        relative_path=u'v1alpha1/{+name}:updateState',
-        request_field='',
-        request_type_name=u'TpuProjectsLocationsNodesUpdateStateRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
