@@ -53,7 +53,7 @@ _python_argcomplete() {
         COMPREPLY[0]=${COMPREPLY[0]%' '}
     fi
 }
-complete -o nospace -o default -F _python_argcomplete "gcloud"
+complete -o nospace -F _python_argcomplete "gcloud"
 
 _completer() {
     command=$1
@@ -78,6 +78,5 @@ _bq_completer() {
     _completer "CLOUDSDK_COMPONENT_MANAGER_DISABLE_UPDATE_CHECK=1 bq help | grep '^[^ ][^ ]*  ' | sed 's/ .*//'" bq
 }
 
-complete -o default -F _bq_completer bq
+complete -F _bq_completer bq
 complete -o nospace -F _python_argcomplete gsutil
-

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """Utilities for generating and parsing arguments from API fields."""
-
+from collections import OrderedDict
 import re
 
 from apitools.base.protorpclite import messages
@@ -91,9 +91,11 @@ DEFAULT_PARAMS = {'project': properties.VALUES.core.project.Get,
                  }
 
 
-def GetFromNamespace(namespace, arg_name, use_defaults=False):
+def GetFromNamespace(namespace, arg_name, fallback=None, use_defaults=False):
   """Gets the given argument from the namespace."""
   value = getattr(namespace, arg_name.replace('-', '_'), None)
+  if not value and fallback:
+    value = fallback()
   if not value and use_defaults:
     value = DEFAULT_PARAMS.get(arg_name, lambda: None)()
   return value
@@ -126,7 +128,7 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
   Returns:
     calliope.base.Argument, The generated argument.
   """
-  variant = field.variant
+  variant = field.variant if field else None
   t = attributes.type or TYPES.get(variant, None)
 
   choices = None
@@ -142,7 +144,7 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
   # Note that a field will never be a message at this point, always a scalar.
   # pylint: disable=g-explicit-bool-comparison, only an explicit False should
   # override this, None just means to do the default.
-  if field.repeated and attributes.repeated != False:
+  if (field and field.repeated) and attributes.repeated != False:
     t = arg_parsers.ArgList(element_type=t, choices=choices)
   name = attributes.arg_name
   arg = base.Argument(
@@ -289,3 +291,188 @@ def FieldHelpDocs(message):
 def IsOutputField(help_text):
   """Determines if the given field is output only based on help text."""
   return help_text and help_text.startswith('[Output Only]')
+
+
+class ChoiceEnumMapper(object):
+  """Utility class for mapping apitools Enum messages to argparse choice args.
+
+  Dynamically builds a base.Argument from an enum message.
+  Derives choice values from supplied enum or an optional custom_mapping dict
+  (see below).
+
+  Class Attributes:
+   choices: Either a list of strings [str] specifying the commandline choice
+       values or an ordered dict of choice value to choice help string mappings
+       {str -> str}
+   enum: underlying enum whos values map to supplied choices.
+   choice_arg: base.Argument object
+   choice_mappings: Mapping of argparse choice value strings to enum values.
+   custom_mappings: Optional dict mapping enum values to a custom
+     argparse choice value. To maintain compatiblity with base.ChoiceAgrument(),
+     dict can be either:
+     {str-> str} - Enum String value to choice argument value i.e.
+     {'MY_MUCH_LONGER_ENUM_VALUE':'short-arg'}
+     OR
+     {str -> (str, str)} -  Enum string value to  tuple of
+     (choice argument value, choice help string) i.e.
+     {'MY_MUCH_LONGER_ENUM_VALUE':('short-arg','My short arg help text.')}
+  """
+  _CUSTOM_MAPPING_ERROR = ('custom_mappings must be a dict of enum string '
+                           'values to argparse argument choices. Choices must '
+                           'be either a string or a string tuple of (choice, '
+                           'choice_help_text): [{}]')
+
+  def __init__(self,
+               arg_name,
+               message_enum,
+               custom_mappings=None,
+               help_str=None,
+               required=False,
+               action=None,
+               metavar=None,
+               dest=None,
+               default=None):
+    """Initialize ChoiceEnumMapper.
+
+    Args:
+      arg_name: str, The name of the argparse argument to create
+      message_enum: apitools.Enum, the enum to map
+      custom_mappings: See Above.
+      help_str: string, pass through for base.Argument,
+        see base.ChoiceArgument().
+      required: boolean,string, pass through for base.Argument,
+          see base.ChoiceArgument().
+      action: string or argparse.Action, string, pass through for base.Argument,
+          see base.ChoiceArgument().
+      metavar: string,  string, pass through for base.Argument,
+          see base.ChoiceArgument()..
+      dest: string, string, pass through for base.Argument,
+          see base.ChoiceArgument().
+      default: string, string, pass through for base.Argument,
+          see base.ChoiceArgument().
+
+    Raises:
+      ValueError: If no enum is given, mappings are incomplete
+      TypeError: If invalid values are passed for base.Argument or
+       custom_mapping
+    """
+     # pylint:disable=protected-access
+    if not isinstance(message_enum, messages._EnumClass):
+      raise ValueError('Invalid Message Enum: [{}]'.format(message_enum))
+    self._arg_name = arg_name
+    self._enum = message_enum
+    self._custom_mappings = custom_mappings
+    self._ValidateAndParseMappings()
+    self._choice_arg = base.ChoiceArgument(
+        arg_name,
+        self.choices,
+        help_str=help_str,
+        required=required,
+        action=action,
+        metavar=metavar,
+        dest=dest,
+        default=default)
+
+  def _ValidateAndParseMappings(self):
+    """Validates and parses choice to enum mappings.
+
+    Validates and parses choice to enum mappings including any custom mappings.
+
+    Raises:
+      ValueError: custom_mappings does not contain correct number of mapped
+        values.
+      TypeError: custom_mappings is incorrect type or contains incorrect types
+        for mapped values.
+    """
+    if self._custom_mappings:  # Process Custom Mappings
+      if not isinstance(self._custom_mappings, dict):
+        raise TypeError(
+            self._CUSTOM_MAPPING_ERROR.format(self._custom_mappings))
+      enum_strings = set([x.name for x in self._enum])
+      diff = set(self._custom_mappings.keys()) - enum_strings
+      if diff:
+        raise ValueError('custom_mappings [{}] may only contain mappings'
+                         ' for enum values. invalid values:[{}]'.format(
+                             ', '.join(self._custom_mappings.keys()),
+                             ', '.join(diff)))
+      try:
+        self._ParseCustomMappingsFromTuples()
+      except (TypeError, ValueError):
+        self._ParseCustomMappingsFromStrings()
+
+    else:  # No Custom Mappings so do automagic mapping
+      self._choice_to_enum = {
+          EnumNameToChoice(x.name): x
+          for x in self._enum
+      }
+      self._enum_to_choice = {
+          y.name: x
+          for x, y in self._choice_to_enum.iteritems()
+      }
+      self._choices = sorted(self._choice_to_enum.keys())
+
+  def _ParseCustomMappingsFromTuples(self):
+    """Parses choice to enum mappings from custom_mapping with tuples.
+
+     Parses choice mappings from dict mapping Enum strings to a tuple of
+     choice values and choice help {str -> (str, str)} mapping.
+
+    Raises:
+      TypeError - Custom choices are not not valid (str,str) tuples.
+    """
+    self._choice_to_enum = {}
+    self._enum_to_choice = {}
+    self._choices = OrderedDict()
+    for enum_string, (choice, help_str) in sorted(
+        self._custom_mappings.iteritems()):
+      self._choice_to_enum[choice] = self._enum(enum_string)
+      self._enum_to_choice[enum_string] = choice
+      self._choices[choice] = help_str
+
+  def _ParseCustomMappingsFromStrings(self):
+    """Parses choice to enum mappings from custom_mapping with strings.
+
+     Parses choice mappings from dict mapping Enum strings to choice
+     values {str -> str} mapping.
+
+    Raises:
+      TypeError - Custom choices are not strings
+    """
+    self._choice_to_enum = {}
+    self._choices = []
+
+    for enum_string, choice_string in sorted(self._custom_mappings.iteritems()):
+      if not isinstance(choice_string, basestring):
+        raise TypeError(
+            self._CUSTOM_MAPPING_ERROR.format(self._custom_mappings))
+      self._choice_to_enum[choice_string] = self._enum(enum_string)
+      self._choices.append(choice_string)
+    self._enum_to_choice = self._custom_mappings
+
+  def GetChoiceForEnum(self, enum_value):
+    """Converts an enum value to a choice argument value."""
+    return self._enum_to_choice.setdefault(str(enum_value), None)
+
+  def GetEnumForChoice(self, choice_value):
+    """Converts a mapped string choice value to an enum."""
+    return self._choice_to_enum.setdefault(choice_value, None)
+
+  @property
+  def choices(self):
+    return self._choices
+
+  @property
+  def enum(self):
+    return self._enum
+
+  @property
+  def choice_arg(self):
+    return self._choice_arg
+
+  @property
+  def choice_mappings(self):
+    return self._choice_to_enum
+
+  @property
+  def custom_mappings(self):
+    return self._custom_mappings

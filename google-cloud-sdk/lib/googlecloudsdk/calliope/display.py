@@ -17,10 +17,9 @@ The print_format string passed to resource_printer.Print() is determined in this
 order:
  (1) Display disabled and resources not consumed if user output is disabled.
  (2) The explicit --format flag format string.
- (3) The DisplayInfo format from the parser.
- (4) The explicit Display() method.
- (5) The DeprecatedFormat() string.
- (6) Otherwise no output but the resources are consumed.
+ (3) The explicit Display() method.
+ (4) The DisplayInfo format from the parser.
+ (5) Otherwise no output but the resources are consumed.
 
 Format expressions are left-to-right composable. Each format expression is a
 string tuple
@@ -69,7 +68,6 @@ class Displayer(object):
     _defaults: The resource format and filter default projection.
     _format: The printer format string.
     _info: The resource info or None if not registered.
-    _legacy: True if command uses legacy Command class methods.
     _printer: The printer object.
     _printer_is_initialized: True if self._printer has been initialized.
     _resources: The resources to display, returned by command.Run().
@@ -98,7 +96,6 @@ class Displayer(object):
     self._format = None
     self._filter = None
     self._info = None
-    self._legacy = True
     self._printer = None
     self._printer_is_initialized = False
     self._resources = resources
@@ -106,7 +103,6 @@ class Displayer(object):
       # pylint: disable=protected-access
       display_info = args.GetDisplayInfo()
     if display_info:
-      self._legacy = display_info.legacy
       self._cache_updater = display_info.cache_updater
       self._defaults = resource_projection_spec.ProjectionSpec(
           defaults=self._defaults,
@@ -114,18 +110,6 @@ class Displayer(object):
           aliases=display_info.aliases)
       self._format = display_info.format
       self._filter = display_info.filter
-    if self._legacy:
-      self._defaults = resource_projection_spec.ProjectionSpec(
-          defaults=command.Defaults(),
-          symbols=display_info.transforms if display_info else None)
-      self._info = command.ResourceInfo(args)
-      if self._info:
-        self._defaults.symbols['collection'] = (
-            lambda r, undefined='': self._info.collection or undefined)
-      geturi = command.GetUriFunc()
-      if geturi:
-        self._defaults.symbols['uri'] = (
-            lambda r, undefined='': geturi(r) or undefined)
     self._transform_uri = self._defaults.symbols.get(
         'uri', resource_transform.TransformUri)
     self._defaults.symbols[
@@ -165,8 +149,6 @@ class Displayer(object):
                 ' '.join(self._args._GetCommand().GetPath())))
       return
 
-    if self._legacy and (not self._info or self._info.bypass_cache):
-      return
     if any([self._GetFlag(flag) for flag in self._CORRUPT_FLAGS]):
       return
 
@@ -352,11 +334,9 @@ class Displayer(object):
     Returns:
       format: The format string, '' if there is an explicit Display().
     """
-    if not self._legacy:
-      return self._format
     if hasattr(self._command, 'Display'):
       return ''
-    return self._command.DeprecatedFormat(self._args)
+    return self._format
 
   def _GetFilter(self):
     flag_filter = self._GetFlag('filter')

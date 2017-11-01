@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flag Utilities for cloud tpu commands."""
-import string
 from googlecloudsdk.calliope import base
 
 
@@ -42,9 +41,8 @@ def GetAcceleratorTypeFlag():
   """Set argument for choosing the TPU Accelerator type."""
   return base.Argument(
       '--accelerator-type',
-      choices=['tpu-v2'],
       default='tpu-v2',
-      type=string.lower,
+      type=lambda x: x.lower(),
       required=False,
       help="""\
       TPU accelerator type for the TPU.

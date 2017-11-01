@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""gcloud shell styles."""
+"""gcloud shell static styles."""
 
 from prompt_toolkit import styles
-from prompt_toolkit.token import Token
+from prompt_toolkit import token
 
 
 BLUE = '#00DED1'
@@ -45,19 +45,19 @@ def GetDocumentStyle():
   """Return the color styles for the layout."""
   prompt_styles = styles.default_style_extensions
   prompt_styles.update({
-      Token.Menu.Completions.Completion.Current: Color(BLUE, GRAY),
-      Token.Menu.Completions.Completion: Color(BLUE, DARK_GRAY),
-      Token.Toolbar: BOLD,
-      Token.Toolbar.Account: BOLD,
-      Token.Toolbar.Separator: BOLD,
-      Token.Toolbar.Project: BOLD,
-      Token.Toolbar.Help: BOLD,
-      Token.Prompt: BOLD,
-      Token.HSep: Color(GREEN),
-      Token.Markdown.Section: BOLD,
-      Token.Markdown.Definition: BOLD,
-      Token.Markdown.Value: ITALIC,
-      Token.Markdown.Truncated: REVERSE,
-      Token.Purple: BOLD,
+      token.Token.Menu.Completions.Completion.Current: Color(BLUE, GRAY),
+      token.Token.Menu.Completions.Completion: Color(BLUE, DARK_GRAY),
+      token.Token.Toolbar: BOLD,
+      token.Token.Toolbar.Account: BOLD,
+      token.Token.Toolbar.Separator: BOLD,
+      token.Token.Toolbar.Project: BOLD,
+      token.Token.Toolbar.Help: BOLD,
+      token.Token.Prompt: BOLD,
+      token.Token.HSep: Color(GREEN),
+      token.Token.Markdown.Section: BOLD,
+      token.Token.Markdown.Definition: BOLD,
+      token.Token.Markdown.Value: ITALIC,
+      token.Token.Markdown.Truncated: REVERSE,
+      token.Token.Purple: BOLD,
   })
   return styles.PygmentsStyle.from_defaults(style_dict=prompt_styles)

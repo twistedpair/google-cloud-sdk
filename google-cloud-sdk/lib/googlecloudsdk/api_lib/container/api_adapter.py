@@ -234,6 +234,7 @@ class CreateClusterOptions(object):
                create_subnetwork=None,
                cluster_secondary_range_name=None,
                services_secondary_range_name=None,
+               enable_shared_network=None,
                accelerators=None,
                enable_audit_logging=None,
                enable_binauthz=None,
@@ -283,6 +284,7 @@ class CreateClusterOptions(object):
     self.create_subnetwork = create_subnetwork
     self.cluster_secondary_range_name = cluster_secondary_range_name
     self.services_secondary_range_name = services_secondary_range_name
+    self.enable_shared_network = enable_shared_network
     self.accelerators = accelerators
     self.enable_audit_logging = enable_audit_logging
     self.enable_binauthz = enable_binauthz
@@ -782,7 +784,32 @@ class APIAdapter(object):
       labels.additionalProperties = props
       cluster.resourceLabels = labels
 
+    self.ParseNetworkConfigOptions(options, cluster)
     self.ParseIPAliasOptions(options, cluster)
+    return cluster
+
+  def ParseNetworkConfigOptions(self, options, cluster):
+    """Asserts the options for Shared VPC Networking."""
+    if not options.enable_shared_network:
+      return cluster
+
+    req_related_options = [('enable-kubernetes-alpha',
+                            options.enable_kubernetes_alpha),
+                           ('enable-ip-alias',
+                            options.enable_ip_alias), ('subnetwork',
+                                                       options.subnetwork),
+                           ('cluster-secondary-range-name',
+                            options.cluster_secondary_range_name),
+                           ('services-secondary-range-name',
+                            options.services_secondary_range_name)]
+
+    for name, opt in req_related_options:
+      if not opt:
+        raise util.MissingArgForSharedSubnetError(name)
+
+    network_config = self.messages.NetworkConfig(
+        enableSharedNetwork=options.enable_shared_network)
+    cluster.networkConfig = network_config
     return cluster
 
   def ParseIPAliasOptions(self, options, cluster):
@@ -1523,9 +1550,9 @@ class V1Beta1Adapter(APIAdapter):
   def SetLoggingService(self, cluster_ref, logging_service):
     op = self.client.projects_locations_clusters.SetLogging(
         self.messages.SetLoggingServiceRequest(
-            clusterId=cluster_ref.clusterId,
-            zone=cluster_ref.zone,
-            projectId=cluster_ref.projectId,
+            name=ProjectLocationCluster(cluster_ref.projectId,
+                                        cluster_ref.zone,
+                                        cluster_ref.clusterId),
             loggingService=logging_service))
     return self.ParseOperation(op.name, cluster_ref.zone)
 

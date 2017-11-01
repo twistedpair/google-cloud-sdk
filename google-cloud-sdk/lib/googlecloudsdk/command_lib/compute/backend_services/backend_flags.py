@@ -171,3 +171,15 @@ def AddCapacityScalar(parser):
       backend service only prevents new connections to instances in the group.
       All existing connections are allowed to continue until they close by
       normal means.""")
+
+
+def AddFailover(parser, default):
+  """Adds the failover argument to the argparse."""
+  parser.add_argument(
+      '--failover',
+      action='store_true',
+      default=default,
+      help="""\
+      Designates whether this is a failover backend. More than one
+      failover backend can be configured for a given BackendService.
+      Not compatible with the --global flag""")

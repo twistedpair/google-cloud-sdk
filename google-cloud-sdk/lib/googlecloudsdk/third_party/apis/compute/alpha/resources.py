@@ -192,6 +192,13 @@ class Collections(enum.Enum):
       {},
       [u'project', u'zone', u'machineType']
   )
+  MAINTENANCEPOLICIES = (
+      'maintenancePolicies',
+      'projects/{project}/regions/{region}/maintenancePolicies/'
+      '{maintenancePolicy}',
+      {},
+      [u'project', u'region', u'maintenancePolicy']
+  )
   NETWORKENDPOINTGROUPS = (
       'networkEndpointGroups',
       'projects/{project}/zones/{zone}/networkEndpointGroups/'

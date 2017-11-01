@@ -12,14 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """A library that is used to support Cloud Pub/Sub commands."""
+from googlecloudsdk.api_lib.pubsub import subscriptions
+from googlecloudsdk.api_lib.pubsub import topics
 from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_projector
+from googlecloudsdk.core.util import times
 
-# Maximum number of results that can be passed in pageSize to list operations.
-MAX_LIST_RESULTS = 10000
+# Format for the seek time argument.
+SEEK_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+
 
 # Collection for various subcommands.
 TOPICS_COLLECTION = 'pubsub.projects.topics'
@@ -87,6 +91,50 @@ def TopicUriFunc(topic):
   return ParseTopic(topic['topic']).SelfLink()
 
 
+def ParsePushConfig(push_endpoint, client=None):
+  client = client or subscriptions.SubscriptionsClient()
+  push_config = None
+  if push_endpoint is not None:
+    push_config = client.messages.PushConfig(pushEndpoint=push_endpoint)
+  return push_config
+
+
+def FormatSeekTime(time):
+  return times.FormatDateTime(time, fmt=SEEK_TIME_FORMAT)
+
+
+def FormatDuration(duration):
+  """Formats a duration argument to be a string with units.
+
+  Args:
+    duration (int): The duration in seconds.
+  Returns:
+    str: The formatted duration.
+  """
+  return str(duration) + 's'
+
+
+def ParseAttributes(attribute_dict, messages=None):
+  """Parses attribute_dict into a list of AdditionalProperty messages.
+
+  Args:
+    attribute_dict (Optional[dict]): Dict containing key=value pairs
+      to parse.
+    messages (Optional[module]): Module containing pubsub proto messages.
+  Returns:
+    list: List of AdditionalProperty messages.
+  """
+  messages = messages or topics.GetMessageModule()
+  attributes = []
+  if attribute_dict:
+    for key, value in sorted(attribute_dict.iteritems()):
+      attributes.append(
+          messages.PubsubMessage.AttributesValue.AdditionalProperty(
+              key=key,
+              value=value))
+  return attributes
+
+
 # TODO(b/32276674): Remove the use of custom *DisplayDict's.
 def TopicDisplayDict(topic):
   """Creates a serializable from a Cloud Pub/Sub Topic operation for display.
@@ -146,3 +194,48 @@ def SnapshotDisplayDict(snapshot):
       'topic': snapshot.topic,
       'expireTime': snapshot.expireTime,
   }
+
+
+def ListSubscriptionDisplayDict(subscription):
+  """Returns a subscription dict with additional fields."""
+  result = resource_projector.MakeSerializable(subscription)
+  result['type'] = 'PUSH' if subscription.pushConfig.pushEndpoint else 'PULL'
+  subscription_ref = ParseSubscription(subscription.name)
+  result['projectId'] = subscription_ref.projectsId
+  result['subscriptionId'] = subscription_ref.subscriptionsId
+  topic_info = ParseTopic(subscription.topic)
+  result['topicId'] = topic_info.topicsId
+  return result
+
+
+def ListTopicDisplayDict(topic):
+  topic_dict = resource_projector.MakeSerializable(topic)
+  topic_ref = ParseTopic(topic.name)
+  topic_dict['topic'] = topic.name
+  topic_dict['topicId'] = topic_ref.topicsId
+  del topic_dict['name']
+  return topic_dict
+
+
+def ListTopicSubscriptionDisplayDict(topic_subscription):
+  """Returns a topic_subscription dict with additional fields."""
+  result = resource_projector.MakeSerializable(
+      {'subscription': topic_subscription})
+
+  subscription_ref = ParseSubscription(topic_subscription)
+  result['projectId'] = subscription_ref.projectsId
+  result['subscriptionId'] = subscription_ref.subscriptionsId
+  return result
+
+
+def ListSnapshotDisplayDict(snapshot):
+  """Returns a snapshot dict with additional fields."""
+  result = resource_projector.MakeSerializable(snapshot)
+  snapshot_ref = ParseSnapshot(snapshot.name)
+  result['projectId'] = snapshot_ref.projectsId
+  result['snapshotId'] = snapshot_ref.snapshotsId
+  topic_ref = ParseTopic(snapshot.topic)
+  result['topicId'] = topic_ref.topicsId
+  result['expireTime'] = snapshot.expireTime
+  return result
+

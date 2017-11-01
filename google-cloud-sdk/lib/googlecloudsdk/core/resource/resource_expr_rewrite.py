@@ -45,6 +45,7 @@ ExprTRUE, ExprAND, ExprOR and ExprNOT do expression rewrites based on None:
 
 from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_lex
+from googlecloudsdk.core.resource import resource_projection_spec
 
 
 class _Expr(object):
@@ -56,6 +57,14 @@ class _Expr(object):
   def Rewrite(self):
     """Returns the server side string rewrite of the filter expression."""
     return self.expr
+
+
+class _BelieveMe(dict):
+  """A symbols dict with nothing that claims everything."""
+
+  def get(self, obj, type=None):  # pylint: disable=redefined-builtin, overridden class expects this prototype
+    del obj, type
+    return self.get
 
 
 class BackendBase(object):
@@ -90,9 +99,13 @@ class BackendBase(object):
       Returns (frontend_expression, backend_expression) for expression.
     """
     self.partial_rewrite = False
+    defaults = resource_projection_spec.ProjectionSpec(defaults=defaults)
+    defaults.symbols = _BelieveMe()
     backend_expression = resource_filter.Compile(
         expression, backend=self, defaults=defaults).Rewrite()
     frontend_expression = expression if self.partial_rewrite else None
+    if frontend_expression and frontend_expression.isspace():
+      frontend_expression = None
     return frontend_expression, backend_expression
 
   def Expr(self, expr):

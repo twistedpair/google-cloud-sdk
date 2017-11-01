@@ -240,6 +240,7 @@ class _Sections(object):
     self.emulator = _SectionEmulator()
     self.experimental = _SectionExperimental()
     self.functions = _SectionFunctions()
+    self.interactive = _SectionInteractive()
     self.metrics = _SectionMetrics()
     self.ml_engine = _SectionMlEngine()
     self.proxy = _SectionProxy()
@@ -251,8 +252,8 @@ class _Sections(object):
         [self.api_endpoint_overrides, self.api_client_overrides, self.app,
          self.auth, self.billing, self.core, self.component_manager,
          self.compute, self.container, self.dataproc, self.devshell,
-         self.emulator, self.experimental, self.functions, self.metrics,
-         self.ml_engine, self.proxy, self.spanner, self.test])
+         self.emulator, self.experimental, self.functions, self.interactive,
+         self.metrics, self.ml_engine, self.proxy, self.spanner, self.test])
     self.__invocation_value_stack = [{}]
 
   @property
@@ -1080,10 +1081,6 @@ class _SectionExperimental(_Section):
     self.fast_component_update = self._AddBool(
         'fast_component_update',
         default=False)
-    self.shell_autocomplete = self._AddBool(
-        'shell_autocomplete',
-        hidden=True,
-        default=False)
 
 
 class _SectionTest(_Section):
@@ -1130,6 +1127,49 @@ class _SectionDataproc(_Section):
             'multi-region namespace which is capable of deploying instances '
             'into all Google Compute Engine zones globally, and is disjoint '
             'from other Cloud Dataproc regions.'))
+
+
+class _SectionInteractive(_Section):
+  """Contains the properties for the 'interactive' section."""
+
+  def __init__(self):
+    super(_SectionInteractive, self).__init__('interactive')
+    self.bottom_bindings_line = self._AddBool(
+        'bottom_bindings_line', default=True,
+        help_text='Display the bottom key bindings line if true.')
+    self.bottom_status_line = self._AddBool(
+        'bottom_status_line', default=False,
+        help_text='Display the bottom status line if true.')
+    self.completion_menu_lines = self._Add(
+        'completion_menu_lines', default=4,
+        help_text='Number of lines in the completion menu.')
+    self.context = self._Add(
+        'context', default='',
+        help_text='Command context string.')
+    self.fixed_prompt_position = self._Add(
+        'fixed_prompt_position', default='',
+        help_text='Display the prompt at the same position if true.')
+    self.help_lines = self._Add(
+        'help_lines', default=10,
+        help_text='Maximum number of help snippet lines.')
+    self.hidden = self._AddBool(
+        'hidden', default=False,
+        help_text='Expose hidden commands/flags if true.')
+    self.justify_bottom_lines = self._AddBool(
+        'justify_bottom_lines', default=False,
+        help_text='Left- and right-justify bottom toolbar lines.')
+    self.multi_column_completion_menu = self._AddBool(
+        'multi_column_completion_menu', default=False,
+        help_text='Display the completions as a multi-column menu.')
+    self.prompt = self._Add(
+        'prompt', default='$ ',
+        help_text='Command prompt string.')
+    self.show_help = self._AddBool(
+        'show_help', default=True,
+        help_text='Show help as command args are entered if true.')
+    self.suggest = self._AddBool(
+        'suggest', default=False,
+        help_text='Add command line suggestions based on history if true.')
 
 
 class _SectionProxy(_Section):
@@ -1449,8 +1489,7 @@ class _Property(object):
     if self.__validator:
       self.__validator(value)
 
-  # TODO(b/30403873): Make this validate by default
-  def GetBool(self, required=False, validate=False):
+  def GetBool(self, required=False, validate=True):
     """Gets the boolean value for this property.
 
     Looks first in the environment, then in the workspace config, then in the

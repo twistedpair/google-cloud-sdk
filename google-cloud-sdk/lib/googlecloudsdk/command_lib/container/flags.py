@@ -20,8 +20,6 @@ from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
@@ -199,61 +197,6 @@ def AddAsyncFlag(parser):
       '--async',
       action='store_true',
       default=None,
-      help='Don\'t wait for the operation to complete.')
-
-
-def GetAsyncValueFromAsyncAndWaitFlags(async, wait):
-  # TODO(b/28523509): Remove this function after July 2017.
-  """Derives --async value from --async and --wait flags for gcloud container.
-
-  Args:
-    async: The --async flag value
-    wait: The --wait flag value.
-
-  Returns:
-    boolean representing derived async value
-  """
-  async_was_set = async is not None
-  wait_was_set = wait is not None
-
-  if wait_was_set:
-    log.warning('\nThe --wait flag is deprecated and will be removed in a '
-                'future release. Use --async or --no-async instead.\n')
-
-  if not async_was_set and not wait_was_set:
-    return False  # Waiting is the 'default' value for cloud sdk
-  elif async_was_set and not wait_was_set:
-    return async
-  elif not async_was_set and wait_was_set:
-    return not wait
-  else:  # async_was_set and wait_was_set
-    if (async and wait) or (not async and not wait):
-      raise exceptions.InvalidArgumentException('--async',
-                                                'You cannot set both the '
-                                                '--async and --wait flags.')
-    elif async and not wait:
-      return True
-    else:  # not async or wait
-      return False
-
-
-def AddClustersWaitAndAsyncFlags(parser):
-  # TODO(b/28523509): Remove this function after July 2017.
-  """Adds the --wait and --async flags to the given parser."""
-  parser.add_argument(
-      '--wait',
-      action='store_true',
-      default=None,
-      # The default value is wait=True but the logic is done in
-      # GetAsyncValueFromAsyncAndWaitFlags as there are wait and async flags
-      help='DEPRECATED, use --no-async. Poll the operation for completion '
-           'after issuing a create request.')
-  parser.add_argument(
-      '--async',
-      action='store_true',
-      default=None,
-      # The default value is async=False but the logic is done in
-      # GetAsyncValueFromAsyncAndWaitFlags as there are wait and async flags
       help='Don\'t wait for the operation to complete.')
 
 
@@ -504,6 +447,27 @@ def AddNetworkPolicyFlags(parser, hidden=False):
       'enabling network policy on an existing cluster the network policy '
       'addon must first be enabled on the master by using '
       '--update-addons=NetworkPolicy=ENABLED flag.')
+
+
+def AddEnableSharedNetworkFlag(parser, hidden=False):
+  """Adds a --enable-shared-network flag to parser."""
+  help_text = """\
+Temporary flag allowing the cluster to be created with a shared network and
+subnetwork. This requires using alias IPs with a pre-existing subnetwork and
+secondary ranges. At a later release, this flag will not be necessary.
+
+The following flags must also be provided: '--enable-kubernetes-alpha',
+'--enable-ip-alias', '--subnetwork', '--services-secondary-range-name', and
+'--cluster-secondary-range-name'.
+
+The flag '--create-subnetwork' cannot be specified.
+"""
+  parser.add_argument(
+      '--enable-shared-network',
+      action='store_true',
+      default=None,
+      hidden=hidden,
+      help=help_text)
 
 
 def AddEnableLegacyAuthorizationFlag(parser, hidden=False):

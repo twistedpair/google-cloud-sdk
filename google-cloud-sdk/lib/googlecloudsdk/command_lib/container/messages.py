@@ -13,6 +13,10 @@
 # limitations under the License.
 """Helper methods for constructing messages for the container CLI."""
 
+from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.container import constants
+from googlecloudsdk.core import properties
+
 
 def AutoUpdateUpgradeRepairMessage(value, flag_name):
   """Messaging for when auto-upgrades or node auto-repairs.
@@ -32,3 +36,15 @@ def AutoUpdateUpgradeRepairMessage(value, flag_name):
           'https://cloud.google.com/container-engine/docs/'
           '{2} for more\n'
           'information on node {3}.\n').format(action, flag_name, link, plural)
+
+
+def NonGAFeatureUsingV1APIWarning(track):
+  if not properties.VALUES.container.use_v1_api_client.GetBool():
+    # No message if v1 API is not forced.
+    return None
+  tmpl = constants.KUBERNETES_API_MISMATCH_PROMPT_TEMPLATE
+  if track == base.ReleaseTrack.ALPHA:
+    return tmpl.format(track='alpha', api='v1alpha1')
+  if track == base.ReleaseTrack.BETA:
+    return tmpl.format(track='beta', api='v1beta1')
+  return None

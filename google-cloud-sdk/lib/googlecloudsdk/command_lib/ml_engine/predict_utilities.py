@@ -13,6 +13,7 @@
 # limitations under the License.
 """Utilities for reading instances for prediction."""
 
+import codecs
 import json
 
 
@@ -45,6 +46,7 @@ def ReadInstances(input_file, data_format, limit=None):
   instances = []
 
   for line_num, line in enumerate(input_file):
+    line = codecs.decode(line, 'utf-8-sig')  # Handle UTF8-BOM
     line_content = line.rstrip('\r\n')
     if not line_content:
       raise InvalidInstancesFileError('Empty line is not allowed in the '

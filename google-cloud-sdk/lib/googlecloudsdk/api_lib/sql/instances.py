@@ -22,6 +22,9 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
+_POSTGRES_DATABASE_VERSION_PREFIX = 'POSTGRES'
+
+
 class _BaseInstances(object):
   """Common utility functions for sql instances."""
 
@@ -62,6 +65,11 @@ class _BaseInstances(object):
         'authorized. Otherwise, they will be overwritten and de-authorized.',
         default=True,
         cancel_on_no=True)
+
+  @staticmethod
+  def IsPostgresDatabaseVersion(database_version):
+    """Returns a boolean indicating if the database version is Postgres."""
+    return _POSTGRES_DATABASE_VERSION_PREFIX in database_version
 
 
 class InstancesV1Beta3(_BaseInstances):

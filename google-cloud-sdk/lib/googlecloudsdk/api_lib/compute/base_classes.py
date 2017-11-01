@@ -366,7 +366,7 @@ def GetRegionalListerHelp(resource):
           *{{command}}* displays all Google Compute Engine {0} in a project.
 
           By default, {0} from all regions are listed. The results can be
-          narrowed down by providing the ``--regions'' flag.
+          narrowed down using a filter: `--filter="region:( REGION ... )"`.
           """.format(resource),
       'EXAMPLES': """\
           To list all {0} in a project in table form, run:
@@ -380,7 +380,7 @@ def GetRegionalListerHelp(resource):
           To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
           run:
 
-            $ {{command}} --regions us-central1 europe-west1
+            $ {{command}} --filter="region( us-central1 europe-west1 )"
             """.format(resource)
   }
 
@@ -421,7 +421,7 @@ def GetZonalListerHelp(resource):
           *{{command}}* displays all Google Compute Engine {0} in a project.
 
           By default, {0} from all zones are listed. The results can be narrowed
-          down by providing the ``--zones'' flag.
+          down using a filter: `--filter="zone:( ZONE ... )"`.
           """.format(resource),
       'EXAMPLES': """\
           To list all {0} in a project in table form, run:
@@ -435,7 +435,7 @@ def GetZonalListerHelp(resource):
           To list all {0} in the ``us-central1-b'' and ``europe-west1-d'' zones,
           run:
 
-            $ {{command}} --zones us-central1-b europe-west1-d
+            $ {{command}} --filter="zone:( europe-west1-b europe-west1-c )"
             """.format(resource)
   }
 

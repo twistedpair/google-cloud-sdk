@@ -32,6 +32,7 @@ LOOKUP_CHOICES = cli_tree.LOOKUP_CHOICES
 LOOKUP_COMPLETER = cli_tree.LOOKUP_COMPLETER
 LOOKUP_FLAGS = cli_tree.LOOKUP_FLAGS
 LOOKUP_GROUPS = cli_tree.LOOKUP_GROUPS
+LOOKUP_IS_GROUP = cli_tree.LOOKUP_IS_GROUP
 LOOKUP_IS_HIDDEN = cli_tree.LOOKUP_IS_HIDDEN
 LOOKUP_NAME = cli_tree.LOOKUP_NAME
 LOOKUP_NARGS = cli_tree.LOOKUP_NARGS
@@ -80,123 +81,132 @@ class ArgToken(object):
                                              self.start, self.end)
 
 
-def ParseCommand(root, line):
-  """Parses the next command from line and returns a list of ArgTokens.
+class Parser(object):
+  """Shell command line parser.
 
-  The caller can examine the return value to determine the parts of the line
-  that were ignored and the remainder of the line that was not lexed/parsed yet.
-
-  Args:
-    root: The CLI tree root.
-    line: a string containing a command line
-
-  Returns:
-    A list of ArgTokens.
+  Attributes:
+    args:
+    context:
+    cmd:
+    hidden:
+    positionals_seen:
+    root:
+    statement:
+    tokens:
   """
-  return ParseArgs(root, lexer.GetShellTokens(line))
 
+  def __init__(self, root, context=None, hidden=False):
+    self.root = root
+    self.hidden = hidden
 
-def ParseArgs(root, tokens):
-  """Parses a list of lexer.ShellTokens as a command.
+    self.args = []
+    self.cmd = self.root
+    self.positionals_seen = 0
+    self.previous_line = None
+    self.statement = 0
+    self.tokens = None
 
-  The parse stops at the first token that is not an ARG or FLAG. That token is
-  not consumed.
+    self.SetContext(context)
 
-  Args:
-    root: The CLI tree root.
-    tokens: list of lexer.ShellTokens, consumed from the left
+  def SetContext(self, context=None):
+    """Sets the default command prompt context."""
+    self.context = unicode(context or '')
 
-  Returns:
-    A list of ArgTokens.
-  """
-  cmd = root
-  positionals_seen = 0
-  positional = None
-  positional_nargs = None
+  def ParseCommand(self, line):
+    """Parses the next command from line and returns a list of ArgTokens.
 
-  args = []
+    The parse stops at the first token that is not an ARG or FLAG. That token is
+    not consumed. The caller can examine the return value to determine the
+    parts of the line that were ignored and the remainder of the line that was
+    not lexed/parsed yet.
 
-  while tokens:
-    token = tokens[0]
-    value = token.UnquotedValue()
+    Args:
+      line: a string containing the current command line
 
-    if token.lex == lexer.ShellTokenType.FLAG:
-      ParseFlag(cmd, tokens, args)
+    Returns:
+      A list of ArgTokens.
+    """
+    self.tokens = lexer.GetShellTokens(line)
+    self.cmd = self.root
+    self.positionals_seen = 0
 
-    elif token.lex == lexer.ShellTokenType.ARG:
-      tokens.pop(0)
-      if value in cmd[LOOKUP_COMMANDS]:
-        cmd = cmd[LOOKUP_COMMANDS][value]
+    self.args = []
 
-        if cmd[LOOKUP_COMMANDS]:
-          token_type = ArgTokenType.GROUP
+    unknown = False
+    while self.tokens:
+      token = self.tokens.pop(0)
+      value = token.UnquotedValue()
+
+      if token.lex == lexer.ShellTokenType.FLAG:
+        self.ParseFlag(token, value)
+
+      elif token.lex == lexer.ShellTokenType.ARG and not unknown:
+        if value in self.cmd[LOOKUP_COMMANDS]:
+          self.cmd = self.cmd[LOOKUP_COMMANDS][value]
+          if self.cmd[LOOKUP_IS_GROUP]:
+            token_type = ArgTokenType.GROUP
+          else:
+            token_type = ArgTokenType.COMMAND
+          self.args.append(ArgToken(value, token_type, self.cmd,
+                                    token.start, token.end))
+
+        elif self.positionals_seen < len(self.cmd[LOOKUP_POSITIONALS]):
+          positional = self.cmd[LOOKUP_POSITIONALS][self.positionals_seen]
+          self.args.append(ArgToken(value, ArgTokenType.POSITIONAL,
+                                    positional, token.start, token.end))
+          if positional[LOOKUP_NARGS] not in ('*', '+'):
+            self.positionals_seen += 1
+
+        elif not value:  # trailing space
+          break
+
         else:
-          token_type = ArgTokenType.COMMAND
+          unknown = True
+          self.args.append(ArgToken(value, ArgTokenType.UNKNOWN, self.cmd,
+                                    token.start, token.end))
 
-        args.append(ArgToken(value, token_type, cmd, token.start, token.end))
-
-      elif positional_nargs in ('*', '+'):
-        args.append(ArgToken(
-            value, ArgTokenType.POSITIONAL, positional, token.start, token.end))
-
-      elif len(cmd[LOOKUP_POSITIONALS]) > positionals_seen:
-        positional = cmd[LOOKUP_POSITIONALS][positionals_seen]
-        positional_nargs = positional[LOOKUP_NARGS]
-        args.append(ArgToken(
-            value, ArgTokenType.POSITIONAL, positional, token.start, token.end))
-        positionals_seen += 1
+      elif token.lex == lexer.ShellTokenType.TERMINATOR:
+        unknown = False
+        self.cmd = self.root
 
       else:
-        args.append(ArgToken(
-            value, ArgTokenType.UNKNOWN, cmd, token.start, token.end))
-    else:
-      break
+        unknown = True
+        self.args.append(ArgToken(value, ArgTokenType.UNKNOWN, self.cmd,
+                                  token.start, token.end))
 
-  return args
+    return self.args
 
+  def ParseFlag(self, token, name):
+    """Parses the flag token and appends it to the arg list."""
 
-def ParseFlag(cmd, tokens, args):
-  """Parse a list of lexer.ShellTokens as a flag and append to args.
+    name_start = token.start
+    name_end = token.end
+    value = None
+    value_start = None
+    value_end = None
 
-  Args:
-    cmd: the current location in the CLI root
-    tokens: list of lexer.ShellTokens of type ARG or FLAG where the first is
-      FLAG. This list is popped from the left as tokens are consumed.
-    args: An ArgToken list to append flag tokens to
-  """
+    if '=' in name:
+      # inline flag value
+      name, value = name.split('=', 1)
+      name_end = name_start + len(name)
+      value_start = name_end + 1
+      value_end = value_start + len(value)
 
-  token = tokens.pop(0)
-  arg = token.UnquotedValue()
-  name = arg
-  value = None
+    flag = self.cmd[LOOKUP_FLAGS].get(name)
+    if not flag or not self.hidden and flag[LOOKUP_IS_HIDDEN]:
+      self.args.append(ArgToken(name, ArgTokenType.UNKNOWN, self.cmd,
+                                token.start, token.end))
+      return
 
-  name_start = token.start
-  name_end = token.end
-  value_start = None
-  value_end = None
+    if flag[LOOKUP_TYPE] != 'bool' and value is None and self.tokens:
+      # next arg is the flag value
+      token = self.tokens.pop(0)
+      value = token.UnquotedValue()
+      value_start = token.start
+      value_end = token.end
 
-  if '=' in name:
-    # inline flag value
-    name, value = arg.split('=', 1)
-    name_end = name_start + len(name)
-    value_start = name_end + 1
-    value_end = value_start + len(value)
-
-  flag = cmd[LOOKUP_FLAGS].get(name)
-  if not flag or flag[LOOKUP_IS_HIDDEN]:
-    args.append(
-        ArgToken(arg, ArgTokenType.UNKNOWN, cmd, token.start, token.end))
-    return
-
-  if flag[LOOKUP_TYPE] != 'bool' and value is None and tokens:
-    # next arg is the flag value
-    token = tokens.pop(0)
-    value = token.UnquotedValue()
-    value_start = token.start
-    value_end = token.end
-
-  args.append(
-      ArgToken(name, ArgTokenType.FLAG, flag, name_start, name_end))
-  if value is not None:
-    args.append(
-        ArgToken(value, ArgTokenType.FLAG_ARG, None, value_start, value_end))
+    self.args.append(ArgToken(name, ArgTokenType.FLAG, flag,
+                              name_start, name_end))
+    if value is not None:
+      self.args.append(ArgToken(value, ArgTokenType.FLAG_ARG, None,
+                                value_start, value_end))

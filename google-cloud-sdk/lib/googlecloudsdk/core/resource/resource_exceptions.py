@@ -19,24 +19,23 @@ from googlecloudsdk.core import exceptions
 
 class Error(exceptions.Error):
   """A base exception for all recoverable resource errors => no stack trace."""
-  pass
 
 
 class InternalError(exceptions.InternalError):
   """A base exception for all unrecoverable resource errors => stack trace."""
-  pass
 
 
 class ExpressionSyntaxError(Error):
   """Resource expression syntax error."""
-  pass
+
+
+class UnknownTransformError(ExpressionSyntaxError):
+  """Unknown transform."""
 
 
 class ResourceRegistryAttributeError(exceptions.InternalError):
   """Missing or invalid resource registry attribute error."""
-  pass
 
 
 class UnregisteredCollectionError(Error):
   """Unregistered resource collection error."""
-  pass

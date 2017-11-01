@@ -16,6 +16,7 @@
 
 from googlecloudsdk.api_lib.deployment_manager import dm_api_util
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
 RESOURCES_AND_OUTPUTS_FORMAT = """
@@ -49,6 +50,23 @@ DEPLOYMENT_FORMAT = """
       operation.status, operation.user, operation.endTime, operation.startTime,
       operation.error, update)
 """
+
+_DELETE_FLAG_KWARGS = {
+    'help_str': ('Delete policy for resources that will change as part of '
+                 'an update or delete. `delete` deletes the resource while '
+                 '`abandon` just removes the resource reference from the '
+                 'deployment.'),
+    'default': 'delete',
+    'name': '--delete-policy'
+}
+
+
+def GetDeleteFlagEnumMap(policy_enum):
+  return arg_utils.ChoiceEnumMapper(
+      _DELETE_FLAG_KWARGS['name'],
+      policy_enum,
+      help_str=_DELETE_FLAG_KWARGS['help_str'],
+      default=_DELETE_FLAG_KWARGS['default'])
 
 
 def AddDeploymentNameFlag(parser):
@@ -95,18 +113,6 @@ def AddAsyncFlag(parser):
       action='store_true')
 
 
-def AddDeletePolicyFlag(parser, request_class):
-  """Add the delete_policy argument."""
-  parser.add_argument(
-      '--delete-policy',
-      help=('Delete policy for resources that will change as part of an update '
-            'or delete. DELETE deletes the resource while ABANDON just removes '
-            'the resource reference from the deployment.'),
-      default='DELETE',
-      choices=(sorted(request_class.DeletePolicyValueValuesEnum
-                      .to_dict().keys())))
-
-
 def AddFingerprintFlag(parser):
   """Add the fingerprint argument."""
   parser.add_argument(
@@ -132,4 +138,3 @@ def AddCredentialFlag(parser):
             'project. Use serviceAccount:email to set default credential '
             'using provided service account.'),
       dest='credential')
-

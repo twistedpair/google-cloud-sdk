@@ -6,6 +6,17 @@ SET INTERACTIVE=%ERRORLEVEL%
 
 echo Welcome to the Google Cloud SDK!
 
+IF "%CLOUDSDK_COMPONENT_MANAGER_SNAPSHOT_URL%"=="" (
+  GOTO SETENABLEDELAYED
+  ) ELSE (
+    echo WARNING: You have set the environment variable
+    echo CLOUDSDK_COMPONENT_MANAGER_SNAPSHOT_URL to
+    echo %CLOUDSDK_COMPONENT_MANAGER_SNAPSHOT_URL%. This may cause installation
+    echo to fail. If installation fails, run "SET
+    echo CLOUDSDK_COMPONENT_MANAGER_SNAPSHOT_URL=" and try again.
+  )
+
+:SETENABLEDELAYED
 SETLOCAL EnableDelayedExpansion
 
 rem install.bat lives in the root of the Cloud SDK installation directory.

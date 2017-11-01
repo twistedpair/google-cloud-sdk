@@ -52,6 +52,11 @@ from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
 
 
+_TASK_CONSOLE_LINK = """\
+https://console.cloud.google.com/appengine/taskqueues/cron?project={}
+"""
+
+
 class Error(core_exceptions.Error):
   """Base error for this module."""
 
@@ -664,14 +669,15 @@ def PrintPostDeployHints(new_versions, updated_configs):
     if yaml_parsing.ConfigYamlInfo.QUEUE not in updated_configs:
       log.status.Print('\nVisit the Cloud Platform Console Task Queues page '
                        'to view your queues and cron jobs.')
+      log.status.Print(_TASK_CONSOLE_LINK.format(
+          properties.VALUES.core.project.Get()))
   if yaml_parsing.ConfigYamlInfo.DISPATCH in updated_configs:
     log.status.Print('\nCustom routings have been updated.')
   if yaml_parsing.ConfigYamlInfo.DOS in updated_configs:
     log.status.Print('\nDoS protection has been updated.'
-                     '\n\nTo delete all blacklist entries, change the dos.yaml '
-                     'file to just contain:'
-                     '\n    blacklist:'
-                     'and redeploy it.')
+                     '\n\nTo delete all blacklist entries, redeploy the '
+                     'dos.yaml file with the following content:\n'
+                     '    blacklist:')
   if yaml_parsing.ConfigYamlInfo.QUEUE in updated_configs:
     log.status.Print('\nTask queues have been updated.')
     log.status.Print('\nVisit the Cloud Platform Console Task Queues page '

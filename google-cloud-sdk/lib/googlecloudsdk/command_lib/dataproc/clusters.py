@@ -21,6 +21,7 @@ from googlecloudsdk.api_lib.compute import utils as api_utils
 from googlecloudsdk.api_lib.dataproc import compute_helpers
 from googlecloudsdk.api_lib.dataproc import constants
 from googlecloudsdk.api_lib.dataproc import util
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute.instances import flags as instances_flags
@@ -192,10 +193,18 @@ Alias,URI
   # Deprecated, to be removed at a future date.
   master_boot_disk.add_argument(
       '--master-boot-disk-size-gb',
+      action=actions.DeprecationAction(
+          '--master-boot-disk-size-gb',
+          warn=('The `--master-boot-disk-size-gb` flag is deprecated. '
+                'Use `--master-boot-disk-size` flag with "GB" after value.')),
       type=int,
       hidden=True)
   worker_boot_disk.add_argument(
       '--worker-boot-disk-size-gb',
+      action=actions.DeprecationAction(
+          '--worker-boot-disk-size-gb',
+          warn=('The `--worker-boot-disk-size-gb` flag is deprecated. '
+                'Use `--worker-boot-disk-size` flag with "GB" after value.')),
       type=int,
       hidden=True)
 

@@ -31,7 +31,7 @@ def Resource(collection, api_version=None):
   """
   collection_info = resources.REGISTRY.GetCollectionInfo(
       collection, api_version=api_version)
-  params = collection_info.params
+  params = collection_info.GetParams('')
 
   def Parse(value):
     if not value:

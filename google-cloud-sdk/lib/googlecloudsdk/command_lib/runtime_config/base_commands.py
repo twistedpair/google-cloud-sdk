@@ -35,14 +35,6 @@ class VariableRetrieverCommand(base.DescribeCommand):
     flags.AddRequiredConfigFlag(parser)
     parser.add_argument('name', help='The variable name.')
 
-  def Collection(self):
-    """Returns the default collection path string.
-
-    Returns:
-      The default collection path string.
-    """
-    return 'runtimeconfig.variables'
-
   def Run(self, args):
     """Run a command that retrieves a variable.
 

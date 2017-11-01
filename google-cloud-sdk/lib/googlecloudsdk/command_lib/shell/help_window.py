@@ -23,10 +23,6 @@ from googlecloudsdk.core.document_renderers import token_renderer
 from prompt_toolkit.layout import controls
 
 
-# The height of the help window in the layout.
-HELP_WINDOW_HEIGHT = 10
-
-
 class HelpWindowControl(controls.UIControl):
   """Implementation of the help window."""
 
@@ -43,45 +39,24 @@ class HelpWindowControl(controls.UIControl):
         default_char=self._default_char)
 
 
-def GetCurrentToken(tokens, pos):
-  """Determine the current token given a cursor position.
-
-  Args:
-    tokens: a list of parser.ArgTokens
-    pos: an int giving the current cursor position
-
-  Returns:
-    The parser.ArgToken at that position or None.
-  """
-  i = 0
-  while i < len(tokens):
-    if pos >= tokens[i].start and pos < tokens[i].end:
-      return tokens[i]
-    if pos < tokens[i].start:
-      return tokens[i-1] if i > 0 else None
-    i += 1
-
-  return tokens[len(tokens)-1] if tokens else None
-
-
 def GenerateHelpContent(cli, width):
   """Returns help lines for the current token."""
   if width > 80:
     width = 80
   doc = cli.current_buffer.document
-  tok = GetCurrentToken(parser.ParseCommand(cli.root, doc.text),
-                        doc.cursor_position)
-  if not tok:
+  args = cli.parser.ParseCommand(doc.text_before_cursor)
+  if not args:
     return []
+  arg = args[-1]
 
-  if tok.token_type == parser.ArgTokenType.COMMAND:
-    return GenerateHelpForCommand(cli, tok, width)
-  elif tok.token_type == parser.ArgTokenType.GROUP:
-    return GenerateHelpForCommand(cli, tok, width)
-  elif tok.token_type == parser.ArgTokenType.FLAG:
-    return GenerateHelpForFlag(cli, tok, width)
-  elif tok.token_type == parser.ArgTokenType.POSITIONAL:
-    return GenerateHelpForPositional(cli, tok, width)
+  if arg.token_type in (parser.ArgTokenType.GROUP, parser.ArgTokenType.COMMAND):
+    return GenerateHelpForCommand(cli, arg, width)
+  elif arg.token_type == parser.ArgTokenType.FLAG:
+    return GenerateHelpForFlag(cli, arg, width)
+  elif arg.token_type == parser.ArgTokenType.FLAG_ARG:
+    return GenerateHelpForFlag(cli, args[-2], width)
+  elif arg.token_type == parser.ArgTokenType.POSITIONAL:
+    return GenerateHelpForPositional(cli, arg, width)
 
   return []
 
@@ -124,7 +99,7 @@ def GenerateHelpForFlag(cli, token, width):
   fin = StringIO.StringIO(mark)
   return render_document.MarkdownRenderer(
       token_renderer.TokenRenderer(
-          width=width, height=HELP_WINDOW_HEIGHT), fin=fin).Run()
+          width=width, height=cli.config.help_lines), fin=fin).Run()
 
 
 def GenerateHelpForPositional(cli, token, width):
@@ -136,4 +111,4 @@ def GenerateHelpForPositional(cli, token, width):
   fin = StringIO.StringIO(mark)
   return render_document.MarkdownRenderer(
       token_renderer.TokenRenderer(
-          width=width, height=HELP_WINDOW_HEIGHT), fin=fin).Run()
+          width=width, height=cli.config.help_lines), fin=fin).Run()

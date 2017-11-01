@@ -28,7 +28,9 @@ from apitools.base.py import list_pager
 from apitools.base.py import transfer
 
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.api_lib.util import exceptions as http_exc
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import exceptions as core_exc
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
@@ -42,7 +44,7 @@ GCS_URL_PATTERN = (
     'https://www.googleapis.com/storage/v1/b/{bucket}/o/{obj}?alt=media')
 
 
-class Error(Exception):
+class Error(core_exc.Error):
   """Base exception for storage API module."""
 
 
@@ -161,8 +163,9 @@ class StorageClient(object):
       response = self.client.objects.Insert(insert_req, upload=upload)
     except api_exceptions.HttpError as err:
       raise exceptions.BadFileException(
-          'Could not copy [{local_file}] to [{gcs}]: {err}. Please retry.'
-          .format(local_file=local_path, gcs=target_path, err=err))
+          'Could not copy [{local_file}] to [{gcs}]. Please retry: {err}'
+          .format(local_file=local_path, gcs=target_path,
+                  err=http_exc.HttpException(err)))
 
     if response.size != file_size:
       log.debug('Response size: {0} bytes, but local file is {1} bytes.'.format(
@@ -201,8 +204,9 @@ class StorageClient(object):
       response = self.client.objects.Get(get_req)
     except api_exceptions.HttpError as err:
       raise exceptions.BadFileException(
-          'Could not copy [{gcs}] to [{local_file}]: {err}. Please retry.'
-          .format(local_file=local_path, gcs=object_path, err=err))
+          'Could not copy [{gcs}] to [{local_file}]. Please retry: {err}'
+          .format(local_file=local_path, gcs=object_path,
+                  err=http_exc.HttpException(err)))
 
     file_size = _GetFileSize(local_path)
     if response.size != file_size:
@@ -235,8 +239,8 @@ class StorageClient(object):
       self.client.objects.Get(get_req, download=download)
     except api_exceptions.HttpError as err:
       raise exceptions.BadFileException(
-          'Could not read [{object_}]: {err}. Please retry.'.format(
-              object_=object_ref, err=err))
+          'Could not read [{object_}]. Please retry: {err}'.format(
+              object_=object_ref, err=http_exc.HttpException(err)))
 
     data.seek(0)
     return data
@@ -288,7 +292,8 @@ class StorageClient(object):
                                            batch_size=None):
         items.add(item.name)
     except api_exceptions.HttpError as e:
-      raise UploadError('Error uploading files: {e}'.format(e=e))
+      raise UploadError('Error uploading files: {e}'.format(
+          e=http_exc.HttpException(e)))
     return items
 
   def DeleteObject(self, bucket_ref, object_path):

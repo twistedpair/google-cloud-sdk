@@ -18,10 +18,10 @@ from __future__ import print_function
 
 from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.api_lib.sql import instance_prop_reducers as reducers
+from googlecloudsdk.api_lib.sql import instances as api_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util import labels_util
-
 
 DEFAULT_RELEASE_TRACK = base.ReleaseTrack.GA
 
@@ -107,6 +107,9 @@ class _BaseInstances(object):
               'using [--storage-auto-increase-limit], '
               '[--storage-auto-increase] must be enabled.')
 
+      if args.IsSpecified('availability_type'):
+        settings.availabilityType = args.availability_type
+
     return settings
 
   @classmethod
@@ -154,6 +157,14 @@ class _BaseInstances(object):
       labels = reducers.UserLabels(sql_messages, instance, labels=args.labels)
       if labels:
         settings.userLabels = labels
+
+      # Check that availability type is only specified if this is Postgres.
+      if (args.IsSpecified('availability_type') and
+          not api_util.InstancesV1Beta4.IsPostgresDatabaseVersion(
+              args.database_version)):
+        raise exceptions.InvalidArgumentException(
+            '--availability-type', 'Cannot set [--availability-type] on a '
+            'non-Postgres instance.')
 
     return settings
 

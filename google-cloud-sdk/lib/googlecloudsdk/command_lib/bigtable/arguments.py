@@ -14,6 +14,7 @@
 """Module for wrangling bigtable command arguments."""
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
 
 
@@ -74,12 +75,13 @@ class ArgAdder(object):
     return self
 
   def AddClusterStorage(self, in_instance=False):
-    self.parser.add_argument(
+    storage_argument = base.ChoiceArgument(
         '--cluster-storage-type' if in_instance else '--storage',
-        choices=['HDD', 'SSD'],
-        default='SSD',
-        type=str.upper,
-        help='Storage class for the cluster.')
+        choices=['hdd', 'ssd'],
+        default='ssd',
+        help_str='Storage class for the cluster.'
+    )
+    storage_argument.AddToParser(self.parser)
     return self
 
   def AddClusterZone(self, in_instance=False):

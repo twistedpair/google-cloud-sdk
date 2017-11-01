@@ -34,12 +34,9 @@ class DisplayInfo(object):
     _format: The default format string. args.format takes precedence.
     _transforms: The filter/format transforms symbol dict.
     _aliases: The resource name alias dict.
-    _legacy: Use legacy Command methods for display info if True. This will
-      be deleted when all commands are refactored to use parser.display_info.
   """
 
   def __init__(self):
-    self._legacy = True
     self._cache_updater = None
     self._filter = None
     self._format = None
@@ -77,7 +74,6 @@ class DisplayInfo(object):
     Args:
       format: The default format string. args.format takes precedence.
     """
-    self._legacy = False
     if format:
       self._format = format
 
@@ -96,7 +92,6 @@ class DisplayInfo(object):
     Args:
       transforms: A filter/format transforms symbol dict.
     """
-    self._legacy = False
     if transforms:
       self._transforms.update(transforms)
 
@@ -118,7 +113,6 @@ class DisplayInfo(object):
     Args:
       aliases: The resource name alias dict.
     """
-    self._legacy = False
     if aliases:
       self._aliases.update(aliases)
 
@@ -133,7 +127,6 @@ class DisplayInfo(object):
         and called to update the cache to reflect the resources returned by the
         calling command. None disables cache update.
     """
-    self._legacy = False
     self._cache_updater = cache_updater or cache_update_ops.NoCacheUpdater
 
   @property
@@ -155,11 +148,3 @@ class DisplayInfo(object):
   @property
   def transforms(self):
     return self._transforms
-
-  @property
-  def legacy(self):
-    return self._legacy
-
-  @legacy.setter
-  def legacy(self, value):
-    self._legacy = value

@@ -213,7 +213,7 @@ class _ConsoleFormatter(logging.Formatter):
 
   def __init__(self, out_stream):
     super(_ConsoleFormatter, self).__init__()
-    use_color = not properties.VALUES.core.disable_color.GetBool()
+    use_color = not properties.VALUES.core.disable_color.GetBool(validate=False)
     use_color &= out_stream.isatty()
     use_color &= (platforms.OperatingSystem.Current() !=
                   platforms.OperatingSystem.WINDOWS)
@@ -450,7 +450,8 @@ class _LogManager(object):
       bool, The old value of enabled.
     """
     if enabled is None:
-      enabled = properties.VALUES.core.user_output_enabled.GetBool()
+      enabled = properties.VALUES.core.user_output_enabled.GetBool(
+          validate=False)
     if enabled is None:
       enabled = DEFAULT_USER_OUTPUT_ENABLED
 

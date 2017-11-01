@@ -244,7 +244,6 @@ def FetchResourcesAndOutputs(client, messages, project, deployment_name):
       if manifest_response.layout:
         outputs = FlattenLayoutOutputs(manifest_response.layout)
 
-    # TODO(b/36049939): Pagination b/28298504
     return_val = ResourcesAndOutputs(resources, outputs)
     return return_val
   except apitools_exceptions.HttpError as error:

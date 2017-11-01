@@ -49,6 +49,75 @@ import os
 import re
 import signal
 import subprocess
+import sys
+
+
+_GET_COMPLETIONS_SHELL_FUNCTION = r"""
+__get_completions__() {
+  # prints the completions for the (partial) command line "$@" followed by
+  # a blank line
+
+  local command completion_function
+  local COMP_CWORD COMP_LINE COMP_POINT COMP_WORDS COMPREPLY=()
+
+  (( $# )) || {
+    printf '\n'
+    return
+  }
+
+  command=$1
+  shift
+  COMP_WORDS=("$@")
+
+  # load bash-completion if necessary
+  declare -F _completion_loader &>/dev/null || {
+    source /usr/share/bash-completion/bash_completion 2>/dev/null || {
+      _completion_loader() {
+        return 1
+      }
+      return
+    }
+  }
+
+  # get the command specific completion function
+  set -- $(complete -p "$command" 2>/dev/null)
+  if (( $# )); then
+    shift $(( $# - 2 ))
+    completion_function=$1
+  else
+    # check the _completion_loader
+    (( $# )) || {
+      # load the completion function for the command
+      _completion_loader "$command"
+
+      # get the command specific completion function
+      set -- $(complete -p "$command" 2>/dev/null)
+      (( $# )) || {
+        printf '\n'
+        return
+      }
+      shift $(( $# - 2 ))
+      completion_function=$1
+    }
+  fi
+
+  # set up the completion call stack -- really, this is the api?
+  COMP_LINE=${COMP_WORDS[*]}
+  COMP_POINT=${#COMP_LINE}
+
+  # add '' to COMP_WORDS if the last character of the command line is a space
+  [[ ${COMP_LINE[@]: -1} = ' ' ]] && COMP_WORDS+=('')
+
+  # index of the last word
+  COMP_CWORD=$(( ${#COMP_WORDS[@]} - 1 ))
+
+  # execute the completion function
+  $completion_function
+
+  # print the completions to stdout
+  printf '%s\n' "${COMPREPLY[@]}" ''
+}
+"""
 
 
 class CoshellExitException(Exception):
@@ -99,7 +168,7 @@ class _CoshellBase(object):
     return status
 
   def Close(self):
-    """Close the coshell connection and release any resources."""
+    """Closes the coshell connection and release any resources."""
     pass
 
   @abc.abstractmethod
@@ -118,6 +187,27 @@ class _CoshellBase(object):
   def Interrupt(self, sig):
     """Sends the interrupt signal to the coshell."""
     pass
+
+  def GetCompletions(self, args):
+    """Returns the list of completion choices for args.
+
+    Args:
+      args: The list of command line argument strings to complete.
+    """
+    del args
+    return None
+
+  def Communicate(self, args):
+    """Runs args and returns the list of output lines, up to first empty one.
+
+    Args:
+      args: The list of command line arguments.
+
+    Returns:
+      The list of output lines from command args up to the first empty line.
+    """
+    del args
+    return []
 
 
 class _UnixCoshellBase(_CoshellBase):
@@ -193,11 +283,17 @@ class _UnixCoshellBase(_CoshellBase):
         # The exit command hits this trap, reaped by _GetStatus() in Run().
         "trap 'echo $?{exit} >&{fdstatus}' 0;"
         # This catches interrupts so commands die while the coshell stays alive.
-        'trap ":" 2;'
-        .format(exit=self.SHELL_STATUS_EXIT, fdstatus=self.SHELL_STATUS_FD))
+        'trap ":" 2;{get_completions}'
+        .format(exit=self.SHELL_STATUS_EXIT,
+                fdstatus=self.SHELL_STATUS_FD,
+                get_completions=_GET_COMPLETIONS_SHELL_FUNCTION))
 
     # Enable job control if supported.
-    self._SendCommand('set -o monitor 2>/dev/null')
+    if not sys.platform.startswith('darwin'):
+      self._SendCommand('set -o monitor 2>/dev/null')
+
+    # Enable alias expansion if supported.
+    self._SendCommand('shopt -s expand_aliases 2>/dev/null')
 
     # Sync the user settable modes to the coshell.
     self._GetModes()
@@ -245,7 +341,7 @@ class _UnixCoshell(_UnixCoshellBase):
     os.close(w)
 
     self._shell = subprocess.Popen(
-        [self.SHELL_PATH, '--posix'], stdin=subprocess.PIPE, close_fds=False)
+        [self.SHELL_PATH], stdin=subprocess.PIPE, close_fds=False)
 
     if caller_shell_status_fd >= 0:
       os.dup2(caller_shell_status_fd, self.SHELL_STATUS_FD)
@@ -262,7 +358,7 @@ class _UnixCoshell(_UnixCoshellBase):
     self._GetUserConfigDefaults()
 
   def Close(self):
-    """Close the coshell connection and release any resources."""
+    """Closes the coshell connection and release any resources."""
     if self._status_fd >= 0:
       os.close(self._status_fd)
       self._status_fd = -1
@@ -288,6 +384,42 @@ class _UnixCoshell(_UnixCoshellBase):
       self._GetModes()
 
     return status
+
+  def Communicate(self, args):
+    """Runs args and returns the list of output lines, up to first empty one.
+
+    Args:
+      args: The list of command line arguments.
+
+    Returns:
+      The list of output lines from command args up to the first empty line.
+    """
+    self._SendCommand('{command} >&{fdstatus}\n'.format(
+        command=' '.join([self._Quote(arg) for arg in args]),
+        fdstatus=self.SHELL_STATUS_FD))
+    lines = []
+    line = []
+    while True:
+      c = os.read(self._status_fd, 1)
+      if c in (None, '\n'):
+        if not line:
+          break
+        lines.append(''.join(line).rstrip())
+        line = []
+      else:
+        line.append(c)
+    return lines
+
+  def GetCompletions(self, args):
+    """Returns the list of completion choices for args.
+
+    Args:
+      args: The list of command line argument strings to complete.
+
+    Returns:
+      The list of completions for args.
+    """
+    return sorted(self.Communicate(['__get_completions__'] + args))
 
 
 class _MinGWCoshell(_UnixCoshellBase):
@@ -322,7 +454,7 @@ class _MinGWCoshell(_UnixCoshellBase):
                             startupinfo=startupinfo)
 
   def Close(self):
-    """Close the coshell connection and release any resources."""
+    """Closes the coshell connection and release any resources."""
     try:
       self._shell.communicate('exit')  # This closes internal fds.
     except (IOError, ValueError):

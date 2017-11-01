@@ -27,6 +27,7 @@ import sys
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_attr_os
 
@@ -444,3 +445,42 @@ def ConvertKnownError(exc):
   # If there is no known exception just return the original exception.
   new_exc = known_err(exc)
   return (new_exc, True) if new_exc else (exc, True)
+
+
+def HandleError(exc, command_path, known_error_handler=None):
+  """Handles an error that occurs during command execution.
+
+  It calls ConvertKnownError to convert exceptions to known types before
+  processing. If it is a known type, it is printed nicely as as error. If not,
+  it is raised as a crash.
+
+  Args:
+    exc: Exception, The original exception that occurred.
+    command_path: str, The name of the command that failed (for error
+      reporting).
+    known_error_handler: f(exc): A function to process known errors.
+  """
+  known_exc, print_error = ConvertKnownError(exc)
+  if known_exc:
+    msg = u'({0}) {1}'.format(
+        console_attr.EncodeForConsole(command_path),
+        console_attr.EncodeForConsole(known_exc))
+    log.debug(msg, exc_info=sys.exc_info())
+    if print_error:
+      log.error(msg)
+    # Uncaught errors will be handled in gcloud_main.
+    if known_error_handler:
+      known_error_handler(exc)
+    if properties.VALUES.core.print_handled_tracebacks.GetBool():
+      raise
+    _Exit(known_exc)
+  else:
+    # Make sure any uncaught exceptions still make it into the log file.
+    log.debug(console_attr.EncodeForConsole(exc), exc_info=sys.exc_info())
+    raise
+
+
+def _Exit(exc):
+  """This method exists so we can mock this out during testing to not exit."""
+  # exit_code won't be defined in the KNOWN_ERRORs classes
+  sys.exit(getattr(exc, 'exit_code', 1))

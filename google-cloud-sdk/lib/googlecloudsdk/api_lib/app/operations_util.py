@@ -24,8 +24,8 @@ from apitools.base.py import exceptions as apitools_exceptions
 import enum
 
 from googlecloudsdk.api_lib.app import exceptions as app_exceptions
-from googlecloudsdk.api_lib.app.api import requests
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
+from googlecloudsdk.api_lib.util import requests
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log

@@ -389,10 +389,7 @@ class CommandCommon(object):
   def _AcquireArgs(self):
     """Calls the functions to register the arguments for this module."""
     # A Command subclass can define a _Flags() method.
-    # Calliope sets up _Flags() and should not affect the legacy setting.
-    legacy = self.ai.display_info.legacy
     self._common_type._Flags(self.ai)  # pylint: disable=protected-access
-    self.ai.display_info.legacy = legacy
     # A command implementation can optionally define an Args() method.
     self._common_type.Args(self.ai)
 

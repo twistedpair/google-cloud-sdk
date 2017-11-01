@@ -93,9 +93,12 @@ def GetShellToken(i, s):
   Returns:
    A ShellToken, None if there are no more token in s.
   """
-  # Skip leading space.
+  # skip leading space
+  index = i
   while True:
     if i >= len(s):
+      if i > index:
+        return ShellToken('', ShellTokenType.ARG, i - 1, i)
       return None
     c = s[i]
     if not c.isspace():
@@ -103,12 +106,12 @@ def GetShellToken(i, s):
     i += 1
   index = i
 
-  # Check for trailing backslash
+  # check for trailing backslash
   if len(s) - 1 == i and s[i] == '\\':
     i += 1
     return ShellToken(s[index:i], ShellTokenType.TRAILING_BACKSLASH, index, i)
 
-  # Check for IO redirection.
+  # check for IO redirection
   if (c in SHELL_REDIRECTION_CHARS or c.isdigit() and i + 1 < len(s) and
       s[i + 1] in SHELL_REDIRECTION_CHARS):
     index = i
@@ -126,12 +129,12 @@ def GetShellToken(i, s):
       return ShellToken(s[index:i], lex, start=index, end=i)
     i = index
 
-  # Check for command terminators.
+  # check for command terminators
   if c in SHELL_TERMINATOR_CHARS:
     i += 1
     return ShellToken(s[index:i], ShellTokenType.TERMINATOR, start=index, end=i)
 
-  # Find the next word.
+  # find the next word
   quote = None
   while i < len(s):
     c = s[i]

@@ -21,13 +21,16 @@ from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import instances_util
+from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.app import service_util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base
+from googlecloudsdk.api_lib.cloudbuild import build as cloud_build
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
+from googlecloudsdk.core import metrics
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
 
 import yaml
@@ -139,6 +142,9 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
                     extra_config_settings=None):
     """Updates and deploys new app versions based on given config.
 
+    If the build operation has not yet completed, streams the Google Cloud
+    Builder logs as well.
+
     Args:
       service_name: str, The service to deploy.
       version_id: str, The version of the service to deploy.
@@ -165,6 +171,14 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         version=version_resource)
 
     operation = self.client.apps_services_versions.Create(create_request)
+
+    # If build operation is still in progress, stream build logs and wait for
+    # completion before polling the service deployment operation for completion.
+    # Service deployment can never complete before the build has finished, as it
+    # is dependent on the built image.
+    if build and build.IsBuildId() and build.build_op:
+      cloud_build.CloudBuildClient().WaitAndStreamLogs(build.build_op)
+      metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE_ASYNC)
 
     log.debug('Received operation: [{operation}]'.format(
         operation=operation.name))

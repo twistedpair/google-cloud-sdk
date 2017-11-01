@@ -209,7 +209,7 @@ class MarkdownGenerator(object):
     self._file_name = '_'.join(self._command_path)
     self._global_flags = set()
     self._is_hidden = is_hidden
-    self._is_root = len(self._command_path) == 1
+    self._is_root = self._IsRoot()
     self._release_track = release_track
     if (len(self._command_path) >= 3 and
         self._command_path[1] == release_track.prefix):
@@ -260,6 +260,23 @@ class MarkdownGenerator(object):
     if args:
       command_link += ' ' + ' '.join(args)
     return command_link
+
+  def _IsRoot(self):
+    """Determine if this node should be treated as a "root" of the CLI tree.
+
+    The top element is the root, but we also treat any additional release tracks
+    as a root so that global flags are shown there as well.
+
+    Returns:
+      True if this node should be treated as a root, False otherwise.
+    """
+    if len(self._command_path) == 1:
+      return True
+    elif len(self._command_path) == 2:
+      tracks = [t.prefix for t in base.ReleaseTrack.AllValues()]
+      if self._command_path[-1] in tracks:
+        return True
+    return False
 
   def _ExpandHelpText(self, text):
     """Expand command {...} references in text.
@@ -535,7 +552,7 @@ class MarkdownGenerator(object):
       help_message = help_stuff
     if not disable_header:
       self.PrintSectionHeader(name)
-    self._out('{message}\n'.format(
+    self._out(u'{message}\n'.format(
         message=textwrap.dedent(help_message).strip()))
 
   def PrintExtraSections(self, disable_header=False):

@@ -86,6 +86,9 @@ LOCAL = tz.tzlocal()  # The local timezone.
 UTC = tz.tzutc()  # The UTC timezone.
 
 
+_MICROSECOND_PRECISION = 6
+
+
 def _StrFtime(dt, fmt):
   """Convert strftime exceptions to Datetime Errors."""
   try:
@@ -126,6 +129,39 @@ def FormatDuration(duration, parts=3, precision=3):
     An ISO 8601 string representation of the duration.
   """
   return duration.Format(parts=parts, precision=precision)
+
+
+def FormatDurationForJson(duration):
+  """Returns a string representation of the duration, ending in 's'.
+
+  See the section of
+  <https://github.com/google/protobuf/blob/master/src/google/protobuf/duration.proto>
+  on JSON formats.
+
+  For example:
+
+    >>> FormatDurationForJson(iso_duration.Duration(seconds=10))
+    10s
+    >>> FormatDurationForJson(iso_duration.Duration(hours=1))
+    3600s
+    >>> FormatDurationForJson(iso_duration.Duration(seconds=1, microseconds=5))
+    1.000005s
+
+  Args:
+    duration: An iso_duration.Duration object.
+
+  Raises:
+    DurationValueError: A Duration numeric constant exceeded its range.
+
+  Returns:
+    An string representation of the duration.
+  """
+  # Caution: the default precision for formatting floats is also 6, so when
+  # introducing adjustable precision, make sure to account for that.
+  num = '{}'.format(round(duration.total_seconds, _MICROSECOND_PRECISION))
+  if num.endswith('.0'):
+    num = num[:-len('.0')]
+  return num + 's'
 
 
 def ParseDuration(string, calendar=False):

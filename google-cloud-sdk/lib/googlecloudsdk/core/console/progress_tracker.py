@@ -58,7 +58,9 @@ class ProgressTracker(object):
     self._tick_delay = tick_delay
     self._is_tty = console_io.IsInteractive(error=True)
     self._ticker = None
-    self.__autotick = autotick
+    self._output_enabled = log.IsUserOutputEnabled()
+    # Don't bother autoticking if we aren't going to print anything.
+    self.__autotick = autotick and self._output_enabled
 
   @property
   def _autotick(self):
@@ -82,7 +84,6 @@ class ProgressTracker(object):
             return
       self._ticker = threading.Thread(target=Ticker)
       self._ticker.start()
-
     return self
 
   def Tick(self):
@@ -104,6 +105,8 @@ class ProgressTracker(object):
 
   def _PrintDot(self):
     """Print dots when not in a tty."""
+    if not self._output_enabled:
+      return
     sys.stderr.write('.')
 
   def _Print(self, message=''):
@@ -117,8 +120,9 @@ class ProgressTracker(object):
     Args:
       message: str, suffix of message
     """
-    if self._spinner_only:
+    if self._spinner_only or not self._output_enabled:
       return
+
     display_message = self._GetPrefix()
 
     # If we are not in a tty, _Print() is called exactly twice.  The first time

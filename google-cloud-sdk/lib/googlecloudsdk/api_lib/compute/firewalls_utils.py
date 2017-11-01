@@ -82,8 +82,7 @@ def AddCommonArgs(parser,
       For port-based protocols - `tcp`, `udp`, and `sctp` - a list of
       destination ports or port ranges to which the rule applies may optionally
       be specified. If no port or port range is specified, the rule applies to
-      all destination ports. TCP and UDP rules must include a port or port
-      range.
+      all destination ports.
 
       The ICMP protocol is supported, but there is no support for configuring
       ICMP packet filtering by ICMP code.
@@ -96,6 +95,11 @@ def AddCommonArgs(parser,
       To create a rule that allows TCP traffic from port 20000 to 25000:
 
         $ {command} MY-RULE --allow tcp:20000-25000
+
+      To create a rule that allows all TCP traffic:
+
+        $ {command} MY-RULE --allow tcp
+
       """ + ("""
       Setting this will override the current values.
       """ if for_update else ''))

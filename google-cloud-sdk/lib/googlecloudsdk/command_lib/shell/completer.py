@@ -11,143 +11,273 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""gcloud shell completion."""
+
+"""shell completion."""
 
 from __future__ import unicode_literals
 
+import time
+
 from googlecloudsdk.calliope import parser_completer
-from googlecloudsdk.command_lib.shell import lexer
 from googlecloudsdk.command_lib.shell import parser
 from googlecloudsdk.core import module_util
-from prompt_toolkit.completion import Completer
-from prompt_toolkit.completion import Completion
+from prompt_toolkit import completion
+from prompt_toolkit import document
+from prompt_toolkit.contrib import completers
 
 
-class ShellCliCompleter(Completer):
+def _NameSpaceDict(args):
+  """Returns a namespace dict given parsed CLI tree args."""
+  namespace = {}
+  name = None
+  for arg in args:
+    if arg.token_type == parser.ArgTokenType.POSITIONAL:
+      name = arg.tree.get(parser.LOOKUP_NAME)
+      value = arg.value
+    elif arg.token_type == parser.ArgTokenType.FLAG:
+      name = arg.tree.get(parser.LOOKUP_NAME)
+      if name:
+        if name.startswith('--'):
+          name = name[2:]
+        name = name.replace('-', '_')
+      continue
+    elif not name:
+      continue
+    elif arg.token_type == parser.ArgTokenType.FLAG_ARG:
+      value = arg.value
+    else:
+      continue
+    namespace[name] = value
+  return namespace
+
+
+class CompleterCache(object):
+  """A local completer cache item to minimize intra-command latency.
+
+  Attributes:
+    _TIMEOUT: Newly updated choices stale after this many seconds.
+    completer_class: The completer class.
+    coshell: The coshell object.
+    choices: The cached choices.
+    stale: choices stale after this time.
+  """
+
+  _TIMEOUT = 60
+
+  def __init__(self, completer_class):
+    self.completer_class = completer_class
+    self.choices = None
+    self.stale = 0
+    self.timeout = CompleterCache._TIMEOUT
+
+
+class ShellCliCompleter(completion.Completer):
   """A prompt_toolkit shell CLI completer."""
 
-  def __init__(self, root, args=None, hidden=False):
-    self.root = root
-    self.args = args
+  def __init__(self, shell_parser, args=None, hidden=False, cosh=None):
+    self.parsed_args = args
     self.hidden = hidden
-    self.completer_classes = {}
+    self.coshell = cosh
+    self.completer_cache = {}
+    self.parser = shell_parser
+    self.path_completer = completers.PathCompleter(expanduser=True)
+    self.empty = False
 
   def IsSuppressed(self, info):
     if self.hidden:
       return info.get(parser.LOOKUP_NAME, '').startswith('--no-')
     return info.get(parser.LOOKUP_IS_HIDDEN)
 
-  def get_completions(self, doc, complete_event):
+  def get_completions(self, doc, event):
     """Yields the completions for doc.
 
     Args:
       doc: A Document instance containing the shell command line to complete.
-      complete_event: The CompleteEvent that triggered this completion.
+      event: The CompleteEvent that triggered this completion.
 
     Yields:
       Completion instances for doc.
     """
-    tokens = lexer.GetShellTokens(doc.text_before_cursor)
-    if not tokens:
+    args = self.parser.ParseCommand(doc.text_before_cursor)
+    if not args:
       return
-    node = self.root[parser.LOOKUP_COMMANDS]
-    info = None
-    last = ''
-    path = []
-    i = 0
+    self.empty = doc.text_before_cursor and doc.text_before_cursor[-1].isspace()
+    self.event = event
 
-    # Autocomplete commands and groups after spaces.
-    if doc.text_before_cursor and doc.text_before_cursor[-1].isspace():
-      for completion in sorted(self.CompleteCommandGroups(tokens)):
-        yield Completion(completion)
-      return
-
-    # Complete after the last terminator
-    for index, token in enumerate(tokens):
-      if token.lex == lexer.ShellTokenType.TERMINATOR:
-        i = index + 1
-
-    # Traverse the cli tree.
-    while i < len(tokens):
-      token = tokens[i]
-      if token.lex == lexer.ShellTokenType.FLAG:
-        if i == len(tokens) - 1:
-          last = token.value
-      elif token.value in node:
-        info = node[token.value]
-        path.append(info)
-        node = info.get(parser.LOOKUP_COMMANDS, {})
-      else:
-        break
-      i += 1
-
-    last = tokens[-1].value
-
-    offset = -len(last)
-
-    # Check for flags.
-    if last.startswith('-') and info:
-      # Collect all flags of current command and parents into node.
-      node = info.get(parser.LOOKUP_FLAGS, {})
-
-      value = last.find('=')
-      if value > 0:
-        if doc.text_before_cursor[-1].isspace():
-          return
-        name = last[:value]
-      else:
-        name = last
-      if name in node:
-        info = node[name]
-        if info.get(parser.LOOKUP_TYPE) != 'bool':
-          choices = info.get(parser.LOOKUP_CHOICES)
-          if choices:
-            # A flag with static choices.
-            prefix = last
-            if value < 0:
-              prefix += '='
-              offset -= 1
-              completer_prefix = ''
-            else:
-              completer_prefix = last[value + 1:]
-            for choice in sorted(choices):
-              yield Completion(name + '=' + choice, offset)
-          else:
-            module_path = info.get(parser.LOOKUP_COMPLETER)
-            if module_path:
-              # A flag with a completer.
-              completer_class = self.completer_classes.get(module_path)
-              if not completer_class:
-                completer_class = module_util.ImportModule(module_path)
-                self.completer_classes[module_path] = completer_class
-              completer = parser_completer.ArgumentCompleter(
-                  completer_class,
-                  parsed_args=self.args)
-              prefix = last
-              if value < 0:
-                prefix += '='
-                offset -= 1
-                completer_prefix = ''
-              else:
-                completer_prefix = last[value + 1:]
-              for completion in completer(prefix=completer_prefix):
-                yield Completion(name + '=' + completion.rstrip(), offset)
+    for completer in (
+        self.CommandCompleter,
+        self.FlagCompleter,
+        self.PositionalCompleter,
+        self.ShellCompleter,
+    ):
+      choices, offset = completer(args)
+      if choices is not None:
+        for choice in sorted(choices):
+          display = choice
+          if choice.endswith('/'):
+            choice = choice[:-1]
+          yield completion.Completion(
+              choice, display=display, start_position=offset)
         return
 
-    # Check for subcommands.
-    for choice, info in sorted(node.iteritems()):
-      if not self.IsSuppressed(info) and choice.startswith(last):
-        yield Completion(choice, offset)
+    if event.completion_requested:
+      # default to path completions
+      choices = self.path_completer.get_completions(
+          document.Document('' if self.empty else args[-1].value), event)
+      if choices:
+        for choice in choices:
+          yield choice
+        return
 
-  def CompleteCommandGroups(self, text):
-    """Return possible commands and groups for completions."""
-    args = parser.ParseArgs(self.root, text)
+  def CommandCompleter(self, args):
+    """Returns the command/group completion choices for args or None.
 
-    if not args:
-      return []
+    Args:
+      args: The CLI tree parsed command args.
 
-    if args[-1].token_type != parser.ArgTokenType.GROUP:
-      return []
+    Returns:
+      (choices, offset):
+        choices - The list of completion strings or None.
+        offset - The completion prefix offset.
+    """
+    arg = args[-1]
 
-    return [k for k, v in args[-1].tree[parser.LOOKUP_COMMANDS].iteritems()
-            if not self.IsSuppressed(v)]
+    if arg.value.startswith('-'):
+      return None, 0
+
+    if arg.token_type == parser.ArgTokenType.GROUP:
+      if not self.empty:
+        return [], 0
+      node = arg.tree
+      prefix = ''
+
+    elif arg.token_type == parser.ArgTokenType.UNKNOWN:
+      prefix = arg.value
+      if len(args) == 1:
+        if self.empty:
+          return None, 0
+        node = self.parser.root
+      elif args[-2].token_type == parser.ArgTokenType.GROUP:
+        node = args[-2].tree
+      else:
+        return None, 0
+
+    else:
+      return None, 0
+
+    return [k for k, v in node[parser.LOOKUP_COMMANDS].iteritems()
+            if k.startswith(prefix) and not self.IsSuppressed(v)], -len(prefix)
+
+  def ArgCompleter(self, args, arg, value):
+    """Returns the flag or positional completion choices for arg or [].
+
+    Args:
+      args: The CLI tree parsed command args.
+      arg: The flag or positional argument.
+      value: The (partial) arg value.
+
+    Returns:
+      (choices, offset):
+        choices - The list of completion strings or None.
+        offset - The completion prefix offset.
+    """
+    choices = arg.get(parser.LOOKUP_CHOICES)
+    if choices:
+      # static choices
+      return [v for v in choices if v.startswith(value)], -len(value)
+
+    if not value and not self.event.completion_requested:
+      return [], 0
+
+    module_path = arg.get(parser.LOOKUP_COMPLETER)
+    if not module_path:
+      return [], 0
+
+    # arg with a completer
+    cache = self.completer_cache.get(module_path)
+    if not cache:
+      cache = CompleterCache(module_util.ImportModule(module_path))
+      self.completer_cache[module_path] = cache
+    prefix = value
+    if not isinstance(cache.completer_class, type):
+      cache.choices = cache.completer_class(prefix=prefix)
+    elif cache.stale < time.time():
+      old_dict = self.parsed_args.__dict__
+      self.parsed_args.__dict__ = {}
+      self.parsed_args.__dict__.update(old_dict)
+      self.parsed_args.__dict__.update(_NameSpaceDict(args))
+      completer = parser_completer.ArgumentCompleter(
+          cache.completer_class,
+          parsed_args=self.parsed_args)
+      cache.choices = completer(prefix='')
+      self.parsed_args.__dict__ = old_dict
+      cache.stale = time.time() + cache.timeout
+    if arg.get(parser.LOOKUP_TYPE) == 'list':
+      parts = value.split(',')
+      prefix = parts[-1]
+    if not cache.choices:
+      return [], 0
+    return [v for v in cache.choices if v.startswith(prefix)], -len(prefix)
+
+  def FlagCompleter(self, args):
+    """Returns the flag completion choices for args or None.
+
+    Args:
+      args: The CLI tree parsed command args.
+
+    Returns:
+      (choices, offset):
+        choices - The list of completion strings or None.
+        offset - The completion prefix offset.
+    """
+    arg = args[-1]
+
+    if arg.token_type == parser.ArgTokenType.FLAG_ARG:
+      flag = args[-2].tree
+      return self.ArgCompleter(args, flag, arg.value)
+
+    elif arg.token_type == parser.ArgTokenType.FLAG:
+      flag = arg.tree
+      if flag.get(parser.LOOKUP_TYPE) != 'bool':
+        return self.ArgCompleter(args, flag, '')
+
+    elif arg.value.startswith('-'):
+      return [k for k, v in arg.tree[parser.LOOKUP_FLAGS].iteritems()
+              if k.startswith(arg.value) and
+              not self.IsSuppressed(v)], -len(arg.value)
+
+    return None, 0
+
+  def PositionalCompleter(self, args):
+    """Returns the positional completion choices for args or None.
+
+    Args:
+      args: The CLI tree parsed command args.
+
+    Returns:
+      (choices, offset):
+        choices - The list of completion strings or None.
+        offset - The completion prefix offset.
+    """
+    arg = args[-1]
+
+    if arg.token_type == parser.ArgTokenType.POSITIONAL:
+      return self.ArgCompleter(args, arg.tree, arg.value)
+
+    return None, 0
+
+  def ShellCompleter(self, args):
+    """Returns the shell completion choices for args or None.
+
+    Args:
+      args: The CLI tree parsed command args.
+
+    Returns:
+      (choices, offset):
+        choices - The list of completion strings or None.
+        offset - The completion prefix offset.
+    """
+    if not self.event.completion_requested:
+      return None, 0
+    command = [arg.value for arg in args]
+    return self.coshell.GetCompletions(command) or None, -len(command[-1])

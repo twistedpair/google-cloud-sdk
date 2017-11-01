@@ -23,7 +23,6 @@ from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import platforms
 
 
-@exceptions.RaiseToolExceptionInsteadOf(platforms.InvalidEnumValue)
 def GetUpdateManager(group_args):
   """Construct the UpdateManager to use based on the common args for the group.
 
@@ -33,10 +32,17 @@ def GetUpdateManager(group_args):
   Returns:
     update_manager.UpdateManager, The UpdateManager to use for the commands.
   """
-  os_override = platforms.OperatingSystem.FromId(
-      group_args.operating_system_override)
-  arch_override = platforms.Architecture.FromId(
-      group_args.architecture_override)
+  try:
+    os_override = platforms.OperatingSystem.FromId(
+        group_args.operating_system_override)
+  except platforms.InvalidEnumValue as e:
+    raise exceptions.InvalidArgumentException('operating-system-override', e)
+  try:
+    arch_override = platforms.Architecture.FromId(
+        group_args.architecture_override)
+  except platforms.InvalidEnumValue as e:
+    raise exceptions.InvalidArgumentException('architecture-override', e)
+
   platform = platforms.Platform.Current(os_override, arch_override)
 
   root = (os.path.expanduser(group_args.sdk_root_override)

@@ -840,7 +840,6 @@ class CLI(object):
     """
     if session_capturer.SessionCapturer.capturer:
       session_capturer.SessionCapturer.capturer.CaptureException(exc)
-    known_exc, print_error = exceptions.ConvertKnownError(exc)
     error_extra_info = {'error_code': getattr(exc, 'exit_code', 1)}
     if isinstance(exc, exceptions.HttpException):
       error_extra_info['http_status_code'] = exc.payload.status_code
@@ -851,23 +850,7 @@ class CLI(object):
     metrics.Error(command_path_string, exc.__class__, specified_arg_names,
                   error_extra_info=error_extra_info)
 
-    if known_exc:
-      msg = u'({0}) {1}'.format(
-          console_attr.EncodeForConsole(command_path_string),
-          console_attr.EncodeForConsole(known_exc))
-      log.debug(msg, exc_info=sys.exc_info())
-      if print_error:
-        log.error(msg)
-      # Uncaught errors will be handled in gcloud_main.
-      if self.__known_error_handler:
-        self.__known_error_handler(exc)
-      if properties.VALUES.core.print_handled_tracebacks.GetBool():
-        raise
-      self._Exit(known_exc)
-    else:
-      # Make sure any uncaught exceptions still make it into the log file.
-      log.debug(console_attr.EncodeForConsole(exc), exc_info=sys.exc_info())
-      raise
+    exceptions.HandleError(exc, command_path_string, self.__known_error_handler)
 
   def _Exit(self, exc):
     """This method exists so we can mock this out during testing to not exit."""

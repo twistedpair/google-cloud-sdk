@@ -11,7 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Common flags for some of the SQL commands."""
+"""Common flags for some of the SQL commands.
+
+Flags are specified with functions that take in a single argument, the parser,
+and add the newly constructed flag to that parser.
+
+Example:
+
+def AddFlagName(parser):
+  parser.add_argument(
+    '--flag-name',
+    ... // Other flag details.
+  )
+"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -87,6 +99,19 @@ def AddUsername(parser):
 
 def AddHost(parser):
   parser.add_argument('host', help='Cloud SQL user\'s host.')
+
+
+def AddAvailabilityType(parser):
+  parser.add_argument(
+      '--availability-type',
+      required=False,
+      choices={
+          'REGIONAL': 'Provides high availability and is recommended for '
+                      'production instances; instance automatically fails over '
+                      'to another zone within your selected region.',
+          'ZONAL': 'Provides no failover capability. This is the default.'
+      },
+      help='Specifies level of availability. Only applies to PSQL instances.')
 
 
 def AddPassword(parser):
@@ -325,8 +350,17 @@ def AddUriArgument(parser, help_text):
       help=help_text)
 
 
-def AddDatabase(parser, help_text):
+def AddDatabase(parser, help_text, required=False):
   """Add the '--database' flag to the parser, with help text help_text."""
+  parser.add_argument(
+      '--database',
+      '-d',
+      required=required,
+      help=help_text)
+
+
+def AddDatabaseList(parser, help_text):
+  """Add the '--database' list flag to the parser, with help text help_text."""
   parser.add_argument(
       '--database',
       '-d',

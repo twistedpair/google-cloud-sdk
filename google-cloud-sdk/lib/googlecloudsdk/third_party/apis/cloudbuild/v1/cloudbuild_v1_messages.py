@@ -153,16 +153,35 @@ class BuildOptions(_messages.Message):
   """Optional arguments to enable specific features of builds.
 
   Enums:
+    LogStreamingOptionValueValuesEnum: LogStreamingOption to define build log
+      streaming behavior to Google Cloud Storage.
     RequestedVerifyOptionValueValuesEnum: Requested verifiability options.
     SourceProvenanceHashValueListEntryValuesEnum:
     SubstitutionOptionValueValuesEnum: SubstitutionOption to allow unmatch
       substitutions.
 
   Fields:
+    logStreamingOption: LogStreamingOption to define build log streaming
+      behavior to Google Cloud Storage.
     requestedVerifyOption: Requested verifiability options.
     sourceProvenanceHash: Requested hash for SourceProvenance.
     substitutionOption: SubstitutionOption to allow unmatch substitutions.
   """
+
+  class LogStreamingOptionValueValuesEnum(_messages.Enum):
+    """LogStreamingOption to define build log streaming behavior to Google
+    Cloud Storage.
+
+    Values:
+      STREAM_DEFAULT: Service may automatically determine build log streaming
+        behavior.
+      STREAM_ON: Build logs should be streamed to Google Cloud Storage.
+      STREAM_OFF: Build logs should not be streamed to Google Cloud Storage;
+        they will be written when the build is completed.
+    """
+    STREAM_DEFAULT = 0
+    STREAM_ON = 1
+    STREAM_OFF = 2
 
   class RequestedVerifyOptionValueValuesEnum(_messages.Enum):
     """Requested verifiability options.
@@ -195,9 +214,10 @@ class BuildOptions(_messages.Message):
     MUST_MATCH = 0
     ALLOW_LOOSE = 1
 
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 1)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 2, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 3)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 1)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 2)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 3, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 4)
 
 
 class BuildStep(_messages.Message):

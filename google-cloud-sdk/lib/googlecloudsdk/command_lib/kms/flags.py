@@ -15,47 +15,75 @@
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.command_lib.util import parameter_info_lib
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
+
 
 KEY_RING_COLLECTION = 'cloudkms.projects.locations.keyRings'
 LOCATION_COLLECTION = 'cloudkms.projects.locations'
 
 
-class LocationCompleter(completers.ListCommandCompleter):
+# list command aggregators
+
+
+class ListCommandParameterInfo(parameter_info_lib.ParameterInfoByConvention):
+
+  def GetFlag(self, parameter_name, parameter_value=None,
+              check_properties=True, for_update=False):
+    return super(ListCommandParameterInfo, self).GetFlag(
+        parameter_name,
+        parameter_value=parameter_value,
+        check_properties=check_properties,
+        for_update=for_update,
+    )
+
+
+class ListCommandCompleter(completers.ListCommandCompleter):
+
+  def ParameterInfo(self, parsed_args, argument):
+    return ListCommandParameterInfo(
+        parsed_args,
+        argument,
+        self.collection,
+        updaters=COMPLETERS_BY_CONVENTION,
+    )
+
+
+# kms completers
+
+
+class LocationCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(LocationCompleter, self).__init__(
         collection=LOCATION_COLLECTION,
         list_command='kms locations list --uri',
-        timeout=8*60*60,
         **kwargs)
 
 
-class KeyRingCompleter(completers.ListCommandCompleter):
+class KeyRingCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(KeyRingCompleter, self).__init__(
         collection=KEY_RING_COLLECTION,
         list_command='kms keyrings list --uri',
         flags=['location'],
-        timeout=8*60*60,
         **kwargs)
 
 
-class KeyCompleter(completers.ListCommandCompleter):
+class KeyCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(KeyCompleter, self).__init__(
         collection='cloudkms.projects.locations.keyRings.cryptoKeys',
         list_command='kms keys list --uri',
         flags=['location', 'keyring'],
-        timeout=8*60*60,
         **kwargs)
 
 
-class KeyVersionCompleter(completers.ListCommandCompleter):
+class KeyVersionCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(KeyVersionCompleter, self).__init__(
@@ -63,8 +91,17 @@ class KeyVersionCompleter(completers.ListCommandCompleter):
                     '.cryptoKeyVersions'),
         list_command='kms keys versions list --uri',
         flags=['location', 'key', 'keyring'],
-        timeout=8*60*60,
         **kwargs)
+
+
+# completers by parameter name convention
+
+
+COMPLETERS_BY_CONVENTION = {
+    'location': (LocationCompleter, False),
+    'keyring': (KeyRingCompleter, False),
+    'key': (KeyCompleter, False),
+}
 
 
 # Collection names.

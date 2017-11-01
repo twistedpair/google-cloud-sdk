@@ -46,4 +46,10 @@ def HandleInterrupt(signal_number=None, frame=None):
 
 def InstallHandler():
   """Installs the default Cloud SDK keyboard interrupt handler."""
-  signal.signal(signal.SIGINT, HandleInterrupt)
+  try:
+    signal.signal(signal.SIGINT, HandleInterrupt)
+  except ValueError:
+    # Signal cannot be sent from non-main threads. Integration testing will
+    # run parallel threads for performance reasons, occasionally hitting this
+    # exception. Should not be reached in production.
+    pass

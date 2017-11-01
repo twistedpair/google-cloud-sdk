@@ -30,14 +30,20 @@ class _KeyBinding(object):
 
   Attributes:
     key: The keys.Key.* object.
+    help_text: The UX help text.
     label: The short word label for the bottom toolbar.
+    metavar: Display this value in GetLabel(markdown=True) instead of the real
+      value.
     status: The bool => string toggle status map.
     toggle: The bool toggle state.
   """
 
-  def __init__(self, key, label=None, status=None, toggle=True):
+  def __init__(self, key, help_text=None, label=None, metavar=None,
+               status=None, toggle=True):
     self.key = key
+    self.help_text = help_text
     self.label = label
+    self.metavar = metavar
     self.status = status
     self.toggle = toggle
 
@@ -45,17 +51,28 @@ class _KeyBinding(object):
     """Returns the binding display name."""
     return re.sub('.*<(.*)>.*', r'\1', str(self.key)).replace('C-', 'ctrl-')
 
-  def GetLabel(self):
+  def GetLabel(self, markdown=False):
     """Returns the key binding display label containing the name and value."""
     if self.label is None and self.status is None:
       return None
-    label = [self.GetName(), ':']
+    label = []
+    if markdown:
+      label.append('*')
+    label.append(self.GetName())
+    label.append(':')
     if self.label:
       label.append(self.label)
       if self.status:
         label.append(':')
+    if markdown:
+      label.append('*')
     if self.status:
-      label.append(self.status[self.toggle])
+      if markdown:
+        label.append('_')
+        label.append(self.metavar or 'STATE')
+        label.append('_')
+      else:
+        label.append(self.status[self.toggle])
     return ''.join(label)
 
   def SetMode(self, cli):
@@ -72,11 +89,42 @@ class _BrowseKeyBinding(_KeyBinding):
   """The browse key binding."""
 
   def __init__(self, key):
-    super(_BrowseKeyBinding, self).__init__(key=key, label='browse')
+    super(_BrowseKeyBinding, self).__init__(
+        key=key,
+        label='browse',
+        help_text=(
+            'Opens a web browser tab/window to display the complete man page '
+            'help for the current command. If there is no active web browser '
+            '(running in *ssh*(1) for example) then command specific help or '
+            '*man*(1) help is attempted.'
+        ),
+    )
 
   def Handle(self, event):
     doc = event.cli.current_buffer.document
     browser.OpenReferencePage(event.cli, doc.text, doc.cursor_position)
+
+
+class _ContextKeyBinding(_KeyBinding):
+  """set context key binding."""
+
+  def __init__(self, key):
+    super(_ContextKeyBinding, self).__init__(
+        key=key,
+        label='context',
+        help_text=(
+            'Sets the current command context to be the text from the '
+            'beginning of the command input line (after the prompt) up to the '
+            'cursor. The context pre-populates the command prompt input until '
+            'it is cleared. Place the cursor at the beginning of the command '
+            'line to clear the context. Hit ^C or edit the command line to '
+            'clear or modify the context in the current command.'
+        ),
+    )
+
+  def Handle(self, event):
+    event.cli.config.context = (
+        event.cli.current_buffer.document.text_before_cursor)
 
 
 class _EditKeyBinding(_KeyBinding):
@@ -84,7 +132,15 @@ class _EditKeyBinding(_KeyBinding):
 
   def __init__(self, key, toggle=True):
     super(_EditKeyBinding, self).__init__(
-        key=key, toggle=toggle, status={False: 'vi', True: 'emacs'})
+        key=key,
+        toggle=toggle,
+        status={False: 'vi', True: 'emacs'},
+        help_text=(
+            'Toggles the command line edit mode, either *emacs* or *vi*. The '
+            'default is determined by the *bash*(1) set -o vi|emacs setting.'
+        ),
+        metavar='EDIT-MODE',
+    )
 
   def SetMode(self, cli):
     if self.toggle:
@@ -98,14 +154,27 @@ class _HelpKeyBinding(_KeyBinding):
 
   def __init__(self, key, toggle=True):
     super(_HelpKeyBinding, self).__init__(
-        key=key, label='help', toggle=toggle, status={False: 'OFF', True: 'ON'})
+        key=key,
+        label='help',
+        toggle=toggle, status={False: 'OFF', True: 'ON'},
+        help_text=(
+            'Toggles the active help section, *ON* when enabled, *OFF* when '
+            'disabled.'
+        ),
+    )
 
 
 class _QuitKeyBinding(_KeyBinding):
   """The quit key binding."""
 
   def __init__(self, key):
-    super(_QuitKeyBinding, self).__init__(key=key, label='quit')
+    super(_QuitKeyBinding, self).__init__(
+        key=key,
+        label='quit',
+        help_text=(
+            'Exit.'
+        ),
+    )
 
   def Handle(self, event):
     del event
@@ -119,7 +188,9 @@ class _InterruptKeyBinding(_KeyBinding):
   """
 
   def __init__(self, key):
-    super(_InterruptKeyBinding, self).__init__(key=key)
+    super(_InterruptKeyBinding, self).__init__(
+        key=key,
+    )
 
   def Handle(self, event):
     event.cli.current_buffer.reset()
@@ -133,7 +204,9 @@ class _StopKeyBinding(_KeyBinding):
   """
 
   def __init__(self, key):
-    super(_StopKeyBinding, self).__init__(key=key)
+    super(_StopKeyBinding, self).__init__(
+        key=key,
+    )
 
 
 class KeyBindings(object):
@@ -157,6 +230,7 @@ class KeyBindings(object):
     # propagates to the bottom toolbar labels.
     self.help_key = _HelpKeyBinding(keys.Keys.F2, toggle=help_mode)
     self.edit_key = _EditKeyBinding(keys.Keys.F3, toggle=edit_mode)
+    self.context_key = _ContextKeyBinding(keys.Keys.F7)
     self.browse_key = _BrowseKeyBinding(keys.Keys.F8)
     self.quit_key = _QuitKeyBinding(keys.Keys.F9)
     self.interrupt_signal = _InterruptKeyBinding(keys.Keys.ControlC)
@@ -166,6 +240,7 @@ class KeyBindings(object):
     self.bindings = [
         self.help_key,
         self.edit_key,
+        self.context_key,
         self.browse_key,
         self.quit_key,
         self.interrupt_signal,

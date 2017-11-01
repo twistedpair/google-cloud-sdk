@@ -54,8 +54,46 @@ class ArgumentCompleter(object):
     # No worries for long msg: negative_integer * ' ' yields ''.
     return [msg + (width / 2 - len(msg)) * ' ' for msg in msgs]
 
+  def _HandleCompleterException(self, exception, prefix, completer=None):
+    """Handles completer errors by crafting two "completions" from exception.
+
+    Fatal completer errors return two "completions", each an error
+    message that is displayed by the shell completers, and look more
+    like a pair of error messages than completions. This is much better than
+    the default that falls back to the file completer with no indication of
+    errors, typically yielding the list of all files in the current directory.
+
+    NOTICE: Each message must start with different characters, otherwise they
+    will be taken as valid completions. Also, the messages are sorted in the
+    display, so the messages here are displayed with ERROR first and REASON
+    second.
+
+    Args:
+      exception: The completer exception.
+      prefix: The current prefix string to be matched by the completer.
+      completer: The instantiated completer object or None.
+
+    Returns:
+      Two "completions" crafted from the completer exception.
+    """
+    if completer:
+      completer_name = completer.collection
+    else:
+      completer_name = self._completer_class.__name__
+    return self._MakeCompletionErrorMessages([
+        u'{}ERROR: {} resource completer failed.'.format(
+            prefix, completer_name),
+        u'{}REASON: {}'.format(prefix, unicode(exception)),
+    ])
+
   def __call__(self, prefix='', parsed_args=None, **kwargs):
     """A completer function suitable for argparse."""
+    if not isinstance(self._completer_class, type):
+      # A function-type completer.
+      try:
+        return self._completer_class(prefix)
+      except BaseException as e:  # pylint: disable=broad-except, e shall not pass
+        return self._HandleCompleterException(e, prefix=prefix)
     if not parsed_args:
       parsed_args = self._parsed_args
     with self._progress_tracker():
@@ -73,21 +111,5 @@ class ArgumentCompleter(object):
           parameter_info = completer.ParameterInfo(parsed_args, self._argument)
           return completer.Complete(prefix, parameter_info)
         except BaseException as e:  # pylint: disable=broad-except, e shall not pass
-          # Fatal completer errors return two "completions", each an error
-          # message that is displayed by the shell completers, and look more
-          # like a pair of error messages than completions.  This is much better
-          # than the default that falls back to the file completer, typically
-          # yielding the list of all files in the current directory.
-          #
-          # NOTICE: Each message must start with different characters,
-          # otherwise they will be taken as valid completions.  Also, the
-          # messages are sorted in the display, so choose the first char wisely.
-          if completer:
-            completer_name = completer.collection
-          else:
-            completer_name = self._completer_class.__name__
-          return self._MakeCompletionErrorMessages([
-              u'{}ERROR: {} resource completer failed.'.format(
-                  prefix, completer_name),
-              u'{}REASON: {}'.format(prefix, unicode(e)),
-          ])
+          return self._HandleCompleterException(
+              e, prefix=prefix, completer=completer)

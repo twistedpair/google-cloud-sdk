@@ -701,21 +701,25 @@ def _UpdateCustomMetricUtilizationsFromStackoverflowFlags(
     _RemoveMetricFromList(result, args.remove_stackdriver_metric)
   if args.update_stackdriver_metric:
     _RemoveMetricFromList(result, args.update_stackdriver_metric)
+    if args.stackdriver_metric_utilization_target_type:
+      target_type = (
+          messages.AutoscalingPolicyCustomMetricUtilization
+          .UtilizationTargetTypeValueValuesEnum(
+              args.stackdriver_metric_utilization_target_type.upper().
+              replace('-', '_'),
+          )
+      )
+    else:
+      target_type = None
     result.append(
         messages.AutoscalingPolicyCustomMetricUtilization(
             utilizationTarget=args.stackdriver_metric_utilization_target,
             metric=args.update_stackdriver_metric,
-            utilizationTargetType=(
-                messages
-                .AutoscalingPolicyCustomMetricUtilization
-                .UtilizationTargetTypeValueValuesEnum(
-                    args.stackdriver_metric_utilization_target_type.upper().
-                    replace('-', '_'),
-                )
-            ),
+            utilizationTargetType=target_type,
             singleInstanceAssignment=(
                 args.stackdriver_metric_single_instance_assignment
             ),
+            filter=args.stackdriver_metric_filter,
         )
     )
   return result

@@ -62,14 +62,12 @@ def GetGlobalTarget(resources, args):
     return flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, resources)
 
 
-def _ValidateRegionalArgs(args, include_alpha, for_set_target):
+def _ValidateRegionalArgs(args, include_alpha):
   """Validate the regional forwarding rules args.
 
   Args:
       args: The arguments given to the create/set-target command.
       include_alpha: True if the api is in alpha version.
-      for_set_target: True if the function is for set-target command, otherwise
-          for create command.
   """
 
   if getattr(args, 'global', None):
@@ -77,11 +75,11 @@ def _ValidateRegionalArgs(args, include_alpha, for_set_target):
         'You cannot specify [--global] for a regional '
         'forwarding rule.')
 
-  allow_global_target = (
-      include_alpha and
-      (for_set_target or
-       (args.network_tier and args.network_tier == 'STANDARD')))
-  if not allow_global_target:
+  # For flexible networking alpha, with STANDARD network tier the regional
+  # forwarding rule can have global target. The request may not specify network
+  # tier because it can be set as default project setting, so here let backend
+  # do validation.
+  if not include_alpha:
     if args.target_http_proxy:
       raise exceptions.ToolException(
           'You cannot specify [--target-http-proxy] for a regional '
@@ -120,10 +118,9 @@ def GetRegionalTarget(client,
                       resources,
                       args,
                       forwarding_rule_ref=None,
-                      include_alpha=False,
-                      for_set_target=False):
+                      include_alpha=False):
   """Return the forwarding target for a regionally scoped request."""
-  _ValidateRegionalArgs(args, include_alpha, for_set_target)
+  _ValidateRegionalArgs(args, include_alpha)
   if forwarding_rule_ref:
     region_arg = forwarding_rule_ref.region
     project_arg = forwarding_rule_ref.project

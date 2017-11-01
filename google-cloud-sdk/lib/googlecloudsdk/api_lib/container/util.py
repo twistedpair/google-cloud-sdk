@@ -117,6 +117,23 @@ class MissingEndpointError(Error):
             cluster.name))
 
 
+ENABLE_SHARED_NETWORK_REQS_ERROR_MSG = """\
+Must specify --{0}.
+
+Enabling shared networks requires the following flags:
+--enable-kubernetes-alpha, --subnetwork, --enable-ip-alias,
+--cluster-secondary-range-name, and --services-secondary-range-name
+"""
+
+
+class MissingArgForSharedSubnetError(Error):
+  """Error for enabling shared subnets without the required parameters."""
+
+  def __init__(self, opt):
+    super(MissingArgForSharedSubnetError, self).__init__(
+        ENABLE_SHARED_NETWORK_REQS_ERROR_MSG.format(opt))
+
+
 class ClusterConfig(object):
   """Encapsulates persistent cluster config data.
 

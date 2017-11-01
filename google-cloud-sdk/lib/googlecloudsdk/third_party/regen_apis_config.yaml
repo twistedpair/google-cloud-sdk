@@ -137,6 +137,9 @@ apis:
   cloudtasks:
     v2beta2:
       discovery_doc: cloudtasks_v2beta2.json
+  cloudscheduler:
+    v1beta1:
+      discovery_doc: cloudscheduler_v1beta1.json
   clouduseraccounts:
     alpha:
       discovery_doc: clouduseraccounts_alpha.json

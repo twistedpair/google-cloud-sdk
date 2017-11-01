@@ -23,6 +23,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_property
@@ -236,8 +237,9 @@ class HttpErrorPayload(string.Formatter):
     """Makes description for error by checking which fields are filled in."""
     if self.status_code and self.resource_item and self.instance_name:
       if self.status_code == 403:
-        return (u'You do not have permission to access {0} [{1}] (or it may '
-                u'not exist)').format(
+        return (u'User [{0}] does not have permission to access {1} [{2}] (or '
+                u'it may not exist)').format(
+                    properties.VALUES.core.account.Get(),
                     self.resource_item, self.instance_name)
       if self.status_code == 404:
         return u'{0} [{1}] not found'.format(

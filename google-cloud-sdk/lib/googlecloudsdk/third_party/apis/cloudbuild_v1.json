@@ -613,6 +613,20 @@
             "MUST_MATCH",
             "ALLOW_LOOSE"
           ]
+        },
+        "logStreamingOption": {
+          "description": "LogStreamingOption to define build log streaming behavior to Google Cloud\nStorage.",
+          "enumDescriptions": [
+            "Service may automatically determine build log streaming behavior.",
+            "Build logs should be streamed to Google Cloud Storage.",
+            "Build logs should not be streamed to Google Cloud Storage; they will be\nwritten when the build is completed."
+          ],
+          "type": "string",
+          "enum": [
+            "STREAM_DEFAULT",
+            "STREAM_ON",
+            "STREAM_OFF"
+          ]
         }
       }
     },

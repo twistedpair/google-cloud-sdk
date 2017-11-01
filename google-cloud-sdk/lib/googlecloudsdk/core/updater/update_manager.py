@@ -150,6 +150,10 @@ class PostProcessingError(Error):
   pass
 
 
+class NoRegisteredRepositoriesError(Error):
+  """Error for when there are no repositories to remove."""
+
+
 class UpdateManager(object):
   """Main class for performing updates for the Cloud SDK."""
 

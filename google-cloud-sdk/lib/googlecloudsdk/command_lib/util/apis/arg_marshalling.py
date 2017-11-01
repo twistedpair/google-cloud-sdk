@@ -273,9 +273,12 @@ class DeclarativeArgumentGenerator(object):
     args = self._CreateGroups()
 
     for attributes in self.arg_info:
-      field_path = attributes.api_field
-      field = arg_utils.GetFieldFromMessage(message, field_path)
-      arg = arg_utils.GenerateFlag(field, attributes)
+      if attributes.api_field:
+        field_path = attributes.api_field
+        field = arg_utils.GetFieldFromMessage(message, field_path)
+        arg = arg_utils.GenerateFlag(field, attributes)
+      else:
+        arg = arg_utils.GenerateFlag(None, attributes)
       if attributes.group:
         args[attributes.group.group_id].AddArgument(arg)
       else:
@@ -321,8 +324,10 @@ class DeclarativeArgumentGenerator(object):
           metavar=resource_property.ConvertToAngrySnakeCase(
               attributes.arg_name),
           completer=attributes.completer,
-          help=attributes.help_text)
-      if is_anchor and not is_positional:
+          help=attributes.help_text,
+          hidden=attributes.hidden)
+
+      if is_anchor and not is_positional and not attributes.fallback:
         arg.kwargs['required'] = True
       args[arg.name] = arg
     return args
@@ -336,8 +341,9 @@ class DeclarativeArgumentGenerator(object):
     """
     message_type = self.method.GetRequestType()
     for attributes in self.arg_info:
-      value = arg_utils.GetFromNamespace(namespace, attributes.arg_name)
-      if value is None:
+      value = arg_utils.GetFromNamespace(namespace, attributes.arg_name,
+                                         fallback=attributes.fallback)
+      if value is None or attributes.api_field is None:
         continue
       field = arg_utils.GetFieldFromMessage(message_type, attributes.api_field)
       value = arg_utils.ConvertValue(field, value, attributes)
@@ -358,12 +364,16 @@ class DeclarativeArgumentGenerator(object):
       return
 
     anchor_field = resource_args[-1]
-    resource = arg_utils.GetFromNamespace(
-        namespace, anchor_field.arg_name, use_defaults=True)
+    resource = arg_utils.GetFromNamespace(namespace, anchor_field.arg_name,
+                                          fallback=anchor_field.fallback,
+                                          use_defaults=True)
     params = {}
     for field in resource_args[:-1]:
+      # Since these parameters might be redundant with information in the anchor
+      # field, we only want to evaluate anchor_field.fallback in Parse() when we
+      # know it's needed.
       params[field.api_field] = arg_utils.GetFromNamespace(
-          namespace, field.arg_name, use_defaults=True)
+          namespace, field.arg_name, use_defaults=True) or field.fallback
     return resources.REGISTRY.Parse(
         resource,
         collection=self.method.resource_argument_collection.full_name,

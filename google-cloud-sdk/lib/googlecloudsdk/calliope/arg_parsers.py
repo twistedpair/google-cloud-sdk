@@ -49,6 +49,7 @@ Example usage:
 import argparse
 import copy
 import re
+import sys
 
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
@@ -1187,3 +1188,74 @@ def HandleNoArgAction(none_arg, deprecation_message):
     return _HandleNoArgAction(none_arg, deprecation_message, **kwargs)
 
   return HandleNoArgActionInit
+
+
+class BufferedFileInput(object):
+  """Creates an argparse type that reads and buffers file or stdin contents.
+
+  This is similar to argparse.FileType, but unlike FileType it does not leave
+  a dangling file handle open. The argument stored in the argparse Namespace
+  is the file's contents.
+
+  Args:
+    max_bytes: int, The maximum file size in bytes, or None to specify no
+        maximum.
+    chunk_size: int, When max_bytes is not None, the buffer size to use when
+        reading chunks from the input file.
+
+  Returns:
+    A function that accepts a filename, or "-" representing that stdin should be
+    used as input.
+  """
+
+  def __init__(self, max_bytes=None, chunk_size=16*1024):
+    self.max_bytes = max_bytes
+    self.chunk_size = chunk_size
+
+  def _ReadFile(self, f):
+    # Unbounded
+    if self.max_bytes is None:
+      return f.read()
+    else:
+      contents = ''
+      while True:
+        chunk = f.read(self.chunk_size)
+
+        # Check for EOF
+        if not chunk:
+          return contents
+        # Fail if the file is too large.
+        if len(contents) + len(chunk) > self.max_bytes:
+          if hasattr(f, 'name'):
+            raise ArgumentTypeError("File '{0}' is too large.".format(f.name))
+          else:
+            raise ArgumentTypeError('File is too large.')
+
+        contents += chunk
+
+  def __call__(self, name):
+    """Return the contents of the file with the specified name.
+
+    If name is "-", stdin is read until EOF. Otherwise, the named file is read.
+    If max_bytes is provided when calling BufferedFileInput, this function will
+    raise an ArgumentTypeError if the specified file is too large.
+
+    Args:
+      name: str, The file name, or '-' to indicate stdin.
+
+    Returns:
+      The contents of the file.
+
+    Raises:
+      ArgumentTypeError: If the file cannot be read or is too large.
+    """
+    # Handle stdin
+    if name == '-':
+      return self._ReadFile(sys.stdin)
+
+    try:
+      with open(name, 'r') as f:
+        return self._ReadFile(f)
+    except (IOError, OSError) as e:
+      raise ArgumentTypeError(
+          "Can't open '{0}': {1}".format(name, e))

@@ -570,8 +570,8 @@ class Lexer(object):
       here = self.GetPosition()
       name = self.Token(_RESERVED_OPERATOR_CHARS, space=False)
       if name:
-        is_not_function = not self.IsCharacter('(', peek=True, eoi_ok=True)
-        if not key and is_not_function and name in self._defaults.aliases:
+        is_function = self.IsCharacter('(', peek=True, eoi_ok=True)
+        if not key and not is_function and name in self._defaults.aliases:
           key.extend(self._defaults.aliases[name])
         else:
           key.append(name)
@@ -710,7 +710,7 @@ class Lexer(object):
     here = self.GetPosition()
     func = self._defaults.symbols.get(func_name)
     if not func:
-      raise resource_exceptions.ExpressionSyntaxError(
+      raise resource_exceptions.UnknownTransformError(
           'Unknown transform function {0} [{1}].'.format(
               func_name, self.Annotate(here)))
     args = []
@@ -782,7 +782,7 @@ class Lexer(object):
             'Transform function expected [{0}].'.format(
                 self.Annotate(here)))
       if len(call) != 1:
-        raise resource_exceptions.ExpressionSyntaxError(
+        raise resource_exceptions.UnknownTransformError(
             'Unknown transform function {0} [{1}].'.format(
                 '.'.join(call), self.Annotate(here)))
       func_name = call.pop()

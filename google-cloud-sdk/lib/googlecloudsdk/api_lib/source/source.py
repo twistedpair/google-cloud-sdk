@@ -27,30 +27,17 @@ from googlecloudsdk.core import exceptions as core_exceptions
 class RepoCreationError(core_exceptions.Error):
   """Unable to create repo."""
 
-  def __init__(self, message):
-    super(RepoCreationError, self).__init__(message)
-
 
 class RepoDeletionError(exceptions.Error):
   """Unable to delete repo."""
-
-  def __init__(self, message):
-    super(RepoDeletionError, self).__init__(message)
 
 
 class RepoNoExistError(exceptions.Error):
   """Repo does not exist."""
 
-  def __init__(self, message):
-    super(RepoNoExistError, self).__init__(message)
-
-
-# TODO(b/36057455): Avoid initializing this at import time.
-messages = apis.GetMessagesModule('source', 'v1')
-
 
 def _NormalizeToSourceAPIPath(path):
-  """Fix an OS-native path to conform to the Unix/Source API style.
+  r"""Fix an OS-native path to conform to the Unix/Source API style.
 
   Args:
     path: (string) An OS-native path (e.g. "/foo/bar" on Unix or "foo\bar" on
@@ -169,10 +156,11 @@ class Project(Source):
   def __init__(self, project_id):
     self._CheckClient()
     self._id = project_id
+    self.messages = self._client.MESSAGES_MODULE
 
   def ListRepos(self):
     """Returns list of repos."""
-    request = messages.SourceProjectsReposListRequest(projectId=self._id)
+    request = self.messages.SourceProjectsReposListRequest(projectId=self._id)
     try:
       return self._client.projects_repos.List(request).repos
     except exceptions.HttpError as error:
@@ -192,7 +180,7 @@ class Project(Source):
     """
     if not repo_name:
       repo_name = 'default'
-    request = messages.SourceProjectsReposGetRequest(
+    request = self.messages.SourceProjectsReposGetRequest(
         projectId=self._id, repoName=repo_name)
     try:
       return self._client.projects_repos.Get(request)
@@ -200,7 +188,7 @@ class Project(Source):
       # If the repo does not exist, we get an HTTP 404
       return None
 
-  def CreateRepo(self, repo_name, vcs=messages.Repo.VcsValueValuesEnum.GIT):
+  def CreateRepo(self, repo_name, vcs=None):
     """Creates a repo.
 
     Args:
@@ -210,7 +198,8 @@ class Project(Source):
       (messages.Repo) The full definition of the new repo, as reported by
         the server.
     """
-    request = messages.Repo(
+    vcs = vcs or self.messages.Repo.VcsValueValuesEnum.GIT
+    request = self.messages.Repo(
         projectId=self._id,
         name=repo_name,
         vcs=vcs)
@@ -222,7 +211,7 @@ class Project(Source):
     Args:
       repo_name: (string) The name of the repo to delete.
     """
-    request = messages.SourceProjectsReposDeleteRequest(
+    request = self.messages.SourceProjectsReposDeleteRequest(
         projectId=self._id,
         repoName=repo_name)
     self._client.projects_repos.Delete(request)
@@ -247,6 +236,7 @@ class Repo(Source):
       name = 'default'
     self._repo_name = name
     self._project_id = project_id
+    self.messages = self._client.MESSAGES_MODULE
 
   def ListWorkspaces(self):
     """Request a list of workspaces.
@@ -254,9 +244,9 @@ class Repo(Source):
     Yields:
       (Workspace) The list of workspaces.
     """
-    request = messages.SourceProjectsReposWorkspacesListRequest(
+    request = self.messages.SourceProjectsReposWorkspacesListRequest(
         projectId=self._project_id, repoName=self._repo_name,
-        view=messages.SourceProjectsReposWorkspacesListRequest.
+        view=self.messages.SourceProjectsReposWorkspacesListRequest.
         ViewValueValuesEnum.MINIMAL)
     response = self._client.projects_repos_workspaces.List(request)
     for ws in response.workspaces:
@@ -275,7 +265,7 @@ class Repo(Source):
     """
     if not workspace_name:
       workspace_name = 'default'
-    request = messages.SourceProjectsReposWorkspacesGetRequest(
+    request = self.messages.SourceProjectsReposWorkspacesGetRequest(
         projectId=self._project_id, repoName=self._repo_name,
         name=workspace_name)
     ws = self._client.projects_repos_workspaces.Get(request)
@@ -289,7 +279,7 @@ class Repo(Source):
       workspace_name: (string) The name of the new workspace. Must be unique.
       alias_name: (string) The alias to use as a baseline for the workspace.
         If the alias does not exist, the workspace will have no baseline, and
-        when it is commited, this name will be used to create a new movable
+        when it is committed, this name will be used to create a new movable
         alias referring to the new root revision created by this workspace.
       expected_baseline: (string) The expected current revision ID for the
         alias specified by alias_name. If specified, this value must match the
@@ -297,11 +287,11 @@ class Repo(Source):
     Returns:
       (Workspace) The workspace that was created.
     """
-    request = messages.SourceProjectsReposWorkspacesCreateRequest(
+    request = self.messages.SourceProjectsReposWorkspacesCreateRequest(
         projectId=self._project_id, repoName=self._repo_name,
-        createWorkspaceRequest=messages.CreateWorkspaceRequest(
-            workspace=messages.Workspace(
-                id=messages.CloudWorkspaceId(name=workspace_name),
+        createWorkspaceRequest=self.messages.CreateWorkspaceRequest(
+            workspace=self.messages.Workspace(
+                id=self.messages.CloudWorkspaceId(name=workspace_name),
                 alias=alias_name,
                 baseline=expected_baseline)))
     return Workspace(
@@ -318,7 +308,7 @@ class Repo(Source):
         delete will succeed if and only if the snapshot ID of the workspace
         matches this value.
     """
-    request = messages.SourceProjectsReposWorkspacesDeleteRequest(
+    request = self.messages.SourceProjectsReposWorkspacesDeleteRequest(
         projectId=self._project_id, repoName=self._repo_name,
         name=workspace_name, currentSnapshotId=current_snapshot)
     self._client.projects_repos_workspaces.Delete(request)
@@ -352,6 +342,7 @@ class Workspace(Source):
     self._pending_actions = []
     self._workspace_state = state
     self._post_callback = None
+    self.messages = self._client.MESSAGES_MODULE
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and str(self) == str(other)
@@ -394,10 +385,10 @@ class Workspace(Source):
           total += len(a.writeAction.contents) + len(a.writeAction.path)
       if total < self.SIZE_THRESHOLD:
         return
-    request = messages.SourceProjectsReposWorkspacesModifyWorkspaceRequest(
+    request = self.messages.SourceProjectsReposWorkspacesModifyWorkspaceRequest(
         projectId=self._project_id, repoName=self._repo_name,
         name=self._workspace_name,
-        modifyWorkspaceRequest=messages.ModifyWorkspaceRequest(
+        modifyWorkspaceRequest=self.messages.ModifyWorkspaceRequest(
             actions=self._pending_actions))
     self._workspace_state = (
         self._client.projects_repos_workspaces.ModifyWorkspace(request))
@@ -405,8 +396,7 @@ class Workspace(Source):
       self._post_callback(len(self._pending_actions))
     self._pending_actions = []
 
-  def WriteFile(self, path, contents,
-                mode=messages.WriteAction.ModeValueValuesEnum.NORMAL):
+  def WriteFile(self, path, contents, mode=None):
     """Schedule an action to create or modify a file.
 
     Args:
@@ -417,12 +407,13 @@ class Workspace(Source):
       FileTooBigException: Indicates that the file contents are bigger than the
         maximum size supported by ModifyWorkspace.
     """
+    mode = mode or self.messages.WriteAction.ModeValueValuesEnum.NORMAL
 
     if len(contents) > self.SIZE_THRESHOLD:
       raise FileTooBigException(path, len(contents), self.SIZE_THRESHOLD)
 
     path = _NormalizeToSourceAPIPath(path)
-    self._pending_actions.append(messages.Action(
-        writeAction=messages.WriteAction(
+    self._pending_actions.append(self.messages.Action(
+        writeAction=self.messages.WriteAction(
             path=path, contents=contents, mode=mode)))
     self.FlushPendingActions(check_size_threshold=True)

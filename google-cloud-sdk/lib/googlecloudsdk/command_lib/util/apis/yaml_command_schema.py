@@ -211,6 +211,7 @@ class Argument(object):
     type: The type to use on the argparse argument.
     choices: A static map of choice to value the user types.
     default: The default for the argument.
+    fallback: A function to call and use as the default for the argument.
     processor: A function to call to process the value of the argument before
       inserting it into the request.
     required: True to make this a required flag.
@@ -236,9 +237,15 @@ class Argument(object):
 
     Returns:
       Argument, the parsed argument.
+
+    Raises:
+      InvalidSchemaError: if the YAML command is malformed.
     """
-    api_field = data['api_field']
+    api_field = data.get('api_field')
     arg_name = data.get('arg_name', api_field)
+    if not arg_name:
+      raise InvalidSchemaError(
+          'An argument must have at least one of [api_field, arg_name].')
     is_positional = data.get('is_positional')
 
     action = data.get('action', None)
@@ -250,16 +257,26 @@ class Argument(object):
         flag_name = arg_name if is_positional else '--' + arg_name
         action = actions.DeprecationAction(flag_name, **deprecation)
 
+    if data.get('default') and data.get('fallback'):
+      raise InvalidSchemaError(
+          'An argument may have at most one of [default, fallback].')
+
+    try:
+      help_text = data['help_text']
+    except KeyError:
+      raise InvalidSchemaError('An argument must have help_text.')
+
     return Argument(
         api_field,
         arg_name,
-        data['help_text'],
+        help_text,
         metavar=data.get('metavar'),
         completer=Hook.FromData(data, 'completer'),
         is_positional=is_positional,
         type=Hook.FromData(data, 'type'),
         choices=data.get('choices'),
         default=data.get('default'),
+        fallback=Hook.FromData(data, 'fallback'),
         processor=Hook.FromData(data, 'processor'),
         required=data.get('required', False),
         hidden=data.get('hidden', False),
@@ -271,8 +288,9 @@ class Argument(object):
   # pylint:disable=redefined-builtin, type param needs to match the schema.
   def __init__(self, api_field, arg_name, help_text, metavar=None,
                completer=None, is_positional=None, type=None, choices=None,
-               default=None, processor=None, required=False, hidden=False,
-               action=None, repeated=None, group=None, generate=True):
+               default=None, fallback=None, processor=None, required=False,
+               hidden=False, action=None, repeated=None, group=None,
+               generate=True):
     self.api_field = api_field
     self.arg_name = arg_name
     self.help_text = help_text
@@ -282,6 +300,7 @@ class Argument(object):
     self.type = type
     self.choices = choices
     self.default = default
+    self.fallback = fallback
     self.processor = processor
     self.required = required
     self.hidden = hidden
@@ -357,7 +376,7 @@ class Hook(object):
     Returns:
       A Python element.
     """
-    if self.kwargs:
+    if self.kwargs is not None:
       return  self.attribute(**self.kwargs)
     return self.attribute
 
@@ -393,9 +412,12 @@ def _ImportPythonHook(path):
     raise InvalidSchemaError(
         'Could not import Python hook: [{}]. {}'.format(path, e))
 
-  kwargs = {}
+  kwargs = None
   if len(parts) == 3:
+    kwargs = {}
     for arg in parts[2].split(','):
+      if not arg:
+        continue
       arg_parts = arg.split('=')
       if len(arg_parts) != 2:
         raise InvalidSchemaError(

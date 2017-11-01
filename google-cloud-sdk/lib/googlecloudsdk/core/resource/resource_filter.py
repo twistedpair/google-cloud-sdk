@@ -283,6 +283,8 @@ class _Parser(object):
       elif restriction in ['AND', 'OR']:
         raise resource_exceptions.ExpressionSyntaxError(
             'Term expected [{0}].'.format(self._lex.Annotate()))
+      elif isinstance(syntax_error, resource_exceptions.UnknownTransformError):
+        raise syntax_error  # pylint: disable=raising-bad-type, previous line checked for valid type, just sayin
       else:
         # A global restriction on key.
         if not restriction:

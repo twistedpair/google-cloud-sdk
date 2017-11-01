@@ -21,6 +21,7 @@ from googlecloudsdk.command_lib.ml_engine import predict_utilities
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 
@@ -67,7 +68,9 @@ def RunPredict(model_dir, json_instances=None, text_instances=None):
     raise LocalPredictEnvironmentError(
         'Something has gone really wrong; we can\'t find a valid Python '
         'executable on your PATH.')
-  python_executable = python_executables[0]
+  # Use python found on PATH or local_python override if set
+  python_executable = (properties.VALUES.ml_engine.local_python.Get() or
+                       python_executables[0])
   # Start local prediction in a subprocess.
   proc = subprocess.Popen(
       [python_executable, local_predict.__file__,

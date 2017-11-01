@@ -19,7 +19,7 @@ from __future__ import print_function
 # Defaults for instance creation.
 DEFAULT_MACHINE_TYPE = 'db-n1-standard-1'
 
-# Determining what executables and flags to use for sql connect.
+# Determining what executables, flags, and defaults to use for sql connect.
 DB_EXE = {'MYSQL': 'mysql', 'POSTGRES': 'psql'}
 
 EXE_FLAGS = {
@@ -34,6 +34,8 @@ EXE_FLAGS = {
         'hostname': '-h'
     }
 }
+
+DEFAULT_SQL_USER = {'mysql': 'root', 'psql': 'postgres'}
 
 # Size conversions.
 BYTES_TO_GB = 1 << 30

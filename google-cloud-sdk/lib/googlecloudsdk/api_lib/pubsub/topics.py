@@ -1,0 +1,140 @@
+# Copyright 2017 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Utilities for Cloud Pub/Sub Topics API."""
+from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import exceptions
+
+
+class PublishOperationException(exceptions.Error):
+  """Error when something went wrong with publish."""
+
+
+class EmptyMessageException(exceptions.Error):
+  """Error when no fields were specified for a Patch operation."""
+
+
+def GetClientInstance(no_http=False):
+  return apis.GetClientInstance('pubsub', 'v1', no_http=no_http)
+
+
+def GetMessagesModule(client=None):
+  client = client or GetClientInstance()
+  return client.MESSAGES_MODULE
+
+
+class TopicsClient(object):
+  """Client for topics service in the Cloud Pub/Sub API."""
+
+  def __init__(self, client=None, messages=None):
+    self.client = client or GetClientInstance()
+    self.messages = messages or GetMessagesModule(client)
+    self._service = self.client.projects_topics
+
+  def Create(self, topic_ref):
+    """Creates a Topic.
+
+    Args:
+      topic_ref (Resource): Resource reference to the Topic to create.
+    Returns:
+      Topic: The created topic.
+    """
+    topic = self.messages.Topic(name=topic_ref.RelativeName())
+    return self._service.Create(topic)
+
+  def Delete(self, topic_ref):
+    """Deletes a Topic.
+
+    Args:
+      topic_ref (Resource): Resource reference to the Topic to delete.
+    Returns:
+      Empty: An empty response message.
+    """
+    delete_req = self.messages.PubsubProjectsTopicsDeleteRequest(
+        topic=topic_ref.RelativeName())
+    return self._service.Delete(delete_req)
+
+  def List(self, project_ref, page_size=100):
+    """Lists Topics for a given project.
+
+    Args:
+      project_ref (Resource): Resource reference to Project to list
+        Topics from.
+      page_size (int): the number of entries in each batch (affects requests
+        made, but not the yielded results).
+    Returns:
+      A generator of Topics in the Project.
+    """
+    list_req = self.messages.PubsubProjectsTopicsListRequest(
+        project=project_ref.RelativeName(),
+        pageSize=page_size
+    )
+    return list_pager.YieldFromList(
+        self._service, list_req, batch_size=page_size,
+        field='topics', batch_size_attribute='pageSize')
+
+  def ListSubscriptions(self, topic_ref, page_size=100):
+    """Lists Subscriptions for a given topic.
+
+    Args:
+      topic_ref (Resource): Resource reference to Topic to list
+        subscriptions from.
+      page_size (int): the number of entries in each batch (affects requests
+        made, but not the yielded results).
+    Returns:
+      A generator of Subscriptions for the Topic..
+    """
+    list_req = self.messages.PubsubProjectsTopicsSubscriptionsListRequest(
+        topic=topic_ref.RelativeName(),
+        pageSize=page_size
+    )
+    list_subs_service = self.client.projects_topics_subscriptions
+    return list_pager.YieldFromList(
+        list_subs_service, list_req, batch_size=page_size,
+        field='subscriptions', batch_size_attribute='pageSize')
+
+  def Publish(self, topic_ref, message_body=None, attributes=None):
+    """Publishes a message to the given topic.
+
+    Args:
+      topic_ref (Resource): Resource reference to Topic to publish to.
+      message_body (str): Message to send.
+      attributes (list[AdditionalProperty]): List of attributes to attach to
+        the message.
+    Returns:
+      PublishResponse: Response message with message ids from the API.
+    Raises:
+      EmptyMessageException: If neither message nor attributes is
+        specified.
+      PublishOperationException: When something went wrong with the publish
+        operation.
+    """
+    if not message_body and not attributes:
+      raise EmptyMessageException(
+          'You cannot send an empty message. You must specify either a '
+          'MESSAGE_BODY, one or more ATTRIBUTE, or both.')
+    message = self.messages.PubsubMessage(
+        data=message_body,
+        attributes=self.messages.PubsubMessage.AttributesValue(
+            additionalProperties=attributes))
+    publish_req = self.messages.PubsubProjectsTopicsPublishRequest(
+        publishRequest=self.messages.PublishRequest(messages=[message]),
+        topic=topic_ref.RelativeName())
+    result = self._service.Publish(publish_req)
+    if not result.messageIds:
+      # If we got a result with empty messageIds, then we've got a problem.
+      raise PublishOperationException(
+          'Publish operation failed with Unknown error.')
+    return result
+

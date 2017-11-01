@@ -13,7 +13,9 @@
 # limitations under the License.
 """Flags for gcloud ml language commands."""
 
+from apitools.base.py.exceptions import HttpError
 from googlecloudsdk.api_lib.ml.language import util
+from googlecloudsdk.core import log
 
 
 def RunLanguageCommand(feature, content_file=None, content=None,
@@ -49,9 +51,19 @@ def RunLanguageCommand(feature, content_file=None, content=None,
                                entity_sentiment_enabled=entity_sentiment,
                                classify_text_enabled=classify_text)
   source = util.GetContentSource(content, content_file)
-  return client.SingleFeatureAnnotate(feature, source=source, language=language,
-                                      content_type=content_type,
-                                      encoding_type=encoding_type)
+  try:
+    return client.SingleFeatureAnnotate(
+        feature,
+        source=source,
+        language=language,
+        content_type=content_type,
+        encoding_type=encoding_type)
+  except HttpError as e:
+    # Print Service Account Help on Access Denied errors
+    # as this is most likely cause
+    if e.status_code == 403:
+      log.warn('Please Note: {}\n'.format(SERVICE_ACCOUNT_HELP))
+    raise e
 
 
 def AddContentToRequest(unused_ref, args, request):

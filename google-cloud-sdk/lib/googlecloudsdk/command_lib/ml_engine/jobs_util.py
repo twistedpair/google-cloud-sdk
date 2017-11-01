@@ -14,10 +14,12 @@
 """ml-engine jobs command code."""
 from apitools.base.py import exceptions
 
+from googlecloudsdk.api_lib.ml_engine import jobs
 from googlecloudsdk.command_lib.logs import stream
 from googlecloudsdk.command_lib.ml_engine import flags
 from googlecloudsdk.command_lib.ml_engine import jobs_prep
 from googlecloudsdk.command_lib.ml_engine import log_utils
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -34,6 +36,31 @@ JOB_FORMAT = 'yaml(jobId,state,startTime.date(tz=LOCAL),endTime.date(tz=LOCAL))'
 # Check every 10 seconds if the job is complete (if we didn't fetch any logs the
 # last time)
 _CONTINUE_INTERVAL = 10
+
+
+_TF_RECORD_URL = ('https://www.tensorflow.org/versions/r0.12/how_tos/'
+                  'reading_data/index.html#file-formats')
+
+
+_PREDICTION_DATA_FORMAT_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--data-format',
+    jobs.GetMessagesModule(
+    ).GoogleCloudMlV1PredictionInput.DataFormatValueValuesEnum,
+    custom_mappings={
+        'TEXT': ('text', ('Text files with instances separated '
+                          'by the new-line character.')),
+        'TF_RECORD': ('tf-record',
+                      'TFRecord files; see {}'.format(_TF_RECORD_URL)),
+        'TF_RECORD_GZIP': ('tf-record-gzip',
+                           'GZIP-compressed TFRecord files.')
+    },
+    help_str='Data format of the input files.',
+    required=True)
+
+
+def DataFormatFlagMap():
+  """Return the ChoiceEnumMapper for the --data-format flag."""
+  return _PREDICTION_DATA_FORMAT_MAPPER
 
 
 def Cancel(jobs_client, job):

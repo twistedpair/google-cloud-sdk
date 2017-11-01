@@ -25,9 +25,7 @@ import sys
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import display
 from googlecloudsdk.core import log
-from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_printer
-from googlecloudsdk.core.resource import resource_registry
 
 
 # Common markdown.
@@ -576,90 +574,6 @@ class Command(_Common):
     """
     pass
 
-  def Collection(self):
-    """Returns the default collection path string.
-
-    Should handle all command-specific args. --async is handled by
-    ResourceInfo().
-
-    Returns:
-      The default collection path string.
-    """
-    return None
-
-  def ResourceInfo(self, args):
-    """Returns the command resource ResourceInfo object.
-
-    Handles the --async flag.
-
-    Args:
-      args: argparse.Namespace, An object that contains the values for the
-          arguments specified in the ._Flags() and .Args() methods.
-
-    Raises:
-      ResourceRegistryAttributeError: If --async is set and the
-        resource_registry info does not have an async_collection attribute.
-      UnregisteredCollectionError: If the async_collection name is not in the
-        resource registry.
-
-    Returns:
-      A resource object dispatched by display.Displayer().
-    """
-    collection = self.Collection()  # pylint: disable=assignment-from-none
-    if not collection:
-      return None
-    info = resource_registry.Get(collection)
-    if not getattr(args, 'async', False):
-      return info
-    if not info.async_collection:
-      raise resource_exceptions.ResourceRegistryAttributeError(
-          'Collection [{collection}] does not have an async_collection '
-          'attribute.'.format(collection=collection))
-    info = resource_registry.Get(info.async_collection)
-    # One more indirection allowed for commands that have a different operations
-    # format for --async and operations list.
-    if info.async_collection:
-      info = resource_registry.Get(info.async_collection)
-    return info
-
-  def DeprecatedFormat(self, args):
-    """Returns the default format string.
-
-    Calliope supports a powerful formatting mini-language. It allows running
-    things like
-
-        $ my-tool run-foo --format=json
-        $ my-tool run-foo --format='value(bar.baz.map().qux().list())'
-        $ my-tool run-foo --format='table[box](a, b, c:label=SOME_DESCRIPTION)'
-
-    For the best current documentation on this formatting language, see
-    `gcloud topic formats` and `gcloud topic projections`.
-
-    When a command is run with no `--format` flag, this method is run and its
-    result is used as the format string.
-
-    This method is deprecated in favor of calling:
-
-        parser.display_info.AddFormat(<format string>)
-
-    in the Args method for the command.
-
-    Args:
-      args: the argparse namespace object for this command execution. Not used
-        in the default implementation, but available for subclasses to use.
-
-    Returns:
-      str, the default format string for this command.
-    """
-    del args  # Unused in DeprecatedFormat
-    return 'default'
-
-  def ListFormat(self, args):
-    info = self.ResourceInfo(args)
-    if info and info.list_format:
-      return info.list_format
-    return 'default'
-
   def Epilog(self, resources_were_displayed):
     """Called after resources are displayed if the default format was used.
 
@@ -667,10 +581,6 @@ class Command(_Common):
       resources_were_displayed: True if resources were displayed.
     """
     _ = resources_were_displayed
-
-  def Defaults(self):
-    """Returns the command projection defaults."""
-    return None
 
   def GetReferencedKeyNames(self, args):
     """Returns the key names referenced by the filter and format expressions."""
@@ -704,9 +614,6 @@ class SilentCommand(Command):
   @staticmethod
   def _Flags(parser):
     parser.display_info.AddFormat('none')
-
-  def DeprecatedFormat(self, unused_args):
-    return 'none'
 
 
 class DescribeCommand(Command):
@@ -743,6 +650,7 @@ class ListCommand(CacheCommand):
     PAGE_SIZE_FLAG.AddToParser(parser)
     SORT_BY_FLAG.AddToParser(parser)
     URI_FLAG.AddToParser(parser)
+    parser.display_info.AddFormat('default')
 
   def Epilog(self, resources_were_displayed):
     """Called after resources are displayed if the default format was used.
@@ -752,9 +660,6 @@ class ListCommand(CacheCommand):
     """
     if not resources_were_displayed:
       log.status.Print('Listed 0 items.')
-
-  def DeprecatedFormat(self, args):
-    return self.ListFormat(args)
 
 
 class CreateCommand(CacheCommand, SilentCommand):

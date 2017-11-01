@@ -59,6 +59,14 @@ class URLFetchError(Error):
     super(URLFetchError, self).__init__(msg)
 
 
+class MalformedSnapshotError(Error):
+  """Error with the contents of the snapshot."""
+
+  def __init__(self):
+    super(MalformedSnapshotError, self).__init__(
+        'Failed to process component listing from server.')
+
+
 class IncompatibleSchemaVersionError(Error):
   """Error for when we are unable to parse the new version of the snapshot."""
 
@@ -155,12 +163,10 @@ class ComponentSnapshot(object):
           current_function_name, unexpected_args.pop()))
     command_path = kwargs.get('command_path', 'unknown')
 
-    # TODO(b/36039276) Handle a json parse error here.
     first = urls[0]
     data = [
-        (ComponentSnapshot._DictFromURL(url,
-                                        command_path,
-                                        is_extra_repo=(url != first)),
+        (ComponentSnapshot._DictFromURL(
+            url, command_path, is_extra_repo=(url != first)),
          url)
         for url in urls]
     return ComponentSnapshot._FromDictionary(*data)
@@ -198,8 +204,12 @@ class ComponentSnapshot(object):
     code = response.getcode()
     if code and code != 200:
       raise URLFetchError(code=code, extra_repo=extra_repo)
-    data = json.loads(response.read())
-    return data
+    try:
+      data = json.loads(response.read())
+      return data
+    except ValueError as e:
+      log.debug('Failed to parse snapshot [{}]: {}'.format(url, e))
+      raise MalformedSnapshotError()
 
   @staticmethod
   def FromInstallState(install_state):

@@ -15,6 +15,7 @@
 """Helpers for flags in commands working with Google Cloud Functions."""
 
 from googlecloudsdk.calliope import actions
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -23,6 +24,17 @@ from googlecloudsdk.core import resources
 API = 'cloudfunctions'
 API_VERSION = 'v1beta2'
 LOCATIONS_COLLECTION = API + '.projects.locations'
+
+SEVERITIES = ['DEBUG', 'INFO', 'ERROR']
+
+
+def AddMinLogLevelFlag(parser):
+  min_log_arg = base.ChoiceArgument(
+      '--min-log-level',
+      choices=[x.lower() for x in SEVERITIES],
+      help_str='Minimum level of logs to be fetched.'
+  )
+  min_log_arg.AddToParser(parser)
 
 
 def GetLocationsUri(resource):
@@ -40,7 +52,6 @@ class LocationsCompleter(completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(LocationsCompleter, self).__init__(
         collection=LOCATIONS_COLLECTION,
-        api_version=API_VERSION,
         list_command='alpha functions regions list --uri',
         **kwargs)
 

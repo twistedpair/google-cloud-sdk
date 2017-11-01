@@ -50,7 +50,7 @@ class InvalidSDKRootError(Error):
         'The components management action could not be performed because the '
         'installation root of the Cloud SDK could not be located. '
         'If you previously used the Cloud SDK installer, '
-        'you could re-install the the SDK and retry again.')
+        'you could re-install the SDK and retry again.')
 
 
 class InvalidDownloadError(Error):
@@ -599,6 +599,7 @@ class InstallationState(object):
     with file_utils.ChDir(self.sdk_root):
       to_compile = [
           os.path.join('bin', 'bootstrapping'),
+          os.path.join('data', 'cli'),
           'lib',
           'platform',
       ]

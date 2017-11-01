@@ -73,6 +73,12 @@ def ImportModule(module_path):
   return obj
 
 
+def _GetPrivateModulePath(module_path):
+  """Mock hook that returns the module path for module that starts with '__'."""
+  del module_path
+  return None
+
+
 def GetModulePath(obj):
   """Returns the module path string for obj, None if its builtin.
 
@@ -92,8 +98,10 @@ def GetModulePath(obj):
     # ... or it has a __class__ that has a __module__.
     obj = obj.__class__
     module = obj.__module__
-  if module.startswith('__builtin__'):
-    return None
+  if module.startswith('__'):
+    module = _GetPrivateModulePath(module)  # pylint: disable=assignment-from-none, function is a test mock hook
+    if not module:
+      return None
   try:
     return module + ':' + obj.__name__
   except AttributeError:

@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags and helpers for the compute security policies rules commands."""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
@@ -25,13 +28,15 @@ class SecurityPolicyRulesCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
-def AddPriority(parser, operation):
+def AddPriority(parser, operation, is_plural=False):
   """Adds the priority argument to the argparse."""
   parser.add_argument(
-      'name',
+      'name' + ('s' if is_plural else ''),
       metavar='PRIORITY',
+      nargs='*' if is_plural else None,
       completer=SecurityPolicyRulesCompleter,
-      help='The priority of the rule to {0}.'.format(operation))
+      help=('The priority of the rule{0} to {1}.'.format(
+          's' if is_plural else '', operation)))
 
 
 def AddMatcher(parser, required=True):
@@ -56,10 +61,7 @@ def AddAction(parser, required=True):
       choices=['allow', 'deny-403', 'deny-404', 'deny-502'],
       type=lambda x: x.lower(),
       required=required,
-      help="""\
-      The action to take if the request matches the match condition. Action can
-      be either "allow", "deny-403", "deny-404", or "deny-502".
-      """)
+      help='The action to take if the request matches the match condition.')
 
 
 def AddDescription(parser):
@@ -76,4 +78,3 @@ def AddPreview(parser, default):
       action='store_true',
       default=default,
       help='If specified, the action will not be enforced.')
-

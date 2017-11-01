@@ -556,3 +556,44 @@ def AddSignedUrlCacheMaxAge(
       are `s` for seconds, `m` for minutes, `h` for hours, and `d` for
       days.
       """.format(unspecified_help))
+
+
+def AddConnectionDrainOnFailover(parser, default):
+  """Adds the connection drain on failover argument to the argparse."""
+  parser.add_argument(
+      '--connection-drain-on-failover',
+      action='store_true',
+      default=default,
+      help="""\
+      Connection drain is enabled by default and on failover or failback
+      connections will be drained. If connection drain is disabled, the existing
+      connection state will be cleared immediately on a best effort basis on
+      failover or failback, all connections will then be served by the active
+      pool of instances. Not compatible with the --global flag, load balancing
+      scheme must be INTERNAL, and the protocol must be TCP.
+      """)
+
+
+def AddDropTrafficIfUnhealthy(parser, default):
+  """Adds the drop traffic if unhealthy argument to the argparse."""
+  parser.add_argument(
+      '--drop-traffic-if-unhealthy',
+      action='store_true',
+      default=default,
+      help="""\
+      Enable dropping of traffic if there are no healthy VMs detected in both
+      the primary and backup instance groups. Not compatible with the --global
+      flag and load balancing scheme must be INTERNAL.
+      """)
+
+
+def AddFailoverRatio(parser):
+  """Adds the failover ratio argument to the argparse."""
+  parser.add_argument(
+      '--failover-ratio',
+      type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
+      help="""\
+      If the ratio of the healthy VMs in the primary backend is at or below this
+      number, traffic arriving at the load-balanced IP will be directed to the
+      failover backend(s). Not compatible with the --global flag.
+      """)

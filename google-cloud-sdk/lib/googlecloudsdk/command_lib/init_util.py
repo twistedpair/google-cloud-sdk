@@ -118,6 +118,7 @@ def _PromptForProjectId(project_ids, limit_exceeded):
 
 
 def _CreateProject(project_id, project_ids):
+  """Create a project and check that it isn't in the known project IDs."""
   if project_ids and project_id in project_ids:
     raise ValueError('Attempting to create a project that already exists.')
 
@@ -132,6 +133,8 @@ def _CreateProject(project_id, project_ids):
              'or change to another project using\n'
              '    $ gcloud config set project <PROJECT ID>'.format(
                  err=str(err), project=project_id))
+    return None
+  return project_id
 
 
 def PickProject(preselected=None):
@@ -174,5 +177,4 @@ def PickProject(preselected=None):
         message=message, prompt_string='Would you like to create it?'):
       return None
 
-  _CreateProject(project_id, project_ids)
-  return project_id
+  return _CreateProject(project_id, project_ids)

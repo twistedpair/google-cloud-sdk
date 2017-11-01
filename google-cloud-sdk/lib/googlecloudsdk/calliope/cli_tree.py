@@ -89,7 +89,11 @@ class CliCommandVersionError(Error):
 
 
 class SdkRootNotFoundError(Error):
-  """Raised if no SDK root can be found."""
+  """Raised if SDK root is not found."""
+
+
+class SdkDataCliNotFoundError(Error):
+  """Raised if SDK root data/cli/ does not exist."""
 
 
 class CliTreeVersionError(Error):
@@ -153,7 +157,7 @@ def _NormalizeDescription(description):
     description = None
   elif description:
     description = textwrap.dedent(description)
-  return description or ''
+  return unicode(description or '')
 
 
 class Argument(object):
@@ -231,12 +235,12 @@ class FlagOrPositional(Argument):
     self.completer = completer
     self.default = arg.default
     self.description = _NormalizeDescription(_GetDescription(arg))
-    self.name = name
+    self.name = unicode(name)
     self.nargs = str(arg.nargs or 0)
     if arg.metavar:
-      self.value = arg.metavar
+      self.value = unicode(arg.metavar)
     else:
-      self.value = name.lstrip('-').replace('-', '_').upper()
+      self.value = self.name.lstrip('-').replace('-', '_').upper()
     self._Scrub()
 
 
@@ -316,8 +320,9 @@ class Group(Argument):
     arguments: [Argument], The list of arguments in the argument group.
   """
 
-  def __init__(self, group, arguments=None):
+  def __init__(self, group, key=None, arguments=None):
     super(Group, self).__init__(group)
+    self._key = key
     self.is_group = True
     self.arguments = arguments
 
@@ -326,19 +331,24 @@ class Constraint(Group):
   """Argument constraint group info."""
 
   def __init__(self, group):
-    arguments = []
+    order = []
     for arg in group.arguments:
       if arg.is_group:
-        arguments.append(Constraint(arg))
+        constraint = Constraint(arg)
+        order.append((constraint._key, constraint))  # pylint: disable=protected-access, _key must not be serialized
       elif arg.is_positional:
         name = arg.dest.replace('_', '-')
-        arguments.append(Positional(arg, name))
+        order.append(('', Positional(arg, name)))
       else:
         for name in arg.option_strings:
           if name.startswith('--'):
             name = name.replace('_', '-')
-            arguments.append(Flag(arg, name))
-    super(Constraint, self).__init__(group, arguments=arguments)
+            order.append((name, Flag(arg, name)))
+    order = sorted(order, key=lambda item: item[0])
+    super(Constraint, self).__init__(
+        group,
+        arguments=[item[1] for item in order],
+        key=order[0][0] if order else '')
 
 
 class Command(object):
@@ -736,24 +746,30 @@ TREE = _Deserialize(_SERIALIZED_TREE)
 
 
 def CliTreeDir():
-  """Creates if necessary and returns the CLI tree default directory.
+  """The CLI tree default directory.
 
   This directory is part of the installation and its contents are managed
   by the installer/updater.
 
   Raises:
     SdkRootNotFoundError: If the SDK root directory does not exist.
+    SdkDataCliNotFoundError: If the SDK root data CLI directory does not exist.
 
   Returns:
     The directory path.
   """
   paths = config.Paths()
   if paths.sdk_root is None:
-    raise SdkRootNotFoundError('SDK root not found for this installation. '
-                               'CLI tree cannot be generated.')
-  directory = os.path.join(paths.sdk_root, paths.CLOUDSDK_STATE_DIR, 'cli')
-  # Ensure directory exists.
-  files.MakeDir(directory)
+    raise SdkRootNotFoundError(
+        'SDK root not found for this installation. CLI tree cannot be '
+        'loaded or generated.')
+  directory = os.path.join(paths.sdk_root,
+                           'data',
+                           'cli')
+  if not os.path.isdir(directory):
+    raise SdkDataCliNotFoundError(
+        'SDK root data CLI directory [{}] not found for this installation. '
+        'CLI tree cannot be loaded or generated.'.format(directory))
   return directory
 
 
@@ -769,9 +785,9 @@ def CliTreeConfigDir():
   return os.path.join(config.Paths().global_config_dir, 'cli')
 
 
-def CliTreePath(name=DEFAULT_CLI_NAME):
-  """Returns the default CLI tree module path for name."""
-  return os.path.join(CliTreeDir(), name + '.py')
+def CliTreePath(name=DEFAULT_CLI_NAME, directory=None):
+  """Returns the CLI tree module path for name, default if directory is None."""
+  return os.path.join(directory or CliTreeDir(), name + '.py')
 
 
 def _GenerateRoot(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
@@ -814,7 +830,6 @@ def Dump(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
   else:
     with open(path, 'w') as f:
       _DumpToFile(tree, name, f)
-    module_util.CompileAll(os.path.dirname(path))
   return resource_projector.MakeSerializable(tree)
 
 
@@ -846,7 +861,10 @@ def _IsValidCliTreeVersion(tree, path, version, cli_version, ignore_errors,
               path, v, version))
     return False
   v = tree.get(LOOKUP_CLI_VERSION)
-  if v != cli_version and cli_version != 'TEST':
+  if v == 'HEAD' or cli_version == 'TEST':
+    # test environments
+    pass
+  elif v != cli_version:
     if not ignore_errors:
       raise CliCommandVersionError(
           'CLI tree [{}] command version is [{}], expected [{}]'.format(

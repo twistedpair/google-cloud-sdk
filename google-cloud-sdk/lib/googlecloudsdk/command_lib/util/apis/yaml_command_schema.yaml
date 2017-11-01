@@ -48,18 +48,26 @@ definitions:
       # even though it would normally be a positional. This should normally not
       # be required for well formed API methods.
       is_positional: { type: boolean }
+      # Whether the flag should be hidden or not.
+      hidden: { type: boolean }
+      # The module path to a function to call (with no arguments) if no value is
+      # provided; the result of this function will be used for this argument
+      # (like default, but with a computed value).
+      fallback: { $ref: "#/definitions/python_hook" }
 
   argument:
-    required: [ api_field, help_text ]
+    required: [ help_text ]
     additionalProperties: false
     properties:
       # The name of the API field the value of this argument goes into.
+      # At least one of [api_field, arg_name] must be given.
       api_field: { type: string }
       # The help text for this individual flag.
       help_text: { type: string }
       # The name of the argument as it should appear in the CLI. If
       # not given it will match the API field name. This does not
       # include '--' even if it will be a flag.
+      # At least one of [api_field, arg_name] must be given.
       arg_name: { type: string }
       # The module path to a class that implements remote completion
       # for this argument.
@@ -86,8 +94,14 @@ definitions:
       # choice is selected.
       choices:
         type: object
-      # The default value of the argument when not provided.
+      # The default value of the argument when not provided. Mutually exclusive
+      # with fallback.
       default: { type: [ string, number, boolean, array ] }
+      # The module path to a function to call (with no arguments) if no value is
+      # provided; the result of this function will be used for this argument
+      # (like default, but with a computed value). Mutually exclusive with
+      # default.
+      fallback: { $ref: "#/definitions/python_hook" }
       # The module path to a function to process the parsed value
       # before inserting it into the request message. It takes a
       # single value which is the parsed argument's value and returns

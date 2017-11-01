@@ -36,8 +36,10 @@ def Create(instance, config, description, nodes):
       config,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection='spanner.projects.instanceConfigs')
+  project_ref = resources.REGISTRY.Create(
+      'spanner.projects', projectsId=properties.VALUES.core.project.GetOrFail)
   req = msgs.SpannerProjectsInstancesCreateRequest(
-      parent='projects/' + properties.VALUES.core.project.Get(required=True),
+      parent=project_ref.RelativeName(),
       createInstanceRequest=msgs.CreateInstanceRequest(
           instanceId=instance,
           instance=msgs.Instance(
@@ -94,8 +96,10 @@ def List():
   """List instances in the project."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
+  project_ref = resources.REGISTRY.Create(
+      'spanner.projects', projectsId=properties.VALUES.core.project.GetOrFail)
   req = msgs.SpannerProjectsInstancesListRequest(
-      parent='projects/' + properties.VALUES.core.project.Get(required=True))
+      parent=project_ref.RelativeName())
   return list_pager.YieldFromList(
       client.projects_instances,
       req,
