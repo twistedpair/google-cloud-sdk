@@ -14,6 +14,8 @@
 """Utilities for Cloud Pub/Sub Topics API."""
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions as api_exceptions
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import exceptions
 
 
@@ -22,7 +24,19 @@ class PublishOperationException(exceptions.Error):
 
 
 class EmptyMessageException(exceptions.Error):
+  """Error when no message was specified for a Publish operation."""
+
+
+class NoFieldsSpecifiedError(exceptions.Error):
   """Error when no fields were specified for a Patch operation."""
+
+
+class _TopicUpdateSetting(object):
+  """Data container class for updating a topic."""
+
+  def __init__(self, field_name, value):
+    self.field_name = field_name
+    self.value = value
 
 
 def GetClientInstance(no_http=False):
@@ -42,16 +56,29 @@ class TopicsClient(object):
     self.messages = messages or GetMessagesModule(client)
     self._service = self.client.projects_topics
 
-  def Create(self, topic_ref):
+  def Create(self, topic_ref, labels=None):
     """Creates a Topic.
 
     Args:
       topic_ref (Resource): Resource reference to the Topic to create.
+      labels (LabelsValue): Labels for the topic to create.
     Returns:
       Topic: The created topic.
     """
-    topic = self.messages.Topic(name=topic_ref.RelativeName())
+    topic = self.messages.Topic(name=topic_ref.RelativeName(), labels=labels)
     return self._service.Create(topic)
+
+  def Get(self, topic_ref):
+    """Gets a Topic.
+
+    Args:
+      topic_ref (Resource): Resource reference to the Topic to delete.
+    Returns:
+      Topic: The topic.
+    """
+    get_req = self.messages.PubsubProjectsTopicsGetRequest(
+        topic=topic_ref.RelativeName())
+    return self._service.Get(get_req)
 
   def Delete(self, topic_ref):
     """Deletes a Topic.
@@ -138,3 +165,95 @@ class TopicsClient(object):
           'Publish operation failed with Unknown error.')
     return result
 
+  def SetIamPolicy(self, topic_ref, policy):
+    """Sets an IAM policy on a Topic.
+
+    Args:
+      topic_ref (Resource): Resource reference for topic to set
+        IAM policy on.
+      policy (Policy): The policy to be added to the Topic.
+
+    Returns:
+      Policy: the policy which was set.
+    """
+    request = self.messages.PubsubProjectsTopicsSetIamPolicyRequest(
+        resource=topic_ref.RelativeName(),
+        setIamPolicyRequest=self.messages.SetIamPolicyRequest(policy=policy))
+    return self._service.SetIamPolicy(request)
+
+  def GetIamPolicy(self, topic_ref):
+    """Gets the IAM policy for a Topic.
+
+    Args:
+      topic_ref (Resource): Resource reference for topic to get
+        the IAM policy of.
+
+    Returns:
+      Policy: the policy for the Topic.
+    """
+    request = self.messages.PubsubProjectsTopicsGetIamPolicyRequest(
+        resource=topic_ref.RelativeName())
+    return self._service.GetIamPolicy(request)
+
+  def AddIamPolicyBinding(self, topic_ref, member, role):
+    """Adds an IAM Policy binding to a Topic.
+
+    Args:
+      topic_ref (Resource): Resource reference for subscription to add
+        IAM policy binding to.
+      member (str): The member to add.
+      role (str): The role to assign to the member.
+    Returns:
+      Policy: the updated policy.
+    Raises:
+      api_exception.HttpException: If either of the requests failed.
+    """
+    policy = self.GetIamPolicy(topic_ref)
+    iam_util.AddBindingToIamPolicy(self.messages.Binding, policy, member, role)
+    return self.SetIamPolicy(topic_ref, policy)
+
+  def RemoveIamPolicyBinding(self, topic_ref, member, role):
+    """Removes an IAM Policy binding from a Topic.
+
+    Args:
+      topic_ref (Resource): Resource reference for subscription to remove
+        IAM policy binding from.
+      member (str): The member to remove.
+      role (str): The role to remove the member from.
+    Returns:
+      Policy: the updated policy.
+    Raises:
+      api_exception.HttpException: If either of the requests failed.
+    """
+    policy = self.GetIamPolicy(topic_ref)
+    iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+    return self.SetIamPolicy(topic_ref, policy)
+
+  def Patch(self, topic_ref, labels=None):
+    """Updates a Topic.
+
+    Args:
+      topic_ref (Resource): Resource reference for the topic to be updated.
+      labels (LabelsValue): The Cloud labels for the topic.
+    Returns:
+      Topic: The updated topic.
+    Raises:
+      NoFieldsSpecifiedError: if no fields were specified.
+    """
+    update_settings = [_TopicUpdateSetting('labels', labels)]
+    topic = self.messages.Topic(
+        name=topic_ref.RelativeName())
+    update_mask = []
+    for update_setting in update_settings:
+      if update_setting.value is not None:
+        setattr(topic, update_setting.field_name, update_setting.value)
+        update_mask.append(update_setting.field_name)
+    if not update_mask:
+      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+    patch_req = self.messages.PubsubProjectsTopicsPatchRequest(
+        updateTopicRequest=self.messages.UpdateTopicRequest(
+            topic=topic,
+            updateMask=','.join(update_mask)),
+        name=topic_ref.RelativeName())
+
+    return self._service.Patch(patch_req)

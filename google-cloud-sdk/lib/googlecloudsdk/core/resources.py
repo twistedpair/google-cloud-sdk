@@ -964,6 +964,9 @@ class Registry(object):
     default_enpoint_url = apis_internal._GetDefaultEndpointUrl(url)
     api_name, api_version, resource_path = (
         resource_util.SplitDefaultEndpointUrl(default_enpoint_url))
+    # Force hyphenated API names to use underscores to conform with apitools
+    # generated clients
+    api_name = api_name.replace('-', '_')
     if not url.startswith(default_enpoint_url):
       # Use last registered api version in case of override.
       api_version = self.registered_apis.get(api_name, [api_version])[-1]

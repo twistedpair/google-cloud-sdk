@@ -214,13 +214,37 @@ def FetchOccurrencesForResource(digest, occurrence_filter=None):
   return _MakeOccurrenceRequest(project_id, resource_filter, occurrence_filter)
 
 
-def TransformContainerAnalysisData(image_name, occurrence_filter=None):
+def FetchDeploymentsForImage(image, occurrence_filter=None):
+  """Fetches the deployment occurrences attached to this image."""
+  project_id = RecoverProjectId(image)
+  depl_filter = 'kind="DEPLOYABLE"'  # and details.deployment.resource_uri=image
+  occ_filter = '({arg_filter} AND {depl_filter})'.format(
+      arg_filter=occurrence_filter,
+      depl_filter=depl_filter,
+  )
+  occurrences = list(_MakeOccurrenceRequest(project_id, occ_filter))
+  deployments = []
+  image_string = str(image)
+  for occ in occurrences:
+    if not occ.deployment:
+      continue
+    if image_string in occ.deployment.resourceUri:
+      deployments.append(occ)
+  return deployments
+
+
+def TransformContainerAnalysisData(image_name, occurrence_filter=None,
+                                   deployments=False):
   """Transforms the occurrence data from Container Analysis API."""
-  occurrences = FetchOccurrencesForResource(image_name, occurrence_filter)
   analysis_obj = container_analysis_data_util.ContainerAndAnalysisData(
       image_name)
-  for occurrence in occurrences:
-    analysis_obj.add_record(occurrence)
+  occs = FetchOccurrencesForResource(image_name, occurrence_filter)
+  for occ in occs:
+    analysis_obj.add_record(occ)
+  if deployments:
+    depl_occs = FetchDeploymentsForImage(image_name, occurrence_filter)
+    for depl_occ in depl_occs:
+      analysis_obj.add_record(depl_occ)
   analysis_obj.resolveSummaries()
   return analysis_obj
 

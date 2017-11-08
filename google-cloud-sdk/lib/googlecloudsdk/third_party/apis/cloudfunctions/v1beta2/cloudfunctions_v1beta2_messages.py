@@ -315,7 +315,7 @@ class EventTrigger(_messages.Message):
     service: The hostname of the service that should be observed.  If no
       string is provided, the default service implementing the API will be
       used. For example, `storage.googleapis.com` is the default for all event
-      types in the 'google.storage` namespace.
+      types in the `google.storage` namespace.
   """
 
   eventType = _messages.StringField(1)
@@ -623,6 +623,7 @@ class OperationMetadataV1(_messages.Message):
     target: Target of the operation - for example
       projects/project-1/locations/region-1/functions/function-1
     type: Type of operation.
+    updateTime: The last update timestamp of the operation.
     versionId: Version id of the function created or updated by an API call.
       This field is only pupulated for Create and Update operations.
   """
@@ -669,7 +670,8 @@ class OperationMetadataV1(_messages.Message):
   request = _messages.MessageField('RequestValue', 1)
   target = _messages.StringField(2)
   type = _messages.EnumField('TypeValueValuesEnum', 3)
-  versionId = _messages.IntegerField(4)
+  updateTime = _messages.StringField(4)
+  versionId = _messages.IntegerField(5)
 
 
 class OperationMetadataV1Beta2(_messages.Message):
@@ -686,6 +688,7 @@ class OperationMetadataV1Beta2(_messages.Message):
     target: Target of the operation - for example
       projects/project-1/locations/region-1/functions/function-1
     type: Type of operation.
+    updateTime: The last update timestamp of the operation.
     versionId: Version id of the function created or updated by an API call.
       This field is only pupulated for Create and Update operations.
   """
@@ -732,7 +735,8 @@ class OperationMetadataV1Beta2(_messages.Message):
   request = _messages.MessageField('RequestValue', 1)
   target = _messages.StringField(2)
   type = _messages.EnumField('TypeValueValuesEnum', 3)
-  versionId = _messages.IntegerField(4)
+  updateTime = _messages.StringField(4)
+  versionId = _messages.IntegerField(5)
 
 
 class Retry(_messages.Message):

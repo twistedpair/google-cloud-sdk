@@ -20,13 +20,15 @@
 
 """A wrapper around the generated Groc parser and lexer."""
 
+from __future__ import absolute_import
+
 __author__ = 'arb@google.com (Anthony Baxter)'
 
 
-import antlr3
+from . import GrocLexer
+from . import GrocParser
 
-import GrocLexer
-import GrocParser
+import antlr3
 
 
 class GrocException(Exception):

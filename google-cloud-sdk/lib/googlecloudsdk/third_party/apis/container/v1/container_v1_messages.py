@@ -71,6 +71,10 @@ class AuditEvent(_messages.Message):
   Fields:
     auditID: Unique audit ID, generated for each request.
     impersonatedUser: Impersonated user information. +optional
+    metadata: ObjectMeta is included for interoperability with Kubernetes API
+      infrastructure. +optional DEPRECATED: Use StageTimestamp which supports
+      micro second instead of ObjectMeta.CreateTimestamp and the rest of the
+      object is not used.
     objectRef: Object reference this request is targeted at.  Does not apply
       for List-type requests, or non-resource requests. +optional
     requestObject: API object from the request, in JSON format. The
@@ -79,6 +83,8 @@ class AuditEvent(_messages.Message):
       is an external versioned object type, and may not be a valid object on
       its own.  Omitted for non-resource requests.  Only logged at Request
       Level and higher. +optional
+    requestReceivedTimestamp: Time the request reached the apiserver.
+      +optional
     requestURI: RequestURI is the request URI as sent by the client to a
       server.
     responseObject: API object returned in the response, in JSON. The
@@ -93,7 +99,9 @@ class AuditEvent(_messages.Message):
       proxies. +optional
     stage: Stage of the request handling when this event instance was
       generated.
-    timestamp: Time the request reached the apiserver.
+    stageTimestamp: Time the request reached current audit stage. +optional
+    timestamp: Time the request reached the apiserver. DEPRECATED: Use
+      RequestReceivedTimestamp which supports micro second instead.
     user: Authenticated user information.
     verb: Verb is the kubernetes verb associated with the request.  For non-
       resource requests, this is identical to HttpMethod.
@@ -159,16 +167,19 @@ class AuditEvent(_messages.Message):
 
   auditID = _messages.StringField(1)
   impersonatedUser = _messages.MessageField('AuthnV1UserInfo', 2)
-  objectRef = _messages.MessageField('AuditObjectReference', 3)
-  requestObject = _messages.MessageField('RequestObjectValue', 4)
-  requestURI = _messages.StringField(5)
-  responseObject = _messages.MessageField('ResponseObjectValue', 6)
-  responseStatus = _messages.MessageField('MetaV1Status', 7)
-  sourceIPs = _messages.StringField(8, repeated=True)
-  stage = _messages.StringField(9)
-  timestamp = _messages.StringField(10)
-  user = _messages.MessageField('AuthnV1UserInfo', 11)
-  verb = _messages.StringField(12)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  objectRef = _messages.MessageField('AuditObjectReference', 4)
+  requestObject = _messages.MessageField('RequestObjectValue', 5)
+  requestReceivedTimestamp = _messages.StringField(6)
+  requestURI = _messages.StringField(7)
+  responseObject = _messages.MessageField('ResponseObjectValue', 8)
+  responseStatus = _messages.MessageField('MetaV1Status', 9)
+  sourceIPs = _messages.StringField(10, repeated=True)
+  stage = _messages.StringField(11)
+  stageTimestamp = _messages.StringField(12)
+  timestamp = _messages.StringField(13)
+  user = _messages.MessageField('AuthnV1UserInfo', 14)
+  verb = _messages.StringField(15)
 
 
 class AuditEventList(_messages.Message):
@@ -2318,7 +2329,7 @@ class NodePool(_messages.Message):
     status: [Output only] The status of the nodes in this pool instance.
     statusMessage: [Output only] Additional information about the current
       status of this node pool instance, if available.
-    version: [Output only] The version of the Kubernetes of this node.
+    version: The version of the Kubernetes of this node.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -2423,6 +2434,26 @@ class NonResourceAttributes(_messages.Message):
 
   path = _messages.StringField(1)
   verb = _messages.StringField(2)
+
+
+class ObjectMeta(_messages.Message):
+  """ObjectMeta is metadata that all persisted resources must have, which
+  includes all objects users must create. Only one field is used from this
+  proto in AuditEvent.  Should match ObjectMeta in https://github.com/kubernet
+  es/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/apis/meta/v1/g
+  enerated.proto
+
+  Fields:
+    creationTimestamp: CreationTimestamp is a timestamp representing the
+      server time when this object was created. It is not guaranteed to be set
+      in happens-before order across separate operations. Clients may not set
+      this value. It is represented in RFC3339 form and is in UTC.  Populated
+      by the system. Read-only. Null for lists. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#metadata +optional
+  """
+
+  creationTimestamp = _messages.StringField(1)
 
 
 class Operation(_messages.Message):

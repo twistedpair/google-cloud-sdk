@@ -64,6 +64,20 @@ class APIDef(object):
 
 
 MAP = {
+    'alpha_vision': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.alpha_vision.v1',
+            client_classpath='alpha_vision_v1_client.AlphaVisionV1',
+            messages_modulepath='alpha_vision_v1_messages',
+            default_version=True
+        ),
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.alpha_vision.v1alpha1',
+            client_classpath='alpha_vision_v1alpha1_client.AlphaVisionV1alpha1',
+            messages_modulepath='alpha_vision_v1alpha1_messages',
+            default_version=False
+        ),
+    },
     'apikeys': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.apikeys.v1',
@@ -165,11 +179,17 @@ MAP = {
         ),
     },
     'cloudfunctions': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudfunctions.v1',
+            client_classpath='cloudfunctions_v1_client.CloudfunctionsV1',
+            messages_modulepath='cloudfunctions_v1_messages',
+            default_version=True
+        ),
         'v1beta2': APIDef(
             class_path='googlecloudsdk.third_party.apis.cloudfunctions.v1beta2',
             client_classpath='cloudfunctions_v1beta2_client.CloudfunctionsV1beta2',
             messages_modulepath='cloudfunctions_v1beta2_messages',
-            default_version=True
+            default_version=False
         ),
     },
     'cloudiot': {

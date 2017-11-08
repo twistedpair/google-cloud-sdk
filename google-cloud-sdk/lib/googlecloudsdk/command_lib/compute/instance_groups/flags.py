@@ -177,7 +177,7 @@ def ValidateManagedInstanceGroupScopeArgs(args, resources):
           '--zones', 'Specified zones not in specified region.')
 
 
-def GetInstanceGroupManagerArg(zones_flag=False):
+def GetInstanceGroupManagerArg(zones_flag=False, region_flag=True):
   """Returns ResourceArgument for working with instance group managers."""
   if zones_flag:
     extra_region_info_about_zones_flag = (
@@ -188,11 +188,15 @@ def GetInstanceGroupManagerArg(zones_flag=False):
                           extra_region_info_about_zones_flag)
   else:
     region_explanation = flags.REGION_PROPERTY_EXPLANATION_NO_DEFAULT
+  if region_flag:
+    regional_collection = 'compute.regionInstanceGroupManagers'
+  else:
+    regional_collection = None
   return flags.ResourceArgument(
       resource_name='managed instance group',
       completer=InstanceGroupManagersCompleter,
       zonal_collection='compute.instanceGroupManagers',
-      regional_collection='compute.regionInstanceGroupManagers',
+      regional_collection=regional_collection,
       zone_explanation=flags.ZONE_PROPERTY_EXPLANATION_NO_DEFAULT,
       region_explanation=region_explanation)
 
@@ -204,3 +208,26 @@ def CreateGroupReference(client, resources, args):
   return resource_arg.ResolveAsResource(
       args, resources, default_scope=default_scope,
       scope_lister=scope_lister)
+
+
+def AddSettingStatefulDisksFlag(parser, required=False):
+  """Add --stateful-disks and --no-stateful-disks flags to the parser."""
+  stateful_disks = parser.add_mutually_exclusive_group(required=required)
+  stateful_disks.add_argument(
+      '--stateful-disks',
+      metavar='DEVICE_NAME',
+      type=arg_parsers.ArgList(min_length=1),
+      help=(
+          'Disks considered stateful by the instance group. Usually, the '
+          'managed instance group deletes disks when deleting instances; '
+          'however, in the case of stateful disks, these disks are detached '
+          'from the deleted instance and attached to new instances the '
+          'managed instance group creates. This flag can only be used with '
+          'zonal managed instance groups.'),
+  )
+  stateful_disks.add_argument(
+      '--no-stateful-disks',
+      action='store_true',
+      help='The group will have no stateful disks.',
+  )
+

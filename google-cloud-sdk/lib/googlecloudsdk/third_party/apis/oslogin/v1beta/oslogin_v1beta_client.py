@@ -34,8 +34,46 @@ class OsloginV1beta(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.users_projects = self.UsersProjectsService(self)
     self.users_sshPublicKeys = self.UsersSshPublicKeysService(self)
     self.users = self.UsersService(self)
+
+  class UsersProjectsService(base_api.BaseApiService):
+    """Service class for the users_projects resource."""
+
+    _NAME = u'users_projects'
+
+    def __init__(self, client):
+      super(OsloginV1beta.UsersProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes a POSIX account.
+
+      Args:
+        request: (OsloginUsersProjectsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta/users/{usersId}/projects/{projectsId}',
+        http_method=u'DELETE',
+        method_id=u'oslogin.users.projects.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta/{+name}',
+        request_field='',
+        request_type_name=u'OsloginUsersProjectsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
   class UsersSshPublicKeysService(base_api.BaseApiService):
     """Service class for the users_sshPublicKeys resource."""
@@ -188,7 +226,7 @@ login profile.
         method_id=u'oslogin.users.importSshPublicKey',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[],
+        query_params=[u'projectId'],
         relative_path=u'v1beta/{+parent}:importSshPublicKey',
         request_field=u'sshPublicKey',
         request_type_name=u'OsloginUsersImportSshPublicKeyRequest',

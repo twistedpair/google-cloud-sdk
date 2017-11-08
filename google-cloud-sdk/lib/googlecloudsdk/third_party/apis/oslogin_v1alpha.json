@@ -138,7 +138,7 @@
     },
     "LoginProfile": {
       "id": "LoginProfile",
-      "description": "The Directory API profile information used for logging in to a virtual\nmachine on Google Compute Engine.",
+      "description": "The user profile information used for logging in to a virtual machine on\nGoogle Compute Engine.",
       "type": "object",
       "properties": {
         "name": {
@@ -167,7 +167,7 @@
     },
     "PosixAccount": {
       "id": "PosixAccount",
-      "description": "The POSIX account information associated with a Directory API User.",
+      "description": "The POSIX account information associated with a Google account.",
       "type": "object",
       "properties": {
         "primary": {
@@ -203,12 +203,16 @@
         "systemId": {
           "description": "System identifier for which account the username or uid applies to.\nBy default, the empty value is used.",
           "type": "string"
+        },
+        "accountId": {
+          "description": "Output only. A POSIX account identifier.",
+          "type": "string"
         }
       }
     },
     "SshPublicKey": {
       "id": "SshPublicKey",
-      "description": "The SSH public key information associated with a Directory API User.",
+      "description": "The SSH public key information associated with a Google account.",
       "type": "object",
       "properties": {
         "key": {
@@ -221,7 +225,7 @@
           "format": "int64"
         },
         "fingerprint": {
-          "description": "The SHA-256 fingerprint of the SSH public key.\nOutput only.",
+          "description": "Output only. The SHA-256 fingerprint of the SSH public key.",
           "type": "string"
         }
       }
@@ -282,6 +286,11 @@
               "required": true,
               "pattern": "^users\/[^\/]+$",
               "type": "string"
+            },
+            "projectId": {
+              "description": "The project ID of the Google Cloud Platform project.",
+              "location": "query",
+              "type": "string"
             }
           },
           "parameterOrder": [
@@ -301,6 +310,36 @@
       }
       ,
       "resources": {
+        "projects": {
+          "methods": {
+            "delete": {
+              "id": "oslogin.users.projects.delete",
+              "path": "v1alpha/{+name}",
+              "flatPath": "v1alpha/users/{usersId}/projects/{projectsId}",
+              "httpMethod": "DELETE",
+              "description": "Deletes a POSIX account.",
+              "parameters": {
+                "name": {
+                  "description": "A reference to the POSIX account to update. POSIX accounts are identified\nby the project ID they are associated with. A reference to the POSIX\naccount is in format `users\/{user}\/projects\/{project}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^users\/[^\/]+\/projects\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute"
+              ]
+            }
+          }
+        },
         "sshPublicKeys": {
           "methods": {
             "delete": {

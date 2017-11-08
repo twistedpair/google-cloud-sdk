@@ -18,9 +18,75 @@ import argparse
 
 from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.container import api_adapter
+from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.container import constants
 from googlecloudsdk.core import properties
+
+
+def AddBasicAuthFlags(parser,
+                      username_default='admin',
+                      enable_basic_auth_default=True):
+  """Adds basic auth flags to the given parser.
+
+  Basic auth flags are: --username, --enable-basic-auth, and --password.
+
+  Args:
+    parser: A given parser.
+    username_default: The default username to use for this parser (create is
+        'admin', update is None).
+    enable_basic_auth_default: The default value for --enable-basic-auth (create
+        is True, update is None).
+  """
+  basic_auth_group = parser.add_group(help='Basic auth')
+  username_group = basic_auth_group.add_group(
+      mutex=True, help='Username options')
+  username_help_text = """\
+The user name to use for basic auth for the cluster. Use `--password` to specify
+a password; if not, the server will randomly generate one."""
+  username_group.add_argument(
+      '--username', '-u', help=username_help_text, default=username_default)
+
+  enable_basic_auth_help_text = """\
+Enable basic (username/password) auth for the cluster.  `--enable-basic-auth` is
+an alias for `--username=admin`; `--no-enable-basic-auth` is an alias for
+`--username=""`. Use `--password` to specify a password; if not, the server will
+randomly generate one."""
+  username_group.add_argument(
+      '--enable-basic-auth',
+      help=enable_basic_auth_help_text,
+      action='store_true',
+      default=enable_basic_auth_default)
+
+  basic_auth_group.add_argument(
+      '--password',
+      help='The password to use for cluster auth. Defaults to a '
+      'server-specified randomly-generated string.')
+
+
+def MungeBasicAuthFlags(args):
+  """Munges flags associated with basic auth.
+
+  If --enable-basic-auth is specified, converts it --username value, and checks
+  that --password is only specified if it makes sense.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+
+  Raises:
+    util.Error, if flags conflict.
+  """
+  if args.IsSpecified('enable_basic_auth'):
+    if not args.enable_basic_auth:
+      args.username = ''
+    else:
+      # Even though this is the default for `clusters create`, we still need to
+      # set it for `clusters update`.
+      args.username = 'admin'
+  if not args.username and args.IsSpecified('password'):
+    raise util.Error(constants.USERNAME_PASSWORD_ERROR_MSG)
 
 
 # TODO(b/28318474): move flags common across commands here.

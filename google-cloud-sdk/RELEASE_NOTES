@@ -2,6 +2,71 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+
+## 179.0.0 (2017-11-08)
+
+### Breaking Changes
+
+*   **(DEPRECATED)** Deprecated `gcloud service-management` in favor of
+    `gcloud endpoints` and `gcloud services`. See help text for details.
+*   Removed the `gcloud alpha bio` command group.
+
+### Google Container Engine
+
+*   Added the --enable-basic-auth flag to `gcloud container clusters create`.
+*   Added the --username, --enable-basic-auth, and --password flags to
+    `gcloud container clusters update`.  These allow a user to enable/disable
+    basic auth on an existing cluster or change the username.
+
+### Google Compute Engine
+
+*   Promote these commands to beta:
+    *   `gcloud beta compute instance-templates create-with-container`
+    *   `gcloud beta compute instances create-with-container`
+    *   `gcloud beta compute instances update-container`
+*   Added alpha commands for creating, describing, listing, deleting, updating
+    SSL policies and listing available SSL policy features:
+    *   `gcloud alpha compute ssl-policies create`
+    *   `gcloud alpha compute ssl-policies describe`
+    *   `gcloud alpha compute ssl-policies list`
+    *   `gcloud alpha compute ssl-policies delete`
+    *   `gcloud alpha compute ssl-policies update`
+    *   `gcloud alpha compute ssl-policies list-available-features`
+*   Added alpha commands for attaching SSL policies to Target HTTPS proxies
+    and Target SSL proxies:
+    *   `gcloud alpha compute target-https-proxies create`
+    *   `gcloud alpha compute target-https-proxies update`
+    *   `gcloud alpha compute target-ssl-proxies create`
+    *   `gcloud alpha compute target-ssl-proxies update`
+
+### Google App Engine
+
+*   Components updated to 1.9.59. Please visit the following release notes for
+    details:
+    *   Java - https://cloud.google.com/appengine/docs/java/release-notes
+
+### Firebase Test Lab
+
+*   Added Firebase Test Lab support for testing Android apps that include a
+    network profile setting. Run tests as follows:
+
+      gcloud firebase test android run \
+        --network-profile=LTE  # or LTE-poor, HSPA, etc.
+
+### Cloud PubSub
+
+*  Added labels flags (`--labels`, `--<update|remove>-labels`) to
+   `gcloud pubsub <topics|subscriptions|snapshots> <update|create>` in release
+   tracks where these commands exist. Use these labels to organize your Google
+   Cloud Pub/Sub subscriptions.
+
+### Cloud Machine Learning
+
+*   All `gcloud ml` commands in all release tracks can now be used with standard
+    user credentials (no longer requires a service account). For this to work,
+    you must have the appropriate ML API enabled on your current gcloud project.
+
+
 ## 178.0.0 (2017-11-01)
 
 

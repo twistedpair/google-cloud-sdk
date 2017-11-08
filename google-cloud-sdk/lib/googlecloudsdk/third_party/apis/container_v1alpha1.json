@@ -649,7 +649,7 @@
           "type": "string"
         },
         "version": {
-          "description": "[Output only] The version of the Kubernetes of this node.",
+          "description": "The version of the Kubernetes of this node.",
           "type": "string"
         },
         "instanceGroupUrls": {
@@ -867,7 +867,7 @@
           "type": "string"
         },
         "allowRouteOverlap": {
-          "description": "Whether to allow certain existing routes to overlap with the CIDRs\nprovided at cluster creation time. When this flag is enabled, the requested\nroutes will only be checked for overlap with routes with smaller netmasks\nand routes whose next hop is a VM instance.\n\nIf this field is set to true, then the cluster_ipv4_cidr_block and\nservices_ipv4_cidr_block fields must be populated with a fully-specified\nCIDR (e.g. `10.96.0.0\/14`, but not `\/14`).",
+          "description": "If true, allow allocation of cluster CIDR ranges that overlap with certain\nkinds of network routes. By default we do not allow cluster CIDR ranges to\nintersect with any user declared routes. With allow_route_overlap == true,\nwe allow overlapping with CIDR ranges that are larger than the cluster CIDR\nrange.\n\nIf this field is set to true, then cluster and services CIDRs must be\nfully-specified (e.g. `10.96.0.0\/14`, but not `\/14`), which means:\n1) When `use_ip_aliases` is true, `cluster_ipv4_cidr_block` and\n   `services_ipv4_cidr_block` must be fully-specified.\n2) When `use_ip_aliases` is false, `cluster.cluster_ipv4_cidr` muse be\n   fully-specified.",
           "type": "boolean"
         }
       }
@@ -985,7 +985,7 @@
       "description": "ClusterAutoscaling contains global, per-cluster information\nrequired by Cluster Autoscaler to automatically adjust\nthe size of the cluster and create\/delete\nnode pools based on the current needs.",
       "type": "object",
       "properties": {
-        "nodeAutoprovisioningEnabled": {
+        "enableNodeAutoprovisioning": {
           "description": "Enables automatic node pool creation and deletion.",
           "type": "boolean"
         },
@@ -1000,7 +1000,7 @@
     },
     "ResourceLimit": {
       "id": "ResourceLimit",
-      "description": "Contains information about amount of some resource in the cluster.",
+      "description": "Contains information about amount of some resource in the cluster.\nFor memory, value should be in GB.",
       "type": "object",
       "properties": {
         "name": {
@@ -1258,6 +1258,10 @@
         "desiredClusterAutoscaling": {
           "description": "The desired cluster-level autoscaling configuration.",
           "$ref": "ClusterAutoscaling"
+        },
+        "desiredBinaryAuthorization": {
+          "description": "The desired configuration options for the Binary Authorization feature.",
+          "$ref": "BinaryAuthorization"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. The only valid value is the\nlatest supported version. Use \"-\" to have the server automatically select\nthe latest version.",

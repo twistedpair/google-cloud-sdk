@@ -185,8 +185,12 @@ def _GetParentCollection(collection_info):
   parts = path.split('/')
   while parts[-1].startswith('{') and parts[-1].endswith('}'):
     parts.pop()
+    if not parts:
+      return None, None
   while not parts[-1].startswith('{') and not parts[-1].endswith('}'):
     parts.pop()
+    if not parts:
+      return None, None
   parent_path = '/'.join(parts)
 
   if '.' in collection_info.name:

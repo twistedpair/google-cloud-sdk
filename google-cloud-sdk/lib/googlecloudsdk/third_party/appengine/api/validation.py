@@ -223,6 +223,15 @@ class ValidatedBase(object):
                      default_flow_style=False,
                      Dumper=yaml.SafeDumper)
 
+  def GetWarnings(self):
+    """Return all the warnings we've got, along with their associated fields.
+
+    Returns:
+      A list of tuples of (dotted_field, warning), both strings.
+    """
+    raise NotImplementedError('Subclasses of ValidatedBase must '
+                              'override GetWarnings')
+
 
 class Validated(ValidatedBase):
   """Base class for classes that require validation.
@@ -255,6 +264,7 @@ class Validated(ValidatedBase):
       AttributeDefinitionError: when class instance is missing ATTRIBUTE
         definition or when ATTRIBUTE is of the wrong type.
     """
+    super(Validated, self).__init__()
     if not isinstance(self.ATTRIBUTES, dict):
       raise AttributeDefinitionError(
           'The class %s does not define an ATTRIBUTE variable.'
@@ -276,6 +286,8 @@ class Validated(ValidatedBase):
     Returns:
       Validator associated with key or attribute value wrapped in a
       validator.
+    Raises:
+      ValidationError: if no such attribute exists.
     """
     if key not in self.ATTRIBUTES:
       raise ValidationError(
@@ -283,6 +295,13 @@ class Validated(ValidatedBase):
           (key, self.__name__))
 
     return AsValidator(self.ATTRIBUTES[key])
+
+  def GetWarnings(self):
+    ret = []
+    for key in self.ATTRIBUTES:
+      ret.extend(self.GetValidator(key).GetWarnings(
+          self.GetUnnormalized(key), key, self))
+    return ret
 
   def Set(self, key, value):
     """Set a single value on Validated instance.
@@ -298,6 +317,14 @@ class Validated(ValidatedBase):
     """
     setattr(self, key, value)
 
+  def GetUnnormalized(self, key):
+    """Get a single value on the Validated instance, without normalizing."""
+    validator = self.GetValidator(key)  # verify that we have the field at all.
+    try:
+      return super(Validated, self).__getattribute__(key)
+    except AttributeError:
+      return validator.default
+
   def Get(self, key):
     """Get a single value on Validated instance.
 
@@ -311,6 +338,21 @@ class Validated(ValidatedBase):
     """
     self.GetValidator(key)
     return getattr(self, key)
+
+  def __getattribute__(self, key):
+    # __getattribute__ allows us to normalize even attributes we have on the
+    # class, which is what we want. (__getattr__ only overrides for absent
+    # attributes)
+    ret = super(Validated, self).__getattribute__(key)
+    if key in ['ATTRIBUTES', 'GetValidator', '__name__', '__class__']:
+      return ret
+    try:
+      validator = self.GetValidator(key)
+    except ValidationError:
+      return ret
+    if isinstance(validator, Normalized):
+      return validator.Get(ret, key, self)
+    return ret
 
   def CheckInitialized(self):
     """Checks that all required fields are initialized.
@@ -328,7 +370,7 @@ class Validated(ValidatedBase):
     """
     for key in self.ATTRIBUTES.iterkeys():
       try:
-        self.GetValidator(key)(getattr(self, key))
+        self.GetValidator(key)(self.GetUnnormalized(key), key, self)
       except MissingAttribute, e:
         e.message = "Missing required value '%s'." % key
         raise e
@@ -352,7 +394,7 @@ class Validated(ValidatedBase):
       ValidationError: when trying to assign to an attribute
         that does not exist.
     """
-    value = self.GetValidator(key)(value, key)
+    value = self.GetValidator(key)(value, key, self)
     object.__setattr__(self, key, value)
 
   def __str__(self):
@@ -422,7 +464,7 @@ class Validated(ValidatedBase):
     """
     result = {}
     for name, validator in self.ATTRIBUTES.iteritems():
-      value = getattr(self, name)
+      value = self.GetUnnormalized(name)
       # Skips values that are the same as the default value.
       if not(isinstance(validator, Validator) and value == validator.default):
         result[name] = _SimplifiedValue(validator, value)
@@ -467,6 +509,7 @@ class ValidatedDict(ValidatedBase, dict):
     Args:
       **kwds: keyword arguments will be validated and put into the dict.
     """
+    super(ValidatedDict, self).__init__()
     self.update(kwds)
 
   @classmethod
@@ -493,7 +536,7 @@ class ValidatedDict(ValidatedBase, dict):
     Raises:
       ValidationError: when trying to assign to a value that does not exist.
     """
-    dict.__setitem__(self, key, self.GetValidator(key)(value, key))
+    dict.__setitem__(self, key, self.GetValidator(key)(value, key, self))
 
   def setdefault(self, key, value=None):
     """Trap setdefaultss to ensure all key/value pairs are valid.
@@ -504,7 +547,7 @@ class ValidatedDict(ValidatedBase, dict):
       ValidationError: if the specified key is illegal or the
       value invalid.
     """
-    return dict.setdefault(self, key, self.GetValidator(key)(value, key))
+    return dict.setdefault(self, key, self.GetValidator(key)(value, key, self))
 
   def update(self, other, **kwds):
     """Trap updates to ensure all key/value pairs are valid.
@@ -518,13 +561,13 @@ class ValidatedDict(ValidatedBase, dict):
     if hasattr(other, 'keys') and callable(getattr(other, 'keys')):
       newother = {}
       for k in other:
-        newother[k] = self.GetValidator(k)(other[k], k)
+        newother[k] = self.GetValidator(k)(other[k], k, self)
     else:
-      newother = [(k, self.GetValidator(k)(v, k)) for (k, v) in other]
+      newother = [(k, self.GetValidator(k)(v, k, self)) for (k, v) in other]
 
     newkwds = {}
     for k in kwds:
-      newkwds[k] = self.GetValidator(k)(kwds[k], k)
+      newkwds[k] = self.GetValidator(k)(kwds[k], k, self)
 
     dict.update(self, newother, **newkwds)
 
@@ -542,6 +585,12 @@ class ValidatedDict(ValidatedBase, dict):
       ValidationError: when no validated attribute exists on class.
     """
     self[key] = value
+
+  def GetWarnings(self):
+    ret = []
+    for name, value in self.items():
+      ret.extend(self.GetValidator(name).GetWarnings(value, name, self))
+    return ret
 
   def ToDict(self):
     """Convert ValidatedBase object to a dictionary.
@@ -563,6 +612,7 @@ class ValidatedDict(ValidatedBase, dict):
 
 ################################################################################
 # Validators
+
 
 class Validator(object):
   """Validator base class.
@@ -588,12 +638,12 @@ class Validator(object):
     """
     self.default = default
 
-  def __call__(self, value, key='???'):
+  def __call__(self, value, key='???', obj=None):
     """Main interface to validator is call mechanism."""
-    return self.Validate(value, key)
+    return self.ValidateEntirely(value, key, obj)
 
   def Validate(self, value, key='???'):
-    """Override this method to customize sub-class behavior.
+    """Validate this field. Override to customize subclass behavior.
 
     Args:
       value: Value to validate.
@@ -603,6 +653,24 @@ class Validator(object):
       Value if value is valid, or a valid representation of value.
     """
     return value
+
+  def ValidateEntirely(self, value, key, obj):  # pylint: disable=unused-argument
+    """Validate this field against others. Override to customize in subclasses.
+
+    By default, calls Validate(value, key). Since ValidateEntirely uses the
+    entire object the relevant field is defined on, validators that use
+    ValidateEntirely may only work on particular subclasses of ValidatedBase,
+    like Validated or ValidatedDict.
+
+    Args:
+      value: Value to validate.
+      key: Name of the field being validated.
+      obj: The object to validate against.
+
+    Returns:
+      Value if value is valid, or a valid representation of value.
+    """
+    return self.Validate(value, key)
 
   def ToValue(self, value):
     """Convert 'value' to a simplified collection or basic type.
@@ -618,6 +686,24 @@ class Validator(object):
       it returns 'value' unmodified.
     """
     return value
+
+  def GetWarnings(self, value, key, obj):
+    """Return any warnings on this attribute.
+
+    Validates the value with an eye towards things that aren't fatal problems.
+
+    Args:
+      value: Value to validate.
+      key: Name of the field being validated.
+      obj: The object to validate against.
+
+    Returns:
+      A list of tuples (context, warning) where
+        - context is the field (or dotted field path, if a sub-field)
+        - warning is the string warning text
+    """
+    del value, key, obj
+    return []
 
 
 class Type(Validator):
@@ -695,6 +781,13 @@ class Type(Validator):
                   value, key, self.expected_type.__name__))
     else:
       return value
+
+  def GetWarnings(self, value, key, obj):
+    del obj
+    if issubclass(self.expected_type, ValidatedBase):
+      return [('%s.%s' % (key, subkey), warning)
+              for subkey, warning in value.GetWarnings()]
+    return []
 
 
 TYPE_BOOL = Type(bool)
@@ -1268,3 +1361,105 @@ class TimeValue(Validator):
       raise ValidationError("Value '%s' for %s is negative (%s)"
                             % (value, key, TimeValue._EXPECTED_SYNTAX))
     return value
+
+
+class Normalized(Validator):
+  """Normalizes a field on lookup, but serializes with the original value.
+
+  Only works with fields on Validated.
+  """
+
+  def Get(self, value, key, obj):  # pylint: disable=unused-argument
+    """Returns the normalized value. Subclasses must override."""
+    raise NotImplementedError('Subclasses must override `Get`!')
+
+
+class Preferred(Normalized):
+  """A non-deprecated field when there's a deprecated one.
+
+  For use with Deprecated. Only works as a field on Validated.
+
+  Both fields will work for value access. It's an error to set both the
+  deprecated and the corresponding preferred field.
+  """
+
+  def __init__(self, deprecated, validator, default=None):
+    """Initializer for Preferred.
+
+    Args:
+      deprecated: The name of the corresponding deprecated field
+      validator: The validator for the actual value of this field.
+      default: The default value for this field.
+    """
+    super(Preferred, self).__init__(default=None)
+    self.validator = AsValidator(validator)
+    self.deprecated = deprecated
+    # To make serializing work right, we need to use a different field name
+    # here, leaving `None` as the `default`
+    self.synthetic_default = default
+
+  def ValidateEntirely(self, value, key, obj):
+    if value is not None and obj.GetUnnormalized(self.deprecated) is not None:
+      raise ValidationError('Only one of the two fields %s (preferred)'
+                            ' and %s (deprecated) may be set.'
+                            % (key, self.deprecated))
+    if value is None:
+      return None
+    return self.validator(value, key)
+
+  def Get(self, value, key, obj):
+    if value is not None:
+      return value
+    val = obj.GetUnnormalized(self.deprecated)
+    if val is not None:
+      return val
+    return self.synthetic_default
+
+
+class Deprecated(Normalized):
+  """A deprecated field.
+
+  For use with Preferred. Only works as a field on Validated.
+
+  Both fields will work for value access. It's an error to set both the
+  deprecated and the corresponding preferred field.
+  """
+
+  def __init__(self, preferred, validator, default=None):
+    """Initializer for Deprecated.
+
+    Args:
+      preferred: The name of the preferred field.
+      validator: The validator for the actual value of this field.
+      default: The default value for this field.
+    """
+    super(Deprecated, self).__init__(default=None)
+    self.validator = AsValidator(validator)
+    self.preferred = preferred
+    self.synthetic_default = default
+
+  def GetWarnings(self, value, key, obj):
+    del obj
+    if value is not None:
+      return [(
+          key,
+          'Field %s is deprecated; use %s instead.' % (key, self.preferred))]
+    return []
+
+  def ValidateEntirely(self, value, key, obj):
+    if value is not None and obj.GetUnnormalized(self.preferred) is not None:
+      raise ValidationError('Only one of the two fields %s (preferred)'
+                            ' and %s (deprecated) may be set.'
+                            % (self.preferred, key))
+    if value is None:
+      return None
+    return self.validator(value, key)
+
+  def Get(self, value, key, obj):
+    pref_attr = obj.GetUnnormalized(self.preferred)
+    if pref_attr is not None:
+      return pref_attr
+    elif value is not None:
+      return value
+    else:
+      return self.synthetic_default

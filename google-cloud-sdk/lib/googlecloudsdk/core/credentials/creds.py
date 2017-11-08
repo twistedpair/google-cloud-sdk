@@ -30,6 +30,7 @@ from oauth2client import client
 from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
 from oauth2client.contrib import multistore_file
+import sqlite3
 
 
 class Error(exceptions.Error):
@@ -78,9 +79,6 @@ class _SqlCursor(object):
     self._cursor = None
 
   def __enter__(self):
-    # TODO(b/36879084): Do not import sqlite upfront since some python
-    # setups might not have it.
-    import sqlite3  # pylint: disable=g-import-not-at-top
     self._connection = sqlite3.connect(
         self._store_file,
         detect_types=sqlite3.PARSE_DECLTYPES,
@@ -270,24 +268,16 @@ def GetCredentialStore(store_file=None, access_token_file=None):
     CredentialStore object.
   """
 
-  try:
-    import sqlite3  # pylint: disable=g-import-not-at-top,unused-variable
-  except ImportError:
-    log.warn('This python installation does not have sqlite3 library. '
-             'Please upgrade your set of dependencies to include sqlite3 as '
-             'otherwise gcloud commands will stop working in near future. '
-             'Contact Cloud SDK if you have any questions.')
-  else:
-    if properties.VALUES.auth.use_sqlite_store.GetBool():
-      _MigrateMultistore2Sqlite()
-      return _GetSqliteStore(store_file, access_token_file)
+  if properties.VALUES.auth.use_sqlite_store.GetBool():
+    _MigrateMultistore2Sqlite()
+    return _GetSqliteStore(store_file, access_token_file)
 
-    log.warn('Your setup has the auth/use_sqlite_store property set to False. '
-             'This use case has been deprecated and will no longer be '
-             'supported. To silence this warning, unset the property by '
-             'running "gcloud config unset auth/use_sqlite_store". '
-             'If you have problems unsetting this property, use the '
-             '"gcloud feedback" command to report the issue.')
+  log.warn('Your setup has the auth/use_sqlite_store property set to False. '
+           'This use case has been deprecated and will no longer be '
+           'supported. To silence this warning, unset the property by '
+           'running "gcloud config unset auth/use_sqlite_store". '
+           'If you have problems unsetting this property, use the '
+           '"gcloud feedback" command to report the issue.')
   _MigrateSqlite2Multistore()
   return Oauth2ClientCredentialStore(
       store_file or config.Paths().credentials_path)

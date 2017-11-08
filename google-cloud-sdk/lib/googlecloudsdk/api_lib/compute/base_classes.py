@@ -435,7 +435,7 @@ def GetZonalListerHelp(resource):
           To list all {0} in the ``us-central1-b'' and ``europe-west1-d'' zones,
           run:
 
-            $ {{command}} --filter="zone:( europe-west1-b europe-west1-c )"
+            $ {{command}} --filter="zone:( us-central1-b europe-west1-d )"
             """.format(resource)
   }
 
@@ -582,17 +582,17 @@ def GetMultiScopeListerHelp(resource, scopes):
 
   zone_example_text = """\
 
-          To list all {0} in zones ``us-central1-b'' and ``europe-west1-d'',
-          run:
+          To list all {0} in zones ``us-central1-b''
+          and ``europe-west1-d'', given they are zonal resources, run:
 
-            $ {{command}} --zones us-central1,europe-west1
+            $ {{command}} --filter="zone:( europe-west1-d us-central1-b )"
   """
   region_example_text = """\
 
           To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
-          run:
+          given they are regional resources, run:
 
-            $ {{command}} --regions us-central1,europe-west1
+            $ {{command}} --filter="region:( europe-west1 us-central1 )"
   """
   global_example_text = """\
 

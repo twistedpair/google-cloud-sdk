@@ -32,10 +32,14 @@ Extensions to be considered:
   allowing a comma separated list of times to run
 """
 
+from __future__ import absolute_import
+
 __author__ = 'arb@google.com (Anthony Baxter)'
 
 import calendar
 import datetime
+
+from . import groc
 
 # Because this module is used in some App Engine client code, it is possible
 # that it be run in an environment without pytz. So, we except the ImportError
@@ -46,8 +50,6 @@ try:
   import pytz
 except ImportError:
   pytz = None
-
-import groc
 
 HOURS = 'hours'
 MINUTES = 'minutes'

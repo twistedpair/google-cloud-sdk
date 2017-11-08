@@ -39,3 +39,7 @@ KUBERNETES_API_MISMATCH_PROMPT_TEMPLATE = (
     "Container Engine v1 API will be used instead of {api} API.\n"
     "If you intended to use {api} API instead, please set "
     "container/use_v1_api_client property to false.")
+
+USERNAME_PASSWORD_ERROR_MSG = (
+    "Cannot specify --password with empty --username or --no-enable-basic-auth."
+)

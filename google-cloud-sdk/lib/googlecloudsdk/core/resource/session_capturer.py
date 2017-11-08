@@ -22,6 +22,7 @@ import json
 import random
 import StringIO
 import sys
+import types
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -426,12 +427,12 @@ class SessionCapturer(object):
 
   @staticmethod
   def _FinalizePrimitive(primitive):
-    project = properties.VALUES.core.project.Get()
-    if not project:
-      return primitive
     if isinstance(primitive, basestring):
+      project = properties.VALUES.core.project.Get()
+      if not project:
+        return primitive
       return primitive.replace(project, 'fake-project')
-    elif isinstance(primitive, (int, long, float,)):
+    elif isinstance(primitive, (int, long, float, types.NoneType,)):
       return primitive
     else:
       raise Exception('Unknown primitive type {}'.format(type(primitive)))

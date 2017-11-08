@@ -121,13 +121,14 @@ def AddCertificateIdFlag(parser, include_no_cert):
 
 
 def AddCertificateManagementFlag(parser):
-  parser.add_argument(
+  """Adds common flags to a domain-mappings command."""
+  certificate_argument = base.ChoiceArgument(
       '--certificate-management',
-      choices=['AUTOMATIC', 'MANUAL'],
-      type=lambda x: x.upper(),
-      help=('Type of certificate management. AUTOMATIC will provision an SSL '
-            'certificate automatically while MANUAL requires the user to '
-            'provide a certificate id to provision.'))
+      choices=['automatic', 'manual'],
+      help_str=('Type of certificate management. \'automatic\' will provision '
+                'an SSL certificate automatically while \'manual\' requires '
+                'the user to provide a certificate id to provision.'))
+  certificate_argument.AddToParser(parser)
 
 
 def AddSslCertificateFlags(parser, required):

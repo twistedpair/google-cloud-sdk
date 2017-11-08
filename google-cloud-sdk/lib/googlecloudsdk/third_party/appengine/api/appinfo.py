@@ -503,15 +503,14 @@ _SUPPORTED_LIBRARIES = [
         'Backport of Python 3.2 Futures.',
         ['3.0.5'],
         latest_version='3.0.5',
-        hidden_versions=['3.0.5'],
         ),
     _VersionedLibrary(
         'grpcio',
-        'http://http://www.grpc.io/',
+        'http://www.grpc.io/',
         'A high performance general RPC framework',
         ['1.0.0'],
         latest_version='1.0.0',
-        hidden_versions=['1.0.0'],
+        experimental_versions=['1.0.0'],
         ),
     _VersionedLibrary(
         'itsdangerous',
@@ -585,9 +584,9 @@ _SUPPORTED_LIBRARIES = [
         'pytz',
         'https://pypi.python.org/pypi/pytz?',
         'A library for cross-platform timezone calculations',
-        ['2016.4'],
-        latest_version='2016.4',
-        default_version='2016.4',
+        ['2016.4', '2017.2'],
+        latest_version='2017.2',
+        default_version='2017.2',
         ),
     _VersionedLibrary(
         'crcmod',
@@ -602,11 +601,11 @@ _SUPPORTED_LIBRARIES = [
         'A library for serializing structured data',
         ['3.0.0'],
         latest_version='3.0.0',
-        hidden_versions=['3.0.0'],
+        experimental_versions=['3.0.0'],
         ),
     _VersionedLibrary(
         'PyAMF',
-        'http://pyamf.appspot.com/index.html',
+        'https://pypi.python.org/pypi/PyAMF',
         'A library that provides (AMF) Action Message Format functionality.',
         ['0.6.1', '0.7.2'],
         latest_version='0.6.1',
@@ -623,8 +622,9 @@ _SUPPORTED_LIBRARIES = [
         'setuptools',
         'http://pypi.python.org/pypi/setuptools',
         'A library that provides package and module discovery capabilities.',
-        ['0.6c11'],
+        ['0.6c11', '36.6.0'],
         latest_version='0.6c11',
+        hidden_versions=['36.6.0'],
         ),
     _VersionedLibrary(
         'six',
@@ -638,7 +638,7 @@ _SUPPORTED_LIBRARIES = [
         'http://docs.python.org/dev/library/ssl.html',
         'The SSL socket wrapper built-in module.',
         ['2.7', '2.7.11'],
-        latest_version='2.7',
+        latest_version='2.7.11',
         ),
     _VersionedLibrary(
         'ujson',
@@ -688,7 +688,7 @@ _NAME_TO_SUPPORTED_LIBRARY = dict((library.name, library)
 # A mapping from third-party name/version to a list of that library's
 # dependencies.
 REQUIRED_LIBRARIES = {
-    ('django', '1.11'): [('pytz', '2016.4')],
+    ('django', '1.11'): [('pytz', '2017.2')],
     ('flask', '0.12'): [('click', '6.6'), ('itsdangerous', '0.24'),
                         ('jinja2', '2.6'), ('werkzeug', '0.11.10')],
     ('jinja2', '2.6'): [('markupsafe', '0.15'), ('setuptools', '0.6c11')],
@@ -1432,6 +1432,12 @@ class BuiltinHandler(validation.Validated):
       # instance dictionary.
       raise AttributeError
     return None
+
+  def GetUnnormalized(self, key):
+    try:
+      return super(BuiltinHandler, self).GetUnnormalized(key)
+    except AttributeError:
+      return getattr(self, key)
 
   def ToDict(self):
     """Converts a `BuiltinHander` object to a dictionary.
@@ -2235,9 +2241,6 @@ class AppInfoExternal(validation.Validated):
       raise appinfo_errors.TooManyURLMappings(
           'Found more than %d URLMap entries in application configuration' %
           MAX_URL_MAPS)
-    if self.service and self.module:
-      raise appinfo_errors.ModuleAndServiceDefined(
-          'Cannot define both "module" and "service" in configuration')
 
     vm_runtime_python27 = (
         self.runtime == 'vm' and
@@ -2487,7 +2490,7 @@ def ValidateHandlers(handlers, is_include_file=False):
 def LoadSingleAppInfo(app_info):
   """Loads a single `AppInfo` object where one and only one is expected.
 
-  This method validates that the the values in the `AppInfo` match the
+  This method validates that the values in the `AppInfo` match the
   validators that are defined in this file, in particular,
   `AppInfoExternal.ATTRIBUTES`.
 
@@ -2536,6 +2539,17 @@ def LoadSingleAppInfo(app_info):
   elif appyaml.project:
     appyaml.application = appyaml.project
     appyaml.project = None
+
+  # Allow `service: name` as an alias for `module: name`. If found, we change
+  # the `service` field to `None`.
+  # TODO (b/63629223) This is breaking gcloud presubmit after being imported
+  # to third_party code base.
+  if appyaml.service and appyaml.module:
+    raise appinfo_errors.ModuleAndServiceDefined(
+        'Cannot define both "module" and "service" in configuration')
+  elif appyaml.service:
+    appyaml.module = appyaml.service
+    appyaml.service = None
 
   appyaml.NormalizeVmSettings()
   return appyaml

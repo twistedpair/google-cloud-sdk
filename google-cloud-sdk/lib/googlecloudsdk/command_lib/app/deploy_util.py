@@ -21,7 +21,6 @@ import re
 from apitools.base.py import exceptions as apitools_exceptions
 import enum
 
-
 from googlecloudsdk.api_lib.app import appengine_client
 from googlecloudsdk.api_lib.app import cloud_endpoints
 from googlecloudsdk.api_lib.app import deploy_app_command_util
@@ -47,6 +46,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
@@ -134,7 +134,7 @@ class DeployOptions(object):
                enable_endpoints,
                runtime_builder_strategy,
                parallel_build=False,
-               use_service_management=False,
+               use_service_management=True,
                flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
     self.promote = promote
     self.stop_previous_version = stop_previous_version
@@ -150,7 +150,6 @@ class DeployOptions(object):
       enable_endpoints,
       runtime_builder_strategy,
       parallel_build=False,
-      use_service_management=ServiceManagementOption.IF_PROPERTY_SET,
       flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
     """Initialize DeloyOptions using user properties where necessary.
 
@@ -161,9 +160,6 @@ class DeployOptions(object):
         externalized runtimes).
       parallel_build: bool, whether to use parallel build and deployment path.
         Only supported in v1beta and v1alpha App Engine Admin API.
-      use_service_management: ServiceManagementOption, enum declaring whether
-        to use Service Management to prepare Flexible deployments, or to
-        default to the app.use_deprecated_preparation property.
       flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
         should upload files so that the server can build the image or build the
         image on client.
@@ -174,12 +170,8 @@ class DeployOptions(object):
     promote = properties.VALUES.app.promote_by_default.GetBool()
     stop_previous_version = (
         properties.VALUES.app.stop_previous_version.GetBool())
-    if use_service_management == ServiceManagementOption.ALWAYS:
-      service_management = True
-    # The only other option in the enum is IF_PROPERTY_SET.
-    else:
-      service_management = (
-          not properties.VALUES.app.use_deprecated_preparation.GetBool())
+    service_management = (
+        not properties.VALUES.app.use_deprecated_preparation.GetBool())
     return cls(promote, stop_previous_version, enable_endpoints,
                runtime_builder_strategy, parallel_build, service_management,
                flex_image_build_option)
@@ -528,7 +520,6 @@ def RunDeploy(
     enable_endpoints=False,
     use_beta_stager=False,
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
-    use_service_management=None,
     parallel_build=True,
     flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
   """Perform a deployment based on the given args.
@@ -544,9 +535,6 @@ def RunDeploy(
     runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
       use the new CloudBuild-based runtime builders (alternative is old
       externalized runtimes).
-    use_service_management: ServiceManagementOption, enum declaring whether
-      to use Service Management to prepare Flexible deployments, or to
-      default to the app.use_deprecated_preparation property.
     parallel_build: bool, whether to use parallel build and deployment path.
       Only supported in v1beta and v1alpha App Engine Admin API.
     flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
@@ -563,7 +551,6 @@ def RunDeploy(
       enable_endpoints,
       runtime_builder_strategy=runtime_builder_strategy,
       parallel_build=parallel_build,
-      use_service_management=use_service_management,
       flex_image_build_option=flex_image_build_option)
 
   with files.TemporaryDirectory() as staging_area:
@@ -694,12 +681,18 @@ def PrintPostDeployHints(new_versions, updated_configs):
   else:
     service = new_versions[0].service
     service_hint = ' -s {svc}'.format(svc=service)
+
+  proj_conf = named_configs.ActivePropertiesFile.Load().Get('core', 'project')
+  project = properties.VALUES.core.project.Get()
+  if proj_conf != project:
+    project_hint = ' --project=' + project
+  else:
+    project_hint = ''
   log.status.Print(
       '\nYou can stream logs from the command line by running:\n'
       '  $ gcloud app logs tail' + (service_hint or ' -s default'))
-  log.status.Print(
-      '\nTo view your application in the web browser run:\n'
-      '  $ gcloud app browse' + service_hint)
+  log.status.Print('\nTo view your application in the web browser run:\n'
+                   '  $ gcloud app browse' + service_hint + project_hint)
 
 
 def _PossiblyCreateApp(api_client, project):

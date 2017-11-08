@@ -301,6 +301,18 @@ class _UnixCoshellBase(_CoshellBase):
     # Set $? to 0.
     self._SendCommand('true')
 
+  def Run(self, command, check_modes=True):
+    """Runs command in the coshell and waits for it to complete."""
+    status = 130  # assume the worst: 128 (had signal) + 2 (it was SIGINT)
+    sigint = signal.signal(signal.SIGINT, signal.SIG_IGN)
+    try:
+      status = self._Run(command, check_modes=check_modes)
+    except KeyboardInterrupt:
+      pass
+    finally:
+      signal.signal(signal.SIGINT, sigint)
+    return status
+
   def Interrupt(self):
     """Sends the interrupt signal to the coshell."""
     self._shell.send_signal(signal.SIGINT)
@@ -369,7 +381,7 @@ class _UnixCoshell(_UnixCoshellBase):
       pass
     return self._ShellStatus(self._shell.returncode)
 
-  def Run(self, command, check_modes=True):
+  def _Run(self, command, check_modes=True):
     """Runs command in the coshell and waits for it to complete."""
     self._SendCommand(
         'command eval {command} <&{fdin} && echo 0 >&{fdstatus} || '
@@ -400,7 +412,11 @@ class _UnixCoshell(_UnixCoshellBase):
     lines = []
     line = []
     while True:
-      c = os.read(self._status_fd, 1)
+      try:
+        c = os.read(self._status_fd, 1)
+      except (IOError, OSError, ValueError):
+        # Yeah, ValueError for IO on a closed file.
+        self._Exited()
       if c in (None, '\n'):
         if not line:
           break
@@ -474,7 +490,7 @@ class _MinGWCoshell(_UnixCoshellBase):
       self._Exited()
     return int(status_string)
 
-  def Run(self, command, check_modes=True):
+  def _Run(self, command, check_modes=True):
     """Runs command in the coshell and waits for it to complete."""
     self._SendCommand(
         "command eval {command} <'{stdin}' >>'{stdout}' && echo 0 || "

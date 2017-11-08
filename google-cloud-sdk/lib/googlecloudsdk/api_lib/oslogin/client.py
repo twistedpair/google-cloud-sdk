@@ -16,6 +16,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import properties
 
 VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1alpha',
                base.ReleaseTrack.BETA: 'v1beta',
@@ -39,6 +40,7 @@ class OsloginClient(object):
 
   def __init__(self, release_track):
     version = VERSION_MAP[release_track]
+    self.project = properties.VALUES.core.project.Get()
     try:
       self.client = _GetClient(version)
       self.messages = self.client.MESSAGES_MODULE
@@ -81,6 +83,7 @@ class OsloginClient(object):
         expirationTimeUsec=expiration_time)
     message = self.messages.OsloginUsersImportSshPublicKeyRequest(
         parent='users/{0}'.format(user),
+        projectId=self.project,
         sshPublicKey=public_key_message)
     res = self.client.users.ImportSshPublicKey(message)
     return res

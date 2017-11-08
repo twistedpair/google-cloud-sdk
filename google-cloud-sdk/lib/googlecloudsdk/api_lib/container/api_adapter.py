@@ -327,13 +327,15 @@ class UpdateClusterOptions(object):
 
 
 class SetMasterAuthOptions(object):
+  """Options to pass to SetMasterAuth."""
+
   SET_PASSWORD = 'SetPassword'
   GENERATE_PASSWORD = 'GeneratePassword'
+  SET_USERNAME = 'SetUsername'
 
-  def __init__(self,
-               action=None,
-               password=None):
+  def __init__(self, action=None, username=None, password=None):
     self.action = action
+    self.username = username
     self.password = password
 
 
@@ -1003,13 +1005,17 @@ class APIAdapter(object):
 
   def SetMasterAuthCommon(self, options):
     """Returns a SetMasterAuth action."""
-    update = self.messages.MasterAuth(password=options.password)
+    update = self.messages.MasterAuth(
+        username=options.username, password=options.password)
     if options.action == SetMasterAuthOptions.SET_PASSWORD:
       action = (self.messages.SetMasterAuthRequest.
                 ActionValueValuesEnum.SET_PASSWORD)
-    else:
+    elif options.action == SetMasterAuthOptions.GENERATE_PASSWORD:
       action = (self.messages.SetMasterAuthRequest.
                 ActionValueValuesEnum.GENERATE_PASSWORD)
+    else:  # options.action == SetMasterAuthOptions.SET_USERNAME
+      action = (
+          self.messages.SetMasterAuthRequest.ActionValueValuesEnum.SET_USERNAME)
     return update, action
 
   def SetMasterAuth(self, cluster_ref, options):

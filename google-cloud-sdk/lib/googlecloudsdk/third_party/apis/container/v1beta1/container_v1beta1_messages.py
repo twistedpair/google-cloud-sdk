@@ -1005,6 +1005,16 @@ class IPAllocationPolicy(_messages.Message):
   """Configuration for controlling how IPs are allocated in the cluster.
 
   Fields:
+    allowRouteOverlap: If true, allow allocation of cluster CIDR ranges that
+      overlap with certain kinds of network routes. By default we do not allow
+      cluster CIDR ranges to intersect with any user declared routes. With
+      allow_route_overlap == true, we allow overlapping with CIDR ranges that
+      are larger than the cluster CIDR range.  If this field is set to true,
+      then cluster and services CIDRs must be fully-specified (e.g.
+      `10.96.0.0/14`, but not `/14`), which means: 1) When `use_ip_aliases` is
+      true, `cluster_ipv4_cidr_block` and    `services_ipv4_cidr_block` must
+      be fully-specified. 2) When `use_ip_aliases` is false,
+      `cluster.cluster_ipv4_cidr` muse be    fully-specified.
     clusterIpv4Cidr: This field is deprecated, use cluster_ipv4_cidr_block.
     clusterIpv4CidrBlock: The IP address range for the cluster pod IPs. If
       this field is set, then `cluster.cluster_ipv4_cidr` must be left blank.
@@ -1053,17 +1063,18 @@ class IPAllocationPolicy(_messages.Message):
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
   """
 
-  clusterIpv4Cidr = _messages.StringField(1)
-  clusterIpv4CidrBlock = _messages.StringField(2)
-  clusterSecondaryRangeName = _messages.StringField(3)
-  createSubnetwork = _messages.BooleanField(4)
-  nodeIpv4Cidr = _messages.StringField(5)
-  nodeIpv4CidrBlock = _messages.StringField(6)
-  servicesIpv4Cidr = _messages.StringField(7)
-  servicesIpv4CidrBlock = _messages.StringField(8)
-  servicesSecondaryRangeName = _messages.StringField(9)
-  subnetworkName = _messages.StringField(10)
-  useIpAliases = _messages.BooleanField(11)
+  allowRouteOverlap = _messages.BooleanField(1)
+  clusterIpv4Cidr = _messages.StringField(2)
+  clusterIpv4CidrBlock = _messages.StringField(3)
+  clusterSecondaryRangeName = _messages.StringField(4)
+  createSubnetwork = _messages.BooleanField(5)
+  nodeIpv4Cidr = _messages.StringField(6)
+  nodeIpv4CidrBlock = _messages.StringField(7)
+  servicesIpv4Cidr = _messages.StringField(8)
+  servicesIpv4CidrBlock = _messages.StringField(9)
+  servicesSecondaryRangeName = _messages.StringField(10)
+  subnetworkName = _messages.StringField(11)
+  useIpAliases = _messages.BooleanField(12)
 
 
 class KubernetesDashboard(_messages.Message):
@@ -1476,7 +1487,7 @@ class NodePool(_messages.Message):
     status: [Output only] The status of the nodes in this pool instance.
     statusMessage: [Output only] Additional information about the current
       status of this node pool instance, if available.
-    version: [Output only] The version of the Kubernetes of this node.
+    version: The version of the Kubernetes of this node.
   """
 
   class StatusValueValuesEnum(_messages.Enum):

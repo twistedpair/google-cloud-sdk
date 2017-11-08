@@ -375,13 +375,13 @@ class ClusterAutoscaling(_messages.Message):
   create/delete node pools based on the current needs.
 
   Fields:
-    nodeAutoprovisioningEnabled: Enables automatic node pool creation and
+    enableNodeAutoprovisioning: Enables automatic node pool creation and
       deletion.
     resourceLimits: Contains global constraints regarding minimum and maximum
       amount of resources in the cluster.
   """
 
-  nodeAutoprovisioningEnabled = _messages.BooleanField(1)
+  enableNodeAutoprovisioning = _messages.BooleanField(1)
   resourceLimits = _messages.MessageField('ResourceLimit', 2, repeated=True)
 
 
@@ -394,6 +394,8 @@ class ClusterUpdate(_messages.Message):
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
     desiredAuditConfig: The desired configuration for audit logging.
+    desiredBinaryAuthorization: The desired configuration options for the
+      Binary Authorization feature.
     desiredClusterAutoscaling: The desired cluster-level autoscaling
       configuration.
     desiredImageType: The desired image type for the node pool. NOTE: Set the
@@ -439,19 +441,20 @@ class ClusterUpdate(_messages.Message):
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
   desiredAuditConfig = _messages.MessageField('AuditConfig', 2)
-  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 3)
-  desiredImageType = _messages.StringField(4)
-  desiredLocations = _messages.StringField(5, repeated=True)
-  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 6)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 7)
-  desiredMasterId = _messages.StringField(8)
-  desiredMasterMachineType = _messages.StringField(9)
-  desiredMasterVersion = _messages.StringField(10)
-  desiredMonitoringService = _messages.StringField(11)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 12)
-  desiredNodePoolId = _messages.StringField(13)
-  desiredNodeVersion = _messages.StringField(14)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 15)
+  desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 3)
+  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 4)
+  desiredImageType = _messages.StringField(5)
+  desiredLocations = _messages.StringField(6, repeated=True)
+  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 7)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 8)
+  desiredMasterId = _messages.StringField(9)
+  desiredMasterMachineType = _messages.StringField(10)
+  desiredMasterVersion = _messages.StringField(11)
+  desiredMonitoringService = _messages.StringField(12)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 13)
+  desiredNodePoolId = _messages.StringField(14)
+  desiredNodeVersion = _messages.StringField(15)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 16)
 
 
 class ClusterUpdateOptions(_messages.Message):
@@ -1041,13 +1044,16 @@ class IPAllocationPolicy(_messages.Message):
   """Configuration for controlling how IPs are allocated in the cluster.
 
   Fields:
-    allowRouteOverlap: Whether to allow certain existing routes to overlap
-      with the CIDRs provided at cluster creation time. When this flag is
-      enabled, the requested routes will only be checked for overlap with
-      routes with smaller netmasks and routes whose next hop is a VM instance.
-      If this field is set to true, then the cluster_ipv4_cidr_block and
-      services_ipv4_cidr_block fields must be populated with a fully-specified
-      CIDR (e.g. `10.96.0.0/14`, but not `/14`).
+    allowRouteOverlap: If true, allow allocation of cluster CIDR ranges that
+      overlap with certain kinds of network routes. By default we do not allow
+      cluster CIDR ranges to intersect with any user declared routes. With
+      allow_route_overlap == true, we allow overlapping with CIDR ranges that
+      are larger than the cluster CIDR range.  If this field is set to true,
+      then cluster and services CIDRs must be fully-specified (e.g.
+      `10.96.0.0/14`, but not `/14`), which means: 1) When `use_ip_aliases` is
+      true, `cluster_ipv4_cidr_block` and    `services_ipv4_cidr_block` must
+      be fully-specified. 2) When `use_ip_aliases` is false,
+      `cluster.cluster_ipv4_cidr` muse be    fully-specified.
     clusterIpv4Cidr: This field is deprecated, use cluster_ipv4_cidr_block.
     clusterIpv4CidrBlock: The IP address range for the cluster pod IPs. If
       this field is set, then `cluster.cluster_ipv4_cidr` must be left blank.
@@ -1539,7 +1545,7 @@ class NodePool(_messages.Message):
     status: [Output only] The status of the nodes in this pool instance.
     statusMessage: [Output only] Additional information about the current
       status of this node pool instance, if available.
-    version: [Output only] The version of the Kubernetes of this node.
+    version: The version of the Kubernetes of this node.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -1746,7 +1752,8 @@ class PodSecurityPolicyConfig(_messages.Message):
 
 
 class ResourceLimit(_messages.Message):
-  """Contains information about amount of some resource in the cluster.
+  """Contains information about amount of some resource in the cluster. For
+  memory, value should be in GB.
 
   Fields:
     maximum: Maximum amount of the resource in the cluster.

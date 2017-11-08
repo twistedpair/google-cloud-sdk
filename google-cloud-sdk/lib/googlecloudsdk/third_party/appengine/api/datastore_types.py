@@ -1897,7 +1897,7 @@ def RestoreFromIndexValue(index_value, data_type):
 
   Projection queries return property values direclty from a datastore index.
   These values are the native datastore values, one of str, bool, long, float,
-  GeoPt, Key or User. This function restores the original value when the the
+  GeoPt, Key or User. This function restores the original value when the
   original type is known.
 
   This function returns the value type returned when decoding a normal entity,

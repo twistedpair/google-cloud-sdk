@@ -69,13 +69,23 @@ class ImageBasesSummary(SummaryResolver):
 
 
 class BuildsSummary(SummaryResolver):
-  """PackageVulnerabilitiesSummary has information about builds."""
+  """BuildsSummary has information about builds."""
 
   def __init__(self):
     self.build_details = []
 
   def add_record(self, occ):
     self.build_details.append(occ)
+
+
+class DeploymentsSummary(SummaryResolver):
+  """DeploymentsSummary has information about deployments."""
+
+  def __init__(self):
+    self.deployments = []
+
+  def add_record(self, occ):
+    self.deployments.append(occ)
 
 
 class ContainerAndAnalysisData(container_data_util.ContainerData):
@@ -92,6 +102,7 @@ class ContainerAndAnalysisData(container_data_util.ContainerData):
     self.package_vulnerability_summary = PackageVulnerabilitiesSummary()
     self.image_basis_summary = ImageBasesSummary()
     self.build_details_summary = BuildsSummary()
+    self.deployment_summary = DeploymentsSummary()
 
   def add_record(self, occurrence):
     messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
@@ -103,11 +114,12 @@ class ContainerAndAnalysisData(container_data_util.ContainerData):
     elif (occurrence.kind ==
           messages.Occurrence.KindValueValuesEnum.BUILD_DETAILS):
       self.build_details_summary.add_record(occurrence)
+    elif (occurrence.kind ==
+          messages.Occurrence.KindValueValuesEnum.DEPLOYABLE):
+      self.deployment_summary.add_record(occurrence)
 
   def resolveSummaries(self):
     self.package_vulnerability_summary.resolve()
     self.image_basis_summary.resolve()
     self.build_details_summary.resolve()
-
-
-
+    self.deployment_summary.resolve()

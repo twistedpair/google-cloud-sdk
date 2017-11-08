@@ -58,7 +58,7 @@ _BUCKET_URI_ERROR = (
     'bucket name with gs:// and append / at the end.')
 
 _API_NAME = 'cloudfunctions'
-_API_VERSION = 'v1beta2'
+_API_VERSION = 'v1'
 
 
 def GetApiClientInstance():

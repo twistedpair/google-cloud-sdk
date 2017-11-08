@@ -94,11 +94,25 @@ class OsloginUsersImportSshPublicKeyRequest(_messages.Message):
 
   Fields:
     parent: The unique ID for the user in format `users/{user}`.
+    projectId: The project ID of the Google Cloud Platform project.
     sshPublicKey: A SshPublicKey resource to be passed as the request body.
   """
 
   parent = _messages.StringField(1, required=True)
-  sshPublicKey = _messages.MessageField('SshPublicKey', 2)
+  projectId = _messages.StringField(2)
+  sshPublicKey = _messages.MessageField('SshPublicKey', 3)
+
+
+class OsloginUsersProjectsDeleteRequest(_messages.Message):
+  """A OsloginUsersProjectsDeleteRequest object.
+
+  Fields:
+    name: A reference to the POSIX account to update. POSIX accounts are
+      identified by the project ID they are associated with. A reference to
+      the POSIX account is in format `users/{user}/projects/{project}`.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class OsloginUsersSshPublicKeysDeleteRequest(_messages.Message):
@@ -143,9 +157,10 @@ class OsloginUsersSshPublicKeysPatchRequest(_messages.Message):
 
 
 class PosixAccount(_messages.Message):
-  """The POSIX account information associated with a Directory API User.
+  """The POSIX account information associated with a Google account.
 
   Fields:
+    accountId: Output only. A POSIX account identifier.
     gecos: The GECOS (user information) entry for this account.
     gid: The default group ID.
     homeDirectory: The path to the home directory for this account.
@@ -157,22 +172,23 @@ class PosixAccount(_messages.Message):
     username: The username of the POSIX account.
   """
 
-  gecos = _messages.StringField(1)
-  gid = _messages.IntegerField(2)
-  homeDirectory = _messages.StringField(3)
-  primary = _messages.BooleanField(4)
-  shell = _messages.StringField(5)
-  systemId = _messages.StringField(6)
-  uid = _messages.IntegerField(7)
-  username = _messages.StringField(8)
+  accountId = _messages.StringField(1)
+  gecos = _messages.StringField(2)
+  gid = _messages.IntegerField(3)
+  homeDirectory = _messages.StringField(4)
+  primary = _messages.BooleanField(5)
+  shell = _messages.StringField(6)
+  systemId = _messages.StringField(7)
+  uid = _messages.IntegerField(8)
+  username = _messages.StringField(9)
 
 
 class SshPublicKey(_messages.Message):
-  """The SSH public key information associated with a Directory API User.
+  """The SSH public key information associated with a Google account.
 
   Fields:
     expirationTimeUsec: An expiration time in microseconds since epoch.
-    fingerprint: The SHA-256 fingerprint of the SSH public key. Output only.
+    fingerprint: Output only. The SHA-256 fingerprint of the SSH public key.
     key: Public key text in SSH format, defined by <a
       href="https://www.ietf.org/rfc/rfc4253.txt" target="_blank">RFC4253</a>
       section 6.6.

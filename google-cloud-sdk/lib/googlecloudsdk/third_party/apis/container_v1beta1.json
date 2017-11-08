@@ -604,7 +604,7 @@
           "type": "string"
         },
         "version": {
-          "description": "[Output only] The version of the Kubernetes of this node.",
+          "description": "The version of the Kubernetes of this node.",
           "type": "string"
         },
         "instanceGroupUrls": {
@@ -824,6 +824,10 @@
         "servicesIpv4CidrBlock": {
           "description": "The IP address range of the services IPs in this cluster. If blank, a range\nwill be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nSet to blank to have a range chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
           "type": "string"
+        },
+        "allowRouteOverlap": {
+          "description": "If true, allow allocation of cluster CIDR ranges that overlap with certain\nkinds of network routes. By default we do not allow cluster CIDR ranges to\nintersect with any user declared routes. With allow_route_overlap == true,\nwe allow overlapping with CIDR ranges that are larger than the cluster CIDR\nrange.\n\nIf this field is set to true, then cluster and services CIDRs must be\nfully-specified (e.g. `10.96.0.0\/14`, but not `\/14`), which means:\n1) When `use_ip_aliases` is true, `cluster_ipv4_cidr_block` and\n   `services_ipv4_cidr_block` must be fully-specified.\n2) When `use_ip_aliases` is false, `cluster.cluster_ipv4_cidr` muse be\n   fully-specified.",
+          "type": "boolean"
         }
       }
     },

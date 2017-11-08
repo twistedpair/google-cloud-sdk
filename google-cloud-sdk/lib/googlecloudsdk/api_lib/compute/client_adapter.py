@@ -33,12 +33,12 @@ class Error(core_exceptions.Error):
   """Errors raised by this module."""
 
 
-def GetBatchUrl(endpoint_url):
+def _GetBatchUrl(endpoint_url, api_version):
   """Return a batch URL for the given endpoint URL."""
   parsed_endpoint = urlparse.urlparse(endpoint_url)
   return urlparse.urljoin(
       '{0}://{1}'.format(parsed_endpoint.scheme, parsed_endpoint.netloc),
-      'batch/compute')
+      'batch/compute/' + api_version)
 
 
 class ClientAdapter(object):
@@ -55,7 +55,7 @@ class ClientAdapter(object):
     # eg. https://www.googleapis.com/compute/v1 -> https://www.googleapis.com
     endpoint_url = core_apis.GetEffectiveApiEndpoint(
         self._API_NAME, self._api_version)
-    self._batch_url = GetBatchUrl(endpoint_url)
+    self._batch_url = _GetBatchUrl(endpoint_url, self._api_version)
 
   @property
   def api_version(self):

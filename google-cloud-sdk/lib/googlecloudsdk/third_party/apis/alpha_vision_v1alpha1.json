@@ -1,0 +1,667 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "alpha_vision:v1alpha1",
+  "name": "alpha_vision",
+  "canonicalName": "Vision",
+  "version": "v1alpha1",
+  "revision": "0",
+  "title": "Google Cloud Vision Alpha API",
+  "description": "Integrates Google Vision features, including image labeling, face, logo, and landmark detection, optical character recognition (OCR), and detection of explicit content, into applications.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/vision/",
+  "protocol": "rest",
+  "rootUrl": "https://alpha-vision.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://alpha-vision.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "bearer_token": {
+      "type": "string",
+      "description": "OAuth bearer token.",
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "pp": {
+      "type": "boolean",
+      "description": "Pretty-print response.",
+      "default": "true",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        },
+        "https://www.googleapis.com/auth/cloud-vision": {
+          "description": "Apply machine learning models to understand and label images"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "Catalog": {
+      "id": "Catalog",
+      "description": "A `Catalog` contains `ReferenceImages`.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the catalog.\n\nFormat is: `productSearch\/catalogs\/CATALOG_NUMBER`.\nThis field is ignored when creating a catalog.",
+          "type": "string"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListCatalogsResponse": {
+      "id": "ListCatalogsResponse",
+      "description": "Response message for the `ListCatalogs` method.",
+      "type": "object",
+      "properties": {
+        "catalogs": {
+          "description": "List of catalogs.",
+          "type": "array",
+          "items": {
+            "$ref": "Catalog"
+          }
+        }
+      }
+    },
+    "ReferenceImage": {
+      "id": "ReferenceImage",
+      "description": "A `ReferenceImage` represents a product image and its associated metadata,\nsuch as product ID, category, and bounding box.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the reference image.\n\nFormat is:\n`productSearch\/catalogs\/CATALOG_NUMBER\/referenceImages\/IMAGE_NUMBER`. This\nfield is ignored when creating a reference image.",
+          "type": "string"
+        },
+        "imageUri": {
+          "description": "The Google Cloud Storage URI of the reference image.\n\nRequired.",
+          "type": "string"
+        },
+        "productId": {
+          "description": "A user-defined ID for the product identified by the reference image.\nRequired. A `productId` can be associated with multiple reference images.\n\nRestricted to 255 characters matching the following regular expression:\n`[a-zA-Z0-9_-]+`",
+          "type": "string"
+        },
+        "category": {
+          "description": "The category for the product identified by the reference image.\nOptional. Inferred by the system if not specified in the create\nrequest.\n[Deprecated] Use `product_category`.",
+          "enumDescriptions": [
+            "Default value used when a category is not specified.",
+            "Shoes category.",
+            "Bags category."
+          ],
+          "type": "string",
+          "enum": [
+            "PRODUCT_SEARCH_CATEGORY_UNSPECIFIED",
+            "SHOES",
+            "BAGS"
+          ]
+        },
+        "productCategory": {
+          "description": "The category for the product identified by the reference image.\nOptional. Inferred by the system if not specified in the create\nrequest.\nSupported values are `bag` and `shoe`.",
+          "type": "string"
+        },
+        "boundingPoly": {
+          "description": "The bounding polygon around the area of interest in the reference image.\nOptional. Inferred by the system if not provided.\nIf `product_category` is specified in the create request without\n`bounding_poly`, the inferred bounding polygon is the entire image.\n\nThe provided shape is converted into a non-rotated rectangle. Once\nconverted, the small edge of the rectangle must be greater than or equal\nto 300 pixels. The aspect ratio must be 1:4 or less (i.e. 1:3 is ok; 1:5\nis not).",
+          "$ref": "BoundingPoly"
+        },
+        "createTime": {
+          "description": "Resource creation timestamp. Output only.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Resource deletion timestamp.\n\nThis timestamp indicates when the resource was marked for deletion.\nResources marked for deletion will continue to show up in product search\nresults until the index is rebuilt (currently daily).\n\nThe value of this field is 0 for resources that have NOT been deleted.\n\nOutput only.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "BoundingPoly": {
+      "id": "BoundingPoly",
+      "description": "A bounding polygon for the detected image annotation.",
+      "type": "object",
+      "properties": {
+        "vertices": {
+          "description": "The bounding polygon vertices.",
+          "type": "array",
+          "items": {
+            "$ref": "Vertex"
+          }
+        }
+      }
+    },
+    "Vertex": {
+      "id": "Vertex",
+      "description": "A vertex represents a 2D point in the image.\nNOTE: the vertex coordinates are in the same scale as the original image.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "X coordinate.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "y": {
+          "description": "Y coordinate.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListReferenceImagesResponse": {
+      "id": "ListReferenceImagesResponse",
+      "description": "Response message for the `ListReferenceImages` method.",
+      "type": "object",
+      "properties": {
+        "referenceImages": {
+          "description": "The list of reference images.",
+          "type": "array",
+          "items": {
+            "$ref": "ReferenceImage"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying the next page of results. If the value is an empty\nstring (\"\"), there are no more results.\n\nPass this value to `pageToken` in an otherwise identical list request to\nsee the next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "ImportCatalogsRequest": {
+      "id": "ImportCatalogsRequest",
+      "description": "Request message for the `ImportProductSets` method.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "description": "The input content for the list of requests.",
+          "$ref": "ImportCatalogsInputConfig"
+        }
+      }
+    },
+    "ImportCatalogsInputConfig": {
+      "id": "ImportCatalogsInputConfig",
+      "description": "The input content for the `ImportCatalogs` method.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "The Google Cloud Storage location for a csv file which preserves a list\nof ImportProductSetRequests in each line.",
+          "$ref": "ImportCatalogsGcsSource"
+        }
+      }
+    },
+    "ImportCatalogsGcsSource": {
+      "id": "ImportCatalogsGcsSource",
+      "description": "The Google Cloud Storage location for a csv file which preserves a list of\nImportCatalogRequests in each line.",
+      "type": "object",
+      "properties": {
+        "csvFileUri": {
+          "description": "The Google Cloud Storage URI of the input csv file.\n\nThe URI must start with gs:\/\/\n\nThe format of the input csv file should be each image per line.\nIn each line, there 5 columns as follows.\n1. catalog_name\n2. image_uri\n3. product_id\n4. product_category\n5. bounding_poly\n\nThe bounding_poly is around the area of interest in the reference image.\nOptional. If the `bounding_poly` is not specified in the image, the\ninferred bounding polygon is the entire image.\n\nThe format of bounding_poly should be a line of even number of integers\nseparated by comma as \"p1_x,p1_y,p2_x,p2_y,...,pn_x,pn_y\".",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "BatchOperationMetadata": {
+      "id": "BatchOperationMetadata",
+      "description": "Metadata for the batch operations such as the current state.\n\nThis is included in the `metadata` field of the `Operation` returned by the\n`GetOperation` call of the `google::longrunning::Operations` service.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The current state of the batch operation.",
+          "enumDescriptions": [
+            "Invalid.",
+            "Request is created.",
+            "The batch request is running.",
+            "The batch is done and no item has been successfully processed.",
+            "The batch is done after the longrunning.Operations.CancelOperation has\nbeen called by the user.  Any records that were processed before the\ncancel command are output as specified in the request."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATED",
+            "RUNNING",
+            "DONE",
+            "CANCELLED"
+          ]
+        },
+        "createTime": {
+          "description": "The time when the batch request was submitted to the server.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "The time when the batch request is recently updated.\ngoogle.longrunning.Operation.done is set to true.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ImportCatalogsResponse": {
+      "id": "ImportCatalogsResponse",
+      "description": "Response message for the `ImportCatalogs` method.\n\nThis message is returned by the\ngoogle.longrunning.Operations.GetOperation method in the returned\ngoogle.longrunning.Operation.response field.",
+      "type": "object",
+      "properties": {
+        "referenceImages": {
+          "description": "The list of reference_images that are imported successfully.",
+          "type": "array",
+          "items": {
+            "$ref": "ReferenceImage"
+          }
+        },
+        "statuses": {
+          "description": "The rpc status for each ImportCatalogs request, including errors.",
+          "type": "array",
+          "items": {
+            "$ref": "Status"
+          }
+        }
+      }
+    }
+  },
+  "resources": {
+    "productSearch": {
+      "resources": {
+        "catalogs": {
+          "methods": {
+            "create": {
+              "id": "alpha_vision.productSearch.catalogs.create",
+              "path": "v1alpha1/productSearch/catalogs",
+              "flatPath": "v1alpha1/productSearch/catalogs",
+              "httpMethod": "POST",
+              "description": "Creates and returns a new catalog resource.\n\nNote: For v1alpha1, a catalog will not be returned by `ListCatalogs` until\nreference images have been added to it. Therefore it's important that you\nnote the catalog name\nreturned by the `CreateCatalog` request as it is required for adding\nreference images.",
+              "parameters": {
+              },
+              "parameterOrder": [
+              ],
+              "request": {
+                "$ref": "Catalog"
+              },
+              "response": {
+                "$ref": "Catalog"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-vision"
+              ]
+            },
+            "delete": {
+              "id": "alpha_vision.productSearch.catalogs.delete",
+              "path": "v1alpha1/{+name}",
+              "flatPath": "v1alpha1/productSearch/catalogs/{catalogsId}",
+              "httpMethod": "DELETE",
+              "description": "Permanently deletes a catalog and its reference images from the service.\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nReturns NOT_FOUND if the catalog does not exist.",
+              "parameters": {
+                "name": {
+                  "description": "Resource name of catalog to delete.\n\nFormat is: `productSearch\/catalogs\/CATALOG_NUMBER`",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^productSearch\/catalogs\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-vision"
+              ]
+            },
+            "list": {
+              "id": "alpha_vision.productSearch.catalogs.list",
+              "path": "v1alpha1/productSearch/catalogs",
+              "flatPath": "v1alpha1/productSearch/catalogs",
+              "httpMethod": "GET",
+              "description": "Lists catalogs (in an unspecified order).\n\nNote: Does not return empty catalogs (catalogs without reference images).",
+              "parameters": {
+              },
+              "parameterOrder": [
+              ],
+              "response": {
+                "$ref": "ListCatalogsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-vision"
+              ]
+            },
+            "deleteReferenceImages": {
+              "id": "alpha_vision.productSearch.catalogs.deleteReferenceImages",
+              "path": "v1alpha1/{+parent}/referenceImages",
+              "flatPath": "v1alpha1/productSearch/catalogs/{catalogsId}/referenceImages",
+              "httpMethod": "DELETE",
+              "description": "Marks all reference images associated with a product for deletion.\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nPossible errors:\n\n* Returns `INVALID_ARGUMENT` if `productId` is not specified.\n* Returns `NOT_FOUND` if the catalog does not exist.\n* Returns `NOT_FOUND` if the specified product ID is not associated with\n  any reference images.",
+              "parameters": {
+                "parent": {
+                  "description": "Resource name of the catalog containing the reference images to be deleted.\n\nFormat is `productSearch\/catalogs\/CATALOG_NUMBER`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^productSearch\/catalogs\/[^\/]+$",
+                  "type": "string"
+                },
+                "productId": {
+                  "description": "The product ID of the reference images to delete.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-vision"
+              ]
+            },
+            "import": {
+              "id": "alpha_vision.productSearch.catalogs.import",
+              "path": "v1alpha1/productSearch/catalogs:import",
+              "flatPath": "v1alpha1/productSearch/catalogs:import",
+              "httpMethod": "POST",
+              "description": "Asynchronous API that imports a list of reference images to specified\ncatalogs based on a list of image names.\n\nThis API implements the google.longrunning.Operation API allowing users\nto keep track of the batch request. Progress and results can be retrieved\nthrough the `google.longrunning.Operations` interface.\n`Operation.metadata` contains `BatchOperationMetadata` describing the\nprogress of the operation.\n`Operation.response` contains `ImportCatalogsResponse` which contains\nthe results.\n\nThe input source of this method is either a list of\n`ImportProductSetRequest` or a CSV file on Google Cloud Storage.\n\nThe CSV file must specify one image per line. The following 5 columns\nmust be specified:\n\n1. `catalog_name`\n2. `image_uri`\n3. `product_id`\n4. `product_category`\n5. `bounding_poly`\n\nIf the `catalog_id` does not exist, a new catalog will be created.\n\nThe `bounding_poly` is optional and specifies the area of interest in the\nreference image. If not specified, the inferred bounding polygon is the\nentire image.",
+              "parameters": {
+              },
+              "parameterOrder": [
+              ],
+              "request": {
+                "$ref": "ImportCatalogsRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-vision"
+              ]
+            }
+          }
+          ,
+          "resources": {
+            "referenceImages": {
+              "methods": {
+                "create": {
+                  "id": "alpha_vision.productSearch.catalogs.referenceImages.create",
+                  "path": "v1alpha1/{+parent}/referenceImages",
+                  "flatPath": "v1alpha1/productSearch/catalogs/{catalogsId}/referenceImages",
+                  "httpMethod": "POST",
+                  "description": "Creates and returns a new `ReferenceImage` resource.\n\nThe `product_category` and `boundingPoly` fields are optional and, if used,\nshould both be specified.\n\nIf they are omitted, the product category and bounding polygon are inferred\nby the system.\n\nIf `boundingPoly` is specified without `product_category`, `boundingPoly`\nis ignored. If `product_category` is specified without `boundingPoly`, the\nimage border is used as the value of `boundingPoly`.\n\nPolygons are converted into non-rotated rectangles by the system.\n\nPossible errors:\n\n* Returns `INVALID_ARGUMENT` if the required fields are missing or if\n  fields violate their restrictions.\n* Returns `FAILED_PRECONDITION` if the catalog does not exist.\n* Returns `FAILED_PRECONDITION` if a product is not detected, or if\n  multiple products are detected, when `product_category` and\n  `boundingPoly` are not specified.",
+                  "parameters": {
+                    "parent": {
+                      "description": "Resource name of the catalog in which to create the reference image.\n\nFormat is `productSearch\/catalogs\/CATALOG_NUMBER`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^productSearch\/catalogs\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "ReferenceImage"
+                  },
+                  "response": {
+                    "$ref": "ReferenceImage"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-vision"
+                  ]
+                },
+                "delete": {
+                  "id": "alpha_vision.productSearch.catalogs.referenceImages.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/productSearch/catalogs/{catalogsId}/referenceImages/{referenceImagesId}",
+                  "httpMethod": "DELETE",
+                  "description": "Marks a reference image for deletion. The image will remain in the catalog\nuntil the next time the catalog is indexed (currently daily).\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nReturns `NOT_FOUND` if the reference image does not exist.",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the reference image to delete.\n\nFormat is:\n`productSearch\/catalogs\/CATALOG_NUMBER\/referenceImages\/IMAGE_NUMBER`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^productSearch\/catalogs\/[^\/]+\/referenceImages\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-vision"
+                  ]
+                },
+                "list": {
+                  "id": "alpha_vision.productSearch.catalogs.referenceImages.list",
+                  "path": "v1alpha1/{+parent}/referenceImages",
+                  "flatPath": "v1alpha1/productSearch/catalogs/{catalogsId}/referenceImages",
+                  "httpMethod": "GET",
+                  "description": "Lists reference images.\n\nPossible errors:\n\n* Returns `NOT_FOUND` if the catalog does not exist.\n* Returns `NOT_FOUND` if there are no images associated with the specified\n  product ID.\n\nPagination is supported. The default page size is 10 and the maximum\nis 1000. Page sizes higher than 1000 will be treated as 1000.",
+                  "parameters": {
+                    "parent": {
+                      "description": "Resource name of the catalog containing the reference images.\n\nFormat is `productSearch\/catalogs\/CATALOG_NUMBER`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^productSearch\/catalogs\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "productId": {
+                      "description": "A filter for listing only reference images with this product ID.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of images to return per page. Default is 10.\nValues higher than 1000 will be treated as 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results to be returned. This is the value\nof `nextPageToken` returned in a previous reference image list request.\n\nDefaults to the first page if not specified.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListReferenceImagesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-vision"
+                  ]
+                },
+                "get": {
+                  "id": "alpha_vision.productSearch.catalogs.referenceImages.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/productSearch/catalogs/{catalogsId}/referenceImages/{referenceImagesId}",
+                  "httpMethod": "GET",
+                  "description": "Gets a reference image.\nReturns `NOT_FOUND` if the specified image does not exist.",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the reference image to get.\n\nFormat is:\n`productSearch\/catalogs\/CATALOG_NUMBER\/referenceImages\/IMAGE_NUMBER`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^productSearch\/catalogs\/[^\/]+\/referenceImages\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ReferenceImage"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-vision"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

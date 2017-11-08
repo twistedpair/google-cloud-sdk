@@ -586,7 +586,7 @@
           "type": "string"
         },
         "version": {
-          "description": "[Output only] The version of the Kubernetes of this node.",
+          "description": "The version of the Kubernetes of this node.",
           "type": "string"
         },
         "instanceGroupUrls": {
@@ -1528,8 +1528,12 @@
       "description": "Event captures all the information that can be included in an API audit log.\n\nShould match Event in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apiserver\/pkg\/apis\/audit\/v1beta1\/generated.proto.",
       "type": "object",
       "properties": {
+        "metadata": {
+          "description": "ObjectMeta is included for interoperability with Kubernetes API\ninfrastructure.\n+optional\nDEPRECATED: Use StageTimestamp which supports micro second instead of\nObjectMeta.CreateTimestamp and the rest of the object is not used.",
+          "$ref": "ObjectMeta"
+        },
         "timestamp": {
-          "description": "Time the request reached the apiserver.",
+          "description": "Time the request reached the apiserver.\nDEPRECATED: Use RequestReceivedTimestamp which supports micro second\ninstead.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -1587,6 +1591,28 @@
             "type": "any",
             "description": "Properties of the object."
           }
+        },
+        "requestReceivedTimestamp": {
+          "description": "Time the request reached the apiserver.\n+optional",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "stageTimestamp": {
+          "description": "Time the request reached current audit stage.\n+optional",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ObjectMeta": {
+      "id": "ObjectMeta",
+      "description": "ObjectMeta is metadata that all persisted resources must have, which includes\nall objects users must create. Only one field is used from this proto in\nAuditEvent.\n\nShould match ObjectMeta in\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apimachinery\/pkg\/apis\/meta\/v1\/generated.proto",
+      "type": "object",
+      "properties": {
+        "creationTimestamp": {
+          "description": "CreationTimestamp is a timestamp representing the server time when this\nobject was created. It is not guaranteed to be set in happens-before order\nacross separate operations. Clients may not set this value. It is\nrepresented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#metadata\n+optional",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

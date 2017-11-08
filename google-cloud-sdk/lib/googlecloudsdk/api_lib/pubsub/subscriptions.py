@@ -14,6 +14,8 @@
 """Utilities for Cloud Pub/Sub Subscriptions API."""
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions as api_exceptions
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import exceptions
 
 
@@ -65,8 +67,22 @@ class SubscriptionsClient(object):
 
     return self._service.Acknowledge(ack_req)
 
+  def Get(self, subscription_ref):
+    """Gets a Subscription from the API.
+
+    Args:
+      subscription_ref (Resource): Relative name of the subscription to get.
+    Returns:
+      Subscription: the subscription.
+    """
+    get_req = self.messages.PubsubProjectsSubscriptionsGetRequest(
+        subscription=subscription_ref.RelativeName())
+
+    return self._service.Get(get_req)
+
   def Create(self, subscription_ref, topic_ref, ack_deadline, push_config=None,
-             retain_acked_messages=None, message_retention_duration=None):
+             retain_acked_messages=None, message_retention_duration=None,
+             labels=None):
     """Creates a Subscription.
 
     Args:
@@ -80,6 +96,7 @@ class SubscriptionsClient(object):
         subscription.
       retain_acked_messages (bool): Whether or not to retain acked messages.
       message_retention_duration (int): How long to retained unacked messages.
+      labels (Subscriptions.LabelsValue): The labels for the request.
     Returns:
       Subscription: the created subscription
     """
@@ -89,6 +106,7 @@ class SubscriptionsClient(object):
         ackDeadlineSeconds=ack_deadline,
         pushConfig=push_config,
         retainAckedMessages=retain_acked_messages,
+        labels=labels,
         messageRetentionDuration=message_retention_duration)
 
     return self._service.Create(subscription)
@@ -199,7 +217,8 @@ class SubscriptionsClient(object):
       update_setting.value = None
 
   def Patch(self, subscription_ref, ack_deadline=None, push_config=None,
-            retain_acked_messages=None, message_retention_duration=None):
+            retain_acked_messages=None, message_retention_duration=None,
+            labels=None):
     """Updates a Subscription.
 
     Args:
@@ -211,6 +230,7 @@ class SubscriptionsClient(object):
         subscription.
       retain_acked_messages (bool): Whether or not to retain acked messages.
       message_retention_duration (str): How long to retained unacked messages.
+      labels (LabelsValue): The Cloud labels for the subscription.
     Returns:
       Subscription: The updated subscription.
     Raises:
@@ -229,6 +249,9 @@ class SubscriptionsClient(object):
         _SubscriptionUpdateSetting(
             'messageRetentionDuration',
             message_retention_duration),
+        _SubscriptionUpdateSetting(
+            'labels',
+            labels),
     ]
     subscription = self.messages.Subscription(
         name=subscription_ref.RelativeName())
@@ -248,3 +271,68 @@ class SubscriptionsClient(object):
         name=subscription_ref.RelativeName())
 
     return self._service.Patch(patch_req)
+
+  def SetIamPolicy(self, subscription_ref, policy):
+    """Sets an IAM policy on a Subscription.
+
+    Args:
+      subscription_ref (Resource): Resource reference for subscription to set
+        IAM policy on.
+      policy (Policy): The policy to be added to the Subscription.
+
+    Returns:
+      Policy: the policy which was set.
+    """
+    request = self.messages.PubsubProjectsSubscriptionsSetIamPolicyRequest(
+        resource=subscription_ref.RelativeName(),
+        setIamPolicyRequest=self.messages.SetIamPolicyRequest(policy=policy))
+    return self._service.SetIamPolicy(request)
+
+  def GetIamPolicy(self, subscription_ref):
+    """Gets the IAM policy for a Subscription.
+
+    Args:
+      subscription_ref (Resource): Resource reference for subscription to get
+        the IAM policy of.
+
+    Returns:
+      Policy: the policy for the Subscription.
+    """
+    request = self.messages.PubsubProjectsSubscriptionsGetIamPolicyRequest(
+        resource=subscription_ref.RelativeName())
+    return self._service.GetIamPolicy(request)
+
+  def AddIamPolicyBinding(self, subscription_ref, member, role):
+    """Adds an IAM Policy binding to a Subscription.
+
+    Args:
+      subscription_ref (Resource): Resource reference for subscription to add
+        IAM policy binding to.
+      member (str): The member to add.
+      role (str): The role to assign to the member.
+    Returns:
+      Policy: the updated policy.
+    Raises:
+      api_exception.HttpException: If either of the requests failed.
+    """
+    policy = self.GetIamPolicy(subscription_ref)
+    iam_util.AddBindingToIamPolicy(self.messages.Binding, policy, member, role)
+    return self.SetIamPolicy(subscription_ref, policy)
+
+  def RemoveIamPolicyBinding(self, subscription_ref, member, role):
+    """Removes an IAM Policy binding from a Subscription.
+
+    Args:
+      subscription_ref (Resource): Resource reference for subscription to
+        remove IAM policy binding from.
+      member (str): The member to add.
+      role (str): The role to assign to the member.
+    Returns:
+      Policy: the updated policy.
+    Raises:
+      api_exception.HttpException: If either of the requests failed.
+    """
+    policy = self.GetIamPolicy(subscription_ref)
+    iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+    return self.SetIamPolicy(subscription_ref, policy)
+

@@ -101,7 +101,6 @@ def AddDeviceResourceArg(parser, verb, positional=True):
       name,
       GetDeviceResourceSpec(),
       'The device {}.'.format(verb),
-      flag_name_overrides={'project': ''},
       required=True).AddToParser(parser)
 
 
@@ -124,7 +123,6 @@ def AddRegistryResourceArg(parser, verb, positional=True):
       name,
       GetRegistryResourceSpec(),
       'The device registry {}.'.format(verb),
-      flag_name_overrides={'project': ''},
       required=True).AddToParser(parser)
 
 
@@ -141,5 +139,4 @@ def AddRegionResourceArg(parser, verb):
       '--region',
       GetRegionResourceSpec(),
       'The Cloud region {}.'.format(verb),
-      flag_name_overrides={'project': ''},
       required=True).AddToParser(parser)

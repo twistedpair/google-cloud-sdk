@@ -1716,12 +1716,12 @@ def WarnForSourceInstanceTemplateLimitations(args):
                        'template\n')
 
 
-def ValidateNetworkTierArgs(args, support_network_tier):
-  if support_network_tier and args.network_tier:
-    if args.network_tier not in constants.NETWORK_TIER_CHOICES_FOR_INSTANCE:
-      raise exceptions.InvalidArgumentException(
-          '--network-tier',
-          'Invalid network tier [{tier}]'.format(tier=args.network_tier))
+def ValidateNetworkTierArgs(args):
+  if (args.network_tier and
+      args.network_tier not in constants.NETWORK_TIER_CHOICES_FOR_INSTANCE):
+    raise exceptions.InvalidArgumentException(
+        '--network-tier',
+        'Invalid network tier [{tier}]'.format(tier=args.network_tier))
 
 
 def AddDeletionProtectionFlag(parser, use_default_value=True):

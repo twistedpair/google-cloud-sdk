@@ -41,36 +41,6 @@ def _NamespaceFormat(arg_name):
   return arg_name.lower()
 
 
-def _GetFlagName(attribute_name, resource_name, flag_name_overrides=None,
-                 prefixes=False):
-  """Gets the flag name for a given attribute name.
-
-  Returns a flag name for an attribute, adding prefixes as necessary or using
-  overrides if an override map is provided.
-
-  Args:
-    attribute_name: str, the name of the attribute to base the flag name on.
-    resource_name: str, the name of the resource the attribute belongs to (e.g.
-      '--instance')
-    flag_name_overrides: {str: str}, a dict of attribute names to exact string
-      of the flag name to use for the attribute. None if no overrides.
-    prefixes: bool, whether to use the resource name as a prefix for the flag.
-
-  Returns:
-    (str) the name of the flag.
-  """
-  flag_name_overrides = flag_name_overrides or {}
-  if attribute_name in flag_name_overrides:
-    return flag_name_overrides.get(attribute_name)
-  prefix = _PREFIX
-  if prefixes or attribute_name == 'project':
-    if resource_name.startswith(_PREFIX):
-      prefix += resource_name[len(_PREFIX):] + '-'
-    else:
-      prefix += resource_name.lower().replace('_', '-') + '-'
-  return prefix + attribute_name
-
-
 class PresentationSpec(object):
   """Class that defines how concept arguments are presented in a command."""
 
@@ -151,8 +121,8 @@ class ResourcePresentationSpec(object):
     self.attribute_to_args_map = {}
     self._skip_flags = []
     for attribute in self.concept_spec.attributes[:-1]:
-      name = _GetFlagName(attribute.name, self.name, flag_name_overrides,
-                          prefixes)
+      name = self.GetFlagName(attribute.name, self.name, flag_name_overrides,
+                              prefixes)
       if name:
         self.attribute_to_args_map[attribute.name] = name
       else:
@@ -180,6 +150,38 @@ class ResourcePresentationSpec(object):
         self.concept_spec,
         self.attribute_to_args_map,
         fallthroughs_map)
+
+  @staticmethod
+  def GetFlagName(attribute_name, resource_name, flag_name_overrides=None,
+                  prefixes=False):
+    """Gets the flag name for a given attribute name.
+
+    Returns a flag name for an attribute, adding prefixes as necessary or using
+    overrides if an override map is provided.
+
+    Args:
+      attribute_name: str, the name of the attribute to base the flag name on.
+      resource_name: str, the name of the resource the attribute belongs to
+        (e.g. '--instance').
+      flag_name_overrides: {str: str}, a dict of attribute names to exact string
+        of the flag name to use for the attribute. None if no overrides.
+      prefixes: bool, whether to use the resource name as a prefix for the flag.
+
+    Returns:
+      (str) the name of the flag.
+    """
+    flag_name_overrides = flag_name_overrides or {}
+    if attribute_name in flag_name_overrides:
+      return flag_name_overrides.get(attribute_name)
+    prefix = _PREFIX
+    if attribute_name == 'project':
+      return ''
+    if prefixes:
+      if resource_name.startswith(_PREFIX):
+        prefix += resource_name[len(_PREFIX):] + '-'
+      else:
+        prefix += resource_name.lower().replace('_', '-') + '-'
+    return prefix + attribute_name
 
   def _KwargsForAttribute(self, name, attribute, required=False):
     """Constructs the kwargs for adding an attribute to argparse."""

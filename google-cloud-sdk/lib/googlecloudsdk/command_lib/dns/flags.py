@@ -14,8 +14,29 @@
 
 """Common flags for some of the DNS commands."""
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.command_lib.util.apis import arg_utils
+
+
+_DNSEC_MAP = arg_utils.ChoiceEnumMapper(
+    '--dnssec-state', (apis.GetMessagesModule('dns', 'v1beta2')
+                       .ManagedZoneDnsSecConfig.StateValueValuesEnum),
+    custom_mappings={
+        'off': ('off', 'Disable DNSSEC for the managed zone.'),
+        'on': ('on', 'Enable DNSSEC for the managed zone.'),
+        'transfer': ('transfer', ('Enable DNSSEC and allow '
+                                  'transferring a signed zone in '
+                                  'or out.'))
+    },
+    help_str='The DNSSEC state for this managed zone.')
+
+_DOE_MAP = arg_utils.ChoiceEnumMapper(
+    '--denial-of-existence',
+    (apis.GetMessagesModule('dns', 'v2beta1')
+     .ManagedZoneDnsSecConfig.NonExistenceValueValuesEnum),
+    help_str='Requires DNSSEC enabled.')
 
 
 class KeyCompleter(completers.ListCommandCompleter):
@@ -43,7 +64,7 @@ class ManagedZoneCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
-def GetKeyArg(help_text='The DNS key identifer.'):
+def GetKeyArg(help_text='The DNS key identifier.'):
   return base.Argument(
       'key_id',
       metavar='KEY-ID',
@@ -82,20 +103,18 @@ def GetManagedZonesDescriptionArg(required=False):
       help='Short description for the managed-zone.')
 
 
+def GetDnsSecStateFlagMapper():
+  return _DNSEC_MAP
+
+
+def GetDoeFlagMapper():
+  return _DOE_MAP
+
+
 def AddCommonManagedZonesDnssecArgs(parser):
   """Add Common DNSSEC flags for the managed-zones group."""
-  parser.add_argument(
-      '--dnssec-state',
-      choices={
-          'off': 'Disable DNSSEC for the managed zone.',
-          'on': 'Enable DNSSEC for the managed zone.',
-          'transfer': 'Enable DNSSEC and allow transfering a signed zone in '
-                      'or out.'},
-      help='The DNSSEC state for this managed zone.')
-  parser.add_argument(
-      '--denial-of-existence',
-      choices=['NSEC', 'NSEC3'],
-      help='Requires DNSSEC enabled.')
+  _DNSEC_MAP.choice_arg.AddToParser(parser)
+  _DOE_MAP.choice_arg.AddToParser(parser)
   parser.add_argument(
       '--ksk-algorithm',
       help='String mnemonic specifying the DNSSEC algorithm of the '

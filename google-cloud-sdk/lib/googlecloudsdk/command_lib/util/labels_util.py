@@ -86,7 +86,7 @@ CREATE_LABELS_FLAG = base.Argument(
     help='A list of label KEY=VALUE pairs to add.')
 
 
-def GetUpdateLablesFlag(extra_message):
+def _GetUpdateLabelsFlag(extra_message):
   return base.Argument(
       '--update-labels',
       metavar='KEY=VALUE',
@@ -98,7 +98,7 @@ def GetUpdateLablesFlag(extra_message):
       is modified, otherwise a new label is created.""" + extra_message)
 
 
-def GetRemoveLablesFlag(extra_message):
+def _GetRemoveLabelsFlag(extra_message):
   return base.Argument(
       '--remove-labels',
       metavar='KEY',
@@ -129,8 +129,8 @@ def AddUpdateLabelsFlags(
     extra_remove_message: str, extra message to append to help text for
                           --delete-labels flag.
   """
-  GetUpdateLablesFlag(extra_update_message).AddToParser(parser)
-  GetRemoveLablesFlag(extra_remove_message).AddToParser(parser)
+  _GetUpdateLabelsFlag(extra_update_message).AddToParser(parser)
+  _GetRemoveLabelsFlag(extra_remove_message).AddToParser(parser)
 
 
 def GetUpdateLabelsDictFromArgs(args):

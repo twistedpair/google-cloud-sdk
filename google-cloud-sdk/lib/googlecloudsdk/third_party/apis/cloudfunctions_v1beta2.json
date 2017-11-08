@@ -370,7 +370,7 @@
           "type": "string"
         },
         "service": {
-          "description": "The hostname of the service that should be observed.\n\nIf no string is provided, the default service implementing the API will\nbe used. For example, `storage.googleapis.com` is the default for all\nevent types in the 'google.storage` namespace.",
+          "description": "The hostname of the service that should be observed.\n\nIf no string is provided, the default service implementing the API will\nbe used. For example, `storage.googleapis.com` is the default for all\nevent types in the `google.storage` namespace.",
           "type": "string"
         },
         "retryPolicy": {
@@ -579,6 +579,11 @@
           "description": "Version id of the function created or updated by an API call.\nThis field is only pupulated for Create and Update operations.",
           "type": "string",
           "format": "int64"
+        },
+        "updateTime": {
+          "description": "The last update timestamp of the operation.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -619,6 +624,11 @@
           "description": "Version id of the function created or updated by an API call.\nThis field is only pupulated for Create and Update operations.",
           "type": "string",
           "format": "int64"
+        },
+        "updateTime": {
+          "description": "The last update timestamp of the operation.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     }

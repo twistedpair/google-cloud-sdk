@@ -132,14 +132,18 @@ TARGET_HTTP_PROXY_ARG = compute_flags.ResourceArgument(
     required=False,
     resource_name='http proxy',
     global_collection='compute.targetHttpProxies',
-    short_help='The target HTTP proxy that will receive the traffic.')
+    short_help='The target HTTP proxy that will receive the traffic.',
+    detailed_help=('The target HTTP proxy that will receive the traffic. '
+                   'Acceptable values for --ports flag are: 80, 8080.'))
 
 TARGET_HTTPS_PROXY_ARG = compute_flags.ResourceArgument(
     name='--target-https-proxy',
     required=False,
     resource_name='https proxy',
     global_collection='compute.targetHttpsProxies',
-    short_help='The target HTTPS proxy that will receive the traffic.')
+    short_help='The target HTTPS proxy that will receive the traffic.',
+    detailed_help=('The target HTTPS proxy that will receive the traffic. '
+                   'Acceptable values for --ports flag are: 443.'))
 
 TARGET_INSTANCE_ARG = compute_flags.ResourceArgument(
     name='--target-instance',
@@ -173,14 +177,22 @@ TARGET_SSL_PROXY_ARG = compute_flags.ResourceArgument(
     required=False,
     resource_name='ssl proxy',
     global_collection='compute.targetSslProxies',
-    short_help='The target SSL proxy that will receive the traffic.')
+    short_help='The target SSL proxy that will receive the traffic.',
+    detailed_help=('The target SSL proxy that will receive the traffic. '
+                   'Acceptable values for --ports flag are: '
+                   '25, 43, 110, 143, 195, 443, 465, 587, '
+                   '700, 993, 995, 1883, 5222.'))
 
 TARGET_TCP_PROXY_ARG = compute_flags.ResourceArgument(
     name='--target-tcp-proxy',
     required=False,
     resource_name='tcp proxy',
     global_collection='compute.targetTcpProxies',
-    short_help='The target TCP proxy that will receive the traffic.')
+    short_help='The target TCP proxy that will receive the traffic.',
+    detailed_help=('The target TCP proxy that will receive the traffic. '
+                   'Acceptable values for --ports flag are: '
+                   '25, 43, 110, 143, 195, 443, 465, 587, '
+                   '700, 993, 995, 1883, 5222.'))
 
 TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
     name='--target-vpn-gateway',
@@ -188,6 +200,9 @@ TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
     resource_name='VPN gateway',
     regional_collection='compute.targetVpnGateways',
     short_help='The target VPN gateway that will receive forwarded traffic.',
+    detailed_help=(
+        'The target VPN gateway that will receive forwarded traffic. '
+        'Acceptable values for --ports flag are: 500, 4500.'),
     region_explanation=('If not specified it will be set the'
                         ' region of the forwarding rule.'))
 
@@ -200,22 +215,40 @@ ADDRESS_ARG = compute_flags.ResourceArgument(
     regional_collection='compute.addresses',
     global_collection='compute.globalAddresses',
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
-    short_help='The external IP address that the forwarding rule will serve.',
+    short_help='The IP address that the forwarding rule will serve.',
     detailed_help="""\
-      The external IP address that the forwarding rule will serve. All
+      The IP address that the forwarding rule will serve. All
       traffic sent to this IP address is directed to the target
       pointed to by the forwarding rule. Assigned IP addresses can be
       reserved or unreserved.
 
-      If the address is reserved, it must either (1) reside in the global scope
-      if the forwarding rule is being configured to point to an external load
-      balancer or (2) reside in the same region as the forwarding rule
-      if the forwarding rule is being configured to point to a
-      target pool or target instance. If this flag is omitted, an
-      ephemeral IP address is assigned.
+      IP addresses are restricted based on the forwarding rule's load balancing
+      scheme (EXTERNAL or INTERNAL) and scope (global or regional).
+
+      When the --load-balancing-scheme is EXTERNAL, if the address is reserved,
+      it must either (1) reside in the global scope if the forwarding rule is
+      being configured to point to an external load balancer or (2) reside in
+      the same region as the forwarding rule if the forwarding rule is being
+      configured to point to a target pool or target instance. If this flag is
+      omitted, an ephemeral external IP address is assigned.
+
+      When the --load-balancing-scheme is INTERNAL, this can only be an RFC 1918
+      IP address belonging to the network/subnet configured for the forwarding
+      rule. If this flag is omitted, an ephemeral internal IP address will be
+      automatically allocated from the IP range of the subnet or network
+      configured for this forwarding rule.
 
       Note: An IP address must be specified if the traffic is being forwarded to
       a VPN.
+
+      This flag can be specified either by a literal IP address or a reference
+      to an existing Address resource. The following examples are all valid:
+      - 100.1.2.3
+      - https://www.googleapis.com/compute/v1/projects/project-1/regions/us-central1/addresses/address-1
+      - projects/project-1/regions/us-central1/addresses/address-1
+      - regions/us-central1/addresses/address-1
+      - global/addresses/address-1
+      - address-1
       """)
 
 

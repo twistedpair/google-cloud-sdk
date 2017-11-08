@@ -295,6 +295,15 @@ class InvalidCharacterInArgException(ToolException):
             _FormatNonAsciiMarkerString(args)))
 
 
+class BadArgumentException(ToolException):
+  """For arguments that are wrong for reason hard to summarize."""
+
+  def __init__(self, argument_name, message):
+    super(BadArgumentException, self).__init__(
+        u'Invalid value for [{0}]: {1}'.format(argument_name, message))
+    self.argument_name = argument_name
+
+
 # TODO(b/35938745): Eventually use api_exceptions.HttpException exclusively.
 class HttpException(api_exceptions.HttpException):
   """HttpException is raised whenever the Http response status code != 200.

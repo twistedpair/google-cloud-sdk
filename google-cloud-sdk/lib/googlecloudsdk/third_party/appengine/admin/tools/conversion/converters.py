@@ -17,6 +17,10 @@ import re
 
 # pylint:disable=g-import-not-at-top
 try:
+  from googlecloudsdk.third_party.appengine.api import dispatchinfo
+except ImportError:
+  from google.appengine.api import dispatchinfo
+try:
   from googlecloudsdk.third_party.appengine.api import appinfo
 except ImportError:
   from google.appengine.api import appinfo
@@ -331,6 +335,54 @@ def ConvertUrlHandler(handler):
   for common_field in _COMMON_HANDLER_FIELDS:
     if common_field in handler:
       new_handler[common_field] = handler[common_field]
+
+  return new_handler
+
+
+def ConvertDispatchHandler(handler):
+  """Create conversion function which handles dispatch rules.
+
+  Extract domain and path from dispatch url,
+  set service value from service or module info.
+
+  Args:
+    handler: Result of converting handler according to schema.
+
+  Returns:
+    Handler which has 'domain', 'path' and 'service' fields.
+
+  Raises:
+    ValueError: if both module and service presented in dispatch entry
+    or no module or service presented in dispatch entry.
+  """
+  dispatch_url = dispatchinfo.ParsedURL(handler['url'])
+
+  dispatch_service = None
+  if 'module' in handler:
+    dispatch_service = handler['module']
+  if 'service' in handler:
+    if dispatch_service:
+      raise ValueError(
+          "Both 'module' and 'service' in dispatch rule, "
+          "please use only one: %s" % handler)
+    else:
+      dispatch_service = handler['service']
+  if not dispatch_service:
+    raise ValueError(
+        "Missing required value 'service' in dispatch rule: %s" % handler)
+
+  dispatch_domain = dispatch_url.host
+  if not dispatch_url.host_exact:
+    dispatch_domain = '*' + dispatch_domain
+
+  dispatch_path = dispatch_url.path
+  if not dispatch_url.path_exact:
+    dispatch_path = dispatch_path.rstrip('/') + '/*'
+
+  new_handler = {}
+  new_handler['domain'] = dispatch_domain
+  new_handler['path'] = dispatch_path
+  new_handler['service'] = dispatch_service
 
   return new_handler
 

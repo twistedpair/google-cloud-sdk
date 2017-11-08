@@ -31,7 +31,7 @@ from googlecloudsdk.core.util import files as file_utils
 
 def CleanOldSourceInfo(function):
   function.sourceArchiveUrl = None
-  function.sourceRepositoryUrl = None
+  function.sourceRepository = None
   function.sourceRepository = None
   function.sourceUploadUrl = None
 
@@ -108,14 +108,14 @@ def UploadFile(source, function_name, stage_bucket):
 
 
 def AddSourceToFunction(function, source_arg, include_ignored_files,
-                        function_name, stage_bucket):
+                        function_name, stage_bucket, messages):
   """Add sources to function."""
   CleanOldSourceInfo(function)
   if source_arg.startswith('gs://'):
     function.sourceArchiveUrl = source_arg
     return
   if source_arg.startswith('https://'):
-    function.sourceRepositoryUrl = source_arg
+    function.sourceRepository = messages.SourceRepository(url=source_arg)
     return
   if not stage_bucket:
     raise exceptions.FunctionsError(
