@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://categorymanager.googleapis.com/v1alpha1/'
+DOCS_URL = 'https://cloud.google.com/'
 
 
 class Collections(enum.Enum):

@@ -25,6 +25,7 @@ import sys
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import display
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer
 
 
@@ -887,3 +888,10 @@ def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,
   return Argument(name_or_flag, choices=choices, required=required,
                   type=_ChoiceValueType, help=help_str, action=action,
                   metavar=metavar, dest=dest, default=default)
+
+
+def DisableUserProjectQuota():
+  """Disable the quota header if the user hasn't manually specified it."""
+  if not properties.VALUES.billing.quota_project.IsExplicitlySet():
+    properties.VALUES.billing.quota_project.Set(
+        properties.VALUES.billing.LEGACY)

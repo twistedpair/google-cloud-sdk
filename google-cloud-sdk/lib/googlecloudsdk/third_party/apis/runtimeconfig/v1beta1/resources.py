@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://runtimeconfig.googleapis.com/v1beta1/'
+DOCS_URL = 'https://cloud.google.com/deployment-manager/runtime-configurator/'
 
 
 class Collections(enum.Enum):

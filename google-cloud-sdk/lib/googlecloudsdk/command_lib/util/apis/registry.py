@@ -99,6 +99,7 @@ class APICollection(object):
     self.api_name = collection_info.api_name
     self.api_version = collection_info.api_version
     self.base_url = collection_info.base_url
+    self.docs_url = collection_info.docs_url
     self.name = collection_info.name
     self.full_name = collection_info.full_name
     self.detailed_path = collection_info.GetPath('')

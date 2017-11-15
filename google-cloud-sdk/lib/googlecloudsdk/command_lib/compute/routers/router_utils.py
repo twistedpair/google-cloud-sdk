@@ -250,8 +250,8 @@ def RemoveIpRangesFromAdvertisements(messages, resource_class, resource,
     IpRangeNotFoundError: if any IP range was not found in the resource.
   """
   for ip_range in ip_ranges:
-    if ip_range not in [p.prefix for p in resource.advertisedPrefixs]:
+    if ip_range not in [r.range for r in resource.advertisedIpRanges]:
       raise IpRangeNotFoundError(messages, resource_class, ip_range)
-  resource.advertisedPrefixs = [
-      p for p in resource.advertisedPrefixs if p.prefix not in ip_ranges
+  resource.advertisedIpRanges = [
+      r for r in resource.advertisedIpRanges if r.range not in ip_ranges
   ]

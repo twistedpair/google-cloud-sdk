@@ -52,6 +52,8 @@ COS_MAJOR_RELEASE = COS_MAJOR_RELEASE_PREFIX + '55'
 
 COS_PROJECT = 'cos-cloud'
 
+_MIN_PREFERRED_COS_VERSION = 63
+
 # Translation from CLI to API wording
 RESTART_POLICY_API = {
     'never': 'Never',
@@ -231,17 +233,18 @@ def ExpandKonletCosImageFlag(compute_client):
   - stable
   - beta
   - dev
-  looking for the first image with version at least 62.
+  looking for the first image with version at least _MIN_PREFERRED_COS_VERSION.
 
   Args:
     compute_client: ClientAdapter, The Compute API client adapter
 
   Returns:
-    COS image at version 62 or later.
+    COS image at version _MIN_PREFERRED_COS_VERSION or later.
 
   Raises:
-    NoCosImageException: No COS image at version at least 62 was found. This
-    should not happen if backend is healthy.
+    NoCosImageException: No COS image at version at least
+    _MIN_PREFERRED_COS_VERSION was found. This should not happen if backend is
+    healthy.
   """
   compute = compute_client.apitools_client
   images = compute_client.MakeRequests(
@@ -249,7 +252,6 @@ def ExpandKonletCosImageFlag(compute_client):
         'List',
         compute_client.messages.ComputeImagesListRequest(project=COS_PROJECT))])
   name_re_template = r'cos-{}-(\d+)-.*'
-  requested_version = 62  # COS image has a konlet since this version
   image_families = ['stable', 'beta', 'dev']
 
   for family in image_families:
@@ -265,7 +267,7 @@ def ExpandKonletCosImageFlag(compute_client):
         [image for image in images if re.match(name_re, image.name)],
         key=MakeCreateComparisonKey(name_re))
     if (cos_images and MakeCreateComparisonKey(name_re)(cos_images[-1])[0] >=
-        requested_version):
+        _MIN_PREFERRED_COS_VERSION):
       return cos_images[-1].selfLink
 
   raise NoCosImageException()

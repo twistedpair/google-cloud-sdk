@@ -124,6 +124,12 @@ class Namespace(argparse.Namespace):
     # pylint: disable=protected-access
     return self._GetCommand().ai.display_info
 
+  @property
+  def CONCEPTS(self):  # pylint: disable=invalid-name
+    handler = self._GetCommand().ai.concept_handler
+    handler.parsed_args = self
+    return handler
+
   def GetSpecifiedArgNames(self):
     """Returns the scrubbed names for args specified on the command line."""
     return sorted(self._specified_args.values())
@@ -320,7 +326,7 @@ class ArgumentParser(argparse.ArgumentParser):
   def AddRemainderArgument(self, *args, **kwargs):
     """Add an argument representing '--' followed by anything.
 
-    This argument is bound to the parser, so the parser can use it's helper
+    This argument is bound to the parser, so the parser can use its helper
     methods to parse.
 
     Args:

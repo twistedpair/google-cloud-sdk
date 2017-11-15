@@ -513,6 +513,11 @@ class CommandBuilder(object):
     if self.spec.release_tracks:
       command = base.ReleaseTracks(*self.spec.release_tracks)(command)
     command.detailed_help = self.spec.help_text
+    command.detailed_help['API REFERENCE'] = (
+        'This command uses the *{}/{}* API. The full documentation for this '
+        'API can be found at: {}'.format(
+            self.method.collection.api_name, self.method.collection.api_version,
+            self.method.collection.docs_url))
 
 
 class AsyncOperationPoller(waiter.OperationPoller):

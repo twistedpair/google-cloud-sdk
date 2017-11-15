@@ -159,13 +159,20 @@ def _GetReferenceURL(cli, line, pos=None, man_page=False):
   Returns:
     A string containing the URL of the reference page.
   """
+  mappers = {
+      'bq': BqReferenceMapper,
+      'gcloud': GcloudReferenceMapper,
+      'gsutil': GsutilReferenceMapper,
+      'kubectl': KubectlReferenceMapper,
+  }
+
   if pos is None:
     pos = len(line)
   args = []
   for arg in cli.parser.ParseCommand(line):
     if arg.start < pos and (
         not args or
-        arg.tree[parser.LOOKUP_COMMANDS] or  # IS_GROUP workaround
+        arg.tree.get(parser.LOOKUP_COMMANDS) or  # IS_GROUP workaround
         arg.token_type in (parser.ArgTokenType.COMMAND,
                            parser.ArgTokenType.GROUP)):
       args.append(arg.value)
@@ -174,17 +181,7 @@ def _GetReferenceURL(cli, line, pos=None, man_page=False):
       return None
     args = ['gcloud', 'alpha', 'interactive']
 
-  command = args[0]
-  if command == 'gcloud':
-    mapper_class = GcloudReferenceMapper
-  elif command == 'bq':
-    mapper_class = BqReferenceMapper
-  elif command == 'gsutil':
-    mapper_class = GsutilReferenceMapper
-  elif command == 'kubectl':
-    mapper_class = KubectlReferenceMapper
-  else:
-    mapper_class = UnknownReferenceMapper
+  mapper_class = mappers.get(args[0], UnknownReferenceMapper)
   mapper = mapper_class(cli, args)
   return mapper.GetMan() if man_page else mapper.GetURL()
 

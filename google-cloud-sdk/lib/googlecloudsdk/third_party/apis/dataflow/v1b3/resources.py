@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://dataflow.googleapis.com/v1b3/'
+DOCS_URL = 'https://cloud.google.com/dataflow'
 
 
 class Collections(enum.Enum):

@@ -207,18 +207,62 @@ def AddAcceleratorArgs(parser):
       """)
 
 
-def AddEnableAuditLoggingFlag(parser, hidden=True):
-  """Adds a --enable-audit-logging flag to parser."""
-  help_text = """\
-Enable audit logging for this cluster.
+def AddAutoprovisioningFlags(parser, update_group=None, hidden=False):
+  """Adds node autoprovisioning related flags to parser.
 
-Interactions with the Kubernetes API will be logged to Cloud Audit Logging."""
-  parser.add_argument(
-      '--enable-audit-logging',
-      action='store_true',
+  Autoprovisioning related flags are: --enable-autoprovisioning
+  --min-cpu --max-cpu --min-memory --max-memory flags.
+
+  Args:
+    parser: A given parser.
+    update_group: An optional group of mutually exclusive flag options
+        to which an --enable-autoprovisioning flag is added.
+    hidden: If true, suppress help text for added options.
+  """
+
+  group = parser.add_argument_group('Node autoprovisioning')
+  autoprovisioning_group = group if update_group is None else update_group
+  autoprovisioning_group.add_argument(
+      '--enable-autoprovisioning',
       default=None,
-      help=help_text,
-      hidden=hidden)
+      help="""\
+Enables  node autoprovisioning for a cluster.
+
+Cluster Autoscaler will be able to create new node pools.""",
+      hidden=hidden,
+      action='store_true')
+  group.add_argument(
+      '--max-cpu',
+      help="""\
+Maximum number of cores in the cluster.
+
+Maximum number of cores to which the cluster can scale.""",
+      hidden=hidden,
+      type=int)
+  group.add_argument(
+      '--min-cpu',
+      help="""\
+Minimum number of cores in the cluster.
+
+Minimum number of cores to which the cluster can scale.""",
+      hidden=hidden,
+      type=int)
+  group.add_argument(
+      '--max-memory',
+      help="""\
+Maximum memory in the cluster.
+
+Maximum number of gigabytes of memory to which the cluster can scale.""",
+      hidden=hidden,
+      type=int)
+  group.add_argument(
+      '--min-memory',
+      help="""\
+Minimum memory in the cluster.
+
+Minimum number of gigabytes of memory to which the cluster can scale.""",
+      hidden=hidden,
+      type=int)
 
 
 def AddEnableBinAuthzFlag(parser, hidden=True):

@@ -21,6 +21,7 @@
   "baseUrl": "https://container.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -317,7 +318,7 @@
           "type": "string"
         },
         "instanceGroupUrls": {
-          "description": "[Output only] The resource URLs of [instance\ngroups](\/compute\/docs\/instance-groups\/) associated with this\ncluster.",
+          "description": "Deprecated. Use node_pools.instance_group_urls.",
           "type": "array",
           "items": {
             "type": "string"
@@ -416,6 +417,10 @@
           "description": "Minimum CPU platform to be used by this instance. The instance may be\nscheduled on the specified or newer CPU platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform)",
           "type": "string"
         },
+        "workloadMetadataConfig": {
+          "description": "The workload metadata configuration for this node.",
+          "$ref": "WorkloadMetadataConfig"
+        },
         "taints": {
           "description": "List of kubernetes taints to be applied to each node.\n\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/configuration\/taint-and-toleration\/",
           "type": "array",
@@ -438,6 +443,27 @@
         "acceleratorType": {
           "description": "The accelerator type resource name. List of supported accelerators\n[here](\/compute\/docs\/gpus\/#Introduction)",
           "type": "string"
+        }
+      }
+    },
+    "WorkloadMetadataConfig": {
+      "id": "WorkloadMetadataConfig",
+      "description": "WorkloadMetadataConfig defines the metadata configuration to expose to\nworkloads on the node pool.",
+      "type": "object",
+      "properties": {
+        "nodeMetadata": {
+          "description": "NodeMetadata is the configuration for if and how to expose the node\nmetadata to the workload running on the node.",
+          "enumDescriptions": [
+            "Not set.",
+            "Expose only a secure subset of metadata to pods.  Currently, this blocks\nkube-env, but exposes all other metadata.",
+            "Expose all GCE metadata to pods."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "SECURE",
+            "EXPOSE"
+          ]
         }
       }
     },
@@ -608,7 +634,7 @@
           "type": "string"
         },
         "instanceGroupUrls": {
-          "description": "[Output only] The resource URLs of [instance\ngroups](\/compute\/docs\/instance-groups\/) associated with this\nnode pool.",
+          "description": "[Output only] The resource URLs of the [managed instance\ngroups](\/compute\/docs\/instance-groups\/creating-groups-of-managed-instances)\nassociated with this node pool.",
           "type": "array",
           "items": {
             "type": "string"

@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://logging.googleapis.com/v2/'
+DOCS_URL = 'https://cloud.google.com/logging/docs/'
 
 
 class Collections(enum.Enum):

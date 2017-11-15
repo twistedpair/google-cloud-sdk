@@ -400,14 +400,22 @@ class ConsoleAttr(object):
       # Handle non-string objects like Colorizer().
       return len(buf)
     width = 0
+    max_width = 0
     i = 0
     while i < len(buf):
       if self._csi and buf[i:].startswith(self._csi):
         i += self.GetControlSequenceLen(buf[i:])
+      elif buf[i] == '\n':
+        # A newline incidates the start of a new line.
+        # Newline characters have 0 width.
+        max_width = max(width, max_width)
+        width = 0
+        i += 1
       else:
         width += GetCharacterDisplayWidth(buf[i])
         i += 1
-    return width
+    max_width = max(width, max_width)
+    return max_width
 
   def SplitIntoNormalAndControl(self, buf):
     """Returns a list of (normal_string, control_sequence) tuples from buf.

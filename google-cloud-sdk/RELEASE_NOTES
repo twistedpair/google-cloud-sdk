@@ -2,6 +2,40 @@
 
 Copyright 2014-2017 Google Inc. All rights reserved.
 
+## 180.0.0 (2017-11-15)
+
+### Breaking Changes
+
+*   **(REMOVED)** Removed the capability to deploy Endpoints configuration when
+    using `gcloud beta app deploy`.
+
+### Google Container Engine
+
+*   Updated Google Container Engine's kubectl from version 1.8.2 to 1.8.3.
+
+### Google Cloud SQL
+
+*   Updated `gcloud sql instances import` to show full source URI.
+
+### Google App Engine
+
+*   Updated components to 1.9.63.
+*   Added deprecation warning in `gcloud app deploy` for Python apps using the
+    library `ssl 2.7`. For information about this deprecation, see
+    <https://cloud.google.com/appengine/docs/deprecations/python-ssl-27>.
+*   Fixed issue affecting the Go runtime in which `gcloud app deploy` failed at
+    finding dependencies that are not required.
+*   Added `--go_debugging` flag to `dev_appserver.py` to enable delve debugging
+    for the Go runtime.
+
+### Google Cloud ML
+
+*   Made Google Cloud ML Engine scale tier BASIC_TPU available in gcloud command
+    line tool.
+
+### Google Cloud Deployment Manager
+
+*   Updated `gcloud deployment-manger` to use latest public API version.
 
 ## 179.0.0 (2017-11-08)
 
@@ -55,6 +89,12 @@ Copyright 2014-2017 Google Inc. All rights reserved.
 
 ### Cloud PubSub
 
+*  Added the following commands to the `gcloud beta pubsub topics` and `gcloud
+   beta pubsub subscriptions` groups, which enable managing IAM policies:
+    * `set-iam-policy`
+    * `get-iam-policy`
+    * `add-iam-policy-binding`
+    * `remove-iam-policy-binding`
 *  Added labels flags (`--labels`, `--<update|remove>-labels`) to
    `gcloud pubsub <topics|subscriptions|snapshots> <update|create>` in release
    tracks where these commands exist. Use these labels to organize your Google

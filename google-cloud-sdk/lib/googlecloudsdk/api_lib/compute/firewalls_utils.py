@@ -49,7 +49,8 @@ class ActionType(enum.Enum):
 def AddCommonArgs(parser,
                   for_update=False,
                   with_egress_support=False,
-                  with_service_account=False):
+                  with_service_account=False,
+                  with_disabled=False):
   """Adds common arguments for firewall create or update subcommands."""
 
   min_length = 0 if for_update else 1
@@ -208,6 +209,23 @@ def AddCommonArgs(parser,
       metavar='TAG',
       type=arg_parsers.ArgList(min_length=min_length),
       help=target_tags_help)
+
+  disabled_help = """\
+      Use this flag to disable a firewall rule and stop it from being enforced
+      in the network. Disabled firewall rules are not enforced, and the
+      associated network behaves as if the firewall rule did not exist. Use
+
+       $ gcloud alpha compute firewall-rules update MY-RULE --no-disabled
+
+      to enable a disabled rule.
+      """
+  if not for_update:
+    disabled_help += """\
+        If omitted firewall rule is considered enabled.
+    """
+  if with_disabled:
+    parser.add_argument(
+        '--disabled', action='store_true', default=None, help=disabled_help)
 
   # Add egress deny firewall cli support.
   if with_egress_support:

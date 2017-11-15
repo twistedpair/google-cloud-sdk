@@ -13,6 +13,7 @@
 # limitations under the License.
 """Command util functions for gcloud container commands."""
 
+from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
@@ -142,3 +143,26 @@ def GetZoneOrRegion(args, ignore_property=False, required=True):
         ['--zone', '--region'], 'Please specify location.')
 
   return location
+
+
+def ParseUpdateOptionsBase(args, locations):
+  """Helper function to build ClusterUpdateOptions object from args.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+        command invocation.
+    locations: list of strings. Zones in which cluster has nodes.
+
+  Returns:
+    ClusterUpdateOptions, object with data used to update cluster.
+  """
+  return api_adapter.UpdateClusterOptions(
+      monitoring_service=args.monitoring_service,
+      disable_addons=args.disable_addons,
+      enable_autoscaling=args.enable_autoscaling,
+      min_nodes=args.min_nodes,
+      max_nodes=args.max_nodes,
+      node_pool=args.node_pool,
+      locations=locations,
+      enable_master_authorized_networks=args.enable_master_authorized_networks,
+      master_authorized_networks=args.master_authorized_networks)

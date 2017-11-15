@@ -449,6 +449,21 @@ class CloudbuildProjectsBuildsListRequest(_messages.Message):
   projectId = _messages.StringField(4, required=True)
 
 
+class CloudbuildProjectsBuildsRetryRequest(_messages.Message):
+  """A CloudbuildProjectsBuildsRetryRequest object.
+
+  Fields:
+    id: Build ID of the original build.
+    projectId: ID of the project.
+    retryBuildRequest: A RetryBuildRequest resource to be passed as the
+      request body.
+  """
+
+  id = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  retryBuildRequest = _messages.MessageField('RetryBuildRequest', 3)
+
+
 class CloudbuildProjectsTriggersCreateRequest(_messages.Message):
   """A CloudbuildProjectsTriggersCreateRequest object.
 
@@ -506,6 +521,20 @@ class CloudbuildProjectsTriggersPatchRequest(_messages.Message):
 
   buildTrigger = _messages.MessageField('BuildTrigger', 1)
   projectId = _messages.StringField(2, required=True)
+  triggerId = _messages.StringField(3, required=True)
+
+
+class CloudbuildProjectsTriggersRunRequest(_messages.Message):
+  """A CloudbuildProjectsTriggersRunRequest object.
+
+  Fields:
+    projectId: ID of the project.
+    repoSource: A RepoSource resource to be passed as the request body.
+    triggerId: ID of the trigger.
+  """
+
+  projectId = _messages.StringField(1, required=True)
+  repoSource = _messages.MessageField('RepoSource', 2)
   triggerId = _messages.StringField(3, required=True)
 
 
@@ -704,6 +733,7 @@ class RepoSource(_messages.Message):
   Fields:
     branchName: Name of the branch to build.
     commitSha: Explicit commit SHA to build.
+    dir: Directory, relative to the source root, in which to run the build.
     projectId: ID of the project that owns the repo. If omitted, the project
       ID requesting the build is assumed.
     repoName: Name of the repo. If omitted, the name "default" is assumed.
@@ -712,9 +742,10 @@ class RepoSource(_messages.Message):
 
   branchName = _messages.StringField(1)
   commitSha = _messages.StringField(2)
-  projectId = _messages.StringField(3)
-  repoName = _messages.StringField(4)
-  tagName = _messages.StringField(5)
+  dir = _messages.StringField(3)
+  projectId = _messages.StringField(4)
+  repoName = _messages.StringField(5)
+  tagName = _messages.StringField(6)
 
 
 class Results(_messages.Message):
@@ -728,6 +759,10 @@ class Results(_messages.Message):
 
   buildStepImages = _messages.StringField(1, repeated=True)
   images = _messages.MessageField('BuiltImage', 2, repeated=True)
+
+
+class RetryBuildRequest(_messages.Message):
+  """RetryBuildRequest specifies a build to retry."""
 
 
 class Secret(_messages.Message):

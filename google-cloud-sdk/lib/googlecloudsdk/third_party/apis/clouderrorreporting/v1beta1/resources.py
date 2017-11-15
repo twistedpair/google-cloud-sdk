@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://clouderrorreporting.googleapis.com/v1beta1/'
+DOCS_URL = 'https://cloud.google.com/error-reporting/'
 
 
 class Collections(enum.Enum):

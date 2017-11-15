@@ -22,7 +22,7 @@ from googlecloudsdk.core import resources
 
 
 API = 'cloudfunctions'
-API_VERSION = 'v1beta2'
+API_VERSION = 'v1'
 LOCATIONS_COLLECTION = API + '.projects.locations'
 
 SEVERITIES = ['DEBUG', 'INFO', 'ERROR']

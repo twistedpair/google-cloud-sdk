@@ -451,11 +451,11 @@ class ChoiceEnumMapper(object):
 
   def GetChoiceForEnum(self, enum_value):
     """Converts an enum value to a choice argument value."""
-    return self._enum_to_choice.setdefault(str(enum_value), None)
+    return self._enum_to_choice.get(str(enum_value))
 
   def GetEnumForChoice(self, choice_value):
     """Converts a mapped string choice value to an enum."""
-    return self._choice_to_enum.setdefault(choice_value, None)
+    return self._choice_to_enum.get(choice_value)
 
   @property
   def choices(self):

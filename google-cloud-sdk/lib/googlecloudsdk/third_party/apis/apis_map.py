@@ -185,12 +185,6 @@ MAP = {
             messages_modulepath='cloudfunctions_v1_messages',
             default_version=True
         ),
-        'v1beta2': APIDef(
-            class_path='googlecloudsdk.third_party.apis.cloudfunctions.v1beta2',
-            client_classpath='cloudfunctions_v1beta2_client.CloudfunctionsV1beta2',
-            messages_modulepath='cloudfunctions_v1beta2_messages',
-            default_version=False
-        ),
     },
     'cloudiot': {
         'v1': APIDef(

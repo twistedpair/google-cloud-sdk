@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://language.googleapis.com/'
+DOCS_URL = 'https://cloud.google.com/natural-language/'
 
 
 class Collections(enum.Enum):

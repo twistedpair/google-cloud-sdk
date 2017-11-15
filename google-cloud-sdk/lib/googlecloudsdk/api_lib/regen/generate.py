@@ -210,13 +210,17 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
   if not os.path.exists(api_dir):
     os.makedirs(api_dir)
   resource_file_name = os.path.join(api_dir, 'resources.py')
-  logging.debug('Generating resource module at %s', resource_file_name)
 
   if resource_collections:
+    logging.debug('Generating resource module at %s', resource_file_name)
     tpl = template.Template(filename=os.path.join(os.path.dirname(__file__),
                                                   'resources.tpl'))
     with open(resource_file_name, 'wb') as output_file:
       ctx = runtime.Context(output_file,
                             collections=sorted(resource_collections),
-                            base_url=resource_collections[0].base_url)
+                            base_url=resource_collections[0].base_url,
+                            docs_url=discovery_doc.docs_url)
       tpl.render_context(ctx)
+  elif os.path.isfile(resource_file_name):
+    logging.debug('Removing existing resource module at %s', resource_file_name)
+    os.remove(resource_file_name)

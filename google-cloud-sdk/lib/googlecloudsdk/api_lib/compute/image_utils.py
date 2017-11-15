@@ -16,6 +16,8 @@
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -313,3 +315,24 @@ def WarnAlias(alias):
     msg += 'Please use --image-family and --image-project instead.'
 
   log.warn(msg)
+
+
+def AddGuestOsFeaturesArg(parser, release_track):
+  """Add the guest-os-features arg."""
+  # Alpha and Beta Args
+  guest_os_features = []
+  if release_track == base.ReleaseTrack.GA:
+    guest_os_features = GUEST_OS_FEATURES
+  elif release_track == base.ReleaseTrack.BETA:
+    guest_os_features = GUEST_OS_FEATURES_BETA
+  elif release_track == base.ReleaseTrack.ALPHA:
+    guest_os_features = GUEST_OS_FEATURES_ALPHA
+
+  if not guest_os_features:
+    return
+  parser.add_argument(
+      '--guest-os-features',
+      metavar='GUEST_OS_FEATURE',
+      type=arg_parsers.ArgList(
+          element_type=lambda x: x.upper(), choices=guest_os_features),
+      help=('One or more features supported by the OS.'))

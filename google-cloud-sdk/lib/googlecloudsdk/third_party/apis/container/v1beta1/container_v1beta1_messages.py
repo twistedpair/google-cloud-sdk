@@ -192,8 +192,7 @@ class Cluster(_messages.Message):
       this configuration (along with the "node_config") will be used to create
       a "NodePool" object with an auto-generated name. Do not use this and a
       node_pool at the same time.
-    instanceGroupUrls: [Output only] The resource URLs of [instance
-      groups](/compute/docs/instance-groups/) associated with this cluster.
+    instanceGroupUrls: Deprecated. Use node_pools.instance_group_urls.
     ipAllocationPolicy: Configuration for cluster IP allocation.
     labelFingerprint: The fingerprint of the set of labels for this cluster.
     legacyAbac: Configuration for the legacy ABAC authorization mode.
@@ -1362,6 +1361,7 @@ class NodeConfig(_messages.Message):
     taints: List of kubernetes taints to be applied to each node.  For more
       information, including usage and the valid values, see:
       https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+    workloadMetadataConfig: The workload metadata configuration for this node.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1442,6 +1442,7 @@ class NodeConfig(_messages.Message):
   serviceAccount = _messages.StringField(13)
   tags = _messages.StringField(14, repeated=True)
   taints = _messages.MessageField('NodeTaint', 15, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 16)
 
 
 class NodeManagement(_messages.Message):
@@ -1479,8 +1480,9 @@ class NodePool(_messages.Message):
       that your Compute Engine <a href="/compute/docs/resource-
       quotas">resource quota</a> is sufficient for this number of instances.
       You must also have available firewall and routes quota.
-    instanceGroupUrls: [Output only] The resource URLs of [instance
-      groups](/compute/docs/instance-groups/) associated with this node pool.
+    instanceGroupUrls: [Output only] The resource URLs of the [managed
+      instance groups](/compute/docs/instance-groups/creating-groups-of-
+      managed-instances) associated with this node pool.
     management: NodeManagement configuration for this NodePool.
     name: The name of the node pool.
     selfLink: [Output only] Server-defined URL for the resource.
@@ -2323,6 +2325,36 @@ class UpdateNodePoolRequest(_messages.Message):
   projectId = _messages.StringField(6)
   version = _messages.StringField(7)
   zone = _messages.StringField(8)
+
+
+class WorkloadMetadataConfig(_messages.Message):
+  """WorkloadMetadataConfig defines the metadata configuration to expose to
+  workloads on the node pool.
+
+  Enums:
+    NodeMetadataValueValuesEnum: NodeMetadata is the configuration for if and
+      how to expose the node metadata to the workload running on the node.
+
+  Fields:
+    nodeMetadata: NodeMetadata is the configuration for if and how to expose
+      the node metadata to the workload running on the node.
+  """
+
+  class NodeMetadataValueValuesEnum(_messages.Enum):
+    """NodeMetadata is the configuration for if and how to expose the node
+    metadata to the workload running on the node.
+
+    Values:
+      UNSPECIFIED: Not set.
+      SECURE: Expose only a secure subset of metadata to pods.  Currently,
+        this blocks kube-env, but exposes all other metadata.
+      EXPOSE: Expose all GCE metadata to pods.
+    """
+    UNSPECIFIED = 0
+    SECURE = 1
+    EXPOSE = 2
+
+  nodeMetadata = _messages.EnumField('NodeMetadataValueValuesEnum', 1)
 
 
 encoding.AddCustomJsonFieldMapping(

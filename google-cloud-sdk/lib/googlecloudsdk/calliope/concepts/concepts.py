@@ -78,6 +78,11 @@ class ConceptSpec(object):
     """
     raise NotImplementedError
 
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return False
+    return self.name == other.name and self.attributes == other.attributes
+
 
 class Attribute(object):
   """An attribute of a concept.
@@ -95,24 +100,26 @@ class Attribute(object):
       specific sources.
     completer: core.cache.completion_cache.Completer, the completer associated
       with the attribute.
+    value_type: the type to be accepted by the attribute arg. Defaults to str.
   """
 
   def __init__(self, name, help_text=None, required=False, fallthroughs=None,
-               completer=None):
+               completer=None, value_type=None):
     self.name = name
     self.help_text = help_text
     self.required = required
     self.fallthroughs = fallthroughs or []
     self.completer = completer
+    self.value_type = value_type or str
 
   def __eq__(self, other):
-    if not isinstance(other, self.__class__):
+    if not isinstance(other, type(self)):
       return False
-    for attribute_name in ['name', 'help_text', 'required', 'completer']:
-      if (getattr(other, attribute_name, '') !=
-          getattr(self, attribute_name, '')):
-        return False
-    return True
+    return (self.name == other.name and self.help_text == other.help_text
+            and self.required == other.required
+            and self.completer == other.completer
+            and self.fallthroughs == other.fallthroughs
+            and self.value_type == other.value_type)
 
 
 class ResourceSpec(ConceptSpec):
@@ -172,7 +179,8 @@ class ResourceSpec(ConceptSpec):
           help_text=attribute_config.help_text,
           required=True,
           fallthroughs=fallthroughs,
-          completer=attribute_config.completer)
+          completer=attribute_config.completer,
+          value_type=str)
       self._attributes.append(new_attribute)
       # Keep a map from attribute names to param names. While attribute names
       # are used for error messaging and arg creation/parsing, resource parsing

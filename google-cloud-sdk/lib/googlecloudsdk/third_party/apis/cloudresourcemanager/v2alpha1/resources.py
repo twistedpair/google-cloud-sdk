@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://cloudresourcemanager.googleapis.com/v2alpha1/'
+DOCS_URL = 'https://cloud.google.com/resource-manager'
 
 
 class Collections(enum.Enum):

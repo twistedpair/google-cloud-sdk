@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 import time
 
 from googlecloudsdk.calliope import parser_completer
+from googlecloudsdk.command_lib.meta import generate_cli_trees
 from googlecloudsdk.command_lib.shell import parser
 from googlecloudsdk.core import module_util
 from prompt_toolkit import completion
@@ -74,14 +75,17 @@ class CompleterCache(object):
 class ShellCliCompleter(completion.Completer):
   """A prompt_toolkit shell CLI completer."""
 
-  def __init__(self, shell_parser, args=None, hidden=False, cosh=None):
+  def __init__(self, shell_parser, args=None, hidden=False,
+               manpage_generator=True, cosh=None):
     self.parsed_args = args
     self.hidden = hidden
     self.coshell = cosh
     self.completer_cache = {}
+    self.manpage_generator = manpage_generator
     self.parser = shell_parser
     self.path_completer = completers.PathCompleter(expanduser=True)
     self.empty = False
+    generate_cli_trees.CliTreeGenerator.MemoizeFailures(True)
 
   def IsSuppressed(self, info):
     if self.hidden:
@@ -154,9 +158,13 @@ class ShellCliCompleter(completion.Completer):
     elif arg.token_type == parser.ArgTokenType.UNKNOWN:
       prefix = arg.value
       if len(args) == 1:
-        if self.empty:
-          return None, 0
         node = self.parser.root
+      elif (self.manpage_generator and not prefix and
+            len(args) == 2 and args[0].value):
+        node = generate_cli_trees.LoadOrGenerate(args[0].value)
+        if not node:
+          return None, 0
+        self.parser.root[parser.LOOKUP_COMMANDS][args[0].value] = node
       elif args[-2].token_type == parser.ArgTokenType.GROUP:
         node = args[-2].tree
       else:

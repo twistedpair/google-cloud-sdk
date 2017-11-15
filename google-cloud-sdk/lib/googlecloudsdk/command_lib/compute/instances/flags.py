@@ -21,6 +21,7 @@ from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute.zones import service as zones_service
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
@@ -1350,13 +1351,31 @@ def AddNoRestartOnFailureArgs(parser):
       """)
 
 
-def AddMaintenancePolicyArgs(parser):
+def AddMaintenancePolicyArgs(parser, deprecate=False):
+  """Adds maintenance behavior related args."""
+  help_text = ('Specifies the behavior of the instances when their host '
+               'machines undergo maintenance. The default is MIGRATE.')
+  flag_type = lambda x: x.upper()
+  action = None
+  if deprecate:
+    # Use nested group to group the deprecated arg with the new one.
+    parser = parser.add_mutually_exclusive_group('Maintenance Behavior.')
+    parser.add_argument(
+        '--on-host-maintenance',
+        dest='maintenance_policy',
+        choices=MIGRATION_OPTIONS,
+        type=flag_type,
+        help=help_text)
+    action = actions.DeprecationAction(
+        '--maintenance-policy',
+        warn='The {flag_name} flag is now deprecated. Please use '
+             '`--on-host-maintenance` instead')
   parser.add_argument(
       '--maintenance-policy',
+      action=action,
       choices=MIGRATION_OPTIONS,
-      type=lambda x: x.upper(),
-      help=('Specifies the behavior of the instances when their host '
-            'machines undergo maintenance. The default is MIGRATE.'))
+      type=flag_type,
+      help=help_text)
 
 
 def AddAcceleratorArgs(parser):
@@ -1736,6 +1755,9 @@ def AddDeletionProtectionFlag(parser, use_default_value=True):
   help_text = ('Enables deletion protection for the instance.')
   if use_default_value:
     help_text += ' Deletion protection is disabled by default.'
+  else:
+    help_text += (' To disable deletion protection, use '
+                  '`--no-deletion-protection`.')
   parser.add_argument(
       '--deletion-protection',
       help=help_text,

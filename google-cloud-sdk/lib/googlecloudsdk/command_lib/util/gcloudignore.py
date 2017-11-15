@@ -482,8 +482,6 @@ class FileChooser(object):
 
 def _GitFilesExist(directory):
   git_files = [os.path.join(directory, name) for name in GIT_FILES]
-  print -2, git_files
-  print -1, map(os.path.exists, git_files)
   return any(map(os.path.exists, git_files))
 
 

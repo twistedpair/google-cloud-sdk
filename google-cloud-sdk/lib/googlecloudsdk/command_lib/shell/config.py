@@ -29,6 +29,8 @@ class Config(object):
     help_lines: Maximum number of help snippet lines.
     hidden: Expose hidden commands/flags if true.
     justify_bottom_lines: Left and right justify bottom toolbar lines.
+    manpage_generator: Use the manpage CLI tree generator for unsupported
+      commands if true.
     multi_column_completion_menu: Display completions as multi-column menu
       if true.
     prompt: Command prompt string.
@@ -46,6 +48,7 @@ class Config(object):
       help_lines=None,
       hidden=None,
       justify_bottom_lines=None,
+      manpage_generator=None,
       multi_column_completion_menu=None,
       prompt=None,
       show_help=None,
@@ -85,6 +88,10 @@ class Config(object):
     if justify_bottom_lines is None:
       justify_bottom_lines = interactive.justify_bottom_lines.GetBool()
     self.justify_bottom_lines = justify_bottom_lines
+
+    if manpage_generator is None:
+      manpage_generator = interactive.manpage_generator.Get()
+    self.manpage_generator = manpage_generator
 
     if multi_column_completion_menu is None:
       multi_column_completion_menu = (

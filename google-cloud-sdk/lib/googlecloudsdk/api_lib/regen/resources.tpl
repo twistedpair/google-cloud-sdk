@@ -32,6 +32,7 @@ def SplitPath(path, max_length):
   return parts
 %>
 BASE_URL = '${base_url}'
+DOCS_URL = '${docs_url}'
 
 
 class Collections(enum.Enum):

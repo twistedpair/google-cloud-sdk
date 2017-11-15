@@ -54,6 +54,14 @@ APP_ENGINE_APIS_DEPRECATION_WARNING = (
     'new base image, or use a Google managed runtime. '
     'To learn more, visit {}.').format(UPGRADE_FLEX_PYTHON_URL)
 
+PYTHON_SSL_WARNING = (
+    'You are using an outdated version [2.7] of the Python SSL library. '
+    'Please update your app.yaml file to specify SSL library [2.7.11] to '
+    'avoid security risks. On March 1, 2018, version 2.7 will be '
+    'deprecated and your app will be automatically migrated to version 2.7.11.'
+    'For more information, visit {}.'
+).format('https://cloud.google.com/appengine/docs/deprecations/python-ssl-27')
+
 # This is the equivalent of the following in app.yaml:
 # skip_files:
 # - ^(.*/)?#.*#$
@@ -298,6 +306,10 @@ class ServiceYamlInfo(_YamlInfo):
     else:
       parsed.module = parsed.service or ServiceYamlInfo.DEFAULT_SERVICE_NAME
 
+    if (util.IsStandard(parsed.env) and parsed.runtime == 'python27' and
+        HasLib(parsed, 'ssl', '2.7')):
+      log.warn(PYTHON_SSL_WARNING)
+
     _CheckIllegalAttribute(
         name='application',
         yaml_info=parsed,
@@ -352,6 +364,24 @@ class ServiceYamlInfo(_YamlInfo):
               DEFAULT_SKIP_FILES_FLEX,
               'skip_files')
           # pylint:enable=protected-access
+
+
+def HasLib(parsed, name, version=None):
+  """Check if the parsed yaml has specified the given library.
+
+  Args:
+    parsed: parsed from yaml to python object
+    name: str, Name of the library
+    version: str, If specified, also matches against the version of the library.
+
+  Returns:
+    True if library with optionally the given version is present.
+  """
+  libs = parsed.libraries or []
+  if version:
+    return any(lib.name == name and lib.version == version for lib in libs)
+  else:
+    return any(lib.name == name for lib in libs)
 
 
 def _CheckIllegalAttribute(name, yaml_info, extractor_func, file_path, msg=''):

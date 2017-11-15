@@ -20,6 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://container.googleapis.com/",
   "batchPath": "batch",
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -237,6 +238,10 @@
           "description": "Configuration for cluster IP allocation.",
           "$ref": "IPAllocationPolicy"
         },
+        "auditConfig": {
+          "description": "Configuration for audit logging.",
+          "$ref": "AuditConfig"
+        },
         "masterAuthorizedNetworksConfig": {
           "description": "Master authorized networks is a Beta feature.\nThe configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
@@ -307,7 +312,7 @@
           "type": "string"
         },
         "instanceGroupUrls": {
-          "description": "[Output only] The resource URLs of [instance\ngroups](\/compute\/docs\/instance-groups\/) associated with this\ncluster.",
+          "description": "Deprecated. Use node_pools.instance_group_urls.",
           "type": "array",
           "items": {
             "type": "string"
@@ -590,7 +595,7 @@
           "type": "string"
         },
         "instanceGroupUrls": {
-          "description": "[Output only] The resource URLs of [instance\ngroups](\/compute\/docs\/instance-groups\/) associated with this\nnode pool.",
+          "description": "[Output only] The resource URLs of the [managed instance\ngroups](\/compute\/docs\/instance-groups\/creating-groups-of-managed-instances)\nassociated with this node pool.",
           "type": "array",
           "items": {
             "type": "string"
@@ -806,6 +811,17 @@
         "servicesIpv4CidrBlock": {
           "description": "The IP address range of the services IPs in this cluster. If blank, a range\nwill be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nSet to blank to have a range chosen with the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
           "type": "string"
+        }
+      }
+    },
+    "AuditConfig": {
+      "id": "AuditConfig",
+      "description": "Configuration for audit logging. It's here only for the internal use by an\noncall to disable or enable audit logging in a cluster by calling\ngoogle.container.v1internal.ClusterManagerInternal.UpdateClusterInternal.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable audit logging of the Kubernetes API.  If enabled, audit logs will be\nexported to Cloud Audit Logging.",
+          "type": "boolean"
         }
       }
     },
@@ -1052,6 +1068,10 @@
         "desiredMasterAuthorizedNetworksConfig": {
           "description": "Master authorized networks is a Beta feature.\nThe desired configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
+        },
+        "desiredAuditConfig": {
+          "description": "The desired configuration for audit logging.",
+          "$ref": "AuditConfig"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. The only valid value is the\nlatest supported version. Use \"-\" to have the server automatically select\nthe latest version.",

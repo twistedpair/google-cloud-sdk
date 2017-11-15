@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://clouddebugger.googleapis.com/v2/'
+DOCS_URL = 'http://cloud.google.com/debugger'
 
 
 class Collections(enum.Enum):

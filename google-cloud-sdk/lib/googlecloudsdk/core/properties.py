@@ -1020,8 +1020,6 @@ class _SectionAuth(_Section):
         'authorization_token_file', hidden=True)
     self.credential_file_override = self._Add(
         'credential_file_override', hidden=True)
-    self.use_sqlite_store = self._AddBool(
-        'use_sqlite_store', default=True, hidden=True)
 
 
 class _SectionBilling(_Section):
@@ -1034,15 +1032,15 @@ class _SectionBilling(_Section):
     super(_SectionBilling, self).__init__('billing')
 
     self.quota_project = self._Add(
-        'quota_project', hidden=True, default=_SectionBilling.LEGACY,
+        'quota_project', default=_SectionBilling.CURRENT_PROJECT,
         help_text='This is the project that will be charged quota for the '
-        'operations performed in gcloud. By default, a shared project will be '
-        'used, but this may not work for all APIs (in which case your current '
-        'project will be used if this is unset). Setting the value to '
-        'CURRENT_PROJECT will change quota against your currently set project '
-        'for the operations you perform on it. If you need to operate on one '
-        'project, but charge quota against a different project, you can use '
-        'this property to specify the alternate project.')
+        'operations performed in gcloud. When unset, the default is '
+        'CURRENT_PROJECT, which will charge quota against your currently set '
+        'project for the operations you perform on it. Some existing APIs '
+        'will continue to use a shared project for quota by default when this '
+        'property is unset. If you need to operate on one project, but charge '
+        'quota against a different project, you can use this property to '
+        'specify the alternate project.')
 
 
 class _SectionMetrics(_Section):
@@ -1136,10 +1134,10 @@ class _SectionInteractive(_Section):
     super(_SectionInteractive, self).__init__('interactive')
     self.bottom_bindings_line = self._AddBool(
         'bottom_bindings_line', default=True,
-        help_text='Display the bottom key bindings line if true.')
+        help_text='Display the bottom key bindings line, if true.')
     self.bottom_status_line = self._AddBool(
         'bottom_status_line', default=False,
-        help_text='Display the bottom status line if true.')
+        help_text='Display the bottom status line, if true.')
     self.completion_menu_lines = self._Add(
         'completion_menu_lines', default=4,
         help_text='Number of lines in the completion menu.')
@@ -1147,29 +1145,33 @@ class _SectionInteractive(_Section):
         'context', default='',
         help_text='Command context string.')
     self.fixed_prompt_position = self._Add(
-        'fixed_prompt_position', default='',
-        help_text='Display the prompt at the same position if true.')
+        'fixed_prompt_position', default=False,
+        help_text='Display the prompt at the same position, if true.')
     self.help_lines = self._Add(
         'help_lines', default=10,
         help_text='Maximum number of help snippet lines.')
     self.hidden = self._AddBool(
         'hidden', default=False,
-        help_text='Expose hidden commands/flags if true.')
+        help_text='Expose hidden commands/flags, if true.')
     self.justify_bottom_lines = self._AddBool(
         'justify_bottom_lines', default=False,
-        help_text='Left- and right-justify bottom toolbar lines.')
+        help_text='Left- and right-justify bottom toolbar lines, if true.')
+    self.manpage_generator = self._Add(
+        'manpage_generator', default=True,
+        help_text=('Use the manpage CLI tree generator for unsupported '
+                   'commands, if true.'))
     self.multi_column_completion_menu = self._AddBool(
         'multi_column_completion_menu', default=False,
-        help_text='Display the completions as a multi-column menu.')
+        help_text='Display the completions as a multi-column menu, if true.')
     self.prompt = self._Add(
         'prompt', default='$ ',
         help_text='Command prompt string.')
     self.show_help = self._AddBool(
         'show_help', default=True,
-        help_text='Show help as command args are entered if true.')
+        help_text='Show help as command args are entered, if true.')
     self.suggest = self._AddBool(
         'suggest', default=False,
-        help_text='Add command line suggestions based on history if true.')
+        help_text='Add command line suggestions based on history, if true.')
 
 
 class _SectionProxy(_Section):

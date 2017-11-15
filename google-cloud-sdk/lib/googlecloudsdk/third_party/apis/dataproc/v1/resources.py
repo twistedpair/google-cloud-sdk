@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://dataproc.googleapis.com/v1/'
+DOCS_URL = 'https://cloud.google.com/dataproc/'
 
 
 class Collections(enum.Enum):

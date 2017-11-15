@@ -11,116 +11,41 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Source apis layer."""
-import os
+"""SourceRepo APIs layer.
 
+Parse methods accepts strings from command-line arguments, and it can accept
+more formats like "https://...". Get methods are strict about the arguments.
+"""
 from apitools.base.py import exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
-class RepoCreationError(exceptions.Error):
-  """Unable to create repo."""
-
-  def __init__(self, message):
-    super(RepoCreationError, self).__init__(message)
-
-
-class RepoDeletionError(exceptions.Error):
-  """Unable to delete repo."""
-
-  def __init__(self, message):
-    super(RepoDeletionError, self).__init__(message)
+def ParseRepo(repo):
+  """Parse a string as a sourcerepo.projects.repos resource."""
+  return resources.REGISTRY.Parse(
+      repo,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='sourcerepo.projects.repos')
 
 
-class RepoNoExistError(exceptions.Error):
-  """Repo does not exist."""
-
-  def __init__(self, message):
-    super(RepoNoExistError, self).__init__(message)
-
-
-def _NormalizeToSourceAPIPath(path):
-  r"""Fix an OS-native path to conform to the Unix/Source API style.
-
-  Args:
-    path: (string) An OS-native path (e.g. "/foo/bar" on Unix or "foo\bar" on
-      Windows.
-  Returns:
-    (string) The path converted to Unix/Source API style. '\' characters will
-    be converted to '/' on Windows.
-    TODO(b/36051030) Consider whether it makes sense to strip drive letters.
-  """
-
-  return path.replace(os.sep, '/')
-
-
-class NoEndpointException(Exception):
-
-  def __str__(self):
-    return ('Source endpoint not initialized. Source.SetApiEndpoint must be '
-            'called before using this module.')
-
-
-class FileTooBigException(Exception):
-
-  def __init__(self, name, size, max_size):
-    super(FileTooBigException, self).__init__()
-    self.name = name
-    self.size = size
-    self.max_size = max_size
-
-  def __str__(self):
-    return ('Could not write file "{0}" because it was too large '
-            '({1} bytes). Max size is {2} bytes').format(
-                self.name, self.size, self.max_size)
-
-
-def _GetViolationsFromError(error_info):
-  """Looks for violations descriptions in error message.
-
-  Args:
-    error_info: json containing error information.
-  Returns:
-    List of violations descriptions.
-  """
-  result = ''
-  details = None
-  try:
-    if 'details' in error_info:
-      details = error_info['details']
-    for field in details:
-      if 'fieldViolations' in field:
-        violations = field['fieldViolations']
-        for violation in violations:
-          if 'description' in violation:
-            result += violation['description'] + '\n'
-  except (ValueError, TypeError):
-    pass
-  return result
+def GetDefaultProject():
+  """Create a sourcerepo.projects resource of the default project."""
+  return resources.REGISTRY.Create(
+      'sourcerepo.projects',
+      projectsId=properties.VALUES.core.project.GetOrFail())
 
 
 class Source(object):
   """Base class for sourcerepo api wrappers."""
-  _client = None
-  _resource_parser = None
 
-  def __init__(self):
-    self._CheckClient()
-    self.messages = self._client.MESSAGES_MODULE
-
-  def _CheckClient(self):
-    if not self._client:
-      raise NoEndpointException()
-
-  @classmethod
-  def SetApiEndpoint(cls):
-    cls._client = apis.GetClientInstance('sourcerepo', 'v1')
-
-  @classmethod
-  def SetResourceParser(cls, parser):
-    cls._resource_parser = parser
+  def __init__(self, client=None):
+    if client is None:
+      client = apis.GetClientInstance('sourcerepo', 'v1')
+    self._client = client
+    self.messages = apis.GetMessagesModule('sourcerepo', 'v1')
 
   def GetIamPolicy(self, repo_resource):
     """Gets IAM policy for a repo.

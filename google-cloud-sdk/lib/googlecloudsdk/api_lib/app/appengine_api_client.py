@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.app import service_util
+from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base
 from googlecloudsdk.api_lib.cloudbuild import build as cloud_build
@@ -138,7 +139,6 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
                     service_config,
                     manifest,
                     build,
-                    endpoints_info=None,
                     extra_config_settings=None):
     """Updates and deploys new app versions based on given config.
 
@@ -155,17 +155,13 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       build: BuildArtifact, a wrapper which contains either the build
         ID for an in-progress parallel build, or the name of the container image
         for a serial build.
-      endpoints_info: EndpointsServiceInfo, Endpoints service info to be added
-        to the AppInfoExternal configuration. Only provided when Endpoints API
-        Management feature is enabled.
       extra_config_settings: dict, client config settings to pass to the server
         as beta settings.
     Returns:
       A Version resource representing the deployed version.
     """
     version_resource = self._CreateVersionResource(
-        service_config, manifest, version_id, build, endpoints_info,
-        extra_config_settings)
+        service_config, manifest, version_id, build, extra_config_settings)
     create_request = self.messages.AppengineAppsServicesVersionsCreateRequest(
         parent=self._GetServiceRelativeName(service_name=service_name),
         version=version_resource)
@@ -184,6 +180,8 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         operation=operation.name))
 
     message = 'Updating service [{service}]'.format(service=service_name)
+    if util.Environment.IsFlexible(service_config.env):
+      message += ' (this may take several minutes)'
 
     return operations_util.WaitForOperation(self.client.apps_operations,
                                             operation,
@@ -546,7 +544,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     return [operations_util.Operation(op) for op in operations]
 
   def _CreateVersionResource(self, service_config, manifest, version_id, build,
-                             endpoints_info, extra_config_settings):
+                             extra_config_settings):
     """Constructs a Version resource for deployment.
 
     Args:
@@ -557,9 +555,6 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       version_id: str, The version of the service.
       build: BuildArtifact, The build ID or image path. Build ID only supported
         in beta.
-      endpoints_info: EndpointsServiceInfo, Endpoints service info to be added
-        to the AppInfoExternal configuration. Only provided when Endpoints API
-        Management feature is enabled.
       extra_config_settings: dict, client config settings to pass to the server
         as beta settings.
 
@@ -615,11 +610,6 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     # possible.
     if 'betaSettings' in json_version_resource:
       json_dict = json_version_resource.get('betaSettings')
-      # TODO(b/29993301): Move Endpoints settings up from beta_settings into a
-      # top level configuration section of messages.Version
-      if json_dict and endpoints_info:
-        json_dict['endpoints_service_name'] = endpoints_info.service_name
-        json_dict['endpoints_service_version'] = endpoints_info.service_version
       attributes = []
       for key, value in sorted(json_dict.iteritems()):
         attributes.append(

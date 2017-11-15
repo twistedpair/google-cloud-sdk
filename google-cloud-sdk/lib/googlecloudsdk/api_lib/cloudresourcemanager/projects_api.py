@@ -19,7 +19,6 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.command_lib.iam import iam_util
-from googlecloudsdk.command_lib.util import labels_util
 
 
 def List(limit=None, filter=None, batch_size=500):  # pylint: disable=redefined-builtin
@@ -63,14 +62,14 @@ def Get(project_ref):
     raise projects_util.ConvertHttpError(error)
 
 
-def Create(project_ref, display_name=None, parent=None, update_labels=None):
+def Create(project_ref, display_name=None, parent=None, labels=None):
   """Create a new project.
 
   Args:
     project_ref: The identifier for the project
     display_name: Optional display name for the project
     parent: Optional for the project (ex. folders/123 or organizations/5231)
-    update_labels: Optional labels to apply to the project
+    labels: Optional labels to apply to the project
 
   Returns:
     An Operation object which can be used to check on the progress of the
@@ -83,8 +82,7 @@ def Create(project_ref, display_name=None, parent=None, update_labels=None):
           projectId=project_ref.Name(),
           name=display_name if display_name else project_ref.Name(),
           parent=parent,
-          labels=labels_util.UpdateLabels(
-              None, messages.Project.LabelsValue, update_labels=update_labels)))
+          labels=labels))
 
 
 def Delete(project_ref):
@@ -118,8 +116,7 @@ def Undelete(project_ref):
 def Update(project_ref,
            name=None,
            parent=None,
-           update_labels=None,
-           remove_labels=None):
+           labels_diff=None):
   """Update project information."""
   client = projects_util.GetClient()
   messages = projects_util.GetMessages()
@@ -137,10 +134,10 @@ def Update(project_ref,
   if parent:
     project.parent = parent
 
-  project.labels = labels_util.UpdateLabels(project.labels,
-                                            messages.Project.LabelsValue,
-                                            update_labels=update_labels,
-                                            remove_labels=remove_labels)
+  if labels_diff and labels_diff.MayHaveUpdates():
+    project.labels = labels_diff.Apply(messages.Project.LabelsValue,
+                                       project.labels)
+
   try:
     return client.projects.Update(project)
   except exceptions.HttpError as error:

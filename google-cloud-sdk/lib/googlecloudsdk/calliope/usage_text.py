@@ -155,16 +155,23 @@ def GetPositionalUsage(arg, markdown=False):
     return var
 
 
-def _GetFlagMetavar(flag, metavar=None, name=None):
+def _GetFlagMetavar(flag, metavar=None, name=None, markdown=False):
   """Returns a usage-separator + metavar for flag."""
   if metavar is None:
     metavar = flag.metavar or flag.dest.upper()
   separator = '=' if name and name.startswith('--') else ' '
   if isinstance(flag.type, arg_parsers.ArgList):
-    msg = flag.type.GetUsageMsg(bool(flag.metavar), metavar)
-    return separator + msg
+    metavar = flag.type.GetUsageMsg(bool(flag.metavar), metavar)
   if metavar == ' ':
     return ''
+  if markdown:
+    metavar = _ApplyMarkdownItalic(metavar)
+  if separator == '=':
+    metavar = separator + metavar
+    separator = ''
+  if flag.nargs in ('?', '*'):
+    metavar = '[' + metavar + ']'
+    separator = ''
   return separator + metavar
 
 
@@ -204,9 +211,10 @@ def GetFlagUsage(arg, brief=False, markdown=False, inverted=False, value=True):
       long_string = ''
     if not value or arg.nargs == 0:
       return long_string
+    flag_metavar = _GetFlagMetavar(arg, metavar, name=long_string)
     return u'{flag}{metavar}'.format(
         flag=long_string,
-        metavar=_GetFlagMetavar(arg, metavar, name=long_string))
+        metavar=flag_metavar)
   if arg.nargs == 0:
     if markdown:
       usage = ', '.join([base.MARKDOWN_BOLD + x + base.MARKDOWN_BOLD
@@ -216,9 +224,7 @@ def GetFlagUsage(arg, brief=False, markdown=False, inverted=False, value=True):
   else:
     usage_list = []
     for name in names:
-      flag_metavar = _GetFlagMetavar(arg, metavar, name=name)
-      if markdown:
-        flag_metavar = _ApplyMarkdownItalic(flag_metavar)
+      flag_metavar = _GetFlagMetavar(arg, metavar, name=name, markdown=markdown)
       usage_list.append(
           u'{bb}{flag}{be}{flag_metavar}'.format(
               bb=base.MARKDOWN_BOLD if markdown else '',

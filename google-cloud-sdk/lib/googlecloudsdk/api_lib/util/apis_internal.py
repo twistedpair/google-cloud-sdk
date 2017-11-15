@@ -223,6 +223,7 @@ def _GetApiCollections(api_name, api_version):
           api_name,
           api_version,
           resources_module.BASE_URL,
+          resources_module.DOCS_URL,
           collection.collection_name,
           collection.path,
           collection.flat_paths,

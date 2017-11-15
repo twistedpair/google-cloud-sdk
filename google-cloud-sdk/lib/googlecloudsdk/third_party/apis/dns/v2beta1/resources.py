@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://www.googleapis.com/dns/v2beta1/'
+DOCS_URL = 'https://developers.google.com/cloud-dns'
 
 
 class Collections(enum.Enum):

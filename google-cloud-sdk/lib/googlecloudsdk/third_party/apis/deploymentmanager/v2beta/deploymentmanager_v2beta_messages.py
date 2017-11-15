@@ -158,7 +158,8 @@ class CompositeType(_messages.Message):
       [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
       characters long and must conform to the regular expression
       ([a-z]([-a-z0-9]*[a-z0-9])?)?
-    name: Name of the composite type.
+    name: Name of the composite type, must follow the expression:
+      [a-z]([-a-z0-9_.]{0,61}[a-z0-9])?.
     operation: Output only. The Operation that most recently ran, or is
       currently running, on this composite type.
     selfLink: Output only. Self link for the type provider.
@@ -1921,14 +1922,16 @@ class TemplateContents(_messages.Message):
     imports: Import files referenced by the main template.
     interpreter: Which interpreter (python or jinja) should be used during
       expansion.
+    mainTemplate: The filename of the mainTemplate
     schema: The contents of the template schema.
     template: The contents of the main template file.
   """
 
   imports = _messages.MessageField('ImportFile', 1, repeated=True)
   interpreter = _messages.StringField(2)
-  schema = _messages.StringField(3)
-  template = _messages.StringField(4)
+  mainTemplate = _messages.StringField(3)
+  schema = _messages.StringField(4)
+  template = _messages.StringField(5)
 
 
 class TestPermissionsRequest(_messages.Message):

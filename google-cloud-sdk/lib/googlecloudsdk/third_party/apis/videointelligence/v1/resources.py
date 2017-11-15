@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://videointelligence.googleapis.com/v1/'
+DOCS_URL = 'https://cloud.google.com/video-intelligence/docs/'
 
 
 class Collections(enum.Enum):

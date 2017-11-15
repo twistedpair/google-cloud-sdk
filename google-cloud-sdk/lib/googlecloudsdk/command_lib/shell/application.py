@@ -21,6 +21,8 @@ import sys
 
 from googlecloudsdk.calliope import cli_tree
 
+from googlecloudsdk.command_lib.meta import generate_cli_trees
+
 from googlecloudsdk.command_lib.shell import bindings
 from googlecloudsdk.command_lib.shell import completer
 from googlecloudsdk.command_lib.shell import coshell
@@ -145,21 +147,25 @@ class Application(object):
   """The CLI application.
 
   Attributes:
-    cli: The prompt cli object.
     coshell: The shell coprocess object.
     key_bindings: The key_bindings object holding the key binding list and
       toggle states.
   """
 
-  def __init__(self, cli=None, cosh=None, args=None, config=None):
+  def __init__(self, cosh=None, args=None, config=None):
     self.args = args
     self.coshell = cosh
     self.config = config
     self.key_bindings = bindings.KeyBindings(
         edit_mode=self.coshell.edit_mode == 'emacs')
 
-    # Load the default CLI trees.
-    self.root = cli_tree.LoadAll(cli=cli)
+    # Load the default CLI trees. On startup we ignore out of date trees. The
+    # alternative is to regenerate them before the first prompt. This could be
+    # a noticeable delay for users that accrue a lot of trees. Although ignored
+    # at startup, the regen will happen on demand as the individual commands
+    # are typed.
+    self.root = generate_cli_trees.LoadAll(
+        ignore_out_of_date=True, warn_on_exceptions=True)
 
     # Add the exit command completer node to the CLI tree.
     self.root[parser.LOOKUP_COMMANDS]['exit'] = cli_tree.Node(
@@ -182,10 +188,12 @@ class Application(object):
         self.root,
         context=config.context,
         hidden=config.hidden)
-    shell_completer = completer.ShellCliCompleter(shell_parser=shell_parser,
-                                                  args=args,
-                                                  cosh=self.coshell,
-                                                  hidden=config.hidden)
+    shell_completer = completer.ShellCliCompleter(
+        shell_parser=shell_parser,
+        args=args,
+        cosh=self.coshell,
+        hidden=config.hidden,
+        manpage_generator=config.manpage_generator)
 
     # Make sure that complete_while_typing is disabled when
     # enable_history_search is enabled. (First convert to SimpleFilter, to
@@ -248,8 +256,6 @@ class Application(object):
         get_title=None,
         key_bindings_registry=self.key_bindings.MakeRegistry(),
         mouse_support=False,
-        on_abort=pt_application.AbortAction.RAISE_EXCEPTION,
-        on_exit=pt_application.AbortAction.RAISE_EXCEPTION,
         reverse_vi_search_direction=True,
         style=shell_style.GetDocumentStyle(),
     )
@@ -284,7 +290,8 @@ class Application(object):
   def Prompt(self):
     """Prompts and returns one command line."""
     self.cli.context_was_set = not self.cli.config.context
-    return self.cli.run().text
+    doc = self.cli.run()
+    return doc.text if doc else None
 
   def Run(self, text):
     """Runs the command(s) in text and waits for them to complete."""
@@ -312,12 +319,11 @@ class Application(object):
         break
 
 
-def main(cli=None, args=None, config=None):
+def main(args=None, config=None):
   """The shell application loop."""
   cosh = coshell.Coshell()
   try:
     Application(
-        cli=cli,
         args=args,
         cosh=cosh,
         config=config,

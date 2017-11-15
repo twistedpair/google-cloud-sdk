@@ -11,6 +11,20 @@ from apitools.base.protorpclite import messages as _messages
 package = 'deploymentmanager'
 
 
+class AsyncOptions(_messages.Message):
+  """Async options that determine when a resource should finish.
+
+  Fields:
+    methodMatch: Method regex where this policy will apply.
+    pollingOptions: Deployment manager will poll instances for this API
+      resource setting a RUNNING state, and blocking until polling conditions
+      tell whether the resource is completed or failed.
+  """
+
+  methodMatch = _messages.StringField(1)
+  pollingOptions = _messages.MessageField('PollingOptions', 2)
+
+
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -141,7 +155,8 @@ class CompositeType(_messages.Message):
       [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
       characters long and must conform to the regular expression
       ([a-z]([-a-z0-9]*[a-z0-9])?)?
-    name: Name of the composite type.
+    name: Name of the composite type, must follow the expression:
+      [a-z]([-a-z0-9_.]{0,61}[a-z0-9])?.
     operation: Output only. The Operation that most recently ran, or is
       currently running, on this composite type.
     selfLink: Output only. Self link for the type provider.
@@ -1313,6 +1328,19 @@ class DeploymentsStopRequest(_messages.Message):
   fingerprint = _messages.BytesField(1)
 
 
+class Diagnostic(_messages.Message):
+  """Diagnostic message type.
+
+  Fields:
+    field: JsonPath expression on the resource that if non empty, indicates
+      that this field needs to be extracted as a diagnostic.
+    level: Level to record this diagnostic.
+  """
+
+  field = _messages.StringField(1)
+  level = _messages.StringField(2)
+
+
 class Expr(_messages.Message):
   """Represents an expression text. Example:  title: "User account presence"
   description: "Determines whether the request has a user account" expression:
@@ -1635,6 +1663,7 @@ class Options(_messages.Message):
   """Options allows customized resource handling by Deployment Manager.
 
   Fields:
+    asyncOptions: Options regarding how to thread async requests.
     inputMappings: The mappings that apply for requests.
     nameProperty: The json path to the field in the resource JSON body into
       which the resource name should be mapped. Leaving this empty indicates
@@ -1643,9 +1672,10 @@ class Options(_messages.Message):
       resource.
   """
 
-  inputMappings = _messages.MessageField('InputMapping', 1, repeated=True)
-  nameProperty = _messages.StringField(2)
-  validationOptions = _messages.MessageField('ValidationOptions', 3)
+  asyncOptions = _messages.MessageField('AsyncOptions', 1, repeated=True)
+  inputMappings = _messages.MessageField('InputMapping', 2, repeated=True)
+  nameProperty = _messages.StringField(3)
+  validationOptions = _messages.MessageField('ValidationOptions', 4)
 
 
 class Policy(_messages.Message):
@@ -1691,6 +1721,28 @@ class Policy(_messages.Message):
   iamOwned = _messages.BooleanField(4)
   rules = _messages.MessageField('Rule', 5, repeated=True)
   version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class PollingOptions(_messages.Message):
+  """PollingOptions message type.
+
+  Fields:
+    diagnostics: An array of diagnostics to be collected by Deployment
+      Manager, these diagnostics will be displayed to the user.
+    failCondition: JsonPath expression that determines if the request failed.
+    finishCondition: JsonPath expression that determines if the request is
+      completed.
+    pollingLink: JsonPath expression that evaluates to string, it indicates
+      where to poll.
+    targetLink: JsonPath expression, after polling is completed, indicates
+      where to fetch the resource.
+  """
+
+  diagnostics = _messages.MessageField('Diagnostic', 1, repeated=True)
+  failCondition = _messages.StringField(2)
+  finishCondition = _messages.StringField(3)
+  pollingLink = _messages.StringField(4)
+  targetLink = _messages.StringField(5)
 
 
 class Resource(_messages.Message):
@@ -2007,14 +2059,16 @@ class TemplateContents(_messages.Message):
     imports: Import files referenced by the main template.
     interpreter: Which interpreter (python or jinja) should be used during
       expansion.
+    mainTemplate: The filename of the mainTemplate
     schema: The contents of the template schema.
     template: The contents of the main template file.
   """
 
   imports = _messages.MessageField('ImportFile', 1, repeated=True)
   interpreter = _messages.StringField(2)
-  schema = _messages.StringField(3)
-  template = _messages.StringField(4)
+  mainTemplate = _messages.StringField(3)
+  schema = _messages.StringField(4)
+  template = _messages.StringField(5)
 
 
 class TestPermissionsRequest(_messages.Message):

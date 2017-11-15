@@ -36,15 +36,22 @@ import textwrap
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import module_util
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import text as text_utils
 
+import httplib2
+
 
 class NoCliTreeGeneratorForCommand(exceptions.Error):
   """Command does not have a CLI tree generator."""
+
+
+class NoManPageTextForCommand(exceptions.Error):
+  """Could not get man page text for command."""
 
 
 def _NormalizeSpace(text):
@@ -53,7 +60,7 @@ def _NormalizeSpace(text):
 
 
 def _Flag(name, description='', value=None, default=None, type_='string',
-          category='', is_global=False, is_required=False):
+          category='', is_global=False, is_required=False, nargs=None):
   """Initializes and returns a flag dict node."""
   return {
       cli_tree.LOOKUP_ATTR: {},
@@ -65,6 +72,7 @@ def _Flag(name, description='', value=None, default=None, type_='string',
       cli_tree.LOOKUP_IS_HIDDEN: False,
       cli_tree.LOOKUP_IS_REQUIRED: is_required,
       cli_tree.LOOKUP_NAME: name,
+      cli_tree.LOOKUP_NARGS: nargs or ('0' if type_ == 'bool' else '1'),
       cli_tree.LOOKUP_VALUE: value,
       cli_tree.LOOKUP_TYPE: type_,
   }
@@ -99,51 +107,90 @@ def _Command(path):
 class CliTreeGenerator(object):
   """Base CLI tree generator."""
 
+  _FAILURES = None
+
+  @classmethod
+  def MemoizeFailures(cls, enable):
+    """Memoizes failed attempts and doesn't repeat them if enable is True."""
+    cls._FAILURES = set() if enable else None
+
+  @classmethod
+  def AlreadyFailed(cls, command):
+    """Returns True if man page request for command already failed."""
+    return command in cls._FAILURES if cls._FAILURES else False
+
+  @classmethod
+  def AddFailure(cls, command):
+    """Add command to the set of failed man generations."""
+    if cls._FAILURES is not None:
+      cls._FAILURES.add(command)
+
   def __init__(self, command):
-    path, self.cli_name = os.path.split(command)
-    self._cli_path = path or None
+    self.command = command
     self._cli_version = None  # For memoizing GetVersion()
 
   def Run(self, cmd):
     """Runs cmd and returns the output as a string."""
     return subprocess.check_output(cmd)
 
-  def CliCommandExists(self):
-    if not self._cli_path:
-      self._cli_path = files.FindExecutableOnPath(self.cli_name)
-    return self._cli_path
-
   def GetVersion(self):
     """Returns the CLI_VERSION string."""
     if not self._cli_version:
-      self._cli_version = self.Run([self.cli_name, 'version']).split()[-1]
+      self._cli_version = self.Run([self.command, 'version']).split()[-1]
     return self._cli_version
 
   @abc.abstractmethod
-  def GenerateTree(self):
+  def Generate(self):
     """Generates and returns the CLI tree dict."""
     return None
 
   def FindTreeFile(self, directories):
     """Returns (path,f) open for read for the first CLI tree in directories."""
-    for directory in directories:
-      path = os.path.join(directory or '.', self.cli_name) + '.json'
+    for directory in directories or [cli_tree.CliTreeConfigDir()]:
+      path = os.path.join(directory or '.', self.command) + '.json'
       try:
         return path, open(path, 'r')
       except IOError:
         pass
     return path, None
 
-  def LoadOrGenerate(self, directories, verbose=False,
+  def IsUpToDate(self, tree, verbose=False):
+    """Returns a bool tuple (readonly, up_to_date)."""
+
+    actual_cli_version = tree.get(cli_tree.LOOKUP_CLI_VERSION)
+    readonly = actual_cli_version == cli_tree.CLI_VERSION_READONLY
+
+    # Check the schema version.
+    actual_tree_version = tree.get(cli_tree.LOOKUP_VERSION)
+    if actual_tree_version != cli_tree.VERSION:
+      return readonly, False
+
+    # Check the CLI version.
+    expected_cli_version = self.GetVersion()
+    if readonly:
+      # READONLY trees are always up to date.
+      pass
+    elif expected_cli_version == cli_tree.CLI_VERSION_UNKNOWN:
+      # Don't know how to regenerate but we have one in hand -- accept it.
+      pass
+    elif actual_cli_version != expected_cli_version:
+      return readonly, False
+
+    # Schema and CLI versions are up to date.
+    if verbose:
+      log.status.Print(u'[{}] CLI tree version [{}] is up to date.'.format(
+          self.command, actual_cli_version))
+    return readonly, True
+
+  def LoadOrGenerate(self, directories=None, force=False,
+                     ignore_out_of_date=False, verbose=False,
                      warn_on_exceptions=False):
-    """Loads the CLI tree or generates it if it's out of date."""
-    if not self.CliCommandExists():
-      if verbose:
-        log.warn(u'Command [{}] not found.'.format(self.cli_name))
-      return None
-    up_to_date = False
+    """Loads the CLI tree or generates it if necessary, and returns the tree."""
     path, f = self.FindTreeFile(directories)
-    if f:
+    if not f:
+      pass
+    else:
+      up_to_date = False
       with f:
         try:
           tree = json.load(f)
@@ -151,26 +198,41 @@ class CliTreeGenerator(object):
           # Corrupt JSON -- could have been interrupted.
           tree = None
         if tree:
-          version = self.GetVersion()
-          up_to_date = tree.get(cli_tree.LOOKUP_CLI_VERSION) == version
-    if up_to_date:
-      if verbose:
-        log.status.Print(u'[{}] CLI tree version [{}] is up to date.'.format(
-            self.cli_name, version))
-      return tree
-    with progress_tracker.ProgressTracker(
-        u'{} the [{}] CLI tree'.format(
-            'Updating' if f else 'Generating', self.cli_name)):
-      tree = self.GenerateTree()
-      try:
-        f = open(path, 'w')
-      except IOError as e:
-        if not warn_on_exceptions:
-          raise
-        log.warn(str(e))
-      else:
+          readonly, up_to_date = self.IsUpToDate(tree, verbose=verbose)
+      if readonly:
+        return tree
+      elif up_to_date:
+        if not force:
+          return tree
+      elif ignore_out_of_date:
+        return None
+
+    def _Generate():
+      """Helper that generates a CLI tree and writes it to a JSON file."""
+      tree = self.Generate()
+      if tree:
+        try:
+          f = open(path, 'w')
+        except IOError as e:
+          if not warn_on_exceptions:
+            raise
+          log.warn(str(e))
+          return None
         with f:
           resource_printer.Print(tree, print_format='json', out=f)
+      return tree
+
+    # At this point:
+    #   (1) the tree is not found or is out of date
+    #   (2) the tree is not readonly
+    #   (3) we have a generator for the tree
+
+    if not verbose:
+      return _Generate()
+    with progress_tracker.ProgressTracker(
+        u'{} the [{}] CLI tree'.format(
+            'Updating' if f else 'Generating', self.command)):
+      return _Generate()
 
 
 class _BqCollector(object):
@@ -285,14 +347,14 @@ class BqCliTreeGenerator(CliTreeGenerator):
 
     return command
 
-  def GenerateTree(self):
-    """Generates and returns the CLI tree rooted at self.cli_name."""
+  def Generate(self):
+    """Generates and returns the CLI tree rooted at self.command."""
 
     # Construct the tree minus the global flags.
-    tree = self.SubTree([self.cli_name])
+    tree = self.SubTree([self.command])
 
     # Add the global flags to the root.
-    text = self.Run([self.cli_name, '--help'])
+    text = self.Run([self.command, '--help'])
     collector = _BqCollector(text)
     _, content = collector.Collect(strip_headings=True)
     self.AddFlags(tree, content, is_global=True)
@@ -484,12 +546,12 @@ class GsutilCliTreeGenerator(CliTreeGenerator):
 
     return command
 
-  def GenerateTree(self):
-    """Generates and returns the CLI tree rooted at self.cli_name."""
-    tree = self.SubTree([self.cli_name])
+  def Generate(self):
+    """Generates and returns the CLI tree rooted at self.command."""
+    tree = self.SubTree([self.command])
 
     # Add the global flags to the root.
-    text = self.Run([self.cli_name, 'help', 'options'])
+    text = self.Run([self.command, 'help', 'options'])
     collector = _GsutilCollector(text)
     while True:
       heading, content = collector.Collect()
@@ -612,19 +674,19 @@ class KubectlCliTreeGenerator(CliTreeGenerator):
   def GetVersion(self):
     """Returns the CLI_VERSION string."""
     if not self._cli_version:
-      verbose_version = self.Run([self.cli_name, 'version', '--client'])
+      verbose_version = self.Run([self.command, 'version', '--client'])
       match = re.search('GitVersion:"([^"]*)"', verbose_version)
       self._cli_version = match.group(1)
     return self._cli_version
 
-  def GenerateTree(self):
-    """Generates and returns the CLI tree rooted at self.cli_name."""
+  def Generate(self):
+    """Generates and returns the CLI tree rooted at self.command."""
 
     # Construct the tree minus the global flags.
-    tree = self.SubTree([self.cli_name])
+    tree = self.SubTree([self.command])
 
     # Add the global flags to the root.
-    text = self.Run([self.cli_name, 'options'])
+    text = self.Run([self.command, 'options'])
     collector = _KubectlCollector(text)
     _, content = collector.Collect(strip_headings=True)
     content.append('  --help=true: List detailed command help.')
@@ -638,20 +700,38 @@ class KubectlCliTreeGenerator(CliTreeGenerator):
 
 
 class _ManPageCollector(object):
-  """man page help document section collector.
+  """man page help document section collector base class.
 
   Attributes:
+    command: The man page command name.
     content_indent: A string of space characters representing the indent of
       the first line of content for any section.
     heading: The heading for the next call to Collect().
     text: The list of man page lines.
+    version: The collector CLI_VERSION string.
   """
 
-  def __init__(self, text):
+  def __init__(self, command):
+    self.command = command
     self.content_indent = None
     self.heading = None
-    self.text = re.sub(
-        u'(\u2010|\\u2010)\n *', '', encoding.Decode(text)).split('\n')
+    self.text = self.GetManPageText().split('\n')
+
+  @classmethod
+  @abc.abstractmethod
+  def GetVersion(cls):
+    """Returns the CLI_VERSION string."""
+    return None
+
+  @abc.abstractmethod
+  def _GetRawManPageText(self):
+    """Returns the raw man page text."""
+    return None
+
+  @abc.abstractmethod
+  def GetManPageText(self):
+    """Returns the preprocessed man page text."""
+    return None
 
   def Collect(self):
     """Returns the heading and content lines from text."""
@@ -701,46 +781,201 @@ class _ManPageCollector(object):
     return heading, content
 
 
+class _ManCommandCollector(_ManPageCollector):
+  """man command help document section collector."""
+
+  _CLI_VERSION = 'man-0.1'
+
+  @classmethod
+  def GetVersion(cls):
+    return cls._CLI_VERSION
+
+  def _GetRawManPageText(self):
+    """Returns the raw man page text."""
+    try:
+      with open(os.devnull, 'w') as f:
+        return subprocess.check_output(['man', self.command], stderr=f)
+    except (OSError, subprocess.CalledProcessError):
+      raise NoManPageTextForCommand(
+          'Cannot get man(1) command man page text for [{}].'.format(
+              self.command))
+
+  def GetManPageText(self):
+    """Returns the preprocessed man page text."""
+    text = self._GetRawManPageText()
+    return re.sub(
+        '.\b', '', re.sub(
+            u'(\u2010|\\u2010)\n *', '', encoding.Decode(text)))
+
+
+class _ManUrlCollector(_ManPageCollector):
+  """man URL help document section collector."""
+
+  _CLI_VERSION = 'man7.org-0.1'
+
+  @classmethod
+  def GetVersion(cls):
+    return cls._CLI_VERSION
+
+  def _GetRawManPageText(self):
+    """Returns the raw man page text."""
+    url = 'http://man7.org/linux/man-pages/man1/{}.1.html'.format(self.command)
+    response, content = httplib2.Http().request(url)
+    if response.status != 200:
+      raise NoManPageTextForCommand(
+          'Cannot get URL man page text for [{}].'.format(self.command))
+    return content.decode('utf-8')
+
+  def GetManPageText(self):
+    """Returns the text man page for self.command from a URL."""
+    text = self._GetRawManPageText()
+
+    # A little sed(1) to clean up the html header/trailer and anchors.
+    # A mispplaced .* or (...) group match could affect timing. Keep track
+    # of that if you change any of the pattern,replacement tuples.
+    for pattern, replacement in (
+        ('<span class="footline">.*', ''),
+        ('<h2><a id="([^"]*)"[^\n]*\n', '\\1\n'),
+        ('<b>( +)', '\\1*'),
+        ('( +)</b>', '*\\1'),
+        ('<i>( +)', '\\1_'),
+        ('( +)</i>', '_\\1'),
+        ('</?b>', '*'),
+        ('</?i>', '_'),
+        ('</pre>', ''),
+        ('<a href="([^"]*)">([^\n]*)</a>', '[\\1](\\2)'),
+        ('&amp;', '\\&'),
+        ('&gt;', '>'),
+        ('&lt;', '<'),
+        ('&#39;', "'"),
+    ):
+      text = re.sub(pattern, replacement, text, flags=re.DOTALL)
+
+    # ... and some non-regular edits to finish up.
+    lines = []
+    top = 'NAME'
+    flags = False
+    paragraph = False
+    for line in text.split('\n'):
+      if top and line == 'NAME':
+        # Ignore all lines before the NAME section.
+        top = None
+        lines = []
+      if line.startswith('       *-'):  # NOTICE: NOT a regex!
+        # Drop font embellishment markdown from flag definition list lines.
+        flags = True
+        if paragraph:
+          # Blank line was really a paragraph.
+          paragraph = False
+          lines.append('')
+        if '  ' in line[7:]:
+          head, tail = line[7:].split('  ', 1)
+          head = re.sub('\\*', '', head)
+          line = '  '.join(['     ', head, tail])
+        else:
+          line = re.sub('\\*', '', line)
+      elif flags:
+        if not line:
+          paragraph = True
+          continue
+        elif not line.startswith('       '):
+          flags = False
+          paragraph = False
+        elif paragraph:
+          if not line[0].lower():
+            # A real paragraph
+            lines.append('+')
+          paragraph = False
+      lines.append(line)
+    return '\n'.join(lines)
+
+
 class ManPageCliTreeGenerator(CliTreeGenerator):
   """man page CLI tree generator."""
 
-  def Run(self, cmd):
-    """Runs the command in cmd and returns the output as a string."""
-    return subprocess.check_output(cmd)
+  @classmethod
+  def _GetManPageCollectorType(cls):
+    """Returns the man page collector type."""
+    if files.FindExecutableOnPath('man'):
+      return _ManCommandCollector
+    return _ManUrlCollector
+
+  def __init__(self, command):
+    super(ManPageCliTreeGenerator, self).__init__(command)
+    self.collector_type = self._GetManPageCollectorType()
 
   def GetVersion(self):
     """Returns the CLI_VERSION string."""
-    return 'MAN(1)'
+    if not self.collector_type:
+      return cli_tree.CLI_VERSION_UNKNOWN
+    return self.collector_type.GetVersion()
 
   def AddFlags(self, command, content, is_global=False):
     """Adds flags in content lines to command."""
 
-    def _Add(name, description, category):
-      if '=' in name:
-        name, value = name.split('=', 1)
+    def _NameTypeValueNargs(name, type_=None, value=None, nargs=None):
+      """Returns the (name, type, value-metavar, nargs) for flag name."""
+      if name.startswith('--'):
+        # --foo
+        if '=' in name:
+          name, value = name.split('=', 1)
+          if name[-1] == '[':
+            name = name[:-1]
+            if value.endswith(']'):
+              value = value[:-1]
+            nargs = '?'
+          else:
+            nargs = '1'
+          type_ = 'string'
+      elif len(name) > 2:
+        # -b VALUE
+        value = name[2:]
+        if value[0].isspace():
+          value = value[1:]
+        if value.startswith('['):
+          value = value[1:]
+          if value.endswith(']'):
+            value = value[:-1]
+          nargs = '?'
+        else:
+          nargs = '1'
+        name = name[:2]
         type_ = 'string'
-      else:
-        value = ''
+      if type_ is None or value is None or nargs is None:
         type_ = 'bool'
+        value = ''
+        nargs = '0'
+      return (name, type_, value, nargs)
+
+    def _Add(name, description, category, type_, value, nargs):
+      """Adds a flag."""
+      name, type_, value, nargs = _NameTypeValueNargs(name, type_, value, nargs)
       default = ''
       command[cli_tree.LOOKUP_FLAGS][name] = _Flag(
           name=name,
           description='\n'.join(description),
           type_=type_,
           value=value,
+          nargs=nargs,
           category=category,
           default=default,
           is_required=False,
           is_global=is_global,
       )
 
+    def _AddNames(names, description, category):
+      """Add a flag name list."""
+      if names:
+        _, type_, value, nargs = _NameTypeValueNargs(names[-1])
+        for name in names:
+          _Add(name, description, category, type_, value, nargs)
+
     names = []
     description = []
     category = ''
     for line in content:
       if line.lstrip().startswith('-'):
-        for name in names:
-          _Add(name, description, category)
+        _AddNames(names, description, category)
         line = line.lstrip()
         names = line.strip().replace(', -', ', --').split(', -')
         if ' ' in names[-1]:
@@ -752,14 +987,11 @@ class ManPageCliTreeGenerator(CliTreeGenerator):
         category = line[4:]
       else:
         description.append(line)
-    for name in names:
-      _Add(name, description, category)
+    _AddNames(names, description, category)
 
-  def SubTree(self, path):
+  def _Generate(self, path, collector):
     """Generates and returns the CLI subtree rooted at path."""
     command = _Command(path)
-    text = self.Run(['man'] + path)
-    collector = _ManPageCollector(text)
 
     while True:
       heading, content = collector.Collect()
@@ -767,20 +999,41 @@ class ManPageCliTreeGenerator(CliTreeGenerator):
         break
       elif heading == 'NAME':
         if content:
-          command[cli_tree.LOOKUP_CAPSULE] = content[0].split('-', 1)[1].strip()
+          command[cli_tree.LOOKUP_CAPSULE] = re.sub(
+              '.* -+  *', '', content[0]).strip()
       elif heading == 'FLAGS':
         self.AddFlags(command, content)
-      elif heading in ('DESCRIPTION', 'SEE ALSO'):
-        text = _NormalizeSpace('\n'.join(content))
+      elif heading not in ('BUGS', 'COLOPHON', 'COMPATIBILITY', 'HISTORY',
+                           'STANDARDS', 'SYNOPSIS'):
+        blocks = []
+        begin = 0
+        end = 0
+        while end < len(content):
+          if content[end].startswith('###'):
+            if begin < end:
+              blocks.append(_NormalizeSpace('\n'.join(content[begin:end])))
+            blocks.append(content[end])
+            begin = end + 1
+          end += 1
+        if begin < end:
+          blocks.append(_NormalizeSpace('\n'.join(content[begin:end])))
+        text = '\n'.join(blocks)
         if heading in command[cli_tree.LOOKUP_SECTIONS]:
           command[cli_tree.LOOKUP_SECTIONS][heading] += '\n\n' + text
         else:
           command[cli_tree.LOOKUP_SECTIONS][heading] = text
     return command
 
-  def GenerateTree(self):
-    """Generates and returns the CLI tree rooted at self.cli_name."""
-    tree = self.SubTree([self.cli_name])
+  def Generate(self):
+    """Generates and returns the CLI tree rooted at self.command."""
+    if not self.collector_type:
+      return None
+    collector = self.collector_type(self.command)
+    if not collector:
+      return None
+    tree = self._Generate([self.command], collector)
+    if not tree:
+      return None
 
     # Add the version stamps.
     tree[cli_tree.LOOKUP_CLI_VERSION] = self.GetVersion()
@@ -796,57 +1049,77 @@ GENERATORS = {
 }
 
 
-def GetCliTreeGenerator(name):
-  """Returns the CLI tree generator for name.
+def LoadOrGenerate(command, directories=None, force=False,
+                   ignore_out_of_date=False, verbose=False,
+                   warn_on_exceptions=False):
+  """Returns the CLI tree for command, generating it if it does not exist.
 
   Args:
-    name: The CLI root command name.
-
-  Raises:
-    NoCliTreeGeneratorForCommand: if name does not have a CLI tree generator
-
-  Returns:
-    The CLI tree generator for name.
-  """
-  try:
-    return GENERATORS[name](name)
-  except KeyError:
-    return ManPageCliTreeGenerator(name)
-
-
-def IsCliTreeUpToDate(cli_name, tree):
-  """Returns True if the CLI tree for cli_name is up to date.
-
-  Args:
-    cli_name: The CLI root command name.
-    tree: The loaded CLI tree.
-
-  Returns:
-    True if the CLI tree for cli_name is up to date.
-  """
-  version = GetCliTreeGenerator(cli_name).GetGetVersion()
-  return tree.get(cli_tree.LOOKUP_CLI_VERSION) == version
-
-
-def UpdateCliTrees(cli=None, commands=None, directory=None,
-                   verbose=False, warn_on_exceptions=False):
-  """(re)generates the CLI trees in directory if non-existent or out ot date.
-
-  This function uses the progress tracker because some of the updates can
-  take ~minutes.
-
-  Args:
-    cli: The default CLI. If not None then the default CLI is also updated.
-    commands: Update only the commands in this list.
-    directory: The directory containing the CLI tree JSON files. If None
-      then the default installation directories are used.
+    command: The CLI root command name.
+    directories: The list of directories containing the CLI tree JSON files.
+      If None then the default installation directories are used.
+    force: Update all exitsing trees by forcing them to be out of date if True.
+    ignore_out_of_date: Ignore out of date trees instead of regenerating.
     verbose: Display a status line for up to date CLI trees if True.
-    warn_on_exceptions: Emits warning messages in lieu of exceptions. Used
-      during installation.
+    warn_on_exceptions: Emits warning messages in lieu of generator exceptions.
+      Used during installation.
 
-  Raises:
-    NoCliTreeGeneratorForCommand: A command in commands is not supported
-      (doesn't have a generator).
+  Returns:
+    The CLI tree for command or None if command not found or there is no
+      generator.
+  """
+  command_dir, command_name = os.path.split(command)
+
+  # Don't repeat failed attempts.
+  if CliTreeGenerator.AlreadyFailed(command_name):
+    if verbose:
+      log.status.Print(u'No CLI tree generator for [{}].'.format(command))
+    return None
+
+  def _LoadOrGenerate():
+    """Helper."""
+
+    # The command must exist.
+    if (command_dir and not os.path.exists(command) or
+        not command_dir and not files.FindExecutableOnPath(command_name)):
+      if verbose:
+        log.status.Print(u'Command [{}] not found.'.format(command))
+      return None
+
+    # Instantiate the appropriate generator.
+    try:
+      generator = GENERATORS[command_name](command_name)
+    except KeyError:
+      generator = ManPageCliTreeGenerator(command_name)
+    if not generator:
+      return None
+
+    # Load or (re)generate the CLI tree if possible.
+    try:
+      return generator.LoadOrGenerate(
+          directories=directories,
+          force=force,
+          ignore_out_of_date=ignore_out_of_date,
+          verbose=verbose,
+          warn_on_exceptions=warn_on_exceptions)
+    except NoManPageTextForCommand:
+      pass
+
+    return None
+
+  tree = _LoadOrGenerate()
+  if not tree:
+    CliTreeGenerator.AddFailure(command_name)
+  return tree
+
+
+def _GetDirectories(directory=None, warn_on_exceptions=False):
+  """Returns the list of directories to search for CLI trees.
+
+  Args:
+    directory: The directory containing the CLI tree JSON files. If None
+      then the default installation and config directories are used.
+    warn_on_exceptions: Emits warning messages in lieu of exceptions.
   """
   # Initialize the list of directories to search for CLI tree files. The default
   # CLI tree is only searched for and generated in directories[0]. Other
@@ -863,23 +1136,49 @@ def UpdateCliTrees(cli=None, commands=None, directory=None,
         raise
       log.warn(str(e))
     directories.append(cli_tree.CliTreeConfigDir())
+  return directories
 
+
+def UpdateCliTrees(cli=None, commands=None, directory=None,
+                   force=False, verbose=False, warn_on_exceptions=False):
+  """(re)generates the CLI trees in directory if non-existent or out ot date.
+
+  This function uses the progress tracker because some of the updates can
+  take ~minutes.
+
+  Args:
+    cli: The default CLI. If not None then the default CLI is also updated.
+    commands: Update only the commands in this list.
+    directory: The directory containing the CLI tree JSON files. If None
+      then the default installation directories are used.
+    force: Update all exitsing trees by forcing them to be out of date if True.
+    verbose: Display a status line for up to date CLI trees if True.
+    warn_on_exceptions: Emits warning messages in lieu of exceptions. Used
+      during installation.
+
+  Raises:
+    NoCliTreeGeneratorForCommand: A command in commands is not supported
+      (doesn't have a generator).
+  """
+  directories = _GetDirectories(
+      directory=directory, warn_on_exceptions=warn_on_exceptions)
   if not commands:
     commands = set([cli_tree.DEFAULT_CLI_NAME] + GENERATORS.keys())
 
   failed = []
   for command in sorted(commands):
     if command != cli_tree.DEFAULT_CLI_NAME:
-      generator = GetCliTreeGenerator(command)
-      try:
-        generator.LoadOrGenerate(directories=directories, verbose=verbose,
-                                 warn_on_exceptions=warn_on_exceptions)
-      except subprocess.CalledProcessError:
+      tree = LoadOrGenerate(command,
+                            directories=directories,
+                            force=force,
+                            verbose=verbose,
+                            warn_on_exceptions=warn_on_exceptions)
+      if not tree:
         failed.append(command)
     elif cli:
       cli_tree.Load(cli=cli,
                     path=cli_tree.CliTreePath(directory=directories[0]),
-                    verbose=verbose)
+                    force=force, verbose=verbose)
   if failed:
     message = 'No CLI tree {} for [{}].'.format(
         text_utils.Pluralize(len(failed), 'generator'),
@@ -887,3 +1186,66 @@ def UpdateCliTrees(cli=None, commands=None, directory=None,
     if not warn_on_exceptions:
       raise NoCliTreeGeneratorForCommand(message)
     log.warn(message)
+
+
+def LoadAll(directory=None, ignore_out_of_date=False, root=None,
+            warn_on_exceptions=True):
+  """Loads all CLI trees in directory and adds them to tree.
+
+  Args:
+    directory: The config directory containing the CLI tree modules.
+    ignore_out_of_date: Ignore out of date trees instead of regenerating.
+    root: dict, The CLI root to update. A new root is created if None.
+    warn_on_exceptions: Warn on exceptions instead of raising if True.
+
+  Raises:
+    CliTreeVersionError: loaded tree version mismatch
+    ImportModuleError: import errors
+
+  Returns:
+    The CLI tree.
+  """
+  # Create the root node if needed.
+  if root is None:
+    root = cli_tree.Node(description='The CLI tree root.')
+
+  # Load the default CLI if available.
+  if cli_tree.DEFAULT_CLI_NAME not in root[cli_tree.LOOKUP_COMMANDS]:
+    try:
+      root[cli_tree.LOOKUP_COMMANDS][cli_tree.DEFAULT_CLI_NAME] = (
+          cli_tree.Load())
+    except module_util.ImportModuleError:
+      pass
+
+  # Load extra CLIs by searching directories in order. .py, .pyc, and .json
+  # files are treated as CLI modules/data, where the file base name is the name
+  # of the CLI root command.
+  directories = _GetDirectories(
+      directory=directory, warn_on_exceptions=warn_on_exceptions)
+
+  loaded = {cli_tree.DEFAULT_CLI_NAME, '__init__'}  # Already loaded this above.
+  for directory in directories:
+    if not directory or not os.path.exists(directory):
+      continue
+    for (dirpath, _, filenames) in os.walk(directory):
+      for filename in sorted(filenames):  # For stability across runs.
+        command, extension = os.path.splitext(filename)
+        if command in loaded:
+          # Already loaded. Earlier directory hits take precedence.
+          continue
+        loaded.add(command)
+        if extension == '.py':
+          tree = cli_tree.Load(os.path.join(dirpath, filename))
+        elif extension == '.json':
+          tree = LoadOrGenerate(command,
+                                directories=[dirpath],
+                                ignore_out_of_date=ignore_out_of_date,
+                                warn_on_exceptions=warn_on_exceptions)
+        else:
+          continue
+        if tree:
+          root[cli_tree.LOOKUP_COMMANDS][command] = tree
+      # Don't search subdirectories.
+      break
+
+  return root

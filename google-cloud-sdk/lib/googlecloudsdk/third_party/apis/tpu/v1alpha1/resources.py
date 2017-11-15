@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://tpu.googleapis.com/v1alpha1/'
+DOCS_URL = 'https://cloud.google.com/tpu/'
 
 
 class Collections(enum.Enum):

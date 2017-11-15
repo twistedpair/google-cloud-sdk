@@ -241,11 +241,11 @@ class AppEngineHttpTarget(_messages.Message):
 
 
 class AppEngineQueueConfig(_messages.Message):
-  """Deprecated. Use AppEngineTarget.
+  """Deprecated. Use AppEngineHttpTarget.
 
   Fields:
     appEngineRoutingOverride: Deprecated. Use
-      AppEngineTarget.app_engine_routing_override.
+      AppEngineHttpTarget.app_engine_routing_override.
   """
 
   appEngineRoutingOverride = _messages.MessageField('AppEngineRouting', 1)
@@ -604,7 +604,7 @@ class CloudtasksProjectsLocationsQueuesListRequest(_messages.Message):
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.BytesField(3)
+  pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
 
 
@@ -805,9 +805,10 @@ class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
       [Google IAM](/iam/) permission on the Task.name resource.
 
   Fields:
-    orderBy:  Sort order used for the query. The fields supported for sorting
-      are Task.schedule_time and PullMessage.tag. All results will be returned
-      in ascending order. The default ordering is by Task.schedule_time.
+    orderBy: Sort order used for the query. The only fields supported for
+      sorting are `schedule_time` and `pull_message.tag`. All results will be
+      returned in approximately ascending order. The default ordering is by
+      `schedule_time`.
     pageSize: Requested page size. Fewer tasks than requested might be
       returned.  The maximum page size is 1000. If unspecified, the page size
       will be the maximum. Fewer tasks than requested might be returned, even
@@ -849,7 +850,7 @@ class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
 
   orderBy = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.BytesField(3)
+  pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
   responseView = _messages.EnumField('ResponseViewValueValuesEnum', 5)
 
@@ -1024,7 +1025,7 @@ class ListQueuesResponse(_messages.Message):
     queues: The list of queues.
   """
 
-  nextPageToken = _messages.BytesField(1)
+  nextPageToken = _messages.StringField(1)
   queues = _messages.MessageField('Queue', 2, repeated=True)
 
 
@@ -1039,7 +1040,7 @@ class ListTasksResponse(_messages.Message):
     tasks: The list of tasks.
   """
 
-  nextPageToken = _messages.BytesField(1)
+  nextPageToken = _messages.StringField(1)
   tasks = _messages.MessageField('Task', 2, repeated=True)
 
 

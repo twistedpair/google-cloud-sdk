@@ -60,6 +60,10 @@ class DiscoveryDoc(object):
   def base_url(self):
     return self._discovery_doc_dict['baseUrl']
 
+  @property
+  def docs_url(self):
+    return self._discovery_doc_dict['documentationLink']
+
   def GetResourceCollections(self, custom_resources, api_version):
     """Returns all resources collections found in this discovery doc.
 
@@ -71,12 +75,67 @@ class DiscoveryDoc(object):
     Returns:
       list(resource_util.CollectionInfo).
     """
-    collections = _ExtractResources(self.api_name, api_version, self.base_url,
-                                    self._discovery_doc_dict['resources'])
+    collections = self._ExtractResources(
+        api_version, self._discovery_doc_dict['resources'])
     collections.extend(
         self._GenerateMissingParentCollections(
             collections, custom_resources, api_version))
     return collections
+
+  def _ExtractResources(self, api_version, infos):
+    """Extract resource definitions from discovery doc."""
+    collections = []
+    for name, info in infos.iteritems():
+      if name == 'methods':
+        get_method = info.get('get')
+        if get_method:
+          collection_info = self._GetCollectionFromMethod(
+              api_version, get_method)
+          collections.append(collection_info)
+      else:
+        subresource_collections = self._ExtractResources(api_version, info)
+        collections.extend(subresource_collections)
+    return collections
+
+  def _GetCollectionFromMethod(self, api_version, get_method):
+    """Created collection_info object given discovery doc get_method."""
+    method_id = get_method['id']
+    match = _METHOD_ID_RE.match(method_id)
+    if match:
+      collection_name = match.group('collection')
+      # Remove api name from collection. It might not match passed in, or
+      # even api name in url. We choose to use api name as defined by url.
+      collection_name = collection_name.split('.', 1)[1]
+      flat_path = get_method.get('flatPath')
+      path = get_method.get('path')
+      return self._MakeResourceCollection(
+          api_version, collection_name, path, flat_path)
+
+  def _MakeResourceCollection(self, api_version,
+                              collection_name, path, flat_path=None):
+    """Make resource collection object given its name and path."""
+    if flat_path == path:
+      flat_path = None
+    # Normalize base url so it includes api_version.
+    url = self.base_url + path
+    url_api_name, url_api_vesion, path = (
+        resource_util.SplitDefaultEndpointUrl(url))
+    if url_api_vesion != api_version:
+      raise UnsupportedDiscoveryDoc(
+          'Collection {0} for version {1}/{2} is using url {3} '
+          'with version {4}'.format(
+              collection_name, self.api_name, api_version, url, url_api_vesion))
+    if flat_path:
+      _, _, flat_path = resource_util.SplitDefaultEndpointUrl(
+          self.base_url + flat_path)
+    # Use url_api_name instead as it is assumed to be source of truth.
+    # Also note that api_version not always equal to url_api_version,
+    # this is the case where api_version is an alias.
+    url = url[:-len(path)]
+    return resource_util.CollectionInfo(
+        url_api_name, api_version, url, self.docs_url, collection_name, path,
+        {DEFAULT_PATH_NAME: flat_path} if flat_path else {},
+        resource_util.GetParamsFromPath(path))
 
   def _GenerateMissingParentCollections(
       self, collections, custom_resources, api_version):
@@ -157,8 +216,8 @@ class DiscoveryDoc(object):
 
   def MakeResourceCollection(self, collection_name, path, api_version):
     return resource_util.CollectionInfo(
-        self.api_name, api_version, self.base_url, collection_name, path,
-        {}, resource_util.GetParamsFromPath(path))
+        self.api_name, api_version, self.base_url, self.docs_url,
+        collection_name, path, {}, resource_util.GetParamsFromPath(path))
 
 
 def _GetParentCollection(collection_info):
@@ -202,62 +261,3 @@ def _GetParentCollection(collection_info):
     # last static part of the path.
     parent_name = parent_path.rsplit('/', 3)[-2]
   return parent_name, parent_path
-
-
-def _ExtractResources(api_name, api_version, base_url, infos):
-  """Extract resource definitions from discovery doc."""
-  collections = []
-  for name, info in infos.iteritems():
-    if name == 'methods':
-      get_method = info.get('get')
-      if get_method:
-        collection_info = _GetCollectionFromMethod(
-            base_url, api_name, api_version, get_method)
-        collections.append(collection_info)
-    else:
-      subresource_collections = _ExtractResources(
-          api_name, api_version, base_url, info)
-      collections.extend(subresource_collections)
-  return collections
-
-
-def _GetCollectionFromMethod(base_url, api_name, api_version, get_method):
-  """Created collection_info object given discovery doc get_method."""
-  method_id = get_method['id']
-  match = _METHOD_ID_RE.match(method_id)
-  if match:
-    collection_name = match.group('collection')
-    # Remove api name from collection. It might not match passed in, or
-    # even api name in url. We choose to use api name as defined by url.
-    collection_name = collection_name.split('.', 1)[1]
-    flat_path = get_method.get('flatPath')
-    path = get_method.get('path')
-    return _MakeResourceCollection(base_url, api_name, api_version,
-                                   collection_name, path, flat_path)
-
-
-def _MakeResourceCollection(base_url, api_name, api_version,
-                            collection_name, path, flat_path=None):
-  """Make resource collection object given its name and path."""
-  if flat_path == path:
-    flat_path = None
-  # Normalize base url so it includes api_version.
-  url = base_url + path
-  url_api_name, url_api_vesion, path = (
-      resource_util.SplitDefaultEndpointUrl(url))
-  if url_api_vesion != api_version:
-    raise UnsupportedDiscoveryDoc(
-        'Collection {0} for version {1}/{2} is using url {3} '
-        'with version {4}'.format(
-            collection_name, api_name, api_version, url, url_api_vesion))
-  if flat_path:
-    _, _, flat_path = resource_util.SplitDefaultEndpointUrl(
-        base_url + flat_path)
-  # Use url_api_name instead as it is assumed to be source of truth.
-  # Also note that api_version not always equal to url_api_version,
-  # this is the case where api_version is an alias.
-  url = url[:-len(path)]
-  return resource_util.CollectionInfo(
-      url_api_name, api_version, url, collection_name, path,
-      {DEFAULT_PATH_NAME: flat_path} if flat_path else {},
-      resource_util.GetParamsFromPath(path))

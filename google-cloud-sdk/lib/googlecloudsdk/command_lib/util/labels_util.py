@@ -11,8 +11,27 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Module for labels API support.
 
-"""Module for labels API support."""
+Typical usage (create command):
+
+  # When defining arguments
+  labels_util.AddCreateLabelsFlags(parser)
+  # When running the command
+  new_resource.labels = labels_util.Diff.FromCreateArgs(args).Apply(labels_cls)
+  Create(..., new_resource)
+
+Typical usage (update command):
+
+  # When defining arguments
+  labels_util.AddUpdateLabelsFlags(parser)
+  # When running the command
+  labels_diff = labels_util.Diff.FromUpdateArgs(args)
+  if labels_diff.MayHaveUpdates():
+    orig_resource = Get(...)  # to prevent unnecessary Get calls
+    new_resource.labels = labels_diff.Apply(labels_cls, orig_resource.labels)
+  Update(..., new_resource)
+"""
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -157,51 +176,6 @@ def GetRemoveLabelsListFromArgs(args):
   return args.remove_labels
 
 
-def UpdateLabels(labels, labels_value, update_labels=None, remove_labels=None):
-  """Returns a labels update proto based on the current state plus edits.
-
-  Args:
-    labels: The current label values proto.
-    labels_value: The LabelsValue proto message class.
-    update_labels: A dict of label key=value edits.
-    remove_labels: A list of labels keys to remove.
-
-  Returns:
-    A new labels request proto representing the update and remove edits, None
-    if there are no changes.
-  """
-  # Return None if there are no edits.
-  if not update_labels and not remove_labels:
-    return None
-
-  new_labels = {}
-  existing_labels = {}
-
-  # Add pre-existing labels.
-  if labels:
-    for label in labels.additionalProperties:
-      new_labels[label.key] = label.value
-      existing_labels[label.key] = label.value
-
-  # Add label updates and/or addtions.
-  if update_labels:
-    new_labels.update(update_labels)
-
-  # Remove labels if requested.
-  if remove_labels:
-    for key in remove_labels:
-      new_labels.pop(key, None)
-
-  # Return None if the edits are a no-op.
-  if new_labels == existing_labels:
-    return None
-
-  # Return the labels proto with all edits applied, sorted for reproducability.
-  return labels_value(additionalProperties=[
-      labels_value.AdditionalProperty(key=key, value=value)
-      for key, value in sorted(new_labels.iteritems())])
-
-
 def GetAndValidateOpsFromArgs(parsed_args):
   """Validates and returns labels specific args.
 
@@ -225,3 +199,83 @@ def GetAndValidateOpsFromArgs(parsed_args):
         'At least one of --update-labels or --remove-labels must be specified.')
 
   return update_labels, remove_labels
+
+
+def _PackageLabels(labels_cls, labels):
+  # Sorted for test stability
+  return labels_cls(additionalProperties=[
+      labels_cls.AdditionalProperty(key=key, value=value)
+      for key, value in sorted(labels.iteritems())])
+
+
+class Diff(object):
+  """A change to the labels on a resource."""
+
+  def __init__(self, additions=None, subtractions=None):
+    """Initialize a Diff.
+
+    Args:
+      additions: {str: str}, any label values to be updated
+      subtractions: List[str], any labels to be removed
+
+    Returns:
+      Diff.
+    """
+    self.additions = additions
+    self.subtractions = subtractions
+
+  def Apply(self, labels_cls, labels=None):
+    """Apply this Diff to the (possibly non-existing) labels.
+
+    First, makes any additions. Then, removes any labels.
+
+    Args:
+      labels_cls: type, the LabelsValue class for the resource.
+      labels: LabelsValue, the existing LabelsValue object for the original
+        resource (or None, if the original resource is unknown)
+
+    Returns:
+      labels_cls, the instantiated LabelsValue message with the new set up
+        labels, or None if there are no changes.
+    """
+    # Return None if there are no edits.
+    if not self.MayHaveUpdates():
+      return None
+
+    new_labels = {}
+    existing_labels = {}
+
+    # Add pre-existing labels.
+    if labels:
+      for label in labels.additionalProperties:
+        new_labels[label.key] = label.value
+        existing_labels[label.key] = label.value
+
+    # Add label updates and/or additions.
+    if self.additions:
+      new_labels.update(self.additions)
+
+    # Remove labels if requested.
+    if self.subtractions:
+      for key in self.subtractions:
+        new_labels.pop(key, None)
+
+    # Return None if the edits are a no-op.
+    if new_labels == existing_labels:
+      return None
+
+    return _PackageLabels(labels_cls, new_labels)
+
+  def MayHaveUpdates(self):
+    """Returns true if this Diff is non-empty (additions OR subtractions)."""
+    return any([self.additions, self.subtractions])
+
+  @classmethod
+  def FromCreateArgs(cls, args):
+    """Initializes a Diff based on the arguments in AddCreateLabelsFlags."""
+    return cls(args.labels)
+
+  @classmethod
+  def FromUpdateArgs(cls, args):
+    """Initializes a Diff based on the arguments in AddUpdateLabelsFlags."""
+    return cls(args.update_labels, args.remove_labels)

@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://cloudiot.googleapis.com/v1/'
+DOCS_URL = 'https://cloud.google.com/iot'
 
 
 class Collections(enum.Enum):

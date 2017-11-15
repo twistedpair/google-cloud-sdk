@@ -32,10 +32,6 @@ class JobTimeoutError(JobError):
   """Job timed out."""
 
 
-class WorkflowTemplateError(Error):
-  """Workflor template error."""
-
-
 class OperationError(Error):
   """Operation encountered an error."""
 

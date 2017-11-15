@@ -22,7 +22,6 @@ from apitools.base.py import exceptions as apitools_exceptions
 import enum
 
 from googlecloudsdk.api_lib.app import appengine_client
-from googlecloudsdk.api_lib.app import cloud_endpoints
 from googlecloudsdk.api_lib.app import deploy_app_command_util
 from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.api_lib.app import metric_names
@@ -115,7 +114,6 @@ class DeployOptions(object):
   Attributes:
     promote: True if the deployed version should receive all traffic.
     stop_previous_version: Stop previous version
-    enable_endpoints: Enable Cloud Endpoints for the deployed app.
     runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
       use the new CloudBuild-based runtime builders (alternative is old
       externalized runtimes).
@@ -131,14 +129,12 @@ class DeployOptions(object):
   def __init__(self,
                promote,
                stop_previous_version,
-               enable_endpoints,
                runtime_builder_strategy,
                parallel_build=False,
                use_service_management=True,
                flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
     self.promote = promote
     self.stop_previous_version = stop_previous_version
-    self.enable_endpoints = enable_endpoints
     self.runtime_builder_strategy = runtime_builder_strategy
     self.parallel_build = parallel_build
     self.use_service_management = use_service_management
@@ -147,14 +143,12 @@ class DeployOptions(object):
   @classmethod
   def FromProperties(
       cls,
-      enable_endpoints,
       runtime_builder_strategy,
       parallel_build=False,
       flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
     """Initialize DeloyOptions using user properties where necessary.
 
     Args:
-      enable_endpoints: Enable Cloud Endpoints for the deployed app.
       runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
         use the new CloudBuild-based runtime builders (alternative is old
         externalized runtimes).
@@ -172,7 +166,7 @@ class DeployOptions(object):
         properties.VALUES.app.stop_previous_version.GetBool())
     service_management = (
         not properties.VALUES.app.use_deprecated_preparation.GetBool())
-    return cls(promote, stop_previous_version, enable_endpoints,
+    return cls(promote, stop_previous_version,
                runtime_builder_strategy, parallel_build, service_management,
                flex_image_build_option)
 
@@ -201,30 +195,6 @@ class ServiceDeployer(object):
   def __init__(self, api_client, deploy_options):
     self.api_client = api_client
     self.deploy_options = deploy_options
-
-  def _PossiblyConfigureEndpoints(self, service, source_dir, new_version):
-    """Configures endpoints for this service (if enabled).
-
-    If the app has enabled Endpoints API Management features, pass control to
-    the cloud_endpoints handler.
-
-    The cloud_endpoints handler calls the Service Management APIs and creates an
-    endpoints/service.json file on disk which will need to be bundled into the
-    app Docker image.
-
-    Args:
-      service: yaml_parsing.ServiceYamlInfo, service configuration to be
-        deployed
-      source_dir: str, path to the service's source directory
-      new_version: version_util.Version describing where to deploy the service
-
-    Returns:
-      EndpointsServiceInfo, or None if endpoints were not created.
-    """
-    if self.deploy_options.enable_endpoints:
-      return cloud_endpoints.ProcessEndpointsService(service, source_dir,
-                                                     new_version.project)
-    return None
 
   def _PossiblyRewriteRuntime(self, service_info):
     """Rewrites the effective runtime of the service to 'custom' if necessary.
@@ -401,8 +371,6 @@ class ServiceDeployer(object):
                      .format(service=new_version.service))
     source_dir = service.upload_dir
     service_info = service.service_info
-    endpoints_info = self._PossiblyConfigureEndpoints(
-        service_info, source_dir, new_version)
     self._PossiblyRewriteRuntime(service_info)
     build = self._PossiblyBuildAndPush(new_version, service_info, source_dir,
                                        image, code_bucket_ref, gcr_domain,
@@ -423,7 +391,7 @@ class ServiceDeployer(object):
     # Actually create the new version of the service.
     metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)
     self.api_client.DeployService(new_version.service, new_version.id,
-                                  service_info, manifest, build, endpoints_info,
+                                  service_info, manifest, build,
                                   extra_config_settings)
     metrics.CustomTimedEvent(metric_names.DEPLOY_API)
     message = 'Updating service [{service}]'.format(
@@ -517,7 +485,6 @@ def _MakeStager(skip_staging, use_beta_stager, staging_command, staging_area):
 def RunDeploy(
     args,
     api_client,
-    enable_endpoints=False,
     use_beta_stager=False,
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
     parallel_build=True,
@@ -529,7 +496,6 @@ def RunDeploy(
         arguments specified in the ArgsDeploy() function.
     api_client: api_lib.app.appengine_api_client.AppengineClient, App Engine
         Admin API client.
-    enable_endpoints: Enable Cloud Endpoints for the deployed app.
     use_beta_stager: Use the stager registry defined for the beta track rather
         than the default stager registry.
     runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
@@ -548,7 +514,6 @@ def RunDeploy(
   """
   project = properties.VALUES.core.project.Get(required=True)
   deploy_options = DeployOptions.FromProperties(
-      enable_endpoints,
       runtime_builder_strategy=runtime_builder_strategy,
       parallel_build=parallel_build,
       flex_image_build_option=flex_image_build_option)

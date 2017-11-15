@@ -20,12 +20,18 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute.disks import flags as disks_flags
 from googlecloudsdk.command_lib.util import completers
 
 _SOURCE_DISK_DETAILED_HELP = """\
         A source disk to create the image from. The value for this option can be
         the name of a disk with the zone specified via ``--source-disk-zone''
         flag.
+"""
+_SOURCE_SNAPSHOT_DETAILED_HELP = """\
+        A source snapshot to create the image from. The value for this option
+        can be the name of a snapshot within the same project as the destination
+        image.
 """
 _REPLACEMENT_DISK_DETAILED_HELP = """\
        Specifies a Compute Engine image as a replacement for the image
@@ -127,6 +133,16 @@ SOURCE_IMAGE_ARG = compute_flags.ResourceArgument(
     global_collection='compute.images',
     required=True)
 
+SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
+    resource_name='snapshot',
+    name='--source-snapshot',
+    completer=disks_flags.SnapshotsCompleter,
+    required=False,
+    global_collection='compute.snapshots',
+    short_help='A source snapshot used to create an image.',
+    detailed_help=_SOURCE_SNAPSHOT_DETAILED_HELP,
+)
+
 DESTINATION_IMAGE_ARG = compute_flags.ResourceArgument(
     resource_name='translated image',
     name='--destination-image',
@@ -195,16 +211,9 @@ def AddCloningImagesArgs(parser, sources_group):
       """)
 
 
-def AddGuestOsFeaturesArg(parser, guest_os_features):
-  """Add the guest-os-features arg."""
-  if not guest_os_features:
-    return
-  parser.add_argument(
-      '--guest-os-features',
-      metavar='GUEST_OS_FEATURE',
-      type=arg_parsers.ArgList(element_type=lambda x: x.upper(),
-                               choices=guest_os_features),
-      help=('One or more features supported by the OS in the image.'))
+def AddCreatingImageFromSnapshotArgs(parser, sources_group):
+  """Add args to support creating image from snapshot."""
+  SOURCE_SNAPSHOT_ARG.AddArgument(parser, mutex_group=sources_group)
 
 
 def ValidateSourceArgs(args, sources):

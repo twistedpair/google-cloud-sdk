@@ -24,7 +24,6 @@ import enum
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from oauth2client import client
 from oauth2client import service_account
@@ -205,12 +204,13 @@ class AccessTokenStore(client.Storage):
     self._credentials = credentials
 
   def locked_get(self):
-    access_token, token_expiry, rapt_token = self._access_token_cache.Load(
-        self._account_id)
-    self._credentials.access_token = access_token
-    self._credentials.token_expiry = token_expiry
-    if rapt_token is not None:
-      self._credentials.rapt_token = rapt_token
+    token_data = self._access_token_cache.Load(self._account_id)
+    if token_data:
+      access_token, token_expiry, rapt_token = token_data
+      self._credentials.access_token = access_token
+      self._credentials.token_expiry = token_expiry
+      if rapt_token is not None:
+        self._credentials.rapt_token = rapt_token
     return self._credentials
 
   def locked_put(self, credentials):
@@ -222,6 +222,34 @@ class AccessTokenStore(client.Storage):
 
   def locked_delete(self):
     self._access_token_cache.Remove(self._account_id)
+
+
+def MaybeAttachAccessTokenCacheStore(credentials,
+                                     access_token_file=None):
+  """Attaches access token cache to given credentials if no store set.
+
+  Note that credentials themselves will not be persisted only access token. Use
+  this whenever access token caching is desired, yet credentials themselves
+  should not be persisted.
+
+  Args:
+    credentials: oauth2client.client.OAuth2Credentials.
+    access_token_file: str, optional path to use for access token storage.
+  Returns:
+    oauth2client.client.OAuth2Credentials, reloaded credentials.
+  """
+  if credentials.store is not None:
+    return credentials
+  account_id = getattr(credentials, 'service_account_email', None)
+  if not account_id:
+    account_id = str(hash(credentials.refresh_token))
+
+  access_token_cache = AccessTokenCache(
+      access_token_file or config.Paths().access_token_db_path)
+  store = AccessTokenStore(access_token_cache, account_id, credentials)
+  credentials.set_store(store)
+  # Return from the store, which will reload credentials with access token info.
+  return store.get()
 
 
 class CredentialStoreWithCache(CredentialStore):
@@ -268,19 +296,9 @@ def GetCredentialStore(store_file=None, access_token_file=None):
     CredentialStore object.
   """
 
-  if properties.VALUES.auth.use_sqlite_store.GetBool():
-    _MigrateMultistore2Sqlite()
-    return _GetSqliteStore(store_file, access_token_file)
-
-  log.warn('Your setup has the auth/use_sqlite_store property set to False. '
-           'This use case has been deprecated and will no longer be '
-           'supported. To silence this warning, unset the property by '
-           'running "gcloud config unset auth/use_sqlite_store". '
-           'If you have problems unsetting this property, use the '
-           '"gcloud feedback" command to report the issue.')
-  _MigrateSqlite2Multistore()
-  return Oauth2ClientCredentialStore(
-      store_file or config.Paths().credentials_path)
+  # TODO(b/69059614): remove migration logic and all of oauth2client multistore.
+  _MigrateMultistore2Sqlite()
+  return _GetSqliteStore(store_file, access_token_file)
 
 
 class Oauth2ClientCredentialStore(CredentialStore):
@@ -481,20 +499,4 @@ def _MigrateMultistore2Sqlite():
       sqlite_store.Store(account_id, credential)
 
     os.remove(multistore_file_path)
-
-
-def _MigrateSqlite2Multistore():
-  credential_db_file = config.Paths().credentials_db_path
-  if os.path.isfile(credential_db_file):
-    multistore = Oauth2ClientCredentialStore(config.Paths().credentials_path)
-    access_token_file = config.Paths().access_token_db_path
-    sqlite_store = _GetSqliteStore(credential_db_file,
-                                   access_token_file)
-
-    for account_id in sqlite_store.GetAccounts():
-      credential = sqlite_store.Load(account_id)
-      multistore.Store(account_id, credential)
-
-    os.remove(credential_db_file)
-    os.remove(access_token_file)
 

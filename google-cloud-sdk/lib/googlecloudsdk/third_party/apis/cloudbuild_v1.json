@@ -398,6 +398,10 @@
         "commitSha": {
           "description": "Explicit commit SHA to build.",
           "type": "string"
+        },
+        "dir": {
+          "description": "Directory, relative to the source root, in which to run the build.",
+          "type": "string"
         }
       }
     },
@@ -731,6 +735,13 @@
         }
       }
     },
+    "RetryBuildRequest": {
+      "id": "RetryBuildRequest",
+      "description": "RetryBuildRequest specifies a build to retry.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "BuildOperationMetadata": {
       "id": "BuildOperationMetadata",
       "description": "Metadata for build operations.",
@@ -977,6 +988,40 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ]
+            },
+            "retry": {
+              "id": "cloudbuild.projects.builds.retry",
+              "path": "v1/projects/{projectId}/builds/{id}:retry",
+              "flatPath": "v1/projects/{projectId}/builds/{id}:retry",
+              "httpMethod": "POST",
+              "description": "Creates a new build based on the given build.\n\nThis API creates a new build using the original build request,  which may\nor may not result in an identical build.\n\nFor triggered builds:\n\n* Triggered builds resolve to a precise revision, so a retry of a triggered\nbuild will result in a build that uses the same revision.\n\nFor non-triggered builds that specify RepoSource:\n\n* If the original build built from the tip of a branch, the retried build\nwill build from the tip of that branch, which may not be the same revision\nas the original build.\n* If the original build specified a commit sha or revision ID, the retried\nbuild will use the identical source.\n\nFor builds that specify StorageSource:\n\n* If the original build pulled source from Cloud Storage without specifying\nthe generation of the object, the new build will use the current object,\nwhich may be different from the original build source.\n* If the original build pulled source from Cloud Storage and specified the\ngeneration of the object, the new build will attempt to use the same\nobject, which may or may not be available depending on the bucket's\nlifecycle management settings.",
+              "parameters": {
+                "projectId": {
+                  "description": "ID of the project.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "id": {
+                  "description": "Build ID of the original build.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "id"
+              ],
+              "request": {
+                "$ref": "RetryBuildRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
             }
           }
         },
@@ -1124,6 +1169,40 @@
               },
               "response": {
                 "$ref": "BuildTrigger"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "run": {
+              "id": "cloudbuild.projects.triggers.run",
+              "path": "v1/projects/{projectId}/triggers/{triggerId}:run",
+              "flatPath": "v1/projects/{projectId}/triggers/{triggerId}:run",
+              "httpMethod": "POST",
+              "description": "Runs a BuildTrigger at a particular source revision.",
+              "parameters": {
+                "projectId": {
+                  "description": "ID of the project.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "triggerId": {
+                  "description": "ID of the trigger.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "triggerId"
+              ],
+              "request": {
+                "$ref": "RepoSource"
+              },
+              "response": {
+                "$ref": "Operation"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"

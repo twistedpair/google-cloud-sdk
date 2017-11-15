@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://containeranalysis.googleapis.com/v1alpha1/'
+DOCS_URL = 'https://cloud.google.com/container-analysis/api/reference/rest/'
 
 
 class Collections(enum.Enum):

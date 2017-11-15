@@ -34,13 +34,15 @@ class CollectionInfo(object):
       params: list(str), description of parameters in the path.
       name: str, collection name for this resource without leading api_name.
       base_url: str, URL for service providing these resources.
+      docs_url: str, URL to the API reference docs for this API.
   """
 
-  def __init__(self, api_name, api_version, base_url, name,
+  def __init__(self, api_name, api_version, base_url, docs_url, name,
                path, flat_paths, params):
     self.api_name = api_name
     self.api_version = api_version
     self.base_url = base_url
+    self.docs_url = docs_url
     self.name = name
     self.path = path
     self.flat_paths = flat_paths

@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://appengine.googleapis.com/v1/'
+DOCS_URL = 'https://cloud.google.com/appengine/docs/admin-api/'
 
 
 class Collections(enum.Enum):

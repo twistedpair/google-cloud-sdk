@@ -75,7 +75,7 @@ def Flag(d):
 
   if flag.type == 'bool':
     flag.nargs = 0
-  else:
+  elif flag.nargs not in ('?', '*', '+'):
     flag.nargs = 1
   if flag.type == 'dict':
     flag.type = arg_parsers.ArgDict()

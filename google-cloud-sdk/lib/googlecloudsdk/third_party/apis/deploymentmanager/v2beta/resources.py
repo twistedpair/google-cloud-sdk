@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://www.googleapis.com/deploymentmanager/v2beta/'
+DOCS_URL = 'https://developers.google.com/deployment-manager/'
 
 
 class Collections(enum.Enum):

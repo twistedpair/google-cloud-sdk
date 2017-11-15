@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://genomics.googleapis.com/v1alpha2/'
+DOCS_URL = 'https://cloud.google.com/genomics'
 
 
 class Collections(enum.Enum):

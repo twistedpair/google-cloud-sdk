@@ -57,10 +57,54 @@ _PREDICTION_DATA_FORMAT_MAPPER = arg_utils.ChoiceEnumMapper(
     help_str='Data format of the input files.',
     required=True)
 
+_SCALE_TIER_CHOICES = {
+    'BASIC': ('basic', ('A single worker instance. This tier is suitable for '
+                        'learning how to use Cloud ML Engine, and for '
+                        'experimenting with new models using small datasets.')),
+    'STANDARD_1': ('standard-1', 'Many workers and a few parameter servers.'),
+    'PREMIUM_1': ('premium-1',
+                  'A large number of workers with many parameter servers.'),
+    'BASIC_GPU': ('basic-gpu', 'A single worker instance with a GPU.'),
+    'BASIC_TPU': ('basic-tpu', 'A single worker instance with a Cloud TPU.'),
+    'CUSTOM': ('custom', """\
+The CUSTOM tier is not a set tier, but rather enables you to use your own
+cluster specification. When you use this tier, set values to configure your
+processing cluster according to these guidelines (using the --config flag):
+
+* You _must_ set `TrainingInput.masterType` to specify the type of machine to
+  use for your master node. This is the only required setting.
+* You _may_ set `TrainingInput.workerCount` to specify the number of workers to
+  use. If you specify one or more workers, you _must_ also set
+  `TrainingInput.workerType` to specify the type of machine to use for your
+  worker nodes.
+* You _may_ set `TrainingInput.parameterServerCount` to specify the number of
+  parameter servers to use. If you specify one or more parameter servers, you
+  _must_ also set `TrainingInput.parameterServerType` to specify the type of
+  machine to use for your parameter servers.  Note that all of your workers must
+  use the same machine type, which can be different from your parameter server
+  type and master type. Your parameter servers must likewise use the same
+  machine type, which can be different from your worker type and master type.\
+""")
+}
+
+_TRAINING_SCALE_TIER_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--scale-tier',
+    jobs.GetMessagesModule()
+    .GoogleCloudMlV1TrainingInput.ScaleTierValueValuesEnum,
+    custom_mappings=_SCALE_TIER_CHOICES,
+    help_str=('Specifies the machine types, the number of replicas for workers '
+              'and parameter servers.'),
+    default=None)
+
 
 def DataFormatFlagMap():
   """Return the ChoiceEnumMapper for the --data-format flag."""
   return _PREDICTION_DATA_FORMAT_MAPPER
+
+
+def ScaleTierFlagMap():
+  """Returns the ChoiceEnumMapper for the --scale-tier flag."""
+  return _TRAINING_SCALE_TIER_MAPPER
 
 
 def Cancel(jobs_client, job):

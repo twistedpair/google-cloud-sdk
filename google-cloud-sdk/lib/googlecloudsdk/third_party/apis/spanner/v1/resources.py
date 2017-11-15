@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://spanner.googleapis.com/v1/'
+DOCS_URL = 'https://cloud.google.com/spanner/'
 
 
 class Collections(enum.Enum):

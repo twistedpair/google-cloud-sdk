@@ -95,7 +95,7 @@ class _BrowseKeyBinding(_KeyBinding):
         help_text=(
             'Opens a web browser tab/window to display the complete man page '
             'help for the current command. If there is no active web browser '
-            '(running in *ssh*(1) for example) then command specific help or '
+            '(running in *ssh*(1) for example), then command specific help or '
             '*man*(1) help is attempted.'
         ),
     )

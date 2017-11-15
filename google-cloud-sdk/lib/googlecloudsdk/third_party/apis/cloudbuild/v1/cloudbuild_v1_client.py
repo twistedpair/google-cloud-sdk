@@ -274,6 +274,58 @@ successfully or unsuccessfully.
         supports_download=False,
     )
 
+    def Retry(self, request, global_params=None):
+      """Creates a new build based on the given build.
+
+This API creates a new build using the original build request,  which may
+or may not result in an identical build.
+
+For triggered builds:
+
+* Triggered builds resolve to a precise revision, so a retry of a triggered
+build will result in a build that uses the same revision.
+
+For non-triggered builds that specify RepoSource:
+
+* If the original build built from the tip of a branch, the retried build
+will build from the tip of that branch, which may not be the same revision
+as the original build.
+* If the original build specified a commit sha or revision ID, the retried
+build will use the identical source.
+
+For builds that specify StorageSource:
+
+* If the original build pulled source from Cloud Storage without specifying
+the generation of the object, the new build will use the current object,
+which may be different from the original build source.
+* If the original build pulled source from Cloud Storage and specified the
+generation of the object, the new build will attempt to use the same
+object, which may or may not be available depending on the bucket's
+lifecycle management settings.
+
+      Args:
+        request: (CloudbuildProjectsBuildsRetryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Retry')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Retry.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudbuild.projects.builds.retry',
+        ordered_params=[u'projectId', u'id'],
+        path_params=[u'id', u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/builds/{id}:retry',
+        request_field=u'retryBuildRequest',
+        request_type_name=u'CloudbuildProjectsBuildsRetryRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsTriggersService(base_api.BaseApiService):
     """Service class for the projects_triggers resource."""
 
@@ -421,6 +473,32 @@ This API is experimental.
         request_field=u'buildTrigger',
         request_type_name=u'CloudbuildProjectsTriggersPatchRequest',
         response_type_name=u'BuildTrigger',
+        supports_download=False,
+    )
+
+    def Run(self, request, global_params=None):
+      """Runs a BuildTrigger at a particular source revision.
+
+      Args:
+        request: (CloudbuildProjectsTriggersRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'cloudbuild.projects.triggers.run',
+        ordered_params=[u'projectId', u'triggerId'],
+        path_params=[u'projectId', u'triggerId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/triggers/{triggerId}:run',
+        request_field=u'repoSource',
+        request_type_name=u'CloudbuildProjectsTriggersRunRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

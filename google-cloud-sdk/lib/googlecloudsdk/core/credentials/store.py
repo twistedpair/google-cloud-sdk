@@ -329,7 +329,9 @@ def Load(account=None, scopes=None, prevent_refresh=False):
       if cred_type in (creds.CredentialType.SERVICE_ACCOUNT,
                        creds.CredentialType.P12_SERVICE_ACCOUNT):
         cred.token_uri = token_uri_override
-    return cred
+    # The credential override is not stored in credential store, but we still
+    # want to cache access tokens between invocations.
+    return creds.MaybeAttachAccessTokenCacheStore(cred)
 
   if not account:
     account = properties.VALUES.core.account.Get()

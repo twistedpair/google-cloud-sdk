@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://source.googleapis.com/v1/'
+DOCS_URL = 'https://cloud.google.com/eap/cloud-repositories/cloud-source-api'
 
 
 class Collections(enum.Enum):

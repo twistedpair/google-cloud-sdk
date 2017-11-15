@@ -269,5 +269,5 @@ def UserLabels(sql_messages,
   existing_labels = None
   if instance:
     existing_labels = instance.settings.userLabels
-  return labels_util.UpdateLabels(
-      existing_labels, sql_messages.Settings.UserLabelsValue, update_labels)
+  return labels_util.Diff(additions=update_labels).Apply(
+      sql_messages.Settings.UserLabelsValue, existing_labels)

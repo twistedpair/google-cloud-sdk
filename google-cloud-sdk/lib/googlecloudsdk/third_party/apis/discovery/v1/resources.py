@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://www.googleapis.com/discovery/v1/'
+DOCS_URL = 'https://developers.google.com/discovery/'
 
 
 class Collections(enum.Enum):

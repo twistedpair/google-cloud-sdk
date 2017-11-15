@@ -51,6 +51,19 @@ class AddonsConfig(_messages.Message):
   networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 4)
 
 
+class AuditConfig(_messages.Message):
+  """Configuration for audit logging. It's here only for the internal use by
+  an oncall to disable or enable audit logging in a cluster by calling
+  google.container.v1internal.ClusterManagerInternal.UpdateClusterInternal.
+
+  Fields:
+    enabled: Enable audit logging of the Kubernetes API.  If enabled, audit
+      logs will be exported to Cloud Audit Logging.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class AuditEvent(_messages.Message):
   """Event captures all the information that can be included in an API audit
   log.  Should match Event in https://github.com/kubernetes/kubernetes/blob/ma
@@ -504,6 +517,7 @@ class Cluster(_messages.Message):
   Fields:
     addonsConfig: Configurations for the various addons available to run in
       the cluster.
+    auditConfig: Configuration for audit logging.
     clusterIpv4Cidr: The IP address range of the container pods in this
       cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `10.96.0.0/14`). Leave blank to have one
@@ -543,8 +557,7 @@ class Cluster(_messages.Message):
       this configuration (along with the "node_config") will be used to create
       a "NodePool" object with an auto-generated name. Do not use this and a
       node_pool at the same time.
-    instanceGroupUrls: [Output only] The resource URLs of [instance
-      groups](/compute/docs/instance-groups/) associated with this cluster.
+    instanceGroupUrls: Deprecated. Use node_pools.instance_group_urls.
     ipAllocationPolicy: Configuration for cluster IP allocation.
     labelFingerprint: The fingerprint of the set of labels for this cluster.
     legacyAbac: Configuration for the legacy ABAC authorization mode.
@@ -658,41 +671,42 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   addonsConfig = _messages.MessageField('AddonsConfig', 1)
-  clusterIpv4Cidr = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  currentMasterVersion = _messages.StringField(4)
-  currentNodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  currentNodeVersion = _messages.StringField(6)
-  description = _messages.StringField(7)
-  enableKubernetesAlpha = _messages.BooleanField(8)
-  endpoint = _messages.StringField(9)
-  expireTime = _messages.StringField(10)
-  initialClusterVersion = _messages.StringField(11)
-  initialNodeCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(13, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 14)
-  labelFingerprint = _messages.StringField(15)
-  legacyAbac = _messages.MessageField('LegacyAbac', 16)
-  locations = _messages.StringField(17, repeated=True)
-  loggingService = _messages.StringField(18)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 19)
-  masterAuth = _messages.MessageField('MasterAuth', 20)
-  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 21)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 22)
-  monitoringService = _messages.StringField(23)
-  name = _messages.StringField(24)
-  network = _messages.StringField(25)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 26)
-  nodeConfig = _messages.MessageField('NodeConfig', 27)
-  nodeIpv4CidrSize = _messages.IntegerField(28, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 29, repeated=True)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 30)
-  selfLink = _messages.StringField(31)
-  servicesIpv4Cidr = _messages.StringField(32)
-  status = _messages.EnumField('StatusValueValuesEnum', 33)
-  statusMessage = _messages.StringField(34)
-  subnetwork = _messages.StringField(35)
-  zone = _messages.StringField(36)
+  auditConfig = _messages.MessageField('AuditConfig', 2)
+  clusterIpv4Cidr = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  currentMasterVersion = _messages.StringField(5)
+  currentNodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  currentNodeVersion = _messages.StringField(7)
+  description = _messages.StringField(8)
+  enableKubernetesAlpha = _messages.BooleanField(9)
+  endpoint = _messages.StringField(10)
+  expireTime = _messages.StringField(11)
+  initialClusterVersion = _messages.StringField(12)
+  initialNodeCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(14, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 15)
+  labelFingerprint = _messages.StringField(16)
+  legacyAbac = _messages.MessageField('LegacyAbac', 17)
+  locations = _messages.StringField(18, repeated=True)
+  loggingService = _messages.StringField(19)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 20)
+  masterAuth = _messages.MessageField('MasterAuth', 21)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 22)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 23)
+  monitoringService = _messages.StringField(24)
+  name = _messages.StringField(25)
+  network = _messages.StringField(26)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 27)
+  nodeConfig = _messages.MessageField('NodeConfig', 28)
+  nodeIpv4CidrSize = _messages.IntegerField(29, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 30, repeated=True)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 31)
+  selfLink = _messages.StringField(32)
+  servicesIpv4Cidr = _messages.StringField(33)
+  status = _messages.EnumField('StatusValueValuesEnum', 34)
+  statusMessage = _messages.StringField(35)
+  subnetwork = _messages.StringField(36)
+  zone = _messages.StringField(37)
 
 
 class ClusterUpdate(_messages.Message):
@@ -703,6 +717,7 @@ class ClusterUpdate(_messages.Message):
   Fields:
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
+    desiredAuditConfig: The desired configuration for audit logging.
     desiredImageType: The desired image type for the node pool. NOTE: Set the
       "desired_node_pool" field as well.
     desiredLocations: The desired list of Google Compute Engine
@@ -744,17 +759,18 @@ class ClusterUpdate(_messages.Message):
   """
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
-  desiredImageType = _messages.StringField(2)
-  desiredLocations = _messages.StringField(3, repeated=True)
-  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 4)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 5)
-  desiredMasterId = _messages.StringField(6)
-  desiredMasterMachineType = _messages.StringField(7)
-  desiredMasterVersion = _messages.StringField(8)
-  desiredMonitoringService = _messages.StringField(9)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 10)
-  desiredNodePoolId = _messages.StringField(11)
-  desiredNodeVersion = _messages.StringField(12)
+  desiredAuditConfig = _messages.MessageField('AuditConfig', 2)
+  desiredImageType = _messages.StringField(3)
+  desiredLocations = _messages.StringField(4, repeated=True)
+  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 5)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 6)
+  desiredMasterId = _messages.StringField(7)
+  desiredMasterMachineType = _messages.StringField(8)
+  desiredMasterVersion = _messages.StringField(9)
+  desiredMonitoringService = _messages.StringField(10)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 11)
+  desiredNodePoolId = _messages.StringField(12)
+  desiredNodeVersion = _messages.StringField(13)
 
 
 class ClusterUpdateOptions(_messages.Message):
@@ -2321,8 +2337,9 @@ class NodePool(_messages.Message):
       that your Compute Engine <a href="/compute/docs/resource-
       quotas">resource quota</a> is sufficient for this number of instances.
       You must also have available firewall and routes quota.
-    instanceGroupUrls: [Output only] The resource URLs of [instance
-      groups](/compute/docs/instance-groups/) associated with this node pool.
+    instanceGroupUrls: [Output only] The resource URLs of the [managed
+      instance groups](/compute/docs/instance-groups/creating-groups-of-
+      managed-instances) associated with this node pool.
     management: NodeManagement configuration for this NodePool.
     name: The name of the node pool.
     selfLink: [Output only] Server-defined URL for the resource.

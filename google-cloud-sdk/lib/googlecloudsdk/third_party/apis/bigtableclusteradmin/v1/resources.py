@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://bigtableclusteradmin.googleapis.com/v1/'
+DOCS_URL = 'https://cloud.google.com/bigtable/'
 
 
 class Collections(enum.Enum):

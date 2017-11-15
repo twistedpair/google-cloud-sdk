@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://www.googleapis.com/replicapoolupdater/v1beta1/'
+DOCS_URL = 'https://cloud.google.com/compute/docs/instance-groups/manager/#applying_rolling_updates_using_the_updater_service'
 
 
 class Collections(enum.Enum):

@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://www.googleapis.com/compute/alpha/'
+DOCS_URL = 'https://developers.google.com/compute/docs/reference/latest/'
 
 
 class Collections(enum.Enum):

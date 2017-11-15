@@ -314,7 +314,7 @@ def IsFlex(env):
 
 
 def IsStandard(env):
-  return env in ['1', 'standard']
+  return env in [None, '1', 'standard']
 
 
 class ClientDeployLoggingContext(object):

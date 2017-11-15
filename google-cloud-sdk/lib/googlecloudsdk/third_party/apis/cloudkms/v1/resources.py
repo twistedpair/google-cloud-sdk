@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://cloudkms.googleapis.com/v1/'
+DOCS_URL = 'https://cloud.google.com/kms/'
 
 
 class Collections(enum.Enum):

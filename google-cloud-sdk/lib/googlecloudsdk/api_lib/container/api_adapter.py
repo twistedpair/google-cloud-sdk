@@ -236,7 +236,6 @@ class CreateClusterOptions(object):
                services_secondary_range_name=None,
                enable_shared_network=None,
                accelerators=None,
-               enable_audit_logging=None,
                enable_binauthz=None,
                min_cpu_platform=None,
                workload_metadata_from_node=None,
@@ -286,7 +285,6 @@ class CreateClusterOptions(object):
     self.services_secondary_range_name = services_secondary_range_name
     self.enable_shared_network = enable_shared_network
     self.accelerators = accelerators
-    self.enable_audit_logging = enable_audit_logging
     self.enable_binauthz = enable_binauthz
     self.min_cpu_platform = min_cpu_platform
     self.workload_metadata_from_node = workload_metadata_from_node
@@ -309,7 +307,7 @@ class UpdateClusterOptions(object):
                locations=None,
                enable_master_authorized_networks=None,
                master_authorized_networks=None,
-               enable_audit_logging=None):
+               enable_autoprovisioning=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -323,7 +321,7 @@ class UpdateClusterOptions(object):
     self.locations = locations
     self.enable_master_authorized_networks = enable_master_authorized_networks
     self.master_authorized_networks = master_authorized_networks
-    self.enable_audit_logging = enable_audit_logging
+    self.enable_autoprovisioning = enable_autoprovisioning
 
 
 class SetMasterAuthOptions(object):
@@ -763,10 +761,6 @@ class APIAdapter(object):
           enabled=options.enable_network_policy,
           provider=self.messages.NetworkPolicy.ProviderValueValuesEnum.CALICO)
 
-    if options.enable_audit_logging is not None:
-      cluster.auditConfig = self.messages.AuditConfig(
-          enabled=options.enable_audit_logging)
-
     if options.enable_binauthz is not None:
       cluster.binaryAuthorization = self.messages.BinaryAuthorization(
           enabled=options.enable_binauthz)
@@ -912,11 +906,23 @@ class APIAdapter(object):
               cidrBlock=network))
       update = self.messages.ClusterUpdate(
           desiredMasterAuthorizedNetworksConfig=authorized_networks)
-    elif options.enable_audit_logging is not None:
-      audit_config = self.messages.AuditConfig(
-          enabled=options.enable_audit_logging)
+    elif options.enable_autoprovisioning is not None:
+      resource_limits = []
+      if options.min_cpu is not None or options.max_cpu is not None:
+        resource_limits.append(self.messages.ResourceLimit(
+            name='cpu',
+            minimum=options.min_cpu,
+            maximum=options.max_cpu))
+      if options.min_memory is not None or options.max_memory is not None:
+        resource_limits.append(self.messages.ResourceLimit(
+            name='memory',
+            minimum=options.min_memory,
+            maximum=options.max_memory))
+      autoscaling = self.messages.ClusterAutoscaling(
+          enableNodeAutoprovisioning=options.enable_autoprovisioning,
+          resourceLimits=resource_limits)
       update = self.messages.ClusterUpdate(
-          desiredAuditConfig=audit_config)
+          desiredClusterAutoscaling=autoscaling)
     if (options.master_authorized_networks
         and not options.enable_master_authorized_networks):
       # Raise error if use --master-authorized-networks without
@@ -1788,6 +1794,31 @@ class V1Beta1Adapter(APIAdapter):
 
 class V1Alpha1Adapter(V1Beta1Adapter):
   """APIAdapter for v1alpha1."""
+
+  def CreateCluster(self, cluster_ref, options):
+    cluster = self.CreateClusterCommon(cluster_ref, options)
+
+    if options.enable_autoprovisioning is not None:
+      resource_limits = []
+      if options.min_cpu is not None or options.max_cpu is not None:
+        resource_limits.append(self.messages.ResourceLimit(
+            name='cpu',
+            minimum=options.min_cpu,
+            maximum=options.max_cpu))
+      if options.min_memory is not None or options.max_memory is not None:
+        resource_limits.append(self.messages.ResourceLimit(
+            name='memory',
+            minimum=options.min_memory,
+            maximum=options.max_memory))
+      cluster.autoscaling = self.messages.ClusterAutoscaling(
+          enableNodeAutoprovisioning=options.enable_autoprovisioning,
+          resourceLimits=resource_limits)
+
+    req = self.messages.CreateClusterRequest(
+        parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
+        cluster=cluster)
+    operation = self.client.projects_locations_clusters.Create(req)
+    return self.ParseOperation(operation.name, cluster_ref.zone)
 
 
 def _AddNodeLabelsToNodeConfig(node_config, options):

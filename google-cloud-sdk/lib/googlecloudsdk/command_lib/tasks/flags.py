@@ -80,6 +80,11 @@ def _EquivalentClearFlag(flag):
   return clear_flag
 
 
+def AddPolicyFileFlag(parser):
+  base.Argument('policy_file', help="""\
+      JSON or YAML file containing the IAM policy.""").AddToParser(parser)
+
+
 def AddTaskLeaseScheduleTimeFlag(parser, verb):
   base.Argument(
       '--schedule-time', required=True,

@@ -86,6 +86,8 @@ class ArgumentInterceptor(Argument):
         in the cli tree.
       cli_generator: cli.CLILoader, The builder used to generate this CLI.
       command_name: str, The dotted command name path.
+      concept_handler: calliope.concepts.handlers.RuntimeHandler, a handler
+        for concept args.
       defaults: {dest: default}, For all registered arguments.
       dests: [str], A list of the dests for all arguments.
       display_info: [display_info.DisplayInfo], The command display info object.
@@ -101,6 +103,7 @@ class ArgumentInterceptor(Argument):
       self.allow_positional = allow_positional
 
       self.ancestor_flag_args = []
+      self.concept_handler = None
       self.defaults = {}
       self.dests = []
       self.display_info = display_info.DisplayInfo()
@@ -175,6 +178,16 @@ class ArgumentInterceptor(Argument):
   @property
   def ancestor_flag_args(self):
     return self.data.ancestor_flag_args
+
+  @property
+  def concept_handler(self):
+    return self.data.concept_handler
+
+  def add_concepts(self, handler):
+    if self.data.concept_handler:
+      raise AttributeError(
+          'It is not permitted to add two runtime handlers to a command class.')
+    self.data.concept_handler = handler
 
   # pylint: disable=g-bad-name
   def add_argument(self, *args, **kwargs):

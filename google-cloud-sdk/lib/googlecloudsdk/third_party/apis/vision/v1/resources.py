@@ -17,6 +17,7 @@ import enum
 
 
 BASE_URL = 'https://vision.googleapis.com/'
+DOCS_URL = 'https://cloud.google.com/vision/'
 
 
 class Collections(enum.Enum):
