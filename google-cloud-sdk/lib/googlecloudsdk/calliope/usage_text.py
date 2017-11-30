@@ -370,7 +370,7 @@ def GetSingleton(args):
     if singleton:
       return None
     singleton = arg
-  if args.is_required and not singleton.is_required:
+  if singleton and args.is_required and not singleton.is_required:
     singleton = copy.copy(singleton)
     singleton.is_required = True
   return singleton
@@ -398,6 +398,15 @@ def GetArgSortKey(arg):
   if arg.is_required:
     return 2, name
   return _GetArgUsageSortKey(name)
+
+
+def _MarkOptional(usage):
+  """Returns usage enclosed in [...] if it hasn't already been enclosed."""
+
+  # If the leading bracket matches the trailing bracket its already marked.
+  if re.match(r'^\[[^][]*(\[[^][]*\])*[^][]*\]$', usage):
+    return usage
+  return u'[{}]'.format(usage)
 
 
 def GetArgUsage(arg, brief=False, definition=False, markdown=False,
@@ -439,8 +448,8 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
       inverted = not definition and getattr(arg, 'inverted_synopsis', False)
       usage = GetFlagUsage(arg, brief=brief, markdown=markdown,
                            inverted=inverted, value=value)
-    if usage and top and not arg.is_required and not usage.startswith('['):
-      usage = u'[{}]'.format(usage)
+    if usage and top and not arg.is_required:
+      usage = _MarkOptional(usage)
     return usage
 
   # An argument group.
@@ -474,19 +483,24 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
           required_usage.append(usage)
       else:
         if top:
-          usage = u'[{}]'.format(usage)
+          usage = _MarkOptional(usage)
         if usage not in optional_usage:
           optional_usage.append(usage)
   all_usage = []
+  nesting = 0
+  optional_positionals = False
   if positional_args:
     nesting = 0
     for a in positional_args:
       usage = GetArgUsage(a, markdown=markdown, hidden=hidden)
       if not usage:
         continue
-      if not a.is_required and not usage.startswith('['):
-        usage = u'[{}'.format(usage)
-        nesting += 1
+      if not a.is_required:
+        optional_positionals = True
+        usage_orig = usage
+        usage = _MarkOptional(usage)
+        if usage != usage_orig:
+          nesting += 1
       all_usage.append(usage)
     if nesting:
       all_usage[-1] = u'{}{}'.format(all_usage[-1], ']' * nesting)
@@ -494,7 +508,8 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
     all_usage.append(sep.join(required_usage))
   if optional_usage:
     if optional:
-      if not top and required_usage:
+      if not top and (positional_args and not optional_positionals
+                      or required_usage):
         all_usage.append(':')
       all_usage.append(sep.join(optional_usage))
     elif brief and top:
@@ -506,9 +521,9 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
   usage = ' '.join(all_usage)
   if arg.is_required:
     return u'({})'.format(usage)
-  if top or len(all_usage) <= 1:
-    return usage
-  return u'[{}]'.format(usage)
+  if not top and len(all_usage) > 1:
+    usage = _MarkOptional(usage)
+  return usage
 
 
 def GetFlags(arg, optional=False):

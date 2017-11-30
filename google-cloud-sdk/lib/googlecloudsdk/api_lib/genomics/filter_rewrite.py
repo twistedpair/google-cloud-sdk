@@ -61,8 +61,9 @@ class Backend(resource_expr_rewrite.BackendBase):
     """Rewrites <left AND right>."""
     return '{left} AND {right}'.format(left=left, right=right)
 
-  def RewriteTerm(self, key, op, operand):
+  def RewriteTerm(self, key, op, operand, key_type):
     """Rewrites <key op operand>."""
+    del key_type  # unused in RewriteTerm
     if key == 'createTime':
       return _RewriteTimeTerm(key, op, operand)
     return None

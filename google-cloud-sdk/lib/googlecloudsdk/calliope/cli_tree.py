@@ -15,8 +15,8 @@
 """A module for the Cloud SDK CLI tree external representation."""
 
 import argparse
+import json
 import os
-import pprint
 import re
 import sys
 import textwrap
@@ -30,6 +30,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import module_util
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.updater import update_manager
 
@@ -107,6 +108,10 @@ class SdkDataCliNotFoundError(Error):
 
 class CliTreeVersionError(Error):
   """Loaded CLI tree version mismatch."""
+
+
+class CliTreeLoadError(Error):
+  """CLI tree load error."""
 
 
 def _IsRunningUnderTest():
@@ -666,84 +671,12 @@ def _Serialize(tree):
   return tree
 
 
-def _DumpToFile(tree, name, f):
+def _DumpToFile(tree, f):
   """Dump helper."""
-  f.write('''\
-# Copyright 2017 Google Inc. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-"""{} CLI tree."""
-
-# pylint: disable=bad-continuation,line-too-long
-
-LOOKUP_ARGUMENTS = '{}'
-LOOKUP_COMMANDS = '{}'
-LOOKUP_CONSTRAINTS = '{}'
-LOOKUP_FLAGS = '{}'
-LOOKUP_IS_GROUP = '{}'
-LOOKUP_POSITIONALS = '{}'
-_LOOKUP_SERIALIZED_FLAG_LIST = '{}'
-
-_SERIALIZED_TREE = '''.format(
-    name,
-    LOOKUP_ARGUMENTS,
-    LOOKUP_COMMANDS,
-    LOOKUP_CONSTRAINTS,
-    LOOKUP_FLAGS,
-    LOOKUP_IS_GROUP,
-    LOOKUP_POSITIONALS,
-    _LOOKUP_SERIALIZED_FLAG_LIST))
-  pprint.pprint(resource_projector.MakeSerializable(_Serialize(tree)), stream=f)
-  f.write('''
-
-def _Deserialize(tree):
-  """Returns the deserialization of a serialized CLI tree."""
-  all_flags_list = tree.get(_LOOKUP_SERIALIZED_FLAG_LIST)
-  if not all_flags_list:
-    # If tree wasn't serialized we're done.
-    return tree
-  tree[_LOOKUP_SERIALIZED_FLAG_LIST] = None
-  del tree[_LOOKUP_SERIALIZED_FLAG_LIST]
-
-  def _ReplaceConstraintIndexWithArgReference(arguments, positionals):
-    for i, arg in enumerate(arguments):
-      if isinstance(arg, int):
-        if arg < 0:  # a positional index
-          arguments[i] = positionals[-(arg + 1)]
-        else:  # a flag index
-          arguments[i] = all_flags_list[arg]
-      elif arg.get(LOOKUP_IS_GROUP, False):
-        _ReplaceConstraintIndexWithArgReference(
-            arg.get(LOOKUP_ARGUMENTS), positionals)
-
-  def _ReplaceIndexWithFlagReference(command):
-    flags = command[LOOKUP_FLAGS]
-    for name, index in flags.iteritems():
-      flags[name] = all_flags_list[index]
-    arguments = command[LOOKUP_CONSTRAINTS][LOOKUP_ARGUMENTS]
-    _ReplaceConstraintIndexWithArgReference(
-        arguments, command[LOOKUP_POSITIONALS])
-    for subcommand in command[LOOKUP_COMMANDS].values():
-      _ReplaceIndexWithFlagReference(subcommand)
-
-  _ReplaceIndexWithFlagReference(tree)
-
-  return tree
-
-
-TREE = _Deserialize(_SERIALIZED_TREE)
-''')
+  resource_printer.Print(
+      resource_projector.MakeSerializable(_Serialize(tree)),
+      'json',
+      out=f)
 
 
 def CliTreeDir():
@@ -787,8 +720,8 @@ def CliTreeConfigDir():
 
 
 def CliTreePath(name=DEFAULT_CLI_NAME, directory=None):
-  """Returns the CLI tree module path for name, default if directory is None."""
-  return os.path.join(directory or CliTreeDir(), name + '.py')
+  """Returns the CLI tree file path for name, default if directory is None."""
+  return os.path.join(directory or CliTreeDir(), name + '.json')
 
 
 def _GenerateRoot(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
@@ -808,14 +741,14 @@ def _GenerateRoot(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
 
 
 def Dump(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
-  """Dumps the CLI tree to a Python file.
+  """Dumps the CLI tree to a JSON file.
 
   The tree is processed by cli_tree._Serialize() to minimize the JSON file size
   and generation time.
 
   Args:
     cli: The CLI.
-    path: The Python file path to dump to, the standard output if '-', the
+    path: The JSON file path to dump to, the standard output if '-', the
       default CLI tree path if None.
     name: The CLI name.
     branch: The path of the CLI subtree to generate.
@@ -827,10 +760,10 @@ def Dump(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
     path = CliTreePath()
   tree = _GenerateRoot(cli=cli, path=path, name=name, branch=branch)
   if path == '-':
-    _DumpToFile(tree, name, sys.stdout)
+    _DumpToFile(tree, sys.stdout)
   else:
     with open(path, 'w') as f:
-      _DumpToFile(tree, name, f)
+      _DumpToFile(tree, f)
   return resource_projector.MakeSerializable(tree)
 
 
@@ -884,7 +817,8 @@ def _Load(path, cli=None, force=False, verbose=False):
   """Load() helper. Returns a tree or None if the tree failed to load."""
   try:
     if not force:
-      tree = module_util.ImportPath(path).TREE
+      with open(path, 'r') as f:
+        tree = json.loads(f.read())
       if _IsUpToDate(tree, path, bool(cli), verbose):
         return tree
       del tree
@@ -893,18 +827,53 @@ def _Load(path, cli=None, force=False, verbose=False):
       os.remove(path)
     except OSError:
       pass
-  except module_util.ImportModuleError:
+  except (IOError, OSError) as e:
     if not cli:
-      raise
+      raise CliTreeLoadError(unicode(e))
   return None
+
+
+def _Deserialize(tree):
+  """Returns the deserialization of a serialized CLI tree."""
+  all_flags_list = tree.get(_LOOKUP_SERIALIZED_FLAG_LIST)
+  if not all_flags_list:
+    # If tree wasn't serialized we're done.
+    return tree
+  tree[_LOOKUP_SERIALIZED_FLAG_LIST] = None
+  del tree[_LOOKUP_SERIALIZED_FLAG_LIST]
+
+  def _ReplaceConstraintIndexWithArgReference(arguments, positionals):
+    for i, arg in enumerate(arguments):
+      if isinstance(arg, int):
+        if arg < 0:  # a positional index
+          arguments[i] = positionals[-(arg + 1)]
+        else:  # a flag index
+          arguments[i] = all_flags_list[arg]
+      elif arg.get(LOOKUP_IS_GROUP, False):
+        _ReplaceConstraintIndexWithArgReference(
+            arg.get(LOOKUP_ARGUMENTS), positionals)
+
+  def _ReplaceIndexWithFlagReference(command):
+    flags = command[LOOKUP_FLAGS]
+    for name, index in flags.iteritems():
+      flags[name] = all_flags_list[index]
+    arguments = command[LOOKUP_CONSTRAINTS][LOOKUP_ARGUMENTS]
+    _ReplaceConstraintIndexWithArgReference(
+        arguments, command[LOOKUP_POSITIONALS])
+    for subcommand in command[LOOKUP_COMMANDS].values():
+      _ReplaceIndexWithFlagReference(subcommand)
+
+  _ReplaceIndexWithFlagReference(tree)
+
+  return tree
 
 
 def Load(path=None, cli=None, force=False, one_time_use_ok=False,
          verbose=False):
-  """Loads the default CLI tree from the Python file path.
+  """Loads the default CLI tree from the json file path.
 
   Args:
-    path: The path name of the Python file the CLI tree was dumped to. None
+    path: The path name of the JSON file the CLI tree was dumped to. None
       for the default CLI tree path.
     cli: The CLI. If not None and path fails to import, a new CLI tree is
       generated, written to path, and returned.
@@ -915,7 +884,7 @@ def Load(path=None, cli=None, force=False, one_time_use_ok=False,
 
   Raises:
     CliTreeVersionError: loaded tree version mismatch
-    ImportModuleError: import errors
+    CliTreeLoadError: load errors
 
   Returns:
     The CLI tree.
@@ -931,12 +900,12 @@ def Load(path=None, cli=None, force=False, one_time_use_ok=False,
 
   # First try to load the tree.
   tree = _Load(path, cli=cli, force=force, verbose=verbose)
-  if tree:
-    return tree
+  if not tree:
+    # The load failed. Regenerate and attempt to load again.
+    Dump(cli=cli, path=path)
+    tree = _Load(path)
 
-  # The load failed. Regenerate and attempt to load again.
-  Dump(cli=cli, path=path)
-  return _Load(path)
+  return _Deserialize(tree)
 
 
 def Node(command=None, commands=None, constraints=None, flags=None, path=None,

@@ -23,39 +23,48 @@ definitions:
     #   googlecloudsdk.module:class.attribute
     #   googlecloudsdk.module:class.function:foo=bar,baz=stuff
     pattern: "\\w+(\\.\\w+)+:\\w+(\\.\\w+)*(:\\w+=\\w+(,\\w+=\\w+)*)?"
+  yaml_reference:
+    type: string
+    # Examples:
+    #   googlecloudsdk.module:attribute
+    #   googlecloudsdk.module:attribute.attribute
+    pattern: "\\w+(\\.\\w+)+:\\w+(\\.\\w+)*"
 
   attribute:
     type: string
     # Examples: a, a.b, a.c.b
     pattern: "\\w+(\\.\\w+)*"
 
-  resource_argument:
-    required: [ api_field, help_text ]
+  property:
+    type: string
+    # Examples: core/project, compute/zone
+    pattern: "\\w+/\\w+"
+
+  resource_attribute:
+    # An individual resource arg attribute.
+    required: [ parameter_name, attribute_name, help ]
     additionalProperties: false
     properties:
-      # The name of the API field the value of this argument goes into.
-      api_field: { type: string }
-      # The help text for this individual flag.
-      help_text: { type: string }
-      # The name of the argument as it should appear in the CLI. If
-      # not given it will match the API field name. This does not
-      # include '--' even if it will be a flag.
-      arg_name: { type: string }
-      # The module path to a class that implements remote completion
-      # for this argument.
-      completer: { type: string }
-      # Set to False on the anchor resource argument to force it to be a flag
-      # even though it would normally be a positional. This should normally not
-      # be required for well formed API methods.
-      is_positional: { type: boolean }
-      # Whether the flag should be hidden or not.
-      hidden: { type: boolean }
-      # The module path to a function to call (with no arguments) if no value is
-      # provided; the result of this function will be used for this argument
-      # (like default, but with a computed value).
-      fallback: { $ref: "#/definitions/python_hook" }
+      # The API parameter name that this attribute maps to.
+      parameter_name: { type: string }
+      # The name as it should appear on the command line.
+      attribute_name: { type: string }
+      # The help text for this attribute.
+      help: { type string }
+      # A property to act as the fallthrough for this attribute when it is not
+      # provided on the command line.
+      property: { $ref: "#definitions/property" }
+      # A list of Python hooks that will act as fallthroughs if the attribute is
+      # not provided on the command line.
+      fallthroughs:
+        type: array
+        items: { $ref: "#/definitions/python_hook" }
 
   argument:
+    oneOf: [ { $ref: "#/definitions/arg" },
+             { $ref: "#/definitions/arg_group" } ]
+
+  arg:
     required: [ help_text ]
     additionalProperties: false
     properties:
@@ -107,9 +116,9 @@ definitions:
       # single value which is the parsed argument's value and returns
       # the value that should be inserted into the request.
       processor: { $ref: "#/definitions/python_hook" }
-      # Whether the flag should required or not.
+      # Whether the flag is required or not.
       required: { type: boolean }
-      # Whether the flag should be hidden or not.
+      # Whether the flag is hidden or not.
       hidden: { type: boolean }
       # Mark this flag as being deprecated. All the sub elements here
       # are passed as kwargs to the calliope.actions.DeprecationAction
@@ -118,6 +127,25 @@ definitions:
         type: object
         patternProperties:
           .*: { type: string }
+
+  arg_group:
+    required: [ params ]
+    type: object
+    additionalProperties: false
+    properties:
+      # The help text for the group.
+      help_text: { type: string }
+      # Whether the group is required or not.
+      required: { type: boolean }
+      # Whether the group is mutually exclusive or not.
+      mutex: { type: boolean }
+      # Whether the group is hidden or not.
+      hidden: { type: boolean }
+      # The group arguments.
+      params:
+        type: array
+        items: { $ref: "#/definitions/argument" }
+        minItems: 1
 
 
 type: object
@@ -211,6 +239,11 @@ properties:
     type: object
     additionalProperties: false
     properties:
+      # The field in the response that is the id of the resource (just the
+      # name, not the relative name or URI). This is used to construct a
+      # URI for resources out of the result of a list command. If not
+      # provided, there won't be a --uri flag on the list command.
+      id_field: { type: string }
       # The attribute of the API response to return (instead of the entire
       # response.
       result_attribute: { $ref: "#/definitions/attribute" }
@@ -311,36 +344,44 @@ properties:
         description: Describes how to generate the resource arg and its flags
         type: object
         additionalProperties: false
-        required: [ help_text ]
+        required: [ help_text, spec ]
         properties:
           # The help text for the overall resource arg group.
           help_text: { type: string }
-          # The field in the response that is the id of the resource (just the
-          # name, not the relative name or URI). This is used to construct a
-          # URI for resources out of the result of a list command. If not
-          # provided, there won't be a --uri flag on the list command.
-          response_id_field: { type: string }
-
-          # Enumerates the API fields that need to be set and information
-          # about each argument to generate.
-          params:
+          # Set to False to force the anchor resource argument to be a flag
+          # even though it would normally be a positional. This should normally
+          # not be required for well formed API methods.
+          is_positional: { type: boolean }
+          # List of resource arg attributes to not generate flags for.
+          removed_flags:
             type: array
-            items: { $ref: "#/definitions/resource_argument" }
-      # Same as the params section below, but each group of params will be
-      # placed in a mutually exclusive argument group for parsing purposes.
-      mutex_groups:
-        type: array
-        items:
-          type: object
-          additionalProperties: false
-          properties:
-            # True if one of the arguments in the group must be provided.
-            required: { type: boolean }
-            # Enumerates the API fields that need to be set and information
-            # about each argument to generate.
-            params:
-              type: array
-              items: { $ref: "#/definitions/argument" }
+            items: { type: string }
+          # The resource arg specification itself. This corresponds to the
+          # ResourceSpec and ResourceParameterAttributeConfig objects and does
+          # not include anything that would go in a presentation spec. It is
+          # expected that this entire section be imported from a resources.yaml
+          # file in command_lib.
+          spec:
+            type: object
+            additionalProperties: false
+            required: [ name, collection, attributes ]
+            properties:
+              # The name of the resource argument, used for messaging.
+              name: { type: string }
+              # The full collection name of the resource argument.
+              collection: { type: string }
+              # The api version this spec refers to. If empty, it applies to any
+              # version.
+              api_version: { type: string }
+              # The field in the create request that should hold the name of the
+              # resource being created (since create requests don't have the
+              # resource id as an API parameter.
+              request_id_field: { $ref: "#/definitions/attribute" }
+              # The set of attributes that map to the API parameters for this
+              # resources collection.
+              attributes:
+                type: array
+                items: { $ref: "#/definitions/resource_attribute" }
       # Enumerates the API fields that need to be set and information
       # about each argument to generate.
       params:

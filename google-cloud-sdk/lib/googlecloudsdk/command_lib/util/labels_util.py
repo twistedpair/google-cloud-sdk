@@ -18,7 +18,7 @@ Typical usage (create command):
   # When defining arguments
   labels_util.AddCreateLabelsFlags(parser)
   # When running the command
-  new_resource.labels = labels_util.Diff.FromCreateArgs(args).Apply(labels_cls)
+  new_resource.labels = labels_util.ParseCreateArgs(args, labels_cls)
   Create(..., new_resource)
 
 Typical usage (update command):
@@ -104,6 +104,22 @@ CREATE_LABELS_FLAG = base.Argument(
     action=arg_parsers.UpdateAction,
     help='A list of label KEY=VALUE pairs to add.')
 
+CLEAR_LABELS_FLAG = base.Argument(
+    '--clear-labels',
+    action='store_true',
+    help="""\
+        Removes all labels. If `--update-labels` is also specified then
+        `--clear-labels` is applied first.
+
+        For example, to remove all labels:
+
+            $ {command} --clear-labels
+
+        To set the labels to exactly "foo" and "baz":
+
+            $ {command} --clear-labels --update-labels foo=bar,baz=qux
+        """)
+
 
 def _GetUpdateLabelsFlag(extra_message):
   return base.Argument(
@@ -138,7 +154,8 @@ def AddCreateLabelsFlags(parser):
 
 
 def AddUpdateLabelsFlags(
-    parser, extra_update_message='', extra_remove_message=''):
+    parser, extra_update_message='', extra_remove_message='',
+    enable_clear=True):
   """Adds update command labels flags to an argparse parser.
 
   Args:
@@ -147,9 +164,15 @@ def AddUpdateLabelsFlags(
                           --update-labels flag.
     extra_remove_message: str, extra message to append to help text for
                           --delete-labels flag.
+    enable_clear: bool, whether to include the --clear-labels flag.
   """
   _GetUpdateLabelsFlag(extra_update_message).AddToParser(parser)
-  _GetRemoveLabelsFlag(extra_remove_message).AddToParser(parser)
+  if enable_clear:
+    remove_group = parser.add_mutually_exclusive_group()
+    CLEAR_LABELS_FLAG.AddToParser(remove_group)
+    _GetRemoveLabelsFlag(extra_remove_message).AddToParser(remove_group)
+  else:
+    _GetRemoveLabelsFlag(extra_remove_message).AddToParser(parser)
 
 
 def GetUpdateLabelsDictFromArgs(args):
@@ -177,28 +200,33 @@ def GetRemoveLabelsListFromArgs(args):
 
 
 def GetAndValidateOpsFromArgs(parsed_args):
-  """Validates and returns labels specific args.
+  """Validates and returns labels specific args for update.
 
-  At least one of --update-labels, --labels or --remove-labels must be present.
+  At least one of --update-labels, --clear-labels or --remove-labels must be
+  provided. The --clear-labels flag *must* be a declared argument, whether it
+  was specified on the command line or not.
 
   Args:
     parsed_args: The parsed args.
+
   Returns:
     (update_labels, remove_labels)
     update_labels contains values from --labels and --update-labels flags
     respectively.
     remove_labels contains values from --remove-labels flag
-  Raise:
-    RequiredArgumentException if all labels arguments are absent.
+
+  Raises:
+    RequiredArgumentException: if all labels arguments are absent.
+    AttributeError: if the --clear-labels flag is absent.
   """
-  update_labels = GetUpdateLabelsDictFromArgs(parsed_args)
-  remove_labels = GetRemoveLabelsListFromArgs(parsed_args)
-  if update_labels is None and remove_labels is None:
+  diff = Diff.FromUpdateArgs(parsed_args)
+  if not diff.MayHaveUpdates():
     raise calliope_exceptions.RequiredArgumentException(
         'LABELS',
-        'At least one of --update-labels or --remove-labels must be specified.')
+        'At least one of --update-labels, --remove-labels, or --clear-labels '
+        'must be specified.')
 
-  return update_labels, remove_labels
+  return diff
 
 
 def _PackageLabels(labels_cls, labels):
@@ -208,21 +236,88 @@ def _PackageLabels(labels_cls, labels):
       for key, value in sorted(labels.iteritems())])
 
 
+def _GetExistingLabelsDict(labels):
+  if not labels:
+    return {}
+  return {l.key: l.value for l in labels.additionalProperties}
+
+
+class UpdateResult(object):
+  """Result type for Diff application.
+
+  Attributes:
+    needs_update: bool, whether the diff resulted in any changes to the existing
+      labels proto.
+    _labels: LabelsValue, the new populated LabelsValue object. If needs_update
+      is False, this is identical to the original LabelValue object.
+  """
+
+  def __init__(self, needs_update, labels):
+    self.needs_update = needs_update
+    self._labels = labels
+
+  @property
+  def labels(self):
+    """Returns the new labels.
+
+    Raises:
+      ValueError: if needs_update is False.
+    """
+    if not self.needs_update:
+      raise ValueError(
+          'If no update is needed (self.needs_update == False), '
+          'checking labels is unnecessary.')
+    return self._labels
+
+  def GetOrNone(self):
+    """Returns the new labels if an update is needed or None otherwise."""
+    try:
+      return self.labels
+    except ValueError:
+      return None
+
+
 class Diff(object):
   """A change to the labels on a resource."""
 
-  def __init__(self, additions=None, subtractions=None):
+  def __init__(self, additions=None, subtractions=None, clear=False):
     """Initialize a Diff.
+
+    Only one of [subtractions, clear] may be specified.
 
     Args:
       additions: {str: str}, any label values to be updated
       subtractions: List[str], any labels to be removed
+      clear: bool, whether to clear the labels
 
     Returns:
       Diff.
+
+    Raises:
+      ValueError: if both subtractions and clear are specified.
     """
-    self.additions = additions
-    self.subtractions = subtractions
+    self._additions = additions or {}
+    self._subtractions = subtractions or []
+    self._clear = clear
+    if self._subtractions and self._clear:
+      raise ValueError('Only one of [subtractions, clear] may be specified.')
+
+  def _RemoveLabels(self, existing_labels, new_labels):
+    """Remove labels."""
+    del existing_labels  # Unused in _RemoveLabels; needed by subclass
+    new_labels = new_labels.copy()
+    for key in self._subtractions:
+      new_labels.pop(key, None)
+    return new_labels
+
+  def _ClearLabels(self, existing_labels):
+    del existing_labels  # Unused in _ClearLabels; needed by subclass
+    return {}
+
+  def _AddLabels(self, new_labels):
+    new_labels = new_labels.copy()
+    new_labels.update(self._additions)
+    return new_labels
 
   def Apply(self, labels_cls, labels=None):
     """Apply this Diff to the (possibly non-existing) labels.
@@ -232,50 +327,86 @@ class Diff(object):
     Args:
       labels_cls: type, the LabelsValue class for the resource.
       labels: LabelsValue, the existing LabelsValue object for the original
-        resource (or None, if the original resource is unknown)
+        resource (or None, which is treated the same as empty labels)
 
     Returns:
       labels_cls, the instantiated LabelsValue message with the new set up
         labels, or None if there are no changes.
     """
-    # Return None if there are no edits.
-    if not self.MayHaveUpdates():
-      return None
-
-    new_labels = {}
-    existing_labels = {}
-
     # Add pre-existing labels.
-    if labels:
-      for label in labels.additionalProperties:
-        new_labels[label.key] = label.value
-        existing_labels[label.key] = label.value
+    existing_labels = _GetExistingLabelsDict(labels)
+    new_labels = existing_labels.copy()
 
-    # Add label updates and/or additions.
-    if self.additions:
-      new_labels.update(self.additions)
+    if self._clear:
+      new_labels = self._ClearLabels(existing_labels)
 
-    # Remove labels if requested.
-    if self.subtractions:
-      for key in self.subtractions:
-        new_labels.pop(key, None)
+    if self._additions:
+      new_labels = self._AddLabels(new_labels)
 
-    # Return None if the edits are a no-op.
-    if new_labels == existing_labels:
-      return None
+    if self._subtractions:
+      new_labels = self._RemoveLabels(existing_labels, new_labels)
 
-    return _PackageLabels(labels_cls, new_labels)
+    needs_update = new_labels != existing_labels
+    return UpdateResult(needs_update, _PackageLabels(labels_cls, new_labels))
 
   def MayHaveUpdates(self):
-    """Returns true if this Diff is non-empty (additions OR subtractions)."""
-    return any([self.additions, self.subtractions])
+    """Returns true if this Diff is non-empty."""
+    return any([self._additions, self._subtractions, self._clear])
 
   @classmethod
-  def FromCreateArgs(cls, args):
-    """Initializes a Diff based on the arguments in AddCreateLabelsFlags."""
-    return cls(args.labels)
-
-  @classmethod
-  def FromUpdateArgs(cls, args):
+  def FromUpdateArgs(cls, args, enable_clear=True):
     """Initializes a Diff based on the arguments in AddUpdateLabelsFlags."""
-    return cls(args.update_labels, args.remove_labels)
+    if enable_clear:
+      clear = args.clear_labels
+    else:
+      clear = None
+    return cls(args.update_labels, args.remove_labels, clear)
+
+
+def ProcessUpdateArgsLazy(args, labels_cls, orig_labels_thunk):
+  """Returns the result of applying the diff constructed from args.
+
+  Lazily fetches the original labels value if needed.
+
+  Args:
+    args: argparse.Namespace, the parsed arguments with update_labels,
+      remove_labels, and clear_labels
+    labels_cls: type, the LabelsValue class for the new labels.
+    orig_labels_thunk: callable, a thunk which will return the original labels
+      object (of type LabelsValue) when evaluated.
+
+  Returns:
+    UpdateResult: the result of applying the diff.
+
+  """
+  diff = Diff.FromUpdateArgs(args)
+  orig_labels = orig_labels_thunk() if diff.MayHaveUpdates() else None
+  return diff.Apply(labels_cls, orig_labels)
+
+
+def ParseCreateArgs(args, labels_cls):
+  """Initializes labels based on args and the given class."""
+  if args.labels is None:
+    return None
+  return _PackageLabels(labels_cls, args.labels)
+
+
+class ExplicitNullificationDiff(Diff):
+  """A change to labels for resources where API requires explicit nullification.
+
+  That is, to clear a label {'foo': 'bar'}, you must pass {'foo': None} to the
+  API.
+  """
+
+  def _RemoveLabels(self, existing_labels, new_labels):
+    """Remove labels."""
+    new_labels = new_labels.copy()
+    for key in self._subtractions:
+      if key in existing_labels:
+        new_labels[key] = None
+      elif key in new_labels:
+        del new_labels[key]
+    return new_labels
+
+  def _ClearLabels(self, existing_labels):
+    return {key: None for key in existing_labels}

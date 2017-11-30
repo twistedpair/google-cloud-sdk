@@ -84,6 +84,20 @@ _NETWORK_UTILIZATION_SCALING_FIELDS = (
     'targetReceivedPacketsPerSecond',
 )
 
+_ENDPOINTS_ROLLOUT_STRATEGY_VALUES = (
+    'fixed',
+    'managed',
+)
+(_ENDPOINTS_UNSPECIFIED_ROLLOUT_STRATEGY_ENUM_VALUE
+) = 'UNSPECIFIED_ROLLOUT_STRATEGY'
+
+_STANDARD_SCHEDULER_SETTINGS = (
+    'maxInstances',
+    'minInstances',
+    'targetCpuUtilization',
+    'targetThroughputUtilization',
+)
+
 
 def EnumConverter(prefix):
   """Create conversion function which translates from string to enum value.
@@ -260,6 +274,7 @@ def ConvertAutomaticScaling(automatic_scaling):
   MoveFieldsTo(_REQUEST_UTILIZATION_SCALING_FIELDS, 'requestUtilization')
   MoveFieldsTo(_DISK_UTILIZATION_SCALING_FIELDS, 'diskUtilization')
   MoveFieldsTo(_NETWORK_UTILIZATION_SCALING_FIELDS, 'networkUtilization')
+  MoveFieldsTo(_STANDARD_SCHEDULER_SETTINGS, 'standardSchedulerSettings')
   return automatic_scaling
 
 
@@ -409,3 +424,27 @@ def _GetHandlerType(handler):
     return 'script'
 
   raise ValueError('Unrecognized handler type: %s' % handler)
+
+
+def ConvertEndpointsRolloutStrategyToEnum(value):
+  """Converts the rollout strategy to an enum.
+
+  In the YAML file, the user does not use the enum values directly. Therefore we
+  must convert these to their corresponding enum values in version.proto.
+
+  Args:
+    value: A string that is a valid rollout strategy ("fixed" or "managed")
+
+  Returns:
+    Value converted to the proper enum value. Defaults to
+    "UNSPECIFIED_ROLLOUT_STRATEGY"
+
+  Raises:
+    ValueError: When the value is set and is not one of "fixed" or "managed".
+  """
+  if value is None:
+    return _ENDPOINTS_UNSPECIFIED_ROLLOUT_STRATEGY_ENUM_VALUE
+  if value in _ENDPOINTS_ROLLOUT_STRATEGY_VALUES:
+    return value.upper()
+
+  raise ValueError('Unrecognized rollout strategy: %s' % value)

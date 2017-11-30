@@ -293,7 +293,7 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
   while m:
     match = start + m.start()
     if start < match:
-      # Format the preceeding standard part.
+      # Format the preceding standard part.
       parts.append(encoding.Decode(_StrFtime(dt, fmt[start:match])))
 
     # The extensions only have one modifier char.
@@ -360,7 +360,7 @@ class _TzInfoOrOffsetGetter(object):
   def Get(self, name, offset):
     """Returns the tzinfo for name or offset.
 
-    Used by dateutil.parser.parser() to convert timezone names and offsets.
+    Used by dateutil.parser.parse() to convert timezone names and offsets.
 
     Args:
       name: A timezone name or None to use offset. If offset is also None then
@@ -380,6 +380,19 @@ class _TzInfoOrOffsetGetter(object):
   def timezone_was_specified(self):
     """True if the parsed date/time string contained an explicit timezone."""
     return self._timezone_was_specified
+
+
+def _SplitTzFromDate(string):
+  """Returns (prefix,tzinfo) if string has a trailing tz, else (None,None)."""
+  try:
+    match = re.match(r'(.*[\d\s])([^\d\s]+)$', string)
+  except TypeError:
+    return None, None
+  if match:
+    tzinfo = GetTimeZone(match.group(2))
+    if tzinfo:
+      return match.group(1), tzinfo
+  return None, None
 
 
 def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
@@ -408,10 +421,10 @@ def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
 
   # Use tzgetter to determine if string contains an explicit timezone name or
   # offset.
+  defaults = GetDateTimeDefaults(tzinfo=tzinfo)
   tzgetter = _TzInfoOrOffsetGetter()
+
   try:
-    # Check if it's a datetime string.
-    defaults = GetDateTimeDefaults(tzinfo=tzinfo)
     dt = parser.parse(string, tzinfos=tzgetter.Get, default=defaults)
     if tzinfo and not tzgetter.timezone_was_specified:
       # The string had no timezone name or offset => localize dt to tzinfo.
@@ -422,9 +435,22 @@ def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
     exc = DateTimeValueError
   except (AttributeError, ValueError, TypeError) as e:
     exc = DateTimeSyntaxError
+    if not tzgetter.timezone_was_specified:
+      # Good ole parser.parse() has a tzinfos kwarg that it sometimes ignores.
+      # Compensate here when the string ends with a tz.
+      prefix, explicit_tzinfo = _SplitTzFromDate(string)
+      if explicit_tzinfo:
+        try:
+          dt = parser.parse(prefix, default=defaults)
+        except OverflowError as e:
+          exc = DateTimeValueError
+        except (AttributeError, ValueError, TypeError) as e:
+          exc = DateTimeSyntaxError
+        else:
+          return dt.replace(tzinfo=explicit_tzinfo)
 
   try:
-    # Check if its an iso_duration string.
+    # Check if it's an iso_duration string.
     return ParseDuration(string).GetRelativeDateTime(Now(tzinfo=tzinfo))
   except Error:
     # Not a duration - reraise the datetime parse error.

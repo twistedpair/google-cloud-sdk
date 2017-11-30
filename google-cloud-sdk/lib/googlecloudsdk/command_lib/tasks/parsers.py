@@ -13,7 +13,7 @@
 # limitations under the License.
 """Utilities for parsing arguments to `gcloud tasks` commands."""
 
-from googlecloudsdk.api_lib.tasks import tasks as tasks_api
+from apitools.base.py import encoding
 from googlecloudsdk.command_lib.tasks import app
 from googlecloudsdk.command_lib.tasks import constants
 from googlecloudsdk.core import exceptions
@@ -27,6 +27,12 @@ _PROJECT = properties.VALUES.core.project.GetOrFail
 
 class NoFieldsSpecifiedError(exceptions.Error):
   """Error for when calling an update method with no fields specified."""
+
+
+def ParseProject():
+  return resources.REGISTRY.Parse(
+      _PROJECT(),
+      collection=constants.PROJECTS_COLLECTION)
 
 
 def ParseLocation(location):
@@ -207,10 +213,9 @@ def _ParsePayloadArgs(args):
 
 def _ParseHeaderArg(args, messages):
   if args.header:
-    header_tuples = map(_SplitHeaderArgValue, args.header)
-    headers_dicts = [{h[0]: h[1]} for h in header_tuples]
-    return tasks_api.ConstructHeadersValueMessageFromListOfDicts(
-        headers_dicts, messages)
+    headers_dict = {k: v for k, v in map(_SplitHeaderArgValue, args.header)}
+    return encoding.DictToAdditionalPropertyMessage(
+        headers_dict, messages.AppEngineHttpRequest.HeadersValue)
 
 
 def _SplitHeaderArgValue(header_arg_value):
@@ -240,4 +245,11 @@ def TasksUriFunc(task):
   return resources.REGISTRY.Parse(
       task.name,
       params={'projectsId': _PROJECT},
-      collection=constants.QUEUES_COLLECTION).SelfLink()
+      collection=constants.TASKS_COLLECTION).SelfLink()
+
+
+def LocationsUriFunc(task):
+  return resources.REGISTRY.Parse(
+      task.name,
+      params={'projectsId': _PROJECT},
+      collection=constants.LOCATIONS_COLLECTION).SelfLink()

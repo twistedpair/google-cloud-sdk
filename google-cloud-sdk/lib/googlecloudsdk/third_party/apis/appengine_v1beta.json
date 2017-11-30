@@ -265,7 +265,6 @@
           "type": "string"
         },
         "iap": {
-
           "$ref": "IdentityAwareProxy"
         },
         "gcrDomain": {
@@ -327,6 +326,10 @@
       "properties": {
         "splitHealthChecks": {
           "description": "Boolean value indicating if split health checks should be used instead of the legacy health checks. At an app.yaml level, this means defaulting to 'readiness_check' and 'liveness_check' values instead of 'health_check' ones. Once the legacy 'health_check' behavior is deprecated, and this value is always true, this setting can be removed.",
+          "type": "boolean"
+        },
+        "useContainerOptimizedOs": {
+          "description": "If true, use Container-Optimized OS (https:\/\/cloud.google.com\/container-optimized-os\/) base image for VMs, rather than a base Debian image.",
           "type": "boolean"
         }
       }
@@ -1372,7 +1375,7 @@
           "type": "string"
         },
         "configId": {
-          "description": "Endpoints service configuration id as specified by the Service Management API. For example \"2016-09-19r1\"",
+          "description": "Endpoints service configuration id as specified by the Service Management API. For example \"2016-09-19r1\"By default, the Endpoints service configuration id is fixed and config_id must be specified. To keep the Endpoints service configuration id updated with each rollout, specify RolloutStrategy.MANAGED and omit config_id.",
           "type": "string"
         }
       }

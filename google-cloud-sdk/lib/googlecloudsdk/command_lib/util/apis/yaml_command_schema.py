@@ -19,17 +19,9 @@ from enum import Enum
 
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
-from googlecloudsdk.core import module_util
-
-
-class Error(Exception):
-  """Base class for module errors."""
-  pass
-
-
-class InvalidSchemaError(Error):
-  """Error for when a yaml command is malformed."""
-  pass
+from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.apis import resource_arg_schema
+from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
 
 
 NAME_FORMAT_KEY = '__name__'
@@ -49,7 +41,8 @@ class CommandData(object):
     self.response = Response(data.get('response', {}))
     async_data = data.get('async')
     if self.command_type == CommandType.WAIT and not async_data:
-      raise InvalidSchemaError('Wait commands must include an async section.')
+      raise util.InvalidSchemaError(
+          'Wait commands must include an async section.')
     self.async = Async(async_data) if async_data else None
     self.arguments = Arguments(data['arguments'])
     self.input = Input(self.command_type, data.get('input', {}))
@@ -93,20 +86,21 @@ class Request(object):
     self.api_version = data.get('api_version')
     self.method = data.get('method', command_type.default_method)
     if not self.method:
-      raise InvalidSchemaError(
+      raise util.InvalidSchemaError(
           'request.method was not specified and there is no default for this '
           'command type.')
     self.resource_method_params = data.get('resource_method_params', {})
     self.static_fields = data.get('static_fields', {})
     self.modify_request_hooks = [
-        Hook.FromPath(p) for p in data.get('modify_request_hooks', [])]
-    self.create_request_hook = Hook.FromData(data, 'create_request_hook')
-    self.issue_request_hook = Hook.FromData(data, 'issue_request_hook')
+        util.Hook.FromPath(p) for p in data.get('modify_request_hooks', [])]
+    self.create_request_hook = util.Hook.FromData(data, 'create_request_hook')
+    self.issue_request_hook = util.Hook.FromData(data, 'issue_request_hook')
 
 
 class Response(object):
 
   def __init__(self, data):
+    self.id_field = data.get('id_field')
     self.result_attribute = data.get('result_attribute')
     self.error = ResponseError(data['error']) if 'error' in data else None
 
@@ -129,7 +123,7 @@ class Async(object):
     self.extract_resource_result = data.get('extract_resource_result', True)
     resource_get_method = data.get('resource_get_method')
     if not self.extract_resource_result and resource_get_method:
-      raise InvalidSchemaError(
+      raise util.InvalidSchemaError(
           'async.resource_get_method was specified but extract_resource_result '
           'is False')
     self.resource_get_method = resource_get_method or 'get'
@@ -158,38 +152,12 @@ class Arguments(object):
   """Everything about cli arguments are registered in this section."""
 
   def __init__(self, data):
-    resource = data.get('resource')
-    self.resource = Resource(resource) if resource else None
-    self.additional_arguments_hook = Hook.FromData(
+    self.resource = resource_arg_schema.YAMLResourceArgument.FromData(
+        data.get('resource'))
+    self.additional_arguments_hook = util.Hook.FromData(
         data, 'additional_arguments_hook')
     self.params = [
         Argument.FromData(param_data) for param_data in data.get('params', [])]
-    self.mutex_group_params = []
-    for group_id, group_data in enumerate(data.get('mutex_groups', [])):
-      group = MutexGroup.FromData(group_id, group_data)
-      self.mutex_group_params.extend([
-          Argument.FromData(param_data, group=group)
-          for param_data in group_data.get('params', [])])
-
-
-class Resource(object):
-
-  def __init__(self, data):
-    self.help_text = data['help_text']
-    self.response_id_field = data.get('response_id_field')
-    self.params = [
-        Argument.FromData(param_data) for param_data in data.get('params', [])]
-
-
-class MutexGroup(object):
-
-  @classmethod
-  def FromData(cls, group_id, data):
-    return MutexGroup(group_id, required=data.get('required', False))
-
-  def __init__(self, group_id, required=False):
-    self.group_id = group_id
-    self.required = required
 
 
 class Argument(object):
@@ -219,7 +187,6 @@ class Argument(object):
     action: An override for the argparse action to use for this argument.
     repeated: False to accept only one value when the request field is actually
       repeated.
-    group: The MutexGroup that this argument is a part of.
     generate: False to not generate this argument. This can be used to create
       placeholder arg specs for defaults that don't actually need to be
       generated.
@@ -228,12 +195,11 @@ class Argument(object):
   STATIC_ACTIONS = {'store', 'store_true'}
 
   @classmethod
-  def FromData(cls, data, group=None):
+  def FromData(cls, data):
     """Gets the arg definition from the spec data.
 
     Args:
       data: The spec data.
-      group: MutexGroup, The group this arg is in or None.
 
     Returns:
       Argument, the parsed argument.
@@ -241,16 +207,19 @@ class Argument(object):
     Raises:
       InvalidSchemaError: if the YAML command is malformed.
     """
+    if data.get('params'):
+      return ArgumentGroup.FromData(data)
+
     api_field = data.get('api_field')
     arg_name = data.get('arg_name', api_field)
     if not arg_name:
-      raise InvalidSchemaError(
+      raise util.InvalidSchemaError(
           'An argument must have at least one of [api_field, arg_name].')
     is_positional = data.get('is_positional')
 
     action = data.get('action', None)
-    if action and action not in Argument.STATIC_ACTIONS:
-      action = Hook.FromPath(action)
+    if action and action not in cls.STATIC_ACTIONS:
+      action = util.Hook.FromPath(action)
     if not action:
       deprecation = data.get('deprecated')
       if deprecation:
@@ -258,38 +227,37 @@ class Argument(object):
         action = actions.DeprecationAction(flag_name, **deprecation)
 
     if data.get('default') and data.get('fallback'):
-      raise InvalidSchemaError(
+      raise util.InvalidSchemaError(
           'An argument may have at most one of [default, fallback].')
 
     try:
       help_text = data['help_text']
     except KeyError:
-      raise InvalidSchemaError('An argument must have help_text.')
+      raise util.InvalidSchemaError('An argument must have help_text.')
 
-    return Argument(
+    return cls(
         api_field,
         arg_name,
         help_text,
         metavar=data.get('metavar'),
-        completer=Hook.FromData(data, 'completer'),
+        completer=util.Hook.FromData(data, 'completer'),
         is_positional=is_positional,
-        type=Hook.FromData(data, 'type'),
+        type=util.Hook.FromData(data, 'type'),
         choices=data.get('choices'),
         default=data.get('default'),
-        fallback=Hook.FromData(data, 'fallback'),
-        processor=Hook.FromData(data, 'processor'),
+        fallback=util.Hook.FromData(data, 'fallback'),
+        processor=util.Hook.FromData(data, 'processor'),
         required=data.get('required', False),
         hidden=data.get('hidden', False),
         action=action,
         repeated=data.get('repeated'),
-        group=group
     )
 
   # pylint:disable=redefined-builtin, type param needs to match the schema.
-  def __init__(self, api_field, arg_name, help_text, metavar=None,
-               completer=None, is_positional=None, type=None, choices=None,
-               default=None, fallback=None, processor=None, required=False,
-               hidden=False, action=None, repeated=None, group=None,
+  def __init__(self, api_field=None, arg_name=None, help_text=None,
+               metavar=None, completer=None, is_positional=None, type=None,
+               choices=None, default=None, fallback=None, processor=None,
+               required=False, hidden=False, action=None, repeated=None,
                generate=True):
     self.api_field = api_field
     self.arg_name = arg_name
@@ -306,8 +274,108 @@ class Argument(object):
     self.hidden = hidden
     self.action = action
     self.repeated = repeated
-    self.group = group
     self.generate = generate
+
+  def Generate(self, message):
+    """Generates and returns the base argument.
+
+    Args:
+      message: The API message, None for non-resource args.
+
+    Returns:
+      The base argument.
+    """
+    if self.api_field:
+      field = arg_utils.GetFieldFromMessage(message, self.api_field)
+    else:
+      field = None
+    return arg_utils.GenerateFlag(field, self)
+
+  def Parse(self, message, namespace):
+    """Sets the argument message value, if any, from the parsed args.
+
+    Args:
+      message: The API message, None for non-resource args.
+      namespace: The parsed command line argument namespace.
+    """
+    if self.api_field is None:
+      return
+    value = arg_utils.GetFromNamespace(
+        namespace, self.arg_name, fallback=self.fallback)
+    if value is None:
+      return
+    field = arg_utils.GetFieldFromMessage(message, self.api_field)
+    value = arg_utils.ConvertValue(field, value, self)
+    arg_utils.SetFieldInMessage(message, self.api_field, value)
+
+
+class ArgumentGroup(object):
+  """Encapsulates data used to generate argument groups.
+
+  Most of the attributes of this object correspond directly to the schema and
+  have more complete docs there.
+
+  Attributes:
+    help_text: Optional help text for the group.
+    required: True to make the group required.
+    mutex: True to make the group mutually exclusive.
+    hidden: True to make the group hidden.
+    arguments: The list of arguments in the group.
+  """
+
+  @classmethod
+  def FromData(cls, data):
+    """Gets the arg group definition from the spec data.
+
+    Args:
+      data: The group spec data.
+
+    Returns:
+      ArgumentGroup, the parsed argument group.
+
+    Raises:
+      InvalidSchemaError: if the YAML command is malformed.
+    """
+    return cls(
+        help_text=data.get('help_text'),
+        required=data.get('required', False),
+        mutex=data.get('mutex', False),
+        hidden=data.get('hidden', False),
+        arguments=[Argument.FromData(item) for item in data.get('params')],
+    )
+
+  def __init__(self, help_text=None, required=False, mutex=False, hidden=False,
+               arguments=None):
+    self.help_text = help_text
+    self.required = required
+    self.mutex = mutex
+    self.hidden = hidden
+    self.arguments = arguments
+
+  def Generate(self, message):
+    """Generates and returns the base argument group.
+
+    Args:
+      message: The API message, None for non-resource args.
+
+    Returns:
+      The base argument group.
+    """
+    group = base.ArgumentGroup(
+        mutex=self.mutex, required=self.required, help=self.help_text)
+    for arg in self.arguments:
+      group.AddArgument(arg.Generate(message))
+    return group
+
+  def Parse(self, message, namespace):
+    """Sets argument group message values, if any, from the parsed args.
+
+    Args:
+      message: The API message, None for non-resource args.
+      namespace: The parsed command line argument namespace.
+    """
+    for arg in self.arguments:
+      arg.Parse(message, namespace)
 
 
 class Input(object):
@@ -324,105 +392,3 @@ class Output(object):
 
   def __init__(self, data):
     self.format = data.get('format')
-
-
-class Hook(object):
-  """Represents a Python code hook declared in the yaml spec.
-
-  A code hook points to some python element with a module path, and attribute
-  path like: package.module:class.attribute.
-
-  If arguments are provided, first the function is called with the arguments
-  and the return value of that is the hook that is used. For example:
-
-  googlecloudsdk.calliope.arg_parsers:Duration:lower_bound=1s,upper_bound=1m
-  """
-
-  @classmethod
-  def FromData(cls, data, key):
-    """Gets the hook from the spec data.
-
-    Args:
-      data: The yaml spec
-      key: The key to extract the hook path from.
-
-    Returns:
-      The Python element to call.
-    """
-    path = data.get(key)
-    if path:
-      return cls.FromPath(path)
-    return None
-
-  @classmethod
-  def FromPath(cls, path):
-    """Gets the hook from the function path.
-
-    Args:
-      path: str, The module path to the hook function.
-
-    Returns:
-      The Python element to call.
-    """
-    return _ImportPythonHook(path).GetHook()
-
-  def __init__(self, attribute, kwargs=None):
-    self.attribute = attribute
-    self.kwargs = kwargs
-
-  def GetHook(self):
-    """Gets the Python element that corresponds to this hook.
-
-    Returns:
-      A Python element.
-    """
-    if self.kwargs is not None:
-      return  self.attribute(**self.kwargs)
-    return self.attribute
-
-
-def _ImportPythonHook(path):
-  """Imports the given python hook.
-
-  Depending on what it is used for, a hook is a reference to a class, function,
-  or attribute in Python code.
-
-  Args:
-    path: str, The path of the hook to import. It must be in the form of:
-      package.module:attribute.attribute where the module path is separated from
-      the class name and sub attributes by a ':'. Additionally, ":arg=value,..."
-      can be appended to call the function with the given args and use the
-      return value as the hook.
-
-  Raises:
-    InvalidSchemaError: If the given module or attribute cannot be loaded.
-
-  Returns:
-    Hook, the hook configuration.
-  """
-  parts = path.split(':')
-  if len(parts) != 2 and len(parts) != 3:
-    raise InvalidSchemaError(
-        'Invalid Python hook: [{}]. Hooks must be in the format: '
-        'package(.module)+:attribute(.attribute)*(:arg=value(,arg=value)*)?'
-        .format(path))
-  try:
-    attr = module_util.ImportModule(parts[0] + ':' + parts[1])
-  except module_util.ImportModuleError as e:
-    raise InvalidSchemaError(
-        'Could not import Python hook: [{}]. {}'.format(path, e))
-
-  kwargs = None
-  if len(parts) == 3:
-    kwargs = {}
-    for arg in parts[2].split(','):
-      if not arg:
-        continue
-      arg_parts = arg.split('=')
-      if len(arg_parts) != 2:
-        raise InvalidSchemaError(
-            'Invalid Python hook: [{}]. Args must be in the form arg=value,'
-            'arg=value,...'.format(path))
-      kwargs[arg_parts[0]] = arg_parts[1]
-
-  return Hook(attr, kwargs)

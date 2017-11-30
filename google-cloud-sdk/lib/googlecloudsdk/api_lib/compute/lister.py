@@ -16,13 +16,13 @@
 import itertools
 
 from googlecloudsdk.api_lib.compute import constants
-from googlecloudsdk.api_lib.compute import filter_rewrite
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
+from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_expr_rewrite
 from googlecloudsdk.core.resource import resource_projector
@@ -355,7 +355,7 @@ class ListException(exceptions.ToolException):
 
 
 # TODO(b/38256601) - Drop these flags
-def AddBaseListerArgs(parser):
+def AddBaseListerArgs(parser, hidden=False):
   """Add arguments defined by base_classes.BaseLister."""
   parser.add_argument(
       'names',
@@ -368,12 +368,14 @@ def AddBaseListerArgs(parser):
       nargs='*',
       default=[],
       completer=compute_completers.InstancesCompleter,
+      hidden=hidden,
       help=('If provided, show details for the specified names and/or URIs of '
             'resources.'))
 
   parser.add_argument(
       '--regexp',
       '-r',
+      hidden=hidden,
       action=actions.DeprecationAction(
           'regexp',
           warn='Flag --regexp is deprecated. '
@@ -403,7 +405,7 @@ def AddZonalListerArgs(parser):
       default=[])
 
 
-def AddRegionsArg(parser):
+def AddRegionsArg(parser, hidden=False):
   """Add arguments used by regional list command.
 
   These arguments are added by this function:
@@ -413,8 +415,9 @@ def AddRegionsArg(parser):
 
   Args:
     parser: argparse.Parser, The parser that this function will add arguments to
+    hidden: bool, If the flags should be hidden.
   """
-  AddBaseListerArgs(parser)
+  AddBaseListerArgs(parser, hidden=hidden)
   parser.add_argument(
       '--regions',
       action=actions.DeprecationAction(
@@ -424,6 +427,7 @@ def AddRegionsArg(parser):
                'For example '
                '--filter="region:( europe-west1 europe-west2 )".'),
       metavar='REGION',
+      hidden=hidden,
       help='If provided, only resources from the given regions are queried.',
       type=arg_parsers.ArgList(min_length=1),
       default=[])
@@ -493,41 +497,43 @@ class _Frontend(object):
     return self._scope_set
 
 
-def _GetListCommandFrontendPrototype(args):
+def _GetListCommandFrontendPrototype(args, message=None):
   """Make Frontend suitable for ListCommand argument namespace.
 
   Generated filter is a pair (client-side filter, server-side filter).
 
   Args:
     args: The argument namespace of ListCommand.
+    message: The response resource proto message for the request.
 
   Returns:
     Frontend initialized with information from ListCommand argument namespace.
     Both client-side and server-side filter is returned.
   """
-  filter_expr = filter_rewrite.Rewriter().Rewrite(args.filter)
+  filter_expr = flags.RewriteFilter(args, message=message)
   max_results = int(args.page_size) if args.page_size else None
   if args.limit and (max_results is None or max_results > args.limit):
     max_results = args.limit
   return _Frontend(filter_expr=filter_expr, maxResults=max_results)
 
 
-def _GetBaseListerFrontendPrototype(args):
+def _GetBaseListerFrontendPrototype(args, message=None):
   """Make Frontend suitable for BaseLister argument namespace.
 
   Generated client-side filter is stored to args.filter. Generated server-side
   filter is None. Client-side filter should be processed using
-  filter_rewrite.Rewriter before use to take advantage of possible server-side
+  flags.RewriteFilter before use to take advantage of possible server-side
   filtering.
 
   Args:
     args: The argument namespace of BaseLister.
+    message: The resource proto message.
 
   Returns:
     Frontend initialized with information from BaseLister argument namespace.
     Server-side filter is None.
   """
-  frontend = _GetListCommandFrontendPrototype(args)
+  frontend = _GetListCommandFrontendPrototype(args, message=message)
   filter_args = []
   if args.filter:
     filter_args.append('('+args.filter+')')
@@ -558,7 +564,7 @@ def _GetBaseListerFrontendPrototype(args):
   return _Frontend(None, frontend.max_results, frontend.scope_set)
 
 
-def _TranslateZonesFlag(args, resources):
+def _TranslateZonesFlag(args, resources, message=None):
   """Translates --zones flag into filter expression and scope set."""
   scope_set = ZoneSet([
       resources.Parse(
@@ -573,12 +579,12 @@ def _TranslateZonesFlag(args, resources):
   # simple pattern?
   zone_regexp = ' '.join([zone for zone in args.zones])
   zone_arg = '(zone :({}))'.format(zone_regexp)
-  args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(
-      filter_arg + zone_arg)
+  args.filter = filter_arg + zone_arg
+  args.filter, filter_expr = flags.RewriteFilter(args, message=message)
   return filter_expr, scope_set
 
 
-def ParseZonalFlags(args, resources):
+def ParseZonalFlags(args, resources, message=None):
   """Make Frontend suitable for ZonalLister argument namespace.
 
   Generated client-side filter is stored to args.filter.
@@ -586,15 +592,17 @@ def ParseZonalFlags(args, resources):
   Args:
     args: The argument namespace of BaseLister.
     resources: resources.Registry, The resource registry
+    message: The response resource proto message for the request.
 
   Returns:
     Frontend initialized with information from BaseLister argument namespace.
     Server-side filter is None.
   """
-  frontend = _GetBaseListerFrontendPrototype(args)
+  frontend = _GetBaseListerFrontendPrototype(args, message=message)
   filter_expr = frontend.filter
   if args.zones:
-    filter_expr, scope_set = _TranslateZonesFlag(args, resources)
+    filter_expr, scope_set = _TranslateZonesFlag(
+        args, resources, message=message)
   else:
     scope_set = AllScopes(
         [
@@ -607,7 +615,7 @@ def ParseZonalFlags(args, resources):
   return _Frontend(filter_expr, frontend.max_results, scope_set)
 
 
-def _TranslateRegionsFlag(args, resources):
+def _TranslateRegionsFlag(args, resources, message=None):
   """Translates --regions flag into filter expression and scope set."""
   scope_set = RegionSet([
       resources.Parse(
@@ -622,12 +630,12 @@ def _TranslateRegionsFlag(args, resources):
   # simple pattern?
   region_regexp = ' '.join([region for region in args.regions])
   region_arg = '(region :({}))'.format(region_regexp)
-  args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(
-      filter_arg + region_arg)
+  args.filter = filter_arg + region_arg
+  args.filter, filter_expr = flags.RewriteFilter(args, message=message)
   return filter_expr, scope_set
 
 
-def ParseRegionalFlags(args, resources):
+def ParseRegionalFlags(args, resources, message=None):
   """Make Frontend suitable for RegionalLister argument namespace.
 
   Generated client-side filter is stored to args.filter.
@@ -635,12 +643,13 @@ def ParseRegionalFlags(args, resources):
   Args:
     args: The argument namespace of RegionalLister.
     resources: resources.Registry, The resource registry
+    message: The response resource proto message for the request.
 
   Returns:
     Frontend initialized with information from RegionalLister argument
     namespace.
   """
-  frontend = _GetBaseListerFrontendPrototype(args)
+  frontend = _GetBaseListerFrontendPrototype(args, message=message)
   filter_expr = frontend.filter
   if args.regions:
     filter_expr, scope_set = _TranslateRegionsFlag(args, resources)
@@ -656,7 +665,7 @@ def ParseRegionalFlags(args, resources):
   return _Frontend(filter_expr, frontend.max_results, scope_set)
 
 
-def ParseMultiScopeFlags(args, resources):
+def ParseMultiScopeFlags(args, resources, message=None):
   """Make Frontend suitable for MultiScopeLister argument namespace.
 
   Generated client-side filter is stored to args.filter.
@@ -664,24 +673,27 @@ def ParseMultiScopeFlags(args, resources):
   Args:
     args: The argument namespace of MultiScopeLister.
     resources: resources.Registry, The resource registry
+    message: The response resource proto message for the request.
 
   Returns:
     Frontend initialized with information from MultiScopeLister argument
     namespace.
   """
-  frontend = _GetBaseListerFrontendPrototype(args)
+  frontend = _GetBaseListerFrontendPrototype(args, message=message)
   filter_expr = frontend.filter
   if getattr(args, 'zones', None):
-    filter_expr, scope_set = _TranslateZonesFlag(args, resources)
+    filter_expr, scope_set = _TranslateZonesFlag(
+        args, resources, message=message)
   elif getattr(args, 'regions', None):
-    filter_expr, scope_set = _TranslateRegionsFlag(args, resources)
+    filter_expr, scope_set = _TranslateRegionsFlag(
+        args, resources, message=message)
   elif getattr(args, 'global', None):
     scope_set = GlobalScope([
         resources.Parse(
             properties.VALUES.core.project.GetOrFail(),
             collection='compute.projects')
     ])
-    args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(args.filter)
+    args.filter, filter_expr = flags.RewriteFilter(args, message=message)
   else:
     scope_set = AllScopes(
         [
@@ -694,7 +706,7 @@ def ParseMultiScopeFlags(args, resources):
   return _Frontend(filter_expr, frontend.max_results, scope_set)
 
 
-def ParseNamesAndRegexpFlags(args, resources):
+def ParseNamesAndRegexpFlags(args, resources, message=None):
   """Makes Frontend suitable for GlobalLister argument namespace.
 
   Stores generated client-side filter in args.filter.
@@ -702,17 +714,18 @@ def ParseNamesAndRegexpFlags(args, resources):
   Args:
     args: The argument namespace of BaseLister.
     resources: resources.Registry, The resource registry
+    message: The resource proto message.
 
   Returns:
     Frontend initialized with information from BaseLister argument namespace.
   """
-  frontend = _GetBaseListerFrontendPrototype(args)
+  frontend = _GetBaseListerFrontendPrototype(args, message=message)
   scope_set = GlobalScope([
       resources.Parse(
           properties.VALUES.core.project.GetOrFail(),
           collection='compute.projects')
   ])
-  args.filter, filter_expr = filter_rewrite.Rewriter().Rewrite(args.filter)
+  args.filter, filter_expr = flags.RewriteFilter(args, message=message)
   return _Frontend(filter_expr, frontend.max_results, scope_set)
 
 

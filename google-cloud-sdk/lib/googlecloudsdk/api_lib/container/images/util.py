@@ -13,6 +13,9 @@
 # limitations under the License.
 """Utilities for the container images commands."""
 
+from contextlib import contextmanager
+
+import httplib
 import itertools
 
 from apitools.base.py import list_pager
@@ -22,8 +25,11 @@ from containerregistry.client import docker_name
 # the schema of the JSON data returned is fairly different, and
 # images addressed by digest must be accessed via the API version
 # corresponding to how they are stored.
+from containerregistry.client.v2 import docker_http as v2_docker_http
 from containerregistry.client.v2 import docker_image as v2_image
+from containerregistry.client.v2_2 import docker_http as v2_2_docker_http
 from containerregistry.client.v2_2 import docker_image as v2_2_image
+from containerregistry.client.v2_2 import docker_image_list
 from googlecloudsdk.api_lib.container.images import container_analysis_data_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
@@ -51,6 +57,10 @@ class InvalidImageNameError(UtilError):
 
 class UserRecoverableV2Error(UtilError):
   """Raised when a user-recoverable V2 API error is encountered."""
+
+
+class TokenRefreshError(UtilError):
+  """Raised when there's an error refreshing tokens."""
 
 
 def IsFullySpecified(image_name):
@@ -445,14 +455,26 @@ def GetDigestFromName(image_name):
 
   def ResolveV22Tag(tag):
     with v2_2_image.FromRegistry(
-        basic_creds=CredentialProvider(), name=tag,
-        transport=http.Http()) as v2_2_img:
+        basic_creds=CredentialProvider(), name=tag, transport=http.Http(),
+        accepted_mimes=v2_2_docker_http.SUPPORTED_MANIFEST_MIMES) as v2_2_img:
       if v2_2_img.exists():
         return v2_2_img.digest()
       return None
 
-  # Resolve v2.2 first because we will exist via a compatibility layer.
-  sha256 = ResolveV22Tag(tag_or_digest) or ResolveV2Tag(tag_or_digest)
+  def ResolveManifestListTag(tag):
+    with docker_image_list.FromRegistry(
+        basic_creds=CredentialProvider(), name=tag,
+        transport=http.Http()) as manifest_list:
+      if manifest_list.exists():
+        return manifest_list.digest()
+      return None
+
+  # Resolve as manifest list, then v2.2, then v2.1 because for compatibility:
+  # - manifest lists can be rewritten to v2.2 "default" images.
+  # - v2.2 manifests can be rewritten to v2.1 manifests.
+  sha256 = (ResolveManifestListTag(tag_or_digest) or
+            ResolveV22Tag(tag_or_digest) or
+            ResolveV2Tag(tag_or_digest))
   if not sha256:
     raise InvalidImageNameError('[{0}] is not a valid name.'.format(image_name))
 
@@ -490,20 +512,19 @@ def GetDockerDigestFromPrefix(digest):
     return digest
 
 
-def GcloudifyRecoverableV2Errors(err, err_str_for_status):
-  """Filters err based on the existence of err.status in err_str_for_status.
-
-  Args:
-    err: The V2DiagnotsticException to filter based on .status.
-    err_str_for_status: a dict(int) -> string which maps HTTP status codes to a
-      helpful error string to display to the user.
-
-  Returns:
-    A googlecloudsdk.core.exceptions.Error with the helpful error string
-    specified in err_str_for_status, otherwise err. This prevents the gcloudSDK
-    from 'crashing' and helps the user recover.
-  """
-  err_str = err_str_for_status.get(err.status, None)
-  if err_str:
-    return UserRecoverableV2Error(err_str)
-  return err
+@contextmanager
+def WrapExpectedDockerlessErrors(optional_image_name=None):
+  try:
+    yield
+  except (v2_docker_http.V2DiagnosticException,
+          v2_2_docker_http.V2DiagnosticException) as err:
+    if err.status in [httplib.UNAUTHORIZED, httplib.FORBIDDEN]:
+      raise UserRecoverableV2Error('Access denied: {}'.format(
+          optional_image_name or str(err)))
+    elif err.status == httplib.NOT_FOUND:
+      raise UserRecoverableV2Error('Not found: {}'.format(
+          optional_image_name or str(err)))
+    raise
+  except (v2_docker_http.TokenRefreshException,
+          v2_2_docker_http.TokenRefreshException) as err:
+    raise TokenRefreshError(str(err))

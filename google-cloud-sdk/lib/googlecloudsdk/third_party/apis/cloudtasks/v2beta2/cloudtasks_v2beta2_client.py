@@ -63,6 +63,11 @@ PullTasksResponse. After the task is acknowledged, it will
 not be returned by a later CloudTasks.PullTasks,
 CloudTasks.GetTask, or CloudTasks.ListTasks.
 
+To acknowledge multiple tasks at the same time, use
+[HTTP batching](/storage/docs/json_api/v1/how-tos/batch)
+or the batching documentation for your client library, for example
+https://developers.google.com/api-client-library/python/guide/batch.
+
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksAcknowledgeRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -348,6 +353,8 @@ failed. google.rpc.Code.FAILED_PRECONDITION is returned when
 CloudTasks.RunTask is called on task that is dispatched or
 already running.
 
+CloudTasks.RunTask cannot be called on pull tasks.
+
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksRunRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -385,11 +392,11 @@ already running.
     def Create(self, request, global_params=None):
       """Creates a queue.
 
-WARNING: This method is only available to whitelisted
-users. Using this method carries some risk. Read
+WARNING: Using this method may have unintended side effects if you are
+using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
+Read
 [Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
-carefully and then sign up for
-[whitelist access to this method](https://goo.gl/Fe5mUy).
+carefully before using this method.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesCreateRequest) input message
@@ -423,11 +430,11 @@ This command will delete the queue even if it has tasks in it.
 Note: If you delete a queue, a queue with the same name can't be created
 for 7 days.
 
-WARNING: This method is only available to whitelisted
-users. Using this method carries some risk. Read
+WARNING: Using this method may have unintended side effects if you are
+using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
+Read
 [Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
-carefully and then sign up for
-[whitelist access to this method](https://goo.gl/Fe5mUy).
+carefully before using this method.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesDeleteRequest) input message
@@ -549,11 +556,11 @@ Queues are returned in lexicographical order.
 This method creates the queue if it does not exist and updates
 the queue if it does exist.
 
-WARNING: This method is only available to whitelisted
-users. Using this method carries some risk. Read
+WARNING: Using this method may have unintended side effects if you are
+using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
+Read
 [Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
-carefully and then sign up for
-[whitelist access to this method](https://goo.gl/Fe5mUy).
+carefully before using this method.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesPatchRequest) input message

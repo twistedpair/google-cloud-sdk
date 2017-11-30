@@ -31,12 +31,12 @@ import json
 import os
 import re
 import subprocess
+import sys
 import textwrap
 
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core import module_util
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import encoding
@@ -52,6 +52,25 @@ class NoCliTreeGeneratorForCommand(exceptions.Error):
 
 class NoManPageTextForCommand(exceptions.Error):
   """Could not get man page text for command."""
+
+
+# TODO(b/69033748): disable until issues resolved
+def _DisableLongRunningCliTreeGeneration(command):
+  """Returns True if long running CLI tree generation is disabled."""
+  # Only a few command generators are long running.
+  if command not in ('bq', 'gsutil', 'kubectl'):
+    return False
+  # Only generate these CLI trees on the fly for explicit requests.
+  # It can take ~1minute, not good, especially at the interactive prompt.
+  if 'update-cli-trees' in sys.argv or '--update-cli-trees' in sys.argv:
+    return False
+  # It's a long running generator, not explicitly requested -- disable.
+  return True
+
+
+# TODO(b/69048062): disable until issues resolved
+def _DisableManCollector():
+  return True
 
 
 def _NormalizeSpace(text):
@@ -188,7 +207,9 @@ class CliTreeGenerator(object):
     """Loads the CLI tree or generates it if necessary, and returns the tree."""
     path, f = self.FindTreeFile(directories)
     if not f:
-      pass
+      # TODO(b/69033748): disable until issues resolved
+      if _DisableLongRunningCliTreeGeneration(self.command):
+        return None
     else:
       up_to_date = False
       with f:
@@ -896,6 +917,9 @@ class ManPageCliTreeGenerator(CliTreeGenerator):
   @classmethod
   def _GetManPageCollectorType(cls):
     """Returns the man page collector type."""
+    # TODO(b/69048062): disable until issues resolved
+    if _DisableManCollector():
+      return None
     if files.FindExecutableOnPath('man'):
       return _ManCommandCollector
     return _ManUrlCollector
@@ -1214,12 +1238,12 @@ def LoadAll(directory=None, ignore_out_of_date=False, root=None,
     try:
       root[cli_tree.LOOKUP_COMMANDS][cli_tree.DEFAULT_CLI_NAME] = (
           cli_tree.Load())
-    except module_util.ImportModuleError:
+    except cli_tree.CliTreeLoadError:
       pass
 
-  # Load extra CLIs by searching directories in order. .py, .pyc, and .json
-  # files are treated as CLI modules/data, where the file base name is the name
-  # of the CLI root command.
+  # Load extra CLIs by searching directories in order. .json files are treated
+  # as CLI modules/data, where the file base name is the name of the CLI root
+  # command.
   directories = _GetDirectories(
       directory=directory, warn_on_exceptions=warn_on_exceptions)
 
@@ -1230,19 +1254,19 @@ def LoadAll(directory=None, ignore_out_of_date=False, root=None,
     for (dirpath, _, filenames) in os.walk(directory):
       for filename in sorted(filenames):  # For stability across runs.
         command, extension = os.path.splitext(filename)
+        if extension != '.json':
+          continue
         if command in loaded:
           # Already loaded. Earlier directory hits take precedence.
           continue
         loaded.add(command)
-        if extension == '.py':
+        if command == cli_tree.DEFAULT_CLI_NAME:
           tree = cli_tree.Load(os.path.join(dirpath, filename))
-        elif extension == '.json':
+        else:
           tree = LoadOrGenerate(command,
                                 directories=[dirpath],
                                 ignore_out_of_date=ignore_out_of_date,
                                 warn_on_exceptions=warn_on_exceptions)
-        else:
-          continue
         if tree:
           root[cli_tree.LOOKUP_COMMANDS][command] = tree
       # Don't search subdirectories.

@@ -75,9 +75,10 @@ class QueryRewriter(resource_expr_rewrite.Backend):
     """
     return call.global_restriction
 
-  def RewriteTerm(self, key, op, operand):
+  def RewriteTerm(self, key, op, operand, key_type):
     """Rewrites <key op operand>."""
 
+    del key_type  # unused in RewriteTerm
     if op in ('~',):
       raise QueryOperatorNotSupported(
           'The [{}] operator is not supported in cloud resource search '
@@ -120,7 +121,7 @@ class QueryRewriter(resource_expr_rewrite.Backend):
 
 
 def List(limit=None, page_size=None, query=None, sort_by=None, uri=False):
-  """Returns the list of Cloud Resources for collection.
+  """Yields the list of Cloud Resources for collection.
 
   Not all collections are indexed for search.
 

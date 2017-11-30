@@ -957,6 +957,47 @@
         }
       }
     },
+    "ClassifyTextRequest": {
+      "id": "ClassifyTextRequest",
+      "description": "The document classification request message.",
+      "type": "object",
+      "properties": {
+        "document": {
+          "description": "Input document.",
+          "$ref": "Document"
+        }
+      }
+    },
+    "ClassifyTextResponse": {
+      "id": "ClassifyTextResponse",
+      "description": "The document classification response message.",
+      "type": "object",
+      "properties": {
+        "categories": {
+          "description": "Categories representing the input document.",
+          "type": "array",
+          "items": {
+            "$ref": "ClassificationCategory"
+          }
+        }
+      }
+    },
+    "ClassificationCategory": {
+      "id": "ClassificationCategory",
+      "description": "Represents a category returned from the text classifier.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the category representing the document.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "The classifier's confidence of the category. Number represents how certain\nthe classifier is that this category represents the given text.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
     "AnnotateTextRequest": {
       "id": "AnnotateTextRequest",
       "description": "The request message for the text annotation API, which can perform multiple\nanalysis types (sentiment, entities, and syntax) in one call.",
@@ -1008,6 +1049,10 @@
         "extractEntitySentiment": {
           "description": "Extract entities and their associated sentiment.",
           "type": "boolean"
+        },
+        "classifyText": {
+          "description": "Classify the full document into categories.",
+          "type": "boolean"
         }
       }
     },
@@ -1044,6 +1089,13 @@
         "language": {
           "description": "The language of the text, which will be the same as the language specified\nin the request or, if not specified, the automatically-detected language.\nSee Document.language field for more details.",
           "type": "string"
+        },
+        "categories": {
+          "description": "Categories identified in the input document.",
+          "type": "array",
+          "items": {
+            "$ref": "ClassificationCategory"
+          }
         }
       }
     },
@@ -1156,6 +1208,27 @@
           },
           "response": {
             "$ref": "AnalyzeSyntaxResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-language",
+            "https://www.googleapis.com/auth/cloud-platform"
+          ]
+        },
+        "classifyText": {
+          "id": "language.documents.classifyText",
+          "path": "v1/documents:classifyText",
+          "flatPath": "v1/documents:classifyText",
+          "httpMethod": "POST",
+          "description": "Classifies a document into categories.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "ClassifyTextRequest"
+          },
+          "response": {
+            "$ref": "ClassifyTextResponse"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-language",

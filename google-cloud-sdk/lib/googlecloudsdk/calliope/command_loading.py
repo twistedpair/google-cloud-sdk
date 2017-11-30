@@ -19,6 +19,7 @@ import os
 import re
 import sys
 
+import googlecloudsdk
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core.util import pkg_resources
 import yaml
@@ -151,6 +152,41 @@ def LoadCommonType(impl_paths, path, release_track,
   Returns:
     The base._Common class for the command or group.
   """
+  implementations = _GetAllImplementations(
+      impl_paths, path, construction_id, is_command, yaml_command_translator)
+  return _ExtractReleaseTrackImplementation(
+      impl_paths[0], release_track, implementations)()
+
+
+def _GetAllImplementations(impl_paths, path, construction_id, is_command,
+                           yaml_command_translator):
+  """Gets all the release track command implementations.
+
+  Can load both python and yaml modules.
+
+  Args:
+    impl_paths: [str], A list of file paths to the command implementation for
+      this group or command.
+    path: [str], A list of group names that got us down to this command group
+      with respect to the CLI itself.  This path should be used for things
+      like error reporting when a specific element in the tree needs to be
+      referenced.
+    construction_id: str, A unique identifier for the CLILoader that is
+      being constructed.
+    is_command: bool, True if we are loading a command, False to load a group.
+    yaml_command_translator: YamlCommandTranslator, An instance of a translator
+      to use to load the yaml data.
+
+  Raises:
+    CommandLoadFailure: If the command is invalid and cannot be loaded.
+
+  Returns:
+    [(func->base._Common, [base.ReleaseTrack])], A list of tuples that can be
+    passed to _ExtractReleaseTrackImplementation. Each item in this list
+    represents a command implementation. The first element is a function that
+    returns the implementation, and the second element is a list of release
+    tracks it is valid for.
+  """
   implementations = []
   for impl_file in impl_paths:
     if impl_file.endswith('.yaml'):
@@ -166,9 +202,7 @@ def LoadCommonType(impl_paths, path, release_track,
       module = _GetModuleFromPath(impl_file, path, construction_id)
       implementations.extend(_ImplementationsFromModule(
           module.__file__, module.__dict__.values(), is_command=is_command))
-
-  return _ExtractReleaseTrackImplementation(
-      impl_paths[0], release_track, implementations)()
+  return implementations
 
 
 def CreateYamlLoader(impl_path):
@@ -238,59 +272,123 @@ def CreateYamlLoader(impl_path):
       - e: f
       - g: h
       - i: j
+
+    You may also use the !REF and _REF_ directives in the same way. Instead of
+    pulling from the common file, they can pull from an arbitrary yaml file
+    somewhere in the googlecloudsdk tree. The syntax looks like:
+
+    bar: !REF googlecloudsdk.foo.bar:a.b.c
+
+    This will load googlecloudsdk/foo/bar.yaml and from that file return the
+    a.b.c nested attribute.
     """
 
-    INCLUDE_MACRO = '!COMMON'
-    MERGE_MACRO = '_COMMON_'
+    INCLUDE_COMMON_MACRO = '!COMMON'
+    MERGE_COMMON_MACRO = '_COMMON_'
+    INCLUDE_REF_MACRO = '!REF'
+    MERGE_REF_MACRO = '_REF_'
 
     def __init__(self, stream):
       super(Loader, self).__init__(stream)
 
     def construct_mapping(self, *args, **kwargs):
       data = super(Loader, self).construct_mapping(*args, **kwargs)
-      attribute_path = data.pop(Loader.MERGE_MACRO, None)
+      data = self._ConstructMappingHelper(Loader.MERGE_COMMON_MACRO,
+                                          self._GetCommonData, data)
+      return self._ConstructMappingHelper(Loader.MERGE_REF_MACRO,
+                                          self._GetRefData, data)
+
+    def _ConstructMappingHelper(self, macro, source_func, data):
+      attribute_path = data.pop(macro, None)
       if not attribute_path:
         return data
 
       modified_data = {}
       for path in attribute_path.split(','):
-        modified_data.update(self._GetData(path))
+        modified_data.update(source_func(path))
       # Add the explicit data last so it can override the imports.
       modified_data.update(data)
       return modified_data
 
     def construct_sequence(self, *args, **kwargs):
       data = super(Loader, self).construct_sequence(*args, **kwargs)
+      data = self._ConstructSequenceHelper(Loader.MERGE_COMMON_MACRO,
+                                           self._GetCommonData, data)
+      return self._ConstructSequenceHelper(Loader.MERGE_REF_MACRO,
+                                           self._GetRefData, data)
+
+    def _ConstructSequenceHelper(self, macro, source_func, data):
       new_list = []
       for i in data:
-        if isinstance(i, basestring) and i.startswith(Loader.MERGE_MACRO):
-          attribute_path = i[len(Loader.MERGE_MACRO):]
+        if isinstance(i, basestring) and i.startswith(macro):
+          attribute_path = i[len(macro):]
           for path in attribute_path.split(','):
-            new_list.extend(self._GetData(path))
+            new_list.extend(source_func(path))
         else:
           new_list.append(i)
       return new_list
 
-    def include(self, node):
+    def IncludeCommon(self, node):
       attribute_path = self.construct_scalar(node)
-      return self._GetData(attribute_path)
+      return self._GetCommonData(attribute_path)
 
-    def _GetData(self, attribute_path):
+    def IncludeRef(self, node):
+      attribute_path = self.construct_scalar(node)
+      return self._GetRefData(attribute_path)
+
+    def _GetCommonData(self, attribute_path):
       if not common_data:
         raise LayoutException(
-            'Command [{}] references common command data but it does not exist.'
-            .format(impl_path))
-      value = common_data
+            'Command [{}] references [common command] data but it does not '
+            'exist.'.format(impl_path))
+      return self._GetAttribute(common_data, attribute_path, 'common command')
+
+    def _GetRefData(self, path):
+      """Loads the YAML data from the given reference.
+
+      A YAML reference must refer to a YAML file and an attribute within that
+      file to extract.
+
+      Args:
+        path: str, The path of the YAML file to import. It must be in the
+          form of: package.module:attribute.attribute, where the module path is
+          separated from the sub attributes within the YAML by a ':'.
+
+      Raises:
+        LayoutException: If the given module or attribute cannot be loaded.
+
+      Returns:
+        The referenced YAML data.
+      """
+      root = os.path.dirname(os.path.dirname(googlecloudsdk.__file__))
+      parts = path.split(':')
+      if len(parts) != 2:
+        raise LayoutException(
+            'Invalid Yaml reference: [{}]. References must be in the format: '
+            'path(.path)+:attribute(.attribute)*'.format(path))
+      yaml_path = os.path.join(root, *parts[0].split('.'))
+      yaml_path += '.yaml'
+      try:
+        data = yaml.load(pkg_resources.GetData(yaml_path))
+      except IOError as e:
+        raise LayoutException(
+            'Failed to load Yaml reference file [{}]: {}'.format(yaml_path, e))
+
+      return self._GetAttribute(data, parts[1], yaml_path)
+
+    def _GetAttribute(self, data, attribute_path, location):
+      value = data
       for attribute in attribute_path.split('.'):
         value = value.get(attribute, None)
         if not value:
           raise LayoutException(
-              'Command [{}] references common command data attribute [{}] in '
+              'Command [{}] references [{}] data attribute [{}] in '
               'path [{}] but it does not exist.'
-              .format(impl_path, attribute, attribute_path))
+              .format(impl_path, location, attribute, attribute_path))
       return value
 
-  Loader.add_constructor(Loader.INCLUDE_MACRO, Loader.include)
+  Loader.add_constructor(Loader.INCLUDE_COMMON_MACRO, Loader.IncludeCommon)
+  Loader.add_constructor(Loader.INCLUDE_REF_MACRO, Loader.IncludeRef)
   return Loader
 
 

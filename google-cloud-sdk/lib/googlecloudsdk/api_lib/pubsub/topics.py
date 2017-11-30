@@ -14,7 +14,6 @@
 """Utilities for Cloud Pub/Sub Topics API."""
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import exceptions
 
@@ -150,7 +149,7 @@ class TopicsClient(object):
     if not message_body and not attributes:
       raise EmptyMessageException(
           'You cannot send an empty message. You must specify either a '
-          'MESSAGE_BODY, one or more ATTRIBUTE, or both.')
+          'MESSAGE, one or more ATTRIBUTE, or both.')
     message = self.messages.PubsubMessage(
         data=message_body,
         attributes=self.messages.PubsubMessage.AttributesValue(

@@ -1,0 +1,31 @@
+region:
+  name: region
+  collection: cloudiot.projects.locations
+  attributes:
+    - &region
+      parameter_name: locationsId
+      attribute_name: region
+      help: The name of the Cloud IoT region.
+
+registry:
+  name: registry
+  collection: cloudiot.projects.locations.registries
+  request_id_field: deviceRegistry.id
+  attributes:
+    - *region
+    - &registry
+      parameter_name: registriesId
+      attribute_name: registry
+      help: The name of the Cloud IoT registry.
+
+device:
+  name: device
+  collection: cloudiot.projects.locations.registries.devices
+  request_id_field: device.id
+  attributes:
+    - *region
+    - *registry
+    - &device
+      parameter_name: devicesId
+      attribute_name: device
+      help: The name of the Cloud IoT device.

@@ -17,7 +17,6 @@ import argparse
 from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.command_lib.util import labels_util
 
 
 def BackupConfiguration(sql_messages,
@@ -225,49 +224,3 @@ def MachineType(instance=None, tier=None, memory=None, cpu=None):
     machine_type = constants.DEFAULT_MACHINE_TYPE
 
   return machine_type
-
-
-def UserLabels(sql_messages,
-               instance=None,
-               labels=None,
-               update_labels=None,
-               remove_labels=None,
-               clear_labels=None):
-  """Generates the labels message for the instance.
-
-  Args:
-    sql_messages: module, The messages module that should be used.
-    instance: sql_messages.DatabaseInstance, The original instance, if
-        prior labels might be needed needed.
-    labels: dict, the full set of labels to set.
-    update_labels: dict, the key-value pairs to update existing labels with.
-    remove_labels: the list of label keys to remove.
-    clear_labels: boolean, True if all labels should be cleared.
-
-  Returns:
-    sql_messages.Settings.UserLabelsValue, an object w/ labels updates applied.
-  """
-
-  # Parse labels args
-  if labels:
-    update_labels = labels
-  elif clear_labels:
-    remove_labels = [
-        label.key for label in instance.settings.userLabels.additionalProperties
-    ]
-
-  # Removing labels with a patch request requires explicitly setting values
-  # to null. If the user did not specify labels in this patch request, we
-  # keep their existing labels.
-  if remove_labels:
-    if not update_labels:
-      update_labels = {}
-    for key in remove_labels:
-      update_labels[key] = None
-
-  # Generate the actual UserLabelsValue message.
-  existing_labels = None
-  if instance:
-    existing_labels = instance.settings.userLabels
-  return labels_util.Diff(additions=update_labels).Apply(
-      sql_messages.Settings.UserLabelsValue, existing_labels)

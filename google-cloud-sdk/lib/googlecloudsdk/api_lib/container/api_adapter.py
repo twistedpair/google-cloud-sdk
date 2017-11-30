@@ -13,6 +13,7 @@
 # limitations under the License.
 """Api client adapter containers commands."""
 from collections import deque
+import httplib
 from os import linesep
 import time
 
@@ -202,6 +203,7 @@ class CreateClusterOptions(object):
                user=None,
                password=None,
                cluster_version=None,
+               node_version=None,
                network=None,
                cluster_ipv4_cidr=None,
                enable_cloud_logging=None,
@@ -239,7 +241,8 @@ class CreateClusterOptions(object):
                enable_binauthz=None,
                min_cpu_platform=None,
                workload_metadata_from_node=None,
-               maintenance_window=None):
+               maintenance_window=None,
+               enable_pod_security_policy=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -251,6 +254,7 @@ class CreateClusterOptions(object):
     self.user = user
     self.password = password
     self.cluster_version = cluster_version
+    self.node_version = node_version
     self.network = network
     self.cluster_ipv4_cidr = cluster_ipv4_cidr
     self.enable_cloud_logging = enable_cloud_logging
@@ -289,6 +293,7 @@ class CreateClusterOptions(object):
     self.min_cpu_platform = min_cpu_platform
     self.workload_metadata_from_node = workload_metadata_from_node
     self.maintenance_window = maintenance_window
+    self.enable_pod_security_policy = enable_pod_security_policy
 
 
 class UpdateClusterOptions(object):
@@ -307,7 +312,9 @@ class UpdateClusterOptions(object):
                locations=None,
                enable_master_authorized_networks=None,
                master_authorized_networks=None,
-               enable_autoprovisioning=None):
+               enable_autoprovisioning=None,
+               enable_pod_security_policy=None,
+               enable_binauthz=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -322,6 +329,8 @@ class UpdateClusterOptions(object):
     self.enable_master_authorized_networks = enable_master_authorized_networks
     self.master_authorized_networks = master_authorized_networks
     self.enable_autoprovisioning = enable_autoprovisioning
+    self.enable_pod_security_policy = enable_pod_security_policy
+    self.enable_binauthz = enable_binauthz
 
 
 class SetMasterAuthOptions(object):
@@ -349,6 +358,7 @@ class CreateNodePoolOptions(object):
                machine_type=None,
                disk_size_gb=None,
                scopes=None,
+               node_version=None,
                enable_cloud_endpoints=None,
                num_nodes=None,
                local_ssd_count=None,
@@ -358,6 +368,7 @@ class CreateNodePoolOptions(object):
                enable_autoscaling=None,
                max_nodes=None,
                min_nodes=None,
+               enable_autoprovisioning=None,
                image_type=None,
                preemptible=None,
                enable_autorepair=None,
@@ -370,6 +381,7 @@ class CreateNodePoolOptions(object):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
+    self.node_version = node_version
     self.enable_cloud_endpoints = enable_cloud_endpoints
     self.num_nodes = num_nodes
     self.local_ssd_count = local_ssd_count
@@ -379,6 +391,7 @@ class CreateNodePoolOptions(object):
     self.enable_autoscaling = enable_autoscaling
     self.max_nodes = max_nodes
     self.min_nodes = min_nodes
+    self.enable_autoprovisioning = enable_autoprovisioning
     self.image_type = image_type
     self.preemptible = preemptible
     self.enable_autorepair = enable_autorepair
@@ -391,12 +404,27 @@ class CreateNodePoolOptions(object):
 
 
 class UpdateNodePoolOptions(object):
+  """Options to pass to UpdateNodePool."""
 
   def __init__(self,
                enable_autorepair=None,
-               enable_autoupgrade=None):
+               enable_autoupgrade=None,
+               enable_autoscaling=None,
+               max_nodes=None,
+               min_nodes=None,
+               enable_autoprovisioning=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
+    self.enable_autoscaling = enable_autoscaling
+    self.max_nodes = max_nodes
+    self.min_nodes = min_nodes
+    self.enable_autoprovisioning = enable_autoprovisioning
+
+  def IsAutoscalingUpdate(self):
+    return (self.enable_autoscaling is not None or
+            self.max_nodes is not None or
+            self.min_nodes is not None or
+            self.enable_autoprovisioning is not None)
 
 
 class APIAdapter(object):
@@ -539,6 +567,8 @@ class APIAdapter(object):
           detail_message = operation.detail
         except apitools_exceptions.HttpError as error:
           log.debug('GetOperation failed: %s', error)
+          if error.status_code == httplib.FORBIDDEN:
+            raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
           # Keep trying until we timeout in case error is transient.
           # TODO(b/36050880): add additional backoff if server is returning 500s
         time.sleep(poll_period_s)
@@ -697,6 +727,7 @@ class APIAdapter(object):
               initialNodeCount=nodes,
               config=node_config,
               autoscaling=autoscaling,
+              version=options.node_version,
               management=self._GetNodeManagement(options)))
       to_add -= nodes
 
@@ -779,6 +810,10 @@ class APIAdapter(object):
         props.append(labels.AdditionalProperty(key=k, value=v))
       labels.additionalProperties = props
       cluster.resourceLabels = labels
+
+    if options.enable_pod_security_policy is not None:
+      cluster.podSecurityPolicyConfig = self.messages.PodSecurityPolicyConfig(
+          enabled=options.enable_pod_security_policy)
 
     self.ParseNetworkConfigOptions(options, cluster)
     self.ParseIPAliasOptions(options, cluster)
@@ -923,6 +958,17 @@ class APIAdapter(object):
           resourceLimits=resource_limits)
       update = self.messages.ClusterUpdate(
           desiredClusterAutoscaling=autoscaling)
+    elif options.enable_pod_security_policy is not None:
+      config = self.messages.PodSecurityPolicyConfig(
+          enabled=options.enable_pod_security_policy)
+      update = self.messages.ClusterUpdate(
+          desiredPodSecurityPolicyConfig=config)
+    elif options.enable_binauthz is not None:
+      binary_authorization = self.messages.BinaryAuthorization(
+          enabled=options.enable_binauthz)
+      update = self.messages.ClusterUpdate(
+          desiredBinaryAuthorization=binary_authorization)
+
     if (options.master_authorized_networks
         and not options.enable_master_authorized_networks):
       # Raise error if use --master-authorized-networks without
@@ -1093,6 +1139,7 @@ class APIAdapter(object):
         name=node_pool_ref.nodePoolId,
         initialNodeCount=options.num_nodes,
         config=node_config,
+        version=options.node_version,
         management=self._GetNodeManagement(options))
 
     if options.enable_autoscaling:
@@ -1100,6 +1147,8 @@ class APIAdapter(object):
           enabled=options.enable_autoscaling,
           minNodeCount=options.min_nodes,
           maxNodeCount=options.max_nodes)
+      if options.enable_autoprovisioning is not None:
+        pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
     return pool
 
   def CreateNodePool(self, node_pool_ref, options):
@@ -1111,14 +1160,14 @@ class APIAdapter(object):
   def GetNodePool(self, node_pool_ref):
     raise NotImplementedError('GetNodePool is not overridden')
 
-  def UpdateNodePoolCommon(self, node_pool_ref, options):
-    """Update a node pool.
+  def UpdateNodePoolNodeManagement(self, node_pool_ref, options):
+    """Update node pool's node management configuration.
 
     Args:
       node_pool_ref: node pool Resource to update.
       options: node pool update options
     Returns:
-      Operation ref for node pool update operation.
+      Updated node management configuration.
     """
     pool = self.GetNodePool(node_pool_ref)
     node_management = pool.management
@@ -1129,6 +1178,35 @@ class APIAdapter(object):
     if options.enable_autoupgrade is not None:
       node_management.autoUpgrade = options.enable_autoupgrade
     return node_management
+
+  def UpdateNodePoolAutoscaling(self, node_pool_ref, options):
+    """Update node pool's autoscaling configuration.
+
+    Args:
+      node_pool_ref: node pool Resource to update.
+      options: node pool update options
+    Returns:
+      Updated autoscaling configuration for the node pool.
+    """
+    pool = self.GetNodePool(node_pool_ref)
+    autoscaling = pool.autoscaling
+    if autoscaling is None:
+      autoscaling = self.messages.NodePoolAutoscaling()
+    if options.enable_autoscaling is not None:
+      autoscaling.enabled = options.enable_autoscaling
+    if options.max_nodes is not None:
+      autoscaling.maxNodeCount = options.max_nodes
+    if options.min_nodes is not None:
+      autoscaling.minNodeCount = options.min_nodes
+    elif options.enable_autoprovisioning is not None:
+      # clear min nodes limit when enabling autoprovisioning
+      autoscaling.minNodeCount = 0
+    if options.enable_autoprovisioning is not None:
+      autoscaling.autoprovisioned = options.enable_autoprovisioning
+    elif not autoscaling.enabled:
+      # turn off autoprovisioning when disabling autoscaling
+      autoscaling.autoprovisioned = False
+    return autoscaling
 
   def UpdateNodePool(self, node_pool_ref, options):
     raise NotImplementedError('UpdateNodePool is not overridden')
@@ -1441,7 +1519,7 @@ class V1Adapter(APIAdapter):
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
   def UpdateNodePool(self, node_pool_ref, options):
-    node_management = self.UpdateNodePoolCommon(node_pool_ref, options)
+    node_management = self.UpdateNodePoolNodeManagement(node_pool_ref, options)
     req = (self.messages.
            ContainerProjectsZonesClustersNodePoolsSetManagementRequest(
                projectId=node_pool_ref.projectId,
@@ -1707,7 +1785,7 @@ class V1Beta1Adapter(APIAdapter):
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
   def UpdateNodePool(self, node_pool_ref, options):
-    node_management = self.UpdateNodePoolCommon(node_pool_ref, options)
+    node_management = self.UpdateNodePoolNodeManagement(node_pool_ref, options)
     req = (self.messages.SetNodePoolManagementRequest(
         name=ProjectLocationClusterNodePool(
             node_pool_ref.projectId,
@@ -1819,6 +1897,32 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         cluster=cluster)
     operation = self.client.projects_locations_clusters.Create(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
+
+  def UpdateNodePool(self, node_pool_ref, options):
+    if options.IsAutoscalingUpdate():
+      autoscaling = self.UpdateNodePoolAutoscaling(node_pool_ref, options)
+      update = self.messages.ClusterUpdate(
+          desiredNodePoolId=node_pool_ref.nodePoolId,
+          desiredNodePoolAutoscaling=autoscaling)
+      operation = self.client.projects_locations_clusters.Update(
+          self.messages.UpdateClusterRequest(
+              name=ProjectLocationCluster(node_pool_ref.projectId,
+                                          node_pool_ref.zone,
+                                          node_pool_ref.clusterId),
+              update=update))
+      return self.ParseOperation(operation.name, node_pool_ref.zone)
+    else:
+      management = self.UpdateNodePoolNodeManagement(node_pool_ref, options)
+      req = (self.messages.SetNodePoolManagementRequest(
+          name=ProjectLocationClusterNodePool(
+              node_pool_ref.projectId,
+              node_pool_ref.zone,
+              node_pool_ref.clusterId,
+              node_pool_ref.nodePoolId),
+          management=management))
+      operation = (
+          self.client.projects_locations_clusters_nodePools.SetManagement(req))
+      return self.ParseOperation(operation.name, node_pool_ref.zone)
 
 
 def _AddNodeLabelsToNodeConfig(node_config, options):

@@ -29,6 +29,10 @@ class ExpressionSyntaxError(Error):
   """Resource expression syntax error."""
 
 
+class UnknownFieldError(ExpressionSyntaxError):
+  """The field name is unknown."""
+
+
 class UnknownTransformError(ExpressionSyntaxError):
   """Unknown transform."""
 

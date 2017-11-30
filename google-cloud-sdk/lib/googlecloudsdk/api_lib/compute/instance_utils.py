@@ -17,11 +17,15 @@ import re
 
 from googlecloudsdk.api_lib.compute import alias_ip_range_utils
 from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import containers_utils
 from googlecloudsdk.api_lib.compute import csek_utils
 from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import kms_utils
+from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.compute import zone_utils
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags
 from googlecloudsdk.command_lib.util.ssh import ssh
@@ -243,6 +247,17 @@ def CreateSchedulingMessage(
     scheduling = messages.Scheduling(automaticRestart=restart_on_failure,
                                      onHostMaintenance=on_host_maintenance)
   return scheduling
+
+
+def CreateShieldedVmConfigMessage(
+    messages, enable_secure_boot, enable_vtpm):
+  """Create shieldedVMConfig message for VM."""
+
+  shielded_vm_config = messages.ShieldedVmConfig(
+      enableSecureBoot=enable_secure_boot,
+      enableVtpm=enable_vtpm)
+
+  return shielded_vm_config
 
 
 def CreateMachineTypeUris(
@@ -732,3 +747,257 @@ def CreateLocalSsdMessage(resources, messages, device_name, interface,
     local_ssd.diskSizeGb = utils.BytesToGb(size_bytes)
 
   return local_ssd
+
+
+def IsAnySpecified(args, *dests):
+  return any([args.IsSpecified(dest) for dest in dests])
+
+
+def GetSourceInstanceTemplate(args, resources, source_instance_template_arg):
+  if not args.IsSpecified('source_instance_template'):
+    return None
+  ref = source_instance_template_arg.ResolveAsResource(args, resources)
+  return ref.SelfLink()
+
+
+def GetSkipDefaults(source_instance_template):
+  # gcloud creates default values for some fields in Instance resource
+  # when no value was specified on command line.
+  # When --source-instance-template was specified, defaults are taken from
+  # Instance Template and gcloud flags are used to override them - by default
+  # fields should not be initialized.
+  return source_instance_template is not None
+
+
+def GetScheduling(args, client, skip_defaults):
+  if (skip_defaults and
+      not IsAnySpecified(
+          args, 'maintenance_policy', 'preemptible', 'restart_on_failure')):
+    return None
+  return CreateSchedulingMessage(
+      messages=client.messages,
+      maintenance_policy=args.maintenance_policy,
+      preemptible=args.preemptible,
+      restart_on_failure=args.restart_on_failure)
+
+
+def GetServiceAccounts(args, client, skip_defaults):
+  if args.no_service_account:
+    service_account = None
+  else:
+    service_account = args.service_account
+  if (skip_defaults and not IsAnySpecified(
+      args, 'scopes', 'no_scopes', 'service_account', 'no_service_account')):
+    return []
+  return CreateServiceAccountMessages(
+      messages=client.messages,
+      scopes=[] if args.no_scopes else args.scopes,
+      service_account=service_account)
+
+
+def GetValidatedMetadata(args, client):
+  user_metadata = metadata_utils.ConstructMetadataMessage(
+      client.messages,
+      metadata=args.metadata,
+      metadata_from_file=args.metadata_from_file)
+  containers_utils.ValidateUserMetadata(user_metadata)
+  return user_metadata
+
+
+def GetMetadata(args, client, skip_defaults):
+  if (skip_defaults and
+      not IsAnySpecified(args, 'metadata', 'metadata_from_file')):
+    return None
+  else:
+    return metadata_utils.ConstructMetadataMessage(
+        client.messages,
+        metadata=args.metadata,
+        metadata_from_file=args.metadata_from_file)
+
+
+def GetBootDiskSizeGb(args):
+  boot_disk_size_gb = utils.BytesToGb(args.boot_disk_size)
+  utils.WarnIfDiskSizeIsTooSmall(boot_disk_size_gb, args.boot_disk_type)
+  return boot_disk_size_gb
+
+
+def GetInstanceRefs(args, client, holder):
+  instance_refs = flags.INSTANCES_ARG.ResolveAsResource(
+      args,
+      holder.resources,
+      scope_lister=compute_flags.GetDefaultScopeLister(client))
+  # Check if the zone is deprecated or has maintenance coming.
+  zone_resource_fetcher = zone_utils.ZoneResourceFetcher(client)
+  zone_resource_fetcher.WarnForZonalCreation(instance_refs)
+  return instance_refs
+
+
+def GetNetworkInterfacesGa(
+    args, client, holder, instance_refs, skip_defaults):
+  if (skip_defaults and not args.IsSpecified('network') and not
+      IsAnySpecified(
+          args, 'address', 'no_address', 'private_network_ip', 'subnet',)):
+    return []
+  return [
+      CreateNetworkInterfaceMessage(
+          resources=holder.resources,
+          compute_client=client,
+          network=args.network,
+          subnet=args.subnet,
+          private_network_ip=args.private_network_ip,
+          no_address=args.no_address,
+          address=args.address,
+          instance_refs=instance_refs,
+      )
+  ]
+
+
+def GetNetworkInterfacesBeta(
+    args, client, holder, instance_refs, skip_defaults):
+  if (skip_defaults and not args.IsSpecified('network') and not
+      IsAnySpecified(
+          args, 'address', 'no_address', 'no_public_ptr',
+          'no_public_ptr_domain', 'private_network_ip', 'public_ptr',
+          'public_ptr_domain', 'subnet',)):
+    return []
+  return [
+      CreateNetworkInterfaceMessage(
+          resources=holder.resources,
+          compute_client=client,
+          network=args.network,
+          subnet=args.subnet,
+          private_network_ip=args.private_network_ip,
+          no_address=args.no_address,
+          address=args.address,
+          instance_refs=instance_refs,
+          no_public_ptr=args.no_public_ptr,
+          public_ptr=args.public_ptr,
+          no_public_ptr_domain=args.no_public_ptr_domain,
+          public_ptr_domain=args.public_ptr_domain,
+      )
+  ]
+
+
+def GetNetworkInterfacesAlpha(
+    args, client, holder, instance_refs, skip_defaults):
+  if (skip_defaults and
+      not IsAnySpecified(
+          args, 'network', 'subnet', 'private_network_ip', 'no_address',
+          'address', 'network_tier', 'no_public_dns', 'public_dns',
+          'no_public_ptr', 'public_ptr', 'no_public_ptr_domain',
+          'public_ptr_domain')):
+    return []
+  return [
+      CreateNetworkInterfaceMessage(
+          resources=holder.resources,
+          compute_client=client,
+          network=args.network,
+          subnet=args.subnet,
+          private_network_ip=args.private_network_ip,
+          no_address=args.no_address,
+          address=args.address,
+          instance_refs=instance_refs,
+          network_tier=getattr(args, 'network_tier', None),
+          no_public_dns=getattr(args, 'no_public_dns', None),
+          public_dns=getattr(args, 'public_dns', None),
+          no_public_ptr=getattr(args, 'no_public_ptr', None),
+          public_ptr=getattr(args, 'public_ptr', None),
+          no_public_ptr_domain=getattr(args, 'no_public_ptr_domain', None),
+          public_ptr_domain=getattr(args, 'public_ptr_domain', None)
+      )
+  ]
+
+
+def GetMachineTypeUris(
+    args, client, holder, instance_refs, skip_defaults):
+  if (skip_defaults and
+      not IsAnySpecified(args, 'machine_type', 'custom_cpu', 'custom_memory')):
+    return [None for _ in instance_refs]
+  return CreateMachineTypeUris(
+      resources=holder.resources,
+      compute_client=client,
+      machine_type=args.machine_type,
+      custom_cpu=args.custom_cpu,
+      custom_memory=args.custom_memory,
+      ext=getattr(args, 'custom_extensions', None),
+      instance_refs=instance_refs)
+
+
+def GetCanIpForward(args, skip_defaults):
+  if skip_defaults and not args.IsSpecified('can_ip_forward'):
+    return None
+  return args.can_ip_forward
+
+
+def CreateDiskMessages(
+    holder, args, boot_disk_size_gb, image_uri, instance_ref, skip_defaults):
+  """Creates API messages with disks attached to VM instance."""
+  if (skip_defaults and not args.IsSpecified('disk') and not
+      IsAnySpecified(
+          args, 'create_disk', 'local_ssd', 'boot_disk_type',
+          'boot_disk_device_name', 'boot_disk_auto_delete')):
+    return []
+  else:
+    persistent_disks, _ = (
+        CreatePersistentAttachedDiskMessages(
+            holder.resources, holder.client, None, args.disk or [],
+            instance_ref))
+    persistent_create_disks = (
+        CreatePersistentCreateDiskMessages(
+            holder.client, holder.resources, None,
+            getattr(args, 'create_disk', []), instance_ref))
+    local_ssds = []
+    for x in args.local_ssd or []:
+      local_ssd = CreateLocalSsdMessage(
+          holder.resources,
+          holder.client.messages,
+          x.get('device-name'),
+          x.get('interface'),
+          x.get('size'),
+          instance_ref.zone,
+          instance_ref.project)
+      local_ssds.append(local_ssd)
+    boot_disk = CreateDefaultBootAttachedDiskMessage(
+        holder.client, holder.resources,
+        disk_type=args.boot_disk_type,
+        disk_device_name=args.boot_disk_device_name,
+        disk_auto_delete=args.boot_disk_auto_delete,
+        disk_size_gb=boot_disk_size_gb,
+        require_csek_key_create=None,
+        image_uri=image_uri,
+        instance_ref=instance_ref,
+        csek_keys=None)
+    return (
+        [boot_disk] + persistent_disks + persistent_create_disks + local_ssds)
+
+
+def GetTags(args, client):
+  if args.tags:
+    return client.messages.Tags(items=args.tags)
+  return None
+
+
+def GetLabels(args, client):
+  if args.labels:
+    return client.messages.Instance.LabelsValue(
+        additionalProperties=[
+            client.messages.Instance.LabelsValue.AdditionalProperty(
+                key=key, value=value)
+            for key, value in sorted(args.labels.iteritems())])
+  return None
+
+
+def GetAccelerators(args, client, resource_parser, instance_ref):
+  """Returns list of messages with accelerators for the instance."""
+  if args.accelerator:
+    accelerator_type_name = args.accelerator['type']
+    accelerator_type_ref = resource_parser.Parse(
+        accelerator_type_name,
+        collection='compute.acceleratorTypes',
+        params={'project': instance_ref.project,
+                'zone': instance_ref.zone})
+    # Accelerator count is default to 1.
+    accelerator_count = int(args.accelerator.get('count', 1))
+    return CreateAcceleratorConfigMessages(
+        client.messages, accelerator_type_ref, accelerator_count)
+  return []

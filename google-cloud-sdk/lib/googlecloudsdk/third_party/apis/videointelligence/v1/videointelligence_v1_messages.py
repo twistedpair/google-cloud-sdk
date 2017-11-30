@@ -33,9 +33,8 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
 
   Fields:
     features: Requested video annotation features.
-    inputContent: The video data bytes. Encoding: base64. If unset, the input
-      video(s) should be specified via `input_uri`. If set, `input_uri` should
-      be unset.
+    inputContent: The video data bytes. If unset, the input video(s) should be
+      specified via `input_uri`. If set, `input_uri` should be unset.
     inputUri: Input video location. Currently, only [Google Cloud
       Storage](https://cloud.google.com/storage/) URIs are supported, which
       must be specified in the following format: `gs://bucket-id/object-id`
@@ -65,15 +64,15 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
       FEATURE_UNSPECIFIED: <no description>
       LABEL_DETECTION: <no description>
       SHOT_CHANGE_DETECTION: <no description>
-      SAFE_SEARCH_DETECTION: <no description>
+      EXPLICIT_CONTENT_DETECTION: <no description>
     """
     FEATURE_UNSPECIFIED = 0
     LABEL_DETECTION = 1
     SHOT_CHANGE_DETECTION = 2
-    SAFE_SEARCH_DETECTION = 3
+    EXPLICIT_CONTENT_DETECTION = 3
 
   features = _messages.EnumField('FeaturesValueListEntryValuesEnum', 1, repeated=True)
-  inputContent = _messages.StringField(2)
+  inputContent = _messages.BytesField(2)
   inputUri = _messages.StringField(3)
   locationId = _messages.StringField(4)
   outputUri = _messages.StringField(5)
@@ -93,92 +92,171 @@ class GoogleCloudVideointelligenceV1AnnotateVideoResponse(_messages.Message):
   annotationResults = _messages.MessageField('GoogleCloudVideointelligenceV1VideoAnnotationResults', 1, repeated=True)
 
 
-class GoogleCloudVideointelligenceV1LabelAnnotation(_messages.Message):
-  """Label annotation.
+class GoogleCloudVideointelligenceV1Entity(_messages.Message):
+  """Detected entity from video analysis.
 
   Fields:
     description: Textual description, e.g. `Fixed-gear bicycle`.
+    entityId: Opaque entity ID. Some IDs may be available in [Google Knowledge
+      Graph Search API](https://developers.google.com/knowledge-graph/).
     languageCode: Language code for `description` in BCP-47 format.
-    locations: Where the label was detected and with what confidence.
   """
 
   description = _messages.StringField(1)
-  languageCode = _messages.StringField(2)
-  locations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelLocation', 3, repeated=True)
+  entityId = _messages.StringField(2)
+  languageCode = _messages.StringField(3)
 
 
-class GoogleCloudVideointelligenceV1LabelLocation(_messages.Message):
-  """Label location.
-
-  Enums:
-    LevelValueValuesEnum: Label level.
-
-  Fields:
-    confidence: Confidence that the label is accurate. Range: [0, 1].
-    level: Label level.
-    segment: Video segment. Unset for video-level labels. Set to a frame
-      timestamp for frame-level labels. Otherwise, corresponds to one of
-      `AnnotateSpec.segments` (if specified) or to shot boundaries (if
-      requested).
-  """
-
-  class LevelValueValuesEnum(_messages.Enum):
-    """Label level.
-
-    Values:
-      LABEL_LEVEL_UNSPECIFIED: Unspecified.
-      VIDEO_LEVEL: Video-level. Corresponds to the whole video.
-      SEGMENT_LEVEL: Segment-level. Corresponds to one of
-        `AnnotateSpec.segments`.
-      SHOT_LEVEL: Shot-level. Corresponds to a single shot (i.e. a series of
-        frames without a major camera position or background change).
-      FRAME_LEVEL: Frame-level. Corresponds to a single video frame.
-    """
-    LABEL_LEVEL_UNSPECIFIED = 0
-    VIDEO_LEVEL = 1
-    SEGMENT_LEVEL = 2
-    SHOT_LEVEL = 3
-    FRAME_LEVEL = 4
-
-  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  level = _messages.EnumField('LevelValueValuesEnum', 2)
-  segment = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 3)
-
-
-class GoogleCloudVideointelligenceV1SafeSearchAnnotation(_messages.Message):
-  """Safe search annotation (based on per-frame visual signals only). If no
-  unsafe content has been detected in a frame, no annotations are present for
-  that frame.
-
-  Enums:
-    AdultValueValuesEnum: Likelihood of adult content.
+class GoogleCloudVideointelligenceV1ExplicitContentAnnotation(_messages.Message):
+  """Explicit content annotation (based on per-frame visual signals only). If
+  no explicit content has been detected in a frame, no annotations are present
+  for that frame.
 
   Fields:
-    adult: Likelihood of adult content.
-    time: Time-offset, relative to the beginning of the video, corresponding
-      to the video frame for this annotation.
+    frames: All video frames where explicit content was detected.
   """
 
-  class AdultValueValuesEnum(_messages.Enum):
-    """Likelihood of adult content.
+  frames = _messages.MessageField('GoogleCloudVideointelligenceV1ExplicitContentFrame', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1ExplicitContentDetectionConfig(_messages.Message):
+  """Config for EXPLICIT_CONTENT_DETECTION.
+
+  Fields:
+    model: Model to use for explicit content detection. Supported values:
+      "builtin/stable" (the default if unset) and "builtin/latest".
+  """
+
+  model = _messages.StringField(1)
+
+
+class GoogleCloudVideointelligenceV1ExplicitContentFrame(_messages.Message):
+  """Video frame level annotation results for explicit content.
+
+  Enums:
+    PornographyLikelihoodValueValuesEnum: Likelihood of the pornography
+      content..
+
+  Fields:
+    pornographyLikelihood: Likelihood of the pornography content..
+    timeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the video frame for this location.
+  """
+
+  class PornographyLikelihoodValueValuesEnum(_messages.Enum):
+    """Likelihood of the pornography content..
 
     Values:
-      UNKNOWN: Unknown likelihood.
+      LIKELIHOOD_UNSPECIFIED: Unspecified likelihood.
       VERY_UNLIKELY: Very unlikely.
       UNLIKELY: Unlikely.
       POSSIBLE: Possible.
       LIKELY: Likely.
       VERY_LIKELY: Very likely.
     """
-    UNKNOWN = 0
+    LIKELIHOOD_UNSPECIFIED = 0
     VERY_UNLIKELY = 1
     UNLIKELY = 2
     POSSIBLE = 3
     LIKELY = 4
     VERY_LIKELY = 5
 
-  adult = _messages.EnumField('AdultValueValuesEnum', 1)
-  time = _messages.StringField(2)
+  pornographyLikelihood = _messages.EnumField('PornographyLikelihoodValueValuesEnum', 1)
+  timeOffset = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1LabelAnnotation(_messages.Message):
+  """Label annotation.
+
+  Fields:
+    categoryEntities: Common categories for the detected entity. E.g. when the
+      label is `Terrier` the category is likely `dog`. And in some cases there
+      might be more than one categories e.g. `Terrier` could also be a `pet`.
+    entity: Detected entity.
+    frames: All video frames where a label was detected.
+    segments: All video segments where a label was detected.
+  """
+
+  categoryEntities = _messages.MessageField('GoogleCloudVideointelligenceV1Entity', 1, repeated=True)
+  entity = _messages.MessageField('GoogleCloudVideointelligenceV1Entity', 2)
+  frames = _messages.MessageField('GoogleCloudVideointelligenceV1LabelFrame', 3, repeated=True)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1LabelSegment', 4, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1LabelDetectionConfig(_messages.Message):
+  """Config for LABEL_DETECTION.
+
+  Enums:
+    LabelDetectionModeValueValuesEnum: What labels should be detected with
+      LABEL_DETECTION, in addition to video-level labels or segment-level
+      labels. If unspecified, defaults to `SHOT_MODE`.
+
+  Fields:
+    labelDetectionMode: What labels should be detected with LABEL_DETECTION,
+      in addition to video-level labels or segment-level labels. If
+      unspecified, defaults to `SHOT_MODE`.
+    model: Model to use for label detection. Supported values:
+      "builtin/stable" (the default if unset) and "builtin/latest".
+    stationaryCamera: Whether the video has been shot from a stationary (i.e.
+      non-moving) camera. When set to true, might improve detection accuracy
+      for moving objects. Should be used with `SHOT_AND_FRAME_MODE` enabled.
+  """
+
+  class LabelDetectionModeValueValuesEnum(_messages.Enum):
+    """What labels should be detected with LABEL_DETECTION, in addition to
+    video-level labels or segment-level labels. If unspecified, defaults to
+    `SHOT_MODE`.
+
+    Values:
+      LABEL_DETECTION_MODE_UNSPECIFIED: Unspecified.
+      SHOT_MODE: Detect shot-level labels.
+      FRAME_MODE: Detect frame-level labels.
+      SHOT_AND_FRAME_MODE: Detect both shot-level and frame-level labels.
+    """
+    LABEL_DETECTION_MODE_UNSPECIFIED = 0
+    SHOT_MODE = 1
+    FRAME_MODE = 2
+    SHOT_AND_FRAME_MODE = 3
+
+  labelDetectionMode = _messages.EnumField('LabelDetectionModeValueValuesEnum', 1)
+  model = _messages.StringField(2)
+  stationaryCamera = _messages.BooleanField(3)
+
+
+class GoogleCloudVideointelligenceV1LabelFrame(_messages.Message):
+  """Video frame level annotation results for label detection.
+
+  Fields:
+    confidence: Confidence that the label is accurate. Range: [0, 1].
+    timeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the video frame for this location.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  timeOffset = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1LabelSegment(_messages.Message):
+  """Video segment level annotation results for label detection.
+
+  Fields:
+    confidence: Confidence that the label is accurate. Range: [0, 1].
+    segment: Video segment where a label was detected.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 2)
+
+
+class GoogleCloudVideointelligenceV1ShotChangeDetectionConfig(_messages.Message):
+  """Config for SHOT_CHANGE_DETECTION.
+
+  Fields:
+    model: Model to use for shot change detection. Supported values:
+      "builtin/stable" (the default if unset) and "builtin/latest".
+  """
+
+  model = _messages.StringField(1)
 
 
 class GoogleCloudVideointelligenceV1VideoAnnotationProgress(_messages.Message):
@@ -205,87 +283,59 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
   Fields:
     error: If set, indicates an error. Note that for a single
       `AnnotateVideoRequest` some videos may succeed and some may fail.
+    explicitAnnotation: Explicit content annotation.
+    frameLabelAnnotations: Label annotations on frame level. There is exactly
+      one element for each unique label.
     inputUri: Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
-    labelAnnotations: Label annotations. There is exactly one element for each
-      unique label.
-    safeSearchAnnotations: Safe search annotations.
+    segmentLabelAnnotations: Label annotations on video level or user
+      specified segment level. There is exactly one element for each unique
+      label.
     shotAnnotations: Shot annotations. Each shot is represented as a video
       segment.
+    shotLabelAnnotations: Label annotations on shot level. There is exactly
+      one element for each unique label.
   """
 
   error = _messages.MessageField('GoogleRpcStatus', 1)
-  inputUri = _messages.StringField(2)
-  labelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 3, repeated=True)
-  safeSearchAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1SafeSearchAnnotation', 4, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 5, repeated=True)
+  explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1ExplicitContentAnnotation', 2)
+  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 3, repeated=True)
+  inputUri = _messages.StringField(4)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 5, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 6, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 7, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1VideoContext(_messages.Message):
   """Video context and/or feature-specific parameters.
 
-  Enums:
-    LabelDetectionModeValueValuesEnum: If label detection has been requested,
-      what labels should be detected in addition to video-level labels or
-      segment-level labels. If unspecified, defaults to `SHOT_MODE`.
-
   Fields:
-    extractBoundingBoxes: Whether bounding boxes be included in the face
-      annotation output. Should be used with `FACE_DETECTION` enabled.
-    labelDetectionMode: If label detection has been requested, what labels
-      should be detected in addition to video-level labels or segment-level
-      labels. If unspecified, defaults to `SHOT_MODE`.
-    labelDetectionModel: Model to use for label detection. Supported values:
-      "latest" and "stable" (the default).
-    safeSearchDetectionModel: Model to use for safe search detection.
-      Supported values: "latest" and "stable" (the default).
+    explicitContentDetectionConfig: Config for EXPLICIT_CONTENT_DETECTION.
+    labelDetectionConfig: Config for LABEL_DETECTION.
     segments: Video segments to annotate. The segments may overlap and are not
       required to be contiguous or span the whole video. If unspecified, each
       video is treated as a single segment.
-    shotChangeDetectionModel: Model to use for shot change detection.
-      Supported values: "latest" and "stable" (the default).
-    stationaryCamera: Whether the video has been shot from a stationary (i.e.
-      non-moving) camera. When set to true, might improve detection accuracy
-      for moving objects. Should be used with `SHOT_AND_FRAME_MODE` enabled.
+    shotChangeDetectionConfig: Config for SHOT_CHANGE_DETECTION.
   """
 
-  class LabelDetectionModeValueValuesEnum(_messages.Enum):
-    """If label detection has been requested, what labels should be detected
-    in addition to video-level labels or segment-level labels. If unspecified,
-    defaults to `SHOT_MODE`.
-
-    Values:
-      LABEL_DETECTION_MODE_UNSPECIFIED: Unspecified.
-      SHOT_MODE: Detect shot-level labels.
-      FRAME_MODE: Detect frame-level labels.
-      SHOT_AND_FRAME_MODE: Detect both shot-level and frame-level labels.
-    """
-    LABEL_DETECTION_MODE_UNSPECIFIED = 0
-    SHOT_MODE = 1
-    FRAME_MODE = 2
-    SHOT_AND_FRAME_MODE = 3
-
-  extractBoundingBoxes = _messages.BooleanField(1)
-  labelDetectionMode = _messages.EnumField('LabelDetectionModeValueValuesEnum', 2)
-  labelDetectionModel = _messages.StringField(3)
-  safeSearchDetectionModel = _messages.StringField(4)
-  segments = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 5, repeated=True)
-  shotChangeDetectionModel = _messages.StringField(6)
-  stationaryCamera = _messages.BooleanField(7)
+  explicitContentDetectionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1ExplicitContentDetectionConfig', 1)
+  labelDetectionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1LabelDetectionConfig', 2)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 3, repeated=True)
+  shotChangeDetectionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1ShotChangeDetectionConfig', 4)
 
 
 class GoogleCloudVideointelligenceV1VideoSegment(_messages.Message):
   """Video segment.
 
   Fields:
-    endTime: Time-offset, relative to the beginning of the video,
+    endTimeOffset: Time-offset, relative to the beginning of the video,
       corresponding to the end of the segment (inclusive).
-    startTime: Time-offset, relative to the beginning of the video,
+    startTimeOffset: Time-offset, relative to the beginning of the video,
       corresponding to the start of the segment (inclusive).
   """
 
-  endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
+  endTimeOffset = _messages.StringField(1)
+  startTimeOffset = _messages.StringField(2)
 
 
 class GoogleCloudVideointelligenceV1beta1AnnotateVideoProgress(_messages.Message):

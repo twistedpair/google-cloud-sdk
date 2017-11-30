@@ -856,6 +856,7 @@ class AutomaticScaling(_messages.Message):
       for this version.
     networkUtilization: Target scaling by network usage.
     requestUtilization: Target scaling by request utilization.
+    standardSchedulerSettings: Scheduler settings for standard environment.
   """
 
   coolDownPeriod = _messages.StringField(1)
@@ -870,6 +871,7 @@ class AutomaticScaling(_messages.Message):
   minTotalInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   networkUtilization = _messages.MessageField('NetworkUtilization', 11)
   requestUtilization = _messages.MessageField('RequestUtilization', 12)
+  standardSchedulerSettings = _messages.MessageField('StandardSchedulerSettings', 13)
 
 
 class BasicScaling(_messages.Message):
@@ -2047,6 +2049,28 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(12)
   uploadType = _messages.StringField(13)
   upload_protocol = _messages.StringField(14)
+
+
+class StandardSchedulerSettings(_messages.Message):
+  """Scheduler settings for standard environment.
+
+  Fields:
+    maxInstances: Maximum number of instances for an app version. Set to a
+      non-positive value (0 by convention) to disable max_instances
+      configuration.
+    minInstances: Minimum number of instances for an app version. Set to a
+      non-positive value (0 by convention) to disable min_instances
+      configuration.
+    targetCpuUtilization: Target CPU utilization ratio to maintain when
+      scaling.
+    targetThroughputUtilization: Target throughput utilization ratio to
+      maintain when scaling
+  """
+
+  maxInstances = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minInstances = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  targetCpuUtilization = _messages.FloatField(3)
+  targetThroughputUtilization = _messages.FloatField(4)
 
 
 class StaticFilesHandler(_messages.Message):

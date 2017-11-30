@@ -73,19 +73,19 @@ class Tasks(object):
             name=task_ref.RelativeName()))
     return self.api.tasks_service.Run(request)
 
-  def RenewLease(self, task_ref, schedule_time, new_lease_duration):
+  def RenewLease(self, task_ref, schedule_time, lease_duration):
     """Constructs and sends a tasks RenewLease request to the Cloud Tasks API.
 
     Args:
       task_ref: A cloudtasks.projects.locations.queues.tasks resource reference
       schedule_time: string formatted as an ISO 8601 datetime with timezone
-      new_lease_duration: string of an integer followed by 's', (e.g. '10s') for
-                          the number of seconds for the new lease
+      lease_duration: string of an integer followed by 's', (e.g. '10s') for
+                      the number of seconds for the new lease
     Returns:
       The response of the tasks RenewLease request
     """
     renew_lease_request = self.api.messages.RenewLeaseRequest(
-        scheduleTime=schedule_time, newLeaseDuration=new_lease_duration)
+        scheduleTime=schedule_time, leaseDuration=lease_duration)
     request_cls = (self.api.messages.
                    CloudtasksProjectsLocationsQueuesTasksRenewLeaseRequest)
     request = request_cls(renewLeaseRequest=renew_lease_request,
@@ -147,16 +147,3 @@ class Tasks(object):
     request = request_cls(acknowledgeTaskRequest=acknowledge_task_request,
                           name=task_ref.RelativeName())
     return self.api.tasks_service.Acknowledge(request)
-
-
-def ConstructHeadersValueMessageFromListOfDicts(headers_dicts, messages):
-  if headers_dicts is None:
-    return
-
-  additional_property_cls = (
-      messages.AppEngineHttpRequest.HeadersValue.AdditionalProperty)
-  additional_properties = [additional_property_cls(key=k, value=v)
-                           for h in headers_dicts
-                           for k, v in h.iteritems()]
-  return messages.AppEngineHttpRequest.HeadersValue(
-      additionalProperties=additional_properties)

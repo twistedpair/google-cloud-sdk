@@ -43,9 +43,10 @@ class ListRewriter(resource_expr_rewrite.Backend):
     return super(ListRewriter, self).Quote(
         value, always=re.search(r'[^-.\w\d]', value))
 
-  def RewriteTerm(self, key, op, operand):
+  def RewriteTerm(self, key, op, operand, key_type):
     """Rewrites <key op operand>."""
 
+    del key_type  # unused in RewriteTerm
     for prefix in ('project', '_'):
       if key.startswith(prefix):
         key = key[len(prefix):]

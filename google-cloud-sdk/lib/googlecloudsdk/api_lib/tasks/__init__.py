@@ -36,3 +36,4 @@ class ApiAdapter(object):
     self.messages = messages or GetMessagesModule(client)
     self.queues_service = client.projects_locations_queues
     self.tasks_service = client.projects_locations_queues_tasks
+    self.locations_service = client.projects_locations

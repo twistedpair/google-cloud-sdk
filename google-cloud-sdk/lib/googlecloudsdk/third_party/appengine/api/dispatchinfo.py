@@ -118,10 +118,10 @@ class ParsedURL(object):
 
   Attributes:
     host_pattern: The host pattern component of the URL pattern.
-    host_exact: True iff the host pattern does not start with a *.
+    host_exact: True if the host pattern does not start with a *.
     host: host_pattern  with any leading * removed.
     path_pattern: The path pattern component of the URL pattern.
-    path_exact: True iff path_pattern does not end with a *.
+    path_exact: True if the path_pattern does not end with a *.
     path: path_pattern with any trailing * removed.
   """
 

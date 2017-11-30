@@ -22,7 +22,6 @@ import urlparse
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.deployment_manager import exceptions
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
-from googlecloudsdk.core import log
 import requests
 import yaml
 
@@ -435,22 +434,21 @@ def BuildConfig(config=None, template=None,
 
   if config:
     if config_obj.IsTemplate():
-      # TODO(b/62844648): when support for passing templates with the config
-      # flag is completely removed, simply change the warning to an exception
-      log.warn('Creating deployments from templates with the \'--config\' '
-               'flag has been deprecated.  Support for this will be '
-               'removed 2017/11/08.  Please use \'--template\' instead.')
+      raise exceptions.ArgumentError(
+          'Creating deployments from templates with the --config '
+          'flag is not supported. Please use the --template flag.')
     elif properties:
       raise exceptions.ArgumentError(
           'The properties flag should only be used '
-          'when using a template or composite type as your config file.')
+          'when using a template (--template) or composite type '
+          '(--composite-type) as your config file.')
     else:
       return config_obj
 
   if template:
     if not config_obj.IsTemplate():
       raise exceptions.ArgumentError(
-          'The template flag should only be used '
+          'The --template flag should only be used '
           'when using a template as your config file.')
 
   # Otherwise we should build the config from scratch.

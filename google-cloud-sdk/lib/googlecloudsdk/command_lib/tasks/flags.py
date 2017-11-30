@@ -66,7 +66,7 @@ def AddUpdateAppEngineQueueFlags(parser):
 
 
 def _AddFlagAndItsClearEquivalent(flag, parser):
-  update_group = base.MutuxArgumentGroup()
+  update_group = base.ArgumentGroup(mutex=True)
   update_group.AddArgument(flag)
   update_group.AddArgument(_EquivalentClearFlag(flag))
   update_group.AddToParser(parser)

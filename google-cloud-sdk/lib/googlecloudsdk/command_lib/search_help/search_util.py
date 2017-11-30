@@ -236,8 +236,11 @@ def _AddFlagToSummary(command, summary, length_per_snippet, location, terms):
           default = flags.get(location[1]).get(lookup.DEFAULT)
           if default:
             lines.append(line)
-            line = 'Default: {}.'.format(
-                flags.get(location[1]).get(lookup.DEFAULT))
+            if isinstance(default, dict):
+              default = ', '.join([x for x in sorted(default.keys())])
+            elif isinstance(default, list):
+              default = ', '.join([x for x in default])
+            line = 'Default: {}.'.format(default)
         else:
           log.warn('Attempted to look up a location [{}] that was not '
                    'found.'.format(location[-1]))

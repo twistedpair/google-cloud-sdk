@@ -13,7 +13,7 @@
 # limitations under the License.
 """Classes for runtime handling of concept arguments."""
 
-import functools
+import abc
 
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps as deps_lib
@@ -48,30 +48,31 @@ class RuntimeHandler(object):
     """Basically a lazy property to use during lazy concept parsing."""
     return self.parsed_args
 
-  def AddConcept(self, name, concept_spec, concept_info):
+  def AddConcept(self, name, concept_info, required=True):
     """Adds a concept handler for a given concept.
 
     Args:
       name: str, the name to be used for the presentation spec.
-      concept_spec: googlecloudsdk.calliope.concepts.ConceptSpec, the spec for
-        the underlying concept.
       concept_info: ConceptInfo, the object that holds dependencies of the
         concept.
+      required: bool, True if the concept must be parseable, False if not.
     """
 
     class LazyParse(object):
 
-      def __init__(self, arg_getter):
-        self.parse = functools.partial(Parse, concept_spec, concept_info)
+      def __init__(self, parse, arg_getter):
+        self.parse = parse
         self.arg_getter = arg_getter
 
       def Parse(self):
         try:
           return self.parse(self.arg_getter())
         except concepts.InitializeError as e:
-          raise ParseError(name, e.message)
+          if required:
+            raise ParseError(name, e.message)
+          return None
 
-    setattr(self, name, LazyParse(self.ParsedArgs))
+    setattr(self, name, LazyParse(concept_info.Parse, self.ParsedArgs))
 
 
 class ConceptInfo(object):
@@ -86,12 +87,37 @@ class ConceptInfo(object):
     attribute_to_args_map: A map of attributes to the names of their associated
       flags.
     fallthroughs_map: A map of attributes to non-argument fallthroughs.
-    arg_info_map: A map of attribute names to values passed to the corresponding
-      flag.
   """
+  __metaclass__ = abc.ABCMeta
+
+  @abc.abstractmethod
+  def Parse(self, parsed_args=None):
+    """Lazy parsing function to parse concept.
+
+    Args:
+      parsed_args: the argparse namespace from the runtime handler.
+
+    Returns:
+      the parsed concept.
+    """
+
+  @abc.abstractmethod
+  def GetHints(self, attribute_name):
+    """Get a list of string hints for how to specify a concept's attribute.
+
+    Args:
+      attribute_name: str, the name of the attribute to get hints for.
+
+    Returns:
+      [str], a list of string hints.
+    """
+
+
+class ResourceInfo(object):
+  """Holds information for a resource argument."""
 
   def __init__(self, concept_spec, attribute_to_args_map,
-               fallthroughs_map):
+               fallthroughs_map, plural=False):
     """Initializes the ConceptInfo.
 
     Args:
@@ -101,14 +127,16 @@ class ConceptInfo(object):
         of their associated flags.
       fallthroughs_map: {str: [deps_lib.Fallthrough]} A map of attribute names
         to non-argument fallthroughs.
+      plural: bool, True if multiple resources can be parsed, False otherwise.
     """
     self.concept_spec = concept_spec
     self.attribute_to_args_map = attribute_to_args_map
     self.fallthroughs_map = fallthroughs_map
+    self.plural = plural
 
-  def _BuildFinalFallthroughsMap(self, parsed_args=None):
+  def _BuildFullFallthroughsMap(self, parsed_args=None):
     """Helper method to build all fallthroughs including arg names."""
-    final_fallthroughs_map = {}
+    fallthroughs_map = {}
     for attribute in self.concept_spec.attributes:
       attribute_name = attribute.name
       attribute_fallthroughs = []
@@ -120,33 +148,18 @@ class ConceptInfo(object):
         arg_value = getattr(parsed_args,
                             util.NamespaceFormat(arg_name),
                             None)
-        # Required positionals end up stored as lists of strings.
-        if isinstance(arg_value, list) and attribute.value_type == str:
+        # The only args that should be lists are anchor args for plural
+        # resources.
+        plural = (attribute_name == self.concept_spec.anchor.name
+                  and self.plural)
+        if isinstance(arg_value, list) and not plural:
           arg_value = arg_value[0] if arg_value else None
         attribute_fallthroughs.append(
             deps_lib.ArgFallthrough(arg_name, arg_value))
 
       attribute_fallthroughs += self.fallthroughs_map.get(attribute_name, [])
-      final_fallthroughs_map[attribute_name] = attribute_fallthroughs
-    return final_fallthroughs_map
-
-  def GetDeps(self, parsed_args=None):
-    """Builds the deps.Deps object to get attribute values.
-
-    Gets a set of fallthroughs for each attribute of the handler's concept spec,
-    including any argument values that were registered through RegisterArg.
-    Then initializes the deps object.
-
-    Args:
-      parsed_args: (calliope.parser_extensions.Namespace) the parsed arguments
-        from command line.
-
-    Returns:
-      (deps_lib.Deps) the deps object representing all data dependencies.
-    """
-    final_fallthroughs_map = self._BuildFinalFallthroughsMap(
-        parsed_args=parsed_args)
-    return deps_lib.Deps(final_fallthroughs_map)
+      fallthroughs_map[attribute_name] = attribute_fallthroughs
+    return fallthroughs_map
 
   def GetHints(self, attribute_name):
     """Gets a list of string hints for how to set an attribute.
@@ -160,27 +173,47 @@ class ConceptInfo(object):
     Returns:
       A list of hints for its fallthroughs, including its primary arg if any.
     """
-    fallthroughs = self._BuildFinalFallthroughsMap().get(attribute_name, [])
+    fallthroughs = self._BuildFullFallthroughsMap().get(attribute_name, [])
     return [f.hint for f in fallthroughs]
 
+  def Parse(self, parsed_args=None):
+    """Lazy parsing function for resource.
 
-def Parse(concept_spec, concept_info, parsed_args=None):
-  """Parses a concept at runtime.
+    Args:
+      parsed_args: the parsed Namespace.
 
-  Args:
-    concept_spec: googlecloudsdk.calliope.concepts.ConceptSpec, The underlying
-      concept spec.
-    concept_info: ConceptInfo, the object that holds dependencies of the
-      concept.
-    parsed_args: (calliope.parser_extensions.Namespace) the parsed arguments
-      from command line.
+    Returns:
+      the initialized resource or a list of initialized resources if the
+        resource argument was pluralized.
+    """
+    fallthroughs_map = self._BuildFullFallthroughsMap(parsed_args)
 
-  Returns:
-    The fully initialized concept.
+    if not self.plural:
+      return self.concept_spec.Initialize(deps_lib.Deps(fallthroughs_map))
 
-  Raises:
-    googlecloudsdk.calliope.concepts.concepts.InitializeError, if the concept
-      can't be initialized.
-  """
-  deps = concept_info.GetDeps(parsed_args=parsed_args)
-  return concept_spec.Initialize(deps)
+    anchor = self.concept_spec.anchor.name
+    anchor_arg_name = self.attribute_to_args_map.get(anchor)
+    anchor_fallthroughs = fallthroughs_map.get(anchor, [])
+    anchor_arg_values = None
+
+    # Remove the original ArgFallthrough that contains all the anchor values.
+    if anchor_arg_name and anchor_fallthroughs:
+      anchor_arg_fallthrough = anchor_fallthroughs.pop(0)
+      if (isinstance(anchor_arg_fallthrough, deps_lib.ArgFallthrough)
+          and anchor_arg_fallthrough.arg_name == anchor_arg_name):
+        anchor_arg_values = anchor_arg_fallthrough.arg_value
+    # Resources only become plural if multiple arg values are provided. If no
+    # argument values were found for whatever reason, no need to split up into
+    # multiple resources.
+    if anchor_arg_values is None:
+      return [self.concept_spec.Initialize(deps_lib.Deps(fallthroughs_map))]
+
+    # Iterate through the values provided to the anchor argument, creating for
+    # each a separate parsed resource.
+    resources = []
+    for arg_value in anchor_arg_values:
+      fallthrough = deps_lib.ArgFallthrough(anchor_arg_name, arg_value)
+      fallthroughs_map[anchor] = [fallthrough] + anchor_fallthroughs
+      resources.append(self.concept_spec.Initialize(deps_lib.Deps(
+          fallthroughs_map)))
+    return resources

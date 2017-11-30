@@ -599,7 +599,6 @@ class InstallationState(object):
     with file_utils.ChDir(self.sdk_root):
       to_compile = [
           os.path.join('bin', 'bootstrapping'),
-          os.path.join('data', 'cli'),
           'lib',
           'platform',
       ]

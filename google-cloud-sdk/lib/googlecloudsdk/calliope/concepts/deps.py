@@ -22,6 +22,8 @@ during runtime before the Deps object is used) when Get() is called for a given
 attribute, depending on the fallthroughs.
 """
 
+import abc
+
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 
@@ -38,65 +40,96 @@ class AttributeNotFoundError(Error, AttributeError):
   """Raised when an attribute value cannot be found by a Deps object."""
 
 
-class Fallthrough(object):
+class _FallthroughBase(object):
   """Represents a way to get information about a concept's attribute.
 
-  Fallthrough objects have a simple interface, both of which must be
-  implemented in subclasses.
+  Specific implementations of Fallthrough objects must implement the method:
 
-    GetValue():
+    _Call():
       Get a value from information given to the fallthrough.
-
-    @property
-    hint:
-      A string message informing the user how to give information accessible to
-      the fallthrough, such as setting a property or a command-line flag.
 
   GetValue() is used by the Deps object to attempt to find the value of an
   attribute. The hint property is used to provide an informative error when an
   attribute can't be found.
   """
+  __metaclass__ = abc.ABCMeta
+
+  def __init__(self, hint):
+    """Initializes a fallthrough to an arbitrary function.
+
+    Args:
+      hint: str, The user-facing message for the fallthrough when it cannot be
+        resolved.
+    """
+    self._hint = hint
 
   def GetValue(self):
     """Gets a value from information given to the fallthrough.
 
     Raises:
-      FallthroughNotFoundError, if the attribute is not found.
+      FallthroughNotFoundError: If the attribute is not found.
+
+    Returns:
+      The value of the attribute.
     """
-    raise NotImplementedError
+    value = self._Call()
+    if value:
+      return value
+    raise FallthroughNotFoundError()
+
+  @abc.abstractmethod
+  def _Call(self):
+    pass
 
   @property
   def hint(self):
-    """String representation of the fallthrough for user-facing messaging.
+    """String representation of the fallthrough for user-facing messaging."""
+    return self._hint
+
+
+class Fallthrough(_FallthroughBase):
+  """A fallthrough that can get an attribute value from an arbitrary function.
+  """
+
+  def __init__(self, function, hint):
+    """Initializes a fallthrough to an arbitrary function.
+
+    Args:
+      function: f() -> value, A no argument function that returns the value of
+        the argument or None if it cannot be resolved.
+      hint: str, The user-facing message for the fallthrough when it cannot be
+        resolved.
     """
-    raise NotImplementedError
+    super(Fallthrough, self).__init__(hint)
+    self._function = function
+
+  def _Call(self):
+    return self._function()
 
 
-class PropertyFallthrough(Fallthrough):
+class PropertyFallthrough(_FallthroughBase):
   """Gets an attribute from a property."""
 
-  def __init__(self, prop=None):
+  def __init__(self, prop):
     """Initializes a fallthrough for the property associated with the attribute.
 
     Args:
       prop: googlecloudsdk.core.properties._Property, a property.
     """
+    hint = 'Set the property [{}]'.format(prop)
+    # Special messaging for the project property, which can be modified by the
+    # global --project flag.
+    if prop == properties.VALUES.core.project:
+      hint += ' or provide the flag [--project] on the command line'
+
+    super(PropertyFallthrough, self).__init__(hint)
     self.property = prop
 
-  def GetValue(self):
+  def _Call(self):
     try:
       return self.property.GetOrFail()
     except (properties.InvalidValueError, properties.RequiredPropertyError):
-      raise FallthroughNotFoundError
-
-  @property
-  def hint(self):
-    hint = 'Set the property [{}]'.format(self.property)
-    # Special messaging for the project property, which can be modified by the
-    # global --project flag.
-    if self.property == properties.VALUES.core.project:
-      hint += ' or provide the flag [--project] on the command line'
-    return hint
+      return None
 
   def __eq__(self, other):
     if not isinstance(other, self.__class__):
@@ -104,7 +137,7 @@ class PropertyFallthrough(Fallthrough):
     return other.property == self.property
 
 
-class ArgFallthrough(Fallthrough):
+class ArgFallthrough(_FallthroughBase):
   """Gets an attribute from the argparse parsed values for that arg."""
 
   def __init__(self, arg_name, arg_value):
@@ -115,17 +148,13 @@ class ArgFallthrough(Fallthrough):
       arg_value: a parsed value (usually string, for resource argument flags)
         provided by argparse.
     """
+    super(ArgFallthrough, self).__init__(
+        'Provide the flag [{}] on the command line'.format(arg_name))
     self.arg_name = arg_name
     self.arg_value = arg_value
 
-  def GetValue(self):
-    if self.arg_value:
-      return self.arg_value
-    raise FallthroughNotFoundError
-
-  @property
-  def hint(self):
-    return 'Provide the flag [{}] on the command line'.format(self.arg_name)
+  def _Call(self):
+    return self.arg_value
 
   def __eq__(self, other):
     if not isinstance(other, self.__class__):

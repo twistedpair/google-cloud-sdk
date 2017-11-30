@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """API Library for gcloud tasks queues."""
-# TODO(b/36865670): Add GetLocation, ListLocation, and TestIamPermissions
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib import tasks

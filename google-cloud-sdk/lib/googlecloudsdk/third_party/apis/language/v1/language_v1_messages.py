@@ -269,6 +269,7 @@ class AnnotateTextResponse(_messages.Message):
   """The text annotations response message.
 
   Fields:
+    categories: Categories identified in the input document.
     documentSentiment: The overall sentiment for the document. Populated if
       the user enables
       AnnotateTextRequest.Features.extract_document_sentiment.
@@ -285,11 +286,46 @@ class AnnotateTextResponse(_messages.Message):
       AnnotateTextRequest.Features.extract_syntax.
   """
 
-  documentSentiment = _messages.MessageField('Sentiment', 1)
-  entities = _messages.MessageField('Entity', 2, repeated=True)
-  language = _messages.StringField(3)
-  sentences = _messages.MessageField('Sentence', 4, repeated=True)
-  tokens = _messages.MessageField('Token', 5, repeated=True)
+  categories = _messages.MessageField('ClassificationCategory', 1, repeated=True)
+  documentSentiment = _messages.MessageField('Sentiment', 2)
+  entities = _messages.MessageField('Entity', 3, repeated=True)
+  language = _messages.StringField(4)
+  sentences = _messages.MessageField('Sentence', 5, repeated=True)
+  tokens = _messages.MessageField('Token', 6, repeated=True)
+
+
+class ClassificationCategory(_messages.Message):
+  """Represents a category returned from the text classifier.
+
+  Fields:
+    confidence: The classifier's confidence of the category. Number represents
+      how certain the classifier is that this category represents the given
+      text.
+    name: The name of the category representing the document.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(2)
+
+
+class ClassifyTextRequest(_messages.Message):
+  """The document classification request message.
+
+  Fields:
+    document: Input document.
+  """
+
+  document = _messages.MessageField('Document', 1)
+
+
+class ClassifyTextResponse(_messages.Message):
+  """The document classification response message.
+
+  Fields:
+    categories: Categories representing the input document.
+  """
+
+  categories = _messages.MessageField('ClassificationCategory', 1, repeated=True)
 
 
 class DependencyEdge(_messages.Message):
@@ -655,16 +691,18 @@ class Features(_messages.Message):
   Setting each one to true will enable that specific analysis for the input.
 
   Fields:
+    classifyText: Classify the full document into categories.
     extractDocumentSentiment: Extract document-level sentiment.
     extractEntities: Extract entities.
     extractEntitySentiment: Extract entities and their associated sentiment.
     extractSyntax: Extract syntax information.
   """
 
-  extractDocumentSentiment = _messages.BooleanField(1)
-  extractEntities = _messages.BooleanField(2)
-  extractEntitySentiment = _messages.BooleanField(3)
-  extractSyntax = _messages.BooleanField(4)
+  classifyText = _messages.BooleanField(1)
+  extractDocumentSentiment = _messages.BooleanField(2)
+  extractEntities = _messages.BooleanField(3)
+  extractEntitySentiment = _messages.BooleanField(4)
+  extractSyntax = _messages.BooleanField(5)
 
 
 class PartOfSpeech(_messages.Message):

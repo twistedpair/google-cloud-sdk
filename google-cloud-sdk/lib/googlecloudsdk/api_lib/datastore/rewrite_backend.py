@@ -43,20 +43,23 @@ class OperationsRewriteBackend(resource_expr_rewrite.Backend):
       },
   }
 
-  def RewriteTerm(self, key, op, operand):
+  def RewriteTerm(self, key, op, operand, key_type):
     """Rewrites a <key op operand> term of a filter expression.
 
     Args:
       key: The key, a string.
       op: The op, a string.
       operand: The operand, a string or list of strings.
+      key_type: The key type, unknown if None.
+
     Returns:
       the new term, as a string.
     """
     key = self._RewriteKey(key)
     op = self._RewriteOp(op)
     operand = self._RewriteOperand(key, operand)
-    return super(OperationsRewriteBackend, self).RewriteTerm(key, op, operand)
+    return super(OperationsRewriteBackend, self).RewriteTerm(
+        key, op, operand, key_type)
 
   def Quote(self, value, always=False):
     """Returns value or value "..." quoted with C-style escapes if needed.

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags and helpers for the compute VM instances commands."""
-import argparse
 import functools
 
 from googlecloudsdk.api_lib.compute import constants
@@ -969,7 +968,7 @@ def AddMinCpuPlatformArgs(parser, track, required=False):
       architecture or a newer one. To list available CPU platforms in given
       zone, run:
 
-          $ gcloud {} compute zones describe ZONE --format="value(availableCpuPlatforms)"
+          $ gcloud {}compute zones describe ZONE --format="value(availableCpuPlatforms)"
 
       Default setting is "AUTOMATIC".
 
@@ -977,7 +976,7 @@ def AddMinCpuPlatformArgs(parser, track, required=False):
 
       You can find more information on-line:
       [](https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform)
-      """.format(track.prefix))
+      """.format(track.prefix + ' ' if track.prefix else ''))
 
 
 def AddPreemptibleVmArgs(parser):
@@ -1421,82 +1420,6 @@ def ValidateAcceleratorArgs(args):
           'e.g. --accelerator type=nvidia-tesla-k80,count=2')
 
 
-def AddDockerArgs(parser):
-  """Adds Docker-related args."""
-  parser.add_argument(
-      '--docker-image',
-      help="""\
-      The URL to a Docker image to run on this instance. For example:
-          gcr.io/google-containers/busybox""")
-
-  parser.add_argument('--container-manifest', help=argparse.SUPPRESS)
-
-  parser.add_argument(
-      '--run-command',
-      help="""\
-      Command to be executed when running the Docker image. The command is
-      specified in shell form:
-
-        command param1 param2 ...
-
-      It is possible to quote and escape params, for example:
-
-        $ {command} --run-command='echo "Hello world"'
-
-      Command will result in error on wrong syntax for this parameter.
-      """)
-
-  parser.add_argument(
-      '--run-as-privileged',
-      action='store_true',
-      help="""\
-  Privileged mode is useful for containers that want to use linux capabilities
-  like manipulating the network stack and accessing devices.
-  With this argument specified Docker will enable to access to all devices on
-  the host as well as set some configuration in AppArmor or SELinux
-  to allow the container nearly all the same access to the host as processes
-  running outside containers on the host.
-  """)
-
-  parser.add_argument(
-      '--port-mappings',
-      type=arg_parsers.ArgList(),
-      metavar='PORT:TARGET_PORT:PROTOCOL',
-      help="""\
-  Configure bindings of container ports to the host ports.
-  Value of this parameter should be comma-separated list of
-  port1:port2:protocol triads representing host port, container port and
-  protocol. Protocol could be: {0}.
-
-  For example following command:
-
-    $ {{command}} --port-mappings=80:8888:TCP
-
-  will expose container port 8888 on port 80 of VM. This binding will serve TCP
-  traffic.
-  """.format(', '.join(containers_utils.ALLOWED_PROTOCOLS)))
-
-
-def ValidateDockerArgs(args):
-  """Validates Docker-related args."""
-  if not args.container_manifest and not args.docker_image:
-    raise exceptions.RequiredArgumentException(
-        '--docker-image', 'You must provide Docker image')
-
-  if args.container_manifest:
-    log.warn('--container-manifest flag is deprecated and will be removed. '
-             'Use --docker-image flag instead.')
-
-    if args.run_command:
-      raise exceptions.InvalidArgumentException(
-          '--run-command', 'argument --run-command: not allowed with argument '
-          '--container-manifest')
-    if args.port_mappings:
-      raise exceptions.InvalidArgumentException(
-          '--port-mappings', 'argument --port-mappings: not allowed with '
-          'argument --container-manifest')
-
-
 def AddKonletArgs(parser):
   """Adds Konlet-related args."""
   parser.add_argument(
@@ -1523,9 +1446,16 @@ def AddKonletArgs(parser):
       Each argument must have a separate flag. Arguments are appended in the
       order of flags. Example:
 
-      `--container-arg "c"`
+      Assuming the default entry point of your container (or an entry point
+      overridden with --container-command flag) is a Bourne shell-compatible
+      executable, in order to execute 'ls -l' command in the container,
+      you could use:
 
-      `--container-arg "ls -l"`
+      `--container-arg="-c" --container-arg="ls -l"`
+
+      Caveat: due to the nature of the argument parsing, it's impossible to
+      provide the flag value that starts with a dash (`-`) without the `=` sign
+      (that is, `--container-arg "-c"` will not work correctly).
 
       Default: None. (no arguments appended)
       """)
@@ -1763,3 +1693,32 @@ def AddDeletionProtectionFlag(parser, use_default_value=True):
       help=help_text,
       action='store_true',
       default=False if use_default_value else None)
+
+
+def AddShieldedVMConfigArgs(parser):
+  """Adds flags for shielded VM configuration.
+
+  Args:
+    parser: ArgumentParser, parser to which flags will be added.
+  """
+  parser.add_argument(
+      '--shielded-vm-secure-boot',
+      action='store_true',
+      default=None,  # Tri-valued: None => don't change the setting.
+      help="""\
+      The instance will boot with secure boot enabled. Changes to this setting
+      (via the update command) will only take effect after stopping and starting
+      the instance.
+      """)
+
+  parser.add_argument(
+      '--shielded-vm-vtpm',
+      action='store_true',
+      default=None,  # Tri-valued: None => don't change the setting.
+      help="""\
+      The instance will boot with the TPM (Trusted Platform Module) enabled.
+      Changes to this setting (via the update command) will only take effect
+      after stopping and starting the instance. A TPM is a hardware module that
+      can be used for different security operations such as remote attestation,
+      encryption and sealing of keys.
+    """)

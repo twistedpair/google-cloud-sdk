@@ -109,6 +109,19 @@ using the following command.
   parser.add_argument('--image-type', help=help_text)
 
 
+def AddNodeVersionFlag(parser, hidden=False):
+  """Adds a --node-version flag to the given parser."""
+  help_text = """\
+The Kubernetes version to use for nodes. Defaults to server-specified.
+
+The default Kubernetes version is available using the following command.
+
+  $ gcloud container get-server-config
+"""
+
+  return parser.add_argument('--node-version', help=help_text, hidden=hidden)
+
+
 def AddClusterVersionFlag(parser, suppressed=False, help=None):  # pylint: disable=redefined-builtin
   """Adds a --cluster-version flag to the given parser."""
   help_text = argparse.SUPPRESS if suppressed else help or """\
@@ -134,13 +147,15 @@ def AddClusterAutoscalingFlags(parser, update_group=None, hidden=False):
     update_group: An optional group of mutually exclusive flag options
         to which an --enable-autoscaling flag is added.
     hidden: If true, suppress help text for added options.
+  Returns:
+    Argument group for autoscaling flags.
   """
 
   group = parser.add_argument_group('Cluster autoscaling')
   autoscaling_group = group if update_group is None else update_group
   autoscaling_group.add_argument(
       '--enable-autoscaling',
-      default=None if update_group else False,
+      default=None,
       help="""\
 Enables autoscaling for a node pool.
 
@@ -168,6 +183,25 @@ Minimum number of nodes to which the node pool specified by --node-pool
 --enable-autoscaling is also specified.""",
       hidden=hidden,
       type=int)
+  return group
+
+
+def AddNodePoolAutoprovisioningFlag(parser, hidden=True):
+  """Adds --enable-autoprovisioning flag for node-pool to parser.
+
+  Args:
+    parser: A given parser.
+    hidden: If true, suppress help text for added options.
+  """
+  parser.add_argument(
+      '--enable-autoprovisioning',
+      help="""\
+Enables Cluster Autoscaler to treat the node pool as if it was autoprovisioned.
+
+Cluster Autoscaler will be able to delete the node pool if it's unneeded.""",
+      hidden=hidden,
+      default=None,
+      action='store_true')
 
 
 def AddLocalSSDFlag(parser, suppressed=False):
@@ -318,7 +352,7 @@ option will result in the cluster having all Kubernetes alpha API groups and
 features turned on. Cluster upgrades (both manual and automatic) will be
 disabled and the cluster will be automatically deleted after 30 days.
 
-Alpha clusters are not covered by the Container Engine SLA and should not be
+Alpha clusters are not covered by the Kubernetes Engine SLA and should not be
 used for production workloads."""
   parser.add_argument(
       '--enable-kubernetes-alpha',
@@ -367,7 +401,7 @@ Applies the given kubernetes taints on all nodes in default node-pool(s) in new 
   $ {command} example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
 """
   help_text += """
-Please see https://cloud.google.com/container-engine/docs/node-taints for more details.
+Please see https://cloud.google.com/kubernetes-engine/docs/node-taints for more details.
 """
 
   parser.add_argument(
@@ -397,8 +431,8 @@ Create nodes using preemptible VM instances in the new cluster.
 """
     help_text += """
 New nodes, including ones created by resize or recreate, will use preemptible
-VM instances. See https://cloud.google.com/container-engine/docs/preemptible-vm
-for more information on how to use Preemptible VMs with Container Engine."""
+VM instances. See https://cloud.google.com/kubernetes-engine/docs/preemptible-vm
+for more information on how to use Preemptible VMs with Kubernetes Engine."""
 
   parser.add_argument(
       '--preemptible',
@@ -452,7 +486,7 @@ Sets autorepair feature for a cluster's default node-pool(s).
   $ {command} example-cluster --enable-autorepair
 """
     help_text += """
-See https://cloud.google.com/container-engine/docs/node-auto-repair for \
+See https://cloud.google.com/kubernetes-engine/docs/node-auto-repair for \
 more info."""
 
   parser.add_argument(
@@ -480,7 +514,7 @@ Sets autoupgrade feature for a cluster's default node-pool(s).
   $ {command} example-cluster --enable-autoupgrade
 """
     help_text += """
-See https://cloud.google.com/container-engine/docs/node-managament for more \
+See https://cloud.google.com/kubernetes-engine/docs/node-managament for more \
 info."""
 
   parser.add_argument(
@@ -673,7 +707,7 @@ def AddLabelsFlag(parser, suppressed=False):
   """
 
   help_text = argparse.SUPPRESS if suppressed else """\
-Labels to apply to the Google Cloud resources in use by the Container Engine
+Labels to apply to the Google Cloud resources in use by the Kubernetes Engine
 cluster. These are unrelated to Kubernetes labels.
 Example:
 
@@ -695,7 +729,7 @@ def AddUpdateLabelsFlag(parser, suppressed=False):
   """
 
   help_text = argparse.SUPPRESS if suppressed else """\
-Labels to apply to the Google Cloud resources in use by the Container Engine
+Labels to apply to the Google Cloud resources in use by the Kubernetes Engine
 cluster. These are unrelated to Kubernetes labels.
 Example:
 
@@ -717,7 +751,7 @@ def AddRemoveLabelsFlag(parser, suppressed=False):
   """
 
   help_text = argparse.SUPPRESS if suppressed else """\
-Labels to remove from the Google Cloud resources in use by the Container Engine
+Labels to remove from the Google Cloud resources in use by the Kubernetes Engine
 cluster. These are unrelated to Kubernetes labels.
 Example:
 
@@ -904,7 +938,8 @@ Sets the node metadata option for workload metadata configuration.
       choices={
           'SECURE': 'Exposes only a secure subset of metadata to workloads. '
                     'Currently, this blocks kube-env and instance identity, '
-                    'but exposes all other metadata.',
+                    'but exposes all other metadata. Calls to the metadata '
+                    'server with recursive=true param are not allowed.',
           'EXPOSED': 'Exposes all metadata to workloads.',
           'UNSPECIFIED': 'Chooses the default.',
       },
@@ -1044,7 +1079,7 @@ def AddAddonsFlags(
       # TODO(b/65264376): Replace the doc link when a better doc is ready.
       help="""\
 Default set of addons includes {0}. Addons
-(https://cloud.google.com/container-engine/reference/rest/v1/projects.zones.clusters#AddonsConfig)
+(https://cloud.google.com/kubernetes-engine/reference/rest/v1/projects.zones.clusters#AddonsConfig)
 are additional Kubernetes cluster components. Addons specified by this flag will
 be enabled. The others will be disabled.
 """.format(', '.join(api_adapter.DEFAULT_ADDONS)))
@@ -1062,3 +1097,20 @@ be enabled. The others will be disabled.
       action=action,
       help='List of cluster addons to disable. Options are {0}'.format(
           ', '.join(api_adapter.ADDONS_OPTIONS)))
+
+
+def AddPodSecurityPolicyFlag(parser, hidden=True):
+  """Adds a --enable-pod-security-policy flag to parser."""
+  help_text = """\
+Enables the pod security policy admission controller for the cluster.  The pod
+security policy admission controller adds fine-grained pod create and update
+authorization controls through the PodSecurityPolicy API objects. For more
+information on the pod security policies, see
+https://kubernetes.io/docs/concepts/policy/pod-security-policy/.
+"""
+  parser.add_argument(
+      '--enable-pod-security-policy',
+      action='store_true',
+      default=None,
+      hidden=hidden,
+      help=help_text)

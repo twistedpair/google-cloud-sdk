@@ -52,13 +52,12 @@ class CommandBuilder(object):
     self.method = registry.GetMethod(
         self.spec.request.collection, self.spec.request.method,
         self.spec.request.api_version)
-    resource_args = (self.spec.arguments.resource.params
-                     if self.spec.arguments.resource else [])
+    resource_arg = self.spec.arguments.resource
     self.arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
         self.method,
-        self.spec.arguments.params + self.spec.arguments.mutex_group_params,
-        resource_args)
-    self.resource_type = self.arg_generator.resource_arg_name
+        self.spec.arguments.params,
+        resource_arg)
+    self.resource_type = resource_arg.name if resource_arg else None
 
   def Generate(self):
     """Generates a calliope command from the yaml spec.
@@ -138,7 +137,7 @@ class CommandBuilder(object):
         self._CommonArgs(parser)
         # Remove the URI flag if we don't know how to generate URIs for this
         # resource.
-        if not self.spec.arguments.resource.response_id_field:
+        if not self.spec.response.id_field:
           base.URI_FLAG.RemoveFromParser(parser)
 
       def Run(self_, args):
@@ -313,7 +312,7 @@ class CommandBuilder(object):
       parser: The argparse parser.
     """
     args = self.arg_generator.GenerateArgs()
-    for arg in args.values():
+    for arg in args:
       arg.AddToParser(parser)
     if self.spec.arguments.additional_arguments_hook:
       for arg in self.spec.arguments.additional_arguments_hook():
@@ -497,7 +496,7 @@ class CommandBuilder(object):
     """
     def URIFunc(resource):
       id_value = getattr(
-          resource, self.spec.arguments.resource.response_id_field)
+          resource, self.spec.response.id_field)
       ref = self.arg_generator.GetResponseResourceRef(id_value, args)
       return ref.SelfLink()
     args.GetDisplayInfo().AddUriFunc(URIFunc)

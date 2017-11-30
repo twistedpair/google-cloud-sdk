@@ -140,7 +140,7 @@ def _GetDeviceFlags(default_for_blocked_flags=True):
         '+\n\n'
         'Connections to device is not blocked by default.')
 
-  blocked_state_args = base.MutuxArgumentGroup()
+  blocked_state_args = base.ArgumentGroup(mutex=True)
   # Defaults are set to None because with nested groups, help text isn't being
   # generated correctly.
   blocked_state_args.AddArgument(base.Argument(

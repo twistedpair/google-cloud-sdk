@@ -398,9 +398,14 @@ class SpeechRecognitionResult(_messages.Message):
       (up to the maximum specified in `max_alternatives`). These alternatives
       are ordered in terms of accuracy, with the top (first) alternative being
       the most probable, as ranked by the recognizer.
+    channelTag: For multi-channel audio, this is the channel number
+      corresponding to the recognized result for the audio from that channel.
+      For audio_channel_count = N, its output values can range from '0' to
+      'N-1'.
   """
 
   alternatives = _messages.MessageField('SpeechRecognitionAlternative', 1, repeated=True)
+  channelTag = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):

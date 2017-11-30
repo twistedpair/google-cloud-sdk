@@ -163,7 +163,34 @@ def CreateMetadataMessage(
 
 def CreateTagsMessage(messages, tags):
   """Create tags message with parameters for container VM or VM templates."""
-  return messages.Tags(items=(tags if tags else ['container-vm']))
+  if tags:
+    return messages.Tags(items=tags)
+
+
+def GetLabelsMessageWithCosVersion(
+    labels, image_uri, resources, resource_class):
+  """Returns message with labels for instance / instance template.
+
+  Args:
+    labels: dict, labels to assign to the resource.
+    image_uri: URI of image used as a base for the resource. The function
+               extracts COS version from the URI and uses it as a value of
+               `container-vm` label.
+    resources: object that can parse image_uri.
+    resource_class: class of the resource to which labels will be assigned.
+                    Must contain LabelsValue class and
+                    resource_class.LabelsValue must contain AdditionalProperty
+                    class.
+  """
+  cos_version = resources.Parse(
+      image_uri, collection='compute.images').Name()
+  if labels is None:
+    labels = {}
+  labels['container-vm'] = cos_version
+  additional_properties = [
+      resource_class.LabelsValue.AdditionalProperty(key=k, value=v)
+      for k, v in sorted(labels.iteritems())]
+  return resource_class.LabelsValue(additionalProperties=additional_properties)
 
 
 class NoCosImageException(core_exceptions.Error):

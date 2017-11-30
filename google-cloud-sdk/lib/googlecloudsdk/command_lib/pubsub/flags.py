@@ -13,40 +13,69 @@
 # limitations under the License.
 """A library containing flags used by Cloud Pub/Sub commands."""
 from googlecloudsdk.api_lib.pubsub import subscriptions
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.pubsub import util
+from googlecloudsdk.core import log
 
 
 # Maximum number of attributes you can specify for a message.
 MAX_ATTRIBUTES = 100
 
 
-def AddSubscriptionResourceArg(parser, action, plural=False):
-  if plural:
-    nargs = '+'
-    help_text = 'One or more subscriptions {}'
-  else:
-    nargs = None
-    help_text = 'Name of the subscription {}'
-  parser.add_argument('subscription', nargs=nargs,
-                      help=help_text.format(action))
+# Format string for deprecation message for renaming positional to flag.
+DEPRECATION_FORMAT_STR = (
+    'Positional argument `{0}` is deprecated. Please use `{1}` instead.')
 
 
-def AddTopicResourceArg(parser, action, plural=False):
-  if plural:
-    nargs = '+'
-    help_text = 'One or more topics {}'
-  else:
-    nargs = None
-    help_text = 'Name of the topic {}'
-  parser.add_argument('topic', nargs=nargs,
-                      help=help_text.format(action))
-
-
-def AddAckIdFlag(parser, action):
+def AddAckIdFlag(parser, action, add_deprecated=False):
   help_text = 'One or more ACK_ID to {}'.format(action)
-  parser.add_argument('ack_id', nargs='+', help=help_text)
+  if add_deprecated:
+    parser.add_argument(
+        'ack_id', nargs='*', help=help_text,
+        action=actions.DeprecationAction(
+            'ACK_ID',
+            show_message=lambda _: False,  # See ParseAckIdsArgs for reason.
+            warn=DEPRECATION_FORMAT_STR.format('ACK_ID', '--ack-ids')))
+  parser.add_argument(
+      '--ack-ids', metavar='ACK_ID', type=arg_parsers.ArgList(), help=help_text)
+
+
+def ParseAckIdsArgs(args):
+  """Gets the list of ack_ids from args.
+
+  This is only necessary because we are deprecating the positional `ack_id`.
+  Putting the positional and a flag in an argument group, will group flag
+  under positional args. This would be confusing.
+
+  DeprecationAction can't be used here because in order to make the positional
+  argument optional, we have to use `nargs='*'`. Since this means zero or more,
+  the DeprecationAction warn message is always triggered.
+
+  This function does not exist in util.py in order to group the explanation for
+  why this exists with the deprecated flags.
+
+  Once the positional is removed, this function can be removed.
+
+  Args:
+    args (argparse.Namespace): Parsed arguments
+
+  Returns:
+    list[str]: List of ack ids.
+  """
+  if args.ack_id and args.ack_ids:
+    raise exceptions.ConflictingArgumentsException('ACK_ID', '--ack-ids')
+  elif not (args.ack_id or args.ack_ids):
+    raise exceptions.MinimumArgumentException(['ACK_ID', '--ack-ids'])
+  else:
+    if args.ack_id:
+      log.warn(DEPRECATION_FORMAT_STR.format('ACK_ID', '--ack-ids'))
+    ack_ids = args.ack_id or args.ack_ids
+    if not isinstance(ack_ids, list):
+      ack_ids = [ack_ids]
+    return ack_ids
 
 
 def AddIamPolicyFileFlag(parser):
@@ -77,11 +106,15 @@ def AddSeekFlags(parser):
           cloud project.""")
 
 
-def AddPullFlags(parser):
-  parser.add_argument(
-      '--max-messages', type=int, default=1,
-      help='The maximum number of messages that Cloud Pub/Sub can return '
-           'in this response.')
+def AddPullFlags(parser, add_deprecated=False):
+  if add_deprecated:
+    parser.add_argument(
+        '--max-messages', type=int, default=1,
+        help='The maximum number of messages that Cloud Pub/Sub can return '
+             'in this response.',
+        action=actions.DeprecationAction(
+            '--max-messages',
+            warn='`{flag_name}` is deprecated. Please use --limit instead.'))
   parser.add_argument(
       '--auto-ack', action='store_true', default=False,
       help='Automatically ACK every message pulled from this subscription.')
@@ -154,16 +187,60 @@ def AddSubscriptionSettingsFlags(parser, track, is_update=False):
             is omitted, seconds is assumed.""".format(retention_default_help))
 
 
-def AddPublishMessageFlags(parser):
+def AddPublishMessageFlags(parser, add_deprecated=False):
+  """Adds the flags for building a PubSub message to the parser.
+
+  Args:
+    parser: The argparse parser.
+    add_deprecated: Whether or not to add the deprecated flags.
+  """
+  message_help_text = """\
+      The body of the message to publish to the given topic name.
+      Information on message formatting and size limits can be found at:
+      https://cloud.google.com/pubsub/docs/publisher#publish"""
+  if add_deprecated:
+    parser.add_argument(
+        'message_body', nargs='?', default=None,
+        help=message_help_text,
+        action=actions.DeprecationAction(
+            'MESSAGE_BODY',
+            show_message=lambda _: False,
+            warn=DEPRECATION_FORMAT_STR.format('MESSAGE_BODY', '--message')))
   parser.add_argument(
-      'message_body', nargs='?', default=None,
-      help="""\
-          The body of the message to publish to the given topic name.
-          Information on message formatting and size limits can be found at:
-          https://cloud.google.com/pubsub/docs/publisher#publish""")
+      '--message', help=message_help_text)
+
   parser.add_argument(
       '--attribute', type=arg_parsers.ArgDict(max_length=MAX_ATTRIBUTES),
       help='Comma-separated list of attributes. Each ATTRIBUTE has the form '
            'name=value". You can specify up to {0} attributes.'.format(
                MAX_ATTRIBUTES))
 
+
+def ParseMessageBody(args):
+  """Gets the message body from args.
+
+  This is only necessary because we are deprecating the positional `ack_id`.
+  Putting the positional and a flag in an argument group, will group flag
+  under positional args. This would be confusing.
+
+  DeprecationAction can't be used here because the positional argument is
+  optional (nargs='?') Since this means zero or more, the DeprecationAction
+  warn message is always triggered.
+
+  This function does not exist in util.py in order to group the explanation for
+  why this exists with the deprecated flags.
+
+  Once the positional is removed, this function can be removed.
+
+  Args:
+    args (argparse.Namespace): Parsed arguments
+
+  Returns:
+    Optional[str]: message body.
+  """
+  if args.message_body and args.message:
+    raise exceptions.ConflictingArgumentsException('MESSAGE_BODY', '--message')
+
+  if args.message_body is not None:
+    log.warn(DEPRECATION_FORMAT_STR.format('MESSAGE_BODY', '--message'))
+  return args.message_body or args.message

@@ -21,6 +21,7 @@
   "baseUrl": "https://alpha-vision.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -815,7 +816,7 @@
     },
     "Landmark": {
       "id": "Landmark",
-      "description": "A face-specific landmark (for example, a face feature).\nLandmark positions may fall outside the bounds of the image\nif the face is near one or more edges of the image.\nTherefore it is NOT guaranteed that `0 <= x < width` or\n`0 <= y < height`.",
+      "description": "A face-specific landmark (for example, a face feature).",
       "type": "object",
       "properties": {
         "type": {
@@ -930,7 +931,7 @@
       "type": "object",
       "properties": {
         "mid": {
-          "description": "Opaque entity ID. Some IDs may be available in\n[Google Knowledge Graph Search API](https:\/\/developers.google.com\/knowledge-graph\/).",
+          "description": "Opaque entity ID. Some IDs may be available in\n[Google Knowledge Graph Search\nAPI](https:\/\/developers.google.com\/knowledge-graph\/).",
           "type": "string"
         },
         "locale": {
@@ -1029,7 +1030,7 @@
     },
     "TextAnnotation": {
       "id": "TextAnnotation",
-      "description": "TextAnnotation contains a structured representation of OCR extracted text.\nThe hierarchy of an OCR extracted text structure is like this:\n    TextAnnotation -> Page -> Block -> Paragraph -> Word -> Symbol\nEach structural component, starting from Page, may further have their own\nproperties. Properties describe detected languages, breaks etc.. Please\nrefer to the google.cloud.vision.v1.TextAnnotation.TextProperty message\ndefinition below for more detail.",
+      "description": "TextAnnotation contains a structured representation of OCR extracted text.\nThe hierarchy of an OCR extracted text structure is like this:\n    TextAnnotation -> Page -> Block -> Paragraph -> Word -> Symbol\nEach structural component, starting from Page, may further have their own\nproperties. Properties describe detected languages, breaks etc.. Please refer\nto the TextAnnotation.TextProperty message definition below for more\ndetail.",
       "type": "object",
       "properties": {
         "pages": {

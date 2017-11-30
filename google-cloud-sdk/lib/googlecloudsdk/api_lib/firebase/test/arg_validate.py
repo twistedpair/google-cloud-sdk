@@ -15,6 +15,8 @@
 """A shared library to validate 'gcloud test' CLI argument values."""
 
 import datetime
+import os
+import posixpath
 import random
 import re
 import string
@@ -386,8 +388,21 @@ _OBB_FILE_REGEX = re.compile(
     r'(.*[\\/:])?(main|patch)\.\d+(\.[a-zA-Z]\w*)+\.obb$')
 
 
-def ValidateObbFileNames(obb_files):
-  """Confirm that any OBB file names follow the required Android pattern."""
+def NormalizeAndValidateObbFileNames(obb_files):
+  """Confirm that any OBB file names follow the required Android pattern.
+
+  Also expand local paths with "~"
+
+  Args:
+    obb_files: list of obb file references. Each one is either a filename on the
+      local FS or a gs:// reference.
+  """
+  if obb_files:
+    obb_files[:] = [
+        obb_file if not obb_file or
+        obb_file.startswith(storage_util.GSUTIL_BUCKET_PREFIX) else
+        os.path.expanduser(obb_file) for obb_file in obb_files
+    ]
   for obb_file in (obb_files or []):
     if not _OBB_FILE_REGEX.match(obb_file):
       raise test_exceptions.InvalidArgException(
@@ -439,12 +454,23 @@ def ValidateEnvironmentVariablesList(args):
           'Invalid environment variable [{0}]'.format(key))
 
 
-_DIRECTORIES_TO_PULL_PATH_REGEX = re.compile(r'^(/.*)+/?$')
+_DIRECTORIES_TO_PULL_PATH_REGEX = re.compile(
+    r'^/?/(?:sdcard|data/local/tmp)(?:/[\w\-\.\+ /]+)*$')
 
 
-def ValidateDirectoriesToPullList(args):
-  """Validates list of file paths for 'directories-to-pull' flag."""
-  for file_path in (args.directories_to_pull or []):
+def NormalizeAndValidateDirectoriesToPullList(dirs):
+  """Validate list of file paths for 'directories-to-pull' flag.
+
+  Also collapse paths to remove "." ".." and "//".
+
+  Args:
+    dirs: list of directory names to pull from the device.
+  """
+  if dirs:
+    # Expand posix paths (Note: blank entries will fail in the next loop)
+    dirs[:] = [posixpath.abspath(path) if path else path for path in dirs]
+
+  for file_path in (dirs or []):
     # Check for correct file path format.
     if not _DIRECTORIES_TO_PULL_PATH_REGEX.match(file_path):
       raise test_exceptions.InvalidArgException(

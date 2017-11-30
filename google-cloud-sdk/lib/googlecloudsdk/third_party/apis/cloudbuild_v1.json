@@ -606,6 +606,25 @@
             "VERIFIED"
           ]
         },
+        "machineType": {
+          "description": "GCE VM size to run the build on.",
+          "enumDescriptions": [
+            "Standard machine type.",
+            "Medium size.",
+            "Large size."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "N1_HIGHCPU_8",
+            "N1_HIGHCPU_32"
+          ]
+        },
+        "diskSizeGb": {
+          "description": "Requested disk size for the VM that runs the build. Note that this is *NOT*\n\"disk free\"; some of the space will be used by the operating system and\nbuild utilities. Also note that this is the minimum disk size that will be\nallocated for the build -- the build may run with a larger disk than\nrequested. At present, the maximum disk size is 1000GB; builds that request\nmore than the maximum are rejected with an error.",
+          "type": "string",
+          "format": "int64"
+        },
         "substitutionOption": {
           "description": "SubstitutionOption to allow unmatch substitutions.",
           "enumDescriptions": [
@@ -678,6 +697,13 @@
       "properties": {
       }
     },
+    "RetryBuildRequest": {
+      "id": "RetryBuildRequest",
+      "description": "RetryBuildRequest specifies a build to retry.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "BuildTrigger": {
       "id": "BuildTrigger",
       "description": "Configuration for an automated build in response to source repository\nchanges.",
@@ -733,13 +759,6 @@
             "$ref": "BuildTrigger"
           }
         }
-      }
-    },
-    "RetryBuildRequest": {
-      "id": "RetryBuildRequest",
-      "description": "RetryBuildRequest specifies a build to retry.",
-      "type": "object",
-      "properties": {
       }
     },
     "BuildOperationMetadata": {

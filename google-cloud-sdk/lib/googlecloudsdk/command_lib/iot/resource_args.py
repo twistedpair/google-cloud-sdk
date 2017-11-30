@@ -15,13 +15,14 @@
 
 from googlecloudsdk.calliope.concepts import concept_parsers
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.core import properties
 
 
-def DeviceAnchorAttributeConfig():
+def DeviceAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='id',
-      help_text='ID of the device.')
+      name='device',
+      help_text='The device of the {resource}.')
 
 
 def RegistryAttributeConfig():
@@ -30,36 +31,24 @@ def RegistryAttributeConfig():
       help_text='The device registry for the {resource}.')
 
 
-def RegistryAnchorAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='id',
-      help_text='ID of the device registry.')
-
-
 def RegionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='region',
       help_text='The Cloud region for the {resource}.')
 
 
-def RegionAnchorAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='region',
-      help_text='The Cloud region.')
-
-
 def ProjectAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='project',
       help_text='The Cloud project for the {resource}.',
-      prop=properties.VALUES.core.project)
+      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
 
 
 def GetDeviceResourceSpec():
   return concepts.ResourceSpec(
       'cloudiot.projects.locations.registries.devices',
       resource_name='device',
-      devicesId=DeviceAnchorAttributeConfig(),
+      devicesId=DeviceAttributeConfig(),
       registriesId=RegistryAttributeConfig(),
       locationsId=RegionAttributeConfig(),
       projectsId=ProjectAttributeConfig())
@@ -69,7 +58,7 @@ def GetRegistryResourceSpec():
   return concepts.ResourceSpec(
       'cloudiot.projects.locations.registries',
       resource_name='registry',
-      registriesId=RegistryAnchorAttributeConfig(),
+      registriesId=RegistryAttributeConfig(),
       locationsId=RegionAttributeConfig(),
       projectsId=ProjectAttributeConfig())
 
@@ -78,7 +67,7 @@ def GetRegionResourceSpec():
   return concepts.ResourceSpec(
       'cloudiot.projects.locations',
       resource_name='region',
-      locationsId=RegionAnchorAttributeConfig(),
+      locationsId=RegionAttributeConfig(),
       projectsId=ProjectAttributeConfig())
 
 

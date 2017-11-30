@@ -16,6 +16,7 @@
 from googlecloudsdk.api_lib.app import region_util
 
 
+PROJECTS_COLLECTION = 'cloudtasks.projects'
 LOCATIONS_COLLECTION = 'cloudtasks.projects.locations'
 QUEUES_COLLECTION = 'cloudtasks.projects.locations.queues'
 TASKS_COLLECTION = 'cloudtasks.projects.locations.queues.tasks'

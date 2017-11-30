@@ -57,6 +57,12 @@ RAW_FLAG = base.Argument(
          'flag to disable this behavior and return the raw response.'
 )
 
+API_REQUIRED_FLAG = base.Argument(
+    '--api',
+    required=True,
+    completer=APICompleter,
+    help='The name of the API to get the attributes for.')
+
 
 class MethodDynamicPositionalAction(parser_extensions.DynamicPositionalAction):
   """A DynamicPositionalAction that adds flags for a given method to the parser.

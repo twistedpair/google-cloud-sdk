@@ -18,7 +18,6 @@ import base64
 from googlecloudsdk.api_lib.ml import content_source
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import iso_duration
@@ -27,6 +26,7 @@ from googlecloudsdk.core.util import times
 VIDEO_API = 'videointelligence'
 VIDEO_API_VERSION_BETA = 'v1beta2'
 OPERATIONS_VERSION = 'v1'
+
 
 INPUT_ERROR_MESSAGE = ('[{}] is not a valid format for video input. Must be a '
                        'local path or a Google Cloud Storage URI '
@@ -54,251 +54,6 @@ class VideoUriFormatError(Error):
   """Error if the video input URI is invalid."""
 
 
-def GetApiClientInstance(version=VIDEO_API_VERSION_BETA, no_http=False):
-  return apis.GetClientInstance(VIDEO_API, version, no_http=no_http)
-
-
-def GetApiMessagesModule(client=None):
-  client = client or GetApiClientInstance()
-  return client.MESSAGES_MODULE
-
-
-class VideoClient(object):
-  """Wrapper class for videointelligence apitools client."""
-
-  def __init__(self, no_http=False):
-    self.version = VIDEO_API_VERSION_BETA
-    self.client = GetApiClientInstance(VIDEO_API_VERSION_BETA, no_http)
-    self.messages = GetApiMessagesModule(self.client)
-
-    # Add message module and client that are used only for interacting
-    # with the operations service (requires different version).
-    self.operations_client = GetApiClientInstance(OPERATIONS_VERSION)
-    self.operations_messages = GetApiMessagesModule(self.operations_client)
-    self._ShortenMessages()
-
-  def GetMessageClass(self, msg_str):
-    """Get API client message class for this client.
-
-    Args:
-      msg_str: str, the message name or suffix to retrieve from self.messages.
-
-    Returns:
-      the Api message class.
-    """
-    return GetApiMessage(msg_str=msg_str,
-                         api_version=self.version,
-                         msg_module=self.messages)
-
-  def _ShortenMessages(self):
-    """Shorten variables for convenience/line length."""
-    self.segment_msg = self.GetMessageClass('VideoSegment')
-    self.req_msg = self.GetMessageClass('AnnotateVideoRequest')
-    self.context_msg = self.GetMessageClass('VideoContext')
-    self.features_enum = self.req_msg.FeaturesValueListEntryValuesEnum
-    self._SetContextConfigs()
-
-  def _SetContextConfigs(self):
-    """Initialize correct message objects to configure Video Context."""
-    self.explicit_config = self.GetMessageClass(
-        'ExplicitContentDetectionConfig')
-    self.shot_config = self.GetMessageClass('ShotChangeDetectionConfig')
-    self.detection_config = self.GetMessageClass('LabelDetectionConfig')
-    self.detection_msg = self.detection_config.LabelDetectionModeValueValuesEnum
-
-  def GetContext(self,
-                 segment_messages=None,
-                 label_detection_mode=None,
-                 explicit_content_model=None,
-                 shot_change_model=None):
-    """Get VideoContext message from information about context.
-
-    Args:
-      segment_messages: [messages.
-                         GoogleCloudVideointelligenceXXXVideoSegment]
-                         | None,
-                         the list of segment messages for the context, if any.
-      label_detection_mode: str for the detection mode for label detection.
-      explicit_content_model: str, Model to use for explicit content detection.
-      shot_change_model: str, Model to use for shot change detection
-
-    Raises:
-      ValueError: label_detection_mode is not a string or
-        a LabelDetectionModeValueValuesEnum value.
-    Returns:
-      the Context message.
-    """
-    detection_models = (label_detection_mode or
-                        explicit_content_model or
-                        shot_change_model)
-    if not segment_messages and not detection_models:
-      return None
-
-    if label_detection_mode:
-      if (not isinstance(label_detection_mode, basestring) and
-          not isinstance(label_detection_mode, self.detection_msg)):
-        raise ValueError('label_detection_mode must be a string or a valid '
-                         'LabelDetectionModeValueValuesEnum value.')
-
-    context = self.context_msg()
-
-    if segment_messages:
-      context.segments = segment_messages
-
-    if label_detection_mode:
-      label_detection_config = self.detection_config()
-      mode = label_detection_mode.upper().replace('-', '_')
-      if not mode.endswith('_MODE'):
-        mode += '_MODE'
-      label_detection_config.labelDetectionMode = self.detection_msg(mode)
-      context.labelDetectionConfig = label_detection_config
-
-    if explicit_content_model:
-      explicit_content_config = self.explicit_config()
-      explicit_content_config.model = explicit_content_model
-      context.explicitContentDetectionConfig = explicit_content_config
-
-    if shot_change_model:
-      shot_config = self.shot_config()
-      shot_config.model = shot_change_model
-      context.shotChangeDetectionConfig = shot_config
-
-    return context
-
-  def _GetAnnotateRequest(self, request_type, video_source, output_uri=None,
-                          segments=None, region=None, detection_mode=None,
-                          explicit_content_model=None, shot_change_model=None):
-    """Builds an images.Annotate request from args given to a command.
-
-    Args:
-      request_type: messages.
-          GoogleCloudVideointelligenceXXXAnnotateVideoRequest.
-          FeaturesValueListEntryValuesEnum, the type of analysis desired.
-      video_source: content_source.RemoteSource, the location of the video.
-      output_uri: str, the location of the output file for analysis to be
-          written to, if desired.
-      segments: str, the segments of video to be analyzed.
-      region: str, the location ID to request analysis be done in.
-      detection_mode: str, the detection mode if label detection is requested.
-      explicit_content_model: str, Model to use for explicit content detection.
-      shot_change_model: str, Model to use for shot change detection.
-
-    Raises:
-      SegmentError: if given segments aren't properly formatted.
-
-    Returns:
-      messages.AnnotateRequest: a request for the API to annotate an image.
-    """
-    segs = ValidateAndParseSegments(segments)
-    request = self.req_msg(features=[self.features_enum(request_type)])
-    if output_uri:
-      request.outputUri = output_uri
-    if region:
-      request.locationId = region
-    video_source.UpdateContent(request)
-    context = self.GetContext(segment_messages=segs,
-                              label_detection_mode=detection_mode,
-                              explicit_content_model=explicit_content_model,
-                              shot_change_model=shot_change_model)
-    request.videoContext = context
-    return request
-
-  def RequestAnnotation(self, request_type, input_uri, output_uri=None,
-                        segments=None, region=None, detection_mode=None,
-                        explicit_content_model=None, shot_change_model=None):
-    """Builds and sends a videos.Annotate request from args given to a command.
-
-    Args:
-      request_type: string, the type of analysis desired. Must be
-        'LABEL_DETECTION', 'FACE_DETECTION', 'SHOT_CHANGE_DETECTION' or
-        'EXPLICIT_CONTENT_DETECTION'
-      input_uri: str, the location of the video.
-      output_uri: str, the location of the output file for analysis to be
-        written to, if desired.
-      segments: str, the segments of video to be analyzed.
-      region: str, the region where the analysis should be done.
-      detection_mode: str, the detection mode if label detection is requested.
-      explicit_content_model: str, Model to use for explicit content detection.
-      shot_change_model: str, Model to use for shot change detection.
-
-    Raises:
-      VideoUriFormatError: if the input path or output URI are incorrectly
-          formatted.
-      SegmentError: if given segments aren't properly formatted.
-
-    Returns:
-      messages.GoogleLongrunningOperation, the result of the request.
-    """
-    output_uri = _ValidateOutputUri(output_uri)
-    video_source = _ValidateAndParseInput(input_uri)
-    request = self._GetAnnotateRequest(
-        request_type, video_source, output_uri=output_uri,
-        segments=segments, region=region, detection_mode=detection_mode,
-        explicit_content_model=explicit_content_model,
-        shot_change_model=shot_change_model)
-    return self.client.videos.Annotate(request)
-
-  def GetOperation(self, operation_ref):
-    """Gets description of a long-running operation.
-
-    Args:
-      operation_ref: the operation reference.
-
-    Returns:
-      messages.GoogleLongrunningOperation, the operation.
-    """
-    return self.operations_client.operations.Get(
-        self.operations_messages.VideointelligenceOperationsGetRequest(
-            name=operation_ref.operationsId))
-
-  def WaitOperation(self, operation_ref):
-    """Waits for a long-running operation.
-
-    Args:
-      operation_ref: the operation reference.
-
-    Raises:
-      waiter.OperationError: if the operation contains an error.
-
-    Returns:
-      messages.AnnotateVideoResponse, the final result of the operation.
-    """
-    message = 'Waiting for operation [{}] to complete'.format(
-        operation_ref.operationsId)
-    return waiter.WaitFor(
-        waiter.CloudOperationPollerNoResources(
-            self.operations_client.operations,
-            # TODO(b/62478975): remove this workaround when operation resources
-            # are compatible with gcloud parsing.
-            get_name_func=lambda x: x.operationsId),
-        operation_ref,
-        message,
-        exponential_sleep_multiplier=2.0,
-        sleep_ms=500,
-        wait_ceiling_ms=20000)
-
-
-def GetApiMessage(msg_str, api_version, msg_module=None):
-  """Get API message class based on api version.
-
-  Args:
-    msg_str: str, the message name or suffix to retrieve from api messages
-      module.
-    api_version:  str, videointelligence api version to retrieve
-      messages from.
-    msg_module: obj, API messages module to retrieve messages from. If not
-      supplied, then will use api_version to get messages module.
-
-  Returns:
-    the Api message class.
-  """
-  message_module = msg_module or GetApiMessagesModule(
-      GetApiClientInstance(api_version, no_http=True))
-
-  return getattr(message_module, 'GoogleCloudVideointelligence' +
-                 api_version.capitalize() + msg_str)
-
-
 def ValidateAndParseSegments(given_segments):
   """Get VideoSegment messages from string of form START1:END1,START2:END2....
 
@@ -315,7 +70,8 @@ def ValidateAndParseSegments(given_segments):
   if not given_segments:
     return None
 
-  segment_msg = GetApiMessage('VideoSegment', VIDEO_API_VERSION_BETA)
+  messages = apis.GetMessagesModule(VIDEO_API, VIDEO_API_VERSION_BETA)
+  segment_msg = messages.GoogleCloudVideointelligenceV1beta2VideoSegment
   segment_messages = []
   segments = [s.split(':') for s in given_segments]
   for segment in segments:
@@ -335,10 +91,10 @@ def ValidateAndParseSegments(given_segments):
       raise SegmentError(SEGMENT_ERROR_MESSAGE.format(
           ','.join(given_segments), ve))
 
-  sec_fmt = '{}s'
-  segment_messages.append(segment_msg(
-      endTimeOffset=sec_fmt.format(end_duration.total_seconds),
-      startTimeOffset=sec_fmt.format(start_duration.total_seconds)))
+    sec_fmt = '{}s'
+    segment_messages.append(segment_msg(
+        endTimeOffset=sec_fmt.format(end_duration.total_seconds),
+        startTimeOffset=sec_fmt.format(start_duration.total_seconds)))
   return segment_messages
 
 

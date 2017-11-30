@@ -132,6 +132,90 @@ def GetMatchingIndexValue(index, func):
   return None
 
 
+def GetMessageFieldType(resource_key, message):
+  """Returns the messages module type for key in message and the actual key.
+
+  Handles camelCase/snake_case key name variants for OnePlatform compatibility.
+  Indices and slices in resource_key are ignored -- they are not needed for
+  repeated field queries.
+
+  Args:
+    resource_key: Ordered list of key names/indices, applied left to right. Each
+      element in the list may be one of:
+        str - A resource property name. This could be a class attribute name or
+          a dict index.
+        int - A list index. Selects one member is the list. Negative indices
+          count from the end of the list, starting with -1 for the last element
+          in the list. An out of bounds index is not an error; it produces the
+          value None.
+        None - A list slice. Selects all members of a list or dict like object.
+          A slice of an empty dict or list is an empty dict or list.
+    message: The known proto message type if not None.
+
+  Raises:
+    KeyError: If key is not in message.
+
+  Returns:
+    (type, actual_key), the messages module type for key in message and the
+      actual key (names in the proper case, indices omitted).
+  """
+  actual_key = []
+  for name in resource_key:
+    if not isinstance(name, basestring):
+      # Ignore indices and slices.
+      continue
+    for convert in (lambda x: x, ConvertToCamelCase, ConvertToSnakeCase):
+      actual_name = convert(name)
+      try:
+        message = message.field_by_name(actual_name).type
+      except KeyError:
+        pass
+      else:
+        break
+    else:
+      raise
+    actual_key.append(actual_name)
+  if message == (int, long):
+    # A distinction we don't need, especially since python 3 only has "int".
+    # Also, dealing with a type tuple is a pain for callers.
+    message = int
+  return message, actual_key
+
+
+def LookupField(resource_key, fields):
+  """Returns the actual_key match of resource_key in fields.
+
+  Handles camelCase/snake_case key name variants for OnePlatform compatibility.
+  Indices and slices in resource_key are ignored to normalize the lookup. This
+  means that the lookup can determine the existence of an attribute name, but
+  not a specific value among all repeated values.
+
+  Args:
+    resource_key: Ordered list of key names/indices, applied left to right. Each
+      element in the list may be one of:
+        str - A resource property name. This could be a class attribute name or
+          a dict index.
+        int - A list index. Selects one member is the list. Negative indices
+          count from the end of the list, starting with -1 for the last element
+          in the list. An out of bounds index is not an error; it produces the
+          value None.
+        None - A list slice. Selects all members of a list or dict like object.
+          A slice of an empty dict or list is an empty dict or list.
+    fields: The set of dotted field names to match against.
+
+  Returns:
+    The actual_key match of resource_key in fields or None if no match.
+  """
+  for convert in (lambda x: x, ConvertToCamelCase, ConvertToSnakeCase):
+    actual_key = [convert(name) if isinstance(name, basestring) else name
+                  for name in resource_key]
+    lookup_key = '.'.join([name for name in actual_key
+                           if isinstance(name, basestring)])
+    if lookup_key in fields:
+      return actual_key
+  return None
+
+
 def Get(resource_obj, resource_key, default=None):
   """Gets the value referenced by key in the object resource.
 

@@ -893,7 +893,7 @@ Modify basic_auth.csv and reset the K8S API server.
           }
 
     def GetServerConfig(self, request, global_params=None):
-      """Returns configuration info about the Container Engine service.
+      """Returns configuration info about the Kubernetes Engine service.
 
       Args:
         request: (ContainerProjectsLocationsGetServerConfigRequest) input message
@@ -1739,7 +1739,7 @@ Modify basic_auth.csv and reset the K8S API server.
           }
 
     def GetServerconfig(self, request, global_params=None):
-      """Returns configuration info about the Container Engine service.
+      """Returns configuration info about the Kubernetes Engine service.
 
       Args:
         request: (ContainerProjectsZonesGetServerconfigRequest) input message

@@ -83,12 +83,23 @@ def SnapshotUriFunc(snapshot):
 
 
 def SubscriptionUriFunc(subscription):
-  return ParseSubscription(
-      subscription['subscriptionId'], subscription['projectId']).SelfLink()
+  project = None
+  if isinstance(subscription, dict):
+    name = subscription['subscriptionId']
+    project = subscription['projectId']
+  elif isinstance(subscription, str):
+    name = subscription
+  else:
+    name = subscription.name
+  return ParseSubscription(name, project).SelfLink()
 
 
 def TopicUriFunc(topic):
-  return ParseTopic(topic['topic']).SelfLink()
+  if isinstance(topic, dict):
+    name = topic['topicId']
+  else:
+    name = topic.name
+  return ParseTopic(name).SelfLink()
 
 
 def ParsePushConfig(push_endpoint, client=None):
@@ -124,7 +135,7 @@ def ParseAttributes(attribute_dict, messages=None):
   Returns:
     list: List of AdditionalProperty messages.
   """
-  messages = messages or topics.GetMessageModule()
+  messages = messages or topics.GetMessagesModule()
   attributes = []
   if attribute_dict:
     for key, value in sorted(attribute_dict.iteritems()):

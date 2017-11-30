@@ -17,6 +17,7 @@ DEFAULT_REGISTRY = 'gcr.io'
 REGIONAL_REGISTRIES = ['us.gcr.io', 'eu.gcr.io', 'asia.gcr.io']
 LAUNCHER_REGISTRIES = ['l.gcr.io', 'launcher.gcr.io']
 LAUNCHER_PROJECT = 'cloud-marketplace'
+KUBERNETES_REGISTRY = 'k8s.gcr.io'
 # GCR's regional demand-based mirrors of DockerHub.
 # These are intended for use with the daemon flag, e.g.
 #  --registry-mirror=https://mirror.gcr.io
@@ -25,7 +26,8 @@ MIRROR_REGISTRIES = [
     'mirror.gcr.io'
 ]
 MIRROR_PROJECT = 'cloud-containers-mirror'
-ALL_SUPPORTED_REGISTRIES = ([DEFAULT_REGISTRY] + REGIONAL_REGISTRIES +
-                            LAUNCHER_REGISTRIES + MIRROR_REGISTRIES)
+ALL_SUPPORTED_REGISTRIES = (
+    [DEFAULT_REGISTRY] + REGIONAL_REGISTRIES + LAUNCHER_REGISTRIES +
+    MIRROR_REGISTRIES + [KUBERNETES_REGISTRY])
 DEFAULT_DEVSHELL_IMAGE = (DEFAULT_REGISTRY + '/dev_con/cloud-dev-common:prod')
 METADATA_IMAGE = DEFAULT_REGISTRY + '/google_appengine/faux-metadata:latest'

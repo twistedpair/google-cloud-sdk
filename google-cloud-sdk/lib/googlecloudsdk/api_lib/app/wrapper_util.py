@@ -21,10 +21,14 @@ import os
 from googlecloudsdk.core import log
 import yaml
 
+# Runtime ID to component mapping. python27-libs is a special token indicating
+# that the real runtime id is python27, and that a libraries section has been
+# specified in the app.yaml.
 _RUNTIME_COMPONENTS = {
     'java': 'app-engine-java',
     'php55': 'app-engine-php',
     'go': 'app-engine-go',
+    'python27-libs': 'app-engine-python-extras',
 }
 
 
@@ -47,7 +51,9 @@ def GetRuntimes(args):
     args: A list of arguments (typically sys.argv).
 
   Returns:
-    A set of runtime strings.
+    A set of runtime strings. If python27 and libraries section is populated
+    in any of the yaml-files, 'python27-libs', a fake runtime id, will be part
+    of the set, in conjunction with the original 'python27'.
 
   Raises:
     MultipleAppYamlError: The supplied application configuration has duplicate
@@ -83,6 +89,8 @@ def GetRuntimes(args):
           if 'runtime' in info:
             runtime = info.get('runtime')
             if type(runtime) == str:
+              if runtime == 'python27' and info.get('libraries'):
+                runtimes.add('python27-libs')
               runtimes.add(runtime)
               if runtime in _WARNING_RUNTIMES:
                 log.warn(_WARNING_RUNTIMES[runtime])

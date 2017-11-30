@@ -114,6 +114,9 @@
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "View and manage your data across Google Cloud Platform services"
+        },
+        "https://www.googleapis.com/auth/cloud-speech": {
+          "description": "Convert speech to text using Google speech recognition technology"
         }
       }
     }
@@ -343,6 +346,11 @@
           "items": {
             "$ref": "SpeechRecognitionAlternative"
           }
+        },
+        "channelTag": {
+          "description": "For multi-channel audio, this is the channel number corresponding to the\nrecognized result for the audio from that channel.\nFor audio_channel_count = N, its output values can range from '0' to 'N-1'.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -444,7 +452,8 @@
             "$ref": "ListOperationsResponse"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-speech"
           ]
         },
         "get": {
@@ -469,7 +478,8 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-speech"
           ]
         },
         "delete": {
@@ -494,7 +504,8 @@
             "$ref": "Empty"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-speech"
           ]
         },
         "cancel": {
@@ -522,7 +533,8 @@
             "$ref": "Empty"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-speech"
           ]
         }
       }
@@ -546,7 +558,8 @@
             "$ref": "RecognizeResponse"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-speech"
           ]
         },
         "longrunningrecognize": {
@@ -566,7 +579,8 @@
             "$ref": "Operation"
           },
           "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-speech"
           ]
         }
       }

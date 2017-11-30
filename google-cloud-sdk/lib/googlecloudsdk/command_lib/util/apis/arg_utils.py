@@ -255,11 +255,13 @@ TYPES = {
 }
 
 
-def FieldHelpDocs(message):
+def FieldHelpDocs(message, section='Fields'):
   """Gets the help text for the fields in the request message.
 
   Args:
     message: The apitools message.
+    section: str, The section to extract help data from. Fields is the default,
+      may also be Values to extract enum data, for example.
 
   Returns:
     {str: str}, A mapping of field name to help text.
@@ -267,7 +269,8 @@ def FieldHelpDocs(message):
   field_helps = {}
   current_field = None
 
-  match = re.search(r'^\s+Fields:.*$', message.__doc__ or '', re.MULTILINE)
+  match = re.search(r'^\s+{}:.*$'.format(section),
+                    message.__doc__ or '', re.MULTILINE)
   if not match:
     # Couldn't find any fields at all.
     return field_helps
@@ -288,9 +291,38 @@ def FieldHelpDocs(message):
   return field_helps
 
 
+def GetRecursiveMessageSpec(message):
+  """Gets the recursive representation of a message as a dictionary.
+
+  Args:
+    message: The apitools message.
+
+  Returns:
+    {str: object}, A recursive mapping of field name to its data.
+  """
+  field_helps = FieldHelpDocs(message)
+  data = {}
+  for field in message.all_fields():
+    field_data = {'description': field_helps.get(field.name)}
+    field_data['repeated'] = field.repeated
+    if field.variant == messages.Variant.MESSAGE:
+      field_data['fields'] = GetRecursiveMessageSpec(field.type)
+    else:
+      field_data['type'] = field.variant
+      if field.variant == messages.Variant.ENUM:
+        enum_help = FieldHelpDocs(field.type, 'Values')
+        field_data['choices'] = {n: enum_help.get(n)
+                                 for n in field.type.names()}
+
+    data[field.name] = field_data
+  return data
+
+
 def IsOutputField(help_text):
   """Determines if the given field is output only based on help text."""
-  return help_text and help_text.startswith('[Output Only]')
+  return help_text and (
+      help_text.startswith('[Output Only]') or
+      help_text.endswith('@OutputOnly'))
 
 
 class ChoiceEnumMapper(object):

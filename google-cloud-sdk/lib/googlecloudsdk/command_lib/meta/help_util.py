@@ -178,14 +178,18 @@ class HelpTextAccumulator(DiffAccumulator):
   Attributes:
     _changes: The list of DirDiff() (op, path) difference tuples.
     _invalid_file_count: The number of files that have invalid content.
+    _restrict: The set of file path prefixes that the accumulator should be
+      restricted to.
   """
 
-  def __init__(self):
+  def __init__(self, restrict=None):
     super(HelpTextAccumulator, self).__init__()
     self._changes = []
     self._invalid_abbreviations = re.compile(
         r'\b({0})\b'.format('|'.join(INVALID_BRAND_ABBREVIATIONS)))
     self._invalid_file_count = 0
+    self._restrict = ({os.sep.join(r.split('.')[1:]) for r in restrict}
+                      if restrict else {})
 
   @property
   def invalid_file_count(self):
@@ -200,7 +204,14 @@ class HelpTextAccumulator(DiffAccumulator):
     Returns:
       True if path is to be ignored in the directory differences.
     """
-    return Whitelisted(relative_file)
+    if Whitelisted(relative_file):
+      return True
+    if not self._restrict:
+      return False
+    for item in self._restrict:
+      if relative_file == item or relative_file.startswith(item + os.sep):
+        return False
+    return True
 
   def Validate(self, relative_file, contents):
     if self._invalid_abbreviations.search(contents):
@@ -252,16 +263,16 @@ class HelpTextUpdater(object):
     self._help_dir = directory
     self._test = test
 
-  def _Update(self):
+  def _Update(self, restrict):
     """Update() helper method. Returns the number of changed help text files."""
     with file_utils.TemporaryDirectory() as temp_dir:
       pb = console_io.ProgressBar(label='Generating Help Docs')
       walker = walker_util.HelpTextGenerator(
-          self._cli, temp_dir, pb.SetProgress)
+          self._cli, temp_dir, pb.SetProgress, restrict=restrict)
       pb.Start()
       walker.Walk(hidden=True)
       pb.Finish()
-      diff = HelpTextAccumulator()
+      diff = HelpTextAccumulator(restrict=restrict)
       DirDiff(self._help_dir, temp_dir, diff)
       if diff.invalid_file_count:
         # Bail out early on invalid content errors. These must be corrected
@@ -318,8 +329,14 @@ class HelpTextUpdater(object):
 
       return changes
 
-  def Update(self):
+  def Update(self, restrict=None):
     """Updates the help text directory to match the current CLI.
+
+    Args:
+      restrict: Restricts the walk to the command/group dotted paths in this
+        list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
+        restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
+        commands/groups.
 
     Raises:
       HelpTextUpdateError: If the destination directory does not exist.
@@ -332,6 +349,6 @@ class HelpTextUpdater(object):
           'Destination directory [%s] must exist and be searchable.' %
           self._help_dir)
     try:
-      return self._Update()
+      return self._Update(restrict)
     except (IOError, OSError, SystemError) as e:
       raise HelpTextUpdateError('Update failed: %s' % unicode(e))

@@ -21,6 +21,7 @@
   "baseUrl": "https://vision.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -270,7 +271,7 @@
     },
     "LatLng": {
       "id": "LatLng",
-      "description": "An object representing a latitude\/longitude pair. This is expressed as a pair\nof doubles representing degrees latitude and degrees longitude. Unless\nspecified otherwise, this must conform to the\n<a href=\"http:\/\/www.unoosa.org\/pdf\/icg\/2012\/template\/WGS_84.pdf\">WGS84\nstandard<\/a>. Values must be within normalized ranges.\n\nExample of normalization code in Python:\n\n    def NormalizeLongitude(longitude):\n      \"\"\"Wraps decimal degrees longitude to [-180.0, 180.0].\"\"\"\n      q, r = divmod(longitude, 360.0)\n      if r > 180.0 or (r == 180.0 and q <= -1.0):\n        return r - 360.0\n      return r\n\n    def NormalizeLatLng(latitude, longitude):\n      \"\"\"Wraps decimal degrees latitude and longitude to\n      [-90.0, 90.0] and [-180.0, 180.0], respectively.\"\"\"\n      r = latitude % 360.0\n      if r <= 90.0:\n        return r, NormalizeLongitude(longitude)\n      elif r >= 270.0:\n        return r - 360, NormalizeLongitude(longitude)\n      else:\n        return 180 - r, NormalizeLongitude(longitude + 180.0)\n\n    assert 180.0 == NormalizeLongitude(180.0)\n    assert -180.0 == NormalizeLongitude(-180.0)\n    assert -179.0 == NormalizeLongitude(181.0)\n    assert (0.0, 0.0) == NormalizeLatLng(360.0, 0.0)\n    assert (0.0, 0.0) == NormalizeLatLng(-360.0, 0.0)\n    assert (85.0, 180.0) == NormalizeLatLng(95.0, 0.0)\n    assert (-85.0, -170.0) == NormalizeLatLng(-95.0, 10.0)\n    assert (90.0, 10.0) == NormalizeLatLng(90.0, 10.0)\n    assert (-90.0, -10.0) == NormalizeLatLng(-90.0, -10.0)\n    assert (0.0, -170.0) == NormalizeLatLng(-180.0, 10.0)\n    assert (0.0, -170.0) == NormalizeLatLng(180.0, 10.0)\n    assert (-90.0, 10.0) == NormalizeLatLng(270.0, 10.0)\n    assert (90.0, 10.0) == NormalizeLatLng(-270.0, 10.0)",
+      "description": "An object representing a latitude\/longitude pair. This is expressed as a pair\nof doubles representing degrees latitude and degrees longitude. Unless\nspecified otherwise, this must conform to the\n<a href=\"http:\/\/www.unoosa.org\/pdf\/icg\/2012\/template\/WGS_84.pdf\">WGS84\nstandard<\/a>. Values must be within normalized ranges.",
       "type": "object",
       "properties": {
         "latitude": {
@@ -600,7 +601,7 @@
     },
     "Landmark": {
       "id": "Landmark",
-      "description": "A face-specific landmark (for example, a face feature).\nLandmark positions may fall outside the bounds of the image\nif the face is near one or more edges of the image.\nTherefore it is NOT guaranteed that `0 <= x < width` or\n`0 <= y < height`.",
+      "description": "A face-specific landmark (for example, a face feature).",
       "type": "object",
       "properties": {
         "type": {
@@ -715,7 +716,7 @@
       "type": "object",
       "properties": {
         "mid": {
-          "description": "Opaque entity ID. Some IDs may be available in\n[Google Knowledge Graph Search API](https:\/\/developers.google.com\/knowledge-graph\/).",
+          "description": "Opaque entity ID. Some IDs may be available in\n[Google Knowledge Graph Search\nAPI](https:\/\/developers.google.com\/knowledge-graph\/).",
           "type": "string"
         },
         "locale": {
@@ -794,7 +795,7 @@
     },
     "TextAnnotation": {
       "id": "TextAnnotation",
-      "description": "TextAnnotation contains a structured representation of OCR extracted text.\nThe hierarchy of an OCR extracted text structure is like this:\n    TextAnnotation -> Page -> Block -> Paragraph -> Word -> Symbol\nEach structural component, starting from Page, may further have their own\nproperties. Properties describe detected languages, breaks etc.. Please\nrefer to the google.cloud.vision.v1.TextAnnotation.TextProperty message\ndefinition below for more detail.",
+      "description": "TextAnnotation contains a structured representation of OCR extracted text.\nThe hierarchy of an OCR extracted text structure is like this:\n    TextAnnotation -> Page -> Block -> Paragraph -> Word -> Symbol\nEach structural component, starting from Page, may further have their own\nproperties. Properties describe detected languages, breaks etc.. Please refer\nto the TextAnnotation.TextProperty message definition below for more\ndetail.",
       "type": "object",
       "properties": {
         "pages": {

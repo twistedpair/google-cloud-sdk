@@ -197,16 +197,6 @@ class ArgumentGroup(Action):
     return parser.add_group(*self.args, **self.kwargs)
 
 
-class MutuxArgumentGroup(ArgumentGroup):
-  """A class that allows you to save an mutex group configuration for reuse."""
-
-  def __init__(self, *args, **kwargs):
-    super(MutuxArgumentGroup, self).__init__(*args, **kwargs)
-
-  def _CreateGroup(self, parser):
-    return parser.add_mutually_exclusive_group(*self.args, **self.kwargs)
-
-
 class Argument(Action):
   """A class that allows you to save an argument configuration for reuse."""
 

@@ -480,9 +480,13 @@ class FileChooser(object):
                           recurse=recurse)
 
 
+def AnyFileOrDirExists(directory, names):
+  files_to_check = [os.path.join(directory, name) for name in names]
+  return any(map(os.path.exists, files_to_check))
+
+
 def _GitFilesExist(directory):
-  git_files = [os.path.join(directory, name) for name in GIT_FILES]
-  return any(map(os.path.exists, git_files))
+  return AnyFileOrDirExists(directory, GIT_FILES)
 
 
 def _GetIgnoreFileContents(default_ignore_file, directory):
@@ -492,8 +496,9 @@ def _GetIgnoreFileContents(default_ignore_file, directory):
   return ignore_file_contents
 
 
-def GetFileChooserForDir(directory, default_ignore_file=DEFAULT_IGNORE_FILE,
-                         write_on_disk=True):
+def GetFileChooserForDir(
+    directory, default_ignore_file=DEFAULT_IGNORE_FILE, write_on_disk=True,
+    gcloud_ignore_creation_predicate=_GitFilesExist):
   """Gets the FileChooser object for the given directory.
 
   In order of preference:
@@ -508,6 +513,11 @@ def GetFileChooserForDir(directory, default_ignore_file=DEFAULT_IGNORE_FILE,
     default_ignore_file: str, the ignore file to use if one is not found (and
       the directory has Git files).
     write_on_disk: bool, whether to save the generated gcloudignore to disk.
+    gcloud_ignore_creation_predicate: one argument function, indicating if a
+      .gcloudignore file should be created. The argument is the path of the
+      directory that would contain the .gcloudignore file. By default
+      .gcloudignore file will be created if and only if the directory contains
+      .gitignore file or .git directory.
 
   Raises:
     BadIncludedFileError: if a file being included does not exist or is not in
@@ -522,7 +532,7 @@ def GetFileChooserForDir(directory, default_ignore_file=DEFAULT_IGNORE_FILE,
     return FileChooser.FromFile(gcloudignore_path)
   except BadFileError:
     pass
-  if not _GitFilesExist(directory):
+  if not gcloud_ignore_creation_predicate(directory):
     return FileChooser([])
 
   ignore_contents = _GetIgnoreFileContents(default_ignore_file, directory)

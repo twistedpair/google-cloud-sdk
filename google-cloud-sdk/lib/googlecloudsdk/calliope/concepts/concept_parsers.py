@@ -23,6 +23,7 @@ of all resources needed for the command, and they should be added all at once
 during calliope's Args method.
 """
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import handlers
 from googlecloudsdk.calliope.concepts import util
@@ -95,8 +96,6 @@ class PresentationSpec(object):
     if ([(arg.name, arg.kwargs) for arg in self.GetAttributeArgs()]
         != [(arg.name, arg.kwargs) for arg in other.GetAttributeArgs()]):
       return False
-    if self.required != other.required:
-      return False
     return True
 
 
@@ -114,10 +113,12 @@ class ResourcePresentationSpec(PresentationSpec):
     required: bool, whether the anchor argument should be required. If True, the
       command will fail at argparse time if the anchor argument isn't given.
     attribute_to_args_map: {str: str}, a map from attribute names to arg names.
+    plural: bool, True if the resource will be parsed as a list, False
+      otherwise.
   """
 
   def __init__(self, name, concept_spec, group_help, prefixes=True,
-               required=False, flag_name_overrides=None):
+               required=False, flag_name_overrides=None, plural=False):
     """Initializes a ResourcePresentationSpec.
 
     Args:
@@ -130,12 +131,15 @@ class ResourcePresentationSpec(PresentationSpec):
       required: bool, whether the anchor argument should be required.
       flag_name_overrides: {str: str}, dict of attribute names to the desired
         flag name. To remove a flag altogether, use '' as its rename value.
+      plural: bool, True if the resource will be parsed as a list, False
+        otherwise.
     """
     self.name = name
     self._concept_spec = concept_spec
     self.group_help = group_help
     self.prefixes = prefixes
     self.required = required
+    self.plural = plural
 
     # Create a rename map for the attributes to their flags.
     self.attribute_to_args_map = {}
@@ -159,17 +163,18 @@ class ResourcePresentationSpec(PresentationSpec):
     return '{}'.format(name)
 
   def GetInfo(self):
-    """Creates a ConceptInfo object to hold dependencies.
+    """Overrides.
 
     Returns:
-      (handlers.ConceptInfo) the holder for the resource's dependencies.
+      (handlers.ResourceInfo) the holder for the resource's dependencies.
     """
     fallthroughs_map = {attribute.name: attribute.fallthroughs
                         for attribute in self.concept_spec.attributes}
-    return handlers.ConceptInfo(
+    return handlers.ResourceInfo(
         self.concept_spec,
         self.attribute_to_args_map,
-        fallthroughs_map)
+        fallthroughs_map,
+        plural=self.plural)
 
   @staticmethod
   def GetFlagName(attribute_name, resource_name, flag_name_overrides=None,
@@ -215,17 +220,26 @@ class ResourcePresentationSpec(PresentationSpec):
     else:
       # Expand the help text.
       help_text = attribute.help_text.format(resource=self.concept_spec.name)
+    plural = attribute == self.concept_spec.anchor and self.plural
     kwargs_dict = {
         'help': help_text,
         'type': attribute.value_type,
         'completer': attribute.completer}
     if util.IsPositional(name):
-      if required:
-        kwargs_dict.update({'nargs': 1})
+      if plural and required:
+        kwargs_dict.update({'nargs': '+'})
+      # The following should not usually happen because anchor args are
+      # required.
+      elif plural and not required:
+        kwargs_dict.update({'nargs': '*'})
+      elif not required:
+        kwargs_dict.update({'nargs': '?'})
     else:
       kwargs_dict.update({'metavar': util.MetavarFormat(name)})
       if required:
         kwargs_dict.update({'required': True})
+      if plural:
+        kwargs_dict.update({'type': arg_parsers.ArgList()})
     return kwargs_dict
 
   def _GetAttributeArg(self, attribute, required=False):
@@ -240,16 +254,19 @@ class ResourcePresentationSpec(PresentationSpec):
 
   def GetAttributeArgs(self):
     """Generate args to add to the argument group."""
+    args = []
     for attribute in self.concept_spec.attributes[:-1]:
       arg = self._GetAttributeArg(attribute)
       if arg:
-        yield arg
+        args.append(arg)
     # If the group is optional, the anchor arg is "modal": it is required only
     # if another argument in the group is specified.
     arg = self._GetAttributeArg(
         self.concept_spec.anchor, required=True)
     if arg:
-      yield arg
+      args.append(arg)
+
+    return args
 
   def GetGroupHelp(self):
     """Build group help for the argument group."""
@@ -276,15 +293,25 @@ class ResourcePresentationSpec(PresentationSpec):
     Args:
       parser: the parser for the Calliope command.
     """
+    args = self.GetAttributeArgs()
+    if not args:
+      # Don't create the group if there are not going to be any args generated.
+      return
+
     group = parser.add_group(
         help=self.GetGroupHelp(),
         required=self.required)
-    for arg in self.GetAttributeArgs():
+    for arg in args:
       arg.AddToParser(group)
 
   @property
   def concept_spec(self):
     return self._concept_spec
+
+  def __eq__(self, other):
+    if not super(ResourcePresentationSpec, self).__eq__(other):
+      return False
+    return self.required == other.required
 
 
 class ConceptParser(object):
@@ -309,7 +336,7 @@ class ConceptParser(object):
 
   @classmethod
   def ForResource(cls, name, resource_spec, group_help, required=False,
-                  flag_name_overrides=None):
+                  flag_name_overrides=None, plural=False):
     """Constructs a ConceptParser for a single resource argument.
 
     Automatically sets prefixes to False.
@@ -323,6 +350,8 @@ class ConceptParser(object):
         command.
       flag_name_overrides: {str: str}, dict of attribute names to the desired
         flag name. To remove a flag altogether, use '' as its rename value.
+      plural: bool, True if the resource will be parsed as a list, False
+        otherwise.
 
     Returns:
       (googlecloudsdk.calliope.concepts.concept_parsers.ConceptParser) The fully
@@ -334,7 +363,8 @@ class ConceptParser(object):
         group_help,
         prefixes=False,
         required=required,
-        flag_name_overrides=flag_name_overrides or {})
+        flag_name_overrides=flag_name_overrides or {},
+        plural=plural)
     return cls([presentation_spec])
 
   def _ArgNameMatches(self, name, other_name):
@@ -396,5 +426,6 @@ class ConceptParser(object):
     parser.add_concepts(self._runtime_handler)
     for spec_name, spec in self._specs.iteritems():
       self._runtime_handler.AddConcept(
-          util.NormalizeFormat(spec_name), spec.concept_spec, spec.GetInfo())
+          util.NormalizeFormat(spec_name), spec.GetInfo(),
+          required=spec.required)
       spec.AddConceptToParser(parser)

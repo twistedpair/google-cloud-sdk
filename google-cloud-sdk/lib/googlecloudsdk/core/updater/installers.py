@@ -135,7 +135,7 @@ class ComponentInstaller(object):
 
     raise UnsupportedSourceError(
         'tar is the only supported source format [{datatype}]'.format(
-            datatype=self.data.type))
+            datatype=data.type))
 
   def _InstallTar(self, component, progress_callback=None,
                   command_path='unknown'):

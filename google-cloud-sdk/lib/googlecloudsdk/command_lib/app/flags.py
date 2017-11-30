@@ -91,11 +91,11 @@ def AddServiceVersionSelectArgs(parser, short_flags=False):
 
   parser.add_argument(
       '--service', *['-s'] if short_flags else [],
-      required=True,
+      required=False,
       help='The service ID.')
   parser.add_argument(
       '--version', *['-v'] if short_flags else [],
-      required=True,
+      required=False,
       help='The version ID.')
 
 

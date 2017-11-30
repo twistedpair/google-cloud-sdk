@@ -69,8 +69,9 @@ class OperatorNotSupportedError(Error):
 class SearchTerms(resource_expr_rewrite.Backend):
   """A resource filter backend that produces help search terms."""
 
-  def RewriteTerm(self, key, op, operand):
+  def RewriteTerm(self, key, op, operand, key_type):
     """Rewrites <key op operand>."""
+    del key_type  # unused in RewriteTerm
     if op != ':':
       raise OperatorNotSupportedError(
           'The [{}] operator is not supported.'.format(op))

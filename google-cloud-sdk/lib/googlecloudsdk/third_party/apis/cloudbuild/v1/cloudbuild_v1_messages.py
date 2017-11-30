@@ -155,14 +155,23 @@ class BuildOptions(_messages.Message):
   Enums:
     LogStreamingOptionValueValuesEnum: LogStreamingOption to define build log
       streaming behavior to Google Cloud Storage.
+    MachineTypeValueValuesEnum: GCE VM size to run the build on.
     RequestedVerifyOptionValueValuesEnum: Requested verifiability options.
     SourceProvenanceHashValueListEntryValuesEnum:
     SubstitutionOptionValueValuesEnum: SubstitutionOption to allow unmatch
       substitutions.
 
   Fields:
+    diskSizeGb: Requested disk size for the VM that runs the build. Note that
+      this is *NOT* "disk free"; some of the space will be used by the
+      operating system and build utilities. Also note that this is the minimum
+      disk size that will be allocated for the build -- the build may run with
+      a larger disk than requested. At present, the maximum disk size is
+      1000GB; builds that request more than the maximum are rejected with an
+      error.
     logStreamingOption: LogStreamingOption to define build log streaming
       behavior to Google Cloud Storage.
+    machineType: GCE VM size to run the build on.
     requestedVerifyOption: Requested verifiability options.
     sourceProvenanceHash: Requested hash for SourceProvenance.
     substitutionOption: SubstitutionOption to allow unmatch substitutions.
@@ -182,6 +191,18 @@ class BuildOptions(_messages.Message):
     STREAM_DEFAULT = 0
     STREAM_ON = 1
     STREAM_OFF = 2
+
+  class MachineTypeValueValuesEnum(_messages.Enum):
+    """GCE VM size to run the build on.
+
+    Values:
+      UNSPECIFIED: Standard machine type.
+      N1_HIGHCPU_8: Medium size.
+      N1_HIGHCPU_32: Large size.
+    """
+    UNSPECIFIED = 0
+    N1_HIGHCPU_8 = 1
+    N1_HIGHCPU_32 = 2
 
   class RequestedVerifyOptionValueValuesEnum(_messages.Enum):
     """Requested verifiability options.
@@ -214,10 +235,12 @@ class BuildOptions(_messages.Message):
     MUST_MATCH = 0
     ALLOW_LOOSE = 1
 
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 1)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 2)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 3, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 4)
+  diskSizeGb = _messages.IntegerField(1)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 2)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 3)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 4)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 5, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 6)
 
 
 class BuildStep(_messages.Message):

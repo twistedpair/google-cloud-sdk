@@ -211,8 +211,8 @@ def PrintWorkflowMetadata(metadata, status, operations, errors):
   """
   if metadata.template not in status or metadata.state != status[metadata.
                                                                  template]:
-    log.status.Print(
-        'Workflow template {0} {1}'.format(metadata.template, metadata.state))
+    log.status.Print('WorkflowTemplate [{0}] {1}'.format(
+        metadata.template, metadata.state))
     status[metadata.template] = metadata.state
   if metadata.createCluster != operations['createCluster']:
     if hasattr(metadata.createCluster,

@@ -181,3 +181,19 @@ class TooManyScalingSettingsError(Error):
 
 class MissingRuntimeError(Error):
   """Raised when the "runtime" field is omitted for a non-vm."""
+
+
+class MissingEndpointsConfigId(Error):
+  """Raised when an Endpoints config id is expected.
+
+  An Endpoints config id is expected when the Endpoints rollout strategy is
+  unspecified or set to "fixed".
+  """
+
+
+class UnexpectedEndpointsConfigId(Error):
+  """Raised when an Endpoints config id is unexpected.
+
+  An Endpoints config id is forbidden when the Endpoints rollout strategy is
+  set to "managed".
+  """

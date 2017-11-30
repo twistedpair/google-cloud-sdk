@@ -327,6 +327,9 @@ NAME = 'name'
 # Attributes for EndpointsApiService
 ENDPOINTS_NAME = 'name'
 CONFIG_ID = 'config_id'
+ROLLOUT_STRATEGY = 'rollout_strategy'
+ROLLOUT_STRATEGY_FIXED = 'fixed'
+ROLLOUT_STRATEGY_MANAGED = 'managed'
 
 # Attributes for ErrorHandlers
 ERROR_CODE = 'error_code'
@@ -373,7 +376,6 @@ SUBNETWORK_NAME = 'subnetwork_name'
 SESSION_AFFINITY = 'session_affinity'
 
 # Attributes for Scheduler Settings
-STANDARD_SCHEDULER_SETTINGS = 'standard_scheduler_settings'
 STANDARD_MIN_INSTANCES = 'min_instances'
 STANDARD_MAX_INSTANCES = 'max_instances'
 STANDARD_TARGET_CPU_UTILIZATION = 'target_cpu_utilization'
@@ -1585,66 +1587,90 @@ class CpuUtilization(validation.Validated):
   }
 
 
-class StandardSchedulerSettings(validation.Validated):
-  """Class representing StandardSchedulerSettings in AppInfoExternal."""
-
-  ATTRIBUTES = {
-      STANDARD_MAX_INSTANCES: validation.Optional(
-          validation.TYPE_INT),
-      STANDARD_MIN_INSTANCES: validation.Optional(
-          validation.TYPE_INT),
-      STANDARD_TARGET_CPU_UTILIZATION: validation.Optional(
-          validation.TYPE_FLOAT),
-      STANDARD_TARGET_THROUGHPUT_UTILIZATION: validation.Optional(
-          validation.TYPE_FLOAT),
-  }
-
-
 class EndpointsApiService(validation.Validated):
   """Class representing EndpointsApiService in AppInfoExternal."""
   ATTRIBUTES = {
-      ENDPOINTS_NAME: validation.Regex(_NON_WHITE_SPACE_REGEX),
-      CONFIG_ID: validation.Regex(_NON_WHITE_SPACE_REGEX),
+      ENDPOINTS_NAME:
+          validation.Regex(_NON_WHITE_SPACE_REGEX),
+      ROLLOUT_STRATEGY:
+          validation.Optional(
+              validation.Options(ROLLOUT_STRATEGY_FIXED,
+                                 ROLLOUT_STRATEGY_MANAGED)),
+      CONFIG_ID:
+          validation.Optional(_NON_WHITE_SPACE_REGEX),
   }
+
+  def CheckInitialized(self):
+    """Determines if the Endpoints API Service is not valid.
+
+    Raises:
+      appinfo_errors.MissingEndpointsConfigId: If the config id is missing when
+          the rollout strategy is unspecified or set to "fixed".
+      appinfo_errors.UnexpectedEndpointsConfigId: If the config id is set when
+          the rollout strategy is "managed".
+    """
+    super(EndpointsApiService, self).CheckInitialized()
+    if (self.rollout_strategy != ROLLOUT_STRATEGY_MANAGED and
+        self.config_id is None):
+      raise appinfo_errors.MissingEndpointsConfigId(
+          'config_id must be specified when rollout_strategy is unspecified or'
+          ' set to "fixed"')
+    elif (self.rollout_strategy == ROLLOUT_STRATEGY_MANAGED and
+          self.config_id is not None):
+      raise appinfo_errors.UnexpectedEndpointsConfigId(
+          'config_id is forbidden when rollout_strategy is set to "managed"')
 
 
 class AutomaticScaling(validation.Validated):
   """Class representing automatic scaling settings in AppInfoExternal."""
   ATTRIBUTES = {
-      MINIMUM_IDLE_INSTANCES: validation.Optional(_IDLE_INSTANCES_REGEX),
-      MAXIMUM_IDLE_INSTANCES: validation.Optional(_IDLE_INSTANCES_REGEX),
-      MINIMUM_PENDING_LATENCY: validation.Optional(_PENDING_LATENCY_REGEX),
-      MAXIMUM_PENDING_LATENCY: validation.Optional(_PENDING_LATENCY_REGEX),
-      MAXIMUM_CONCURRENT_REQUEST: validation.Optional(
-          _CONCURRENT_REQUESTS_REGEX),
+      MINIMUM_IDLE_INSTANCES:
+          validation.Optional(_IDLE_INSTANCES_REGEX),
+      MAXIMUM_IDLE_INSTANCES:
+          validation.Optional(_IDLE_INSTANCES_REGEX),
+      MINIMUM_PENDING_LATENCY:
+          validation.Optional(_PENDING_LATENCY_REGEX),
+      MAXIMUM_PENDING_LATENCY:
+          validation.Optional(_PENDING_LATENCY_REGEX),
+      MAXIMUM_CONCURRENT_REQUEST:
+          validation.Optional(_CONCURRENT_REQUESTS_REGEX),
       # Attributes for VM-based AutomaticScaling.
-      MIN_NUM_INSTANCES: validation.Optional(validation.Range(1, sys.maxint)),
-      MAX_NUM_INSTANCES: validation.Optional(validation.Range(1, sys.maxint)),
-      COOL_DOWN_PERIOD_SEC: validation.Optional(
-          validation.Range(60, sys.maxint, int)),
-      CPU_UTILIZATION: validation.Optional(CpuUtilization),
-      STANDARD_SCHEDULER_SETTINGS: validation.Optional(
-          StandardSchedulerSettings),
+      MIN_NUM_INSTANCES:
+          validation.Optional(validation.Range(1, sys.maxint)),
+      MAX_NUM_INSTANCES:
+          validation.Optional(validation.Range(1, sys.maxint)),
+      COOL_DOWN_PERIOD_SEC:
+          validation.Optional(validation.Range(60, sys.maxint, int)),
+      CPU_UTILIZATION:
+          validation.Optional(CpuUtilization),
+      STANDARD_MAX_INSTANCES:
+          validation.Optional(validation.TYPE_INT),
+      STANDARD_MIN_INSTANCES:
+          validation.Optional(validation.TYPE_INT),
+      STANDARD_TARGET_CPU_UTILIZATION:
+          validation.Optional(validation.TYPE_FLOAT),
+      STANDARD_TARGET_THROUGHPUT_UTILIZATION:
+          validation.Optional(validation.TYPE_FLOAT),
       TARGET_NETWORK_SENT_BYTES_PER_SEC:
-      validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxint)),
       TARGET_NETWORK_SENT_PACKETS_PER_SEC:
-      validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxint)),
       TARGET_NETWORK_RECEIVED_BYTES_PER_SEC:
-      validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxint)),
       TARGET_NETWORK_RECEIVED_PACKETS_PER_SEC:
-      validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxint)),
       TARGET_DISK_WRITE_BYTES_PER_SEC:
-      validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxint)),
       TARGET_DISK_WRITE_OPS_PER_SEC:
-      validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxint)),
       TARGET_DISK_READ_BYTES_PER_SEC:
-      validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxint)),
       TARGET_DISK_READ_OPS_PER_SEC:
-      validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxint)),
       TARGET_REQUEST_COUNT_PER_SEC:
-      validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxint)),
       TARGET_CONCURRENT_REQUESTS:
-      validation.Optional(validation.Range(1, sys.maxint)),
+          validation.Optional(validation.Range(1, sys.maxint)),
   }
 
 

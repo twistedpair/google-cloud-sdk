@@ -16,7 +16,9 @@
 
 from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.apis import resource_arg_schema
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_property
@@ -27,22 +29,6 @@ class Error(Exception):
   pass
 
 
-class InvalidResourceArguments(Error):
-  """Exception for when there is a mismatch in resource arg registration."""
-
-
-class InvalidResourceArgumentLists(InvalidResourceArguments):
-  """Exception for missing, extra, or out of order arguments."""
-
-  def __init__(self, expected, actual):
-    expected = [
-        '[' + e + ']' if e in DeclarativeArgumentGenerator.IGNORED_FIELDS else e
-        for e in expected]
-    super(InvalidResourceArgumentLists, self).__init__(
-        'Invalid resource arguments: Expected [{}], Found [{}].'
-        .format(', '.join(expected), ', '.join([a.api_field for a in actual])))
-
-
 class DeclarativeArgumentGenerator(object):
   """An argument generator that operates off a declarative configuration.
 
@@ -50,40 +36,22 @@ class DeclarativeArgumentGenerator(object):
   should be generated. All resource arguments must be provided and arguments
   will only be generated for API fields for which attributes were provided.
   """
-  IGNORED_FIELDS = {
-      'project': 'project',
-      'projectId': 'project',
-      'projectsId': 'project',
-  }
 
-  def __init__(self, method, arg_info, resource_arg_info):
+  def __init__(self, method, arg_info, resource_arg):
     """Creates a new Argument Generator.
 
     Args:
       method: APIMethod, The method to generate arguments for.
       arg_info: [yaml_command_schema.Argument], Information about
         request fields and how to map them into arguments.
-      resource_arg_info: [yaml_command_schema.Argument], Information about
-        request parameter fields that will be made into a resource argument.
+      resource_arg: resource_arg_schema.YAMLResourceArgument, The spec for
+        the primary resource arg.
     """
     self.method = method
     self.arg_info = arg_info
-    self.resource_arg_info = self._NormalizeResourceArgInfo(resource_arg_info)
-
-  @property
-  def resource_arg_name(self):
-    """Gets the type of the resource being operated on.
-
-    This is based off the name of the final positional parameter of the resource
-    type for the collection this method is in.
-
-    Returns:
-      The name of the resource type being operated on (i.e. instance, registry,
-      disk, etc).
-    """
-    if self.resource_arg_info:
-      return self.resource_arg_info[-1].arg_name
-    return None
+    self.resource_arg = resource_arg
+    self.resource_spec = self.resource_arg.GenerateResourceSpec(
+        self.method.resource_argument_collection) if self.resource_arg else None
 
   def GenerateArgs(self):
     """Generates all the CLI arguments required to call this method.
@@ -91,9 +59,9 @@ class DeclarativeArgumentGenerator(object):
     Returns:
       {str, calliope.base.Action}, A map of field name to the argument.
     """
-    args = {}
-    args.update(self._GenerateArguments())
-    args.update(self._GenerateResourceArg())
+    args = []
+    args.extend(self._GenerateArguments())
+    args.extend(self._GenerateResourceArg())
     return args
 
   def CreateRequest(self, namespace, static_fields=None,
@@ -140,7 +108,7 @@ class DeclarativeArgumentGenerator(object):
         self.method.request_collection.detailed_params):
       # Sets the name of the resource in the message object body.
       arg_utils.SetFieldInMessage(
-          message, self.resource_arg_info[-1].api_field, ref.Name())
+          message, self.resource_arg.request_id_field, ref.Name())
       # Create a reference for the parent resource to put in the API params.
       ref = ref.Parent(
           parent_collection=self.method.request_collection.full_name)
@@ -190,107 +158,10 @@ class DeclarativeArgumentGenerator(object):
     """Gets the value of the page size flag (if present)."""
     return arg_utils.PageSize(self.method, namespace)
 
-  def _NormalizeResourceArgInfo(self, resource_arg_info):
-    """Make sure the registered args match required args for the resource.
-
-    For normal methods, this simply ensures that all API parameters have
-    registered resource arguments and that there are no extra registered
-    arguments. You are allowed to omit arguments that are "ignored", meaning
-    arguments are not generated for them (like project).
-
-    In this case where the method's params don't match the resources params and
-    it is not a list method (basically just create), we will want to validate
-    that you supply arguments for all parts of the resource because that is how
-    it surfaces on the command line. The difference is that the last arg should
-    have an api_field that points to the message body of the request because it
-    cannot be included as a direct API parameter.
-
-    Args:
-      resource_arg_info: [yaml_command_yaml_command_schema.Argument], The
-        registered resource arguments.
-
-    Raises:
-      InvalidResourceArguments: If something is wong with the registered
-        arguments.
-      InvalidResourceArgumentLists: If the lists of actual and expected
-        arguments don't match.
-
-    Returns:
-      The modified list of resource args. Placeholder arguments will be created
-      for any missing "ignored" args. The end result is that this list is the
-      exact length and order of the API parameters.
-    """
-    actual_field_names = list(
-        self.method.resource_argument_collection.detailed_params)
-    resource_args = list(resource_arg_info)
-
-    if (self.method.resource_argument_collection.detailed_params !=
-        self.method.request_collection.detailed_params):
-      # This only happens for create (not list)
-      if resource_args:
-        request_field_name = resource_args[-1].api_field
-        # Ensure that the api_field for the last param of create methods points
-        # to the message body and not to a normal API param.
-        if not request_field_name.startswith(self.method.request_field + '.'):
-          raise InvalidResourceArguments(
-              'The API field for the final resource arguments of create '
-              'commands must point to a request field, not a resource reference'
-              ' parameter. It must start with: [{}]'.format(
-                  self.method.request_field + '.'))
-        # Update this so validation doesn't fail down below.
-        actual_field_names[-1] = request_field_name
-
-    full_resource_args = []
-    for field_name in actual_field_names:
-      if resource_args and field_name == resource_args[0].api_field:
-        # Argument matches expected, just add it to the list.
-        full_resource_args.append(resource_args.pop(0))
-      elif field_name in DeclarativeArgumentGenerator.IGNORED_FIELDS:
-        # It doesn't match, but the field is ignored. Assume it was omitted
-        # and generate a placeholder.
-        full_resource_args.append(
-            yaml_command_schema.Argument(
-                field_name,
-                DeclarativeArgumentGenerator.IGNORED_FIELDS[field_name],
-                None,
-                generate=False))
-      else:
-        # The lists just don't match.
-        raise InvalidResourceArgumentLists(
-            actual_field_names, resource_arg_info)
-
-    if resource_args:
-      # All actual fields were processed but there are still registered
-      # arguments remaining, they must be extra.
-      raise InvalidResourceArgumentLists(
-          actual_field_names, resource_arg_info)
-
-    return full_resource_args
-
   def _GenerateArguments(self):
     """Generates the arguments for the API fields of this method."""
     message = self.method.GetRequestType()
-    args = self._CreateGroups()
-
-    for attributes in self.arg_info:
-      if attributes.api_field:
-        field_path = attributes.api_field
-        field = arg_utils.GetFieldFromMessage(message, field_path)
-        arg = arg_utils.GenerateFlag(field, attributes)
-      else:
-        arg = arg_utils.GenerateFlag(None, attributes)
-      if attributes.group:
-        args[attributes.group.group_id].AddArgument(arg)
-      else:
-        args[arg.name] = arg
-    return args
-
-  def _CreateGroups(self):
-    """Generate calliope argument groups for every registered mutex group."""
-    groups = {
-        a.group.group_id: base.MutuxArgumentGroup(required=a.group.required)
-        for a in self.arg_info if a.group}
-    return groups
+    return [arg.Generate(message) for arg in self.arg_info]
 
   def _GenerateResourceArg(self):
     """Generates the flags to add to the parser that appear in the method path.
@@ -298,39 +169,29 @@ class DeclarativeArgumentGenerator(object):
     Returns:
       {str, calliope.base.Argument}, A map of field name to argument.
     """
-    resource_args = self.resource_arg_info
-    if not resource_args:
-      return {}
+    if not self.resource_arg:
+      return []
 
-    args = {}
-    anchor_field = resource_args[-1].api_field
+    # The anchor arg is positional unless explicitly overridden by the
+    # attributes or for list commands (where everything should be a flag since
+    # the parent resource collection is being used).
+    anchor_arg_is_flag = (
+        not self.resource_arg.is_positional or self.method.IsList())
+    anchor_arg_name = (
+        '--' + self.resource_spec.anchor.name if anchor_arg_is_flag
+        else self.resource_spec.anchor.name)
+    no_gen = {n: '' for n in resource_arg_schema.IGNORED_FIELDS}
+    no_gen.update({n: '' for n in self.resource_arg.removed_flags})
 
-    for attributes in resource_args:
-      # Don't generate any placeholder arguments for ignored fields.
-      if not attributes.generate:
-        continue
-      is_anchor = attributes.api_field == anchor_field
-      # pylint: disable=g-explicit-bool-comparison, only an explicit False
-      # should, None just means to do the default.
-      # The anchor arg is positional unless explicitly overridden by the
-      # attributes or for list commands (where everything should be a flag since
-      # the parent resource collection is being used).
-      is_positional = (is_anchor and not (attributes.is_positional == False or
-                                          self.method.IsList()))
-
-      arg_name = attributes.arg_name
-      arg = base.Argument(
-          arg_name if is_positional else '--' + arg_name,
-          metavar=resource_property.ConvertToAngrySnakeCase(
-              attributes.arg_name),
-          completer=attributes.completer,
-          help=attributes.help_text,
-          hidden=attributes.hidden)
-
-      if is_anchor and not is_positional and not attributes.fallback:
-        arg.kwargs['required'] = True
-      args[arg.name] = arg
-    return args
+    concept = concept_parsers.ConceptParser([
+        concept_parsers.ResourcePresentationSpec(
+            anchor_arg_name,
+            self.resource_spec,
+            self.resource_arg.group_help,
+            prefixes=False,
+            required=True,
+            flag_name_overrides=no_gen)])
+    return [concept]
 
   def _ParseArguments(self, message, namespace):
     """Parse all the arguments from the namespace into the message object.
@@ -339,15 +200,8 @@ class DeclarativeArgumentGenerator(object):
       message: A constructed apitools message object to inject the value into.
       namespace: The argparse namespace.
     """
-    message_type = self.method.GetRequestType()
-    for attributes in self.arg_info:
-      value = arg_utils.GetFromNamespace(namespace, attributes.arg_name,
-                                         fallback=attributes.fallback)
-      if value is None or attributes.api_field is None:
-        continue
-      field = arg_utils.GetFieldFromMessage(message_type, attributes.api_field)
-      value = arg_utils.ConvertValue(field, value, attributes)
-      arg_utils.SetFieldInMessage(message, attributes.api_field, value)
+    for arg in self.arg_info:
+      arg.Parse(message, namespace)
 
   def _ParseResourceArg(self, namespace):
     """Gets the resource ref for the resource specified as the positional arg.
@@ -359,25 +213,11 @@ class DeclarativeArgumentGenerator(object):
       The parsed resource ref or None if no resource arg was generated for this
       method.
     """
-    resource_args = self.resource_arg_info
-    if not resource_args:
+    if not self.resource_arg:
       return
 
-    anchor_field = resource_args[-1]
-    resource = arg_utils.GetFromNamespace(namespace, anchor_field.arg_name,
-                                          fallback=anchor_field.fallback,
-                                          use_defaults=True)
-    params = {}
-    for field in resource_args[:-1]:
-      # Since these parameters might be redundant with information in the anchor
-      # field, we only want to evaluate anchor_field.fallback in Parse() when we
-      # know it's needed.
-      params[field.api_field] = arg_utils.GetFromNamespace(
-          namespace, field.arg_name, use_defaults=True) or field.fallback
-    return resources.REGISTRY.Parse(
-        resource,
-        collection=self.method.resource_argument_collection.full_name,
-        params=params)
+    return arg_utils.GetFromNamespace(
+        namespace.CONCEPTS, self.resource_spec.anchor.name).Parse()
 
 
 class AutoArgumentGenerator(object):
@@ -421,10 +261,28 @@ class AutoArgumentGenerator(object):
     Returns:
       {str, calliope.base.Action}, A map of field name to the argument.
     """
-    args = {}
-    args.update(self._GenerateListMethodFlags())
-    args.update(self._GenerateArguments('', self.method.GetRequestType()))
-    args.update(self._GenerateResourceArg())
+    seen = set()
+    args = []
+
+    def _UpdateArgs(arguments):
+      for arg in arguments:
+        try:
+          name = arg.name
+        except IndexError:
+          # An argument group does not have a name.
+          pass
+        else:
+          if name in seen:
+            continue
+          seen.add(name)
+        args.append(arg)
+
+    # NOTICE: The call order is significant. Duplicate arg names are possible.
+    # The first of the duplicate args entered wins.
+    _UpdateArgs(self._GenerateResourceArg())
+    _UpdateArgs(self._GenerateArguments('', self.method.GetRequestType()))
+    _UpdateArgs(self._GenerateListMethodFlags())
+
     return args
 
   def CreateRequest(self, namespace):
@@ -464,16 +322,16 @@ class AutoArgumentGenerator(object):
     Returns:
       {str, calliope.base.Action}, A map of field name to the argument.
     """
-    flags = {}
+    flags = []
     if not self.raw and self.method.IsList():
-      flags[base.FILTER_FLAG.name] = base.FILTER_FLAG
-      flags[base.SORT_BY_FLAG.name] = base.SORT_BY_FLAG
+      flags.append(base.FILTER_FLAG)
+      flags.append(base.SORT_BY_FLAG)
       if self.method.IsPageableList() and self.method.ListItemField():
         # We can use YieldFromList() with a limit.
-        flags[base.LIMIT_FLAG.name] = base.LIMIT_FLAG
+        flags.append(base.LIMIT_FLAG)
         if self.method.BatchPageSizeField():
           # API supports page size.
-          flags[base.PAGE_SIZE_FLAG.name] = base.PAGE_SIZE_FLAG
+          flags.append(base.PAGE_SIZE_FLAG)
     return flags
 
   def _GenerateArguments(self, prefix, message):
@@ -487,7 +345,7 @@ class AutoArgumentGenerator(object):
     Returns:
       {str, calliope.base.Argument}, A map of field name to argument.
     """
-    args = {}
+    args = []
     field_helps = arg_utils.FieldHelpDocs(message)
     for field in message.all_fields():
       field_help = field_helps.get(field.name, None)
@@ -500,14 +358,14 @@ class AutoArgumentGenerator(object):
         if sub_args:
           help_text = (name + ': ' + field_help) if field_help else ''
           group = base.ArgumentGroup(help=help_text)
-          args[name] = group
-          for arg in sub_args.values():
+          args.append(group)
+          for arg in sub_args:
             group.AddArgument(arg)
       else:
         attributes = yaml_command_schema.Argument(name, name, field_help)
         arg = arg_utils.GenerateFlag(field, attributes, fix_bools=False,
                                      category='MESSAGE')
-        args[arg.name] = arg
+        args.append(arg)
     return args
 
   def _GenerateResourceArg(self):
@@ -516,20 +374,21 @@ class AutoArgumentGenerator(object):
     Returns:
       {str, calliope.base.Argument}, A map of field name to argument.
     """
+    args = []
     field_names = (self.method.request_collection.detailed_params
                    if self.method.request_collection else None)
     if not field_names:
-      return {}
+      return args
     field_helps = arg_utils.FieldHelpDocs(self.method.GetRequestType())
     default_help = 'For substitution into: ' + self.method.detailed_path
 
-    args = {}
     # Make a dedicated positional in addition to the flags for each part of
     # the URI path.
-    args[AutoArgumentGenerator.FLAT_RESOURCE_ARG_NAME] = base.Argument(
+    arg = base.Argument(
         AutoArgumentGenerator.FLAT_RESOURCE_ARG_NAME,
         nargs='?',
         help='The GRI for the resource being operated on.')
+    args.append(arg)
 
     for field in field_names:
       arg = base.Argument(
@@ -537,7 +396,7 @@ class AutoArgumentGenerator(object):
           metavar=resource_property.ConvertToAngrySnakeCase(field),
           category='RESOURCE',
           help=field_helps.get(field, default_help))
-      args[arg.name] = arg
+      args.append(arg)
     return args
 
   def _ParseArguments(self, namespace, prefix, message):

@@ -1095,7 +1095,10 @@ class EndpointsApiService(_messages.Message):
 
   Fields:
     configId: Endpoints service configuration id as specified by the Service
-      Management API. For example "2016-09-19r1"
+      Management API. For example "2016-09-19r1"By default, the Endpoints
+      service configuration id is fixed and config_id must be specified. To
+      keep the Endpoints service configuration id updated with each rollout,
+      specify RolloutStrategy.MANAGED and omit config_id.
     name: Endpoints service name which is the name of the "service" resource
       in the Service Management API. For example
       "myapi.endpoints.myproject.cloud.goog"
@@ -1150,9 +1153,13 @@ class FeatureSettings(_messages.Message):
       instead of 'health_check' ones. Once the legacy 'health_check' behavior
       is deprecated, and this value is always true, this setting can be
       removed.
+    useContainerOptimizedOs: If true, use Container-Optimized OS
+      (https://cloud.google.com/container-optimized-os/) base image for VMs,
+      rather than a base Debian image.
   """
 
   splitHealthChecks = _messages.BooleanField(1)
+  useContainerOptimizedOs = _messages.BooleanField(2)
 
 
 class FileInfo(_messages.Message):

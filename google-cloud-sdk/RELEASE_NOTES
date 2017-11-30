@@ -3,6 +3,90 @@
 Copyright 2014-2017 Google Inc. All rights reserved.
 
 
+## 181.0.0 (2017-11-30)
+
+### Breaking Changes
+
+* Promoted `gcloud pubsub` to GA. There are breaking changes in beta.
+  * `pubsub subscriptions modify-ack-deadline` has been renamed to
+    `pubsub subscriptions modify-message-ack-deadline`.
+    * **(BETA - DEPRECATED)** Deprecated `modify-ack-deadline`. It will be
+      removed in the future.
+  * In `pubsub subscriptions <ack|modify-message-ack-deadline|modify-ack-deadline>`,
+    the positional argument `ACK_ID` has been replaced by `--ack-ids`.
+    * **(BETA - DEPRECATED)** Deprecated the positional. It will be removed
+      in the future.
+  * Removed the `--max-messages` flag from `pubsub subscriptions pull`.
+    Use the `--limit` flag to achieve the same behavior.
+    * **(BETA - DEPRECATED)** Deprecated `--max-messages`. It will be removed
+      in the future.
+  * Replaced the positional argument `MESSAGE_BODY` with `--message` in
+    `pubsub topics publish` .
+    * **(BETA - DEPRECATED)** Deprecated the positional. It will be removed
+      in the future.
+  * Added `pubsub <subscriptions|topics> describe` commands to all
+    release tracks.
+  * All commands in `pubsub <subscriptions|topics>` now output exactly the
+    API response. Extra fields have been removed. See the following for
+    output
+    documentation: https://cloud.google.com/pubsub/docs/reference/rest/
+    * **(BETA)**, this is also the new default behavior. You can set the
+      `pubsub/legacy_output` property to get the old output. This will
+      eventually be removed.
+* **(ALPHA - DEPRECATED)** `gcloud alpha shell` has been renamed
+  `gcloud alpha interactive`.
+
+### Google Cloud SDK
+
+* `gcloud alpha interactive` has been added with these features:
+  * auto-completion and active help for *gcloud* commands, flags and resource
+    arguments
+  * auto-completion and active help for *bq*, *gsutil* and *kubectl*
+  * support for running non-gcloud commands
+  * state preservation across commands: *cd*, *pwd*, local and environment
+  variables
+
+
+### Compute Engine
+
+* Promoted `--source-instance-template` flag of `gcloud compute instances
+  create` command to GA.
+* Added `--async` flag to `gcloud alpha compute instances suspend`.
+  * Added wait polling for synchronous case.
+  * Removed zone prompting support.
+  * Moved tests to autogen test framework.
+
+### Cloud Machine Learning
+
+* `gcloud beta ml vision suggest-crop` is now available.
+
+
+### Google App Engine
+
+* Fixed issue where Python 2.7 apps using App Engine managed libraries, such as
+  Django and Flask, would result in ImportError when running `dev_appserver.py`.
+  Now, `dev_appserver.py` offers to install the `app-engine-python-extras`
+  component which contain the missing libraries. Only applies to apps specifying
+  the `libraries`-section in app.yaml.
+
+
+### Google Cloud Dataproc
+
+* Renamed `run` to `instantiate` in `gcloud beta dataproc workflow-templates`
+  command group.
+
+### Google Cloud Source Repositories
+
+* Corrected warning message from `gcloud source repos clone` when cloning a
+  mirror.
+
+
+### Google Cloud Deployment Manager
+
+* `deployment-manager deployments create/update --config` no longer accepts
+  templates. Please use the `--template` argument.
+
+
 ## 180.0.1 (2017-11-20)
 
 *   Hotfix for `gcloud compute project-info add-metadata/remove-metadata`

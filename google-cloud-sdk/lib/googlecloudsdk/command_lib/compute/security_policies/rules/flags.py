@@ -51,7 +51,7 @@ def AddMatcher(parser, required=True):
       help='The source IP ranges to match for this rule.')
   matcher.add_argument(
       '--expression',
-      help='The CEVAL expression to match for this rule.')
+      help='The Cloud Armor rules language expression to match for this rule.')
 
 
 def AddAction(parser, required=True):

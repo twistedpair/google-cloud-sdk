@@ -1276,7 +1276,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Resize(self, request, global_params=None):
-      """Resizes the specified persistent disk.
+      """Resizes the specified persistent disk. You can only increase the size of the disk.
 
       Args:
         request: (ComputeDisksResizeRequest) input message
@@ -2954,7 +2954,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def List(self, request, global_params=None):
-      """Retrieves the list of private images available to the specified project. Private images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
+      """Retrieves the list of custom images available to the specified project. Custom images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
 
       Args:
         request: (ComputeImagesListRequest) input message
@@ -8515,6 +8515,32 @@ For more information, see Deleting snaphots.
         supports_download=False,
     )
 
+    def SetQuicOverride(self, request, global_params=None):
+      """Sets the QUIC override policy for TargetHttpsProxy.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesSetQuicOverrideRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetQuicOverride')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetQuicOverride.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetHttpsProxies.setQuicOverride',
+        ordered_params=[u'project', u'targetHttpsProxy'],
+        path_params=[u'project', u'targetHttpsProxy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setQuicOverride',
+        request_field=u'targetHttpsProxiesSetQuicOverrideRequest',
+        request_type_name=u'ComputeTargetHttpsProxiesSetQuicOverrideRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetSslCertificates(self, request, global_params=None):
       """Replaces SslCertificates for TargetHttpsProxy.
 
@@ -9605,6 +9631,32 @@ For more information, see Deleting snaphots.
         supports_download=False,
     )
 
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on a TargetVpnGateway. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeTargetVpnGatewaysSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetVpnGateways.setLabels',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/targetVpnGateways/{resource}/setLabels',
+        request_field=u'regionSetLabelsRequest',
+        request_type_name=u'ComputeTargetVpnGatewaysSetLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
 
@@ -10012,6 +10064,32 @@ For more information, see Deleting snaphots.
         request_field='',
         request_type_name=u'ComputeVpnTunnelsListRequest',
         response_type_name=u'VpnTunnelList',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on a VpnTunnel. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeVpnTunnelsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.vpnTunnels.setLabels',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/vpnTunnels/{resource}/setLabels',
+        request_field=u'regionSetLabelsRequest',
+        request_type_name=u'ComputeVpnTunnelsSetLabelsRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

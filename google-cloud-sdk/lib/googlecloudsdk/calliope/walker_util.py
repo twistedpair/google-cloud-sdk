@@ -146,7 +146,7 @@ class HelpTextGenerator(walker.Walker):
     _directory: The help text output directory.
   """
 
-  def __init__(self, cli, directory, progress_callback=None):
+  def __init__(self, cli, directory, progress_callback=None, restrict=None):
     """Constructor.
 
     Args:
@@ -154,9 +154,13 @@ class HelpTextGenerator(walker.Walker):
       directory: The help text output directory path name.
       progress_callback: f(float), The function to call to update the progress
         bar or None for no progress bar.
+      restrict: Restricts the walk to the command/group dotted paths in this
+        list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
+        restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
+        commands/groups.
     """
     super(HelpTextGenerator, self).__init__(
-        cli, progress_callback=progress_callback)
+        cli, progress_callback=progress_callback, restrict=restrict)
     self._directory = directory
     files.MakeDir(self._directory)
 

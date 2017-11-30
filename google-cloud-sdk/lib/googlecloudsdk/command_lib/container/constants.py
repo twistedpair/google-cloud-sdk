@@ -22,7 +22,7 @@ EXPIRE_WARNING = """
 
 KUBERNETES_ALPHA_PROMPT = (
     "This will create a cluster with all Kubernetes Alpha features enabled.\n"
-    "- This cluster will not be covered by the Container Engine SLA and should"
+    "- This cluster will not be covered by the Kubernetes Engine SLA and should"
     " not be used for production workloads.\n"
     "- You will not be able to upgrade the master or nodes.\n"
     "- The cluster will be deleted after 30 days.\n"
@@ -36,7 +36,7 @@ KUBERNETES_REGIONAL_CHARGES_PROMPT = (
 
 KUBERNETES_API_MISMATCH_PROMPT_TEMPLATE = (
     "Warning: you invoked `gcloud {track}`, but with current configuration "
-    "Container Engine v1 API will be used instead of {api} API.\n"
+    "Kubernetes Engine v1 API will be used instead of {api} API.\n"
     "If you intended to use {api} API instead, please set "
     "container/use_v1_api_client property to false.")
 

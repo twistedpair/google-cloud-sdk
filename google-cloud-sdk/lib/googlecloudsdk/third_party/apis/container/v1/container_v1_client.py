@@ -34,6 +34,8 @@ class ContainerV1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.masterProjects_locations_projects_clusters = self.MasterProjectsLocationsProjectsClustersService(self)
+    self.masterProjects_locations_projects = self.MasterProjectsLocationsProjectsService(self)
     self.masterProjects_locations_signedUrls = self.MasterProjectsLocationsSignedUrlsService(self)
     self.masterProjects_locations_tokens = self.MasterProjectsLocationsTokensService(self)
     self.masterProjects_locations = self.MasterProjectsLocationsService(self)
@@ -46,6 +48,53 @@ class ContainerV1(base_api.BaseApiClient):
     self.projects_zones_operations = self.ProjectsZonesOperationsService(self)
     self.projects_zones = self.ProjectsZonesService(self)
     self.projects = self.ProjectsService(self)
+
+  class MasterProjectsLocationsProjectsClustersService(base_api.BaseApiService):
+    """Service class for the masterProjects_locations_projects_clusters resource."""
+
+    _NAME = u'masterProjects_locations_projects_clusters'
+
+    def __init__(self, client):
+      super(ContainerV1.MasterProjectsLocationsProjectsClustersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetRepairwork(self, request, global_params=None):
+      """This method requests work from the API server to see if there are.
+any repairs to be done on the Hosted Master.
+
+      Args:
+        request: (ContainerMasterProjectsLocationsProjectsClustersGetRepairworkRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetRepairWorkResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetRepairwork')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRepairwork.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'container.masterProjects.locations.projects.clusters.getRepairwork',
+        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/projects/{projectNumber}/clusters/{clusterId}/repairwork',
+        request_field='',
+        request_type_name=u'ContainerMasterProjectsLocationsProjectsClustersGetRepairworkRequest',
+        response_type_name=u'GetRepairWorkResponse',
+        supports_download=False,
+    )
+
+  class MasterProjectsLocationsProjectsService(base_api.BaseApiService):
+    """Service class for the masterProjects_locations_projects resource."""
+
+    _NAME = u'masterProjects_locations_projects'
+
+    def __init__(self, client):
+      super(ContainerV1.MasterProjectsLocationsProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class MasterProjectsLocationsSignedUrlsService(base_api.BaseApiService):
     """Service class for the masterProjects_locations_signedUrls resource."""
@@ -1346,7 +1395,7 @@ This can be either via password generation or explicitly set the password.
           }
 
     def GetServerconfig(self, request, global_params=None):
-      """Returns configuration info about the Container Engine service.
+      """Returns configuration info about the Kubernetes Engine service.
 
       Args:
         request: (ContainerProjectsZonesGetServerconfigRequest) input message

@@ -134,9 +134,11 @@ def Update(project_ref,
   if parent:
     project.parent = parent
 
-  if labels_diff and labels_diff.MayHaveUpdates():
-    project.labels = labels_diff.Apply(messages.Project.LabelsValue,
-                                       project.labels)
+  if labels_diff:
+    labels_update = labels_diff.Apply(messages.Project.LabelsValue,
+                                      project.labels)
+    if labels_update.needs_update:
+      project.labels = labels_update.labels
 
   try:
     return client.projects.Update(project)

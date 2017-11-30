@@ -418,7 +418,7 @@ def GetHintForServiceAccountResource(action='act on'):
           'a resource or as an identity. This command is to {action} a '
           'service account resource. There are other gcloud commands to '
           'manage IAM policies for other types of resources. For example, to '
-          'manage IAM policies on a project, use the ```gcloud projects``` '
+          'manage IAM policies on a project, use the `$ gcloud projects` '
           'commands.'.format(action=action))
 
 

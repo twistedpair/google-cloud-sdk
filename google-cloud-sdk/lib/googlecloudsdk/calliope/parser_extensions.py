@@ -1092,7 +1092,7 @@ class DynamicPositionalAction(CloudSDKSubParsersAction):
 
     # Add args to the parser and remove any collisions if arguments are
     # already registered with the same name.
-    for _, arg in args.iteritems():
+    for arg in args:
       arg.RemoveFromParser(ai)
       added_arg = arg.AddToParser(ai)
       # Argcomplete patches parsers and actions before call() is called. Since

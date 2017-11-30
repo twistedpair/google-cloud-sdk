@@ -444,7 +444,8 @@ class _Parser(object):
     tree = self._ParseAdjTerm()
     if tree:
       tree = self._ParseAdjTail(tree)
-    elif must:
+    # isinstance(self._backend, resource_expr_rewrite.Backend) => import loop
+    elif must and not hasattr(self._backend, 'Rewrite'):
       raise resource_exceptions.ExpressionSyntaxError(
           'Term expected [{0}].'.format(self._lex.Annotate()))
     return tree

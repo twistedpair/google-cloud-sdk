@@ -181,3 +181,29 @@ analyzeEntities, and analyzeSyntax provide in one call.
         response_type_name=u'AnnotateTextResponse',
         supports_download=False,
     )
+
+    def ClassifyText(self, request, global_params=None):
+      """Classifies a document into categories.
+
+      Args:
+        request: (ClassifyTextRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ClassifyTextResponse) The response message.
+      """
+      config = self.GetMethodConfig('ClassifyText')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ClassifyText.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'language.documents.classifyText',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/documents:classifyText',
+        request_field='<request>',
+        request_type_name=u'ClassifyTextRequest',
+        response_type_name=u'ClassifyTextResponse',
+        supports_download=False,
+    )

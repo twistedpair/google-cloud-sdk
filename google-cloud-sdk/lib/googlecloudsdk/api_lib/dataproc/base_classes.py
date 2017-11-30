@@ -166,9 +166,7 @@ class JobSubmitter(base.Command):
   @abc.abstractmethod
   def ConfigureJob(self, messages, job, args):
     """Add type-specific job configuration to job message."""
-    # Parse labels (if present)
-    job.labels = labels_util.Diff.FromCreateArgs(args).Apply(
-        messages.Job.LabelsValue)
+    job.labels = labels_util.ParseCreateArgs(args, messages.Job.LabelsValue)
 
   @abc.abstractmethod
   def PopulateFilesByType(self, args):

@@ -878,10 +878,7 @@ class ImportCatalogsResponse(_messages.Message):
 
 
 class Landmark(_messages.Message):
-  """A face-specific landmark (for example, a face feature). Landmark
-  positions may fall outside the bounds of the image if the face is near one
-  or more edges of the image. Therefore it is NOT guaranteed that `0 <= x <
-  width` or `0 <= y < height`.
+  """A face-specific landmark (for example, a face feature).
 
   Enums:
     TypeValueValuesEnum: Face landmark type.
@@ -1732,8 +1729,8 @@ class TextAnnotation(_messages.Message):
   TextAnnotation -> Page -> Block -> Paragraph -> Word -> Symbol Each
   structural component, starting from Page, may further have their own
   properties. Properties describe detected languages, breaks etc.. Please
-  refer to the google.cloud.vision.v1.TextAnnotation.TextProperty message
-  definition below for more detail.
+  refer to the TextAnnotation.TextProperty message definition below for more
+  detail.
 
   Fields:
     pages: List of pages detected by OCR.

@@ -243,6 +243,7 @@ class _Sections(object):
     self.interactive = _SectionInteractive()
     self.metrics = _SectionMetrics()
     self.ml_engine = _SectionMlEngine()
+    self.pubsub = _SectionPubsub()
     self.proxy = _SectionProxy()
     self.spanner = _SectionSpanner()
     self.test = _SectionTest()
@@ -687,7 +688,7 @@ class _SectionContainer(_Section):
     super(_SectionContainer, self).__init__('container')
     self.cluster = self._Add(
         'cluster', help_text='The name of the cluster to use by default when '
-        'working with Container Engine.')
+        'working with Kubernetes Engine.')
     self.use_client_certificate = self._AddBool(
         'use_client_certificate',
         default=False,
@@ -703,8 +704,8 @@ class _SectionContainer(_Section):
         default=True,
         hidden=True,
         help_text='If True, always use a v1 api client to talk to the '
-        'Container Engine v1 API; if False, gcloud alpha track commands will '
-        'use a v1alpha1 API client. The Container Engine v1alpha1 API is '
+        'Kubernetes Engine v1 API; if False, gcloud alpha track commands will '
+        'use a v1alpha1 API client. The Kubernetes Engine v1alpha1 API is '
         'whitelist-only at this time.')
 
     def BuildTimeoutValidator(build_timeout):
@@ -1107,6 +1108,18 @@ class _SectionMlEngine(_Section):
                    'Cloud ML Engine local predict/train jobs. If not '
                    'specified, will default to using the Python interpreter '
                    'found on system PATH.'))
+
+
+class _SectionPubsub(_Section):
+  """Contains the properties for the 'pubsub' section."""
+
+  def __init__(self):
+    super(_SectionPubsub, self).__init__('pubsub')
+    self.legacy_output = self._AddBool(
+        'legacy_output', default=False,
+        help_text=('Use the legacy output for beta pubsub commands. The legacy '
+                   'output from beta is being deprecated. This property will '
+                   'eventually be removed.'))
 
 
 class _SectionDataproc(_Section):

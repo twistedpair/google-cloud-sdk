@@ -37,6 +37,11 @@ _TASK_LIST_FORMAT = '''table(
         :label="LAST_ATTEMPT_STATUS")'''
 
 
+_LOCATION_LIST_FORMAT = '''table(
+     locationId:label="NAME",
+     name:label="FULL_NAME")'''
+
+
 def AddListQueuesFormats(parser):
   parser.display_info.AddTransforms({'queuetype': _TranformQueueType})
   parser.display_info.AddFormat(_QUEUE_LIST_FORMAT)
@@ -47,6 +52,11 @@ def AddListTasksFormats(parser):
   parser.display_info.AddTransforms({'tasktype': _TranformTaskType})
   parser.display_info.AddFormat(_TASK_LIST_FORMAT)
   parser.display_info.AddUriFunc(parsers.TasksUriFunc)
+
+
+def AddListLocationsFormats(parser):
+  parser.display_info.AddFormat(_LOCATION_LIST_FORMAT)
+  parser.display_info.AddUriFunc(parsers.LocationsUriFunc)
 
 
 def _IsPullQueue(r):

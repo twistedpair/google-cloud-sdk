@@ -66,5 +66,5 @@ def AddJobToWorkflowTemplate(args, dataproc, ordered_job):
 def ConfigureOrderedJob(messages, job, args):
   """Add type-specific job configuration to job message."""
   # Parse labels (if present)
-  job.labels = labels_util.Diff.FromCreateArgs(args).Apply(
-      messages.OrderedJob.LabelsValue)
+  job.labels = labels_util.ParseCreateArgs(
+      args, messages.OrderedJob.LabelsValue)

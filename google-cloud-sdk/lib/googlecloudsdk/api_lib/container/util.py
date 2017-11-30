@@ -79,7 +79,7 @@ def ConstructList(title, items):
 
 
 MISSING_KUBECTL_MSG = """\
-Accessing a Container Engine cluster requires the kubernetes commandline
+Accessing a Kubernetes Engine cluster requires the kubernetes commandline
 client [kubectl]. To install, run
   $ gcloud components install kubectl
 """

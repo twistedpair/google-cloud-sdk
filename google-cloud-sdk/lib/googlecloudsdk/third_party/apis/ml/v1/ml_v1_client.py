@@ -187,6 +187,35 @@ set.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates a specific job resource.
+
+Currently the only supported fields to update are `labels`.
+
+      Args:
+        request: (MlProjectsJobsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1Job) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/jobs/{jobsId}',
+        http_method=u'PATCH',
+        method_id=u'ml.projects.jobs.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/{+name}',
+        request_field=u'googleCloudMlV1Job',
+        request_type_name=u'MlProjectsJobsPatchRequest',
+        response_type_name=u'GoogleCloudMlV1Job',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on the specified resource. Replaces any.
 existing policy.
@@ -380,7 +409,7 @@ be retrieved in batches (called pages):
         method_id=u'ml.projects.models.versions.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
         relative_path=u'v1/{+parent}/versions',
         request_field='',
         request_type_name=u'MlProjectsModelsVersionsListRequest',
@@ -603,7 +632,7 @@ versions.
         method_id=u'ml.projects.models.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
         relative_path=u'v1/{+parent}/models',
         request_field='',
         request_type_name=u'MlProjectsModelsListRequest',

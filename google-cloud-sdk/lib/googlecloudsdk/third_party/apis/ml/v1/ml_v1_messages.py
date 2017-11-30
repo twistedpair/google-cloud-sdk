@@ -225,16 +225,35 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
 
 
 class GoogleCloudMlV1Job(_messages.Message):
-  """Represents a training or prediction job.  Next ID: 16
+  """Represents a training or prediction job.
 
   Enums:
     StateValueValuesEnum: Output only. The detailed state of a job.
+
+  Messages:
+    LabelsValue: Optional. One or more labels that you can add, to organize
+      your jobs. Each label is a key-value pair, where both the key and the
+      value are arbitrary strings that you supply. For more information, see
+      the documentation on <a href="/ml-engine/docs/how-tos/resource-
+      labels">using labels</a>.
 
   Fields:
     createTime: Output only. When the job was created.
     endTime: Output only. When the job processing was completed.
     errorMessage: Output only. The details of a failure or a cancellation.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a job from overwriting each other. It is
+      strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform job updates in order to avoid race
+      conditions: An `etag` is returned in the response to `GetJob`, and
+      systems are expected to put that etag in the request to `UpdateJob` to
+      ensure that their change will be applied to the same version of the job.
     jobId: Required. The user-specified id of the job.
+    labels: Optional. One or more labels that you can add, to organize your
+      jobs. Each label is a key-value pair, where both the key and the value
+      are arbitrary strings that you supply. For more information, see the
+      documentation on <a href="/ml-engine/docs/how-tos/resource-labels">using
+      labels</a>.
     predictionInput: Input parameters to create a prediction job.
     predictionOutput: The current prediction job result.
     startTime: Output only. When the job processing was started.
@@ -268,16 +287,46 @@ class GoogleCloudMlV1Job(_messages.Message):
     CANCELLING = 6
     CANCELLED = 7
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Optional. One or more labels that you can add, to organize your jobs.
+    Each label is a key-value pair, where both the key and the value are
+    arbitrary strings that you supply. For more information, see the
+    documentation on <a href="/ml-engine/docs/how-tos/resource-labels">using
+    labels</a>.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   endTime = _messages.StringField(2)
   errorMessage = _messages.StringField(3)
-  jobId = _messages.StringField(4)
-  predictionInput = _messages.MessageField('GoogleCloudMlV1PredictionInput', 5)
-  predictionOutput = _messages.MessageField('GoogleCloudMlV1PredictionOutput', 6)
-  startTime = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  trainingInput = _messages.MessageField('GoogleCloudMlV1TrainingInput', 9)
-  trainingOutput = _messages.MessageField('GoogleCloudMlV1TrainingOutput', 10)
+  etag = _messages.BytesField(4)
+  jobId = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  predictionInput = _messages.MessageField('GoogleCloudMlV1PredictionInput', 7)
+  predictionOutput = _messages.MessageField('GoogleCloudMlV1PredictionOutput', 8)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  trainingInput = _messages.MessageField('GoogleCloudMlV1TrainingInput', 11)
+  trainingOutput = _messages.MessageField('GoogleCloudMlV1TrainingOutput', 12)
 
 
 class GoogleCloudMlV1ListJobsResponse(_messages.Message):
@@ -335,7 +384,14 @@ class GoogleCloudMlV1ManualScaling(_messages.Message):
 class GoogleCloudMlV1Model(_messages.Message):
   """Represents a machine learning solution.  A model can have multiple
   versions, each of which is a deployed, trained model ready to receive
-  prediction requests. The model itself is just a container.  Next ID: 8
+  prediction requests. The model itself is just a container.
+
+  Messages:
+    LabelsValue: Optional. One or more labels that you can add, to organize
+      your models. Each label is a key-value pair, where both the key and the
+      value are arbitrary strings that you supply. For more information, see
+      the documentation on <a href="/ml-engine/docs/how-tos/resource-
+      labels">using labels</a>.
 
   Fields:
     defaultVersion: Output only. The default version of the model. This
@@ -345,6 +401,18 @@ class GoogleCloudMlV1Model(_messages.Message):
       engine/reference/rest/v1/projects.models.versions/setDefault).
     description: Optional. The description specified for the model when it was
       created.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a model from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform model updates in order to avoid race
+      conditions: An `etag` is returned in the response to `GetModel`, and
+      systems are expected to put that etag in the request to `UpdateModel` to
+      ensure that their change will be applied to the model as intended.
+    labels: Optional. One or more labels that you can add, to organize your
+      models. Each label is a key-value pair, where both the key and the value
+      are arbitrary strings that you supply. For more information, see the
+      documentation on <a href="/ml-engine/docs/how-tos/resource-labels">using
+      labels</a>.
     name: Required. The name specified for the model when it was created.  The
       model name must be unique within the project it is created in.
     onlinePredictionLogging: Optional. If true, enables StackDriver Logging
@@ -358,26 +426,63 @@ class GoogleCloudMlV1Model(_messages.Message):
       and does not take its value from     this field.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Optional. One or more labels that you can add, to organize your models.
+    Each label is a key-value pair, where both the key and the value are
+    arbitrary strings that you supply. For more information, see the
+    documentation on <a href="/ml-engine/docs/how-tos/resource-labels">using
+    labels</a>.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   defaultVersion = _messages.MessageField('GoogleCloudMlV1Version', 1)
   description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  onlinePredictionLogging = _messages.BooleanField(4)
-  regions = _messages.StringField(5, repeated=True)
+  etag = _messages.BytesField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  onlinePredictionLogging = _messages.BooleanField(6)
+  regions = _messages.StringField(7, repeated=True)
 
 
 class GoogleCloudMlV1OperationMetadata(_messages.Message):
-  """Represents the metadata of the long-running operation.  Next ID: 9
+  """Represents the metadata of the long-running operation.
 
   Enums:
     OperationTypeValueValuesEnum: The operation type.
+
+  Messages:
+    LabelsValue: The user labels, inherited from the model or the model
+      version being operated on.
 
   Fields:
     createTime: The time the operation was submitted.
     endTime: The time operation processing completed.
     isCancellationRequested: Indicates whether a request to cancel this
       operation has been made.
+    labels: The user labels, inherited from the model or the model version
+      being operated on.
     modelName: Contains the name of the model associated with the operation.
     operationType: The operation type.
+    projectNumber: Contains the project number associated with the operation.
     startTime: The time operation processing started.
     version: Contains the version associated with the operation.
   """
@@ -392,6 +497,7 @@ class GoogleCloudMlV1OperationMetadata(_messages.Message):
       DELETE_MODEL: An operation to delete an existing model.
       UPDATE_MODEL: An operation to update an existing model.
       UPDATE_VERSION: An operation to update an existing version.
+      UPDATE_CONFIG: An operation to update project configuration.
     """
     OPERATION_TYPE_UNSPECIFIED = 0
     CREATE_VERSION = 1
@@ -399,14 +505,42 @@ class GoogleCloudMlV1OperationMetadata(_messages.Message):
     DELETE_MODEL = 3
     UPDATE_MODEL = 4
     UPDATE_VERSION = 5
+    UPDATE_CONFIG = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """The user labels, inherited from the model or the model version being
+    operated on.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
   endTime = _messages.StringField(2)
   isCancellationRequested = _messages.BooleanField(3)
-  modelName = _messages.StringField(4)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
-  startTime = _messages.StringField(6)
-  version = _messages.MessageField('GoogleCloudMlV1Version', 7)
+  labels = _messages.MessageField('LabelsValue', 4)
+  modelName = _messages.StringField(5)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 6)
+  projectNumber = _messages.IntegerField(7)
+  startTime = _messages.StringField(8)
+  version = _messages.MessageField('GoogleCloudMlV1Version', 9)
 
 
 class GoogleCloudMlV1ParameterSpec(_messages.Message):
@@ -580,6 +714,12 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
       version used during the CreateVersion request for this model version, or
       choose the latest stable version when model version information is not
       available such as when the model is specified by uri.
+    signatureName: Optional. The name of the signature defined in the
+      SavedModel to use for this job. Please refer to
+      [SavedModel](https://tensorflow.github.io/serving/serving_basic.html)
+      for information about how to use signatures.  Defaults to [DEFAULT_SERVI
+      NG_SIGNATURE_DEF_KEY](https://www.tensorflow.org/api_docs/python/tf/save
+      d_model/signature_constants) , which is "serving_default".
     uri: Use this field if you want to specify a Google Cloud Storage path for
       the model to use.
     versionName: Use this field if you want to specify a version of the model
@@ -611,8 +751,9 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
   outputPath = _messages.StringField(6)
   region = _messages.StringField(7)
   runtimeVersion = _messages.StringField(8)
-  uri = _messages.StringField(9)
-  versionName = _messages.StringField(10)
+  signatureName = _messages.StringField(9)
+  uri = _messages.StringField(10)
+  versionName = _messages.StringField(11)
 
 
 class GoogleCloudMlV1PredictionOutput(_messages.Message):
@@ -668,12 +809,23 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       number of cores and roughly double the   memory of <code
       suppresswarning="true">complex_model_m</code>.   </dd>
       <dt>standard_gpu</dt>   <dd>   A machine equivalent to <code
-      suppresswarning="true">standard</code> that   also includes a   <a href
-      ="/ml-engine/docs/how-tos/using-gpus">   GPU that you can use in your
-      trainer</a>.   </dd>   <dt>complex_model_m_gpu</dt>   <dd>   A machine
-      equivalent to   <code suppresswarning="true">complex_model_m</code> that
-      also includes   four GPUs.   </dd> </dl>  You must set this value when
-      `scaleTier` is set to `CUSTOM`.
+      suppresswarning="true">standard</code> that   also includes a single
+      NVIDIA Tesla K80 GPU. See more about   <a href="/ml-engine/docs/how-tos
+      /using-gpus">   using GPUs for training your model</a>.   </dd>
+      <dt>complex_model_m_gpu</dt>   <dd>   A machine equivalent to   <code
+      suppresswarning="true">complex_model_m</code> that also includes   four
+      NVIDIA Tesla K80 GPUs.   </dd>   <dt>complex_model_l_gpu</dt>   <dd>   A
+      machine equivalent to   <code
+      suppresswarning="true">complex_model_l</code> that also includes   eight
+      NVIDIA Tesla K80 GPUs.   </dd>   <dt>standard_p100</dt>   <dd>   A
+      machine equivalent to <code suppresswarning="true">standard</code> that
+      also includes a single NVIDIA Tesla P100 GPU. The availability of these
+      GPUs is in the Alpha launch stage.   </dd>
+      <dt>complex_model_m_p100</dt>   <dd>   A machine equivalent to   <code
+      suppresswarning="true">complex_model_m</code> that also includes   four
+      NVIDIA Tesla P100 GPUs. The availability of these GPUs is in   the Alpha
+      launch stage.   </dd> </dl>  You must set this value when `scaleTier` is
+      set to `CUSTOM`.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies. The maximum
       number of package URIs is 100.
@@ -689,6 +841,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       `parameter_server_count` is greater than zero.
     pythonModule: Required. The Python module name to run after installing the
       packages.
+    pythonVersion: Optional. The version of Python used in training. If not
+      set, the default version is '2.7'.
     region: Required. The Google Compute Engine region to run the training job
       in.
     runtimeVersion: Optional. The Google Cloud ML runtime version to use for
@@ -753,11 +907,12 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   parameterServerCount = _messages.IntegerField(6)
   parameterServerType = _messages.StringField(7)
   pythonModule = _messages.StringField(8)
-  region = _messages.StringField(9)
-  runtimeVersion = _messages.StringField(10)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 11)
-  workerCount = _messages.IntegerField(12)
-  workerType = _messages.StringField(13)
+  pythonVersion = _messages.StringField(9)
+  region = _messages.StringField(10)
+  runtimeVersion = _messages.StringField(11)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 12)
+  workerCount = _messages.IntegerField(13)
+  workerType = _messages.StringField(14)
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):
@@ -784,11 +939,17 @@ class GoogleCloudMlV1Version(_messages.Message):
   deployed in the cloud, ready to handle prediction requests. A model can have
   multiple versions. You can get information about all of the versions of a
   given model by calling [projects.models.versions.list](/ml-
-  engine/reference/rest/v1/projects.models.versions/list).  Next ID: 19
-  LINT.IfChange
+  engine/reference/rest/v1/projects.models.versions/list).  LINT.IfChange
 
   Enums:
     StateValueValuesEnum: Output only. The state of a version.
+
+  Messages:
+    LabelsValue: Optional. One or more labels that you can add, to organize
+      your model versions. Each label is a key-value pair, where both the key
+      and the value are arbitrary strings that you supply. For more
+      information, see the documentation on <a href="/ml-engine/docs/how-tos
+      /resource-labels">using labels</a>.
 
   Fields:
     autoScaling: Automatically scale the number of nodes used to serve the
@@ -808,10 +969,22 @@ class GoogleCloudMlV1Version(_messages.Message):
     description: Optional. The description specified for the version when it
       was created.
     errorMessage: Output only. The details of a failure or a cancellation.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a model from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform model updates in order to avoid race
+      conditions: An `etag` is returned in the response to `GetVersion`, and
+      systems are expected to put that etag in the request to `UpdateVersion`
+      to ensure that their change will be applied to the model as intended.
     isDefault: Output only. If true, this version will be used to handle
       prediction requests that do not specify a version.  You can change the
       default version by calling [projects.methods.versions.setDefault](/ml-
       engine/reference/rest/v1/projects.models.versions/setDefault).
+    labels: Optional. One or more labels that you can add, to organize your
+      model versions. Each label is a key-value pair, where both the key and
+      the value are arbitrary strings that you supply. For more information,
+      see the documentation on <a href="/ml-engine/docs/how-tos/resource-
+      labels">using labels</a>.
     lastUseTime: Output only. The time the version was last used for
       prediction.
     manualScaling: Manually select the number of nodes to use for serving the
@@ -844,17 +1017,47 @@ class GoogleCloudMlV1Version(_messages.Message):
     FAILED = 3
     DELETING = 4
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Optional. One or more labels that you can add, to organize your model
+    versions. Each label is a key-value pair, where both the key and the value
+    are arbitrary strings that you supply. For more information, see the
+    documentation on <a href="/ml-engine/docs/how-tos/resource-labels">using
+    labels</a>.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   autoScaling = _messages.MessageField('GoogleCloudMlV1AutoScaling', 1)
   createTime = _messages.StringField(2)
   deploymentUri = _messages.StringField(3)
   description = _messages.StringField(4)
   errorMessage = _messages.StringField(5)
-  isDefault = _messages.BooleanField(6)
-  lastUseTime = _messages.StringField(7)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 8)
-  name = _messages.StringField(9)
-  runtimeVersion = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
+  etag = _messages.BytesField(6)
+  isDefault = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  lastUseTime = _messages.StringField(9)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 10)
+  name = _messages.StringField(11)
+  runtimeVersion = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
@@ -1350,6 +1553,31 @@ class MlProjectsJobsListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
+class MlProjectsJobsPatchRequest(_messages.Message):
+  """A MlProjectsJobsPatchRequest object.
+
+  Fields:
+    googleCloudMlV1Job: A GoogleCloudMlV1Job resource to be passed as the
+      request body.
+    name: Required. The job name.
+    updateMask: Required. Specifies the path, relative to `Job`, of the field
+      to update. To adopt etag mechanism, include `etag` field in the mask,
+      and include the `etag` value in your job resource.  For example, to
+      change the labels of a job, the `update_mask` parameter would be
+      specified as `labels`, `etag`, and the `PATCH` request body would
+      specify the new value, as follows:     {       "labels": {
+      "owner": "Google",          "color": "Blue"       }       "etag":
+      "33a64df551425fcc55e4d42a148795d9f25f89d4"     } If `etag` matches the
+      one on the server, the labels of the job will be replaced with the given
+      ones, and the server end `etag` will be recalculated.  Currently the
+      only supported update masks are `labels` and `etag`.
+  """
+
+  googleCloudMlV1Job = _messages.MessageField('GoogleCloudMlV1Job', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class MlProjectsJobsSetIamPolicyRequest(_messages.Message):
   """A MlProjectsJobsSetIamPolicyRequest object.
 
@@ -1430,6 +1658,7 @@ class MlProjectsModelsListRequest(_messages.Message):
   """A MlProjectsModelsListRequest object.
 
   Fields:
+    filter: Optional. Specifies the subset of models to retrieve.
     pageSize: Optional. The number of models to retrieve per "page" of
       results. If there are more remaining results than this number, the
       response message will contain a valid value in the `next_page_token`
@@ -1440,9 +1669,10 @@ class MlProjectsModelsListRequest(_messages.Message):
     parent: Required. The name of the project whose models are to be listed.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class MlProjectsModelsPatchRequest(_messages.Message):
@@ -1540,6 +1770,7 @@ class MlProjectsModelsVersionsListRequest(_messages.Message):
   """A MlProjectsModelsVersionsListRequest object.
 
   Fields:
+    filter: Optional. Specifies the subset of versions to retrieve.
     pageSize: Optional. The number of versions to retrieve per "page" of
       results. If there are more remaining results than this number, the
       response message will contain a valid value in the `next_page_token`
@@ -1550,9 +1781,10 @@ class MlProjectsModelsVersionsListRequest(_messages.Message):
     parent: Required. The name of the model for which to list the version.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class MlProjectsModelsVersionsPatchRequest(_messages.Message):

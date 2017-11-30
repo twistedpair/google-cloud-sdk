@@ -43,9 +43,11 @@ ExprTRUE, ExprAND, ExprOR and ExprNOT do expression rewrites based on None:
   NOT None => None
 """
 
+from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
+from googlecloudsdk.core.resource import resource_property
 
 
 class _Expr(object):
@@ -63,7 +65,7 @@ class _BelieveMe(dict):
   """A symbols dict with nothing that claims everything."""
 
   def get(self, obj, type=None):  # pylint: disable=redefined-builtin, overridden class expects this prototype
-    del obj, type
+    del obj, type  # unused in get
     return self.get
 
 
@@ -74,13 +76,18 @@ class BackendBase(object):
   implement a small subset of OnePlatform expressions.
 
   Attributes:
+    frontend_fields: A set of dotted field names supported in the frontend.
+    message: The resource proto message object that describes all fields
+      available in the backend.
     partial_rewrite: True if the most recent Rewrite() backend_expression is
       a partial rewrite of the original expression. False means that the entire
       original expression was rewritten and that frontend_expression can be
       ignored.
   """
 
-  def __init__(self):
+  def __init__(self, frontend_fields=None, message=None):
+    self.frontend_fields = frontend_fields
+    self.message = message
     self.partial_rewrite = False
 
   def Rewrite(self, expression, defaults=None):
@@ -133,7 +140,8 @@ class BackendBase(object):
     """Rewrites an operand."""
     return None
 
-  def RewriteTerm(self, unused_key, unused_op, unused_operand):
+  def RewriteTerm(self, unused_key, unused_op, unused_operand,
+                  unused_key_type=None):
     """Rewrites <key op operand>."""
     return None
 
@@ -209,10 +217,47 @@ class BackendBase(object):
     return self.Quote(operand, always=always)
 
   def Term(self, key, op, operand, transform, args):
+    """Returns the rewritten backend term expression.
+
+    Args:
+      key: The parsed key.
+      op: The operator name.
+      operand: The operand.
+      transform: The transform object if a transform was specified.
+      args: The transform args if a transform was specified.
+
+    Raises:
+      UnknownFieldError: If key is not supported on the frontend and backend.
+
+    Returns:
+      The rewritten backend term expression.
+    """
+
+    # No backend transforms.
     if transform or args:
       return self.Expr(None)
-    return self.Expr(
-        self.RewriteTerm(resource_lex.GetKeyName(key), op, operand))
+
+    # Determine the key type if possible.
+    key_name = resource_lex.GetKeyName(key)
+    if self.message:
+      try:
+        # key supported in the backend.
+        key_type, key = resource_property.GetMessageFieldType(
+            key, self.message)
+      except KeyError:
+        # key not supported in the backend -- check the frontend if possible.
+        if (self.frontend_fields is not None and
+            not resource_property.LookupField(key, self.frontend_fields)):
+          raise resource_exceptions.UnknownFieldError(
+              'Unknown field [{}] in expression.'.format(key_name))
+        return self.Expr(None)
+      else:
+        # GetMessageFieldType camelCase/lower_snake_case normalizes key.
+        key_name = resource_lex.GetKeyName(key)
+    else:
+      # Not enough info to determine the key type.
+      key_type = None
+    return self.Expr(self.RewriteTerm(key_name, op, operand, key_type))
 
   def ExprTRUE(self):
     return _Expr(None)
@@ -315,8 +360,9 @@ class Backend(BackendBase):
     """Rewrites an operand."""
     return self.QuoteOperand(operand)
 
-  def RewriteTerm(self, key, op, operand):
+  def RewriteTerm(self, key, op, operand, key_type):
     """Rewrites <key op operand>."""
+    del key_type  # unused in RewriteTerm
     if op in ['~', '!~']:
       return None
     arg = self.RewriteOperand(operand)

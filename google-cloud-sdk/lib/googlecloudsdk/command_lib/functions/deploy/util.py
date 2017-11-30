@@ -29,29 +29,30 @@ from googlecloudsdk.core.util import archive
 from googlecloudsdk.core.util import files as file_utils
 
 
-def CleanOldSourceInfo(function):
+def _CleanOldSourceInfo(function, update_mask):
   function.sourceArchiveUrl = None
   function.sourceRepository = None
-  function.sourceRepository = None
   function.sourceUploadUrl = None
+  update_mask.extend(
+      ['sourceArchiveUrl', 'sourceRepository', 'sourceUploadUrl'])
 
 
-def GetLocalPath(args):
-  return args.local_path or '.'
+def _GcloudIgnoreCreationPredicate(directory):
+  return gcloudignore.AnyFileOrDirExists(
+      directory, gcloudignore.GIT_FILES + ['node_modules'])
 
 
 def _GetChooser(path):
   default_ignore_file = gcloudignore.DEFAULT_IGNORE_FILE + '\nnode_modules\n'
+
   return gcloudignore.GetFileChooserForDir(
-      path, default_ignore_file=default_ignore_file)
+      path, default_ignore_file=default_ignore_file,
+      gcloud_ignore_creation_predicate=_GcloudIgnoreCreationPredicate)
 
 
-def _ValidateUnpackedSourceSize(path, include_ignored_files):
-  if include_ignored_files:
-    predicate = None
-  else:
-    chooser = _GetChooser(path)
-    predicate = chooser.IsIncluded
+def _ValidateUnpackedSourceSize(path):
+  chooser = _GetChooser(path)
+  predicate = chooser.IsIncluded
   size_b = file_utils.GetTreeSizeBytes(path, predicate=predicate)
   size_limit_mb = 512
   size_limit_b = size_limit_mb * 2 ** 20
@@ -60,29 +61,24 @@ def _ValidateUnpackedSourceSize(path, include_ignored_files):
         str(size_b) + 'B', str(size_limit_b) + 'B')
 
 
-def CreateSourcesZipFile(zip_dir, source_path, include_ignored_files):
+def _CreateSourcesZipFile(zip_dir, source_path):
   """Prepare zip file with source of the function to upload.
 
   Args:
     zip_dir: str, directory in which zip file will be located. Name of the file
              will be `fun.zip`.
     source_path: str, directory containing the sources to be zipped.
-    include_ignored_files: bool, indicates whether `node_modules` directory and
-                           its content will be included in the zip.
   Returns:
     Path to the zip file (str).
   Raises:
     FunctionsError
   """
   util.ValidateDirectoryExistsOrRaiseFunctionError(source_path)
-  _ValidateUnpackedSourceSize(source_path, include_ignored_files)
+  _ValidateUnpackedSourceSize(source_path)
   zip_file_name = os.path.join(zip_dir, 'fun.zip')
   try:
-    if include_ignored_files:
-      predicate = None
-    else:
-      chooser = _GetChooser(source_path)
-      predicate = chooser.IsIncluded
+    chooser = _GetChooser(source_path)
+    predicate = chooser.IsIncluded
     archive.MakeZipFromDir(zip_file_name, source_path, predicate=predicate)
   except ValueError as e:
     raise exceptions.FunctionsError(
@@ -97,7 +93,7 @@ def _GenerateRemoteZipFileName(function_name):
       properties.VALUES.functions.region.Get(), function_name, suffix)
 
 
-def UploadFile(source, function_name, stage_bucket):
+def _UploadFile(source, function_name, stage_bucket):
   remote_zip_file = _GenerateRemoteZipFileName(function_name)
   gcs_url = storage.BuildRemoteDestination(stage_bucket, remote_zip_file)
   if storage.Upload(source, gcs_url) != 0:
@@ -107,10 +103,18 @@ def UploadFile(source, function_name, stage_bucket):
   return gcs_url
 
 
-def AddSourceToFunction(function, source_arg, include_ignored_files,
-                        function_name, stage_bucket, messages):
+def CleanOldTriggerInfo(function, update_mask):
+  function.eventTrigger = None
+  function.httpsTrigger = None
+  update_mask.extend(['eventTrigger', 'httpsTrigger'])
+
+
+def AddSourceToFunction(function, update_mask, source_arg, function_name,
+                        stage_bucket, messages):
   """Add sources to function."""
-  CleanOldSourceInfo(function)
+  _CleanOldSourceInfo(function, update_mask)
+  if source_arg is None:
+    source_arg = '.'
   if source_arg.startswith('gs://'):
     function.sourceArchiveUrl = source_arg
     return
@@ -123,8 +127,8 @@ def AddSourceToFunction(function, source_arg, include_ignored_files,
         'from a local directory.')
 
   with file_utils.TemporaryDirectory() as tmp_dir:
-    zip_file = CreateSourcesZipFile(tmp_dir, source_arg, include_ignored_files)
-    function.sourceArchiveUrl = UploadFile(
+    zip_file = _CreateSourcesZipFile(tmp_dir, source_arg)
+    function.sourceArchiveUrl = _UploadFile(
         zip_file, function_name, stage_bucket)
 
 
@@ -189,37 +193,8 @@ def DeduceAndCheckArgs(args):
   #    to be reused here.
   # 2. _CheckArgs() is invoked from Run() and ArgumentParsingError thrown
   #    from Run are not caught.
-  _ValidateSourceArgs(args)
   _ValidateTriggerArgs(args)
   return _CheckTriggerProviderArgs(args)
-
-
-def _ValidateSourceArgs(args):
-  """Check if args related to source code to deploy are valid.
-
-  Args:
-    args: parsed command line arguments.
-  Raises:
-    FunctionsError.
-  """
-  if args.source_url is None:
-    if args.source_revision is not None:
-      raise exceptions.FunctionsError(
-          'argument --source-revision: can be given only if argument '
-          '--source-url is provided')
-    if args.source_branch is not None:
-      raise exceptions.FunctionsError(
-          'argument --source-branch: can be given only if argument '
-          '--source-url is provided')
-    if args.source_tag is not None:
-      raise exceptions.FunctionsError(
-          'argument --source-tag: can be given only if argument '
-          '--source-url is provided')
-  else:
-    if args.source_path is None:
-      raise exceptions.FunctionsError(
-          'argument --source-path: required when argument --source-url is '
-          'provided')
 
 
 def _ValidateTriggerArgs(args):

@@ -118,7 +118,7 @@ class _BaseInstances(object):
                                        args,
                                        instance=None,
                                        release_track=DEFAULT_RELEASE_TRACK):
-    """Constructs patch settings object from base settings and args."""
+    """Constructs create settings object from base settings and args."""
     original_settings = instance.settings if instance else None
     settings = cls._ConstructBaseSettingsFromArgs(sql_messages, args, instance,
                                                   release_track)
@@ -154,9 +154,8 @@ class _BaseInstances(object):
 
     # BETA args.
     if release_track == base.ReleaseTrack.BETA:
-      labels = reducers.UserLabels(sql_messages, instance, labels=args.labels)
-      if labels:
-        settings.userLabels = labels
+      settings.userLabels = labels_util.ParseCreateArgs(
+          args, sql_messages.Settings.UserLabelsValue)
 
       # Check that availability type is only specified if this is Postgres.
       if (args.IsSpecified('availability_type') and
@@ -172,10 +171,10 @@ class _BaseInstances(object):
   def _ConstructPatchSettingsFromArgs(cls,
                                       sql_messages,
                                       args,
-                                      instance=None,
+                                      instance,
                                       release_track=DEFAULT_RELEASE_TRACK):
     """Constructs create settings object from base settings and args."""
-    original_settings = instance.settings if instance else None
+    original_settings = instance.settings
     settings = cls._ConstructBaseSettingsFromArgs(sql_messages, args, instance,
                                                   release_track)
 
@@ -218,18 +217,11 @@ class _BaseInstances(object):
 
     # BETA args.
     if release_track == base.ReleaseTrack.BETA:
-      update_labels, remove_labels = {}, []
-      if args.update_labels or args.remove_labels:
-        update_labels, remove_labels = labels_util.GetAndValidateOpsFromArgs(
-            args)
-      labels = reducers.UserLabels(
-          sql_messages,
-          instance,
-          update_labels=update_labels,
-          remove_labels=remove_labels,
-          clear_labels=args.clear_labels)
-      if labels:
-        settings.userLabels = labels
+      labels_diff = labels_util.ExplicitNullificationDiff.FromUpdateArgs(args)
+      labels_update = labels_diff.Apply(
+          sql_messages.Settings.UserLabelsValue, instance.settings.userLabels)
+      if labels_update.needs_update:
+        settings.userLabels = labels_update.labels
 
     return settings
 
@@ -307,7 +299,7 @@ class _BaseInstances(object):
   def ConstructPatchInstanceFromArgs(cls,
                                      sql_messages,
                                      args,
-                                     original=None,
+                                     original,
                                      instance_ref=None,
                                      release_track=DEFAULT_RELEASE_TRACK):
     """Constructs Instance for patch request from base instance and args."""

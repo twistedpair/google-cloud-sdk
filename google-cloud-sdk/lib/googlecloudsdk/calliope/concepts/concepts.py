@@ -38,6 +38,10 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
 
 
+ANCHOR_HELP = ('The ID of the {resource} or a fully qualified identifier for '
+               'the {resource}.')
+
+
 class InitializeError(exceptions.Error):
   """Raised if a spec fails to initialize."""
 
@@ -171,14 +175,12 @@ class ResourceSpec(ConceptSpec):
                                     ResourceParameterAttributeConfig())
       attribute_name = self._AttributeName(param_name, attribute_config,
                                            anchor=anchor)
-      fallthroughs = []
-      if attribute_config.prop:
-        fallthroughs.append(deps_lib.PropertyFallthrough(attribute_config.prop))
+      help_text = attribute_config.help_text if not anchor else ANCHOR_HELP
       new_attribute = Attribute(
           name=attribute_name,
-          help_text=attribute_config.help_text,
+          help_text=help_text,
           required=True,
-          fallthroughs=fallthroughs,
+          fallthroughs=attribute_config.fallthroughs,
           completer=attribute_config.completer,
           value_type=str)
       self._attributes.append(new_attribute)
@@ -220,8 +222,7 @@ class ResourceSpec(ConceptSpec):
       return attribute_config.attribute_name
     if anchor:
       return 'name'
-    else:
-      return param_name
+    return param_name
 
   def _ParamName(self, attribute_name):
     """Given an attribute name, gets the param name for resource parsing."""
@@ -267,7 +268,8 @@ class ResourceSpec(ConceptSpec):
 class ResourceParameterAttributeConfig(object):
   """Configuration used to create attributes from resource parameters."""
 
-  def __init__(self, name=None, help_text=None, prop=None, completer=None):
+  def __init__(self, name=None, help_text=None, fallthroughs=None,
+               completer=None):
     """Create a resource attribute.
 
     Args:
@@ -276,12 +278,12 @@ class ResourceParameterAttributeConfig(object):
       help_text: str, generic help text for any flag based on the attribute. One
         special expansion is available to convert "{resource}" to the name of
         the resource.
-      prop: core.properties._Property, the property object to read as a
-        fallthrough for the attribute.
+      fallthroughs: [deps.Fallthrough], A list of fallthroughs to use to resolve
+        the attribute if it is not provided on the command line.
       completer: core.cache.completion_cache.Completer, the completer
         associated with the attribute.
     """
     self.attribute_name = name
     self.help_text = help_text
-    self.prop = prop
+    self.fallthroughs = fallthroughs or []
     self.completer = completer

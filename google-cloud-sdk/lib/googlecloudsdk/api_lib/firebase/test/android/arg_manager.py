@@ -164,10 +164,11 @@ class AndroidArgsManager(object):
     arg_validate.ValidateDeviceList(args, self._catalog_mgr)
     arg_validate.ValidateResultsBucket(args)
     arg_validate.ValidateResultsDir(args)
-    arg_validate.ValidateObbFileNames(args.obb_files)
+    arg_validate.NormalizeAndValidateObbFileNames(args.obb_files)
     arg_validate.ValidateRoboDirectivesList(args)
     arg_validate.ValidateEnvironmentVariablesList(args)
-    arg_validate.ValidateDirectoriesToPullList(args)
+    arg_validate.NormalizeAndValidateDirectoriesToPullList(
+        args.directories_to_pull)
     arg_validate.ValidateScenarioNumbers(args)
 
   def GetTestTypeOrRaise(self, args):

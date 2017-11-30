@@ -13,57 +13,7 @@
 # limitations under the License.
 """Flags for gcloud ml language commands."""
 
-from apitools.base.py.exceptions import HttpError
 from googlecloudsdk.api_lib.ml.language import util
-from googlecloudsdk.core import log
-
-
-def RunLanguageCommand(feature, content_file=None, content=None,
-                       language=None, content_type=None,
-                       encoding_type=None,
-                       api_version=util.LANGUAGE_GA_VERSION):
-  """Runs a gcloud ml language command.
-
-  Args:
-    feature: str, the name of the feature being used, such as analyzeEntities.
-    content_file: str, the file to be used to analyze text.
-    content: str, the text to be analyzed.
-    language: str, the language of the input text.
-    content_type: str, the format of the input text - 'PLAIN_TEXT' or 'HTML'.
-    encoding_type: str, the encoding type to be used for calculating word
-        offsets - 'UTF8', 'UTF16', 'UTF32', 'NONE'.
-    api_version: str, the API version to use.
-
-  Raises:
-    ContentFileError: if content file can't be found and is not a GCS URL.
-    ContentError: if content is given but empty.
-    googlecloudsdk.api_lib.util.exceptions.HttpException: if the API returns
-        an error.
-
-  Returns:
-    the response from the API (type depends on feature, for example
-          if feature is analyzeEntities, response would be
-          messages.AnalyzeEntitiesResponse).
-  """
-  entity_sentiment = True if feature == 'analyzeEntitySentiment' else False
-  classify_text = True if feature == 'classifyText' else False
-  client = util.LanguageClient(version=api_version,
-                               entity_sentiment_enabled=entity_sentiment,
-                               classify_text_enabled=classify_text)
-  source = util.GetContentSource(content, content_file)
-  try:
-    return client.SingleFeatureAnnotate(
-        feature,
-        source=source,
-        language=language,
-        content_type=content_type,
-        encoding_type=encoding_type)
-  except HttpError as e:
-    # Print Service Account Help on Access Denied errors
-    # as this is most likely cause
-    if e.status_code == 403:
-      log.warn('Please Note: {}\n'.format(SERVICE_ACCOUNT_HELP))
-    raise e
 
 
 def AddContentToRequest(unused_ref, args, request):
@@ -71,25 +21,3 @@ def AddContentToRequest(unused_ref, args, request):
   source = util.GetContentSource(args.content, args.content_file)
   source.UpdateContent(request.document)
   return request
-
-
-SERVICE_ACCOUNT_HELP = (
-    'This command requires a service account from a project that has enabled '
-    'the Natural Language API. To learn about using service accounts with the '
-    'Natural Language API, please go to '
-    'https://cloud.google.com/natural-language/docs/getting-started. '
-    'Step 2 under the "Make an entity analysis request" section will give '
-    'directions for using service accounts in gcloud.')
-
-LANGUAGE_HELP = (
-    'Currently English, Spanish, and Japanese are supported.')
-
-
-LANGUAGE_HELP_BETA = (
-    'Currently English, Spanish, Japanese, Chinese (Simplified and '
-    'Traditional), French, German, Italian, Korean, and Portuguese are '
-    'supported.')
-
-
-LANGUAGE_HELP_ENTITY_SENTIMENT = (
-    'Currently only English is supported for this feature.')

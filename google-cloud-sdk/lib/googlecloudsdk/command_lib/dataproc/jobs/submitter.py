@@ -91,8 +91,7 @@ class JobSubmitter(base.Command):
   def ConfigureJob(messages, job, args):
     """Add type-specific job configuration to job message."""
     # Parse labels (if present)
-    job.labels = labels_util.Diff.FromCreateArgs(args).Apply(
-        messages.Job.LabelsValue)
+    job.labels = labels_util.ParseCreateArgs(args, messages.Job.LabelsValue)
 
 
 @base.ReleaseTracks(base.ReleaseTrack.BETA)

@@ -85,11 +85,15 @@ class APICallError(Error):
 class API(object):
   """A data holder for returning API data for display."""
 
-  def __init__(self, name, version, is_default, base_url):
+  def __init__(self, name, version, is_default, client):
     self.name = name
     self.version = version
     self.is_default = is_default
-    self.base_url = base_url
+    self._client = client
+    self.base_url = client.BASE_URL
+
+  def GetMessagesModule(self):
+    return self._client.MESSAGES_MODULE
 
 
 class APICollection(object):
@@ -426,8 +430,7 @@ def GetAPI(api_name, api_version=None):
   # pylint: disable=protected-access
   api_def = apis_internal._GetApiDef(api_name, api_version)
   api_client = apis_internal._GetClientClassFromDef(api_def)
-  return API(api_name, api_version,
-             api_def.default_version, api_client.BASE_URL)
+  return API(api_name, api_version, api_def.default_version, api_client)
 
 
 def GetAllAPIs():

@@ -75,6 +75,15 @@ class _KeyBinding(object):
         label.append(self.status[self.toggle])
     return ''.join(label)
 
+  def GetHelp(self, markdown=False):
+    """Returns the key help text."""
+    if not self.help_text:
+      return None
+    key = self.GetName()
+    if markdown:
+      key = '*{}*'.format(key)
+    return self.help_text.format(key=key)
+
   def SetMode(self, cli):
     """Sets the toggle mode in the cli."""
     del cli
@@ -113,12 +122,17 @@ class _ContextKeyBinding(_KeyBinding):
         key=key,
         label='context',
         help_text=(
-            'Sets the current command context to be the text from the '
-            'beginning of the command input line (after the prompt) up to the '
-            'cursor. The context pre-populates the command prompt input until '
-            'it is cleared. Place the cursor at the beginning of the command '
-            'line to clear the context. Hit ^C or edit the command line to '
-            'clear or modify the context in the current command.'
+            'Sets the context for command input, so you won\'t have to re-type '
+            'common command prefixes at every prompt. The context is the '
+            'command line from just after the prompt up to the cursor.'
+            '\n+\n'
+            'For example, if you are about to work with `gcloud compute` for '
+            'a while, type *gcloud compute* and hit {key}. This will display '
+            '*gcloud compute* at subsequent prompts until the context is '
+            'changed.'
+            '\n+\n'
+            'Hit ^C and {key} to clear the context, or edit a command line '
+            'and/or move the cursor and hit {key} to set a different context.'
         ),
     )
 

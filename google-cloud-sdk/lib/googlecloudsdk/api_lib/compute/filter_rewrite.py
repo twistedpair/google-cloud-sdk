@@ -58,11 +58,17 @@ the compute code can simply use
     filter=args.filter,
     ...
   )
+
+Compute query parsing is finicky with respect to spaces. Some are OK, some
+aren't. Don't fiddle with the spacing in the list => string code without
+verifying against the actual compute implementation.
 """
 
 import re
 
+from apitools.base.protorpclite import messages
 from googlecloudsdk.core.resource import resource_expr_rewrite
+from googlecloudsdk.core.util import times
 
 
 def ConvertEQPatternToFullMatch(pattern):
@@ -159,6 +165,37 @@ def ConvertREPatternToFullMatch(pattern, wordmatch=False):
   return '".*(' + pattern.replace('"', r'\"') + ').*"'
 
 
+def _GuessOperandType(operand):
+  """Returns the probable type for operand.
+
+  This is a rewriter fallback, used if the resource proto message is not
+  available.
+
+  Args:
+    operand: The operand string value to guess the type of.
+
+  Returns:
+    The probable type for the operand value.
+  """
+  try:
+    int(operand)
+  except ValueError:
+    pass
+  else:
+    return int
+  try:
+    float(operand)
+  except ValueError:
+    pass
+  else:
+    return float
+  if operand.lower() in ('true', 'false'):
+    return bool
+  if operand.replace('_', '').isupper():
+    return messages.EnumField
+  return unicode
+
+
 class Rewriter(resource_expr_rewrite.Backend):
   """Compute resource filter expression rewriter backend.
 
@@ -171,13 +208,13 @@ class Rewriter(resource_expr_rewrite.Backend):
   def Rewrite(self, expression, defaults=None):
     frontend, backend_tokens = super(Rewriter, self).Rewrite(
         expression, defaults=defaults)
-    backend = ' '.join(backend_tokens) if backend_tokens else None
+    backend = ''.join(backend_tokens) if backend_tokens else None
     return frontend, backend
 
   def RewriteNOT(self, expr):
     if expr[0] == '(':
       return None
-    expr[1] = self._INVERT[expr[1]]
+    expr[2] = self._INVERT[expr[2]]
     return expr
 
   def RewriteAND(self, left, right):
@@ -186,29 +223,45 @@ class Rewriter(resource_expr_rewrite.Backend):
   def RewriteOR(self, left, right):
     return None
 
-  def RewriteTerm(self, key, op, operand):
-    """Rewrites <key op operand>."""
+  def RewriteTerm(self, key, op, operand, key_type):
+    """Rewrites <key op operand>.
+
+    Args:
+      key: The dotted resource name.
+      op: The operator name.
+      operand: The operand string value.
+      key_type: The type of key, None if not known.
+
+    Returns:
+      A rewritten expression node or None if not supported server side.
+    """
     if isinstance(operand, list):
       # foo:(bar,baz) needs OR
       return None
 
-    try:
-      float(operand)
-      numeric = True
-    except ValueError:
-      if operand.lower() in ('true', 'false'):
-        operand = operand.lower()
-        numeric = True
-      else:
-        numeric = False
+    # Determine if the operand is matchable or a literal string.
+    if not key_type:
+      key_type = _GuessOperandType(operand)
+    matchable = key_type is unicode
 
+    # Convert time stamps to ISO RFC 3339 normal form.
+    if key.endswith('Timestamp') or key.endswith('_timestamp'):
+      try:
+        operand = times.FormatDateTime(times.ParseDateTime(operand))
+      except (times.DateTimeSyntaxError, times.DateTimeValueError):
+        pass
+      else:
+        matchable = False
+
+    if operand.lower() in ('true', 'false'):
+      operand = operand.lower()
     if op == ':':
-      if not numeric:
-        operand = ConvertHASPatternToFullMatch(operand)
       op = 'eq'
+      if matchable:
+        operand = ConvertHASPatternToFullMatch(operand)
     elif op in ('=', '!='):
       op = 'ne' if op.startswith('!') else 'eq'
-      if not numeric:
+      if matchable:
         operand = ConvertEQPatternToFullMatch(operand)
     elif op in ('~', '!~'):
       # All re match operands are strings.
@@ -218,4 +271,4 @@ class Rewriter(resource_expr_rewrite.Backend):
     else:
       return None
 
-    return [key, op, operand]
+    return [key, ' ', op, ' ', operand]
