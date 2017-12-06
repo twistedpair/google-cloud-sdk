@@ -1528,7 +1528,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Resize(self, request, global_params=None):
-      """Resizes the specified persistent disk.
+      """Resizes the specified persistent disk. You can only increase the size of the disk.
 
       Args:
         request: (ComputeDisksResizeRequest) input message
@@ -5133,6 +5133,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def Resume(self, request, global_params=None):
+      """Resumes an instance that was suspended using the instances().suspend method.
+
+      Args:
+        request: (ComputeInstancesResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.resume',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/resume',
+        request_field=u'instancesResumeRequest',
+        request_type_name=u'ComputeInstancesResumeRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetDeletionProtection(self, request, global_params=None):
       """Sets deletion protection on the instance.
 
@@ -5819,6 +5845,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates the specified interconnect attachment with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.interconnectAttachments.patch',
+        ordered_params=[u'project', u'region', u'interconnectAttachment'],
+        path_params=[u'interconnectAttachment', u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{interconnectAttachment}',
+        request_field=u'interconnectAttachmentResource',
+        request_type_name=u'ComputeInterconnectAttachmentsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on the specified resource. Replaces any existing policy.
 
@@ -5842,6 +5894,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field=u'policy',
         request_type_name=u'ComputeInterconnectAttachmentsSetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on an InterconnectAttachment. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnectAttachments.setLabels',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{resource}/setLabels',
+        request_field=u'regionSetLabelsRequest',
+        request_type_name=u'ComputeInterconnectAttachmentsSetLabelsRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -6148,6 +6226,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field=u'policy',
         request_type_name=u'ComputeInterconnectsSetIamPolicyRequest',
         response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on an Interconnect. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeInterconnectsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnects.setLabels',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/interconnects/{resource}/setLabels',
+        request_field=u'globalSetLabelsRequest',
+        request_type_name=u'ComputeInterconnectsSetLabelsRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -7200,7 +7304,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      """Patches the specified network with the data included in the request.
+      """Patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode.
 
       Args:
         request: (ComputeNetworksPatchRequest) input message

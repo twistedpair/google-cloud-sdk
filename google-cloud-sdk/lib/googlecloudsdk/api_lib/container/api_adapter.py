@@ -50,6 +50,15 @@ Cannot use --master-authorized-networks \
 if --enable-master-authorized-networks is not \
 specified."""
 
+NO_AUTOPROVISIONING_MSG = """\
+Node autoprovisioning is currently in alpha. Please contact GKE support \
+if you're interested in enabling alpha features in your cluster.
+"""
+
+NO_AUTOPROVISIONING_LIMITS_ERROR_MSG = """\
+Must specify both --max-cpu and --max-memory to enable autoprovisioning.
+"""
+
 NO_SUCH_LABEL_ERROR_MSG = """\
 No label named '{name}' found on cluster '{cluster}'."""
 
@@ -87,6 +96,14 @@ Invalid taint effect [{effect}] for argument --node-taints. Valid effect values 
 
 UNKNOWN_WORKLOAD_METADATA_FROM_NODE_ERROR_MSG = """\
 Invalid option '{option}' for '--workload-metadata-from-node' (must be one of 'unspecified', 'secure', 'exposed').
+"""
+
+ALLOW_ROUTE_OVERLAP_WITHOUT_CLUSTER_CIDR_ERROR_MSG = """\
+Flag --cluster-ipv4-cidr must be fully specified (e.g. `10.96.0.0/14`, but not `/14`) with --allow-route-overlap.
+"""
+
+ALLOW_ROUTE_OVERLAP_WITHOUT_SERVICES_CIDR_ERROR_MSG = """\
+Flag --services-ipv4-cidr must be fully specified (e.g. `10.96.0.0/14`, but not `/14`) with --allow-route-overlap and --enable-ip-alias.
 """
 
 MAX_NODES_PER_POOL = 1000
@@ -157,12 +174,11 @@ def InitAPIAdapter(api_version, adapter):
                  compute_messages)
 
 
-_REQUIRED_SCOPES = (
-    constants.SCOPES['compute-rw'] + constants.SCOPES['storage-ro'])
+_SERVICE_ACCOUNT_SCOPES = ('cloud-platform',)
 
-_ENDPOINTS_SCOPES = (
-    constants.SCOPES['service-control'] +
-    constants.SCOPES['service-management'])
+_REQUIRED_SCOPES = ('compute-rw', 'storage-ro')
+
+_ENDPOINTS_SCOPES = ('service-control', 'service-management')
 
 
 def ExpandScopeURIs(scopes):
@@ -242,7 +258,8 @@ class CreateClusterOptions(object):
                min_cpu_platform=None,
                workload_metadata_from_node=None,
                maintenance_window=None,
-               enable_pod_security_policy=None):
+               enable_pod_security_policy=None,
+               allow_route_overlap=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -294,6 +311,7 @@ class CreateClusterOptions(object):
     self.workload_metadata_from_node = workload_metadata_from_node
     self.maintenance_window = maintenance_window
     self.enable_pod_security_policy = enable_pod_security_policy
+    self.allow_route_overlap = allow_route_overlap
 
 
 class UpdateClusterOptions(object):
@@ -663,10 +681,15 @@ class APIAdapter(object):
       node_config.diskType = options.disk_type
     if options.node_source_image:
       raise util.Error('cannot specify node source image in container v1 api')
-    scope_uris = ExpandScopeURIs(options.scopes)
-    if options.enable_cloud_endpoints:
-      scope_uris += _ENDPOINTS_SCOPES
-    node_config.oauthScopes = sorted(set(scope_uris + _REQUIRED_SCOPES))
+
+    if options.service_account:
+      node_config.serviceAccount = options.service_account
+      options.scopes = _SERVICE_ACCOUNT_SCOPES
+    else:
+      options.scopes += _REQUIRED_SCOPES
+      if options.enable_cloud_endpoints:
+        options.scopes += _ENDPOINTS_SCOPES
+    node_config.oauthScopes = sorted(set(ExpandScopeURIs(options.scopes)))
 
     if options.local_ssd_count:
       node_config.localSsdCount = options.local_ssd_count
@@ -684,9 +707,6 @@ class APIAdapter(object):
 
     if options.preemptible:
       node_config.preemptible = options.preemptible
-
-    if options.service_account:
-      node_config.serviceAccount = options.service_account
 
     if options.accelerators is not None:
       type_name = options.accelerators['type']
@@ -817,6 +837,7 @@ class APIAdapter(object):
 
     self.ParseNetworkConfigOptions(options, cluster)
     self.ParseIPAliasOptions(options, cluster)
+    self.ParseAllowRouteOverlapOptions(options, cluster)
     return cluster
 
   def ParseNetworkConfigOptions(self, options, cluster):
@@ -894,8 +915,29 @@ class APIAdapter(object):
       cluster.ipAllocationPolicy = policy
     return cluster
 
+  def ParseAllowRouteOverlapOptions(self, options, cluster):
+    """Parse the options for allow route overlap."""
+    if not options.allow_route_overlap:
+      return
+    # Validate required flags are set.
+    if options.cluster_ipv4_cidr is None:
+      raise util.Error(ALLOW_ROUTE_OVERLAP_WITHOUT_CLUSTER_CIDR_ERROR_MSG)
+    if options.enable_ip_alias and options.services_ipv4_cidr is None:
+      raise util.Error(ALLOW_ROUTE_OVERLAP_WITHOUT_SERVICES_CIDR_ERROR_MSG)
+
+    # Fill in corresponding field.
+    if cluster.ipAllocationPolicy is None:
+      policy = self.messages.IPAllocationPolicy(
+          allowRouteOverlap=True)
+      cluster.ipAllocationPolicy = policy
+    else:
+      cluster.ipAllocationPolicy.allowRouteOverlap = True
+
   def CreateCluster(self, cluster_ref, options):
     raise NotImplementedError('CreateCluster is not overridden')
+
+  def CreateClusterAutoscalingCommon(self, _):
+    raise util.Error(NO_AUTOPROVISIONING_MSG)
 
   def UpdateClusterCommon(self, options):
     """Returns an UpdateCluster operation."""
@@ -942,20 +984,7 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredMasterAuthorizedNetworksConfig=authorized_networks)
     elif options.enable_autoprovisioning is not None:
-      resource_limits = []
-      if options.min_cpu is not None or options.max_cpu is not None:
-        resource_limits.append(self.messages.ResourceLimit(
-            name='cpu',
-            minimum=options.min_cpu,
-            maximum=options.max_cpu))
-      if options.min_memory is not None or options.max_memory is not None:
-        resource_limits.append(self.messages.ResourceLimit(
-            name='memory',
-            minimum=options.min_memory,
-            maximum=options.max_memory))
-      autoscaling = self.messages.ClusterAutoscaling(
-          enableNodeAutoprovisioning=options.enable_autoprovisioning,
-          resourceLimits=resource_limits)
+      autoscaling = self.CreateClusterAutoscalingCommon(options)
       update = self.messages.ClusterUpdate(
           desiredClusterAutoscaling=autoscaling)
     elif options.enable_pod_security_policy is not None:
@@ -1099,18 +1128,22 @@ class APIAdapter(object):
       node_config.diskType = options.disk_type
     if options.image_type:
       node_config.imageType = options.image_type
-    scope_uris = ExpandScopeURIs(options.scopes)
-    if options.enable_cloud_endpoints:
-      scope_uris += _ENDPOINTS_SCOPES
-    node_config.oauthScopes = sorted(set(scope_uris + _REQUIRED_SCOPES))
+
+    if options.service_account:
+      node_config.serviceAccount = options.service_account
+      options.scopes = _SERVICE_ACCOUNT_SCOPES
+    else:
+      options.scopes += _REQUIRED_SCOPES
+      if options.enable_cloud_endpoints:
+        options.scopes += _ENDPOINTS_SCOPES
+    node_config.oauthScopes = sorted(set(ExpandScopeURIs(options.scopes)))
+
     if options.local_ssd_count:
       node_config.localSsdCount = options.local_ssd_count
     if options.tags:
       node_config.tags = options.tags
     else:
       node_config.tags = []
-    if options.service_account:
-      node_config.serviceAccount = options.service_account
 
     if options.accelerators is not None:
       type_name = options.accelerators['type']
@@ -1147,8 +1180,6 @@ class APIAdapter(object):
           enabled=options.enable_autoscaling,
           minNodeCount=options.min_nodes,
           maxNodeCount=options.max_nodes)
-      if options.enable_autoprovisioning is not None:
-        pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
     return pool
 
   def CreateNodePool(self, node_pool_ref, options):
@@ -1875,28 +1906,52 @@ class V1Alpha1Adapter(V1Beta1Adapter):
 
   def CreateCluster(self, cluster_ref, options):
     cluster = self.CreateClusterCommon(cluster_ref, options)
-
     if options.enable_autoprovisioning is not None:
-      resource_limits = []
-      if options.min_cpu is not None or options.max_cpu is not None:
-        resource_limits.append(self.messages.ResourceLimit(
-            name='cpu',
-            minimum=options.min_cpu,
-            maximum=options.max_cpu))
-      if options.min_memory is not None or options.max_memory is not None:
-        resource_limits.append(self.messages.ResourceLimit(
-            name='memory',
-            minimum=options.min_memory,
-            maximum=options.max_memory))
-      cluster.autoscaling = self.messages.ClusterAutoscaling(
-          enableNodeAutoprovisioning=options.enable_autoprovisioning,
-          resourceLimits=resource_limits)
-
+      cluster.autoscaling = self.CreateClusterAutoscalingCommon(options)
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
     operation = self.client.projects_locations_clusters.Create(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
+
+  def CreateClusterAutoscalingCommon(self, options):
+    """Create cluster's autoscaling configuration.
+
+    Args:
+      options: Either CreateClusterOptions or UpdateClusterOptions.
+    Returns:
+      Cluster's autoscaling configuration.
+    """
+    if (options.enable_autoprovisioning and
+        (options.max_cpu is None or options.max_memory is None)):
+      raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
+
+    resource_limits = []
+    if options.min_cpu is not None or options.max_cpu is not None:
+      resource_limits.append(self.messages.ResourceLimit(
+          name='cpu',
+          minimum=options.min_cpu,
+          maximum=options.max_cpu))
+    if options.min_memory is not None or options.max_memory is not None:
+      resource_limits.append(self.messages.ResourceLimit(
+          name='memory',
+          minimum=options.min_memory,
+          maximum=options.max_memory))
+    return self.messages.ClusterAutoscaling(
+        enableNodeAutoprovisioning=options.enable_autoprovisioning,
+        resourceLimits=resource_limits)
+
+  def CreateNodePool(self, node_pool_ref, options):
+    pool = self.CreateNodePoolCommon(node_pool_ref, options)
+    if options.enable_autoprovisioning is not None:
+      pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
+    req = self.messages.CreateNodePoolRequest(
+        nodePool=pool,
+        parent=ProjectLocationCluster(node_pool_ref.projectId,
+                                      node_pool_ref.zone,
+                                      node_pool_ref.clusterId))
+    operation = self.client.projects_locations_clusters_nodePools.Create(req)
+    return self.ParseOperation(operation.name, node_pool_ref.zone)
 
   def UpdateNodePool(self, node_pool_ref, options):
     if options.IsAutoscalingUpdate():

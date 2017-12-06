@@ -40,6 +40,7 @@ Pythonicness of the Transform*() methods:
       Exceptions for arguments explicitly under the caller's control are OK.
 """
 
+import base64
 import datetime
 import re
 import StringIO
@@ -314,6 +315,25 @@ def TransformDecode(r, encoding, undefined=''):
   Returns:
     The decoded resource.
   """
+  # Apitools will encode bytefields using URL-safe base64 when translating
+  # from message to JSON. The built in base64 codec uses the standard
+  # implementation which will fail to decode some URL-safe base64 encoded
+  # strings. So if a encoded string contains '-' or '_' characters, the
+  # built-in decode function will fail to decode the string.
+  # This solution attempts to first use URL-safe base64 decoding and will fall
+  # through to the built-in decode implementation. This was deemed better than
+  # registering a new codec which would mess with the global state.
+  # TODO(b/69855177): See if this can be done by registering a base64 codec
+  # instead.
+  if encoding == 'base64':
+    try:
+      # This uses str.translate, so we must cast unicode to str here.
+      return base64.urlsafe_b64decode(str(r))
+    except:  # pylint: disable=bare-except
+      # This shouldn't happen because the URL-safe implementation can handle
+      # both standard and URL-safe encoded base64 strings.
+      pass
+
   # Some codecs support 'replace', all support 'strict' (the default).
   for errors in ('replace', 'strict'):
     try:

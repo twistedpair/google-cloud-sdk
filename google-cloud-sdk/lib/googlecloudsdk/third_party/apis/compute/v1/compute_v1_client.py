@@ -1144,7 +1144,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Resize(self, request, global_params=None):
-      """Resizes the specified persistent disk.
+      """Resizes the specified persistent disk. You can only increase the size of the disk.
 
       Args:
         request: (ComputeDisksResizeRequest) input message
@@ -2536,7 +2536,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def List(self, request, global_params=None):
-      """Retrieves the list of private images available to the specified project. Private images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
+      """Retrieves the list of custom images available to the specified project. Custom images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
 
       Args:
         request: (ComputeImagesListRequest) input message
@@ -4526,7 +4526,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      """Patches the specified network with the data included in the request.
+      """Patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode.
 
       Args:
         request: (ComputeNetworksPatchRequest) input message

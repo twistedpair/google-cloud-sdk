@@ -135,8 +135,7 @@ def Create(name,
   """Invoke TPU Create API and return created resource."""
   tpu_api_client = api_util.TpusClient('v1alpha1')
   zone = zone or properties.VALUES.compute.zone.GetOrFail()
-  node_msg = tpu_api_client.messages.Node(name=name,
-                                          cidrBlock=cidr_range,
+  node_msg = tpu_api_client.messages.Node(cidrBlock=cidr_range,
                                           network=network,
                                           acceleratorType=accelerator_type,
                                           tensorflowVersion=version,
@@ -147,4 +146,5 @@ def Create(name,
       params={
           'projectsId': properties.VALUES.core.project.GetOrFail},
       collection=TPU_LOCATION_COLLECTION)
-  return WaitForOperation(tpu_api_client.Create(node_msg, parent_ref), zone)
+  return WaitForOperation(tpu_api_client.Create(node_msg, parent_ref, name),
+                          zone)

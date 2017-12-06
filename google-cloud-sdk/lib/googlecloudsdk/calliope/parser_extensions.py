@@ -485,15 +485,15 @@ class ArgumentParser(argparse.ArgumentParser):
         also_optional.append(arg)
 
     if need_required:
-      if top or not have_optional and not also_optional:
+      if top or have_required and not (have_optional or also_optional):
         ai = parser_arguments.ArgumentInterceptor(self, arguments=need_required)
         raise parser_errors.RequiredError(
             parser=self,
             argument=usage_text.GetArgUsage(
                 ai, value=False, hidden=True, top=top))
-      if have_optional:
+      if have_optional or have_required:
         have_ai = parser_arguments.ArgumentInterceptor(
-            self, arguments=have_optional)
+            self, arguments=have_optional + have_required)
         need_ai = parser_arguments.ArgumentInterceptor(
             self, arguments=need_required)
         raise parser_errors.ModalGroupError(

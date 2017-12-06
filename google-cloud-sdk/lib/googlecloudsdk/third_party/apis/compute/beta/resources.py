@@ -272,6 +272,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'sslCertificate']
   )
+  SSLPOLICIES = (
+      'sslPolicies',
+      'projects/{project}/global/sslPolicies/{sslPolicy}',
+      {},
+      [u'project', u'sslPolicy']
+  )
   SUBNETWORKS = (
       'subnetworks',
       'projects/{project}/regions/{region}/subnetworks/{subnetwork}',

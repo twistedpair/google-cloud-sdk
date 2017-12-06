@@ -61,9 +61,9 @@ class TpusClient(object):
         self.messages.TpuProjectsLocationsOperationsGetRequest(
             name=operation_ref.RelativeName()))
 
-  def Create(self, node, parent_ref):
+  def Create(self, node, parent_ref, name):
     return self.client.projects_locations_nodes.Create(
         self.messages.TpuProjectsLocationsNodesCreateRequest(
             node=node,
-            nodeId=node.name,
+            nodeId=name,
             parent=parent_ref.RelativeName()))

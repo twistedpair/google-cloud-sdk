@@ -10812,6 +10812,21 @@ class ComputeRoutesTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeSecurityPoliciesAddRuleRequest(_messages.Message):
+  """A ComputeSecurityPoliciesAddRuleRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  securityPolicy = _messages.StringField(2, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 3)
+
+
 class ComputeSecurityPoliciesDeleteRequest(_messages.Message):
   """A ComputeSecurityPoliciesDeleteRequest object.
 
@@ -10845,6 +10860,21 @@ class ComputeSecurityPoliciesGetRequest(_messages.Message):
 
   project = _messages.StringField(1, required=True)
   securityPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeSecurityPoliciesGetRuleRequest(_messages.Message):
+  """A ComputeSecurityPoliciesGetRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to get from the security policy.
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to which the queried rule
+      belongs.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  securityPolicy = _messages.StringField(3, required=True)
 
 
 class ComputeSecurityPoliciesInsertRequest(_messages.Message):
@@ -10944,6 +10974,37 @@ class ComputeSecurityPoliciesPatchRequest(_messages.Message):
   requestId = _messages.StringField(2)
   securityPolicy = _messages.StringField(3, required=True)
   securityPolicyResource = _messages.MessageField('SecurityPolicy', 4)
+
+
+class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
+  """A ComputeSecurityPoliciesPatchRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to patch.
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 4)
+
+
+class ComputeSecurityPoliciesRemoveRuleRequest(_messages.Message):
+  """A ComputeSecurityPoliciesRemoveRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to remove from the security policy.
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to update.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  securityPolicy = _messages.StringField(3, required=True)
 
 
 class ComputeSecurityPoliciesTestIamPermissionsRequest(_messages.Message):
@@ -11185,6 +11246,205 @@ class ComputeSslCertificatesListRequest(_messages.Message):
 
 class ComputeSslCertificatesTestIamPermissionsRequest(_messages.Message):
   """A ComputeSslCertificatesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
+class ComputeSslPoliciesDeleteRequest(_messages.Message):
+  """A ComputeSslPoliciesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sslPolicy: Name of the SSL policy to delete. The name must be 1-63
+      characters long, and comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sslPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeSslPoliciesGetRequest(_messages.Message):
+  """A ComputeSslPoliciesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    sslPolicy: Name of the SSL policy to update. The name must be 1-63
+      characters long, and comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  sslPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeSslPoliciesInsertRequest(_messages.Message):
+  """A ComputeSslPoliciesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sslPolicy: A SslPolicy resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sslPolicy = _messages.MessageField('SslPolicy', 3)
+
+
+class ComputeSslPoliciesListAvailableFeaturesRequest(_messages.Message):
+  """A ComputeSslPoliciesListAvailableFeaturesRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeSslPoliciesListRequest(_messages.Message):
+  """A ComputeSslPoliciesListRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeSslPoliciesPatchRequest(_messages.Message):
+  """A ComputeSslPoliciesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sslPolicy: Name of the SSL policy to update. The name must be 1-63
+      characters long, and comply with RFC1035.
+    sslPolicyResource: A SslPolicy resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sslPolicy = _messages.StringField(3, required=True)
+  sslPolicyResource = _messages.MessageField('SslPolicy', 4)
+
+
+class ComputeSslPoliciesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeSslPoliciesTestIamPermissionsRequest object.
 
   Fields:
     project: Project ID for this request.
@@ -11804,6 +12064,34 @@ class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
   targetHttpsProxiesSetSslCertificatesRequest = _messages.MessageField('TargetHttpsProxiesSetSslCertificatesRequest', 3)
+  targetHttpsProxy = _messages.StringField(4, required=True)
+
+
+class ComputeTargetHttpsProxiesSetSslPolicyRequest(_messages.Message):
+  """A ComputeTargetHttpsProxiesSetSslPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sslPolicyReference: A SslPolicyReference resource to be passed as the
+      request body.
+    targetHttpsProxy: Name of the TargetHttpsProxy resource whose SSL policy
+      is to be set. The name must be 1-63 characters long, and comply with
+      RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sslPolicyReference = _messages.MessageField('SslPolicyReference', 3)
   targetHttpsProxy = _messages.StringField(4, required=True)
 
 
@@ -12561,6 +12849,33 @@ class ComputeTargetSslProxiesSetSslCertificatesRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
   targetSslProxiesSetSslCertificatesRequest = _messages.MessageField('TargetSslProxiesSetSslCertificatesRequest', 3)
+  targetSslProxy = _messages.StringField(4, required=True)
+
+
+class ComputeTargetSslProxiesSetSslPolicyRequest(_messages.Message):
+  """A ComputeTargetSslProxiesSetSslPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sslPolicyReference: A SslPolicyReference resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose SSL policy is to
+      be set. The name must be 1-63 characters long, and comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sslPolicyReference = _messages.MessageField('SslPolicyReference', 3)
   targetSslProxy = _messages.StringField(4, required=True)
 
 
@@ -24084,6 +24399,19 @@ class Router(_messages.Message):
   selfLink = _messages.StringField(11)
 
 
+class RouterAdvertisedIpRange(_messages.Message):
+  """Description-tagged IP ranges for the router to advertise.
+
+  Fields:
+    description: User-specified description for the IP range.
+    range: The IP range to advertise. The value must be a CIDR-formatted
+      string.
+  """
+
+  description = _messages.StringField(1)
+  range = _messages.StringField(2)
+
+
 class RouterAggregatedList(_messages.Message):
   """Contains a list of routers.
 
@@ -24236,20 +24564,76 @@ class RouterAggregatedList(_messages.Message):
 class RouterBgp(_messages.Message):
   """A RouterBgp object.
 
+  Enums:
+    AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
+      to use for advertisement.
+    AdvertisedGroupsValueListEntryValuesEnum:
+
   Fields:
+    advertiseMode: User-specified flag to indicate which mode to use for
+      advertisement.
+    advertisedGroups: User-specified list of prefix groups to advertise in
+      custom mode. This field can only be populated if advertise_mode is
+      CUSTOM and is advertised to all peers of the router. These groups will
+      be advertised in addition to any specified prefixes. Leave this field
+      blank to advertise no custom groups.
+    advertisedIpRanges: User-specified list of individual IP ranges to
+      advertise in custom mode. This field can only be populated if
+      advertise_mode is CUSTOM and is advertised to all peers of the router.
+      These IP ranges will be advertised in addition to any specified groups.
+      Leave this field blank to advertise no custom IP ranges.
     asn: Local BGP Autonomous System Number (ASN). Must be an RFC6996 private
       ASN, either 16-bit or 32-bit. The value will be fixed for this router
       resource. All VPN tunnels that link to this router will have the same
       local ASN.
   """
 
-  asn = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  class AdvertiseModeValueValuesEnum(_messages.Enum):
+    """User-specified flag to indicate which mode to use for advertisement.
+
+    Values:
+      CUSTOM: <no description>
+      DEFAULT: <no description>
+    """
+    CUSTOM = 0
+    DEFAULT = 1
+
+  class AdvertisedGroupsValueListEntryValuesEnum(_messages.Enum):
+    """AdvertisedGroupsValueListEntryValuesEnum enum type.
+
+    Values:
+      ALL_SUBNETS: <no description>
+    """
+    ALL_SUBNETS = 0
+
+  advertiseMode = _messages.EnumField('AdvertiseModeValueValuesEnum', 1)
+  advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
+  advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
+  asn = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
 
 
 class RouterBgpPeer(_messages.Message):
   """A RouterBgpPeer object.
 
+  Enums:
+    AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
+      to use for advertisement.
+    AdvertisedGroupsValueListEntryValuesEnum:
+
   Fields:
+    advertiseMode: User-specified flag to indicate which mode to use for
+      advertisement.
+    advertisedGroups: User-specified list of prefix groups to advertise in
+      custom mode. This field can only be populated if advertise_mode is
+      CUSTOM and overrides the list defined for the router (in Bgp message).
+      These groups will be advertised in addition to any specified prefixes.
+      Leave this field blank to advertise no custom groups.
+    advertisedIpRanges: User-specified list of individual IP ranges to
+      advertise in custom mode. This field can only be populated if
+      advertise_mode is CUSTOM and overrides the list defined for the router
+      (in Bgp message). These IP ranges will be advertised in addition to any
+      specified groups. Leave this field blank to advertise no custom IP
+      ranges.
     advertisedRoutePriority: The priority of routes advertised to this BGP
       peer. In the case where there is more than one matching route of maximum
       length, the routes with lowest priority value win.
@@ -24264,12 +24648,33 @@ class RouterBgpPeer(_messages.Message):
       IPv4 is supported.
   """
 
-  advertisedRoutePriority = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
-  interfaceName = _messages.StringField(2)
-  ipAddress = _messages.StringField(3)
-  name = _messages.StringField(4)
-  peerAsn = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(6)
+  class AdvertiseModeValueValuesEnum(_messages.Enum):
+    """User-specified flag to indicate which mode to use for advertisement.
+
+    Values:
+      CUSTOM: <no description>
+      DEFAULT: <no description>
+    """
+    CUSTOM = 0
+    DEFAULT = 1
+
+  class AdvertisedGroupsValueListEntryValuesEnum(_messages.Enum):
+    """AdvertisedGroupsValueListEntryValuesEnum enum type.
+
+    Values:
+      ALL_SUBNETS: <no description>
+    """
+    ALL_SUBNETS = 0
+
+  advertiseMode = _messages.EnumField('AdvertiseModeValueValuesEnum', 1)
+  advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
+  advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
+  advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  interfaceName = _messages.StringField(5)
+  ipAddress = _messages.StringField(6)
+  name = _messages.StringField(7)
+  peerAsn = _messages.IntegerField(8, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(9)
 
 
 class RouterInterface(_messages.Message):
@@ -24962,6 +25367,44 @@ class SecurityPolicyRuleMatcher(_messages.Message):
   """Represents a match condition that incoming traffic is evaluated against.
   Exactly one field must be specified.
 
+  Enums:
+    VersionedExprValueValuesEnum: Preconfigured versioned expression. If this
+      field is specified, config must also be specified. Available
+      preconfigured expressions along with their requirements are: SRC_IPS_V1
+      - must specify the corresponding src_ip_range field in config.
+
+  Fields:
+    config: The configuration options available when specifying
+      versioned_expr. This field must be specified if versioned_expr is
+      specified and cannot be specified if versioned_expr is not specified.
+    srcIpRanges: CIDR IP address range. Only IPv4 is supported.
+    versionedExpr: Preconfigured versioned expression. If this field is
+      specified, config must also be specified. Available preconfigured
+      expressions along with their requirements are: SRC_IPS_V1 - must specify
+      the corresponding src_ip_range field in config.
+  """
+
+  class VersionedExprValueValuesEnum(_messages.Enum):
+    """Preconfigured versioned expression. If this field is specified, config
+    must also be specified. Available preconfigured expressions along with
+    their requirements are: SRC_IPS_V1 - must specify the corresponding
+    src_ip_range field in config.
+
+    Values:
+      SRC_IPS_V1: <no description>
+      VERSIONED_EXPR_UNSPECIFIED: <no description>
+    """
+    SRC_IPS_V1 = 0
+    VERSIONED_EXPR_UNSPECIFIED = 1
+
+  config = _messages.MessageField('SecurityPolicyRuleMatcherConfig', 1)
+  srcIpRanges = _messages.StringField(2, repeated=True)
+  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 3)
+
+
+class SecurityPolicyRuleMatcherConfig(_messages.Message):
+  """A SecurityPolicyRuleMatcherConfig object.
+
   Fields:
     srcIpRanges: CIDR IP address range. Only IPv4 is supported.
   """
@@ -25457,6 +25900,350 @@ class SslCertificateList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class SslPoliciesList(_messages.Message):
+  """A SslPoliciesList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of SslPolicy resources.
+    kind: [Output Only] Type of the resource. Always compute#sslPoliciesList
+      for lists of sslPolicies.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('SslPolicy', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#sslPoliciesList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class SslPoliciesListAvailableFeaturesResponse(_messages.Message):
+  """A SslPoliciesListAvailableFeaturesResponse object.
+
+  Fields:
+    features: A string attribute.
+  """
+
+  features = _messages.StringField(1, repeated=True)
+
+
+class SslPolicy(_messages.Message):
+  """A SSL policy specifies the server-side support for SSL features. This can
+  be attached to a TargetHttpsProxy or a TargetSslProxy. This affects
+  connections between clients and the HTTPS or SSL proxy load balancer. They
+  do not affect the connection between the load balancers and the backends.
+
+  Enums:
+    MinTlsVersionValueValuesEnum: The minimum version of SSL protocol that can
+      be used by the clients to establish a connection with the load balancer.
+      This can be one of TLS_1_0, TLS_1_1, TLS_1_2, TLS_1_3.
+    ProfileValueValuesEnum: Profile specifies the set of SSL features that can
+      be used by the load balancer when negotiating SSL with clients. This can
+      be one of COMPATIBLE, MODERN, RESTRICTED, or CUSTOM. If using CUSTOM,
+      the set of SSL features to enable must be specified in the
+      customFeatures field.
+
+  Messages:
+    WarningsValueListEntry: A WarningsValueListEntry object.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    customFeatures: List of features enabled when the selected profile is
+      CUSTOM. The - method returns the set of features that can be specified
+      in this list. This field must be empty if the profile is not CUSTOM.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    enabledFeatures: [Output Only] The list of features enabled in the SSL
+      policy.
+    fingerprint: Fingerprint of this resource. A hash of the contents stored
+      in this object. This field is used in optimistic locking. This field
+      will be ignored when inserting a SslPolicy. An up-to-date fingerprint
+      must be provided in order to update the SslPolicy.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output only] Type of the resource. Always compute#sslPolicyfor SSL
+      policies.
+    minTlsVersion: The minimum version of SSL protocol that can be used by the
+      clients to establish a connection with the load balancer. This can be
+      one of TLS_1_0, TLS_1_1, TLS_1_2, TLS_1_3.
+    name: Name of the resource. The name must be 1-63 characters long, and
+      comply with RFC1035. Specifically, the name must be 1-63 characters long
+      and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means
+      the first character must be a lowercase letter, and all following
+      characters must be a dash, lowercase letter, or digit, except the last
+      character, which cannot be a dash.
+    profile: Profile specifies the set of SSL features that can be used by the
+      load balancer when negotiating SSL with clients. This can be one of
+      COMPATIBLE, MODERN, RESTRICTED, or CUSTOM. If using CUSTOM, the set of
+      SSL features to enable must be specified in the customFeatures field.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    warnings: [Output Only] If potential misconfigurations are detected for
+      this SSL policy, this field will be populated with warning messages.
+  """
+
+  class MinTlsVersionValueValuesEnum(_messages.Enum):
+    """The minimum version of SSL protocol that can be used by the clients to
+    establish a connection with the load balancer. This can be one of TLS_1_0,
+    TLS_1_1, TLS_1_2, TLS_1_3.
+
+    Values:
+      TLS_1_0: <no description>
+      TLS_1_1: <no description>
+      TLS_1_2: <no description>
+      TLS_1_3: <no description>
+    """
+    TLS_1_0 = 0
+    TLS_1_1 = 1
+    TLS_1_2 = 2
+    TLS_1_3 = 3
+
+  class ProfileValueValuesEnum(_messages.Enum):
+    """Profile specifies the set of SSL features that can be used by the load
+    balancer when negotiating SSL with clients. This can be one of COMPATIBLE,
+    MODERN, RESTRICTED, or CUSTOM. If using CUSTOM, the set of SSL features to
+    enable must be specified in the customFeatures field.
+
+    Values:
+      COMPATIBLE: <no description>
+      CUSTOM: <no description>
+      MODERN: <no description>
+      RESTRICTED: <no description>
+    """
+    COMPATIBLE = 0
+    CUSTOM = 1
+    MODERN = 2
+    RESTRICTED = 3
+
+  class WarningsValueListEntry(_messages.Message):
+    """A WarningsValueListEntry object.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  creationTimestamp = _messages.StringField(1)
+  customFeatures = _messages.StringField(2, repeated=True)
+  description = _messages.StringField(3)
+  enabledFeatures = _messages.StringField(4, repeated=True)
+  fingerprint = _messages.BytesField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#sslPolicy')
+  minTlsVersion = _messages.EnumField('MinTlsVersionValueValuesEnum', 8)
+  name = _messages.StringField(9)
+  profile = _messages.EnumField('ProfileValueValuesEnum', 10)
+  selfLink = _messages.StringField(11)
+  warnings = _messages.MessageField('WarningsValueListEntry', 12, repeated=True)
+
+
+class SslPolicyReference(_messages.Message):
+  """A SslPolicyReference object.
+
+  Fields:
+    sslPolicy: URL of the SSL policy resource. Set this to empty string to
+      clear any existing SSL policy associated with the target proxy resource.
+  """
+
+  sslPolicy = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -26309,6 +27096,9 @@ class TargetHttpsProxy(_messages.Message):
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections between users and the load balancer. Currently,
       exactly one SSL certificate must be specified.
+    sslPolicy: URL of SslPolicy resource that will be associated with the
+      TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource
+      will not have any SSL policy configured.
     urlMap: A fully-qualified or valid partial URL to the UrlMap resource that
       defines the mapping from URL to the BackendService. For example, the
       following are all valid URLs for specifying a URL map:   -
@@ -26342,7 +27132,8 @@ class TargetHttpsProxy(_messages.Message):
   quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 6)
   selfLink = _messages.StringField(7)
   sslCertificates = _messages.StringField(8, repeated=True)
-  urlMap = _messages.StringField(9)
+  sslPolicy = _messages.StringField(9)
+  urlMap = _messages.StringField(10)
 
 
 class TargetHttpsProxyList(_messages.Message):
@@ -27568,6 +28359,9 @@ class TargetSslProxy(_messages.Message):
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections to Backends. Currently exactly one SSL
       certificate must be specified.
+    sslPolicy: URL of SslPolicy resource that will be associated with the
+      TargetSslProxy resource. If not set, the TargetSslProxy resource will
+      not have any SSL policy configured.
   """
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
@@ -27590,6 +28384,7 @@ class TargetSslProxy(_messages.Message):
   selfLink = _messages.StringField(7)
   service = _messages.StringField(8)
   sslCertificates = _messages.StringField(9, repeated=True)
+  sslPolicy = _messages.StringField(10)
 
 
 class TargetSslProxyList(_messages.Message):

@@ -56,9 +56,10 @@ class LocationsCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
-def AddRegionFlag(parser):
+def AddRegionFlag(parser, help_text):
   parser.add_argument(
       '--region',
-      help='The region in which the function will run.',
+      help=help_text,
       completer=LocationsCompleter,
-      action=actions.StoreProperty(properties.VALUES.functions.region))
+      action=actions.StoreProperty(properties.VALUES.functions.region),
+  )

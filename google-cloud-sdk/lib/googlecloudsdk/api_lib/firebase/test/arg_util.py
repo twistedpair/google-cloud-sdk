@@ -109,12 +109,12 @@ def AddAndroidTestArgs(parser):
       metavar='DIR_TO_PULL',
       help='A list of paths that will be copied from the device\'s storage to '
       'the designated results bucket after the test is complete. These must be '
-      'absolute paths under /sdcard or /data/local/tmp (For example, '
-      '--directories-to-pull /sdcard/tempDir1,/data/local/tmp/tempDir2)'
-      'Path names are restricted to characters *a-z A-Z 0-9 _ - . / and +*.'
-      'The paths /sdcard and /data will be made available and treated as'
-      'implicit path substitutions. E.g. if /sdcard on a particular device does'
-      'not map to external storage, the system will replace it with the'
+      'absolute paths under `/sdcard` or `/data/local/tmp` (for example, '
+      '`--directories-to-pull /sdcard/tempDir1,/data/local/tmp/tempDir2`). '
+      'Path names are restricted to the characters ```a-zA-Z0-9_-./+```. '
+      'The paths `/sdcard` and `/data` will be made available and treated as '
+      'implicit path substitutions. E.g. if `/sdcard` on a particular device '
+      'does not map to external storage, the system will replace it with the '
       'external storage path prefix for that device.')
   parser.add_argument(
       '--environment-variables',

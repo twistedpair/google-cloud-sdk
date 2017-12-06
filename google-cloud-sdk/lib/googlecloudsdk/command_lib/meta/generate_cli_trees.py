@@ -68,11 +68,6 @@ def _DisableLongRunningCliTreeGeneration(command):
   return True
 
 
-# TODO(b/69048062): disable until issues resolved
-def _DisableManCollector():
-  return True
-
-
 def _NormalizeSpace(text):
   """Returns text dedented and multiple non-indent spaces replaced by one."""
   return re.sub('([^ ])   *', r'\1 ', textwrap.dedent(text)).strip('\n')
@@ -234,11 +229,17 @@ class CliTreeGenerator(object):
       if tree:
         try:
           f = open(path, 'w')
-        except IOError as e:
-          if not warn_on_exceptions:
-            raise
-          log.warn(str(e))
-          return None
+        except EnvironmentError as e:
+          # CLI data config dir may not be initialized yet.
+          directory, _ = os.path.split(path)
+          try:
+            files.MakeDir(directory)
+            f = open(path, 'w')
+          except (EnvironmentError, files.Error):
+            if not warn_on_exceptions:
+              raise
+            log.warn(str(e))
+            return None
         with f:
           resource_printer.Print(tree, print_format='json', out=f)
       return tree
@@ -917,9 +918,6 @@ class ManPageCliTreeGenerator(CliTreeGenerator):
   @classmethod
   def _GetManPageCollectorType(cls):
     """Returns the man page collector type."""
-    # TODO(b/69048062): disable until issues resolved
-    if _DisableManCollector():
-      return None
     if files.FindExecutableOnPath('man'):
       return _ManCommandCollector
     return _ManUrlCollector

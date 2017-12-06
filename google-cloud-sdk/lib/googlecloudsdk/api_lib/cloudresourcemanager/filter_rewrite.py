@@ -41,7 +41,7 @@ class ListRewriter(resource_expr_rewrite.Backend):
   def Quote(self, value):
     """Returns value double quoted if it contains special characters."""
     return super(ListRewriter, self).Quote(
-        value, always=re.search(r'[^-.\w\d]', value))
+        value, always=re.search(r'[^-@.\w]', value))
 
   def RewriteTerm(self, key, op, operand, key_type):
     """Rewrites <key op operand>."""

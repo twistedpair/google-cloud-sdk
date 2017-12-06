@@ -852,7 +852,7 @@ def GetKeyName(key, quote=True, omit_indices=False):
       if parts:
         parts[-1] += part
         continue
-    elif quote and re.search(r'[^\w@]', part):
+    elif quote and re.search(r'[^-@\w]', part):
       part = part.replace('\\', '\\\\')
       part = part.replace('"', '\\"')
       part = u'"{part}"'.format(part=part)

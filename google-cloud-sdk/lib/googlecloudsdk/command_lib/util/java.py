@@ -50,9 +50,20 @@ def RequireJavaInstalled(for_text, min_version=7):
                     ' The {for_text} requires a Java {v}+ JRE installed and on '
                     'your system PATH'.format(for_text=for_text, v=min_version))
 
-  match = re.search(r'version "1.(\d+).', output)
-  if not match or int(match.group(1)) < min_version:
-    raise JavaError('The java executable on your PATH is not a Java {v}+ JRE.'
-                    ' The {for_text} requires a Java {v}+ JRE installed and on '
-                    'your system PATH'.format(v=min_version, for_text=for_text))
+  java_exec_version_error = JavaError(
+      'The java executable on your PATH is not a Java {v}+ JRE.'
+      ' The {for_text} requires a Java {v}+ JRE installed and on '
+      'your system PATH'.format(v=min_version, for_text=for_text))
+
+  match = re.search(r'version "(\d+)\.(\d+)\.', output)
+  if not match:
+    raise java_exec_version_error
+
+  major_version = int(match.group(1))
+  minor_version = int(match.group(2))
+  # Java <= 8 used 1.X version format. Java > 8 uses X.* version format.
+  if ((major_version == 1 and minor_version < min_version) or
+      (major_version > 1 and major_version < min_version)):
+    raise java_exec_version_error
+
   return java_path

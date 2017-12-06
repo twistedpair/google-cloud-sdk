@@ -27,7 +27,8 @@ class AcceleratorConfig(_messages.Message):
 
 
 class AcceleratorType(_messages.Message):
-  """An Accelerator Type resource.
+  """An Accelerator Type resource. (== resource_for beta.acceleratorTypes ==)
+  (== resource_for v1.acceleratorTypes ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -535,7 +536,9 @@ class AccessConfig(_messages.Message):
 
 
 class Address(_messages.Message):
-  """A reserved address resource.
+  """A reserved address resource. (== resource_for beta.addresses ==) (==
+  resource_for v1.addresses ==) (== resource_for beta.globalAddresses ==) (==
+  resource_for v1.globalAddresses ==)
 
   Enums:
     AddressTypeValueValuesEnum: The type of address to reserve, either
@@ -600,9 +603,10 @@ class Address(_messages.Message):
       currently in the process of being reserved. A RESERVED address is
       currently reserved and available to use. An IN_USE address is currently
       being used by another resource and is not available.
-    subnetwork: For external addresses, this field should not be used.  The
-      URL of the subnetwork in which to reserve the address. If an IP address
-      is specified, it must be within the subnetwork's IP range.
+    subnetwork: The URL of the subnetwork in which to reserve the address. If
+      an IP address is specified, it must be within the subnetwork's IP range.
+      This field can only be used with INTERNAL type with
+      GCE_ENDPOINT/DNS_RESOLVER purposes.
     users: [Output Only] The URLs of the resources that are using this
       address.
   """
@@ -1129,6 +1133,10 @@ class AttachedDisk(_messages.Message):
     ModeValueValuesEnum: The mode in which to attach this disk, either
       READ_WRITE or READ_ONLY. If not specified, the default is to attach the
       disk in READ_WRITE mode.
+    SavedStateValueValuesEnum: For LocalSSD disks on VM Instances in STOPPED
+      or SUSPENDED state, this field is set to PRESERVED iff the LocalSSD data
+      has been saved to a persistent location by customer request. (see the
+      discard_local_ssd option on Stop/Suspend). Read-only in the api.
     TypeValueValuesEnum: Specifies the type of the disk, either SCRATCH or
       PERSISTENT. If not specified, the default is PERSISTENT.
 
@@ -1162,6 +1170,9 @@ class AttachedDisk(_messages.Message):
       managed instance group.
     diskSizeGb: The size of the disk in base-2 GB. This supersedes
       disk_size_gb in InitializeParams.
+    guestOsFeatures: A list of features to enable on the guest operating
+      system. Applicable only for bootable images. Read  Enabling guest
+      operating system features to see a list of available options.
     index: [Output Only] A zero-based index to this disk, where 0 is reserved
       for the boot disk. If you have many disks attached to an instance, each
       disk would have a unique index number.
@@ -1182,6 +1193,10 @@ class AttachedDisk(_messages.Message):
     mode: The mode in which to attach this disk, either READ_WRITE or
       READ_ONLY. If not specified, the default is to attach the disk in
       READ_WRITE mode.
+    savedState: For LocalSSD disks on VM Instances in STOPPED or SUSPENDED
+      state, this field is set to PRESERVED iff the LocalSSD data has been
+      saved to a persistent location by customer request. (see the
+      discard_local_ssd option on Stop/Suspend). Read-only in the api.
     source: Specifies a valid partial or full URL to an existing Persistent
       Disk resource. When creating a new instance, one of
       initializeParams.sourceImage or disks.source is required except for
@@ -1218,6 +1233,19 @@ class AttachedDisk(_messages.Message):
     READ_ONLY = 0
     READ_WRITE = 1
 
+  class SavedStateValueValuesEnum(_messages.Enum):
+    """For LocalSSD disks on VM Instances in STOPPED or SUSPENDED state, this
+    field is set to PRESERVED iff the LocalSSD data has been saved to a
+    persistent location by customer request. (see the discard_local_ssd option
+    on Stop/Suspend). Read-only in the api.
+
+    Values:
+      DISK_SAVED_STATE_UNSPECIFIED: <no description>
+      PRESERVED: <no description>
+    """
+    DISK_SAVED_STATE_UNSPECIFIED = 0
+    PRESERVED = 1
+
   class TypeValueValuesEnum(_messages.Enum):
     """Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
     specified, the default is PERSISTENT.
@@ -1234,14 +1262,16 @@ class AttachedDisk(_messages.Message):
   deviceName = _messages.StringField(3)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
   diskSizeGb = _messages.IntegerField(5)
-  index = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 7)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 8)
-  kind = _messages.StringField(9, default=u'compute#attachedDisk')
-  licenses = _messages.StringField(10, repeated=True)
-  mode = _messages.EnumField('ModeValueValuesEnum', 11)
-  source = _messages.StringField(12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
+  index = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 8)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 9)
+  kind = _messages.StringField(10, default=u'compute#attachedDisk')
+  licenses = _messages.StringField(11, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 12)
+  savedState = _messages.EnumField('SavedStateValueValuesEnum', 13)
+  source = _messages.StringField(14)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -1408,7 +1438,9 @@ class Autoscaler(_messages.Message):
   """Represents an Autoscaler resource. Autoscalers allow you to automatically
   scale virtual machine instances in managed instance groups according to an
   autoscaling policy that you define. For more information, read Autoscaling
-  Groups of Instances.
+  Groups of Instances. (== resource_for beta.autoscalers ==) (== resource_for
+  v1.autoscalers ==) (== resource_for beta.regionAutoscalers ==) (==
+  resource_for v1.regionAutoscalers ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the autoscaler
@@ -1435,6 +1467,11 @@ class Autoscaler(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    recommendedSize: [Output Only] Target recommended MIG size computed by
+      autoscaler. Autoscaler calculates recommended MIG size even when
+      autoscaling policy mode is different from ON. This field is empty when
+      autoscaler is not connected to the existing managed instance group or
+      autoscaler did not generate its first prediction.
     region: [Output Only] URL of the region where the instance group resides
       (for autoscalers living in regional scope).
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -1467,12 +1504,13 @@ class Autoscaler(_messages.Message):
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#autoscaler')
   name = _messages.StringField(6)
-  region = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  statusDetails = _messages.MessageField('AutoscalerStatusDetails', 10, repeated=True)
-  target = _messages.StringField(11)
-  zone = _messages.StringField(12)
+  recommendedSize = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  statusDetails = _messages.MessageField('AutoscalerStatusDetails', 11, repeated=True)
+  target = _messages.StringField(12)
+  zone = _messages.StringField(13)
 
 
 class AutoscalerAggregatedList(_messages.Message):
@@ -2407,7 +2445,8 @@ class BackendBucketList(_messages.Message):
 
 class BackendService(_messages.Message):
   """A BackendService resource. This resource defines a group of backend
-  virtual machines and their serving capacity.
+  virtual machines and their serving capacity. (== resource_for
+  v1.backendService ==) (== resource_for beta.backendService ==)
 
   Enums:
     LoadBalancingSchemeValueValuesEnum: Indicates whether the backend service
@@ -3173,7 +3212,8 @@ class Commitment(_messages.Message):
   Use Discounts.  Committed use discounts are subject to Google Cloud
   Platform's Service Specific Terms. By purchasing a committed use discount,
   you agree to these terms. Committed use discounts will not renew, so you
-  must purchase a new commitment to continue receiving discounts.
+  must purchase a new commitment to continue receiving discounts. (==
+  resource_for beta.commitments ==) (== resource_for v1.commitments ==)
 
   Enums:
     PlanValueValuesEnum: The plan for this commitment, which determines
@@ -8702,6 +8742,34 @@ class ComputeInstancesResetRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstancesResumeRequest(_messages.Message):
+  """A ComputeInstancesResumeRequest object.
+
+  Fields:
+    instance: Name of the instance resource to resume.
+    instancesResumeRequest: A InstancesResumeRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesResumeRequest = _messages.MessageField('InstancesResumeRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstancesSetDeletionProtectionRequest(_messages.Message):
   """A ComputeInstancesSetDeletionProtectionRequest object.
 
@@ -9404,6 +9472,34 @@ class ComputeInterconnectAttachmentsListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeInterconnectAttachmentsPatchRequest(_messages.Message):
+  """A ComputeInterconnectAttachmentsPatchRequest object.
+
+  Fields:
+    interconnectAttachment: Name of the interconnect attachment to patch.
+    interconnectAttachmentResource: A InterconnectAttachment resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  interconnectAttachment = _messages.StringField(1, required=True)
+  interconnectAttachmentResource = _messages.MessageField('InterconnectAttachment', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
 class ComputeInterconnectAttachmentsSetIamPolicyRequest(_messages.Message):
   """A ComputeInterconnectAttachmentsSetIamPolicyRequest object.
 
@@ -9418,6 +9514,34 @@ class ComputeInterconnectAttachmentsSetIamPolicyRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   resource = _messages.StringField(4, required=True)
+
+
+class ComputeInterconnectAttachmentsSetLabelsRequest(_messages.Message):
+  """A ComputeInterconnectAttachmentsSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
 
 
 class ComputeInterconnectAttachmentsTestIamPermissionsRequest(_messages.Message):
@@ -9668,6 +9792,21 @@ class ComputeInterconnectsSetIamPolicyRequest(_messages.Message):
   """
 
   policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeInterconnectsSetLabelsRequest(_messages.Message):
+  """A ComputeInterconnectsSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
   project = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
 
@@ -16491,7 +16630,8 @@ class DeprecationStatus(_messages.Message):
 
 
 class Disk(_messages.Message):
-  """A Disk resource.
+  """A Disk resource. (== resource_for beta.disks ==) (== resource_for
+  v1.disks ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of disk creation.
@@ -16515,14 +16655,9 @@ class Disk(_messages.Message):
       the disk.  If you do not provide an encryption key when creating the
       disk, then the disk will be encrypted using an automatically generated
       key and you do not need to provide a key to use the disk later.
-    guestOsFeatures: A list of features to enable on the guest OS. Applicable
-      for bootable disks only. Currently, only one feature can be enabled,
-      VIRTIO_SCSI_MULTIQUEUE, which allows each virtual CPU to have its own
-      queue. For Windows disks, you can only enable VIRTIO_SCSI_MULTIQUEUE on
-      images with driver version 1.2.0.1621 or higher. Linux disks with kernel
-      versions 3.17 and higher will support VIRTIO_SCSI_MULTIQUEUE.  For newer
-      Windows images, the server might also populate this property with the
-      value WINDOWS to indicate that this is a Windows image.
+    guestOsFeatures: A list of features to enable on the guest operating
+      system. Applicable only for bootable images. Read  Enabling guest
+      operating system features to see a list of available options.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#disk for disks.
@@ -17037,7 +17172,8 @@ class DiskMoveRequest(_messages.Message):
 
 
 class DiskType(_messages.Message):
-  """A DiskType resource.
+  """A DiskType resource. (== resource_for beta.diskTypes ==) (== resource_for
+  v1.diskTypes ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -17958,7 +18094,11 @@ class FixedOrPercent(_messages.Message):
 class ForwardingRule(_messages.Message):
   """A ForwardingRule resource. A ForwardingRule resource specifies which pool
   of target virtual machines to forward a packet to if it matches the given
-  [IPAddress, IPProtocol, ports] tuple.
+  [IPAddress, IPProtocol, ports] tuple. (== resource_for beta.forwardingRules
+  ==) (== resource_for v1.forwardingRules ==) (== resource_for
+  beta.globalForwardingRules ==) (== resource_for v1.globalForwardingRules ==)
+  (== resource_for beta.regionForwardingRules ==) (== resource_for
+  v1.regionForwardingRules ==)
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
@@ -18708,22 +18848,17 @@ class GuestOsFeature(_messages.Message):
   """Guest OS features.
 
   Enums:
-    TypeValueValuesEnum: The type of supported feature. Currently only
-      VIRTIO_SCSI_MULTIQUEUE is supported. For newer Windows images, the
-      server might also populate this property with the value WINDOWS to
-      indicate that this is a Windows image.
+    TypeValueValuesEnum: The ID of a supported feature. Read  Enabling guest
+      operating system features to see a list of available options.
 
   Fields:
-    type: The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE
-      is supported. For newer Windows images, the server might also populate
-      this property with the value WINDOWS to indicate that this is a Windows
-      image.
+    type: The ID of a supported feature. Read  Enabling guest operating system
+      features to see a list of available options.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of supported feature. Currently only VIRTIO_SCSI_MULTIQUEUE is
-    supported. For newer Windows images, the server might also populate this
-    property with the value WINDOWS to indicate that this is a Windows image.
+    """The ID of a supported feature. Read  Enabling guest operating system
+    features to see a list of available options.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -20600,7 +20735,8 @@ class HttpsHealthCheckList(_messages.Message):
 
 
 class Image(_messages.Message):
-  """An Image resource.
+  """An Image resource. (== resource_for beta.images ==) (== resource_for
+  v1.images ==)
 
   Enums:
     SourceTypeValueValuesEnum: The type of the image used to create this disk.
@@ -20629,14 +20765,9 @@ class Image(_messages.Message):
       create disks by specifying an image family instead of a specific image
       name. The image family always returns its latest image that is not
       deprecated. The name of the image family must comply with RFC1035.
-    guestOsFeatures: A list of features to enable on the guest OS. Applicable
-      for bootable images only. Currently, only one feature can be enabled,
-      VIRTIO_SCSI_MULTIQUEUE, which allows each virtual CPU to have its own
-      queue. For Windows images, you can only enable VIRTIO_SCSI_MULTIQUEUE on
-      images with driver version 1.2.0.1621 or higher. Linux images with
-      kernel versions 3.17 and higher will support VIRTIO_SCSI_MULTIQUEUE.
-      For newer Windows images, the server might also populate this property
-      with the value WINDOWS to indicate that this is a Windows image.
+    guestOsFeatures: A list of features to enable on the guest operating
+      system. Applicable only for bootable images. Read  Enabling guest
+      operating system features to see a list of available options.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -20950,7 +21081,8 @@ class ImageList(_messages.Message):
 
 
 class Instance(_messages.Message):
-  """An Instance resource.
+  """An Instance resource. (== resource_for beta.instances ==) (==
+  resource_for v1.instances ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
@@ -21290,7 +21422,9 @@ class InstanceAggregatedList(_messages.Message):
 
 
 class InstanceGroup(_messages.Message):
-  """A InstanceGroup object.
+  """InstanceGroups (== resource_for beta.instanceGroups ==) (== resource_for
+  v1.instanceGroups ==) (== resource_for beta.regionInstanceGroups ==) (==
+  resource_for v1.regionInstanceGroups ==)
 
   Fields:
     creationTimestamp: [Output Only] The creation timestamp for this instance
@@ -21617,7 +21751,10 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  """An Instance Group Manager resource.
+  """An Instance Group Manager resource. (== resource_for
+  beta.instanceGroupManagers ==) (== resource_for v1.instanceGroupManagers ==)
+  (== resource_for beta.regionInstanceGroupManagers ==) (== resource_for
+  v1.regionInstanceGroupManagers ==)
 
   Enums:
     FailoverActionValueValuesEnum: The action to perform in case of zone
@@ -22240,7 +22377,7 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     maxUnavailable: The maximum number of instances that can be unavailable
       during the update process. An instance is considered available if all of
       the following conditions are satisfied:    - The instance's status is
-      RUNNING.  - If there is a health check on the instance grourp, the
+      RUNNING.  - If there is a health check on the instance group, the
       instance's liveness health check result must be HEALTHY at least once.
       If there is no health check on the group, then the instance only needs
       to have a status of RUNNING to be considered available.  By default, a
@@ -23429,7 +23566,8 @@ class InstanceReference(_messages.Message):
 
 
 class InstanceTemplate(_messages.Message):
-  """An Instance Template resource.
+  """An Instance Template resource. (== resource_for beta.instanceTemplates
+  ==) (== resource_for v1.instanceTemplates ==)
 
   Fields:
     creationTimestamp: [Output Only] The creation timestamp for this instance
@@ -23656,6 +23794,26 @@ class InstancesRemoveMaintenancePoliciesRequest(_messages.Message):
   maintenancePolicies = _messages.StringField(1, repeated=True)
 
 
+class InstancesResumeRequest(_messages.Message):
+  """A InstancesResumeRequest object.
+
+  Fields:
+    disks: Array of disks associated with this instance that are protected
+      with a customer-supplied encryption key.  In order to resume the
+      instance, the disk url and its corresponding key must be provided.  If
+      the disk is not protected with a customer-supplied encryption key it
+      should not be specified.
+    instanceEncryptionKey: Decrypts data associated with an instance that is
+      protected with a customer-supplied encryption key.  If the instance you
+      are starting is protected with a customer-supplied encryption key, the
+      correct key must be provided otherwise the instance resume will not
+      succeed.
+  """
+
+  disks = _messages.MessageField('CustomerEncryptionKeyProtectedDisk', 1, repeated=True)
+  instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 2)
+
+
 class InstancesScopedList(_messages.Message):
   """A InstancesScopedList object.
 
@@ -23879,7 +24037,8 @@ class InstancesStartWithEncryptionKeyRequest(_messages.Message):
 class Interconnect(_messages.Message):
   """Represents an Interconnects resource. The Interconnects resource is a
   dedicated connection between Google's network and your on-premises network.
-  For more information, see the  Dedicated overview page.
+  For more information, see the  Dedicated overview page. (== resource_for
+  v1.interconnects ==) (== resource_for beta.interconnects ==)
 
   Enums:
     InterconnectTypeValueValuesEnum: Type of interconnect. Note that
@@ -23890,6 +24049,13 @@ class Interconnect(_messages.Message):
       Ethernet_10G_LR
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this Interconnect is functional.
+    StateValueValuesEnum: [Output Only] The current state of whether or not
+      this Interconnect is functional.
+
+  Messages:
+    LabelsValue: Labels to apply to this Interconnect resource. These can be
+      later modified by the setLabels method. Each label key/value must comply
+      with RFC1035. Label values may be empty.
 
   Fields:
     adminEnabled: Administrative status of the interconnect. When this is set
@@ -23919,6 +24085,16 @@ class Interconnect(_messages.Message):
       deprecated in favor of "DEDICATED"
     kind: [Output Only] Type of the resource. Always compute#interconnect for
       interconnects.
+    labelFingerprint: A fingerprint for the labels being applied to this
+      Interconnect, which is essentially a hash of the labels set used for
+      optimistic locking. The fingerprint is initially generated by Compute
+      Engine and changes after every request to modify or update labels. You
+      must always provide an up-to-date fingerprint hash in order to update or
+      change labels.  To see the latest fingerprint, make a get() request to
+      retrieve an Interconnect.
+    labels: Labels to apply to this Interconnect resource. These can be later
+      modified by the setLabels method. Each label key/value must comply with
+      RFC1035. Label values may be empty.
     linkType: Type of link requested. This field indicates speed of each of
       the links in the bundle, not the entire bundle. Only 10G per link is
       allowed for a dedicated interconnect. Options: Ethernet_10G_LR
@@ -23946,6 +24122,8 @@ class Interconnect(_messages.Message):
     requestedLinkCount: Target number of physical links in the link bundle, as
       requested by the customer.
     selfLink: [Output Only] Server-defined URL for the resource.
+    state: [Output Only] The current state of whether or not this Interconnect
+      is functional.
   """
 
   class InterconnectTypeValueValuesEnum(_messages.Enum):
@@ -23982,6 +24160,43 @@ class Interconnect(_messages.Message):
     OS_ACTIVE = 0
     OS_UNPROVISIONED = 1
 
+  class StateValueValuesEnum(_messages.Enum):
+    """[Output Only] The current state of whether or not this Interconnect is
+    functional.
+
+    Values:
+      ACTIVE: <no description>
+      UNPROVISIONED: <no description>
+    """
+    ACTIVE = 0
+    UNPROVISIONED = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this Interconnect resource. These can be later
+    modified by the setLabels method. Each label key/value must comply with
+    RFC1035. Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   adminEnabled = _messages.BooleanField(1)
   circuitInfos = _messages.MessageField('InterconnectCircuitInfo', 2, repeated=True)
   creationTimestamp = _messages.StringField(3)
@@ -23994,20 +24209,25 @@ class Interconnect(_messages.Message):
   interconnectAttachments = _messages.StringField(10, repeated=True)
   interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 11)
   kind = _messages.StringField(12, default=u'compute#interconnect')
-  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 13)
-  location = _messages.StringField(14)
-  name = _messages.StringField(15)
-  nocContactEmail = _messages.StringField(16)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 17)
-  peerIpAddress = _messages.StringField(18)
-  provisionedLinkCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  requestedLinkCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(21)
+  labelFingerprint = _messages.BytesField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 15)
+  location = _messages.StringField(16)
+  name = _messages.StringField(17)
+  nocContactEmail = _messages.StringField(18)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 19)
+  peerIpAddress = _messages.StringField(20)
+  provisionedLinkCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  requestedLinkCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
 
 
 class InterconnectAttachment(_messages.Message):
   """Represents an InterconnectAttachment (VLAN attachment) resource. For more
-  information, see  Creating VLAN Attachments.
+  information, see  Creating VLAN Attachments. (== resource_for
+  beta.interconnectAttachments ==) (== resource_for v1.interconnectAttachments
+  ==)
 
   Enums:
     AvailabilityZoneValueValuesEnum:
@@ -24017,6 +24237,11 @@ class InterconnectAttachment(_messages.Message):
     StateValueValuesEnum: [Output Only] The current state of whether or not
       this interconnect attachment is functional.
     TypeValueValuesEnum:
+
+  Messages:
+    LabelsValue: Labels to apply to this InterconnectAttachment resource.
+      These can be later modified by the setLabels method. Each label
+      key/value must comply with RFC1035. Label values may be empty.
 
   Fields:
     adminEnabled: Determines whether this Attachment will carry packets. Not
@@ -24048,6 +24273,16 @@ class InterconnectAttachment(_messages.Message):
       attachment's traffic will traverse through.
     kind: [Output Only] Type of the resource. Always
       compute#interconnectAttachment for interconnect attachments.
+    labelFingerprint: A fingerprint for the labels being applied to this
+      InterconnectAttachment, which is essentially a hash of the labels set
+      used for optimistic locking. The fingerprint is initially generated by
+      Compute Engine and changes after every request to modify or update
+      labels. You must always provide an up-to-date fingerprint hash in order
+      to update or change labels.  To see the latest fingerprint, make a get()
+      request to retrieve an InterconnectAttachment.
+    labels: Labels to apply to this InterconnectAttachment resource. These can
+      be later modified by the setLabels method. Each label key/value must
+      comply with RFC1035. Label values may be empty.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -24060,6 +24295,10 @@ class InterconnectAttachment(_messages.Message):
     pairingKey: [Output only for type PARTNER. Input only for
       PARTNER_PROVIDER. Not present for DEDICATED]. Opaque string identifying
       an PARTNER attachment. Of the form ?cloud-region/XXXXXX?.
+    partnerAsn: [Output only for PARTNER. Input for PARTNER_PROVIDER. Not
+      present for DEDICATED] BGP ASN of the Partner. A layer 3 Partner should
+      supply this if they configured BGP on behalf of the customer.
+    partnerMetadata: A InterconnectAttachmentPartnerMetadata attribute.
     privateInterconnectInfo: [Output Only] Information specific to an
       InterconnectAttachment. This property is populated if the interconnect
       that this is attached to is of type DEDICATED.
@@ -24073,9 +24312,10 @@ class InterconnectAttachment(_messages.Message):
     state: [Output Only] The current state of whether or not this interconnect
       attachment is functional.
     type: A TypeValueValuesEnum attribute.
-    vlanTag8021q: Available only for DEDICATED and PARTNER_PROVIDER New field:
-      VLAN. Only specified at creation time. This field is mapped to
-      ieee_802_1q_tag in the resource proto.
+    vlanTag8021q: Available only for DEDICATED and PARTNER_PROVIDER. Desired
+      VLAN tag for this attachment, in the range 2-4094. This field refers to
+      802.1q VLAN tag, also known as IEEE 802.1Q Only specified at creation
+      time.
   """
 
   class AvailabilityZoneValueValuesEnum(_messages.Enum):
@@ -24133,12 +24373,20 @@ class InterconnectAttachment(_messages.Message):
 
     Values:
       ACTIVE: <no description>
+      DEFUNCT: <no description>
+      PARTNER_REQUEST_RECEIVED: <no description>
+      PENDING_CUSTOMER: <no description>
+      PENDING_PARTNER: <no description>
       STATE_UNSPECIFIED: <no description>
       UNPROVISIONED: <no description>
     """
     ACTIVE = 0
-    STATE_UNSPECIFIED = 1
-    UNPROVISIONED = 2
+    DEFUNCT = 1
+    PARTNER_REQUEST_RECEIVED = 2
+    PENDING_CUSTOMER = 3
+    PENDING_PARTNER = 4
+    STATE_UNSPECIFIED = 5
+    UNPROVISIONED = 6
 
   class TypeValueValuesEnum(_messages.Enum):
     """TypeValueValuesEnum enum type.
@@ -24152,6 +24400,32 @@ class InterconnectAttachment(_messages.Message):
     PARTNER = 1
     PARTNER_PROVIDER = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this InterconnectAttachment resource. These can be
+    later modified by the setLabels method. Each label key/value must comply
+    with RFC1035. Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   adminEnabled = _messages.BooleanField(1)
   availabilityZone = _messages.EnumField('AvailabilityZoneValueValuesEnum', 2)
   bandwidth = _messages.EnumField('BandwidthValueValuesEnum', 3)
@@ -24164,16 +24438,20 @@ class InterconnectAttachment(_messages.Message):
   id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
   interconnect = _messages.StringField(11)
   kind = _messages.StringField(12, default=u'compute#interconnectAttachment')
-  name = _messages.StringField(13)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 14)
-  pairingKey = _messages.StringField(15)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 16)
-  region = _messages.StringField(17)
-  router = _messages.StringField(18)
-  selfLink = _messages.StringField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  type = _messages.EnumField('TypeValueValuesEnum', 21)
-  vlanTag8021q = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  labelFingerprint = _messages.BytesField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 16)
+  pairingKey = _messages.StringField(17)
+  partnerAsn = _messages.IntegerField(18)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 19)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 20)
+  region = _messages.StringField(21)
+  router = _messages.StringField(22)
+  selfLink = _messages.StringField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  type = _messages.EnumField('TypeValueValuesEnum', 25)
+  vlanTag8021q = _messages.IntegerField(26, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -24453,6 +24731,29 @@ class InterconnectAttachmentList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class InterconnectAttachmentPartnerMetadata(_messages.Message):
+  """Informational metadata about Partner attachments from Partners to display
+  to customers. These fields are propagated from PARTNER_PROVIDER attachments
+  to their corresponding PARTNER attachments. Only mutable for
+  PARTNER_PROVIDER type, output-only for PARTNER, not available for DEDICATED.
+
+  Fields:
+    interconnectName: Plain text name of the Interconnect this attachment is
+      connected to, as displayed in the Partner?s portal. For instance
+      ?Chicago 1?. This value may be validated to match approved Partner
+      values.
+    partnerName: Plain text name of the Partner providing this attachment.
+      This value may be validated to match approved Partner values.
+    portalUrl: URL of the Partner?s portal for this Attachment. Partners may
+      customise this to be a deep-link to the specific resource on the Partner
+      portal. This value may be validated to match approved Partner values.
+  """
+
+  interconnectName = _messages.StringField(1)
+  partnerName = _messages.StringField(2)
+  portalUrl = _messages.StringField(3)
 
 
 class InterconnectAttachmentPrivateInfo(_messages.Message):
@@ -25520,7 +25821,8 @@ class LogConfigDataAccessOptions(_messages.Message):
 
 
 class MachineType(_messages.Message):
-  """A Machine Type resource.
+  """A Machine Type resource. (== resource_for v1.machineTypes ==) (==
+  resource_for beta.machineTypes ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -26715,7 +27017,8 @@ class NamedPort(_messages.Message):
 
 class Network(_messages.Message):
   """Represents a Network resource. Read Networks and Firewalls for more
-  information.
+  information. (== resource_for v1.networks ==) (== resource_for beta.networks
+  ==)
 
   Enums:
     CrossVmEncryptionValueValuesEnum: [Output Only] Type of VM-to-VM traffic
@@ -27782,7 +28085,11 @@ class NetworksRemovePeeringRequest(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """An Operation resource, used to manage asynchronous API requests.
+  """An Operation resource, used to manage asynchronous API requests. (==
+  resource_for v1.globalOperations ==) (== resource_for beta.globalOperations
+  ==) (== resource_for v1.regionOperations ==) (== resource_for
+  beta.regionOperations ==) (== resource_for v1.zoneOperations ==) (==
+  resource_for beta.zoneOperations ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the operation, which
@@ -28497,7 +28804,8 @@ class Policy(_messages.Message):
 class Project(_messages.Message):
   """A Project resource. Projects can only be created in the Google Cloud
   Platform Console. Unless marked otherwise, values can only be modified in
-  the console.
+  the console. (== resource_for v1.projects ==) (== resource_for beta.projects
+  ==)
 
   Enums:
     DefaultNetworkTierValueValuesEnum: This signifies the default network tier
@@ -28701,11 +29009,14 @@ class Quota(_messages.Message):
       INTERNAL_ADDRESSES: <no description>
       IN_USE_ADDRESSES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
+      MAINTENANCE_POLICIES: <no description>
       NETWORKS: <no description>
       NVIDIA_K80_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
+      PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_P100_GPUS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
       ROUTERS: <no description>
@@ -28747,31 +29058,34 @@ class Quota(_messages.Message):
     INTERNAL_ADDRESSES = 17
     IN_USE_ADDRESSES = 18
     LOCAL_SSD_TOTAL_GB = 19
-    NETWORKS = 20
-    NVIDIA_K80_GPUS = 21
-    NVIDIA_P100_GPUS = 22
-    PREEMPTIBLE_CPUS = 23
-    PREEMPTIBLE_LOCAL_SSD_GB = 24
-    REGIONAL_AUTOSCALERS = 25
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 26
-    ROUTERS = 27
-    ROUTES = 28
-    SECURITY_POLICIES = 29
-    SECURITY_POLICY_RULES = 30
-    SNAPSHOTS = 31
-    SSD_TOTAL_GB = 32
-    SSL_CERTIFICATES = 33
-    STATIC_ADDRESSES = 34
-    SUBNETWORKS = 35
-    TARGET_HTTPS_PROXIES = 36
-    TARGET_HTTP_PROXIES = 37
-    TARGET_INSTANCES = 38
-    TARGET_POOLS = 39
-    TARGET_SSL_PROXIES = 40
-    TARGET_TCP_PROXIES = 41
-    TARGET_VPN_GATEWAYS = 42
-    URL_MAPS = 43
-    VPN_TUNNELS = 44
+    MAINTENANCE_POLICIES = 20
+    NETWORKS = 21
+    NVIDIA_K80_GPUS = 22
+    NVIDIA_P100_GPUS = 23
+    PREEMPTIBLE_CPUS = 24
+    PREEMPTIBLE_LOCAL_SSD_GB = 25
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 26
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 27
+    REGIONAL_AUTOSCALERS = 28
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 29
+    ROUTERS = 30
+    ROUTES = 31
+    SECURITY_POLICIES = 32
+    SECURITY_POLICY_RULES = 33
+    SNAPSHOTS = 34
+    SSD_TOTAL_GB = 35
+    SSL_CERTIFICATES = 36
+    STATIC_ADDRESSES = 37
+    SUBNETWORKS = 38
+    TARGET_HTTPS_PROXIES = 39
+    TARGET_HTTP_PROXIES = 40
+    TARGET_INSTANCES = 41
+    TARGET_POOLS = 42
+    TARGET_SSL_PROXIES = 43
+    TARGET_TCP_PROXIES = 44
+    TARGET_VPN_GATEWAYS = 45
+    URL_MAPS = 46
+    VPN_TUNNELS = 47
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -28797,7 +29111,8 @@ class Reference(_messages.Message):
 
 
 class Region(_messages.Message):
-  """Region resource.
+  """Region resource. (== resource_for beta.regions ==) (== resource_for
+  v1.regions ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] Status of the region, either UP or
@@ -30033,7 +30348,8 @@ class Route(_messages.Message):
   The packet is then forwarded as specified by the nextHop field of the
   winning route - either to another instance destination, an instance gateway,
   or a Google Compute Engine-operated gateway.  Packets that do not match any
-  route in the sending instance's routing table are dropped.
+  route in the sending instance's routing table are dropped. (== resource_for
+  beta.routes ==) (== resource_for v1.routes ==)
 
   Messages:
     WarningsValueListEntry: A WarningsValueListEntry object.
@@ -31549,7 +31865,6 @@ class SecurityPolicyRuleMatcher(_messages.Message):
       match criteria such as origin.ip, source.region_code and contents in the
       request header.
     srcIpRanges: CIDR IP address range. Only IPv4 is supported.
-    srcRegionCodes: Match by country or region code.
     versionedExpr: Preconfigured versioned expression. If this field is
       specified, config must also be specified. Available preconfigured
       expressions along with their requirements are: SRC_IPS_V1 - must specify
@@ -31572,8 +31887,7 @@ class SecurityPolicyRuleMatcher(_messages.Message):
   config = _messages.MessageField('SecurityPolicyRuleMatcherConfig', 1)
   expr = _messages.MessageField('Expr', 2)
   srcIpRanges = _messages.StringField(3, repeated=True)
-  srcRegionCodes = _messages.StringField(4, repeated=True)
-  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 5)
+  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 4)
 
 
 class SecurityPolicyRuleMatcherConfig(_messages.Message):
@@ -31654,7 +31968,8 @@ class SignedUrlKey(_messages.Message):
 
 
 class Snapshot(_messages.Message):
-  """A persistent disk snapshot resource.
+  """A persistent disk snapshot resource. (== resource_for beta.snapshots ==)
+  (== resource_for v1.snapshots ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the snapshot. This can
@@ -31727,6 +32042,8 @@ class Snapshot(_messages.Message):
       reallocation. This status can either be UPDATING, meaning the size of
       the snapshot is being updated, or UP_TO_DATE, meaning the size of the
       snapshot is up-to-date.
+    storageLocations: GCS bucket storage location of the snapshot (regional or
+      multi-regional).
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -31802,6 +32119,7 @@ class Snapshot(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 16)
   storageBytes = _messages.IntegerField(17)
   storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 18)
+  storageLocations = _messages.StringField(19, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -31945,7 +32263,8 @@ class SourceInstanceParams(_messages.Message):
 class SslCertificate(_messages.Message):
   """An SslCertificate resource. This resource provides a mechanism to upload
   an SSL key and certificate to the load balancer to serve secure connections
-  from the user.
+  from the user. (== resource_for beta.sslCertificates ==) (== resource_for
+  v1.sslCertificates ==)
 
   Fields:
     certificate: A local certificate file. The certificate must be in PEM
@@ -32522,7 +32841,8 @@ class StatefulPolicyPreservedResources(_messages.Message):
 
 
 class Subnetwork(_messages.Message):
-  """A Subnetwork resource.
+  """A Subnetwork resource. (== resource_for beta.subnetworks ==) (==
+  resource_for v1.subnetworks ==)
 
   Fields:
     allowSubnetCidrRoutesOverlap: Whether this subnetwork can conflict with
@@ -33127,7 +33447,9 @@ class Tags(_messages.Message):
 
 
 class TargetHttpProxy(_messages.Message):
-  """A TargetHttpProxy resource. This resource defines an HTTP proxy.
+  """A TargetHttpProxy resource. This resource defines an HTTP proxy. (==
+  resource_for beta.targetHttpProxies ==) (== resource_for
+  v1.targetHttpProxies ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -33323,7 +33645,9 @@ class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
 
 
 class TargetHttpsProxy(_messages.Message):
-  """A TargetHttpsProxy resource. This resource defines an HTTPS proxy.
+  """A TargetHttpsProxy resource. This resource defines an HTTPS proxy. (==
+  resource_for beta.targetHttpsProxies ==) (== resource_for
+  v1.targetHttpsProxies ==)
 
   Enums:
     QuicOverrideValueValuesEnum: Specifies the QUIC override policy for this
@@ -33532,7 +33856,8 @@ class TargetHttpsProxyList(_messages.Message):
 
 class TargetInstance(_messages.Message):
   """A TargetInstance resource. This resource defines an endpoint instance
-  that terminates traffic of certain protocols.
+  that terminates traffic of certain protocols. (== resource_for
+  beta.targetInstances ==) (== resource_for v1.targetInstances ==)
 
   Enums:
     NatPolicyValueValuesEnum: NAT option controlling how IPs are NAT'ed to the
@@ -33977,7 +34302,8 @@ class TargetInstancesScopedList(_messages.Message):
 
 class TargetPool(_messages.Message):
   """A TargetPool resource. This resource defines a pool of instances, an
-  associated HttpHealthCheck resource, and the fallback target pool.
+  associated HttpHealthCheck resource, and the fallback target pool. (==
+  resource_for beta.targetPools ==) (== resource_for v1.targetPools ==)
 
   Enums:
     SessionAffinityValueValuesEnum: Sesssion affinity option, must be one of
@@ -34594,7 +34920,9 @@ class TargetSslProxiesSetSslCertificatesRequest(_messages.Message):
 
 
 class TargetSslProxy(_messages.Message):
-  """A TargetSslProxy resource. This resource defines an SSL proxy.
+  """A TargetSslProxy resource. This resource defines an SSL proxy. (==
+  resource_for beta.targetSslProxies ==) (== resource_for v1.targetSslProxies
+  ==)
 
   Enums:
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
@@ -34817,7 +35145,9 @@ class TargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
 
 
 class TargetTcpProxy(_messages.Message):
-  """A TargetTcpProxy resource. This resource defines a TCP proxy.
+  """A TargetTcpProxy resource. This resource defines a TCP proxy. (==
+  resource_for beta.targetTcpProxies ==) (== resource_for v1.targetTcpProxies
+  ==)
 
   Enums:
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
@@ -34992,7 +35322,8 @@ class TargetTcpProxyList(_messages.Message):
 
 
 class TargetVpnGateway(_messages.Message):
-  """Represents a Target VPN gateway resource.
+  """Represents a Target VPN gateway resource. (== resource_for
+  beta.targetVpnGateways ==) (== resource_for v1.targetVpnGateways ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the VPN gateway.
@@ -35960,7 +36291,8 @@ class VmMaintenancePolicy(_messages.Message):
 
 
 class VpnTunnel(_messages.Message):
-  """A VpnTunnel object.
+  """VPN tunnel resource. (== resource_for beta.vpnTunnels ==) (==
+  resource_for v1.vpnTunnels ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the VPN tunnel.
@@ -36640,7 +36972,8 @@ class XpnResourceId(_messages.Message):
 
 
 class Zone(_messages.Message):
-  """A Zone resource.
+  """A Zone resource. (== resource_for beta.zones ==) (== resource_for
+  v1.zones ==)
 
   Enums:
     StatusValueValuesEnum: [Output Only] Status of the zone, either UP or

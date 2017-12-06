@@ -16,6 +16,7 @@
 """Utility methods to upload source to GCS and call Cloud Build service."""
 
 import gzip
+import operator
 import os
 import StringIO
 import tarfile
@@ -236,6 +237,13 @@ def FixUpBuild(build, object_ref):
   messages = cloudbuild_util.GetMessagesModule()
   # Make a copy, so we don't modify the original
   build = encoding.CopyProtoMessage(build)
+  # CopyProtoMessage doesn't preserve the order of additionalProperties; sort
+  # these so that they're in a consistent order for tests (this *only* matters
+  # for tests).
+  if build.substitutions:
+    build.substitutions.additionalProperties.sort(
+        key=operator.attrgetter('key'))
+
   # Check that nothing we're expecting to fill in has been set already
   _ValidateBuildFields(build, ('source', 'timeout', 'logsBucket'))
 

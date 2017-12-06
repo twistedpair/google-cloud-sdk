@@ -29,7 +29,6 @@ def GetBgpRoutingMode(network):
   return network.get('routingConfig', {}).get('routingMode')
 
 
-# TODO(b/67060825): Replace with a resource transform function.
 def AddModesForListFormat(resource):
   return dict(
       resource,

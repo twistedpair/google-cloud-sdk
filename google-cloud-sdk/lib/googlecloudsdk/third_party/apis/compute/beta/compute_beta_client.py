@@ -74,6 +74,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.securityPolicies = self.SecurityPoliciesService(self)
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
+    self.sslPolicies = self.SslPoliciesService(self)
     self.subnetworks = self.SubnetworksService(self)
     self.targetHttpProxies = self.TargetHttpProxiesService(self)
     self.targetHttpsProxies = self.TargetHttpsProxiesService(self)
@@ -5426,7 +5427,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      """Patches the specified network with the data included in the request.
+      """Patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode.
 
       Args:
         request: (ComputeNetworksPatchRequest) input message
@@ -7501,6 +7502,32 @@ If the group is part of a backend service that has enabled connection draining, 
       self._upload_configs = {
           }
 
+    def AddRule(self, request, global_params=None):
+      """Inserts a rule into a security policy.
+
+      Args:
+        request: (ComputeSecurityPoliciesAddRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.securityPolicies.addRule',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/addRule',
+        request_field=u'securityPolicyRule',
+        request_type_name=u'ComputeSecurityPoliciesAddRuleRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the specified policy.
 
@@ -7550,6 +7577,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeSecurityPoliciesGetRequest',
         response_type_name=u'SecurityPolicy',
+        supports_download=False,
+    )
+
+    def GetRule(self, request, global_params=None):
+      """Gets a rule at the specified priority.
+
+      Args:
+        request: (ComputeSecurityPoliciesGetRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicyRule) The response message.
+      """
+      config = self.GetMethodConfig('GetRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.securityPolicies.getRule',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[u'priority'],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/getRule',
+        request_field='',
+        request_type_name=u'ComputeSecurityPoliciesGetRuleRequest',
+        response_type_name=u'SecurityPolicyRule',
         supports_download=False,
     )
 
@@ -7627,6 +7680,58 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}',
         request_field=u'securityPolicyResource',
         request_type_name=u'ComputeSecurityPoliciesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def PatchRule(self, request, global_params=None):
+      """Patches a rule at the specified priority.
+
+      Args:
+        request: (ComputeSecurityPoliciesPatchRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.securityPolicies.patchRule',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[u'priority'],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/patchRule',
+        request_field=u'securityPolicyRule',
+        request_type_name=u'ComputeSecurityPoliciesPatchRuleRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def RemoveRule(self, request, global_params=None):
+      """Deletes a rule at the specified priority.
+
+      Args:
+        request: (ComputeSecurityPoliciesRemoveRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.securityPolicies.removeRule',
+        ordered_params=[u'project', u'securityPolicy'],
+        path_params=[u'project', u'securityPolicy'],
+        query_params=[u'priority'],
+        relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/removeRule',
+        request_field='',
+        request_type_name=u'ComputeSecurityPoliciesRemoveRuleRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -7935,6 +8040,198 @@ For more information, see Deleting snaphots.
         relative_path=u'projects/{project}/global/sslCertificates/{resource}/testIamPermissions',
         request_field=u'testPermissionsRequest',
         request_type_name=u'ComputeSslCertificatesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class SslPoliciesService(base_api.BaseApiService):
+    """Service class for the sslPolicies resource."""
+
+    _NAME = u'sslPolicies'
+
+    def __init__(self, client):
+      super(ComputeBeta.SslPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
+
+      Args:
+        request: (ComputeSslPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.sslPolicies.delete',
+        ordered_params=[u'project', u'sslPolicy'],
+        path_params=[u'project', u'sslPolicy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/sslPolicies/{sslPolicy}',
+        request_field='',
+        request_type_name=u'ComputeSslPoliciesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """List all of the ordered rules present in a single specified policy.
+
+      Args:
+        request: (ComputeSslPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.sslPolicies.get',
+        ordered_params=[u'project', u'sslPolicy'],
+        path_params=[u'project', u'sslPolicy'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/sslPolicies/{sslPolicy}',
+        request_field='',
+        request_type_name=u'ComputeSslPoliciesGetRequest',
+        response_type_name=u'SslPolicy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      """Returns the specified SSL policy resource. Get a list of available SSL policies by making a list() request.
+
+      Args:
+        request: (ComputeSslPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.sslPolicies.insert',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/sslPolicies',
+        request_field=u'sslPolicy',
+        request_type_name=u'ComputeSslPoliciesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """List all the SSL policies that have been configured for the specified project.
+
+      Args:
+        request: (ComputeSslPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPoliciesList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.sslPolicies.list',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/sslPolicies',
+        request_field='',
+        request_type_name=u'ComputeSslPoliciesListRequest',
+        response_type_name=u'SslPoliciesList',
+        supports_download=False,
+    )
+
+    def ListAvailableFeatures(self, request, global_params=None):
+      """Lists all features that can be specified in the SSL policy when using custom profile.
+
+      Args:
+        request: (ComputeSslPoliciesListAvailableFeaturesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslPoliciesListAvailableFeaturesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListAvailableFeatures')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListAvailableFeatures.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.sslPolicies.listAvailableFeatures',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/global/sslPolicies/listAvailableFeatures',
+        request_field='',
+        request_type_name=u'ComputeSslPoliciesListAvailableFeaturesRequest',
+        response_type_name=u'SslPoliciesListAvailableFeaturesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Patches the specified SSL policy with the data included in the request.
+
+      Args:
+        request: (ComputeSslPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.sslPolicies.patch',
+        ordered_params=[u'project', u'sslPolicy'],
+        path_params=[u'project', u'sslPolicy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/sslPolicies/{sslPolicy}',
+        request_field=u'sslPolicyResource',
+        request_type_name=u'ComputeSslPoliciesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeSslPoliciesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.sslPolicies.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/sslPolicies/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeSslPoliciesTestIamPermissionsRequest',
         response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
@@ -8563,6 +8860,32 @@ For more information, see Deleting snaphots.
         relative_path=u'projects/{project}/targetHttpsProxies/{targetHttpsProxy}/setSslCertificates',
         request_field=u'targetHttpsProxiesSetSslCertificatesRequest',
         request_type_name=u'ComputeTargetHttpsProxiesSetSslCertificatesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetSslPolicy(self, request, global_params=None):
+      """Sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the HTTPS proxy load balancer. They do not affect the connection between the load balancer and the backends.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesSetSslPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSslPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSslPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetHttpsProxies.setSslPolicy',
+        ordered_params=[u'project', u'targetHttpsProxy'],
+        path_params=[u'project', u'targetHttpsProxy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setSslPolicy',
+        request_field=u'sslPolicyReference',
+        request_type_name=u'ComputeTargetHttpsProxiesSetSslPolicyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -9295,6 +9618,32 @@ For more information, see Deleting snaphots.
         relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setSslCertificates',
         request_field=u'targetSslProxiesSetSslCertificatesRequest',
         request_type_name=u'ComputeTargetSslProxiesSetSslCertificatesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetSslPolicy(self, request, global_params=None):
+      """Sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the SSL proxy load balancer. They do not affect the connection between the load balancer and the backends.
+
+      Args:
+        request: (ComputeTargetSslProxiesSetSslPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSslPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSslPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetSslProxies.setSslPolicy',
+        ordered_params=[u'project', u'targetSslProxy'],
+        path_params=[u'project', u'targetSslProxy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/targetSslProxies/{targetSslProxy}/setSslPolicy',
+        request_field=u'sslPolicyReference',
+        request_type_name=u'ComputeTargetSslProxiesSetSslPolicyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

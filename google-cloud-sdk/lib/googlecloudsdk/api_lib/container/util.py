@@ -32,7 +32,7 @@ from googlecloudsdk.core.util import platforms
 CLUSTERS_FORMAT = """
     table(
         name,
-        zone,
+        zone:label=LOCATION,
         master_version():label=MASTER_VERSION,
         endpoint:label=MASTER_IP,
         nodePools[0].config.machineType,
@@ -46,7 +46,7 @@ OPERATIONS_FORMAT = """
     table(
         name,
         operationType:label=TYPE,
-        zone,
+        zone:label=LOCATION,
         targetLink.basename():label=TARGET,
         statusMessage,
         status,

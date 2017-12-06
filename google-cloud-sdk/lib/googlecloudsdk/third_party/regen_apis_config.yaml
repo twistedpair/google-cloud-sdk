@@ -338,6 +338,8 @@ apis:
     v1:
       discovery_doc: alpha_vision_v1.json
       default: true
+      resources:
+         images: 'images'
     v1alpha1:
       discovery_doc: alpha_vision_v1alpha1.json
 

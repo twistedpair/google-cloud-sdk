@@ -24,8 +24,7 @@ from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times
 
 VIDEO_API = 'videointelligence'
-VIDEO_API_VERSION_BETA = 'v1beta2'
-OPERATIONS_VERSION = 'v1'
+VIDEO_API_VERSION = 'v1'
 
 
 INPUT_ERROR_MESSAGE = ('[{}] is not a valid format for video input. Must be a '
@@ -70,8 +69,8 @@ def ValidateAndParseSegments(given_segments):
   if not given_segments:
     return None
 
-  messages = apis.GetMessagesModule(VIDEO_API, VIDEO_API_VERSION_BETA)
-  segment_msg = messages.GoogleCloudVideointelligenceV1beta2VideoSegment
+  messages = apis.GetMessagesModule(VIDEO_API, VIDEO_API_VERSION)
+  segment_msg = messages.GoogleCloudVideointelligenceV1VideoSegment
   segment_messages = []
   segments = [s.split(':') for s in given_segments]
   for segment in segments:

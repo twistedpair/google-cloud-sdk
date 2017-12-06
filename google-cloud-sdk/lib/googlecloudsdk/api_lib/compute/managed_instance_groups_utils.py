@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
@@ -711,6 +712,14 @@ def _UpdateCustomMetricUtilizationsFromStackoverflowFlags(
       )
     else:
       target_type = None
+
+    if args.stackdriver_metric_filter and "'" in args.stackdriver_metric_filter:
+      log.warn(
+          "The provided filter contains a single quote character ('). While "
+          "valid as a metric/resource label value, it's not a control "
+          "character that is part of the filtering language; if you meant "
+          "to use it to quote a string value, you need to use a double quote "
+          "character (\") instead.")
     result.append(
         messages.AutoscalingPolicyCustomMetricUtilization(
             utilizationTarget=args.stackdriver_metric_utilization_target,

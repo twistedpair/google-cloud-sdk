@@ -41,7 +41,7 @@ def AddBasicAuthFlags(parser,
   """
   basic_auth_group = parser.add_group(help='Basic auth')
   username_group = basic_auth_group.add_group(
-      mutex=True, help='Username options')
+      mutex=True, help='Options to specify the username.')
   username_help_text = """\
 The user name to use for basic auth for the cluster. Use `--password` to specify
 a password; if not, the server will randomly generate one."""
@@ -262,7 +262,8 @@ def AddAutoprovisioningFlags(parser, update_group=None, hidden=False):
       help="""\
 Enables  node autoprovisioning for a cluster.
 
-Cluster Autoscaler will be able to create new node pools.""",
+Cluster Autoscaler will be able to create new node pools. Requires --max-cpu
+and --max-memory to be specified.""",
       hidden=hidden,
       action='store_true')
   group.add_argument(
@@ -329,9 +330,7 @@ def AddZoneAndRegionFlags(parser, region_hidden=False):
       action=actions.StoreProperty(properties.VALUES.compute.zone))
   group.add_argument(
       '--region',
-      help='The compute region (e.g. us-central1) for the cluster. '
-           'For the given cluster, only one of flags --zone and --region can '
-           'be specified.',
+      help='The compute region (e.g. us-central1) for the cluster.',
       hidden=region_hidden)
 
 
@@ -530,18 +529,6 @@ def AddTagsFlag(parser, help_text):
       '--tags',
       metavar='TAG',
       type=arg_parsers.ArgList(min_length=1),
-      help=help_text)
-
-
-def AddServiceAccountFlag(parser, suppressed=False):
-  """Adds a --service-account to the given parser."""
-  help_text = argparse.SUPPRESS if suppressed else """\
-The Google Cloud Platform Service Account to be used by the node VMs. \
-If no Service Account is specified, the "default" service account is used.
-"""
-
-  parser.add_argument(
-      '--service-account',
       help=help_text)
 
 
@@ -1012,10 +999,29 @@ def AddLoggingServiceFlag(parser, hidden=False):
       '"none" (logs will not be exported from the cluster)')
 
 
-def AddScopesFlag(parser, example_target, is_deprecated):
+def AddNodeIdentityFlags(parser,
+                         example_target,
+                         is_deprecated,
+                         sa_suppressed=False):
+  """Adds node identity flags to the given parser.
+
+  Node identity flags are --scopes, --[no-]enable-cloud-endpoints, and
+  --service-account.  --service-account is mutually exclusive with the other
+  two, which are not mutually exclusive with each other.
+
+  Args:
+    parser: A given parser.
+    example_target: the target for the command, e.g. mycluster.
+    is_deprecated: whether to use "deprecated" scopes behavior.
+    sa_suppressed: whether to suppress help text for --service-account.
+  """
+  node_identity_group = parser.add_group(
+      mutex=True, help='Options to specify the node identity.')
+  scopes_group = node_identity_group.add_group(help='Scopes options.')
+
   min_args_length = 1 if is_deprecated else 0
   default = [] if is_deprecated else ['logging-write', 'monitoring']
-  parser.add_argument(
+  scopes_group.add_argument(
       '--scopes',
       type=arg_parsers.ArgList(min_length=min_args_length),
       metavar='SCOPE',
@@ -1047,23 +1053,83 @@ Alias,URI
     scope_deprecation_msg=compute_constants.DEPRECATED_SCOPES_MESSAGES,
     example_target=example_target))
 
+  scopes_group.add_argument(
+      '--enable-cloud-endpoints',
+      action='store_true',
+      default=True,
+      help='Automatically enable Google Cloud Endpoints to take advantage of '
+      'API management features.')
 
-def AddClusterScopesFlag(parser):
-  AddScopesFlag(parser, example_target='example-cluster', is_deprecated=False)
+  if sa_suppressed:
+    sa_help_text = argparse.SUPPRESS
+  else:
+    sa_help_text = """\
+The Google Cloud Platform Service Account to be used by the node VMs.  If a \
+service account is specified, the cloud-platform scope is used. If no Service \
+Account is specified, the "default" service account is used.
+"""
+  node_identity_group.add_argument('--service-account', help=sa_help_text)
 
 
-def AddOldClusterScopesFlag(parser):
-  AddScopesFlag(parser, example_target='example-cluster', is_deprecated=True)
+def AddClusterNodeIdentityFlags(parser):
+  """Adds node identity flags to the given parser.
+
+  This is a wrapper around AddNodeIdentityFlags for [alpha|beta] cluster, as it
+  provides example-cluster as the example and uses non-deprecated scopes
+  behavior.
+
+  Args:
+    parser: A given parser.
+  """
+  AddNodeIdentityFlags(
+      parser, example_target='example-cluster', is_deprecated=False)
 
 
-def AddNodePoolScopesFlag(parser):
-  AddScopesFlag(parser, example_target='node-pool-1 --cluster=example-cluster',
-                is_deprecated=False)
+def AddOldClusterNodeIdentityFlags(parser):
+  """Adds node identity flags to the given parser.
+
+  This is a wrapper around AddNodeIdentityFlags for (GA) cluster, as it
+  provides example-cluster as the example and uses deprecated scopes behavior.
+
+  Args:
+    parser: A given parser.
+  """
+  AddNodeIdentityFlags(
+      parser,
+      example_target='example-cluster',
+      is_deprecated=True,
+      sa_suppressed=True)
 
 
-def AddOldNodePoolScopesFlag(parser):
-  AddScopesFlag(parser, example_target='node-pool-1 --cluster=example-cluster',
-                is_deprecated=True)
+def AddNodePoolNodeIdentityFlags(parser):
+  """Adds node identity flags to the given parser.
+
+  This is a wrapper around AddNodeIdentityFlags for (GA) node-pools, as it
+  provides node-pool-1 as the example and uses non-deprecated scopes behavior.
+
+  Args:
+    parser: A given parser.
+  """
+  AddNodeIdentityFlags(
+      parser,
+      example_target='node-pool-1 --cluster=example-cluster',
+      is_deprecated=False)
+
+
+def AddOldNodePoolNodeIdentityFlags(parser):
+  """Adds node identity flags to the given parser.
+
+  This is a wrapper around AddNodeIdentityFlags for (GA) node-pools, as it
+  provides node-pool-1 as the example and uses deprecated scopes behavior.
+
+  Args:
+    parser: A given parser.
+  """
+  AddNodeIdentityFlags(
+      parser,
+      example_target='node-pool-1 --cluster=example-cluster',
+      is_deprecated=True,
+      sa_suppressed=True)
 
 
 def AddAddonsFlags(
@@ -1113,4 +1179,21 @@ https://kubernetes.io/docs/concepts/policy/pod-security-policy/.
       action='store_true',
       default=None,
       hidden=hidden,
+      help=help_text)
+
+
+def AddAllowRouteOverlapFlag(parser):
+  """Adds a --allow-route-overlap flag to parser."""
+  help_text = """\
+Allows the provided cluster CIDRs to overlap with existing routes
+that are less specific and do not terminate at a VM.
+
+When enabled, `--cluster-ipv4-cidr` must be fully specified (e.g. `10.96.0.0/14`
+, but not `/14`). If `--enable-ip-alias` is also specified, both
+`--cluster-ipv4-cidr` and `--services-ipv4-cidr` must be fully specified.
+"""
+  parser.add_argument(
+      '--allow-route-overlap',
+      action='store_true',
+      default=None,
       help=help_text)
