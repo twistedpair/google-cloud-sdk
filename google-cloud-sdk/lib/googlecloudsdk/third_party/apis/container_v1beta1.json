@@ -1182,6 +1182,39 @@
         "desiredMasterId": {
           "description": "An id of master replica to be updated.\nCan be set only when desired_master_version is set.\nIf not set, all replicas will be updated.",
           "type": "string"
+        },
+        "desiredClusterStatus": {
+          "description": "The desired status fields for the cluster.",
+          "$ref": "ClusterStatus"
+        }
+      }
+    },
+    "ClusterStatus": {
+      "id": "ClusterStatus",
+      "description": "ClusterStatus is used for internal only purposes to transition a cluster\nbetween DEGRADED AND RUNNING using UpdateClusterInternal. The message is used\nin ClusterUpdate's DesiredClusterStatus field and should not be confused with\nCluster's Status Enum.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "The current status of the cluster.",
+          "enumDescriptions": [
+            "The UNKNOWN status should never be set",
+            "The RUNNING state indicates the cluster has been created and is fully\nusable.",
+            "The DEGRADED state indicates the cluster is not fully functional and\nrequires user action. Details can be found in the `message` field."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "RUNNING",
+            "DEGRADED"
+          ]
+        },
+        "message": {
+          "description": "A human-readable message that describes the status of the cluster.",
+          "type": "string"
+        },
+        "internal": {
+          "description": "An internal field for the sub-error type or other metadata for the Status.",
+          "type": "string"
         }
       }
     },

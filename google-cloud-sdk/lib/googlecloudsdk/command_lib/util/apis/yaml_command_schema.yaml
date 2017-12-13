@@ -98,6 +98,9 @@ definitions:
       # API field is repeated. If the API field is not repeated, this attribute
       # has no effect.
       repeated: { type: boolean }
+      # The metavar for the generated argument. This will be generated
+      # automatically if not provided.
+      metavar: { type: string }
       # Overrides the choices that are generated for the argument. Each key
       # is one choice and the value is the value that is returned when that
       # choice is selected.

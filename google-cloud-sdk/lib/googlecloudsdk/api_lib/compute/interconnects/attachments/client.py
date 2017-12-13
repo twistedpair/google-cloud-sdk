@@ -89,7 +89,8 @@ class InterconnectAttachment(object):
                     partnerAsn=partner_asn)))
 
   def _MakePatchRequestTupleAlpha(
-      self, description, admin_enabled, bandwidth, partner_metadata):
+      self, description, admin_enabled, bandwidth, partner_metadata, labels,
+      label_fingerprint):
     return (self._client.interconnectAttachments, 'Patch',
             self._messages.ComputeInterconnectAttachmentsPatchRequest(
                 project=self.ref.project,
@@ -100,6 +101,8 @@ class InterconnectAttachment(object):
                     name=self.ref.Name(),
                     description=description,
                     adminEnabled=admin_enabled,
+                    labels=labels,
+                    labelFingerprint=label_fingerprint,
                     bandwidth=bandwidth,
                     partnerMetadata=partner_metadata)))
 
@@ -187,6 +190,8 @@ class InterconnectAttachment(object):
                  partner_name=None,
                  partner_interconnect=None,
                  partner_portal_url=None,
+                 labels=None,
+                 label_fingerprint=None,
                  only_generate_request=False):
     """Patch an interconnectAttachment."""
     if bandwidth:
@@ -203,7 +208,8 @@ class InterconnectAttachment(object):
       partner_metadata = None
     requests = [
         self._MakePatchRequestTupleAlpha(
-            description, admin_enabled, bandwidth, partner_metadata)
+            description, admin_enabled, bandwidth, partner_metadata, labels,
+            label_fingerprint)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

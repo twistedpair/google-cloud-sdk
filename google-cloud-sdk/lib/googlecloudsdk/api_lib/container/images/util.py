@@ -16,9 +16,7 @@
 from contextlib import contextmanager
 
 import httplib
-import itertools
 
-from apitools.base.py import list_pager
 from containerregistry.client import docker_creds
 from containerregistry.client import docker_name
 # We use distinct versions of the library for v2 and v2.2 because
@@ -31,6 +29,7 @@ from containerregistry.client.v2_2 import docker_http as v2_2_docker_http
 from containerregistry.client.v2_2 import docker_image as v2_2_image
 from containerregistry.client.v2_2 import docker_image_list
 from googlecloudsdk.api_lib.container.images import container_analysis_data_util
+from googlecloudsdk.api_lib.containeranalysis import util as containeranalysis_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
@@ -39,12 +38,6 @@ from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.docker import docker
 from googlecloudsdk.core.util import times
-
-
-# The maximum number of resource URLs by which to filter when showing
-# occurrences. This is required since filtering by too many causes the
-# API request to be too large. Instead, the requests are chunkified.
-_MAXIMUM_RESOURCE_URL_CHUNK_SIZE = 5
 
 
 class UtilError(exceptions.Error):
@@ -168,60 +161,13 @@ def _MakeSummaryRequest(project_id, url_filter):
   return client.projects.GetVulnzsummary(req)
 
 
-def _MakeOccurrenceRequest(
-    project_id, resource_filter, occurrence_filter=None, resource_urls=None):
-  """Helper function to make Fetch Occurrence Request."""
-  client = apis.GetClientInstance('containeranalysis', 'v1alpha1')
-  messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
-  base_filter = resource_filter
-  if occurrence_filter:
-    base_filter = (
-        '({occurrence_filter}) AND ({base_filter})'.format(
-            occurrence_filter=occurrence_filter,
-            base_filter=base_filter))
-  project_ref = resources.REGISTRY.Parse(
-      project_id, collection='cloudresourcemanager.projects')
-
-  if not resource_urls:
-    # When there are no resource_urls to filter don't need to do chunkifying
-    # logic or add anything to the base filter.
-    return list_pager.YieldFromList(
-        client.projects_occurrences,
-        request=messages.ContaineranalysisProjectsOccurrencesListRequest(
-            parent=project_ref.RelativeName(), filter=base_filter),
-        field='occurrences',
-        batch_size=1000,
-        batch_size_attribute='pageSize')
-
-  # Occurrences are filtered by resource URLs. If there are more than roughly
-  # _MAXIMUM_RESOURCE_URL_CHUNK_SIZE resource urls in the API request, the
-  # request becomes too big and will be rejected. This block chunkifies the
-  # resource URLs list and issues multiple API requests to circumvent this
-  # limit. The resulting generators (from YieldFromList) are chained together in
-  # the final output.
-  occurrence_generators = []
-  for index in range(0, len(resource_urls), _MAXIMUM_RESOURCE_URL_CHUNK_SIZE):
-    chunk = resource_urls[index : (index + _MAXIMUM_RESOURCE_URL_CHUNK_SIZE)]
-    url_filter = '%s AND (%s)' % (
-        base_filter,
-        ' OR '.join(['resource_url="%s"' % url for url in chunk]))
-    occurrence_generators.append(
-        list_pager.YieldFromList(
-            client.projects_occurrences,
-            request=messages.ContaineranalysisProjectsOccurrencesListRequest(
-                parent=project_ref.RelativeName(), filter=url_filter),
-            field='occurrences',
-            batch_size=1000,
-            batch_size_attribute='pageSize'))
-  return itertools.chain(*occurrence_generators)
-
-
 def FetchOccurrencesForResource(digest, occurrence_filter=None):
   """Fetches the occurrences attached to this image."""
   project_id = RecoverProjectId(digest)
   resource_filter = 'resource_url="{resource_url}"'.format(
       resource_url=_FullyqualifiedDigest(digest))
-  return _MakeOccurrenceRequest(project_id, resource_filter, occurrence_filter)
+  return containeranalysis_util.MakeOccurrenceRequest(
+      project_id, resource_filter, occurrence_filter)
 
 
 def FetchDeploymentsForImage(image, occurrence_filter=None):
@@ -232,7 +178,8 @@ def FetchDeploymentsForImage(image, occurrence_filter=None):
       arg_filter=occurrence_filter,
       depl_filter=depl_filter,
   )
-  occurrences = list(_MakeOccurrenceRequest(project_id, occ_filter))
+  occurrences = list(containeranalysis_util.MakeOccurrenceRequest(
+      project_id, occ_filter))
   deployments = []
   image_string = str(image)
   for occ in occurrences:
@@ -283,8 +230,8 @@ def FetchOccurrences(repository, occurrence_filter=None, resource_urls=None):
   resource_filter = 'has_prefix(resource_url, "{repo}")'.format(
       repo=_UnqualifiedResourceUrl(repository))
 
-  occurrences = _MakeOccurrenceRequest(project_id, resource_filter,
-                                       occurrence_filter, resource_urls)
+  occurrences = containeranalysis_util.MakeOccurrenceRequest(
+      project_id, resource_filter, occurrence_filter, resource_urls)
   occurrences_by_resources = {}
   for occ in occurrences:
     if occ.resourceUrl not in occurrences_by_resources:

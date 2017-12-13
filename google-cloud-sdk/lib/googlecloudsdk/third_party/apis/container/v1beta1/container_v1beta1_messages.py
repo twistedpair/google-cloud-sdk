@@ -351,6 +351,43 @@ class Cluster(_messages.Message):
   zone = _messages.StringField(39)
 
 
+class ClusterStatus(_messages.Message):
+  """ClusterStatus is used for internal only purposes to transition a cluster
+  between DEGRADED AND RUNNING using UpdateClusterInternal. The message is
+  used in ClusterUpdate's DesiredClusterStatus field and should not be
+  confused with Cluster's Status Enum.
+
+  Enums:
+    StatusValueValuesEnum: The current status of the cluster.
+
+  Fields:
+    internal: An internal field for the sub-error type or other metadata for
+      the Status.
+    message: A human-readable message that describes the status of the
+      cluster.
+    status: The current status of the cluster.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    """The current status of the cluster.
+
+    Values:
+      UNKNOWN: The UNKNOWN status should never be set
+      RUNNING: The RUNNING state indicates the cluster has been created and is
+        fully usable.
+      DEGRADED: The DEGRADED state indicates the cluster is not fully
+        functional and requires user action. Details can be found in the
+        `message` field.
+    """
+    UNKNOWN = 0
+    RUNNING = 1
+    DEGRADED = 2
+
+  internal = _messages.StringField(1)
+  message = _messages.StringField(2)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
 class ClusterUpdate(_messages.Message):
   """ClusterUpdate describes an update to the cluster. Exactly one update can
   be applied to a cluster with each request, so at most one field can be
@@ -360,6 +397,7 @@ class ClusterUpdate(_messages.Message):
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
     desiredAuditConfig: The desired configuration for audit logging.
+    desiredClusterStatus: The desired status fields for the cluster.
     desiredImageType: The desired image type for the node pool. NOTE: Set the
       "desired_node_pool" field as well.
     desiredLocations: The desired list of Google Compute Engine
@@ -403,18 +441,19 @@ class ClusterUpdate(_messages.Message):
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
   desiredAuditConfig = _messages.MessageField('AuditConfig', 2)
-  desiredImageType = _messages.StringField(3)
-  desiredLocations = _messages.StringField(4, repeated=True)
-  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 5)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 6)
-  desiredMasterId = _messages.StringField(7)
-  desiredMasterMachineType = _messages.StringField(8)
-  desiredMasterVersion = _messages.StringField(9)
-  desiredMonitoringService = _messages.StringField(10)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 11)
-  desiredNodePoolId = _messages.StringField(12)
-  desiredNodeVersion = _messages.StringField(13)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 14)
+  desiredClusterStatus = _messages.MessageField('ClusterStatus', 3)
+  desiredImageType = _messages.StringField(4)
+  desiredLocations = _messages.StringField(5, repeated=True)
+  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 6)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 7)
+  desiredMasterId = _messages.StringField(8)
+  desiredMasterMachineType = _messages.StringField(9)
+  desiredMasterVersion = _messages.StringField(10)
+  desiredMonitoringService = _messages.StringField(11)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 12)
+  desiredNodePoolId = _messages.StringField(13)
+  desiredNodeVersion = _messages.StringField(14)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 15)
 
 
 class ClusterUpdateOptions(_messages.Message):

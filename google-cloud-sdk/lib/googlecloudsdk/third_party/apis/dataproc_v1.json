@@ -19,6 +19,7 @@
   "servicePath": "",
   "baseUrl": "https://dataproc.googleapis.com/",
   "batchPath": "batch",
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -1114,7 +1115,7 @@
     },
     "JobScheduling": {
       "id": "JobScheduling",
-      "description": "Job scheduling options.Beta Feature: These options are available for testing purposes only. They may be changed before final release.",
+      "description": "Job scheduling options.",
       "type": "object",
       "properties": {
         "maxFailuresPerHour": {
@@ -1431,6 +1432,12 @@
                       "required": true,
                       "type": "string"
                     },
+                    "gracefulDecommissionTimeout": {
+                      "description": "Optional. Timeout for graceful YARN decomissioning. Graceful decommissioning allows removing nodes from the cluster without interrupting jobs in progress. Timeout specifies how long to wait for jobs in progress to finish before forcefully removing nodes (and potentially interrupting jobs). Default timeout is 0 (for forceful decommission), and the maximum allowed timeout is 1 day.Only supported on Dataproc image versions 1.2 and higher.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-duration"
+                    },
                     "updateMask": {
                       "description": "Required. Specifies the path, relative to Cluster, of the field to update. For example, to change the number of workers in a cluster to 5, the update_mask parameter would be specified as config.worker_config.num_instances, and the PATCH request body would specify the new value, as follows:\n{\n  \"config\":{\n    \"workerConfig\":{\n      \"numInstances\":\"5\"\n    }\n  }\n}\nSimilarly, to change the number of preemptible workers in a cluster to 5, the update_mask parameter would be config.secondary_worker_config.num_instances, and the PATCH request body would be set as follows:\n{\n  \"config\":{\n    \"secondaryWorkerConfig\":{\n      \"numInstances\":\"5\"\n    }\n  }\n}\n<strong>Note:<\/strong> Currently, only the following fields can be updated:<table>  <tbody>  <tr>  <td><strong>Mask<\/strong><\/td>  <td><strong>Purpose<\/strong><\/td>  <\/tr>  <tr>  <td><strong><em>labels<\/em><\/strong><\/td>  <td>Update labels<\/td>  <\/tr>  <tr>  <td><strong><em>config.worker_config.num_instances<\/em><\/strong><\/td>  <td>Resize primary worker group<\/td>  <\/tr>  <tr>  <td><strong><em>config.secondary_worker_config.num_instances<\/em><\/strong><\/td>  <td>Resize secondary worker group<\/td>  <\/tr>  <\/tbody>  <\/table>",
                       "location": "query",
@@ -1729,7 +1736,7 @@
                       "type": "string"
                     },
                     "jobStateMatcher": {
-                      "description": "Optional. Specifies enumerated categories of jobs to list (default = match ALL jobs).",
+                      "description": "Optional. Specifies enumerated categories of jobs to list. (default = match ALL jobs).If filter is provided, jobStateMatcher will be ignored.",
                       "location": "query",
                       "type": "string",
                       "enum": [
@@ -1739,7 +1746,7 @@
                       ]
                     },
                     "filter": {
-                      "description": "Optional. A filter constraining the jobs to list. Filters are case-sensitive and have the following syntax:field = value AND field = value ...where field is status.state or labels.[KEY], and [KEY] is a label key. value can be * to match all values. status.state can be either ACTIVE or INACTIVE. Only the logical AND operator is supported; space-separated items are treated as having an implicit AND operator.Example filter:status.state = ACTIVE AND labels.env = staging AND labels.starred = *",
+                      "description": "Optional. A filter constraining the jobs to list. Filters are case-sensitive and have the following syntax:field = value AND field = value ...where field is status.state or labels.[KEY], and [KEY] is a label key. value can be * to match all values. status.state can be either ACTIVE or NON_ACTIVE. Only the logical AND operator is supported; space-separated items are treated as having an implicit AND operator.Example filter:status.state = ACTIVE AND labels.env = staging AND labels.starred = *",
                       "location": "query",
                       "type": "string"
                     }

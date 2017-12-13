@@ -13,29 +13,36 @@
 # limitations under the License.
 """Utilities for gcloud ml products commands."""
 
+import os
 import re
 
+from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import resources
 
 PRODUCTS_API = 'alpha_vision'
 PRODUCTS_SEARCH_VERSION = 'v1'
 PRODUCTS_VERSION = 'v1alpha1'
 
-GCS_URI_FORMAT = r'^gs://'
+GCS_URI_FORMAT = r'^gs://.+'
 PRODUCT_ID_FORMAT = r'^[a-zA-Z0-9_-]+$'
+PRODUCT_ID_VALIDATION = ('Product Id is restricted to 255 characters '
+                         'including letters, numbers, underscore ( _ ) and '
+                         'hyphen (-).')
+PRODUCT_ID_VALIDATION_ERROR = ('Invalid product_id [{}]. ' +
+                               PRODUCT_ID_VALIDATION)
 _GCS_PATH_ERROR_MESSAGE = (
     'The {object} path [{data}] is not a properly formatted URI for a remote '
     '{object}. URI must be a Google Cloud Storage image URI, in '
     'the form `gs://bucket_name/object_name`. Please double-check your input '
     'and try again.')
 
-_BOUNDING_POLY_ERROR = ('vertices must be a list of (int,int) coordinate tuples'
-                        ' representing the vertices of the bounding polygon '
-                        'e.g. [(x1, y1), (x2, y2), (x3, y3),...]. Received '
-                        '[{}]: {}')
+BOUNDING_POLY_ERROR = ('vertices must be a list of coordinate pairs '
+                       'representing the vertices of the bounding polygon '
+                       'e.g. [x1:y1, x2:y2, x3:y3,...]. Received [{}]: {}')
 
 
 def GetApiClient(version=PRODUCTS_VERSION):
@@ -68,6 +75,32 @@ class InvalidBoundsError(Error):
 
 class ProductSearchException(Error):
   """Raised if the image product search resulted in an error."""
+
+
+def GetImageFromPath(path):
+  """Builds an Image message from a path.
+
+  Args:
+    path: the path arg given to the command.
+
+  Raises:
+    ImagePathError: if the image path does not exist and does not seem to be
+        a remote URI.
+
+  Returns:
+    alpha_vision_v1_messages.Image: an image message containing information
+      for the API on the image to analyze.
+  """
+  messages = GetApiMessages(PRODUCTS_SEARCH_VERSION)
+  image = messages.Image()
+  if os.path.isfile(path):
+    with open(path, 'rb') as content_file:
+      image.content = content_file.read()
+  elif re.match(GCS_URI_FORMAT, path):
+    image.source = messages.ImageSource(imageUri=path)
+  else:
+    GcsPathError(_GCS_PATH_ERROR_MESSAGE.format(object='image', data=path))
+  return image
 
 
 class ProductsClient(object):
@@ -104,7 +137,7 @@ class ProductsClient(object):
         AlphaVisionProductSearchCatalogsReferenceImagesListRequest)
     self.ref_image_list_resp = self.messages.ListReferenceImagesResponse
     self.ref_image_service = (self.client.
-                              ProductSearchCatalogsReferenceImagesService)
+                              productSearch_catalogs_referenceImages)
 
     # Catalogs
     self.delete_catalog_msg = (
@@ -116,7 +149,7 @@ class ProductsClient(object):
     self.delete_catalog_images_msg = (
         self.messages.
         AlphaVisionProductSearchCatalogsDeleteReferenceImagesRequest)
-    self.catalog_service = self.client.ProductSearchCatalogsService
+    self.catalog_service = self.client.productSearch_catalogs
 
     # Catalogs Import
     self.import_catalog_msg = self.messages.ImportCatalogsRequest
@@ -133,36 +166,39 @@ class ProductsClient(object):
     self.search_image_msg = self.search_messages.Image  # Target Image
     self.search_feature_enum = (
         self.search_messages.Feature.TypeValueValuesEnum.PRODUCT_SEARCH)
-    self.products_search_service = self.search_client.ImagesService  # Annotate
+    self.products_search_service = self.search_client.images  # Annotate
 
   # Reference Image Management
-  def BuildBoundingPoly(self, vertex_tuples):
+  def BuildBoundingPoly(self, vertex_list):
     """Builds a BoundingPoly Message for a RefrenceImage.
 
     Convert list of image coordinates into a BoundingPoly message.
 
     Args:
-      vertex_tuples: [(int,int)] - List of integer tuples representing the
+      vertex_list: [int:int] - List of string integer pairs representing the
       vertices of the BoundingPoly
 
     Returns:
       BoundingPoly message
 
     Raises:
-      InvalidBoundsError: vertex_tuples contains fewer than 3 vertices OR format
-        of vertex_tuples is incorrect.
+      InvalidBoundsError: vertex_list contains fewer than 3 vertices OR format
+        of vertex_list is incorrect.
     """
+    if not vertex_list:
+      return None
     vertices = []
-    if vertex_tuples and len(vertex_tuples) < 3:
+    if len(vertex_list) < 3:
       raise InvalidBoundsError(
-          _BOUNDING_POLY_ERROR.format(vertex_tuples,
-                                      'Too few vertices. '
-                                      'Must specify at least 3.'))
+          BOUNDING_POLY_ERROR.format(vertex_list,
+                                     'Too few vertices. '
+                                     'Must specify at least 3.'))
     try:
-      for x_coord, y_coord in vertex_tuples:
-        vertices.append(self.messages.Vertex(x=x_coord, y=y_coord))
+      for coord_pair in vertex_list:
+        x_coord, y_coord = coord_pair.split(':')
+        vertices.append(self.messages.Vertex(x=int(x_coord), y=int(y_coord)))
     except (TypeError, ValueError) as e:
-      raise InvalidBoundsError(_BOUNDING_POLY_ERROR.format(vertex_tuples, e))
+      raise InvalidBoundsError(BOUNDING_POLY_ERROR.format(vertex_list, e))
     if vertices:
       return self.messages.BoundingPoly(vertices=vertices)
 
@@ -196,11 +232,9 @@ class ProductsClient(object):
       ProductIdError: if the product_id is invalid.
       ValueError: bounds is invalid.
     """
-    if not self._ValidateProductId(product_id):
-      raise ProductIdError('Invalid product_id [{}]. product_id should be no '
-                           'more than 255 chars long and match the regular '
-                           'expression `{}`.'.format(product_id,
-                                                     PRODUCT_ID_FORMAT))
+    if product_id and not self._ValidateProductId(product_id):
+      raise ProductIdError(PRODUCT_ID_VALIDATION_ERROR.format(
+          product_id, PRODUCT_ID_FORMAT))
 
     if not re.match(GCS_URI_FORMAT, image_path):
       raise GcsPathError(_GCS_PATH_ERROR_MESSAGE.format(object='image',
@@ -214,10 +248,10 @@ class ProductsClient(object):
                                         productId=product_id,
                                         boundingPoly=bounds)
 
-  def CreateRefImage(self, input_image, catalog_name):
+  def CreateRefImage(self, input_image, catalog_ref):
     """Creates a ReferenceImage in the specified Catalog."""
     image_create_request = self.ref_image_create_msg(
-        parent=catalog_name, referenceImage=input_image)
+        parent=catalog_ref, referenceImage=input_image)
     return self.ref_image_service.Create(image_create_request)
 
   def DescribeRefImage(self, image_name):
@@ -250,8 +284,8 @@ class ProductsClient(object):
 
   def DeleteCatalog(self, catalog_name):
     """Delete a Catalog."""
-    return self.catalog_service.Delete(
-        self.delete_catalog_msg(name=catalog_name))
+    self.catalog_service.Delete(self.delete_catalog_msg(name=catalog_name))
+    return catalog_name
 
   def ListCatalogs(self):
     """List all Catalogs."""
@@ -275,7 +309,7 @@ class ProductsClient(object):
       per line.
 
     Returns:
-      Operation: messages.longrunning.Operation, result of the Import request.
+      Response: messages.ImportCatalogsResponse, result of the Import request.
 
     Raises:
       GcsPathError: If CSV file path is not a valid GCS URI.
@@ -286,8 +320,16 @@ class ProductsClient(object):
 
     import_config = self.import_catalog_config(
         gcsSource=self.import_catalog_src(csvFileUri=catalog_file_uri))
-    return self.catalog_service.Import(self.import_catalog_msg(
+    import_op = self.catalog_service.Import(self.import_catalog_msg(
         inputConfig=import_config))
+    operation_ref = resources.REGISTRY.Parse(
+        import_op.name,
+        collection='alpha_vision.operations')
+    op_response = self.WaitOperation(operation_ref)
+    import_response = encoding.JsonToMessage(
+        self.messages.ImportCatalogsResponse,
+        encoding.MessageToJson(op_response))
+    return import_response
 
   # Misc
   def WaitOperation(self, operation_ref):
@@ -303,13 +345,13 @@ class ProductsClient(object):
       messages.AnnotateVideoResponse, the final result of the operation.
     """
     message = 'Waiting for operation [{}] to complete'.format(
-        operation_ref.operationsId)
+        operation_ref.RelativeName())
     return waiter.WaitFor(
         waiter.CloudOperationPollerNoResources(
             self.search_client.operations,
             # TODO(b/62478975): remove this workaround when operation resources
             # are compatible with gcloud parsing.
-            get_name_func=lambda x: x.operationsId),
+            get_name_func=lambda x: x.RelativeName()),
         operation_ref,
         message,
         exponential_sleep_multiplier=2.0,

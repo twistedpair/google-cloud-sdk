@@ -138,6 +138,7 @@ _STORAGE_RO = 'https://www.googleapis.com/auth/devstorage.read_only'
 _USERACCOUNTS_RO = 'https://www.googleapis.com/auth/cloud.useraccounts.readonly'
 _LOGGING_WRITE = 'https://www.googleapis.com/auth/logging.write'
 _MONITORING_WRITE = 'https://www.googleapis.com/auth/monitoring.write'
+_MONITORING = 'https://www.googleapis.com/auth/monitoring'
 _SERVICE_CONTROL_SCOPE = 'https://www.googleapis.com/auth/servicecontrol'
 _SERVICE_MANAGEMENT_SCOPE = 'https://www.googleapis.com/auth/service.management.readonly'
 _SOURCE_REPOS = 'https://www.googleapis.com/auth/source.full_control'
@@ -148,6 +149,15 @@ _STACKDRIVER_TRACE = 'https://www.googleapis.com/auth/trace.append'
 DEFAULT_SCOPES = sorted([
     _STORAGE_RO, _USERACCOUNTS_RO, _LOGGING_WRITE, _MONITORING_WRITE,
     _SERVICE_CONTROL_SCOPE, _SERVICE_MANAGEMENT_SCOPE, _PUBSUB,
+    _STACKDRIVER_TRACE,
+])
+
+GKE_DEFAULT_SCOPES = sorted([
+    _STORAGE_RO,
+    _LOGGING_WRITE,
+    _MONITORING,
+    _SERVICE_CONTROL_SCOPE,
+    _SERVICE_MANAGEMENT_SCOPE,
     _STACKDRIVER_TRACE,
 ])
 
@@ -167,22 +177,27 @@ SCOPES = {
     'cloud-source-repos-ro': [_SOURCE_REPOS_RO],
     'compute-ro': ['https://www.googleapis.com/auth/compute.readonly'],
     'compute-rw': ['https://www.googleapis.com/auth/compute'],
-    'default': DEFAULT_SCOPES,
+    'default':
+        DEFAULT_SCOPES,
+    'gke-default':
+        GKE_DEFAULT_SCOPES,
     'useraccounts-ro': [_USERACCOUNTS_RO],
     'useraccounts-rw': ['https://www.googleapis.com/auth/cloud.useraccounts'],
     'datastore': ['https://www.googleapis.com/auth/datastore'],
     'logging-write': [_LOGGING_WRITE],
-    'monitoring': ['https://www.googleapis.com/auth/monitoring'],
+    'monitoring': [_MONITORING],
     'monitoring-write': [_MONITORING_WRITE],
     'service-control': [_SERVICE_CONTROL_SCOPE],
     'service-management': [_SERVICE_MANAGEMENT_SCOPE],
     'sql': ['https://www.googleapis.com/auth/sqlservice'],
     'sql-admin': ['https://www.googleapis.com/auth/sqlservice.admin'],
+    'trace': [_STACKDRIVER_TRACE],
     'storage-full': ['https://www.googleapis.com/auth/devstorage.full_control'],
     'storage-ro': [_STORAGE_RO],
     'storage-rw': ['https://www.googleapis.com/auth/devstorage.read_write'],
     'taskqueue': ['https://www.googleapis.com/auth/taskqueue'],
     'userinfo-email': ['https://www.googleapis.com/auth/userinfo.email'],
+    'pubsub': ['https://www.googleapis.com/auth/pubsub'],
 }
 
 

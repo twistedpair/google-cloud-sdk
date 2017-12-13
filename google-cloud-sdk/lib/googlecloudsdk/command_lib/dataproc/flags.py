@@ -14,6 +14,7 @@
 """Flags for workflow templates related commands."""
 
 from googlecloudsdk.calliope import actions
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import properties
 
 
@@ -37,3 +38,41 @@ def AddVersionFlag(parser):
 def AddTemplateFlag(parser, action):
   parser.add_argument(
       'template', help='The ID of the workflow template to {0}.'.format(action))
+
+
+def AddTimeoutFlag(parser, default='10m'):
+  # This may be made visible or passed to the server in future.
+  parser.add_argument(
+      '--timeout',
+      type=arg_parsers.Duration(),
+      default=default,
+      help='Client side timeout on how long to wait for Datproc operations.',
+      hidden=True)
+
+
+def AddMinCpuPlatformArgs(parser, track):
+  """Add mininum CPU platform flags for both master and worker instances."""
+  help_text = """\
+      When specified, the VM will be scheduled on host with specified CPU
+      architecture or a newer one. To list available CPU platforms in given
+      zone, run:
+
+          $ gcloud {}compute zones describe ZONE
+
+      CPU platform selection is available only in selected zones; zones that
+      allow CPU platform selection will have an `availableCpuPlatforms` field
+      that contains the list of available CPU platforms for that zone.
+
+      You can find more information online:
+      https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform
+      """.format(track.prefix + ' ' if track.prefix else '')
+  parser.add_argument(
+      '--master-min-cpu-platform',
+      metavar='PLATFORM',
+      required=False,
+      help=help_text)
+  parser.add_argument(
+      '--worker-min-cpu-platform',
+      metavar='PLATFORM',
+      required=False,
+      help=help_text)

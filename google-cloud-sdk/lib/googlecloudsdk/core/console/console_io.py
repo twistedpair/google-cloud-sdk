@@ -124,9 +124,7 @@ def IsInteractive(output=False, error=False, heuristic=False):
     return False
   if error and not sys.stderr.isatty():
     return False
-  if platforms.OperatingSystem.Current() != platforms.OperatingSystem.WINDOWS:
-    if os.getppid() == os.getpgrp():
-      return False
+
   if heuristic:
     # Check the home path. Most startup scripts for example are executed by
     # users that don't have a home path set. Home is OS dependent though, so
@@ -143,6 +141,16 @@ def IsInteractive(output=False, error=False, heuristic=False):
     if not homepath and (not home or home == '/'):
       return False
   return True
+
+
+# TODO(b/69972740) Add this to metrics in addition to current isinteractive.
+def IsRunFromShellScript():
+  """Check if command is being run from command line or a script."""
+  # Commands run from a shell script typically have getppid() == getpgrp()
+  if platforms.OperatingSystem.Current() != platforms.OperatingSystem.WINDOWS:
+    if os.getppid() == os.getpgrp():
+      return True
+  return False
 
 
 def CanPrompt():

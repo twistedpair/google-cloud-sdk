@@ -1,0 +1,22 @@
+catalog:
+  name: catalog
+  collection: alpha_vision.productSearch.catalogs
+  api_version: v1alpha1
+  request_id_field: catalog.name
+  attributes:
+    - &catalog
+      parameter_name: catalogsId
+      attribute_name: catalog
+      help: The name of the catalog.
+
+reference_image:
+  name: referenceImage
+  collection: alpha_vision.productSearch.catalogs.referenceImages
+  api_version: v1alpha1
+  request_id_field: referenceImage.name
+  attributes:
+    - *catalog
+    - &reference_image
+      parameter_name: referenceImagesId
+      attribute_name: reference_image
+      help: The reference image.

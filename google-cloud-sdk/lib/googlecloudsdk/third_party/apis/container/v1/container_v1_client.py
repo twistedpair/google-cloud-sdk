@@ -34,6 +34,7 @@ class ContainerV1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.masterProjects_locations_projects_clusters_master = self.MasterProjectsLocationsProjectsClustersMasterService(self)
     self.masterProjects_locations_projects_clusters = self.MasterProjectsLocationsProjectsClustersService(self)
     self.masterProjects_locations_projects = self.MasterProjectsLocationsProjectsService(self)
     self.masterProjects_locations_signedUrls = self.MasterProjectsLocationsSignedUrlsService(self)
@@ -49,13 +50,13 @@ class ContainerV1(base_api.BaseApiClient):
     self.projects_zones = self.ProjectsZonesService(self)
     self.projects = self.ProjectsService(self)
 
-  class MasterProjectsLocationsProjectsClustersService(base_api.BaseApiService):
-    """Service class for the masterProjects_locations_projects_clusters resource."""
+  class MasterProjectsLocationsProjectsClustersMasterService(base_api.BaseApiService):
+    """Service class for the masterProjects_locations_projects_clusters_master resource."""
 
-    _NAME = u'masterProjects_locations_projects_clusters'
+    _NAME = u'masterProjects_locations_projects_clusters_master'
 
     def __init__(self, client):
-      super(ContainerV1.MasterProjectsLocationsProjectsClustersService, self).__init__(client)
+      super(ContainerV1.MasterProjectsLocationsProjectsClustersMasterService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -64,7 +65,7 @@ class ContainerV1(base_api.BaseApiClient):
 any repairs to be done on the Hosted Master.
 
       Args:
-        request: (ContainerMasterProjectsLocationsProjectsClustersGetRepairworkRequest) input message
+        request: (ContainerMasterProjectsLocationsProjectsClustersMasterGetRepairworkRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GetRepairWorkResponse) The response message.
@@ -75,16 +76,26 @@ any repairs to be done on the Hosted Master.
 
     GetRepairwork.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'GET',
-        method_id=u'container.masterProjects.locations.projects.clusters.getRepairwork',
-        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
+        method_id=u'container.masterProjects.locations.projects.clusters.master.getRepairwork',
+        ordered_params=[u'masterProjectName', u'location', u'projectNumber', u'clusterId', u'masterId'],
+        path_params=[u'clusterId', u'location', u'masterId', u'masterProjectName', u'projectNumber'],
         query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/projects/{projectNumber}/clusters/{clusterId}/repairwork',
+        relative_path=u'v1/masterProjects/{masterProjectName}/locations/{location}/projects/{projectNumber}/clusters/{clusterId}/master/{masterId}/repairwork',
         request_field='',
-        request_type_name=u'ContainerMasterProjectsLocationsProjectsClustersGetRepairworkRequest',
+        request_type_name=u'ContainerMasterProjectsLocationsProjectsClustersMasterGetRepairworkRequest',
         response_type_name=u'GetRepairWorkResponse',
         supports_download=False,
     )
+
+  class MasterProjectsLocationsProjectsClustersService(base_api.BaseApiService):
+    """Service class for the masterProjects_locations_projects_clusters resource."""
+
+    _NAME = u'masterProjects_locations_projects_clusters'
+
+    def __init__(self, client):
+      super(ContainerV1.MasterProjectsLocationsProjectsClustersService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class MasterProjectsLocationsProjectsService(base_api.BaseApiService):
     """Service class for the masterProjects_locations_projects resource."""

@@ -29,6 +29,12 @@ class Collections(enum.Enum):
       {},
       [u'usersId']
   )
+  USERS_PROJECTS = (
+      'users.projects',
+      'users/{user}/projects/{project}',
+      {},
+      ['user', 'project']
+  )
   USERS_SSHPUBLICKEYS = (
       'users.sshPublicKeys',
       '{+name}',

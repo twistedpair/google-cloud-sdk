@@ -20,26 +20,26 @@ from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.compute import utils as api_utils
 from googlecloudsdk.api_lib.dataproc import compute_helpers
 from googlecloudsdk.api_lib.dataproc import constants
-from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute.instances import flags as instances_flags
+from googlecloudsdk.command_lib.dataproc import flags
 from googlecloudsdk.command_lib.util import labels_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import times
 
 
-def ArgsForClusterRef(parser):
+def ArgsForClusterRef(parser, beta=False):
   """Register flags for creating a dataproc cluster.
 
   Args:
     parser: The argparse.ArgParser to configure with dataproc cluster arguments.
+    beta: whether or not this is a beta command (may affect flag visibility)
   """
   labels_util.AddCreateLabelsFlags(parser)
   instances_flags.AddTagsArgs(parser)
   # 30m is backend timeout + 5m for safety buffer.
-  util.AddTimeoutFlag(parser, default='35m')
+  flags.AddTimeoutFlag(parser, default='35m')
   parser.add_argument(
       '--metadata',
       type=arg_parsers.ArgDict(min_length=1),
@@ -49,15 +49,32 @@ def ArgsForClusterRef(parser):
             'running on the instances'),
       metavar='KEY=VALUE')
 
-  parser.add_argument(
+  # Either allow creating a single node cluster (--single-node), or specifying
+  # the number of workers in the multi-node cluster (--num-workers and
+  # --num-preemptible-workers)
+  node_group = parser.add_argument_group(mutex=True)  # Mutually exclusive
+  node_group.add_argument(
+      '--single-node',
+      action='store_true',
+      help="""\
+      Create a single node cluster.
+
+      A single node cluster has all master and worker components.
+      It cannot have any separate worker nodes. If this flag is not
+      specified, a cluster with separate workers is created.
+      """)
+  # Not mutually exclusive
+  worker_group = node_group.add_argument_group(help='Multi-node cluster flags')
+  worker_group.add_argument(
       '--num-workers',
       type=int,
       help='The number of worker nodes in the cluster. Defaults to '
       'server-specified.')
-  parser.add_argument(
+  worker_group.add_argument(
       '--num-preemptible-workers',
       type=int,
       help='The number of preemptible worker nodes in the cluster.')
+
   parser.add_argument(
       '--master-machine-type',
       help='The type of machine to use for the master. Defaults to '
@@ -66,7 +83,11 @@ def ArgsForClusterRef(parser):
       '--worker-machine-type',
       help='The type of machine to use for workers. Defaults to '
       'server-specified.')
-  parser.add_argument('--image', hidden=True)
+  parser.add_argument(
+      '--image',
+      hidden=True,
+      help='The full image URI to use with the cluster. Overrides '
+      '--image-version.')
   parser.add_argument(
       '--image-version',
       metavar='VERSION',
@@ -93,6 +114,18 @@ def ArgsForClusterRef(parser):
       exclusive with --network.
       """)
   parser.add_argument(
+      '--no-address',
+      action='store_true',
+      help="""\
+      If provided, the instances in the cluster will not be assigned external
+      IP addresses.
+
+      Note: Dataproc VMs need access to the Dataproc API. This can be achieved
+      without external IP addresses using Private Google Access
+      (https://cloud.google.com/compute/docs/private-google-access).
+      """,
+      hidden=not beta)
+  parser.add_argument(
       '--num-worker-local-ssds',
       type=int,
       help='The number of local SSDs to attach to each worker in a cluster.')
@@ -112,6 +145,22 @@ def ArgsForClusterRef(parser):
       metavar='TIMEOUT',
       default='10m',
       help='The maximum duration of each initialization action.')
+  parser.add_argument(
+      '--num-masters',
+      type=arg_parsers.CustomFunctionValidator(
+          lambda n: int(n) in [1, 3],
+          'Number of masters must be 1 (Standard) or 3 (High Availability)',
+          parser=arg_parsers.BoundedInt(1, 3)),
+      help="""\
+      The number of master nodes in the cluster.
+
+      [format="csv",options="header"]
+      |========
+      Number of Masters,Cluster Mode
+      1,Standard
+      3,High Availability
+      |========
+      """)
   parser.add_argument(
       '--properties',
       type=arg_parsers.ArgDict(),
@@ -223,7 +272,6 @@ Alias,URI
       '--worker-boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
-
   parser.add_argument(
       '--preemptible-worker-boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
@@ -236,8 +284,13 @@ Alias,URI
       """)
 
 
-def GetClusterConfig(args, dataproc, project_id, compute_resources,
-                     use_accelerators=False, use_auto_delete_ttl=False):
+def GetClusterConfig(args,
+                     dataproc,
+                     project_id,
+                     compute_resources,
+                     use_accelerators=False,
+                     use_auto_delete_ttl=False,
+                     use_min_cpu_platform=False):
   """Get dataproc cluster configuration.
 
   Args:
@@ -247,6 +300,7 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources,
     compute_resources: compute resource for cluster
     use_accelerators: use accelerators in BETA only.
     use_auto_delete_ttl: use to configure auto-delete/TTL in BETA only.
+    use_min_cpu_platform: use to configure minimum CPU platform for instances.
 
   Returns:
     cluster_config: Dataproc cluster configuration
@@ -366,6 +420,10 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources,
       initializationActions=init_actions,
       softwareConfig=software_config,)
 
+  if use_min_cpu_platform:
+    cluster_config.masterConfig.minCpuPlatform = args.master_min_cpu_platform
+    cluster_config.workerConfig.minCpuPlatform = args.worker_min_cpu_platform
+
   if use_auto_delete_ttl:
     lifecycle_config = dataproc.messages.LifecycleConfig()
     changed_config = False
@@ -391,5 +449,8 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources,
             numInstances=args.num_preemptible_workers,
             diskConfig=dataproc.messages.DiskConfig(
                 bootDiskSizeGb=preemptible_worker_boot_disk_size_gb,)))
+    if use_min_cpu_platform and args.worker_min_cpu_platform:
+      secondary_worker_config = cluster_config.secondaryWorkerConfig
+      secondary_worker_config.minCpuPlatform = args.worker_min_cpu_platform
 
   return cluster_config

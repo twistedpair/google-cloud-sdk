@@ -773,7 +773,8 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
 
   Enums:
     JobStateMatcherValueValuesEnum: Optional. Specifies enumerated categories
-      of jobs to list (default = match ALL jobs).
+      of jobs to list. (default = match ALL jobs).If filter is provided,
+      jobStateMatcher will be ignored.
 
   Fields:
     clusterName: Optional. If set, the returned jobs list includes only jobs
@@ -782,12 +783,13 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
       case-sensitive and have the following syntax:field = value AND field =
       value ...where field is status.state or labels.[KEY], and [KEY] is a
       label key. value can be * to match all values. status.state can be
-      either ACTIVE or INACTIVE. Only the logical AND operator is supported;
+      either ACTIVE or NON_ACTIVE. Only the logical AND operator is supported;
       space-separated items are treated as having an implicit AND
       operator.Example filter:status.state = ACTIVE AND labels.env = staging
       AND labels.starred = *
-    jobStateMatcher: Optional. Specifies enumerated categories of jobs to list
-      (default = match ALL jobs).
+    jobStateMatcher: Optional. Specifies enumerated categories of jobs to
+      list. (default = match ALL jobs).If filter is provided, jobStateMatcher
+      will be ignored.
     pageSize: Optional. The number of results to return in each response.
     pageToken: Optional. The page token, returned by a previous call, to
       request the next page of results.
@@ -798,8 +800,8 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
   """
 
   class JobStateMatcherValueValuesEnum(_messages.Enum):
-    """Optional. Specifies enumerated categories of jobs to list (default =
-    match ALL jobs).
+    """Optional. Specifies enumerated categories of jobs to list. (default =
+    match ALL jobs).If filter is provided, jobStateMatcher will be ignored.
 
     Values:
       ALL: <no description>
@@ -1008,6 +1010,8 @@ class DiskConfig(_messages.Message):
 
   Fields:
     bootDiskSizeGb: Optional. Size in GB of the boot disk (default is 500GB).
+    bootDiskType: Optional. Type of the boot disk (default is 'pd-standard').
+      Valid values: 'pd-ssd', 'pd-standard'
     numLocalSsds: Optional. Number of attached SSDs, from 0 to 4 (default is
       0). If SSDs are not attached, the boot disk is used to store runtime
       logs and HDFS
@@ -1018,7 +1022,8 @@ class DiskConfig(_messages.Message):
   """
 
   bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  numLocalSsds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  bootDiskType = _messages.StringField(2)
+  numLocalSsds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Empty(_messages.Message):
@@ -1328,6 +1333,9 @@ class InstanceGroupConfig(_messages.Message):
     managedGroupConfig: Output-only. The config for Google Compute Engine
       Instance Group Manager that manages this group. This is only used for
       preemptible instance groups.
+    minCpuPlatform: Optional. Specifies the minimum cpu platform for the
+      Instance Group. Examples: *
+      https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform
     numInstances: Optional. The number of VM instances in the instance group.
       For master instance groups, must be set to 1.
   """
@@ -1339,7 +1347,8 @@ class InstanceGroupConfig(_messages.Message):
   isPreemptible = _messages.BooleanField(5)
   machineTypeUri = _messages.StringField(6)
   managedGroupConfig = _messages.MessageField('ManagedGroupConfig', 7)
-  numInstances = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  minCpuPlatform = _messages.StringField(8)
+  numInstances = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class InstantiateWorkflowTemplateRequest(_messages.Message):
@@ -1487,8 +1496,7 @@ class JobReference(_messages.Message):
 
 
 class JobScheduling(_messages.Message):
-  """Job scheduling options.Beta Feature: These options are available for
-  testing purposes only. They may be changed before final release.
+  """Job scheduling options.
 
   Fields:
     maxFailuresPerHour: Optional. Maximum number of times per hour a driver

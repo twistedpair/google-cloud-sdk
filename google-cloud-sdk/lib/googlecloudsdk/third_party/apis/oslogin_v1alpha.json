@@ -7,7 +7,7 @@
   "version": "v1alpha",
   "revision": "0",
   "title": "Google Cloud OS Login API",
-  "description": "Manages OS login configuration for Directory API users.",
+  "description": "Manages OS login configuration for Google account users.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

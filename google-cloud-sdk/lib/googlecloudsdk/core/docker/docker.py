@@ -23,7 +23,6 @@ import os
 import subprocess
 import sys
 
-from distutils import version as distutils_version
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import store
@@ -35,7 +34,6 @@ from googlecloudsdk.core.util import files
 _USERNAME = 'oauth2accesstoken'
 _EMAIL = 'not@val.id'
 _CREDENTIAL_STORE_KEY = 'credsStore'
-_EMAIL_FLAG_DEPRECATED_VERSION = distutils_version.LooseVersion('1.11.0')
 
 
 class UnsupportedRegistryError(client_lib.DockerError):
@@ -49,7 +47,7 @@ class UnsupportedRegistryError(client_lib.DockerError):
             '{1}'.format(self.image_url, constants.ALL_SUPPORTED_REGISTRIES))
 
 
-def DockerLogin(server, email, username, access_token):
+def DockerLogin(server, username, access_token):
   """Register the username / token for the given server on Docker's keyring."""
 
   # Sanitize and normalize the server input.
@@ -60,8 +58,6 @@ def DockerLogin(server, email, username, access_token):
   # 'docker login' must be used due to the change introduced in
   # https://github.com/docker/docker/pull/20107 .
   docker_args = ['login']
-  if not _EmailFlagDeprecatedForDockerVersion():
-    docker_args.append('--email=' + email)
   docker_args.append('--username=' + username)
   docker_args.append('--password=' + access_token)
   docker_args.append(server)  # The auth endpoint must be the last argument.
@@ -84,24 +80,6 @@ def DockerLogin(server, email, username, access_token):
     log.out.Print(stdoutdata)
     log.status.Print(stderrdata)
     raise client_lib.DockerError('Docker login failed.')
-
-
-def _EmailFlagDeprecatedForDockerVersion():
-  """Checks to see if --email flag is deprecated.
-
-  Returns:
-    True if the installed Docker client version has deprecated the
-    --email flag during 'docker login,' False otherwise.
-  """
-  try:
-    version = client_lib.GetDockerVersion()
-
-  except exceptions.Error:
-    # Docker doesn't exist or doesn't like the modern version query format.
-    # Assume that --email is not deprecated, return False.
-    return False
-
-  return version >= _EMAIL_FLAG_DEPRECATED_VERSION
 
 
 def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
@@ -131,7 +109,7 @@ def _SurfaceUnexpectedInfo(stdoutdata, stderrdata):
       log.status.Print(line)  # log.status => stderr
 
 
-def _CredentialHelperConfigured():
+def _CredentialStoreConfigured():
   """Returns True if a credential store is specified in the docker config.
 
   Returns:
@@ -152,30 +130,6 @@ def _CredentialHelperConfigured():
       return False
   except IOError:
     # Config file doesn't exist.
-    return False
-
-
-def _GCRCredHelperConfigured():
-  """Returns True if docker-credential-gcr is the docker credential store.
-
-  Returns:
-    True if docker-credential-gcr is specified in the docker config.
-    False if the config file does not exist, does not contain a
-    'credsStore' key, or if the credstore is not docker-credential-gcr.
-  """
-  try:
-    # Not using DockerConfigInfo here to be backward compatible with
-    # UpdateDockerCredentials which should still work if Docker is not installed
-    path, is_new_format = client_lib.GetDockerConfigPath()
-    contents = client_lib.ReadConfigurationFile(path)
-    if is_new_format and (
-        _CREDENTIAL_STORE_KEY in contents):
-      return contents[_CREDENTIAL_STORE_KEY] == 'gcr'
-    else:
-      # Docker <1.7.0 (no credential store support) or credsStore == null
-      return False
-  except IOError:
-    # Config file doesn't exist or can't be parsed.
     return False
 
 
@@ -249,20 +203,11 @@ def UpdateDockerCredentials(server, refresh=True):
     raise exceptions.Error(
         'No access token could be obtained from the current credentials.')
 
-  url = client_lib.GetNormalizedURL(server)
-  # Strip the port, if it exists. It's OK to butcher IPv6, this is only an
-  # optimization for hostnames in constants.ALL_SUPPORTED_REGISTRIES.
-  hostname = url.hostname.split(':')[0]
-
-  third_party_cred_helper = (_CredentialHelperConfigured() and
-                             not _GCRCredHelperConfigured())
-  if (third_party_cred_helper or
-      hostname not in constants.ALL_SUPPORTED_REGISTRIES):
-    # If this is a custom host or if there's a third-party credential helper...
+  if _CredentialStoreConfigured():
     try:
-      # Update the credentials stored by docker, passing the access token
-      # as a password, and benign values as the email and username.
-      DockerLogin(server, _EMAIL, _USERNAME, cred.access_token)
+      # Update the credentials stored by docker, passing the sentinel username
+      # and access token.
+      DockerLogin(server, _USERNAME, cred.access_token)
     except client_lib.DockerError as e:
       # Only catch docker-not-found error
       if str(e) != client_lib.DOCKER_NOT_FOUND_ERROR:
@@ -274,11 +219,8 @@ def UpdateDockerCredentials(server, refresh=True):
       log.warn("'docker' was not discovered on the path. Credentials have been "
                'stored, but are not guaranteed to work with the Docker client '
                ' if an external credential store is configured.')
-  elif not _GCRCredHelperConfigured():
-    # If this is not a custom host and no third-party cred helper...
+  else:
     _UpdateDockerConfig(server, _USERNAME, cred.access_token)
-
-  # If this is a default registry and docker-credential-gcr is configured, no-op
 
 
 def _UpdateDockerConfig(server, username, access_token):
@@ -314,7 +256,7 @@ def _IsExpectedErrorLine(line):
   """Returns whether or not the given line was expected from the Docker client.
 
   Args:
-    line: The line recieved in stderr from Docker
+    line: The line received in stderr from Docker
   Returns:
     True if the line was expected, False otherwise.
   """

@@ -17,14 +17,17 @@ from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
+from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.cloudbuild import execution
+from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import console_io
 
 
 _BUILDER = 'gcr.io/compute-image-tools/daisy:release'
@@ -59,6 +62,39 @@ def AddCommonDaisyArgs(parser):
           """
   )
   base.ASYNC_FLAG.AddToParser(parser)
+
+
+def CheckIamPermissions(project_id):
+  """Check for needed IAM permissions and prompt to add if missing.
+
+  Args:
+    project_id: A string with the name of the project.
+  """
+  project = projects_api.Get(project_id)
+  service_account = 'serviceAccount:{0}@cloudbuild.gserviceaccount.com'.format(
+      project.projectNumber)
+  expected_permissions = {'roles/compute.admin': service_account,
+                          'roles/iam.serviceAccountActor': service_account}
+  permissions = projects_api.GetIamPolicy(project_id)
+  for binding in permissions.bindings:
+    if expected_permissions.get(binding.role) in binding.members:
+      del expected_permissions[binding.role]
+
+  if expected_permissions:
+    ep_table = ['{0} {1}'.format(role, account) for role, account
+                in expected_permissions.items()]
+    prompt_message = (
+        'The following IAM permissions are needed for this operation:\n'
+        '[{0}]\n'.format('\n'.join(ep_table)))
+    console_io.PromptContinue(
+        message=prompt_message,
+        prompt_string='Would you like to add the permissions',
+        throw_if_unattended=True,
+        cancel_on_no=True)
+
+    for role, account in expected_permissions.items():
+      log.info('Adding [{0}] to [{1}]'.format(account, role))
+      projects_api.AddIamPolicyBinding(project_id, account, role)
 
 
 def _CreateCloudBuild(build_config, client, messages):
@@ -114,6 +150,10 @@ def RunDaisyBuild(args, workflow, variables):
   """
   client = cloudbuild_util.GetClientInstance()
   messages = cloudbuild_util.GetMessagesModule()
+  project_id = projects_util.ParseProject(
+      properties.VALUES.core.project.GetOrFail())
+
+  CheckIamPermissions(project_id)
 
   timeout_str = '{0}s'.format(args.timeout)
 

@@ -23,7 +23,6 @@ from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import storage_helpers
-from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
@@ -105,16 +104,6 @@ def AddJvmDriverFlags(parser):
       dest='main_class',
       help=('The class containing the main method of the driver. Must be in a'
             ' provided jar or jar that is already on the classpath'))
-
-
-def AddTimeoutFlag(parser, default='10m'):
-  """Add hidden client side timeout flag to parser."""
-  # This may be made visible or passed to the server in future.
-  parser.add_argument(
-      '--timeout',
-      type=arg_parsers.Duration(),
-      default=default,
-      hidden=True)
 
 
 def IsClientHttpException(http_exception):

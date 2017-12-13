@@ -51,6 +51,40 @@ def NoteId(artifact_url, public_key, signature):
   return 'signature_test_{}'.format(artifact_url_md5)
 
 
+def ReplaceImageUrlScheme(image_url, scheme):
+  """Returns the passed `image_url` with the scheme replaced.
+
+  Args:
+    image_url: The URL to replace (or strip) the scheme from. (string)
+    scheme: The scheme of the returned URL.  If this is an empty string or
+      `None`, the scheme is stripped and the leading `//` of the resulting URL
+      will be stripped off.
+  Raises:
+    BadImageUrlError: `image_url` isn't valid.
+  """
+  scheme = scheme or ''
+  parsed_url = urlparse.urlparse(image_url)
+
+  # If the URL has a scheme but not a netloc, then it must have looked like
+  # 'scheme:///foo/bar', which is invalid for the purpose of attestation.
+  if parsed_url.scheme and not parsed_url.netloc:
+    raise BadImageUrlError(
+        "Image URL '{image_url}' is invalid because it does not have a host "
+        'component.'.format(image_url=image_url))
+
+  # If there is neither a scheme nor a netloc, this means that an unqualified
+  # URL was passed, like 'gcr.io/foo/bar'.  In this case we canonicalize the URL
+  # by prefixing '//', which will cause urlparse it to correctly pick up the
+  # netloc.
+  if not parsed_url.netloc:
+    parsed_url = urlparse.urlparse('//{}'.format(image_url))
+
+  # Finally, we replace the scheme and generate the URL.  If we were stripping
+  # the scheme, the result will be prefixed with '//', which we strip off.  If
+  # the scheme is non-empty, the lstrip is a no-op.
+  return parsed_url._replace(scheme=scheme).geturl().lstrip('/')
+
+
 def MakeSignaturePayload(container_image_url):
   """Creates a dict representing a JSON signature object to sign.
 
@@ -63,31 +97,31 @@ def MakeSignaturePayload(container_image_url):
     Dictionary of nested dictionaries and strings, suitable for passing to
     `json.dumps` or similar.
   """
+  url = ReplaceImageUrlScheme(image_url=container_image_url, scheme='')
   try:
-    repo_digest = docker_name.Digest(container_image_url)
+    repo_digest = docker_name.Digest(url)
   except docker_name.BadNameException as e:
     raise BadImageUrlError(e)
   return {
       'critical': {
           'identity': {
-              'docker-reference': repo_digest.repository
+              'docker-reference': str(repo_digest.as_repository()),
           },
           'image': {
-              'docker-manifest-digest': repo_digest.digest
+              'docker-manifest-digest': repo_digest.digest,
           },
-          'type': 'Google cloud binauthz container signature'
-      }
+          'type': 'Google cloud binauthz container signature',
+      },
   }
 
 
 def NormalizeArtifactUrl(artifact_url):
   """Normalizes given URL by ensuring the scheme is https."""
-  if '//' not in artifact_url:
-    artifact_url = '//' + artifact_url
-  parsed_url = urlparse.urlparse(artifact_url)
-  url = urlparse.ParseResult('https', *parsed_url[1:]).geturl()
+  url_without_scheme = ReplaceImageUrlScheme(artifact_url, scheme='')
   try:
-    docker_name.Digest(url)  # Just check over the URL.
+    # The validation logic in `docker_name` silently produces incorrect results
+    # if the passed URL has a scheme.
+    docker_name.Digest(url_without_scheme)
   except docker_name.BadNameException as e:
     raise BadImageUrlError(e)
-  return url
+  return ReplaceImageUrlScheme(artifact_url, scheme='https')

@@ -60,16 +60,16 @@ def TransformFirewallRule(r, undefined=''):
   Returns:
     A compact string describing the firewall rule in r.
   """
-  protocol = r.get('IPProtocol', None)
+  protocol = resource_transform.GetKeyValue(r, 'IPProtocol', None)
   if protocol is None:
     return undefined
   rule = []
-  port_ranges = r.get('ports', None)
-  if port_ranges is None:
-    rule.append(protocol)
-  else:
+  port_ranges = resource_transform.GetKeyValue(r, 'ports', None)
+  try:
     for port_range in port_ranges:
       rule.append('{0}:{1}'.format(protocol, port_range))
+  except TypeError:
+    rule.append(protocol)
   return ','.join(rule)
 
 
@@ -202,6 +202,21 @@ def TransformProject(r, undefined=''):
   return project or undefined
 
 
+def TransformName(r, undefined=''):
+  """Returns a resorce name from an URI.
+
+  Args:
+    r: JSON-serializable object.
+    undefined: Returns this value if the resource cannot be formatted.
+
+  Returns:
+    A project name for selfLink from r.
+  """
+  if r:
+    return r.split('/')[-1]
+  return undefined
+
+
 def TransformQuota(r, undefined=''):
   """Formats a quota as usage/limit.
 
@@ -283,6 +298,7 @@ _TRANSFORMS = {
     'location_scope': TransformLocationScope,
     'machine_type': TransformMachineType,
     'next_maintenance': TransformNextMaintenance,
+    'name': TransformName,
     'operation_http_status': TransformOperationHttpStatus,
     'project': TransformProject,
     'quota': TransformQuota,

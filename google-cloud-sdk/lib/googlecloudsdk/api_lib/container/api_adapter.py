@@ -174,26 +174,25 @@ def InitAPIAdapter(api_version, adapter):
                  compute_messages)
 
 
-_SERVICE_ACCOUNT_SCOPES = ('cloud-platform',)
+_SERVICE_ACCOUNT_SCOPES = ('https://www.googleapis.com/auth/cloud-platform',)
 
 _REQUIRED_SCOPES = ('compute-rw', 'storage-ro')
 
-_ENDPOINTS_SCOPES = ('service-control', 'service-management')
+_ENDPOINTS_SCOPES = (
+    'https://www.googleapis.com/auth/servicecontrol',
+    'https://www.googleapis.com/auth/service.management.readonly')
 
 
 def ExpandScopeURIs(scopes):
   """Expand scope names to the fully qualified uris.
 
   Args:
-    scopes: [str,] list of scope names. Can be short names ('compute-rw')
-      or full urls ('https://www.googleapis.com/auth/compute')
+    scopes: [str,] list of scope names. Can be short names ('compute-rw') or
+    full urls ('https://www.googleapis.com/auth/compute'). See SCOPES in
+    api_lib/container/constants.py & api_lib/compute/constants.py.
 
   Returns:
     list of str, full urls for recognized scopes.
-
-  Raises:
-    util.Error, if any scope provided is not recognized. See SCOPES in
-        cloud/sdk/compute/lib/constants.py.
   """
 
   scope_uris = []
@@ -259,7 +258,9 @@ class CreateClusterOptions(object):
                workload_metadata_from_node=None,
                maintenance_window=None,
                enable_pod_security_policy=None,
-               allow_route_overlap=None):
+               allow_route_overlap=None,
+               private_cluster=None,
+               master_ipv4_cidr=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -312,6 +313,8 @@ class CreateClusterOptions(object):
     self.maintenance_window = maintenance_window
     self.enable_pod_security_policy = enable_pod_security_policy
     self.allow_route_overlap = allow_route_overlap
+    self.private_cluster = private_cluster
+    self.master_ipv4_cidr = master_ipv4_cidr
 
 
 class UpdateClusterOptions(object):
@@ -684,12 +687,23 @@ class APIAdapter(object):
 
     if options.service_account:
       node_config.serviceAccount = options.service_account
-      options.scopes = _SERVICE_ACCOUNT_SCOPES
+      node_config.oauthScopes = _SERVICE_ACCOUNT_SCOPES
     else:
+      if not options.scopes:
+        options.scopes = []
       options.scopes += _REQUIRED_SCOPES
+      # TODO(b/69431751) The interactions between --scopes and
+      # --[no-enable-cloud-endpoints] is all kind of whacky behavior.  Expand
+      # scope aliases _before_ munging with endpoints scopes so we can filter
+      # out scopes if the --no-enable-cloud-endpoints is set.
+      options.scopes = ExpandScopeURIs(options.scopes)
       if options.enable_cloud_endpoints:
         options.scopes += _ENDPOINTS_SCOPES
-    node_config.oauthScopes = sorted(set(ExpandScopeURIs(options.scopes)))
+      else:
+        options.scopes = [
+            x for x in options.scopes if x not in _ENDPOINTS_SCOPES
+        ]
+      node_config.oauthScopes = sorted(set(options.scopes))
 
     if options.local_ssd_count:
       node_config.localSsdCount = options.local_ssd_count
@@ -838,6 +852,7 @@ class APIAdapter(object):
     self.ParseNetworkConfigOptions(options, cluster)
     self.ParseIPAliasOptions(options, cluster)
     self.ParseAllowRouteOverlapOptions(options, cluster)
+    self.ParsePrivateClusterOptions(options, cluster)
     return cluster
 
   def ParseNetworkConfigOptions(self, options, cluster):
@@ -932,6 +947,13 @@ class APIAdapter(object):
       cluster.ipAllocationPolicy = policy
     else:
       cluster.ipAllocationPolicy.allowRouteOverlap = True
+
+  def ParsePrivateClusterOptions(self, options, cluster):
+    """Parses the options for Private Clusters."""
+    if options.private_cluster:
+      cluster.masterIpv4CidrBlock = options.master_ipv4_cidr
+      cluster.privateCluster = options.private_cluster
+    return cluster
 
   def CreateCluster(self, cluster_ref, options):
     raise NotImplementedError('CreateCluster is not overridden')
@@ -1131,12 +1153,23 @@ class APIAdapter(object):
 
     if options.service_account:
       node_config.serviceAccount = options.service_account
-      options.scopes = _SERVICE_ACCOUNT_SCOPES
+      node_config.oauthScopes = _SERVICE_ACCOUNT_SCOPES
     else:
+      if not options.scopes:
+        options.scopes = []
       options.scopes += _REQUIRED_SCOPES
+      # TODO(b/69431751) The interactions between --scopes and
+      # --[no-enable-cloud-endpoints] is all kind of whacky behavior.  Expand
+      # scope aliases _before_ munging with endpoints scopes so we can filter
+      # out scopes if the --no-enable-cloud-endpoints is set.
+      options.scopes = ExpandScopeURIs(options.scopes)
       if options.enable_cloud_endpoints:
         options.scopes += _ENDPOINTS_SCOPES
-    node_config.oauthScopes = sorted(set(ExpandScopeURIs(options.scopes)))
+      else:
+        options.scopes = [
+            x for x in options.scopes if x not in _ENDPOINTS_SCOPES
+        ]
+      node_config.oauthScopes = sorted(set(options.scopes))
 
     if options.local_ssd_count:
       node_config.localSsdCount = options.local_ssd_count

@@ -539,8 +539,11 @@ class ArgumentParser(argparse.ArgumentParser):
     namespace._SetParser(self)  # pylint: disable=protected-access
     try:
       if self._remainder_action:
-        # Remove remainder_action so it is not parsed regularly.
-        self._actions.remove(self._remainder_action)
+        # Remove remainder_action if still there so it is not parsed regularly.
+        try:
+          self._actions.remove(self._remainder_action)
+        except ValueError:
+          pass
         # Split on first -- if it exists
         namespace, args = self._remainder_action.ParseKnownArgs(args, namespace)
       # _get_values() updates self._specified_args.

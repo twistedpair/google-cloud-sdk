@@ -580,6 +580,27 @@ def AddNetworkPolicyFlags(parser, hidden=False):
       '--update-addons=NetworkPolicy=ENABLED flag.')
 
 
+def AddPrivateClusterFlags(parser, hidden=False):
+  """Adds --private-cluster flag to parser and --master-ipv4-cidr to parser."""
+  group = parser.add_argument_group('Private Clusters')
+  group.add_argument(
+      '--private-cluster',
+      help=('Cluster is created with no public IP addresses on the cluster '
+            'nodes.'),
+      default=None,
+      action='store_true',
+      required=True,
+      hidden=hidden)
+  group.add_argument(
+      '--master-ipv4-cidr',
+      help=('IPv4 CIDR range to use for the master network.  This should be a '
+            '/28 and should be used in conjunction with the --private-cluster '
+            'flag.'),
+      default=None,
+      required=True,
+      hidden=hidden)
+
+
 def AddEnableSharedNetworkFlag(parser, hidden=False):
   """Adds a --enable-shared-network flag to parser."""
   help_text = """\
@@ -999,10 +1020,7 @@ def AddLoggingServiceFlag(parser, hidden=False):
       '"none" (logs will not be exported from the cluster)')
 
 
-def AddNodeIdentityFlags(parser,
-                         example_target,
-                         is_deprecated,
-                         sa_suppressed=False):
+def AddNodeIdentityFlags(parser, example_target):
   """Adds node identity flags to the given parser.
 
   Node identity flags are --scopes, --[no-]enable-cloud-endpoints, and
@@ -1012,34 +1030,33 @@ def AddNodeIdentityFlags(parser,
   Args:
     parser: A given parser.
     example_target: the target for the command, e.g. mycluster.
-    is_deprecated: whether to use "deprecated" scopes behavior.
-    sa_suppressed: whether to suppress help text for --service-account.
   """
   node_identity_group = parser.add_group(
       mutex=True, help='Options to specify the node identity.')
   scopes_group = node_identity_group.add_group(help='Scopes options.')
 
-  min_args_length = 1 if is_deprecated else 0
-  default = [] if is_deprecated else ['logging-write', 'monitoring']
   scopes_group.add_argument(
       '--scopes',
-      type=arg_parsers.ArgList(min_length=min_args_length),
+      type=arg_parsers.ArgList(),
       metavar='SCOPE',
-      default=default,
+      default='gke-default',
       help="""\
-Specifies scopes for the node instances. The project's default
-service account is used. Examples:
+Specifies scopes for the node instances. The project's default service account
+is used. Examples:
 
   $ {{command}} {example_target} --scopes https://www.googleapis.com/auth/devstorage.read_only
 
   $ {{command}} {example_target} --scopes bigquery,storage-rw,compute-ro
 
-Multiple SCOPEs can specified, separated by commas. The scopes
-necessary for the cluster to function properly (compute-rw, storage-ro),
-are always added, even if not explicitly specified.
+Multiple SCOPEs can specified, separated by commas. The scopes necessary for the
+cluster to function properly (compute-rw, storage-ro), are always added, even if
+not explicitly specified.
 
-SCOPE can be either the full URI of the scope or an alias.
-Available aliases are:
+--enable-cloud-endpoints by default adds service-control and service-management
+scopes.  To remove them, use --no-enable-cloud-endpoints.
+
+SCOPE can be either the full URI of the scope or an alias. Available aliases
+are:
 
 [format="csv",options="header"]
 |========
@@ -1053,17 +1070,21 @@ Alias,URI
     scope_deprecation_msg=compute_constants.DEPRECATED_SCOPES_MESSAGES,
     example_target=example_target))
 
+  cloud_endpoints_help_text = """\
+Automatically enable Google Cloud Endpoints to take advantage of API management
+features by adding service-control and service-management scopes.
+
+If --no-enable-cloud-endpoints is set, remove service-control and
+service-management scopes, even if they are implicitly (via default) or
+explicitly set via --scopes.
+"""
   scopes_group.add_argument(
       '--enable-cloud-endpoints',
       action='store_true',
       default=True,
-      help='Automatically enable Google Cloud Endpoints to take advantage of '
-      'API management features.')
+      help=cloud_endpoints_help_text)
 
-  if sa_suppressed:
-    sa_help_text = argparse.SUPPRESS
-  else:
-    sa_help_text = """\
+  sa_help_text = """\
 The Google Cloud Platform Service Account to be used by the node VMs.  If a \
 service account is specified, the cloud-platform scope is used. If no Service \
 Account is specified, the "default" service account is used.
@@ -1081,24 +1102,7 @@ def AddClusterNodeIdentityFlags(parser):
   Args:
     parser: A given parser.
   """
-  AddNodeIdentityFlags(
-      parser, example_target='example-cluster', is_deprecated=False)
-
-
-def AddOldClusterNodeIdentityFlags(parser):
-  """Adds node identity flags to the given parser.
-
-  This is a wrapper around AddNodeIdentityFlags for (GA) cluster, as it
-  provides example-cluster as the example and uses deprecated scopes behavior.
-
-  Args:
-    parser: A given parser.
-  """
-  AddNodeIdentityFlags(
-      parser,
-      example_target='example-cluster',
-      is_deprecated=True,
-      sa_suppressed=True)
+  AddNodeIdentityFlags(parser, example_target='example-cluster')
 
 
 def AddNodePoolNodeIdentityFlags(parser):
@@ -1111,25 +1115,7 @@ def AddNodePoolNodeIdentityFlags(parser):
     parser: A given parser.
   """
   AddNodeIdentityFlags(
-      parser,
-      example_target='node-pool-1 --cluster=example-cluster',
-      is_deprecated=False)
-
-
-def AddOldNodePoolNodeIdentityFlags(parser):
-  """Adds node identity flags to the given parser.
-
-  This is a wrapper around AddNodeIdentityFlags for (GA) node-pools, as it
-  provides node-pool-1 as the example and uses deprecated scopes behavior.
-
-  Args:
-    parser: A given parser.
-  """
-  AddNodeIdentityFlags(
-      parser,
-      example_target='node-pool-1 --cluster=example-cluster',
-      is_deprecated=True,
-      sa_suppressed=True)
+      parser, example_target='node-pool-1 --cluster=example-cluster')
 
 
 def AddAddonsFlags(

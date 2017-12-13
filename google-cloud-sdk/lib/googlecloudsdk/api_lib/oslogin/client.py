@@ -63,10 +63,23 @@ class OsloginClient(object):
     Returns:
       The login profile for the user.
     """
+    # TODO(b/70287338): Update these calls to use Resource references.
     message = self.messages.OsloginUsersGetLoginProfileRequest(
         name='users/{0}'.format(user))
     res = self.client.users.GetLoginProfile(message)
     return res
+
+  def DeletePosixAccounts(self, project_ref):
+    """Delete the posix accounts for an account in the current project.
+
+    Args:
+      project_ref: The oslogin.users.projects resource.
+    Returns:
+      None
+    """
+    message = self.messages.OsloginUsersProjectsDeleteRequest(
+        name=project_ref.RelativeName())
+    self.client.users_projects.Delete(message)
 
   def ImportSshPublicKey(self, user, public_key, expiration_time=None):
     """Upload an SSH public key to the user's login profile.
@@ -110,7 +123,7 @@ class OsloginClient(object):
     Returns:
       The requested SSH public key.
     """
-    message = self.messages.OsloginUsersSshPublicKeysGetReqest(
+    message = self.messages.OsloginUsersSshPublicKeysGetRequest(
         name='users/{0}/sshPublicKeys/{1}'.format(user, fingerprint))
     res = self.client.users_sshPublicKeys.Get(message)
     return res

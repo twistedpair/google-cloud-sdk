@@ -69,12 +69,13 @@ class SearchImagesCompleter(completers.ResourceSearchCompleter):
         **kwargs)
 
 
-def MakeDiskImageArg(plural=False):
+def MakeDiskImageArg(plural=False, required=True, name='image_name'):
   return compute_flags.ResourceArgument(
       resource_name='disk image',
-      name='image_name',
+      name=name,
       completer=ImagesCompleter,
       plural=plural,
+      required=required,
       global_collection='compute.images')
 
 

@@ -17,8 +17,10 @@ import random
 import re
 import string
 import sys
+from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.compute import lister
+from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
@@ -57,7 +59,15 @@ CLOUD_PUB_SUB_VALID_RESOURCE_RE = r'^[A-Za-z][A-Za-z0-9-_.~+%]{2,}$'
 
 
 class ResourceNotFoundException(exceptions.ToolException):
-  pass
+  """The user tries to get/use/update resource which does not exist."""
+
+
+class ResourceAlreadyExistsException(exceptions.ToolException):
+  """The user tries to create resource which already exists."""
+
+
+class ResourceCannotBeResolvedException(exceptions.ToolException):
+  """The user uses invalid / partial name to resolve URI for the resource."""
 
 
 def ArgsSupportQueueScaling(args):
@@ -1028,3 +1038,50 @@ def GetHealthCheckUri(resources, args, health_check_parser=None):
         args.https_health_check,
         params={'project': properties.VALUES.core.project.GetOrFail},
         collection='compute.httpsHealthChecks').SelfLink()
+
+
+# TODO(b/70203649): improve/fix method (no silent errors, add optimizations)
+def CreateInstanceReferences(holder, igm_ref, instance_names):
+  """Creates references to instances in instance group (zonal or regional)."""
+  if igm_ref.Collection() == 'compute.instanceGroupManagers':
+    instance_refs = []
+    for instance in instance_names:
+      instance_refs.append(
+          holder.resources.Parse(
+              instance,
+              params={
+                  'project': igm_ref.project,
+                  'zone': igm_ref.zone,
+              },
+              collection='compute.instances'))
+    return instance_refs
+  elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
+    messages = holder.client.messages
+    request = (
+        messages.ComputeRegionInstanceGroupManagersListManagedInstancesRequest)(
+            instanceGroupManager=igm_ref.Name(),
+            region=igm_ref.region,
+            project=igm_ref.project)
+    managed_instances = list_pager.YieldFromList(
+        service=holder.client.apitools_client.regionInstanceGroupManagers,
+        batch_size=500,
+        request=request,
+        method='ListManagedInstances',
+        field='managedInstances',
+    )
+    instances_to_return = []
+    for instance_ref in managed_instances:
+      if path_simplifier.Name(
+          instance_ref.instance
+      ) in instance_names or instance_ref.instance in instance_names:
+        instances_to_return.append(instance_ref.instance)
+    return instances_to_return
+  else:
+    raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
+
+
+def GetDeviceNamesFromStatefulPolicy(stateful_policy):
+  """Returns a list of device names from given StatefulPolicy message."""
+  if not stateful_policy or not stateful_policy.preservedResources:
+    return []
+  return [disk.deviceName for disk in stateful_policy.preservedResources.disks]

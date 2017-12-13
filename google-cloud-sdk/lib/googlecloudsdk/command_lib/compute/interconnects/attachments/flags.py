@@ -152,7 +152,7 @@ def AddPartnerMetadata(parser, required=True):
       be validated to match approved Partner values.
       """)
   parser.add_argument(
-      '--partner-interconnect',
+      '--partner-interconnect-name',
       required=required,
       help="""\
       Plain text name of the Interconnect this attachment is connected to, as

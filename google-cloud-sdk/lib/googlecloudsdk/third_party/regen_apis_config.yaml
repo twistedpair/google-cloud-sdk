@@ -235,9 +235,17 @@ apis:
   oslogin:
     v1alpha:
       discovery_doc: oslogin_v1alpha.json
+      resources:
+        users.projects: 'users/{user}/projects/{project}'
     v1beta:
       discovery_doc: oslogin_v1beta.json
+      resources:
+        users.projects: 'users/{user}/projects/{project}'
+    v1:
+      discovery_doc: oslogin_v1.json
       default: true
+      resources:
+        users.projects: 'users/{user}/projects/{project}'
   iam:
     v1:
       discovery_doc: iam_v1.json

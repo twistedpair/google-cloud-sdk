@@ -147,6 +147,8 @@ class Application(object):
   """The CLI application.
 
   Attributes:
+    args: The parsed command line arguments.
+    config: The interactive shell config object.
     coshell: The shell coprocess object.
     key_bindings: The key_bindings object holding the key binding list and
       toggle states.
@@ -262,7 +264,8 @@ class Application(object):
 
   def _GetProjectAndAccount(self):
     """Returns the current (project, account) tuple."""
-    named_configs.ActivePropertiesFile().Invalidate()
+    if not self.args.IsSpecified('project'):
+      named_configs.ActivePropertiesFile().Invalidate()
     project = properties.VALUES.core.project.Get() or '<NO PROJECT SET>'
     account = properties.VALUES.core.account.Get() or '<NO ACCOUNT SET>'
     return (project, account)

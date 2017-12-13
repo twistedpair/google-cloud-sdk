@@ -422,6 +422,43 @@ class ClusterAutoscaling(_messages.Message):
   resourceLimits = _messages.MessageField('ResourceLimit', 2, repeated=True)
 
 
+class ClusterStatus(_messages.Message):
+  """ClusterStatus is used for internal only purposes to transition a cluster
+  between DEGRADED AND RUNNING using UpdateClusterInternal. The message is
+  used in ClusterUpdate's DesiredClusterStatus field and should not be
+  confused with Cluster's Status Enum.
+
+  Enums:
+    StatusValueValuesEnum: The current status of the cluster.
+
+  Fields:
+    internal: An internal field for the sub-error type or other metadata for
+      the Status.
+    message: A human-readable message that describes the status of the
+      cluster.
+    status: The current status of the cluster.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    """The current status of the cluster.
+
+    Values:
+      UNKNOWN: The UNKNOWN status should never be set
+      RUNNING: The RUNNING state indicates the cluster has been created and is
+        fully usable.
+      DEGRADED: The DEGRADED state indicates the cluster is not fully
+        functional and requires user action. Details can be found in the
+        `message` field.
+    """
+    UNKNOWN = 0
+    RUNNING = 1
+    DEGRADED = 2
+
+  internal = _messages.StringField(1)
+  message = _messages.StringField(2)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
 class ClusterUpdate(_messages.Message):
   """ClusterUpdate describes an update to the cluster. Exactly one update can
   be applied to a cluster with each request, so at most one field can be
@@ -435,6 +472,7 @@ class ClusterUpdate(_messages.Message):
       Binary Authorization feature.
     desiredClusterAutoscaling: The desired cluster-level autoscaling
       configuration.
+    desiredClusterStatus: The desired status fields for the cluster.
     desiredImageType: The desired image type for the node pool. NOTE: Set the
       "desired_node_pool" field as well.
     desiredLocations: The desired list of Google Compute Engine
@@ -480,18 +518,19 @@ class ClusterUpdate(_messages.Message):
   desiredAuditConfig = _messages.MessageField('AuditConfig', 2)
   desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 3)
   desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 4)
-  desiredImageType = _messages.StringField(5)
-  desiredLocations = _messages.StringField(6, repeated=True)
-  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 7)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 8)
-  desiredMasterId = _messages.StringField(9)
-  desiredMasterMachineType = _messages.StringField(10)
-  desiredMasterVersion = _messages.StringField(11)
-  desiredMonitoringService = _messages.StringField(12)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 13)
-  desiredNodePoolId = _messages.StringField(14)
-  desiredNodeVersion = _messages.StringField(15)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 16)
+  desiredClusterStatus = _messages.MessageField('ClusterStatus', 5)
+  desiredImageType = _messages.StringField(6)
+  desiredLocations = _messages.StringField(7, repeated=True)
+  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 8)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 9)
+  desiredMasterId = _messages.StringField(10)
+  desiredMasterMachineType = _messages.StringField(11)
+  desiredMasterVersion = _messages.StringField(12)
+  desiredMonitoringService = _messages.StringField(13)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 14)
+  desiredNodePoolId = _messages.StringField(15)
+  desiredNodeVersion = _messages.StringField(16)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 17)
 
 
 class ClusterUpdateOptions(_messages.Message):
@@ -1742,6 +1781,38 @@ class ListOperationsResponse(_messages.Message):
   version = _messages.StringField(3)
 
 
+class LocalSsdVolumeConfig(_messages.Message):
+  """LocalSsdVolumeConfig is comprised of three fields, count, type, and
+  format. Count is the number of ssds of this grouping requested, type is the
+  interface type and is either nvme or scsi, and format is whether the disk is
+  to be formatted with a filesystem or left for block storage
+
+  Enums:
+    FormatValueValuesEnum: Format of the local SSD (fs/block).
+
+  Fields:
+    count: Number of local SSDs to use
+    format: Format of the local SSD (fs/block).
+    type: Local SSD interface to use (nvme/scsi).
+  """
+
+  class FormatValueValuesEnum(_messages.Enum):
+    """Format of the local SSD (fs/block).
+
+    Values:
+      FORMAT_UNSPECIFIED: Default value
+      FS: File system formatted
+      BLOCK: Raw block
+    """
+    FORMAT_UNSPECIFIED = 0
+    FS = 1
+    BLOCK = 2
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  format = _messages.EnumField('FormatValueValuesEnum', 2)
+  type = _messages.StringField(3)
+
+
 class MaintenancePolicy(_messages.Message):
   """MaintenancePolicy defines the maintenance policy to be used for the
   cluster.
@@ -1935,6 +2006,8 @@ class NodeConfig(_messages.Message):
       available on a machine per zone. See:
       https://cloud.google.com/compute/docs/disks/local-ssd#local_ssd_limits
       for more information.
+    localSsdVolumeConfigs: Parameters for using Local SSD with extra options
+      as hostpath or local volumes
     machineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-1`).  If
       unspecified, the default machine type is `n1-standard-1`.
@@ -2052,15 +2125,16 @@ class NodeConfig(_messages.Message):
   imageType = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   localSsdCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(8)
-  metadata = _messages.MessageField('MetadataValue', 9)
-  minCpuPlatform = _messages.StringField(10)
-  oauthScopes = _messages.StringField(11, repeated=True)
-  preemptible = _messages.BooleanField(12)
-  serviceAccount = _messages.StringField(13)
-  tags = _messages.StringField(14, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 15, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 16)
+  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 8, repeated=True)
+  machineType = _messages.StringField(9)
+  metadata = _messages.MessageField('MetadataValue', 10)
+  minCpuPlatform = _messages.StringField(11)
+  oauthScopes = _messages.StringField(12, repeated=True)
+  preemptible = _messages.BooleanField(13)
+  serviceAccount = _messages.StringField(14)
+  tags = _messages.StringField(15, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 16, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 17)
 
 
 class NodeManagement(_messages.Message):

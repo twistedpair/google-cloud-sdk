@@ -242,15 +242,18 @@ def _GetParentCollection(collection_info):
   #   a/{a}/b/{b}/{c} --> a/{a}
   #   a/{a}/b/c/{b}/{c} --> a/{a}
   parts = path.split('/')
-  while parts[-1].startswith('{') and parts[-1].endswith('}'):
-    parts.pop()
-    if not parts:
-      return None, None
-  while not parts[-1].startswith('{') and not parts[-1].endswith('}'):
-    parts.pop()
-    if not parts:
-      return None, None
+  _PopSegments(parts, True)
+  _PopSegments(parts, False)
+  if not parts:
+    return None, None
+
   parent_path = '/'.join(parts)
+  # Sometimes the parent is just all parameters (when the parent can be a
+  # projects, org, or folder. This is not useful as a parent collection so just
+  # skip it.
+  _PopSegments(parts, True)
+  if not parts:
+    return None, None
 
   if '.' in collection_info.name:
     # The discovery doc uses dotted paths for collections, chop off the last
@@ -259,5 +262,14 @@ def _GetParentCollection(collection_info):
   else:
     # The discovery doc uses short names for collections, use the name of the
     # last static part of the path.
-    parent_name = parent_path.rsplit('/', 3)[-2]
+    parent_name = parts[-1]
   return parent_name, parent_path
+
+
+def _PopSegments(parts, is_params):
+  if parts:
+    while (parts[-1].startswith('{') == is_params and
+           parts[-1].endswith('}') == is_params):
+      parts.pop()
+      if not parts:
+        break

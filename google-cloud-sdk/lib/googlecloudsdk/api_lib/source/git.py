@@ -53,6 +53,10 @@ class CannotFetchRepositoryException(Error):
   """Exception to be thrown when a repository cannot be fetched."""
 
 
+class CannotPushToRepositoryException(Error):
+  """Exception to be thrown when a repository cannot be pushed to."""
+
+
 class GitVersionException(Error):
   """Exceptions for when git version is too old."""
 
@@ -230,6 +234,54 @@ def _HasSystemCredHelper():
     return False
   except subprocess.CalledProcessError:
     return False
+
+
+def _GetCredHelperCommand(uri, full_path=False):
+  """Returns the gcloud credential helper command for a remote repository.
+
+  The command will be of the form '!gcloud auth-git-helper --account=EMAIL
+  --ignore-unknown $@`. See https://git-scm.com/docs/git-config. If the
+  installed version of git or the remote repository does not support
+  the gcloud credential helper, then returns None.
+
+  Args:
+    uri: str, The uri of the remote repository.
+    full_path: bool, If true, use the full path to gcloud.
+
+  Returns:
+    str, The credential helper command if it is available.
+  """
+  credentialed_hosts = ['source.developers.google.com']
+  extra = properties.VALUES.core.credentialed_hosted_repo_domains.Get()
+  if extra:
+    credentialed_hosts.extend(extra.split(','))
+  if any(uri.startswith('https://' + host) for host in credentialed_hosts):
+    try:
+      CheckGitVersion(_HELPER_MIN)
+    except GitVersionException as e:
+      helper_min = '.'.join(str(i) for i in _HELPER_MIN)
+      log.warn(
+          textwrap.dedent("""\
+          You are using a Google-hosted repository with a
+          {current} which is older than {min_version}. If you upgrade
+          to {min_version} or later, gcloud can handle authentication to
+          this repository. Otherwise, to authenticate, use your Google
+          account and the password found by running the following command.
+           $ gcloud auth print-access-token""".format(
+               current=e.cur_version, min_version=helper_min)))
+      return None
+    if _HasSystemCredHelper():
+      log.warn(
+          textwrap.dedent("""\
+          If your system's credential.helper requests a password, choose
+          cancel."""))
+    # Use git alias "!shell command" syntax so we can configure
+    # the helper with options. Also git-credential is not
+    # prefixed when it starts with "!".
+    return '!{0} auth git-helper --account={1} --ignore-unknown $@'.format(
+        _GetGcloudScript(full_path),
+        properties.VALUES.core.account.Get(required=True))
+  return None
 
 
 class GitIgnoreHandler(object):
@@ -464,16 +516,14 @@ class Git(object):
   """Represents project git repo."""
 
   def __init__(self, project_id, repo_name, uri=None):
-    """Clone a repository associated with a Google Cloud Project.
-
-    Looks up the URL of the indicated repository, and clones it to alias.
+    """Constructor.
 
     Args:
       project_id: str, The name of the project that has a repository associated
           with it.
       repo_name: str, The name of the repository to clone.
-      uri: str, The URI of the repository to clone, or None if it will be
-          inferred from the name.
+      uri: str, The URI of the repository, or None if it will be inferred from
+          the name.
 
     Raises:
       UnknownRepositoryAliasException: If the repo name is not known to be
@@ -519,53 +569,63 @@ class Git(object):
     # Make a brand new repository if directory does not exist or
     # clone if directory exists and is empty
     try:
-      credentialed_hosts = ['source.developers.google.com']
-      extra = properties.VALUES.core.credentialed_hosted_repo_domains.Get()
-      if extra:
-        credentialed_hosts.extend(extra.split(','))
-      if any(
-          self._uri.startswith('https://' + host)
-          for host in credentialed_hosts):
-        # If this is a Google-hosted repo, clone with the cred helper.
-        try:
-          CheckGitVersion(_HELPER_MIN)
-        except GitVersionException as e:
-          helper_min = '.'.join(str(i) for i in _HELPER_MIN)
-          log.warn(textwrap.dedent("""\
-          You are cloning a Google-hosted repository with a
-          {current} which is older than {min_version}. If you upgrade
-          to {min_version} or later, gcloud can handle authentication to
-          this repository. Otherwise, to authenticate, use your Google
-          account and the password found by running the following command.
-           $ gcloud auth print-access-token""".format(
-               current=e.cur_version, min_version=helper_min)))
-          cmd = ['git', 'clone', self._uri, abs_repository_path]
-        else:
-          if _HasSystemCredHelper():
-            log.warn(
-                textwrap.dedent("""\
-            If your system's credential.helper requests a password, choose
-            cancel."""))
-          cmd = ['git', 'clone', self._uri, abs_repository_path,
-                 '--config',
-                 # Use git alias "!shell command" syntax so we can configure
-                 # the helper with options. Also git-credential is not
-                 # prefixed when it starts with "!".
-                 # See https://git-scm.com/docs/git-config
-                 'credential.helper=!{0} auth git-helper --account={1} '
-                 '--ignore-unknown $@'
-                 .format(_GetGcloudScript(full_path),
-                         properties.VALUES.core.account.Get(required=True))]
-        self._RunCommand(cmd, dry_run)
-      else:
-        # Otherwise, just do a simple clone. We do this clone, without the
-        # credential helper, because a user may have already set a default
-        # credential helper that would know the repo's auth info.
-        subprocess.check_call(
-            ['git', 'clone', self._uri, abs_repository_path])
+      # If this is a Google-hosted repo, clone with the cred helper.
+      cmd = ['git', 'clone', self._uri, abs_repository_path]
+      cred_helper_command = _GetCredHelperCommand(self._uri, full_path)
+      if cred_helper_command:
+        cmd += ['--config', 'credential.helper=' + cred_helper_command]
+      self._RunCommand(cmd, dry_run)
     except subprocess.CalledProcessError as e:
       raise CannotFetchRepositoryException(e)
     return abs_repository_path
+
+  def ForcePushFilesToBranch(self,
+                             branch,
+                             base_path,
+                             paths,
+                             dry_run=False,
+                             full_path=False):
+    """Force pushes a set of files to a branch on the remote repository.
+
+    This is mainly to be used with source captures, where the user wants to
+    upload files associated with a deployment to view later.
+
+    Args:
+      branch: str, The name of the branch to push to.
+      base_path: str, The base path to use for the files.
+      paths: list of str, The paths for the files to upload.
+          Their paths in the repository will be relative to base_path.
+          For example, if base_path is '/a/b/c', the path '/a/b/c/d/file1' will
+          appear as 'd/file1' in the repository.
+      dry_run: bool, If true do not run but print commands instead.
+      full_path: bool, If true use the full path to gcloud.
+    """
+    CheckGitVersion()
+    with files.TemporaryDirectory() as temp_dir:
+      def RunGitCommand(*args):
+        git_dir = '--git-dir=' + os.path.join(temp_dir, '.git')
+        work_tree = '--work-tree=' + base_path
+        self._RunCommand(['git', git_dir, work_tree] + list(args), dry_run)
+
+      # Init empty repository in a temporary location
+      self._RunCommand(['git', 'init', temp_dir], dry_run)
+
+      # Create new branch and add files
+      RunGitCommand('checkout', '-b', branch)
+      args_len = 100
+      for i in range(0, len(paths), args_len):
+        RunGitCommand('add', *paths[i:i + args_len])
+      RunGitCommand('commit', '-m', 'source capture uploaded from gcloud')
+
+      # Add remote and force push
+      cred_helper_command = _GetCredHelperCommand(self._uri, full_path)
+      if cred_helper_command:
+        RunGitCommand('config', 'credential.helper', cred_helper_command)
+      try:
+        RunGitCommand('remote', 'add', 'origin', self._uri)
+        RunGitCommand('push', '-f', 'origin', branch)
+      except subprocess.CalledProcessError as e:
+        raise CannotPushToRepositoryException(e)
 
   def _RunCommand(self, cmd, dry_run):
     log.debug('Executing %s', cmd)

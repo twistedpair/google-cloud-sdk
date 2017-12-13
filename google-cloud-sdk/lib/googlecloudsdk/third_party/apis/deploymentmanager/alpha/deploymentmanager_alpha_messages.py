@@ -1498,7 +1498,11 @@ class ManifestsListResponse(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """An Operation resource, used to manage asynchronous API requests.
+  """An Operation resource, used to manage asynchronous API requests. (==
+  resource_for v1.globalOperations ==) (== resource_for beta.globalOperations
+  ==) (== resource_for v1.regionOperations ==) (== resource_for
+  beta.regionOperations ==) (== resource_for v1.zoneOperations ==) (==
+  resource_for beta.zoneOperations ==)
 
   Messages:
     ErrorValue: [Output Only] If errors are generated during processing of the
@@ -1767,6 +1771,8 @@ class Resource(_messages.Message):
       config.
     properties: Output only. The current properties of the resource before any
       references have been filled in. Returned as serialized YAML.
+    runtimePolicies: Output only. In case this is an action, it will show the
+      runtimePolicies on which this action will run in the deployment
     type: Output only. The type of the resource, for example
       compute.v1.instance, or cloudfunctions.v1beta1.function.
     update: Output only. If Deployment Manager is currently updating or
@@ -1824,11 +1830,12 @@ class Resource(_messages.Message):
   manifest = _messages.StringField(6)
   name = _messages.StringField(7)
   properties = _messages.StringField(8)
-  type = _messages.StringField(9)
-  update = _messages.MessageField('ResourceUpdate', 10)
-  updateTime = _messages.StringField(11)
-  url = _messages.StringField(12)
-  warnings = _messages.MessageField('WarningsValueListEntry', 13, repeated=True)
+  runtimePolicies = _messages.StringField(9, repeated=True)
+  type = _messages.StringField(10)
+  update = _messages.MessageField('ResourceUpdate', 11)
+  updateTime = _messages.StringField(12)
+  url = _messages.StringField(13)
+  warnings = _messages.MessageField('WarningsValueListEntry', 14, repeated=True)
 
 
 class ResourceAccessControl(_messages.Message):
@@ -1864,6 +1871,9 @@ class ResourceUpdate(_messages.Message):
       configuration of this resource.
     properties: Output only. The set of updated properties for this resource,
       before references are expanded. Returned as serialized YAML.
+    runtimePolicies: Output only. In case this is an action, it will show the
+      runtimePolicies that this action will have after updating the
+      deployment.
     state: Output only. The state of the resource.
     warnings: Output only. If warning messages are generated during processing
       of this resource, this field will be populated.
@@ -1941,8 +1951,9 @@ class ResourceUpdate(_messages.Message):
   intent = _messages.StringField(5)
   manifest = _messages.StringField(6)
   properties = _messages.StringField(7)
-  state = _messages.StringField(8)
-  warnings = _messages.MessageField('WarningsValueListEntry', 9, repeated=True)
+  runtimePolicies = _messages.StringField(8, repeated=True)
+  state = _messages.StringField(9)
+  warnings = _messages.MessageField('WarningsValueListEntry', 10, repeated=True)
 
 
 class ResourcesListResponse(_messages.Message):

@@ -463,6 +463,12 @@ MAP = {
         ),
     },
     'oslogin': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.oslogin.v1',
+            client_classpath='oslogin_v1_client.OsloginV1',
+            messages_modulepath='oslogin_v1_messages',
+            default_version=True
+        ),
         'v1alpha': APIDef(
             class_path='googlecloudsdk.third_party.apis.oslogin.v1alpha',
             client_classpath='oslogin_v1alpha_client.OsloginV1alpha',
@@ -473,7 +479,7 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.oslogin.v1beta',
             client_classpath='oslogin_v1beta_client.OsloginV1beta',
             messages_modulepath='oslogin_v1beta_messages',
-            default_version=True
+            default_version=False
         ),
     },
     'pubsub': {

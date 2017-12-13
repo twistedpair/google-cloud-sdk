@@ -467,6 +467,13 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
   Fields:
     cluster: A Cluster resource to be passed as the request body.
     clusterName: Required. The cluster name.
+    gracefulDecommissionTimeout: Optional. Timeout for graceful YARN
+      decomissioning. Graceful decommissioning allows removing nodes from the
+      cluster without interrupting jobs in progress. Timeout specifies how
+      long to wait for jobs in progress to finish before forcefully removing
+      nodes (and potentially interrupting jobs). Default timeout is 0 (for
+      forceful decommission), and the maximum allowed timeout is 1 day.Only
+      supported on Dataproc image versions 1.2 and higher.
     projectId: Required. The ID of the Google Cloud Platform project the
       cluster belongs to.
     region: Required. The Cloud Dataproc region in which to handle the
@@ -494,9 +501,10 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
 
   cluster = _messages.MessageField('Cluster', 1)
   clusterName = _messages.StringField(2, required=True)
-  projectId = _messages.StringField(3, required=True)
-  region = _messages.StringField(4, required=True)
-  updateMask = _messages.StringField(5)
+  gracefulDecommissionTimeout = _messages.StringField(3)
+  projectId = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
+  updateMask = _messages.StringField(6)
 
 
 class DataprocProjectsRegionsJobsCancelRequest(_messages.Message):
@@ -555,7 +563,8 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
 
   Enums:
     JobStateMatcherValueValuesEnum: Optional. Specifies enumerated categories
-      of jobs to list (default = match ALL jobs).
+      of jobs to list. (default = match ALL jobs).If filter is provided,
+      jobStateMatcher will be ignored.
 
   Fields:
     clusterName: Optional. If set, the returned jobs list includes only jobs
@@ -564,12 +573,13 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
       case-sensitive and have the following syntax:field = value AND field =
       value ...where field is status.state or labels.[KEY], and [KEY] is a
       label key. value can be * to match all values. status.state can be
-      either ACTIVE or INACTIVE. Only the logical AND operator is supported;
+      either ACTIVE or NON_ACTIVE. Only the logical AND operator is supported;
       space-separated items are treated as having an implicit AND
       operator.Example filter:status.state = ACTIVE AND labels.env = staging
       AND labels.starred = *
-    jobStateMatcher: Optional. Specifies enumerated categories of jobs to list
-      (default = match ALL jobs).
+    jobStateMatcher: Optional. Specifies enumerated categories of jobs to
+      list. (default = match ALL jobs).If filter is provided, jobStateMatcher
+      will be ignored.
     pageSize: Optional. The number of results to return in each response.
     pageToken: Optional. The page token, returned by a previous call, to
       request the next page of results.
@@ -580,8 +590,8 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
   """
 
   class JobStateMatcherValueValuesEnum(_messages.Enum):
-    """Optional. Specifies enumerated categories of jobs to list (default =
-    match ALL jobs).
+    """Optional. Specifies enumerated categories of jobs to list. (default =
+    match ALL jobs).If filter is provided, jobStateMatcher will be ignored.
 
     Values:
       ALL: <no description>
@@ -1168,8 +1178,7 @@ class JobReference(_messages.Message):
 
 
 class JobScheduling(_messages.Message):
-  """Job scheduling options.Beta Feature: These options are available for
-  testing purposes only. They may be changed before final release.
+  """Job scheduling options.
 
   Fields:
     maxFailuresPerHour: Optional. Maximum number of times per hour a driver

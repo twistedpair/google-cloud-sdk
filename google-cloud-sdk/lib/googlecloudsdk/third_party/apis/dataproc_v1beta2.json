@@ -20,6 +20,7 @@
   "baseUrl": "https://dataproc.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -383,6 +384,10 @@
           "items": {
             "$ref": "AcceleratorConfig"
           }
+        },
+        "minCpuPlatform": {
+          "description": "Optional. Specifies the minimum cpu platform for the Instance Group. Examples: * https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform",
+          "type": "string"
         }
       }
     },
@@ -391,6 +396,10 @@
       "description": "Specifies the config of disk options for a group of VM instances.",
       "type": "object",
       "properties": {
+        "bootDiskType": {
+          "description": "Optional. Type of the boot disk (default is 'pd-standard'). Valid values: 'pd-ssd', 'pd-standard'",
+          "type": "string"
+        },
         "bootDiskSizeGb": {
           "description": "Optional. Size in GB of the boot disk (default is 500GB).",
           "type": "integer",
@@ -1141,7 +1150,7 @@
     },
     "JobScheduling": {
       "id": "JobScheduling",
-      "description": "Job scheduling options.Beta Feature: These options are available for testing purposes only. They may be changed before final release.",
+      "description": "Job scheduling options.",
       "type": "object",
       "properties": {
         "maxFailuresPerHour": {
@@ -2244,7 +2253,7 @@
                       "type": "string"
                     },
                     "jobStateMatcher": {
-                      "description": "Optional. Specifies enumerated categories of jobs to list (default = match ALL jobs).",
+                      "description": "Optional. Specifies enumerated categories of jobs to list. (default = match ALL jobs).If filter is provided, jobStateMatcher will be ignored.",
                       "location": "query",
                       "type": "string",
                       "enum": [
@@ -2254,7 +2263,7 @@
                       ]
                     },
                     "filter": {
-                      "description": "Optional. A filter constraining the jobs to list. Filters are case-sensitive and have the following syntax:field = value AND field = value ...where field is status.state or labels.[KEY], and [KEY] is a label key. value can be * to match all values. status.state can be either ACTIVE or INACTIVE. Only the logical AND operator is supported; space-separated items are treated as having an implicit AND operator.Example filter:status.state = ACTIVE AND labels.env = staging AND labels.starred = *",
+                      "description": "Optional. A filter constraining the jobs to list. Filters are case-sensitive and have the following syntax:field = value AND field = value ...where field is status.state or labels.[KEY], and [KEY] is a label key. value can be * to match all values. status.state can be either ACTIVE or NON_ACTIVE. Only the logical AND operator is supported; space-separated items are treated as having an implicit AND operator.Example filter:status.state = ACTIVE AND labels.env = staging AND labels.starred = *",
                       "location": "query",
                       "type": "string"
                     }

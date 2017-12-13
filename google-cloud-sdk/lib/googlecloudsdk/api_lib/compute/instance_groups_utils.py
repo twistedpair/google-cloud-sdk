@@ -80,8 +80,19 @@ def UnwrapResponse(responses, attr_name):
       yield item
 
 
-def UriFuncForListInstances(resource):
-  """UriFunc for list-instances commands."""
+def UriFuncForListInstanceRelatedObjects(resource):
+  """UriFunc for listing instance-group related subresources.
+
+  Function returns field with URI for objects being subresources of
+  instance-groups, with instance fields. Works for list-instances and
+  instance-configs list commands.
+
+  Args:
+    resource: instance-group subresource with instance field
+
+  Returns:
+    URI of instance
+  """
   return resource.instance
 
 

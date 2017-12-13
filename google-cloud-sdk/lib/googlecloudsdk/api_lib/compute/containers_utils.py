@@ -183,7 +183,7 @@ def GetLabelsMessageWithCosVersion(
                     class.
   """
   cos_version = resources.Parse(
-      image_uri, collection='compute.images').Name()
+      image_uri, collection='compute.images').Name().replace('/', '-')
   if labels is None:
     labels = {}
   labels['container-vm'] = cos_version

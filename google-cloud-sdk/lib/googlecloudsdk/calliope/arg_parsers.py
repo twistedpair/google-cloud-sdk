@@ -276,14 +276,15 @@ def RegexpValidator(pattern, description):
   return Parse
 
 
-def CustomFunctionValidator(fn, description):
+def CustomFunctionValidator(fn, description, parser=None):
   """Returns a function that validates the input by running it through fn.
 
   For example:
 
   >>> def isEven(val):
-  ...   return int(val) % 2 == 0
-  >>> even_number_parser = CustomFunctionValidator(isEven, 'This is not even!')
+  ...   return val % 2 == 0
+  >>> even_number_parser = arg_parsers.CustomFunctionValidator(
+        isEven, 'This is not even!', parser=arg_parsers.BoundedInt(0))
   >>> parser.add_argument('--foo', type=even_number_parser)
   >>> parser.parse_args(['--foo', '3'])
   >>> # SystemExit raised and the error "error: argument foo: Bad value [3]:
@@ -292,14 +293,22 @@ def CustomFunctionValidator(fn, description):
   Args:
     fn: str -> boolean
     description: an error message to show if boolean function returns False
+    parser: an arg_parser that is applied to to value before validation. The
+      value is also returned by this parser.
 
   Returns:
     function: str -> str, usable as an argparse type
   """
 
   def Parse(value):
-    if fn(value):
-      return value
+    """Validates and returns a custom object from an argument string value."""
+    try:
+      parsed_value = parser(value) if parser else value
+    except ArgumentTypeError:
+      pass
+    else:
+      if fn(parsed_value):
+        return parsed_value
     encoded_value = console_attr.EncodeForConsole(value)
     formatted_err = u'Bad value [{0}]: {1}'.format(encoded_value, description)
     raise ArgumentTypeError(formatted_err)
@@ -633,6 +642,38 @@ def _TokenizeQuotedList(arg_value, delim=','):
 
 class ArgType(object):
   """Base class for arg types."""
+
+
+class ArgBoolean(ArgType):
+  """Interpret an argument value as a bool."""
+
+  def __init__(
+      self, truthy_strings=None, falsey_strings=None, case_sensitive=False):
+    self._case_sensitive = case_sensitive
+    if truthy_strings:
+      self._truthy_strings = truthy_strings
+    else:
+      self._truthy_strings = ['true', 'yes']
+    if falsey_strings:
+      self._falsey_strings = falsey_strings
+    else:
+      self._falsey_strings = ['false', 'no']
+
+  def __call__(self, arg_value):
+    if not self._case_sensitive:
+      normalized_arg_value = arg_value.lower()
+    else:
+      normalized_arg_value = arg_value
+    if normalized_arg_value in self._truthy_strings:
+      return True
+    if normalized_arg_value in self._falsey_strings:
+      return False
+    raise ArgumentTypeError(
+        'Invalid flag value [{0}], expected one of [{1}]'.format(
+            arg_value,
+            ', '.join(self._truthy_strings + self._falsey_strings)
+        )
+    )
 
 
 class ArgList(ArgType):
