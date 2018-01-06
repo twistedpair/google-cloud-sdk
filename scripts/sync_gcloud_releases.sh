@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Fixes for malformed release notes
 declare -A MISSING_RELEASE_DATES_FIXES=(
@@ -8,15 +9,17 @@ declare -A MISSING_RELEASE_DATES_FIXES=(
 
 COMMIT_AUTHOR="Google <gcloud@google.com>" # TODO who really authors these?
 
-REPO_URI="git@github.com:twistedpair/google-cloud-sdk.git"
+REPO_URI="https://github.com/twistedpair/google-cloud-sdk.git"
 WORK_DIR=/tmp/gcloud_history
 GIT_WORK_DIR="$WORK_DIR/google-cloud-sdk"
 
 # In case you're new here
 if [[ ! -e $WORK_DIR ]]
 then
+    echo "Making initial checkout"
     git clone --quiet $REPO_URI $WORK_DIR
 fi
+
 cd $WORK_DIR
 
 
