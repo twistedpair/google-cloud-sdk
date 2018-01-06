@@ -1,0 +1,6 @@
+before_script:
+  - sudo apt-get update -qq
+  - sudo apt-get install git -y
+  - ./install_gcloud_sdk.sh
+
+script: ./sync_gcloud_releases.sh
