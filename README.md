@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/twistedpair/google-cloud-sdk.svg?branch=master)](https://travis-ci.org/twistedpair/google-cloud-sdk)
+
 # google-cloud-sdk
 Mirror of gcloud Google Cloud Platform SDK to track release changes
 
