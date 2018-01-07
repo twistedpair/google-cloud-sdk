@@ -5,7 +5,7 @@ set -e
 echo "Installing github keys"
 
 KEY_NAME=travis_deploy_key.private
-KEY_FILE_PATH=~/.travis/$KEY_NAME
+KEY_FILE_PATH=`pwd`/.travis/$KEY_NAME
 openssl aes-256-cbc -k "$GITHUB_KEY_PASSWORD" -d -a -in "$KEY_FILE_PATH.enc" -out $KEY_FILE_PATH
 echo -e "Host github.com\n  IdentityFile $KEY_FILE_PATH" > ~/.ssh/config
 
