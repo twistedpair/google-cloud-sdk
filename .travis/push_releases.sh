@@ -1,5 +1,5 @@
 #!/bin/bash
 set -e
 
-git push --quiet origin head --tags
+git --git-dir /tmp/gcloud_history push origin head --tags
 echo "git sync complete"
