@@ -1,6 +1,10 @@
 before_script:
-  - sudo apt-get update -qq
-  - sudo apt-get install git -y
-  - ./scripts/install_gcloud_sdk.sh
-
-script: ./scripts/sync_gcloud_releases.sh
+- sudo apt-get update -qq
+- sudo apt-get install git -y
+- .travis/install_gcloud_sdk.sh
+script: .travis/sync_gcloud_releases.sh
+after_success:
+- .travis/push_releases.sh
+env:
+  global:
+    secure: PfRPp0z4/825CsRUIPXxzAtKH1tTHYOkXDMO8c0+AEvGbkfc1XB/Mqj5D8ChazzeQKQyr5HrKWU9AeO2c9lJzi3s984zLex/xkMFuPxXBnsHMRVto9oy/sTAa2fgtR66m8idyoXa/HGf+hgVBFax9/0dp2pzAY8UQ8FQ7hOnY1DMU3PJ/3IrOCHj10CKoPJFnXLDar1iJBemm6E6AAHLHqKzaUd/hDiXegbB8QfMeHZMygs07yLBMff8SJeTfoPwrK7sINrUzSZce08lEnAP9PTU/pnblM7R8Yxi6AG+CTfRYTLND9FpuVAbQBxx6rLIsDrdQ1B6VlQzwlCOFuIYGyOn4+cz6YAV3DC7Vw7Fia3IGnIN6qaPi60f1BCa0DPWfxLQ8JPsrKAH9UcebH+XndekpNFVajbEeksZgwRwPTgIdw7fxQnDCELXTkUHFk8U3y3qDIhBTZfU9swhCMrLogHY12B9PbJGBxkjK1EeduTUhoqCk9/Hzq3sI2z4nGtNFi5Hsklds9AcpGTo1zt/OxAk9y+FvVfsjX3lSOvprrlFgrU9ncyyrEla6DyQ827ZGa4ifpGasZR7ciL4aQ2//4+vKLTuLGN4gWdgVNywIeZuomWkYpXyLQO+mgBm6KLw4tbjnNxTWJHTfxnjOLe+T6gnW4gk/SsoX1ljzK+9/nc=
