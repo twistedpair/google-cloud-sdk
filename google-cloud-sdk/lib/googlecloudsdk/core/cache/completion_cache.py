@@ -42,6 +42,8 @@ contains Completer objects.  A Completer object:
 This module is resource agnostic.  All resource specific information is
 encapsulated in resource specific Completer objects.
 """
+# Ignore type because this file implements an abstract class.
+# type: ignore
 
 import abc
 

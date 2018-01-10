@@ -74,7 +74,7 @@ class CommandType(Enum):
   @classmethod
   def ForName(cls, name):
     try:
-      return CommandType[name.upper()]
+      return CommandType[name.upper()]  # pytype: disable=not-indexable
     except KeyError:
       return CommandType.GENERIC
 
@@ -207,8 +207,9 @@ class Argument(object):
     Raises:
       InvalidSchemaError: if the YAML command is malformed.
     """
-    if data.get('params'):
-      return ArgumentGroup.FromData(data)
+    group = data.get('group')
+    if group:
+      return ArgumentGroup.FromData(group)
 
     api_field = data.get('api_field')
     arg_name = data.get('arg_name', api_field)
@@ -216,15 +217,7 @@ class Argument(object):
       raise util.InvalidSchemaError(
           'An argument must have at least one of [api_field, arg_name].')
     is_positional = data.get('is_positional')
-
-    action = data.get('action', None)
-    if action and action not in cls.STATIC_ACTIONS:
-      action = util.Hook.FromPath(action)
-    if not action:
-      deprecation = data.get('deprecated')
-      if deprecation:
-        flag_name = arg_name if is_positional else '--' + arg_name
-        action = actions.DeprecationAction(flag_name, **deprecation)
+    flag_name = arg_name if is_positional else '--' + arg_name
 
     if data.get('default') and data.get('fallback'):
       raise util.InvalidSchemaError(
@@ -235,6 +228,8 @@ class Argument(object):
     except KeyError:
       raise util.InvalidSchemaError('An argument must have help_text.')
 
+    choices = data.get('choices')
+
     return cls(
         api_field,
         arg_name,
@@ -243,15 +238,45 @@ class Argument(object):
         completer=util.Hook.FromData(data, 'completer'),
         is_positional=is_positional,
         type=util.Hook.FromData(data, 'type'),
-        choices=data.get('choices'),
+        choices=[Choice(d) for d in choices] if choices else None,
         default=data.get('default'),
         fallback=util.Hook.FromData(data, 'fallback'),
         processor=util.Hook.FromData(data, 'processor'),
         required=data.get('required', False),
         hidden=data.get('hidden', False),
-        action=action,
+        action=cls._ParseAction(data, flag_name),
         repeated=data.get('repeated'),
     )
+
+  @classmethod
+  def _ParseAction(cls, data, flag_name):
+    """Parse the action out of the argument spec.
+
+    Args:
+      data: The argument spec data.
+      flag_name: str, The effective flag name.
+
+    Raises:
+      ValueError: If the spec is invalid.
+
+    Returns:
+      The action to use as argparse accepts it. It will either be a class that
+      implements action, or it will be a str of a builtin argparse type.
+    """
+    action = data.get('action', None)
+    if not action:
+      return None
+
+    if isinstance(action, basestring):
+      if action in cls.STATIC_ACTIONS:
+        return action
+      return util.Hook.FromPath(action)
+
+    deprecation = action.get('deprecated')
+    if deprecation:
+      return actions.DeprecationAction(flag_name, **deprecation)
+
+    raise ValueError('Unknown value for action: ' + str(action))
 
   # pylint:disable=redefined-builtin, type param needs to match the schema.
   def __init__(self, api_field=None, arg_name=None, help_text=None,
@@ -307,6 +332,27 @@ class Argument(object):
     field = arg_utils.GetFieldFromMessage(message, self.api_field)
     value = arg_utils.ConvertValue(field, value, self)
     arg_utils.SetFieldInMessage(message, self.api_field, value)
+
+  def MapChoice(self, value):
+    """Maps an choice value to the API's enum string value.
+
+    Args:
+      value: str, The value the user typed.
+
+    Returns:
+      str, The representation of the API's enum value that corresponds to this
+      choice. If no match is found, the original value is returned.
+    """
+    for c in self.choices or []:
+      arg_value = c.arg_value
+      # Accept both upper and lowercase strings for string values.
+      if isinstance(arg_value, basestring):
+        arg_value = arg_value.lower()
+      if isinstance(value, basestring):
+        value = value.lower()
+      if arg_value == value:
+        return c.enum_value
+    return value
 
 
 class ArgumentGroup(object):
@@ -376,6 +422,15 @@ class ArgumentGroup(object):
     """
     for arg in self.arguments:
       arg.Parse(message, namespace)
+
+
+class Choice(object):
+  """Holds information about a single enum choice value."""
+
+  def __init__(self, data):
+    self.arg_value = data['arg_value']
+    self.enum_value = data['enum_value']
+    self.help_text = data.get('help_text')
 
 
 class Input(object):

@@ -282,6 +282,10 @@
           "description": "Optional. Resource name of the trace associated with the log entry, if any. If it contains a relative resource name, the name is assumed to be relative to \/\/tracing.googleapis.com. Example: projects\/my-projectid\/traces\/06796866738c859f2f19b7cfb3214824",
           "type": "string"
         },
+        "spanId": {
+          "description": "Optional. The span ID within the trace associated with the log entry. For Stackdriver Trace spans, this is the same format that the Stackdriver Trace API v2 uses: a 16-character hexadecimal encoding of an 8-byte array, such as <code>\"000000000000004a\"<\/code>.",
+          "type": "string"
+        },
         "sourceLocation": {
           "description": "Optional. Source code location information associated with the log entry, if any.",
           "$ref": "LogEntrySourceLocation"
@@ -1122,6 +1126,75 @@
     }
   },
   "resources": {
+    "logs": {
+      "methods": {
+        "delete": {
+          "id": "logging.logs.delete",
+          "path": "v2/{+logName}",
+          "flatPath": "v2/{v2Id}/{v2Id1}/logs/{logsId}",
+          "httpMethod": "DELETE",
+          "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.",
+          "parameters": {
+            "logName": {
+              "description": "Required. The resource name of the log to delete:\n\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\"\n\"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\"\n[LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". For more information about log names, see LogEntry.",
+              "location": "path",
+              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+\/logs\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "logName"
+          ],
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/logging.admin"
+          ]
+        },
+        "list": {
+          "id": "logging.logs.list",
+          "path": "v2/{+parent}/logs",
+          "flatPath": "v2/{v2Id}/{v2Id1}/logs",
+          "httpMethod": "GET",
+          "description": "Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.",
+          "parameters": {
+            "parent": {
+              "description": "Required. The resource name that owns the logs:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
+              "location": "path",
+              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+$",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "parent"
+          ],
+          "response": {
+            "$ref": "ListLogsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ]
+        }
+      }
+    },
     "projects": {
       "resources": {
         "logs": {
@@ -3140,6 +3213,338 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
+          ]
+        }
+      }
+    },
+    "sinks": {
+      "methods": {
+        "list": {
+          "id": "logging.sinks.list",
+          "path": "v2/{+parent}/sinks",
+          "flatPath": "v2/{v2Id}/{v2Id1}/sinks",
+          "httpMethod": "GET",
+          "description": "Lists sinks.",
+          "parameters": {
+            "parent": {
+              "description": "Required. The parent resource whose sinks are to be listed:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
+              "location": "path",
+              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+$",
+              "type": "string"
+            },
+            "pageToken": {
+              "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "parameterOrder": [
+            "parent"
+          ],
+          "response": {
+            "$ref": "ListSinksResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ]
+        },
+        "get": {
+          "id": "logging.sinks.get",
+          "path": "v2/{+sinkName}",
+          "flatPath": "v2/{v2Id}/{v2Id1}/sinks/{sinksId}",
+          "httpMethod": "GET",
+          "description": "Gets a sink.",
+          "parameters": {
+            "sinkName": {
+              "description": "Required. The resource name of the sink:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+              "location": "path",
+              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+\/sinks\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "sinkName"
+          ],
+          "response": {
+            "$ref": "LogSink"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ]
+        },
+        "create": {
+          "id": "logging.sinks.create",
+          "path": "v2/{+parent}/sinks",
+          "flatPath": "v2/{v2Id}/{v2Id1}/sinks",
+          "httpMethod": "POST",
+          "description": "Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.",
+          "parameters": {
+            "parent": {
+              "description": "Required. The resource in which to create the sink:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+              "location": "path",
+              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+$",
+              "type": "string"
+            },
+            "uniqueWriterIdentity": {
+              "description": "Optional. Determines the kind of IAM identity returned as writer_identity in the new sink. If this value is omitted or set to false, and if the sink's parent is a project, then the value returned as writer_identity is the same group or service account used by Stackdriver Logging before the addition of writer identities to this API. The sink's destination must be in the same project as the sink itself.If this field is set to true, or if the sink is owned by a non-project resource such as an organization, then the value of writer_identity will be a unique service account used only for exports from the new sink. For more information, see writer_identity in LogSink.",
+              "location": "query",
+              "type": "boolean"
+            }
+          },
+          "parameterOrder": [
+            "parent"
+          ],
+          "request": {
+            "$ref": "LogSink"
+          },
+          "response": {
+            "$ref": "LogSink"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/logging.admin"
+          ]
+        },
+        "update": {
+          "id": "logging.sinks.update",
+          "path": "v2/{+sinkName}",
+          "flatPath": "v2/{v2Id}/{v2Id1}/sinks/{sinksId}",
+          "httpMethod": "PUT",
+          "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
+          "parameters": {
+            "sinkName": {
+              "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+              "location": "path",
+              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+\/sinks\/[^\/]+$",
+              "type": "string"
+            },
+            "uniqueWriterIdentity": {
+              "description": "Optional. See sinks.create for a description of this field. When updating a sink, the effect of this field on the value of writer_identity in the updated sink depends on both the old and new values of this field:\nIf the old and new values of this field are both false or both true, then there is no change to the sink's writer_identity.\nIf the old value is false and the new value is true, then writer_identity is changed to a unique service account.\nIt is an error if the old value is true and the new value is set to false or defaulted to false.",
+              "location": "query",
+              "type": "boolean"
+            },
+            "updateMask": {
+              "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes:  destination,filter,includeChildren At some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmaskExample: updateMask=filter.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "sinkName"
+          ],
+          "request": {
+            "$ref": "LogSink"
+          },
+          "response": {
+            "$ref": "LogSink"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/logging.admin"
+          ]
+        },
+        "delete": {
+          "id": "logging.sinks.delete",
+          "path": "v2/{+sinkName}",
+          "flatPath": "v2/{v2Id}/{v2Id1}/sinks/{sinksId}",
+          "httpMethod": "DELETE",
+          "description": "Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.",
+          "parameters": {
+            "sinkName": {
+              "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+              "location": "path",
+              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+\/sinks\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "sinkName"
+          ],
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/logging.admin"
+          ]
+        }
+      }
+    },
+    "exclusions": {
+      "methods": {
+        "list": {
+          "id": "logging.exclusions.list",
+          "path": "v2/{+parent}/exclusions",
+          "flatPath": "v2/{v2Id}/{v2Id1}/exclusions",
+          "httpMethod": "GET",
+          "description": "Lists all the exclusions in a parent resource.",
+          "parameters": {
+            "parent": {
+              "description": "Required. The parent resource whose exclusions are to be listed.\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
+              "location": "path",
+              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+$",
+              "type": "string"
+            },
+            "pageToken": {
+              "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "parameterOrder": [
+            "parent"
+          ],
+          "response": {
+            "$ref": "ListExclusionsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ]
+        },
+        "get": {
+          "id": "logging.exclusions.get",
+          "path": "v2/{+name}",
+          "flatPath": "v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}",
+          "httpMethod": "GET",
+          "description": "Gets the description of an exclusion.",
+          "parameters": {
+            "name": {
+              "description": "Required. The resource name of an existing exclusion:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+              "location": "path",
+              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+\/exclusions\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "LogExclusion"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ]
+        },
+        "create": {
+          "id": "logging.exclusions.create",
+          "path": "v2/{+parent}/exclusions",
+          "flatPath": "v2/{v2Id}/{v2Id1}/exclusions",
+          "httpMethod": "POST",
+          "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.",
+          "parameters": {
+            "parent": {
+              "description": "Required. The parent resource in which to create the exclusion:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+              "location": "path",
+              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "parent"
+          ],
+          "request": {
+            "$ref": "LogExclusion"
+          },
+          "response": {
+            "$ref": "LogExclusion"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/logging.admin"
+          ]
+        },
+        "patch": {
+          "id": "logging.exclusions.patch",
+          "path": "v2/{+name}",
+          "flatPath": "v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}",
+          "httpMethod": "PATCH",
+          "description": "Changes one or more properties of an existing exclusion.",
+          "parameters": {
+            "name": {
+              "description": "Required. The resource name of the exclusion to update:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+              "location": "path",
+              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+\/exclusions\/[^\/]+$",
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "Required. A nonempty list of fields to change in the existing exclusion. New values for the fields are taken from the corresponding fields in the LogExclusion included in this request. Fields not mentioned in update_mask are not changed and are ignored in the request.For example, to change the filter and description of an exclusion, specify an update_mask of \"filter,description\".",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "LogExclusion"
+          },
+          "response": {
+            "$ref": "LogExclusion"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/logging.admin"
+          ]
+        },
+        "delete": {
+          "id": "logging.exclusions.delete",
+          "path": "v2/{+name}",
+          "flatPath": "v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}",
+          "httpMethod": "DELETE",
+          "description": "Deletes an exclusion.",
+          "parameters": {
+            "name": {
+              "description": "Required. The resource name of an existing exclusion to delete:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+              "location": "path",
+              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+\/exclusions\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/logging.admin"
           ]
         }
       }

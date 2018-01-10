@@ -50,6 +50,8 @@ from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.resource import table_printer
 from googlecloudsdk.core.resource import yaml_printer
 
+from typing import List, Tuple
+
 
 class Error(core_exceptions.Error):
   """Exceptions for this module."""
@@ -108,7 +110,9 @@ class MultiPrinter(resource_printer_base.ResourcePrinter):
 
   def __init__(self, *args, **kwargs):
     super(MultiPrinter, self).__init__(*args, **kwargs)
-    self.columns = []
+    # pylint: disable=line-too-long
+    self.columns = []  # type: List[Tuple[resource_projection_spec.ProjectionSpec._Column, resource_printer_base.ResourcePrinter]]
+    # pylint: disable=line-too-long
     for col in self.column_attributes.Columns():
       if not col.attribute.subformat:
         raise ProjectionFormatRequiredError(

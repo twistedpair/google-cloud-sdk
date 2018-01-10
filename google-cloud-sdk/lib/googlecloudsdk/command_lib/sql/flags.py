@@ -370,6 +370,11 @@ def AddDatabaseList(parser, help_text):
       help=help_text)
 
 
+def AddUser(parser, help_text):
+  """Add the '--user' flag to the parser, with help text help_text."""
+  parser.add_argument('--user', help=help_text)
+
+
 INSTANCES_FORMAT = """
   table(
     instance:label=NAME,

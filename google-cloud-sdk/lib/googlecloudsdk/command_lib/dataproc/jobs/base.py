@@ -35,7 +35,7 @@ class JobBase(object):
     super(JobBase, self).__init__(*args, **kwargs)
     self.files_by_type = {}
     self.files_to_stage = []
-    self._staging_dir = None
+    self._staging_dir = None  # type: str
 
   def _GetStagedFile(self, file_str):
     """Validate file URI and register it for uploading if it is local."""
@@ -99,4 +99,4 @@ class JobBase(object):
             messages.LoggingConfig.DriverLogLevelsValue))
 
   def PopulateFilesByType(self, args):
-    self.files_by_type.update(self.GetFilesByType(args))
+    self.files_by_type.update(self.GetFilesByType(args))  # pytype: disable=attribute-error

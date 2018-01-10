@@ -52,6 +52,8 @@ class CloudFunction(_messages.Message):
     StatusValueValuesEnum: Output only. Status of the function deployment.
 
   Messages:
+    EnvironmentVariablesValue: Envrionment variables that shall be available
+      during function execution.
     LabelsValue: Labels associated with this Cloud Function.
 
   Fields:
@@ -64,6 +66,8 @@ class CloudFunction(_messages.Message):
       the system will try to use function named "function". For Node.js this
       is name of a function exported by the module specified in
       `source_location`.
+    environmentVariables: Envrionment variables that shall be available during
+      function execution.
     eventTrigger: A source that fires events in response to a condition in
       another service.
     httpsTrigger: An HTTPS endpoint type of source that can be triggered via
@@ -110,6 +114,33 @@ class CloudFunction(_messages.Message):
     UNKNOWN = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvironmentVariablesValue(_messages.Message):
+    """Envrionment variables that shall be available during function
+    execution.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        EnvironmentVariablesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        EnvironmentVariablesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a EnvironmentVariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels associated with this Cloud Function.
 
@@ -136,19 +167,20 @@ class CloudFunction(_messages.Message):
   availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   description = _messages.StringField(2)
   entryPoint = _messages.StringField(3)
-  eventTrigger = _messages.MessageField('EventTrigger', 4)
-  httpsTrigger = _messages.MessageField('HttpsTrigger', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  runtime = _messages.MessageField('Runtime', 8)
-  serviceAccountEmail = _messages.StringField(9)
-  sourceArchiveUrl = _messages.StringField(10)
-  sourceRepository = _messages.MessageField('SourceRepository', 11)
-  sourceUploadUrl = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  timeout = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  versionId = _messages.IntegerField(16)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 4)
+  eventTrigger = _messages.MessageField('EventTrigger', 5)
+  httpsTrigger = _messages.MessageField('HttpsTrigger', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  runtime = _messages.MessageField('Runtime', 9)
+  serviceAccountEmail = _messages.StringField(10)
+  sourceArchiveUrl = _messages.StringField(11)
+  sourceRepository = _messages.MessageField('SourceRepository', 12)
+  sourceUploadUrl = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  timeout = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  versionId = _messages.IntegerField(17)
 
 
 class CloudfunctionsOperationsCancelRequest(_messages.Message):
@@ -351,19 +383,15 @@ class EventTrigger(_messages.Message):
 
   Fields:
     eventType: Required. The type of event to observe. For example:
-      `google.storage.object.finalized` and
-      `google.firebase.analytics.event.log`.  Event type consists of three
-      parts:  1. namespace: The domain name of the organization in reverse-
-      domain     notation (e.g. `acme.net` appears as `net.acme`) and any
-      orginization     specific subdivisions. If the organization's top-level
-      domain is `com`,     the top-level domain is ommited (e.g. `google.com`
-      appears as     `google`). For example, `google.storage` and
+      `providers/cloud.storage/eventTypes/object.change` and
+      `providers/cloud.pubsub/eventTypes/topic.publish`.  Event types match
+      pattern `providers/*/eventTypes/*.*`. The pattern contains:  1.
+      namespace: For example, `cloud.storage` and
       `google.firebase.analytics`.  2. resource type: The type of resource on
-      which event ocurs. For     example, the Google Cloud Storage API
+      which event occurs. For     example, the Google Cloud Storage API
       includes the type `object`.  3. action: The action that generates the
-      event. For example, actions for     a Google Cloud Storage Object
-      include 'finalize' and 'delete'. These parts are lower case and joined
-      by '.'.
+      event. For example, action for     a Google Cloud Storage Object is
+      'change'. These parts are lower case.
     failurePolicy: Specifies policy for failed executions.
     resource: Required. The resource(s) from which to observe events, for
       example, `projects/_/buckets/myBucket`.  Not all syntactically correct

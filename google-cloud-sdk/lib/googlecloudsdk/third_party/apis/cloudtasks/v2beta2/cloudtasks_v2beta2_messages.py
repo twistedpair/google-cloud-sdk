@@ -613,7 +613,9 @@ class CloudtasksProjectsLocationsQueuesPatchRequest(_messages.Message):
     name: The queue name.  The queue name must have the following format:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *
       `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),    hyphens
-      (-), colons (:), or periods (.). * `LOCATION_ID` is the canonical ID for
+      (-), colons (:), or periods (.).    For more information, see
+      [Identifying projects](/resource-manager/docs/creating-managing-
+      projects#identifying_projects) * `LOCATION_ID` is the canonical ID for
       the queue's location.    The list of available locations can be obtained
       by calling    google.cloud.location.Locations.ListLocations.    For more
       information, see https://cloud.google.com/about/locations/. * `QUEUE_ID`
@@ -1297,11 +1299,10 @@ class Queue(_messages.Message):
   retry options, target types, and others.
 
   Enums:
-    QueueStateValueValuesEnum: Output only. The state of the queue.
-      `queue_state` can only be changed by called CloudTasks.PauseQueue,
-      CloudTasks.ResumeQueue, or uploading
-      [queue.yaml](/appengine/docs/python/config/queueref).
-      CloudTasks.UpdateQueue cannot be used to change `queue_state`.
+    StateValueValuesEnum: Output only. The state of the queue.  `state` can
+      only be changed by called CloudTasks.PauseQueue, CloudTasks.ResumeQueue,
+      or uploading [queue.yaml](/appengine/docs/python/config/queueref).
+      CloudTasks.UpdateQueue cannot be used to change `state`.
 
   Fields:
     appEngineHttpTarget: App Engine HTTP target.  An App Engine queue is a
@@ -1310,7 +1311,9 @@ class Queue(_messages.Message):
     name: The queue name.  The queue name must have the following format:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *
       `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),    hyphens
-      (-), colons (:), or periods (.). * `LOCATION_ID` is the canonical ID for
+      (-), colons (:), or periods (.).    For more information, see
+      [Identifying projects](/resource-manager/docs/creating-managing-
+      projects#identifying_projects) * `LOCATION_ID` is the canonical ID for
       the queue's location.    The list of available locations can be obtained
       by calling    google.cloud.location.Locations.ListLocations.    For more
       information, see https://cloud.google.com/about/locations/. * `QUEUE_ID`
@@ -1326,10 +1329,6 @@ class Queue(_messages.Message):
       tasks-and-queues#purging_all_tasks_from_a_queue).  Purge time will be
       truncated to the nearest microsecond. Purge time will be zero if the
       queue has never been purged.
-    queueState: Output only. The state of the queue.  `queue_state` can only
-      be changed by called CloudTasks.PauseQueue, CloudTasks.ResumeQueue, or
-      uploading [queue.yaml](/appengine/docs/python/config/queueref).
-      CloudTasks.UpdateQueue cannot be used to change `queue_state`.
     rateLimits: Rate limits for task dispatches.  Queue.rate_limits and
       Queue.retry_config are related because they both control task attempts
       however they control how tasks are attempted in different ways:  *
@@ -1348,16 +1347,20 @@ class Queue(_messages.Message):
       were created by the App Engine SDK. See   [App Engine
       documentation](/appengine/docs/standard/python/taskqueue/push/retrying-
       tasks).
+    state: Output only. The state of the queue.  `state` can only be changed
+      by called CloudTasks.PauseQueue, CloudTasks.ResumeQueue, or uploading
+      [queue.yaml](/appengine/docs/python/config/queueref).
+      CloudTasks.UpdateQueue cannot be used to change `state`.
   """
 
-  class QueueStateValueValuesEnum(_messages.Enum):
-    """Output only. The state of the queue.  `queue_state` can only be changed
-    by called CloudTasks.PauseQueue, CloudTasks.ResumeQueue, or uploading
+  class StateValueValuesEnum(_messages.Enum):
+    """Output only. The state of the queue.  `state` can only be changed by
+    called CloudTasks.PauseQueue, CloudTasks.ResumeQueue, or uploading
     [queue.yaml](/appengine/docs/python/config/queueref).
-    CloudTasks.UpdateQueue cannot be used to change `queue_state`.
+    CloudTasks.UpdateQueue cannot be used to change `state`.
 
     Values:
-      QUEUE_STATE_UNSPECIFIED: Unspecified state.
+      STATE_UNSPECIFIED: Unspecified state.
       RUNNING: The queue is running. Tasks can be dispatched.
       PAUSED: Tasks are paused by the user. If the queue is paused then Cloud
         Tasks will stop delivering tasks from it, but more tasks can still be
@@ -1372,7 +1375,7 @@ class Queue(_messages.Message):
         `FAILED_PRECONDITION` error.  To permanently delete this queue and all
         of its tasks, call CloudTasks.DeleteQueue.
     """
-    QUEUE_STATE_UNSPECIFIED = 0
+    STATE_UNSPECIFIED = 0
     RUNNING = 1
     PAUSED = 2
     DISABLED = 3
@@ -1383,9 +1386,9 @@ class Queue(_messages.Message):
   pullQueueConfig = _messages.MessageField('PullQueueConfig', 4)
   pullTarget = _messages.MessageField('PullTarget', 5)
   purgeTime = _messages.StringField(6)
-  queueState = _messages.EnumField('QueueStateValueValuesEnum', 7)
-  rateLimits = _messages.MessageField('RateLimits', 8)
-  retryConfig = _messages.MessageField('RetryConfig', 9)
+  rateLimits = _messages.MessageField('RateLimits', 7)
+  retryConfig = _messages.MessageField('RetryConfig', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class RateLimits(_messages.Message):
@@ -1789,13 +1792,14 @@ class Task(_messages.Message):
     name: The task name.  The task name must have the following format:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID
       `  * `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),
-      hyphens (-), colons (:), or periods (.). * `LOCATION_ID` is the
-      canonical ID for the task's location.    The list of available locations
-      can be obtained by calling
-      google.cloud.location.Locations.ListLocations.    For more information,
-      see https://cloud.google.com/about/locations/. * `QUEUE_ID` can contain
-      letters ([A-Za-z]), numbers ([0-9]), or   hyphens (-). The maximum
-      length is 100 characters. * `TASK_ID` can contain only letters
+      hyphens (-), colons (:), or periods (.).    For more information, see
+      [Identifying projects](/resource-manager/docs/creating-managing-
+      projects#identifying_projects) * `LOCATION_ID` is the canonical ID for
+      the task's location.    The list of available locations can be obtained
+      by calling    google.cloud.location.Locations.ListLocations.    For more
+      information, see https://cloud.google.com/about/locations/. * `QUEUE_ID`
+      can contain letters ([A-Za-z]), numbers ([0-9]), or   hyphens (-). The
+      maximum length is 100 characters. * `TASK_ID` can contain only letters
       ([A-Za-z]), numbers ([0-9]),   hyphens (-), or underscores (_). The
       maximum length is 500 characters.  Optionally caller-specified in
       CreateTaskRequest.

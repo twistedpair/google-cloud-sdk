@@ -294,7 +294,8 @@ class CommandCommon(object):
         nargs=1,
         metavar='ATTRIBUTES',
         type=arg_parsers.ArgDict(),
-        help=argparse.SUPPRESS)
+        hidden=True,
+        help='THIS TEXT SHOULD BE HIDDEN')
 
     self._AcquireArgs()
 
@@ -433,13 +434,13 @@ class CommandCommon(object):
       return flags
     return [f for f in flags if
             (include_global or not f.is_global) and
-            (include_hidden or f.help != argparse.SUPPRESS)]
+            (include_hidden or not f.hidden)]
 
   def GetSpecificFlags(self, include_hidden=True):
     flags = self.ai.flag_args
     if include_hidden:
       return flags
-    return [f for f in flags if f.help != argparse.SUPPRESS]
+    return [f for f in flags if not f.hidden]
 
   def GetExistingAlternativeReleaseTracks(self, value=None):
     """Gets the names for the command in other release tracks.

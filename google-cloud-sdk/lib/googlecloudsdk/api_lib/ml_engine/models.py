@@ -15,8 +15,13 @@
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+
+
+class NoFieldsSpecifiedError(exceptions.Error):
+  """Error indicating that no updates were requested in a Patch operation."""
 
 
 def _ParseModel(model_id):
@@ -33,7 +38,7 @@ class ModelsClient(object):
     self.client = client or apis.GetClientInstance('ml', 'v1')
     self.messages = messages or self.client.MESSAGES_MODULE
 
-  def Create(self, model_name, regions, enable_logging=False):
+  def Create(self, model_name, regions, enable_logging=False, labels=None):
     """Create a new model."""
     model_ref = _ParseModel(model_name)
     regions_list = regions or []
@@ -44,7 +49,8 @@ class ModelsClient(object):
         googleCloudMlV1Model=self.messages.GoogleCloudMlV1Model(
             name=model_ref.Name(),
             regions=regions_list,
-            onlinePredictionLogging=enable_logging))
+            onlinePredictionLogging=enable_logging,
+            labels=labels))
     return self.client.projects_models.Create(req)
 
   def GetIamPolicy(self, model_ref):
@@ -84,3 +90,18 @@ class ModelsClient(object):
         req,
         field='models',
         batch_size_attribute='pageSize')
+
+  def Patch(self, model_ref, labels_update):
+    """Update a model."""
+    model = self.messages.GoogleCloudMlV1Model()
+    update_mask = []
+    if labels_update.needs_update:
+      model.labels = labels_update.labels
+      update_mask.append('labels')
+    if not update_mask:
+      raise NoFieldsSpecifiedError('No updates requested.')
+    req = self.messages.MlProjectsModelsPatchRequest(
+        name=model_ref.RelativeName(),
+        googleCloudMlV1Model=model,
+        updateMask=','.join(update_mask))
+    return self.client.projects_models.Patch(req)

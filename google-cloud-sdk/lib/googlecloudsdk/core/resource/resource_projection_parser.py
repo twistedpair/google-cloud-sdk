@@ -298,7 +298,7 @@ class Parser(object):
       ExpressionSyntaxError: The expression has a syntax error.
     """
     while True:
-      name = self._lex.Token('=:,)', space=False)
+      name = self._lex.Token('=:,)', space=False)  # type: str
       here = self._lex.GetPosition()
       if self._lex.IsCharacter('=', eoi_ok=True):
         boolean_value = False
@@ -418,7 +418,7 @@ class Parser(object):
       ExpressionSyntaxError: The expression has a syntax error.
     """
     while True:
-      name = self._lex.Token('=,])', space=False)
+      name = self._lex.Token('=,])', space=False)  # type: str
       if name:
         if self._lex.IsCharacter('='):
           value = self._lex.Token(',])', space=False, convert=True)
@@ -475,7 +475,7 @@ class Parser(object):
           self.__key_order_offset = 0
         else:
           here = self._lex.GetPosition()
-          name = self._lex.Token(':([')
+          name = self._lex.Token(':([')  # type: str
           if not name.isalpha():
             raise resource_exceptions.ExpressionSyntaxError(
                 'Name expected [{0}].'.format(self._lex.Annotate(here)))

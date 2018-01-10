@@ -14,8 +14,8 @@
 
 """Flags and helpers for the compute related commands."""
 
-import argparse
 import functools
+import enum  # pylint: disable=unused-import, for pytype
 
 from googlecloudsdk.api_lib.compute import filter_rewrite
 from googlecloudsdk.api_lib.compute.regions import service as regions_service
@@ -34,7 +34,8 @@ from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.util import text
 
 ZONE_PROPERTY_EXPLANATION = """\
-If not specified, you may be prompted to select a zone.
+If not specified and the ``compute/zone'' property isn't set, you
+will be prompted to select a zone.
 
 To avoid prompting when this flag is omitted, you can set the
 ``compute/zone'' property:
@@ -230,6 +231,7 @@ class ResourceArgScopes(object):
     self.scopes = {}
 
   def AddScope(self, scope, collection):
+    # type: (enum.Enum, str) -> None
     self.scopes[scope] = ResourceArgScope(scope, self.flag_prefix, collection)
 
   def SpecifiedByArgs(self, args):
@@ -502,7 +504,7 @@ class ResourceResolver(object):
         api_resource_registry)
 
     # Now unpack each element.
-    refs = [ref[0] for ref in refs]
+    refs = [ref[0] for ref in refs]  # type: list[resources.Resource]
 
     # Make sure correct collection was given for each resource, for example
     # URLs have implicit collections.
@@ -559,7 +561,8 @@ class ResourceArgument(object):
   def __init__(self, name=None, resource_name=None, completer=None,
                plural=False, required=True, zonal_collection=None,
                regional_collection=None, global_collection=None,
-               region_explanation=None, zone_explanation=None,
+               region_explanation=None, region_hidden=False,
+               zone_explanation=None, zone_hidden=False,
                short_help=None, detailed_help=None, custom_plural=None):
 
     """Constructor.
@@ -578,11 +581,11 @@ class ResourceArgument(object):
                               and uses this collection to resolve as
                               global resource.
       region_explanation: str, long help that will be given for region flag,
-                               empty by default. Provide argparse.SUPPRESS to
-                               hide in help.
+                               empty by default.
+      region_hidden: bool, Hide region in help if True.
       zone_explanation: str, long help that will be given for zone flag, empty
-                             by default. Provide argparse.SUPPRESS to hide in
-                             help.
+                             by default.
+      zone_hidden: bool, Hide region in help if True.
       short_help: str, help for the flag being added, if not provided help text
                        will be 'The name[s] of the ${resource_name}[s].'.
       detailed_help: str, detailed help for the flag being added, if not
@@ -623,7 +626,9 @@ class ResourceArgument(object):
       self.scopes.AddScope(compute_scope.ScopeEnum.GLOBAL,
                            collection=global_collection)
     self._region_explanation = region_explanation or ''
+    self._region_hidden = region_hidden
     self._zone_explanation = zone_explanation or ''
+    self._zone_hidden = zone_hidden
     self._resource_resolver = ResourceResolver(self.scopes, resource_name)
 
   # TODO(b/31933786) remove cust_metavar once surface supports metavars for
@@ -678,7 +683,7 @@ class ResourceArgument(object):
           resource_type=self.resource_name,
           operation_type=operation_type,
           explanation=self._zone_explanation,
-          hidden=self._zone_explanation is argparse.SUPPRESS,
+          hidden=self._zone_hidden,
           plural=self.plural,
           custom_plural=self.custom_plural)
 
@@ -689,7 +694,7 @@ class ResourceArgument(object):
           resource_type=self.resource_name,
           operation_type=operation_type,
           explanation=self._region_explanation,
-          hidden=self._region_explanation is argparse.SUPPRESS,
+          hidden=self._region_hidden,
           plural=self.plural,
           custom_plural=self.custom_plural)
 

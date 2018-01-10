@@ -209,12 +209,15 @@ class ArgumentInterceptor(Argument):
     # A flag that can only be supplied where it is defined and not propagated to
     # subcommands.
     do_not_propagate = kwargs.pop('do_not_propagate', False)
-    # hidden=True => help=argparse.SUPPRESS, but retains help in the source.
+    # hidden=True retains help but does not display it.
     hidden = kwargs.pop('hidden', False)
-    if hidden:
-      kwargs['help'] = argparse.SUPPRESS
-    elif kwargs.get('help') == argparse.SUPPRESS:
-      hidden = True
+    help_text = kwargs.get('help')
+    if not help_text:
+      raise ValueError('Argument {} requires help text [hidden={}]'.format(
+          name, hidden))
+    if help_text == argparse.SUPPRESS:
+      raise ValueError('Argument {} needs hidden=True instead of '
+                       'help=argparse.SUPPRESS.'.format(name))
     # A global flag that is added at each level explicitly because each command
     # has a different behavior (like -h).
     is_replicated = kwargs.pop('is_replicated', False)
@@ -273,6 +276,10 @@ class ArgumentInterceptor(Argument):
     added_argument.is_hidden = hidden
     added_argument.is_required = required
     added_argument.is_positional = positional
+    if hidden:
+      # argparse uses SUPPRESS -- cli_tree uses hidden_help to work around
+      added_argument.hidden_help = added_argument.help
+      added_argument.help = argparse.SUPPRESS
     if positional:
       if category:
         raise parser_errors.ArgumentException(
@@ -407,7 +414,6 @@ class ArgumentInterceptor(Argument):
 
     Args:
       action: argparse.Action, The action for the flag being added.
-
     """
     # pylint:disable=protected-access, simply no other way to do this.
     self.parser._add_action(action)
@@ -481,10 +487,10 @@ class ArgumentInterceptor(Argument):
     kwargs['action'] = action
     if not kwargs.get('dest'):
       kwargs['dest'] = dest
-    kwargs['help'] = argparse.SUPPRESS
 
     inverted_argument = self.parser.add_argument(
         name.replace('--', '--no-', 1), **kwargs)
+    inverted_argument.hidden = True
     if inverted_synopsis:
       # flag.inverted_synopsis means display the inverted flag in the SYNOPSIS.
       setattr(added_argument, 'inverted_synopsis', True)

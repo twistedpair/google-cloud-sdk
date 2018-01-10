@@ -336,6 +336,13 @@
           "items": {
             "$ref": "Secret"
           }
+        },
+        "timing": {
+          "description": "Stores timing information for phases of the build. Valid keys are:\n\n* BUILD: time to execute all build steps\n* PUSH: time to push all specified images.\n* FETCHSOURCE: time to fetch source.\n\nIf the build does not specify source, or does not specify images,\nthese keys will not be included.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "TimeSpan"
+          }
         }
       }
     },
@@ -460,6 +467,10 @@
           "items": {
             "$ref": "Volume"
           }
+        },
+        "timing": {
+          "description": "Stores timing information for executing this build step.",
+          "$ref": "TimeSpan"
         }
       }
     },
@@ -475,6 +486,23 @@
         "path": {
           "description": "Path at which to mount the volume.\n\nPaths must be absolute and cannot conflict with other volume paths on the\nsame build step or with certain reserved volume paths.",
           "type": "string"
+        }
+      }
+    },
+    "TimeSpan": {
+      "id": "TimeSpan",
+      "description": "Stores start and end times for a build execution phase.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Start of time span.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "End of time span.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -511,6 +539,10 @@
         "digest": {
           "description": "Docker Registry 2.0 digest.",
           "type": "string"
+        },
+        "pushTiming": {
+          "description": "Stores timing information for pushing the specified image.",
+          "$ref": "TimeSpan"
         }
       }
     },
@@ -607,11 +639,11 @@
           ]
         },
         "machineType": {
-          "description": "GCE VM size to run the build on.",
+          "description": "Compute Engine machine type on which to run the build.",
           "enumDescriptions": [
             "Standard machine type.",
-            "Medium size.",
-            "Large size."
+            "Highcpu machine with 8 CPUs.",
+            "Highcpu machine with 32 CPUs."
           ],
           "type": "string",
           "enum": [

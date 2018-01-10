@@ -392,6 +392,10 @@ class LogEntry(_messages.Message):
       LogSeverity.DEFAULT.
     sourceLocation: Optional. Source code location information associated with
       the log entry, if any.
+    spanId: Optional. The span ID within the trace associated with the log
+      entry. For Stackdriver Trace spans, this is the same format that the
+      Stackdriver Trace API v2 uses: a 16-character hexadecimal encoding of an
+      8-byte array, such as <code>"000000000000004a"</code>.
     textPayload: The log entry payload, represented as a Unicode string
       (UTF-8).
     timestamp: Optional. The time the event described by the log entry
@@ -522,9 +526,10 @@ class LogEntry(_messages.Message):
   resource = _messages.MessageField('MonitoredResource', 9)
   severity = _messages.EnumField('SeverityValueValuesEnum', 10)
   sourceLocation = _messages.MessageField('LogEntrySourceLocation', 11)
-  textPayload = _messages.StringField(12)
-  timestamp = _messages.StringField(13)
-  trace = _messages.StringField(14)
+  spanId = _messages.StringField(12)
+  textPayload = _messages.StringField(13)
+  timestamp = _messages.StringField(14)
+  trace = _messages.StringField(15)
 
 
 class LogEntryOperation(_messages.Message):
@@ -1159,6 +1164,96 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class LoggingExclusionsCreateRequest(_messages.Message):
+  """A LoggingExclusionsCreateRequest object.
+
+  Fields:
+    logExclusion: A LogExclusion resource to be passed as the request body.
+    parent: Required. The parent resource in which to create the exclusion:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
+      "projects/my-logging-project", "organizations/123456789".
+  """
+
+  logExclusion = _messages.MessageField('LogExclusion', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class LoggingExclusionsDeleteRequest(_messages.Message):
+  """A LoggingExclusionsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of an existing exclusion to delete:
+      "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
+      "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
+      project-id/exclusions/my-exclusion-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingExclusionsGetRequest(_messages.Message):
+  """A LoggingExclusionsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of an existing exclusion:
+      "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
+      "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
+      project-id/exclusions/my-exclusion-id".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingExclusionsListRequest(_messages.Message):
+  """A LoggingExclusionsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The parent resource whose exclusions are to be listed.
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingExclusionsPatchRequest(_messages.Message):
+  """A LoggingExclusionsPatchRequest object.
+
+  Fields:
+    logExclusion: A LogExclusion resource to be passed as the request body.
+    name: Required. The resource name of the exclusion to update:
+      "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
+      "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
+      project-id/exclusions/my-exclusion-id".
+    updateMask: Required. A nonempty list of fields to change in the existing
+      exclusion. New values for the fields are taken from the corresponding
+      fields in the LogExclusion included in this request. Fields not
+      mentioned in update_mask are not changed and are ignored in the
+      request.For example, to change the filter and description of an
+      exclusion, specify an update_mask of "filter,description".
+  """
+
+  logExclusion = _messages.MessageField('LogExclusion', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class LoggingFoldersExclusionsCreateRequest(_messages.Message):
   """A LoggingFoldersExclusionsCreateRequest object.
 
@@ -1441,6 +1536,44 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
   sinkName = _messages.StringField(2, required=True)
   uniqueWriterIdentity = _messages.BooleanField(3)
   updateMask = _messages.StringField(4)
+
+
+class LoggingLogsDeleteRequest(_messages.Message):
+  """A LoggingLogsDeleteRequest object.
+
+  Fields:
+    logName: Required. The resource name of the log to delete:
+      "projects/[PROJECT_ID]/logs/[LOG_ID]"
+      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
+      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
+      example, "projects/my-project-id/logs/syslog", "organizations/1234567890
+      /logs/cloudresourcemanager.googleapis.com%2Factivity". For more
+      information about log names, see LogEntry.
+  """
+
+  logName = _messages.StringField(1, required=True)
+
+
+class LoggingLogsListRequest(_messages.Message):
+  """A LoggingLogsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource name that owns the logs:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class LoggingMonitoredResourceDescriptorsListRequest(_messages.Message):
@@ -2062,6 +2195,123 @@ class LoggingProjectsSinksPatchRequest(_messages.Message):
 
 class LoggingProjectsSinksUpdateRequest(_messages.Message):
   """A LoggingProjectsSinksUpdateRequest object.
+
+  Fields:
+    logSink: A LogSink resource to be passed as the request body.
+    sinkName: Required. The full resource name of the sink to update,
+      including the parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
+    uniqueWriterIdentity: Optional. See sinks.create for a description of this
+      field. When updating a sink, the effect of this field on the value of
+      writer_identity in the updated sink depends on both the old and new
+      values of this field: If the old and new values of this field are both
+      false or both true, then there is no change to the sink's
+      writer_identity. If the old value is false and the new value is true,
+      then writer_identity is changed to a unique service account. It is an
+      error if the old value is true and the new value is set to false or
+      defaulted to false.
+    updateMask: Optional. Field mask that specifies the fields in sink that
+      need an update. A sink field will be overwritten if, and only if, it is
+      in the update mask. name and output only fields cannot be updated.An
+      empty updateMask is temporarily treated as using the following mask for
+      backwards compatibility purposes:  destination,filter,includeChildren At
+      some point in the future, behavior will be removed and specifying an
+      empty updateMask will be an error.For a detailed FieldMask definition,
+      see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmaskExample:
+      updateMask=filter.
+  """
+
+  logSink = _messages.MessageField('LogSink', 1)
+  sinkName = _messages.StringField(2, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(3)
+  updateMask = _messages.StringField(4)
+
+
+class LoggingSinksCreateRequest(_messages.Message):
+  """A LoggingSinksCreateRequest object.
+
+  Fields:
+    logSink: A LogSink resource to be passed as the request body.
+    parent: Required. The resource in which to create the sink:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
+      "projects/my-logging-project", "organizations/123456789".
+    uniqueWriterIdentity: Optional. Determines the kind of IAM identity
+      returned as writer_identity in the new sink. If this value is omitted or
+      set to false, and if the sink's parent is a project, then the value
+      returned as writer_identity is the same group or service account used by
+      Stackdriver Logging before the addition of writer identities to this
+      API. The sink's destination must be in the same project as the sink
+      itself.If this field is set to true, or if the sink is owned by a non-
+      project resource such as an organization, then the value of
+      writer_identity will be a unique service account used only for exports
+      from the new sink. For more information, see writer_identity in LogSink.
+  """
+
+  logSink = _messages.MessageField('LogSink', 1)
+  parent = _messages.StringField(2, required=True)
+  uniqueWriterIdentity = _messages.BooleanField(3)
+
+
+class LoggingSinksDeleteRequest(_messages.Message):
+  """A LoggingSinksDeleteRequest object.
+
+  Fields:
+    sinkName: Required. The full resource name of the sink to delete,
+      including the parent resource and the sink identifier:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
+  """
+
+  sinkName = _messages.StringField(1, required=True)
+
+
+class LoggingSinksGetRequest(_messages.Message):
+  """A LoggingSinksGetRequest object.
+
+  Fields:
+    sinkName: Required. The resource name of the sink:
+      "projects/[PROJECT_ID]/sinks/[SINK_ID]"
+      "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
+      id/sinks/my-sink-id".
+  """
+
+  sinkName = _messages.StringField(1, required=True)
+
+
+class LoggingSinksListRequest(_messages.Message):
+  """A LoggingSinksListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The parent resource whose sinks are to be listed:
+      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingSinksUpdateRequest(_messages.Message):
+  """A LoggingSinksUpdateRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.

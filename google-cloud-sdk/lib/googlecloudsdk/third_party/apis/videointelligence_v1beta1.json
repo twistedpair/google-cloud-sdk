@@ -21,6 +21,7 @@
   "baseUrl": "https://videointelligence.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -819,8 +820,22 @@
           "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
           "type": "string"
         },
-        "labelAnnotations": {
-          "description": "Label annotations. There is exactly one element for each unique label.",
+        "segmentLabelAnnotations": {
+          "description": "Label annotations on video level or user specified segment level.\nThere is exactly one element for each unique label.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_LabelAnnotation"
+          }
+        },
+        "shotLabelAnnotations": {
+          "description": "Label annotations on shot level.\nThere is exactly one element for each unique label.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_LabelAnnotation"
+          }
+        },
+        "frameLabelAnnotations": {
+          "description": "Label annotations on frame level.\nThere is exactly one element for each unique label.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1_LabelAnnotation"
@@ -833,12 +848,9 @@
             "$ref": "GoogleCloudVideointelligenceV1_VideoSegment"
           }
         },
-        "safeSearchAnnotations": {
-          "description": "Safe search annotations.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1_SafeSearchAnnotation"
-          }
+        "explicitAnnotation": {
+          "description": "Explicit content annotation.",
+          "$ref": "GoogleCloudVideointelligenceV1_ExplicitContentAnnotation"
         },
         "error": {
           "description": "If set, indicates an error. Note that for a single `AnnotateVideoRequest`\nsome videos may succeed and some may fail.",
@@ -851,6 +863,42 @@
       "description": "Label annotation.",
       "type": "object",
       "properties": {
+        "entity": {
+          "description": "Detected entity.",
+          "$ref": "GoogleCloudVideointelligenceV1_Entity"
+        },
+        "categoryEntities": {
+          "description": "Common categories for the detected entity.\nE.g. when the label is `Terrier` the category is likely `dog`. And in some\ncases there might be more than one categories e.g. `Terrier` could also be\na `pet`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_Entity"
+          }
+        },
+        "segments": {
+          "description": "All video segments where a label was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_LabelSegment"
+          }
+        },
+        "frames": {
+          "description": "All video frames where a label was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_LabelFrame"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1_Entity": {
+      "id": "GoogleCloudVideointelligenceV1_Entity",
+      "description": "Detected entity from video analysis.",
+      "type": "object",
+      "properties": {
+        "entityId": {
+          "description": "Opaque entity ID. Some IDs may be available in\n[Google Knowledge Graph Search\nAPI](https:\/\/developers.google.com\/knowledge-graph\/).",
+          "type": "string"
+        },
         "description": {
           "description": "Textual description, e.g. `Fixed-gear bicycle`.",
           "type": "string"
@@ -858,47 +906,22 @@
         "languageCode": {
           "description": "Language code for `description` in BCP-47 format.",
           "type": "string"
-        },
-        "locations": {
-          "description": "Where the label was detected and with what confidence.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1_LabelLocation"
-          }
         }
       }
     },
-    "GoogleCloudVideointelligenceV1_LabelLocation": {
-      "id": "GoogleCloudVideointelligenceV1_LabelLocation",
-      "description": "Label location.",
+    "GoogleCloudVideointelligenceV1_LabelSegment": {
+      "id": "GoogleCloudVideointelligenceV1_LabelSegment",
+      "description": "Video segment level annotation results for label detection.",
       "type": "object",
       "properties": {
         "segment": {
-          "description": "Video segment. Unset for video-level labels.\nSet to a frame timestamp for frame-level labels.\nOtherwise, corresponds to one of `AnnotateSpec.segments`\n(if specified) or to shot boundaries (if requested).",
+          "description": "Video segment where a label was detected.",
           "$ref": "GoogleCloudVideointelligenceV1_VideoSegment"
         },
         "confidence": {
           "description": "Confidence that the label is accurate. Range: [0, 1].",
           "type": "number",
           "format": "float"
-        },
-        "level": {
-          "description": "Label level.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Video-level. Corresponds to the whole video.",
-            "Segment-level. Corresponds to one of `AnnotateSpec.segments`.",
-            "Shot-level. Corresponds to a single shot (i.e. a series of frames\nwithout a major camera position or background change).",
-            "Frame-level. Corresponds to a single video frame."
-          ],
-          "type": "string",
-          "enum": [
-            "LABEL_LEVEL_UNSPECIFIED",
-            "VIDEO_LEVEL",
-            "SEGMENT_LEVEL",
-            "SHOT_LEVEL",
-            "FRAME_LEVEL"
-          ]
         }
       }
     },
@@ -907,27 +930,63 @@
       "description": "Video segment.",
       "type": "object",
       "properties": {
-        "startTime": {
+        "startTimeOffset": {
           "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the start of the segment (inclusive).",
           "type": "string",
           "format": "google-duration"
         },
-        "endTime": {
+        "endTimeOffset": {
           "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the end of the segment (inclusive).",
           "type": "string",
           "format": "google-duration"
         }
       }
     },
-    "GoogleCloudVideointelligenceV1_SafeSearchAnnotation": {
-      "id": "GoogleCloudVideointelligenceV1_SafeSearchAnnotation",
-      "description": "Safe search annotation (based on per-frame visual signals only).\nIf no unsafe content has been detected in a frame, no annotations\nare present for that frame.",
+    "GoogleCloudVideointelligenceV1_LabelFrame": {
+      "id": "GoogleCloudVideointelligenceV1_LabelFrame",
+      "description": "Video frame level annotation results for label detection.",
       "type": "object",
       "properties": {
-        "adult": {
-          "description": "Likelihood of adult content.",
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the\nvideo frame for this location.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "confidence": {
+          "description": "Confidence that the label is accurate. Range: [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1_ExplicitContentAnnotation": {
+      "id": "GoogleCloudVideointelligenceV1_ExplicitContentAnnotation",
+      "description": "Explicit content annotation (based on per-frame visual signals only).\nIf no explicit content has been detected in a frame, no annotations are\npresent for that frame.",
+      "type": "object",
+      "properties": {
+        "frames": {
+          "description": "All video frames where explicit content was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_ExplicitContentFrame"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1_ExplicitContentFrame": {
+      "id": "GoogleCloudVideointelligenceV1_ExplicitContentFrame",
+      "description": "Video frame level annotation results for explicit content.",
+      "type": "object",
+      "properties": {
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the\nvideo frame for this location.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "pornographyLikelihood": {
+          "description": "Likelihood of the pornography content..",
           "enumDescriptions": [
-            "Unknown likelihood.",
+            "Unspecified likelihood.",
             "Very unlikely.",
             "Unlikely.",
             "Possible.",
@@ -936,18 +995,13 @@
           ],
           "type": "string",
           "enum": [
-            "UNKNOWN",
+            "LIKELIHOOD_UNSPECIFIED",
             "VERY_UNLIKELY",
             "UNLIKELY",
             "POSSIBLE",
             "LIKELY",
             "VERY_LIKELY"
           ]
-        },
-        "time": {
-          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the video frame for this annotation.",
-          "type": "string",
-          "format": "google-duration"
         }
       }
     },

@@ -154,6 +154,8 @@ class ResourceInfo(object):
                   and self.plural)
         if isinstance(arg_value, list) and not plural:
           arg_value = arg_value[0] if arg_value else None
+        if plural and arg_value is None:
+          arg_value = []
         attribute_fallthroughs.append(
             deps_lib.ArgFallthrough(arg_name, arg_value))
 
@@ -202,11 +204,6 @@ class ResourceInfo(object):
       if (isinstance(anchor_arg_fallthrough, deps_lib.ArgFallthrough)
           and anchor_arg_fallthrough.arg_name == anchor_arg_name):
         anchor_arg_values = anchor_arg_fallthrough.arg_value
-    # Resources only become plural if multiple arg values are provided. If no
-    # argument values were found for whatever reason, no need to split up into
-    # multiple resources.
-    if anchor_arg_values is None:
-      return [self.concept_spec.Initialize(deps_lib.Deps(fallthroughs_map))]
 
     # Iterate through the values provided to the anchor argument, creating for
     # each a separate parsed resource.

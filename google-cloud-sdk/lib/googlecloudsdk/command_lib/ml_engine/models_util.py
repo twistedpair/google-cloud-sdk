@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for ml-engine models commands."""
+from googlecloudsdk.api_lib.ml_engine import models
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.command_lib.util import labels_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -30,12 +32,18 @@ def ParseModel(model):
       collection=MODELS_COLLECTION)
 
 
-def Create(models_client, model, regions=None, enable_logging=None):
+def ParseCreateLabels(models_client, args):
+  return labels_util.ParseCreateArgs(
+      args, models_client.messages.GoogleCloudMlV1Model.LabelsValue)
+
+
+def Create(models_client, model, regions=None, enable_logging=None,
+           labels=None):
   if regions is None:
     log.warn('`--regions` flag will soon be required. Please explicitly '
              'specify a region. Using [us-central1] by default.')
     regions = ['us-central1']
-  return models_client.Create(model, regions, enable_logging)
+  return models_client.Create(model, regions, enable_logging, labels=labels)
 
 
 def Delete(models_client, operations_client, model):
@@ -52,6 +60,30 @@ def List(models_client):
       properties.VALUES.core.project.GetOrFail(),
       collection='ml.projects')
   return models_client.List(project_ref)
+
+
+def ParseUpdateLabels(models_client, args):
+  def GetLabels():
+    return models_client.Get(args.model).labels
+  return labels_util.ProcessUpdateArgsLazy(
+      args, models_client.messages.GoogleCloudMlV1Model.LabelsValue, GetLabels)
+
+
+def Update(models_client, operations_client, args):
+  model_ref = ParseModel(args.model)
+  labels_update = ParseUpdateLabels(models_client, args)
+  try:
+    op = models_client.Patch(model_ref, labels_update)
+  except models.NoFieldsSpecifiedError:
+    if not any(args.IsSpecified(arg) for arg in ('update_labels',
+                                                 'clear_labels',
+                                                 'remove_labels')):
+      raise
+    log.status.Print('No update to perform.')
+    return None
+  else:
+    return operations_client.WaitForOperation(
+        op, message='Updating model [{}]'.format(args.model)).response
 
 
 def GetIamPolicy(models_client, model):

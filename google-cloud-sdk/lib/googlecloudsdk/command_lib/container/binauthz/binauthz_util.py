@@ -17,7 +17,7 @@ import base64
 import md5
 import urlparse
 
-from containerregistry.client import docker_name
+from containerregistry.client import docker_name  # pytype: disable=import-error
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.exceptions import Error
 

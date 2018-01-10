@@ -19,7 +19,8 @@ class AcceleratorConfig(_messages.Message):
     acceleratorCount: The number of the guest accelerator cards exposed to
       this instance.
     acceleratorType: Full or partial URL of the accelerator type resource to
-      expose to this instance.
+      attach to this instance. If you are creating an instance template,
+      specify only the accelerator name.
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -21168,6 +21169,8 @@ class Instance(_messages.Message):
       These specify how interfaces are configured to interact with other
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
+    preservedStateSizeGb: Total amount of preserved state for SUSPENDED
+      instances. Read-only in the api.
     scheduling: Sets the scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
     serviceAccounts: A list of service accounts, with their specified scopes,
@@ -21258,15 +21261,16 @@ class Instance(_messages.Message):
   minCpuPlatform = _messages.StringField(17)
   name = _messages.StringField(18)
   networkInterfaces = _messages.MessageField('NetworkInterface', 19, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 20)
-  selfLink = _messages.StringField(21)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 22, repeated=True)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 23)
-  startRestricted = _messages.BooleanField(24)
-  status = _messages.EnumField('StatusValueValuesEnum', 25)
-  statusMessage = _messages.StringField(26)
-  tags = _messages.MessageField('Tags', 27)
-  zone = _messages.StringField(28)
+  preservedStateSizeGb = _messages.IntegerField(20)
+  scheduling = _messages.MessageField('Scheduling', 21)
+  selfLink = _messages.StringField(22)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 23, repeated=True)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 24)
+  startRestricted = _messages.BooleanField(25)
+  status = _messages.EnumField('StatusValueValuesEnum', 26)
+  statusMessage = _messages.StringField(27)
+  tags = _messages.MessageField('Tags', 28)
+  zone = _messages.StringField(29)
 
 
 class InstanceAggregatedList(_messages.Message):

@@ -21,8 +21,11 @@ from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.iam import completers as iam_completers
 from googlecloudsdk.command_lib.ml_engine import models_util
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -210,7 +213,7 @@ will be used instead.
     type_ = str
   else:
     type_ = functools.partial(storage_util.ObjectReference.FromArgument,
-                              allow_empty_object=True)
+                              allow_empty_object=True)  # pytype: disable=wrong-arg-types
   return base.Argument('--job-dir', type=type_, help=help_)
 
 
@@ -335,3 +338,41 @@ def GetPredictJobSummary():
   return _JOB_SUMMARY.format(
       INPUT=_JOB_PREDICT_INPUT_SUMMARY_FORMAT,
       OUTPUT=_JOB_PREDICT_OUTPUT_SUMMARY_FORMAT)
+
+
+# Resource arguments
+def ProjectAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='project',
+      help_text='The Cloud project for the {resource}.',
+      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
+
+
+def ModelAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='model',
+      help_text='The model for the {resource}.')
+
+
+def VersionAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='version',
+      help_text='The version for the {resource}.')
+
+
+def GetVersionResourceSpec():
+  return concepts.ResourceSpec(
+      'ml.projects.models.versions',
+      resource_name='version',
+      versionsId=VersionAttributeConfig(),
+      modelsId=ModelAttributeConfig(),
+      projectsId=ProjectAttributeConfig())
+
+
+def AddVersionResourceArg(parser, verb):
+  """Add a resource argument for a Cloud ML Engine version."""
+  concept_parsers.ConceptParser.ForResource(
+      'version',
+      GetVersionResourceSpec(),
+      'The Cloud ML Engine model {}.'.format(verb),
+      required=True).AddToParser(parser)

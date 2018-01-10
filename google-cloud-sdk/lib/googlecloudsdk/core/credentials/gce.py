@@ -185,7 +185,7 @@ class _GCEMetadata(object):
     return '-'.join(zone.split('-')[:-1])
 
 
-_metadata = None
+_metadata = None  # type: _GCEMetadata
 _metadata_lock = mutex.mutex()
 
 

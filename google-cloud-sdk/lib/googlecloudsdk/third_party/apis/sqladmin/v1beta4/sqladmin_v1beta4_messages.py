@@ -210,9 +210,10 @@ class DatabaseInstance(_messages.Message):
     etag: HTTP 1.1 Entity tag for the resource.
     failoverReplica: The name and status of the failover replica. This
       property is applicable only to Second Generation instances.
-    gceZone: The GCE zone that the instance is serving from. In case when the
-      instance is failed over to standby zone, this value may be different
-      with what user specified in the settings.
+    gceZone: The Compute Engine zone that the instance is currently serving
+      from. This value could be different from the zone that was specified
+      when the instance was created if the instance has failed over to its
+      secondary zone.
     instanceType: The instance type. This can be one of the following.
       CLOUD_SQL_INSTANCE: A Cloud SQL instance that is not replicating from a
       master. ON_PREMISES_INSTANCE: An instance running on the customer's
@@ -880,7 +881,11 @@ class Settings(_messages.Message):
     authorizedGaeApplications: The App Engine app IDs that can access this
       instance. This property is only applicable to First Generation
       instances.
-    availabilityType: Reserved for future use.
+    availabilityType: Availability type (PostgreSQL instances only). Potential
+      values: ZONAL: The instance serves data from only one zone. Outages in
+      that zone affect data accessibility. REGIONAL: The instance can serve
+      data from more than one zone in a region (it is highly available). For
+      more information, see Overview of the High Availability Configuration.
     backupConfiguration: The daily backup configuration for the instance.
     crashSafeReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether database flags for crash-safe replication
@@ -901,8 +906,8 @@ class Settings(_messages.Message):
     kind: This is always sql#settings.
     locationPreference: The location preference settings. This allows the
       instance to be located as near as possible to either an App Engine app
-      or GCE zone for better performance. App Engine co-location is only
-      applicable to First Generation instances.
+      or Compute Engine zone for better performance. App Engine co-location is
+      only applicable to First Generation instances.
     maintenanceWindow: The maintenance window for this instance. This
       specifies when the instance may be restarted for maintenance purposes.
       Applies only to Second Generation instances.

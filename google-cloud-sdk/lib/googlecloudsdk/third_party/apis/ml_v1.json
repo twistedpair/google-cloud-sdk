@@ -421,13 +421,15 @@
           "description": "Required. The format of the input data files.",
           "enumDescriptions": [
             "Unspecified format.",
-            "The source file is a text file with instances separated by the\nnew-line character.",
-            "The source file is a TFRecord file.",
-            "The source file is a GZIP-compressed TFRecord file."
+            "Each line of the file is a JSON dictionary representing one record.",
+            "Deprecated. Use JSON instead.",
+            "INPUT ONLY. The source file is a TFRecord file.",
+            "INPUT ONLY. The source file is a GZIP-compressed TFRecord file."
           ],
           "type": "string",
           "enum": [
             "DATA_FORMAT_UNSPECIFIED",
+            "JSON",
             "TEXT",
             "TF_RECORD",
             "TF_RECORD_GZIP"
@@ -870,7 +872,7 @@
     },
     "GoogleCloudMlV1__PredictRequest": {
       "id": "GoogleCloudMlV1__PredictRequest",
-      "description": "Request for predictions to be issued against a trained model.\n\nThe body of the request is a single JSON object with a single top-level\nfield:\n\n<dl>\n  <dt>instances<\/dt>\n  <dd>A JSON array containing values representing the instances to use for\n      prediction.<\/dd>\n<\/dl>\n\nThe structure of each element of the instances list is determined by your\nmodel's input definition. Instances can include named inputs or can contain\nonly unlabeled values.\n\nNot all data includes named inputs. Some instances will be simple\nJSON values (boolean, number, or string). However, instances are often lists\nof simple values, or complex nested lists. Here are some examples of request\nbodies:\n\nCSV data with each row encoded as a string value:\n<pre>\n{\"instances\": [\"1.0,true,\\\\\"x\\\\\"\", \"-2.0,false,\\\\\"y\\\\\"\"]}\n<\/pre>\nPlain text:\n<pre>\n{\"instances\": [\"the quick brown fox\", \"la bruja le dio\"]}\n<\/pre>\nSentences encoded as lists of words (vectors of strings):\n<pre>\n{\n  \"instances\": [\n    [\"the\",\"quick\",\"brown\"],\n    [\"la\",\"bruja\",\"le\"],\n    ...\n  ]\n}\n<\/pre>\nFloating point scalar values:\n<pre>\n{\"instances\": [0.0, 1.1, 2.2]}\n<\/pre>\nVectors of integers:\n<pre>\n{\n  \"instances\": [\n    [0, 1, 2],\n    [3, 4, 5],\n    ...\n  ]\n}\n<\/pre>\nTensors (in this case, two-dimensional tensors):\n<pre>\n{\n  \"instances\": [\n    [\n      [0, 1, 2],\n      [3, 4, 5]\n    ],\n    ...\n  ]\n}\n<\/pre>\nImages can be represented different ways. In this encoding scheme the first\ntwo dimensions represent the rows and columns of the image, and the third\ncontains lists (vectors) of the R, G, and B values for each pixel.\n<pre>\n{\n  \"instances\": [\n    [\n      [\n        [138, 30, 66],\n        [130, 20, 56],\n        ...\n      ],\n      [\n        [126, 38, 61],\n        [122, 24, 57],\n        ...\n      ],\n      ...\n    ],\n    ...\n  ]\n}\n<\/pre>\nJSON strings must be encoded as UTF-8. To send binary data, you must\nbase64-encode the data and mark it as binary. To mark a JSON string\nas binary, replace it with a JSON object with a single attribute named `b64`:\n<pre>{\"b64\": \"...\"} <\/pre>\nFor example:\n\nTwo Serialized tf.Examples (fake data, for illustrative purposes only):\n<pre>\n{\"instances\": [{\"b64\": \"X5ad6u\"}, {\"b64\": \"IA9j4nx\"}]}\n<\/pre>\nTwo JPEG image byte strings (fake data, for illustrative purposes only):\n<pre>\n{\"instances\": [{\"b64\": \"ASa8asdf\"}, {\"b64\": \"JLK7ljk3\"}]}\n<\/pre>\nIf your data includes named references, format each instance as a JSON object\nwith the named references as the keys:\n\nJSON input data to be preprocessed:\n<pre>\n{\n  \"instances\": [\n    {\n      \"a\": 1.0,\n      \"b\": true,\n      \"c\": \"x\"\n    },\n    {\n      \"a\": -2.0,\n      \"b\": false,\n      \"c\": \"y\"\n    }\n  ]\n}\n<\/pre>\nSome models have an underlying TensorFlow graph that accepts multiple input\ntensors. In this case, you should use the names of JSON name\/value pairs to\nidentify the input tensors, as shown in the following exmaples:\n\nFor a graph with input tensor aliases \"tag\" (string) and \"image\"\n(base64-encoded string):\n<pre>\n{\n  \"instances\": [\n    {\n      \"tag\": \"beach\",\n      \"image\": {\"b64\": \"ASa8asdf\"}\n    },\n    {\n      \"tag\": \"car\",\n      \"image\": {\"b64\": \"JLK7ljk3\"}\n    }\n  ]\n}\n<\/pre>\nFor a graph with input tensor aliases \"tag\" (string) and \"image\"\n(3-dimensional array of 8-bit ints):\n<pre>\n{\n  \"instances\": [\n    {\n      \"tag\": \"beach\",\n      \"image\": [\n        [\n          [138, 30, 66],\n          [130, 20, 56],\n          ...\n        ],\n        [\n          [126, 38, 61],\n          [122, 24, 57],\n          ...\n        ],\n        ...\n      ]\n    },\n    {\n      \"tag\": \"car\",\n      \"image\": [\n        [\n          [255, 0, 102],\n          [255, 0, 97],\n          ...\n        ],\n        [\n          [254, 1, 101],\n          [254, 2, 93],\n          ...\n        ],\n        ...\n      ]\n    },\n    ...\n  ]\n}\n<\/pre>\nIf the call is successful, the response body will contain one prediction\nentry per instance in the request body. If prediction fails for any\ninstance, the response body will contain no predictions and will contian\na single error entry instead.",
+      "description": "Request for predictions to be issued against a trained model.",
       "type": "object",
       "properties": {
         "httpBody": {
@@ -1176,7 +1178,7 @@
           "path": "v1/{+name}:predict",
           "flatPath": "v1/projects/{projectsId}:predict",
           "httpMethod": "POST",
-          "description": "Performs prediction on the data in the request.\n\n**** REMOVE FROM GENERATED DOCUMENTATION",
+          "description": "Performs prediction on the data in the request.\nCloud ML Engine implements a custom `predict` verb on top of an HTTP POST\nmethod. For details of the format, see the **guide to the\n[predict request format](\/ml-engine\/docs\/v1\/predict-request)**.",
           "parameters": {
             "name": {
               "description": "Required. The resource name of a model or a version.\n\nAuthorization: requires the `predict` permission on the specified resource.",

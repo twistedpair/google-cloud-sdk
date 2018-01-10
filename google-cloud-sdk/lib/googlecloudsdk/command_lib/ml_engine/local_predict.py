@@ -40,7 +40,7 @@ def _verify_tensorflow(version):
   # Check tensorflow with a recent version is installed.
   try:
     # pylint: disable=g-import-not-at-top
-    import tensorflow as tf
+    import tensorflow as tf  # pytype: disable=import-error
     # pylint: enable=g-import-not-at-top
   except ImportError:
     eprint('Cannot import Tensorflow. Please verify '
@@ -72,7 +72,7 @@ def import_prediction_lib():
       # prediction.prediction_lib.
       sys.path.insert(0, os.path.join(sdk_root_dir, 'lib', 'third_party',
                                       'cloud_ml_engine_sdk', 'prediction'))
-      import prediction_lib
+      import prediction_lib  # pytype: disable=import-error
       return prediction_lib
     finally:
       sys.path.pop(0)

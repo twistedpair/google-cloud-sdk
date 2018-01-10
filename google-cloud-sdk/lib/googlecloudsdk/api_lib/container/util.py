@@ -161,8 +161,8 @@ class ClusterConfig(object):
     self.client_key_data = kwargs.get('client_key_data')
 
   def __str__(self):
-    return 'ClusterConfig{project:%s, cluster:%s, zone:%s, endpoint:%s}' % (
-        self.project_id, self.cluster_name, self.zone_id, self.endpoint)
+    return 'ClusterConfig{project:%s, cluster:%s, zone:%s}' % (
+        self.project_id, self.cluster_name, self.zone_id)
 
   def _Fullpath(self, filename):
     return os.path.abspath(os.path.join(self.config_dir, filename))

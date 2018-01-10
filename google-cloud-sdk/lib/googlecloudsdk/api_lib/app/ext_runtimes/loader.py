@@ -31,7 +31,7 @@ from googlecloudsdk.core import log
 # class only exists in Python on Windows, but we need to catch it in order to
 # deal with certain error cases).
 try:
-  WindowsError
+  WindowsError  # pytype: disable=name-error
 except NameError:
 
   class WindowsError(Exception):

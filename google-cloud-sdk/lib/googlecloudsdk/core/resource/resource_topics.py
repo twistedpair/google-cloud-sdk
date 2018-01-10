@@ -17,7 +17,7 @@
 import pkgutil
 import textwrap
 
-from googlecloudsdk import api_lib
+from googlecloudsdk import api_lib  # pytype: disable=import-error
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_transform
 

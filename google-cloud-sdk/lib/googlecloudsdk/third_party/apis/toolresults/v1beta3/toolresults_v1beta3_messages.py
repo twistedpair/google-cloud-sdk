@@ -39,11 +39,7 @@ class AndroidInstrumentationTest(_messages.Message):
       package_name.class_name" - "class package_name.class_name#method_name"
       If empty, all targets in the module will be run.
     useOrchestrator: The flag indicates whether Android Test Orchestrator will
-      be used to run test or not. Test orchestrator is used if either: -
-      orchestrator_option field is USE_ORCHESTRATOR, and test runner is
-      compatible with orchestrator. Or - orchestrator_option field is
-      unspecified or ORCHESTRATOR_OPTION_UNSPECIFIED, and test runner is
-      compatible with orchestrator.
+      be used to run test or not.
   """
 
   testPackageId = _messages.StringField(1)
@@ -119,19 +115,24 @@ class Any(_messages.Message):
   "type.googleapis.com/google.protobuf.Duration", "value": "1.212s" }
 
   Fields:
-    typeUrl: A URL/resource name whose content describes the type of the
-      serialized protocol buffer message.  For URLs which use the scheme
-      `http`, `https`, or no scheme, the following restrictions and
-      interpretations apply:  * If no scheme is provided, `https` is assumed.
-      * The last segment of the URL's path must represent the fully qualified
-      name of the type (as in `path/google.protobuf.Duration`). The name
-      should be in a canonical form (e.g., leading "." is not accepted). * An
-      HTTP GET on the URL must yield a [google.protobuf.Type][] value in
-      binary format, or produce an error. * Applications are allowed to cache
-      lookup results based on the URL, or have them precompiled into a binary
-      to avoid any lookup. Therefore, binary compatibility needs to be
-      preserved on changes to types. (Use versioned type names to manage
-      breaking changes.)  Schemes other than `http`, `https` (or the empty
+    typeUrl: A URL/resource name that uniquely identifies the type of the
+      serialized protocol buffer message. The last segment of the URL's path
+      must represent the fully qualified name of the type (as in
+      `path/google.protobuf.Duration`). The name should be in a canonical form
+      (e.g., leading "." is not accepted).  In practice, teams usually
+      precompile into the binary all types that they expect it to use in the
+      context of Any. However, for URLs which use the scheme `http`, `https`,
+      or no scheme, one can optionally set up a type server that maps type
+      URLs to message definitions as follows:  * If no scheme is provided,
+      `https` is assumed. * An HTTP GET on the URL must yield a
+      [google.protobuf.Type][] value in binary format, or produce an error. *
+      Applications are allowed to cache lookup results based on the URL, or
+      have them precompiled into a binary to avoid any lookup. Therefore,
+      binary compatibility needs to be preserved on changes to types. (Use
+      versioned type names to manage breaking changes.)  Note: this
+      functionality is not currently available in the official protobuf
+      release, and it is not used for type URLs beginning with
+      type.googleapis.com.  Schemes other than `http`, `https` (or the empty
       scheme) might be used with implementation specific semantics.
     value: Must be a valid serialized protocol buffer of the above specified
       type.
@@ -1238,7 +1239,6 @@ class TestIssue(_messages.Message):
     type: Type of issue. Required.
     warning: Warning message with additional details of the issue. Should
       always be a message from com.google.devtools.toolresults.v1.warnings
-      Required.
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
@@ -1260,14 +1260,18 @@ class TestIssue(_messages.Message):
 
     Values:
       anr: <no description>
+      compatibleWithOrchestrator: <no description>
       fatalException: <no description>
       nativeCrash: <no description>
       unspecifiedType: <no description>
+      unusedRoboDirective: <no description>
     """
     anr = 0
-    fatalException = 1
-    nativeCrash = 2
-    unspecifiedType = 3
+    compatibleWithOrchestrator = 1
+    fatalException = 2
+    nativeCrash = 3
+    unspecifiedType = 4
+    unusedRoboDirective = 5
 
   errorMessage = _messages.StringField(1)
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
@@ -1384,8 +1388,8 @@ class Timestamp(_messages.Message):
   format using
   [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
   the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
-  the Joda Time's [`ISODateTimeFormat.dateTime()`]( http://joda-time.sourcefor
-  ge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()) to
+  the Joda Time's [`ISODateTimeFormat.dateTime()`]( http://www.joda.org/joda-
+  time/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime-- ) to
   obtain a formatter capable of generating timestamps in this format.
 
   Fields:

@@ -187,12 +187,15 @@ class CloudiotProjectsLocationsRegistriesDevicesGetRequest(_messages.Message):
   """A CloudiotProjectsLocationsRegistriesDevicesGetRequest object.
 
   Fields:
+    fieldMask: The fields of the `Device` resource to be returned in the
+      response. If the field mask is unset or empty, all fields are returned.
     name: The name of the device. For example, `projects/p0/locations/us-
       central1/registries/registry0/devices/device0` or `projects/p0/locations
       /us-central1/registries/registry0/devices/{num_id}`.
   """
 
-  name = _messages.StringField(1, required=True)
+  fieldMask = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudiotProjectsLocationsRegistriesDevicesListRequest(_messages.Message):
@@ -337,7 +340,7 @@ class CloudiotProjectsLocationsRegistriesPatchRequest(_messages.Message):
     updateMask: Only updates the `device_registry` fields indicated by this
       mask. The field mask must not be empty, and it must not contain fields
       that are immutable or only set by the server. Mutable top-level fields:
-      `event_notification_config`, `mqtt_config`, and
+      `event_notification_config`, `http_config`, `mqtt_config`, and
       `state_notification_config`.
   """
 
@@ -568,7 +571,10 @@ class DeviceRegistry(_messages.Message):
       events received from the device. All telemetry events that were
       successfully published by the device and acknowledged by Cloud IoT Core
       are guaranteed to be delivered to Cloud Pub/Sub. Only the first
-      configuration is used.
+      configuration is used. If you try to publish a device telemetry event
+      using MQTT without specifying a Cloud Pub/Sub topic for the device's
+      registry, the connection closes automatically. If you try to do so using
+      an HTTP connection, an error is returned.
     httpConfig: The DeviceService (HTTP) configuration for this device
       registry.
     id: The identifier of this device registry. For example, `myRegistry`.

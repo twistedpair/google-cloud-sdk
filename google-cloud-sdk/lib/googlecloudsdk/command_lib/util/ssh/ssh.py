@@ -131,6 +131,11 @@ class Environment(object):
     """
     self.suite = suite
     self.bin_path = bin_path
+    # So pytype is aware of attributes.
+    self.ssh = None
+    self.ssh_term = None
+    self.scp = None
+    self.keygen = None
     for key, cmd in self.COMMANDS[suite].iteritems():
       setattr(self, key, files.FindExecutableOnPath(cmd, path=self.bin_path))
     self.ssh_exit_code = self.SSH_EXIT_CODES[suite]
@@ -288,10 +293,11 @@ class Keys(object):
     private_key_file = os.path.realpath(os.path.expanduser(key_file))
     self.dir = os.path.dirname(private_key_file)
     self.env = env or Environment.Current()
+    # TODO(b/71388306): Enums aren't handled well by pytype.
     self.keys = {
         _KeyFileKind.PRIVATE: self.KeyFileData(private_key_file),
         _KeyFileKind.PUBLIC: self.KeyFileData(private_key_file + '.pub')
-    }
+    }  # type: dict[enum.Enum, Keys.KeyFileData]
     if self.env.suite is Suite.PUTTY:
       self.keys[_KeyFileKind.PPK] = self.KeyFileData(private_key_file + '.ppk')
 
@@ -320,13 +326,13 @@ class Keys(object):
     status_padding = 0
     for kind in self.keys:
       data = self.keys[kind]
-      key_padding = max(key_padding, len(kind.value))
-      status_padding = max(status_padding, len(data.status.value))
+      key_padding = max(key_padding, len(kind.value))  # pytype: disable=attribute-error
+      status_padding = max(status_padding, len(data.status.value))  # pytype: disable=attribute-error
     for kind in self.keys:
       data = self.keys[kind]
       messages.append('{} {} [{}]\n'.format(
-          (kind.value + ' key').ljust(key_padding + 4),
-          ('(' + data.status.value + ')') .ljust(status_padding + 2),
+          (kind.value + ' key').ljust(key_padding + 4),  # pytype: disable=attribute-error
+          ('(' + data.status.value + ')') .ljust(status_padding + 2),  # pytype: disable=attribute-error
           data.filename))
     messages.sort()
     return ''.join(messages)
@@ -345,7 +351,7 @@ class Keys(object):
     """
     def ValidateFile(kind):
       status_or_line = self._WarnOrReadFirstKeyLine(self.keys[kind].filename,
-                                                    kind.value)
+                                                    kind.value)  # pytype: disable=attribute-error
       if isinstance(status_or_line, KeyFileStatus):
         return status_or_line
       else:  # returned line - present
@@ -451,6 +457,7 @@ class Keys(object):
     return status
 
   def GetPublicKey(self):
+    # type: () -> Keys.PublicKey
     """Returns the public key verbatim from file as a string.
 
     Precondition: The public key must exist. Run Keys.EnsureKeysExist() prior.

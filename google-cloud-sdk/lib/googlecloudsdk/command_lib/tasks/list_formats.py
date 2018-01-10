@@ -20,7 +20,7 @@ from googlecloudsdk.command_lib.tasks import parsers
 _QUEUE_LIST_FORMAT = '''table(
     name.basename():label="QUEUE_NAME",
     queuetype():label=TYPE,
-    queueState:label=STATE,
+    state,
     rateLimits.maxConcurrentTasks.yesno(no="unlimited").format("{0}").sub("-1", "unlimited"):label="MAX_NUM_OF_TASKS",
     rateLimits.maxTasksDispatchedPerSecond.yesno(no="unlimited"):label="MAX_RATE (/sec)",
     retryConfig.maxAttempts.yesno(no="unlimited"):label="MAX_ATTEMPTS")'''

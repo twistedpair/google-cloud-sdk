@@ -57,6 +57,36 @@ class ScopePrompter(object):
 
   __metaclass__ = abc.ABCMeta
 
+  @abc.abstractproperty
+  def resource_type(self):
+    """Specifies the name of the collection that should be printed."""
+    pass
+
+  @abc.abstractproperty
+  def http(self):
+    """Specifies the http client to be used for requests."""
+    pass
+
+  @abc.abstractproperty
+  def project(self):
+    """Specifies the user's project."""
+    pass
+
+  @abc.abstractproperty
+  def batch_url(self):
+    """Specifies the API batch URL."""
+    pass
+
+  @abc.abstractproperty
+  def compute(self):
+    """Specifies the compute client."""
+    pass
+
+  @abc.abstractproperty
+  def resources(self):
+    """Specifies the resources parser for compute resources."""
+    pass
+
   def FetchChoiceResources(self, attribute, service, flag_names,
                            prefix_filter=None):
     """Returns a list of choices used to prompt with."""

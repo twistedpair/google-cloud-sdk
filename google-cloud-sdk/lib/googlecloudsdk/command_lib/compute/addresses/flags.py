@@ -14,8 +14,6 @@
 
 """Flags and helpers for the compute addresses commands."""
 
-import argparse
-
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
@@ -65,7 +63,7 @@ def SubnetworkArgument():
       resource_name='subnet',
       required=False,
       regional_collection='compute.subnetworks',
-      region_explanation=argparse.SUPPRESS,
+      region_hidden=True,
       short_help='The subnet in which to reserve the addresses.',
       detailed_help="""\
       If specified, the subnet name in which the address(es) should be reserved.

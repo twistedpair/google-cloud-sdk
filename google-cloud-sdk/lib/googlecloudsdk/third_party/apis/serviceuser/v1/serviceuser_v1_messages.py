@@ -483,9 +483,6 @@ class Endpoint(_messages.Message):
       backends served from this endpoint to receive and respond to HTTP
       OPTIONS requests. The response will be used by the browser to determine
       whether the subsequent cross-origin request is allowed to proceed.
-    apis: The list of APIs served by this endpoint.  If no APIs are specified
-      this translates to "all APIs" exported by the service, as defined in the
-      top-level service configuration.
     features: The list of features enabled on this endpoint.
     name: The canonical name of this endpoint.
     target: The specification of an Internet routable address of API frontend
@@ -497,10 +494,9 @@ class Endpoint(_messages.Message):
 
   aliases = _messages.StringField(1, repeated=True)
   allowCors = _messages.BooleanField(2)
-  apis = _messages.StringField(3, repeated=True)
-  features = _messages.StringField(4, repeated=True)
-  name = _messages.StringField(5)
-  target = _messages.StringField(6)
+  features = _messages.StringField(3, repeated=True)
+  name = _messages.StringField(4)
+  target = _messages.StringField(5)
 
 
 class Enum(_messages.Message):

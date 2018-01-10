@@ -36,6 +36,7 @@ class PubsubV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers)
     self.projects_snapshots = self.ProjectsSnapshotsService(self)
     self.projects_subscriptions = self.ProjectsSubscriptionsService(self)
+    self.projects_topics_snapshots = self.ProjectsTopicsSnapshotsService(self)
     self.projects_topics_subscriptions = self.ProjectsTopicsSubscriptionsService(self)
     self.projects_topics = self.ProjectsTopicsService(self)
     self.projects = self.ProjectsService(self)
@@ -668,6 +669,43 @@ may "fail open" without warning.
         supports_download=False,
     )
 
+  class ProjectsTopicsSnapshotsService(base_api.BaseApiService):
+    """Service class for the projects_topics_snapshots resource."""
+
+    _NAME = u'projects_topics_snapshots'
+
+    def __init__(self, client):
+      super(PubsubV1.ProjectsTopicsSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      """Lists the names of the snapshots on this topic.
+
+      Args:
+        request: (PubsubProjectsTopicsSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTopicSnapshotsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/topics/{topicsId}/snapshots',
+        http_method=u'GET',
+        method_id=u'pubsub.projects.topics.snapshots.list',
+        ordered_params=[u'topic'],
+        path_params=[u'topic'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+topic}/snapshots',
+        request_field='',
+        request_type_name=u'PubsubProjectsTopicsSnapshotsListRequest',
+        response_type_name=u'ListTopicSnapshotsResponse',
+        supports_download=False,
+    )
+
   class ProjectsTopicsSubscriptionsService(base_api.BaseApiService):
     """Service class for the projects_topics_subscriptions resource."""
 
@@ -679,7 +717,7 @@ may "fail open" without warning.
           }
 
     def List(self, request, global_params=None):
-      """Lists the name of the subscriptions for this topic.
+      """Lists the names of the subscriptions on this topic.
 
       Args:
         request: (PubsubProjectsTopicsSubscriptionsListRequest) input message

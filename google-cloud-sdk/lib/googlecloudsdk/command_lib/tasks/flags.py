@@ -45,6 +45,13 @@ def AddIdArg(parser, noun, verb, metavar=None):
   argument.AddToParser(parser)
 
 
+def AddLocationFlag(parser):
+  argument = base.Argument(
+      '--location', hidden=True,
+      help='The location of the app associated with the active project.')
+  argument.AddToParser(parser)
+
+
 def AddCreatePullQueueFlags(parser):
   for flag in _PullQueueFlags():
     flag.AddToParser(parser)

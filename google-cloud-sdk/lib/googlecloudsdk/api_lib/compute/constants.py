@@ -164,7 +164,7 @@ GKE_DEFAULT_SCOPES = sorted([
 DEPRECATED_SQL_SCOPE_MSG = ("""
       DEPRECATION WARNING: 'https://www.googleapis.com/auth/sqlservice' account scope and
       `sql` alias do not provide SQL instance management capabilities and have been deprecated.
-      Please, use 'https://www.googleapis.com/auth/sqlservice.admin' or `sql.admin` to manage
+      Please, use 'https://www.googleapis.com/auth/sqlservice.admin' or `sql-admin` to manage
       your Google SQL Service instances.
     """)
 

@@ -503,7 +503,7 @@ def _PreActionHook(action, func, additional_help=None):
 
     @classmethod
     def SetWrappedAction(cls, action):
-      # This looks potentially scary, but is 'okay' becaues the Action class
+      # This looks potentially scary, but is OK because the Action class
       # is enclosed within the _PreActionHook function.
       cls.wrapped_action = action
 
@@ -517,11 +517,10 @@ def _PreActionHook(action, func, additional_help=None):
     def __init__(self, *args, **kwargs):
       if additional_help:
         original_help = kwargs.get('help', '').rstrip()
-        if original_help != argparse.SUPPRESS:
-          kwargs['help'] = '{0} {1}\n+\n{2}'.format(
-              additional_help.label,
-              original_help,
-              additional_help.message)
+        kwargs['help'] = '{0} {1}\n+\n{2}'.format(
+            additional_help.label,
+            original_help,
+            additional_help.message)
 
       self._wrapped_action = self._GetActionClass()(*args, **kwargs)
       self.func = func

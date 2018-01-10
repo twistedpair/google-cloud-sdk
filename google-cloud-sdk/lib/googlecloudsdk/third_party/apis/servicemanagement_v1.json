@@ -1422,13 +1422,6 @@
             "type": "string"
           }
         },
-        "apis": {
-          "description": "The list of APIs served by this endpoint.\n\nIf no APIs are specified this translates to \"all APIs\" exported by the\nservice, as defined in the top-level service configuration.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "features": {
           "description": "The list of features enabled on this endpoint.",
           "type": "array",
@@ -2046,7 +2039,6 @@
           "$ref": "QuotaGroup"
         },
         "billingInteraction": {
-
           "enumDescriptions": [
             "The interaction between this quota group and the project billing status\nis unspecified.",
             "This quota group is enforced only when the consumer project\nis not billable.",
@@ -2786,7 +2778,6 @@
           "format": "byte"
         },
         "iamOwned": {
-
           "type": "boolean"
         }
       }
@@ -2846,7 +2837,6 @@
           "type": "string"
         },
         "exemptedMembers": {
-
           "type": "array",
           "items": {
             "type": "string"
@@ -3108,7 +3098,6 @@
           "format": "int32"
         },
         "surface": {
-
           "enumDescriptions": [
             "",
             "",

@@ -914,8 +914,9 @@ for training the model with Google Cloud Machine Learning.
 
     def Predict(self, request, global_params=None):
       """Performs prediction on the data in the request.
-
-**** REMOVE FROM GENERATED DOCUMENTATION
+Cloud ML Engine implements a custom `predict` verb on top of an HTTP POST
+method. For details of the format, see the **guide to the
+[predict request format](/ml-engine/docs/v1/predict-request)**.
 
       Args:
         request: (MlProjectsPredictRequest) input message

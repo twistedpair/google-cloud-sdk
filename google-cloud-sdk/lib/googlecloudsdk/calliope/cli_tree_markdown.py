@@ -39,8 +39,6 @@ Usage:
   markdown = generator.Edit()
 """
 
-import argparse
-
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import cli_tree
@@ -66,7 +64,7 @@ def Flag(d):
   flag.is_required = d.get(cli_tree.LOOKUP_IS_REQUIRED,
                            d.get(cli_tree.LOOKUP_REQUIRED, False))
   flag.required = flag.is_required
-  flag.help = argparse.SUPPRESS if flag.is_hidden else flag.description
+  flag.help = flag.description
   flag.dest = flag.name.lower().replace('-', '_')
   flag.metavar = flag.value
   flag.option_strings = [flag.name]
@@ -156,8 +154,6 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
     self._tree = tree
     self._command = command
     self._command_path = command[cli_tree.LOOKUP_PATH]
-    self._subcommands = self.GetSubCommandHelp()
-    self._subgroups = self.GetSubGroupHelp()
     super(CliTreeMarkdownGenerator, self).__init__(
         self._command_path,
         _GetReleaseTrackFromId(self._command[cli_tree.LOOKUP_RELEASE]),
@@ -165,6 +161,8 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
                           self._command.get('hidden', False)))
     self._capsule = self._command[cli_tree.LOOKUP_CAPSULE]
     self._sections = self._command[cli_tree.LOOKUP_SECTIONS]
+    self._subcommands = self.GetSubCommandHelp()
+    self._subgroups = self.GetSubGroupHelp()
 
   def _GetCommandFromPath(self, command_path):
     """Returns the command node for command_path."""

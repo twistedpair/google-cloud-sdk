@@ -834,8 +834,8 @@ class AutomaticScaling(_messages.Message):
   Fields:
     coolDownPeriod: Amount of time that the Autoscaler
       (https://cloud.google.com/compute/docs/autoscaler/) should wait between
-      changes to the number of virtual machines. Only applicable for VM
-      runtimes.
+      changes to the number of virtual machines. Only applicable in the App
+      Engine flexible environment.
     cpuUtilization: Target scaling by CPU usage.
     diskUtilization: Target scaling by disk usage.
     maxConcurrentRequests: Number of concurrent requests an automatic scaling
@@ -1021,7 +1021,8 @@ class Deployment(_messages.Message):
 
 
 class DiskUtilization(_messages.Message):
-  """Target scaling by disk usage. Only applicable for VM runtimes.
+  """Target scaling by disk usage. Only applicable in the App Engine flexible
+  environment.
 
   Fields:
     targetReadBytesPerSecond: Target bytes read per second.
@@ -1568,15 +1569,15 @@ class ManualScaling(_messages.Message):
 
 
 class Network(_messages.Message):
-  """Extra network settings. Only applicable for App Engine flexible
-  environment versions
+  """Extra network settings. Only applicable in the App Engine flexible
+  environment.
 
   Fields:
     forwardedPorts: List of ports, or port pairs, to forward from the virtual
-      machine to the application container. Only applicable for App Engine
-      flexible environment versions.
-    instanceTag: Tag to apply to the VM instance during creation. Only
-      applicable for for App Engine flexible environment versions.
+      machine to the application container. Only applicable in the App Engine
+      flexible environment.
+    instanceTag: Tag to apply to the VM instance during creation. for Only
+      applicable in the App Engine flexible environment.
     name: Google Compute Engine network where the virtual machines are
       created. Specify the short name, not the resource path.Defaults to
       default.
@@ -1603,7 +1604,8 @@ class Network(_messages.Message):
 
 
 class NetworkUtilization(_messages.Message):
-  """Target scaling by network usage. Only applicable for VM runtimes.
+  """Target scaling by network usage. Only applicable in the App Engine
+  flexible environment.
 
   Fields:
     targetReceivedBytesPerSecond: Target bytes received per second.
@@ -1879,7 +1881,8 @@ class RepairApplicationRequest(_messages.Message):
 
 
 class RequestUtilization(_messages.Message):
-  """Target scaling by request utilization. Only applicable for VM runtimes.
+  """Target scaling by request utilization. Only applicable in the App Engine
+  flexible environment.
 
   Fields:
     targetConcurrentRequests: Target number of concurrent requests.
@@ -2055,12 +2058,10 @@ class StandardSchedulerSettings(_messages.Message):
   """Scheduler settings for standard environment.
 
   Fields:
-    maxInstances: Maximum number of instances for an app version. Set to a
-      non-positive value (0 by convention) to disable max_instances
-      configuration.
-    minInstances: Minimum number of instances for an app version. Set to a
-      non-positive value (0 by convention) to disable min_instances
-      configuration.
+    maxInstances: Maximum number of instances for an app version. Set to zero
+      to disable max_instances configuration.
+    minInstances: Minimum number of instances for an app version. Set to zero
+      to disable min_instances configuration.
     targetCpuUtilization: Target CPU utilization ratio to maintain when
       scaling.
     targetThroughputUtilization: Target throughput utilization ratio to
@@ -2480,7 +2481,7 @@ class Version(_messages.Message):
     deployment: Code and application artifacts that make up this version.Only
       returned in GET requests if view=FULL is set.
     diskUsageBytes: Total size in bytes of all the files that are included in
-      this version and curerntly hosted on the App Engine disk.@OutputOnly
+      this version and currently hosted on the App Engine disk.@OutputOnly
     endpointsApiService: Cloud Endpoints configuration.If
       endpoints_api_service is set, the Cloud Endpoints Extensible Service
       Proxy will be provided to serve the API implemented by the app.
@@ -2496,7 +2497,8 @@ class Version(_messages.Message):
       if view=FULL is set.
     healthCheck: Configures health checking for VM instances. Unhealthy
       instances are stopped and replaced with new instances. Only applicable
-      for VM runtimes.Only returned in GET requests if view=FULL is set.
+      in the App Engine flexible environment.Only returned in GET requests if
+      view=FULL is set.
     id: Relative name of the version within the service. Example: v1. Version
       names can contain only lowercase letters, numbers, or hyphens. Reserved
       names: "default", "latest", and any name with the prefix "ah-".
@@ -2517,16 +2519,16 @@ class Version(_messages.Message):
       memory over time.
     name: Full path to the Version resource in the API. Example:
       apps/myapp/services/default/versions/v1.@OutputOnly
-    network: Extra network settings. Only applicable for App Engine flexible
-      environment versions.
+    network: Extra network settings. Only applicable in the App Engine
+      flexible environment.
     nobuildFilesRegex: Files that match this pattern will not be built into
       this version. Only applicable for Go runtimes.Only returned in GET
       requests if view=FULL is set.
     readinessCheck: Configures readiness health checking for VM instances.
       Unhealthy instances are not put into the backend traffic rotation.Only
       returned in GET requests if view=FULL is set.
-    resources: Machine resources for this version. Only applicable for VM
-      runtimes.
+    resources: Machine resources for this version. Only applicable in the App
+      Engine flexible environment.
     runtime: Desired runtime. Example: python27.
     runtimeApiVersion: The version of the API in the given runtime
       environment. Please see the app.yaml reference for valid values at https
@@ -2540,6 +2542,8 @@ class Version(_messages.Message):
     versionUrl: Serving URL for this version. Example: "https://myversion-dot-
       myservice-dot-myapp.appspot.com"@OutputOnly
     vm: Whether to deploy this version in a container on a virtual machine.
+    zones: The choice of gce zones to use for this App Engine Flexible
+      version.
   """
 
   class InboundServicesValueListEntryValuesEnum(_messages.Enum):
@@ -2667,11 +2671,12 @@ class Version(_messages.Message):
   threadsafe = _messages.BooleanField(30)
   versionUrl = _messages.StringField(31)
   vm = _messages.BooleanField(32)
+  zones = _messages.StringField(33, repeated=True)
 
 
 class Volume(_messages.Message):
-  """Volumes mounted within the app container. Only applicable for VM
-  runtimes.
+  """Volumes mounted within the app container. Only applicable in the App
+  Engine flexible environment.
 
   Fields:
     name: Unique name for the volume.

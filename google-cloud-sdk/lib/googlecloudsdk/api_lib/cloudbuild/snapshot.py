@@ -21,6 +21,7 @@ import tarfile
 
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 
@@ -65,19 +66,27 @@ class Snapshot(object):
     self.uncompressed_size = 0
     self._client = core_apis.GetClientInstance('storage', 'v1')
     self._messages = core_apis.GetMessagesModule('storage', 'v1')
+    file_chooser = gcloudignore.GetFileChooserForDir(self.src_dir)
     for (dirpath, dirnames, filenames) in os.walk(self.src_dir):
       relpath = os.path.relpath(dirpath, self.src_dir)
+      if not file_chooser.IsIncluded(relpath, is_dir=True):
+        continue
       for fname in filenames:
         # Join file paths with Linux path separators, avoiding ./ prefix.
         # GCB workers are Linux VMs so os.path.join produces incorrect output.
         fpath = '/'.join([relpath, fname]) if relpath != '.' else fname
+        if not file_chooser.IsIncluded(fpath):
+          continue
         fm = FileMetadata(self.src_dir, fpath)
         self.files[fpath] = fm
         self.uncompressed_size += fm.size
-      for dname in dirnames:
+      for dname in dirnames[:]:  # Make a copy since we modify the original.
         # Join dir paths with Linux path separators, avoiding ./ prefix.
         # GCB workers are Linux VMs so os.path.join produces incorrect output.
         dpath = '/'.join([relpath, dname]) if relpath != '.' else dname
+        if not file_chooser.IsIncluded(dpath, is_dir=True):
+          dirnames.remove(dpath)  # Don't recurse into dpath at all.
+          continue
         self.dirs.append(dpath)
 
   def _MakeTarball(self, archive_path):

@@ -99,6 +99,18 @@ class AlphaVisionProductSearchCatalogsReferenceImagesListRequest(_messages.Messa
   productId = _messages.StringField(4)
 
 
+class AsyncBatchAnnotateImagesResponse(_messages.Message):
+  """Response to an async batch image annotation request.
+
+  Fields:
+    outputConfig: The output config where result(s) are located. This is the
+      same location as was specified in the output_config, and is provided for
+      convenience.
+  """
+
+  outputConfig = _messages.MessageField('OutputConfig', 1)
+
+
 class BatchOperationMetadata(_messages.Message):
   """Metadata for the batch operations such as the current state.  This is
   included in the `metadata` field of the `Operation` returned by the
@@ -168,6 +180,18 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class GcsDestination(_messages.Message):
+  """The Google Cloud Storage location where the output will be written to.
+
+  Fields:
+    uri: Google Cloud Storage URI where the results will be stored. Results
+      will be in JSON format and preceded by its corresponding input URI. All
+      the results will be in this single file.
+  """
+
+  uri = _messages.StringField(1)
 
 
 class ImportCatalogsGcsSource(_messages.Message):
@@ -356,6 +380,50 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class OperationMetadata(_messages.Message):
+  """Contains metadata for the BatchAnnotateImages operation.
+
+  Enums:
+    StateValueValuesEnum: Current state of the batch operation.
+
+  Fields:
+    createTime: The time when the batch request was received.
+    state: Current state of the batch operation.
+    updateTime: The time when the operation result was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """Current state of the batch operation.
+
+    Values:
+      STATE_UNSPECIFIED: Invalid.
+      CREATED: Request is received.
+      RUNNING: Request is actively being processed.
+      DONE: The batch processing is done.
+      CANCELLED: The batch processing was cancelled.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATED = 1
+    RUNNING = 2
+    DONE = 3
+    CANCELLED = 4
+
+  createTime = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  updateTime = _messages.StringField(3)
+
+
+class OutputConfig(_messages.Message):
+  """The desired output location and metadata.
+
+  Fields:
+    gcsDestination: Required. The Google Cloud Storage location to write the
+      output to.
+  """
+
+  gcsDestination = _messages.MessageField('GcsDestination', 1)
 
 
 class ReferenceImage(_messages.Message):

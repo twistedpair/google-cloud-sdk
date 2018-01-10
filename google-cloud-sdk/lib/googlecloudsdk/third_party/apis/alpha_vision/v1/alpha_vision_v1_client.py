@@ -73,6 +73,36 @@ class AlphaVisionV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AsyncBatchAnnotate(self, request, global_params=None):
+      """Run async image detection and annotation for a batch of images.
+Progress and results can be retrieved through the
+`google.longrunning.Operations` interface.
+`Operation.metadata` contains `OperationMetadata` (metadata).
+`Operation.response` contains `AsyncBatchAnnotateImagesResponse` (results).
+
+      Args:
+        request: (AsyncBatchAnnotateImagesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AsyncBatchAnnotate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AsyncBatchAnnotate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'alpha_vision.images.asyncBatchAnnotate',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/images:asyncBatchAnnotate',
+        request_field='<request>',
+        request_type_name=u'AsyncBatchAnnotateImagesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
 

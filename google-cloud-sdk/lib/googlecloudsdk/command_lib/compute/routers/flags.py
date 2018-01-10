@@ -13,8 +13,6 @@
 # limitations under the License.
 """Flags and helpers for the compute routers commands."""
 
-import argparse
-
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
@@ -68,12 +66,9 @@ def RouterArgumentForVpnTunnel(required=True):
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
-def RouterArgumentForOtherResources(required=True, supress_region=True):
-  if supress_region:
-    region_explanation = argparse.SUPPRESS
-  else:
-    region_explanation = ('Should be the same as --region, if not specified, '
-                          'it will be inherited from --region.')
+def RouterArgumentForOtherResources(required=True, suppress_region=True):
+  region_explanation = ('Should be the same as --region, if not specified, '
+                        'it will be inherited from --region.')
   return compute_flags.ResourceArgument(
       resource_name='router',
       name='--router',
@@ -82,7 +77,8 @@ def RouterArgumentForOtherResources(required=True, supress_region=True):
       required=required,
       regional_collection='compute.routers',
       short_help='The Google Cloud Router to use for dynamic routing.',
-      region_explanation=region_explanation)
+      region_explanation=region_explanation,
+      region_hidden=suppress_region)
 
 
 def AddCreateRouterArgs(parser):

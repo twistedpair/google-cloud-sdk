@@ -293,6 +293,7 @@ class _Uploader(object):
   def __init__(self, workspace):
     self._workspace = workspace
     self._progress_bar = None
+    self.total_files = 0
     self.total_size = 0
     self.file_count = 0
     self.skip_count = 0

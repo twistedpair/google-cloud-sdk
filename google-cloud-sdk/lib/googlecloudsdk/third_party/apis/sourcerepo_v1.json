@@ -156,23 +156,23 @@
           "type": "string"
         },
         "size": {
-          "description": "The disk usage of the repo, in bytes.\nOnly returned by GetRepo.",
+          "description": "The disk usage of the repo, in bytes. Read-only field. Size is only\nreturned by GetRepo.",
           "type": "string",
           "format": "int64"
         },
         "url": {
-          "description": "URL to clone the repository from Google Cloud Source Repositories.",
+          "description": "URL to clone the repository from Google Cloud Source Repositories.\nRead-only field.",
           "type": "string"
         },
         "mirrorConfig": {
-          "description": "How this repository mirrors a repository managed by another service.",
+          "description": "How this repository mirrors a repository managed by another service.\nRead-only field.",
           "$ref": "MirrorConfig"
         }
       }
     },
     "MirrorConfig": {
       "id": "MirrorConfig",
-      "description": "Configuration to automatically mirror a repository from another\nhosting service, for example GitHub or BitBucket.",
+      "description": "Configuration to automatically mirror a repository from another\nhosting service, for example GitHub or Bitbucket.",
       "type": "object",
       "properties": {
         "url": {
@@ -242,7 +242,6 @@
           "format": "byte"
         },
         "iamOwned": {
-
           "type": "boolean"
         }
       }
@@ -302,7 +301,6 @@
           "type": "string"
         },
         "exemptedMembers": {
-
           "type": "array",
           "items": {
             "type": "string"

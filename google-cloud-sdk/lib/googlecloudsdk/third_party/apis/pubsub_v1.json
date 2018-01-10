@@ -226,11 +226,11 @@
       "type": "object",
       "properties": {
         "topic": {
-          "description": "The topic to update.",
+          "description": "The updated topic object.",
           "$ref": "Topic"
         },
         "updateMask": {
-          "description": "Indicates which fields in the provided topic to update.\nMust be specified and non-empty.",
+          "description": "Indicates which fields in the provided topic to update. Must be specified\nand non-empty. Note that if `update_mask` contains\n\"message_storage_policy\" then the new value will be determined based on the\npolicy configured at the project level. The `message_storage_policy` must\nnot be set in the `topic` provided above.",
           "type": "string",
           "format": "google-fieldmask"
         }
@@ -324,6 +324,24 @@
         },
         "nextPageToken": {
           "description": "If not empty, indicates that there may be more subscriptions that match\nthe request; this value should be passed in a new\n`ListTopicSubscriptionsRequest` to get more subscriptions.",
+          "type": "string"
+        }
+      }
+    },
+    "ListTopicSnapshotsResponse": {
+      "id": "ListTopicSnapshotsResponse",
+      "description": "Response for the `ListTopicSnapshots` method.",
+      "type": "object",
+      "properties": {
+        "snapshots": {
+          "description": "The names of the snapshots that match the request.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nextPageToken": {
+          "description": "If not empty, indicates that there may be more snapshots that match\nthe request; this value should be passed in a new\n`ListTopicSnapshotsRequest` to get more snapshots.",
           "type": "string"
         }
       }
@@ -613,7 +631,6 @@
     },
     "SeekResponse": {
       "id": "SeekResponse",
-
       "type": "object",
       "properties": {
       }
@@ -894,7 +911,7 @@
                   "path": "v1/{+topic}/subscriptions",
                   "flatPath": "v1/projects/{projectsId}/topics/{topicsId}/subscriptions",
                   "httpMethod": "GET",
-                  "description": "Lists the name of the subscriptions for this topic.",
+                  "description": "Lists the names of the subscriptions on this topic.",
                   "parameters": {
                     "topic": {
                       "description": "The name of the topic that subscriptions are attached to.\nFormat is `projects\/{project}\/topics\/{topic}`.",
@@ -920,6 +937,47 @@
                   ],
                   "response": {
                     "$ref": "ListTopicSubscriptionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/pubsub"
+                  ]
+                }
+              }
+            },
+            "snapshots": {
+              "methods": {
+                "list": {
+                  "id": "pubsub.projects.topics.snapshots.list",
+                  "path": "v1/{+topic}/snapshots",
+                  "flatPath": "v1/projects/{projectsId}/topics/{topicsId}/snapshots",
+                  "httpMethod": "GET",
+                  "description": "Lists the names of the snapshots on this topic.",
+                  "parameters": {
+                    "topic": {
+                      "description": "The name of the topic that snapshots are attached to.\nFormat is `projects\/{project}\/topics\/{topic}`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/topics\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of snapshot names to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListTopicSnapshotsResponse`; indicates\nthat this is a continuation of a prior `ListTopicSnapshots` call, and\nthat the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "topic"
+                  ],
+                  "response": {
+                    "$ref": "ListTopicSnapshotsResponse"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",

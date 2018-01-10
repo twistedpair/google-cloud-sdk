@@ -291,6 +291,9 @@ class BaseSSHHelper(object):
     env: ssh.Environment, the current environment, used by subclasses.
   """
 
+  # Attributes for pytype
+  keys = None  # type: ssh.Keys
+
   @staticmethod
   def Args(parser):
     """Args is called by calliope to gather arguments for this command.
@@ -307,13 +310,13 @@ class BaseSSHHelper(object):
         action='store_true',
         default=None,
         help="""\
-        If enabled gcloud will regenerate and overwrite the files associated
-        with a broken SSH key without asking for confirmation in both
-        interactive and non-interactive environment.
+        If enabled, the gcloud command-line tool will regenerate and overwrite
+        the files associated with a broken SSH key without asking for
+        confirmation in both interactive and non-interactive environments.
 
-        If disabled gcloud will not attempt to regenerate the files associated
-        with a broken SSH key and fail in both interactive and non-interactive
-        environment.""")
+        If disabled, the files associated with a broken SSH key will not be
+        regenerated and will fail in both interactive and non-interactive
+        environments.""")
 
     # Last line empty to preserve spacing between last paragraph and calliope
     # attachment "Use --no-force-key-file-overwrite to disable."
@@ -673,14 +676,14 @@ class BaseSSHCLIHelper(BaseSSHHelper):
     parser.add_argument(
         '--dry-run',
         action='store_true',
-        help=('If provided, prints the command that would be run to standard '
-              'out instead of executing it.'))
+        help=('Print the equivalent scp/ssh command that would be run to '
+              'stdout, instead of executing it.'))
 
     parser.add_argument(
         '--plain',
         action='store_true',
         help="""\
-        Suppresses the automatic addition of *ssh(1)*/*scp(1)* flags. This flag
+        Suppress the automatic addition of *ssh(1)*/*scp(1)* flags. This flag
         is useful if you want to take care of authentication yourself or
         use specific ssh/scp features.
         """)
@@ -689,10 +692,10 @@ class BaseSSHCLIHelper(BaseSSHHelper):
         '--strict-host-key-checking',
         choices=['yes', 'no', 'ask'],
         help="""\
-        Override the default behavior of StrictHostKeyChecking. By default,
-        StrictHostKeyChecking is set to 'no' the first time you connect to an
-        instance and will be set to 'yes' for all subsequent connections. Use
-        this flag to specify a value for the connection.
+        Override the default behavior of StrictHostKeyChecking for the
+        connection. By default, StrictHostKeyChecking is set to 'no' the first
+        time you connect to an instance, and will be set to 'yes' for all
+        subsequent connections.
         """)
 
   def Run(self, args):
@@ -724,7 +727,7 @@ class BaseSSHCLIHelper(BaseSSHHelper):
         .format(metadata_id_url, instance_id)]
     cmd = ssh.SSHCommand(remote, identity_file=identity_file,
                          options=options, remote_command=remote_command)
-    return_code = cmd.Run(self.env, force_connect=True)
+    return_code = cmd.Run(self.env, force_connect=True)  # pytype: disable=attribute-error
     if return_code == 0:
       return
     elif return_code == 23:

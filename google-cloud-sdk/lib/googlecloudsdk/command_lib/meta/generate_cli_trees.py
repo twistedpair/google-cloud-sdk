@@ -44,6 +44,7 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import text as text_utils
 
 import httplib2
+from typing import Any, Dict  # pylint: disable=unused-import
 
 
 class NoCliTreeGeneratorForCommand(exceptions.Error):
@@ -103,6 +104,7 @@ def _Positional(name, description='', default=None, nargs='0'):
 
 
 def _Command(path):
+  # type: (str) -> Dict[str, Any]
   """Initializes and returns a command/group dict node."""
   return {
       cli_tree.LOOKUP_CAPSULE: '',
@@ -120,6 +122,8 @@ def _Command(path):
 
 class CliTreeGenerator(object):
   """Base CLI tree generator."""
+
+  __metaclass__ = abc.ABCMeta
 
   _FAILURES = None
 
@@ -166,7 +170,7 @@ class CliTreeGenerator(object):
         return path, open(path, 'r')
       except IOError:
         pass
-    return path, None
+    return path, None  # pytype: disable=name-error
 
   def IsUpToDate(self, tree, verbose=False):
     """Returns a bool tuple (readonly, up_to_date)."""
@@ -359,13 +363,13 @@ class BqCliTreeGenerator(CliTreeGenerator):
         else:
           paragraph.append(line)
       subcommand = _Command(path + [name])
-      command[cli_tree.LOOKUP_COMMANDS][name] = subcommand
+      command[cli_tree.LOOKUP_COMMANDS][name] = subcommand  # pytype: disable=attribute-error
       if description:
         subcommand[cli_tree.LOOKUP_SECTIONS]['DESCRIPTION'] = '\n'.join(
-            description)
+            description)  # pytype: disable=attribute-error
       if examples:
         subcommand[cli_tree.LOOKUP_SECTIONS]['EXAMPLES'] = '\n'.join(
-            examples)
+            examples)  # pytype: disable=attribute-error
 
     return command
 
@@ -688,7 +692,7 @@ class KubectlCliTreeGenerator(CliTreeGenerator):
           command[cli_tree.LOOKUP_IS_GROUP] = True
           command[cli_tree.LOOKUP_COMMANDS][name] = self.SubTree(path + [name])
       elif heading in ('DESCRIPTION', 'EXAMPLES'):
-        command[cli_tree.LOOKUP_SECTIONS][heading] = '\n'.join(content)
+        command[cli_tree.LOOKUP_SECTIONS][heading] = '\n'.join(content)  # pytype: disable=attribute-error
       elif heading == 'FLAGS':
         self.AddFlags(command, content)
     return command
@@ -733,11 +737,13 @@ class _ManPageCollector(object):
     version: The collector CLI_VERSION string.
   """
 
+  __metaclass__ = abc.ABCMeta
+
   def __init__(self, command):
     self.command = command
     self.content_indent = None
     self.heading = None
-    self.text = self.GetManPageText().split('\n')
+    self.text = self.GetManPageText().split('\n')  # pytype: disable=none-attr
 
   @classmethod
   @abc.abstractmethod
@@ -1041,9 +1047,9 @@ class ManPageCliTreeGenerator(CliTreeGenerator):
           blocks.append(_NormalizeSpace('\n'.join(content[begin:end])))
         text = '\n'.join(blocks)
         if heading in command[cli_tree.LOOKUP_SECTIONS]:
-          command[cli_tree.LOOKUP_SECTIONS][heading] += '\n\n' + text
+          command[cli_tree.LOOKUP_SECTIONS][heading] += '\n\n' + text  # pytype: disable=attribute-error
         else:
-          command[cli_tree.LOOKUP_SECTIONS][heading] = text
+          command[cli_tree.LOOKUP_SECTIONS][heading] = text  # pytype: disable=attribute-error
     return command
 
   def Generate(self):

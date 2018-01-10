@@ -192,7 +192,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The queue name.\n\nThe queue name must have the following format:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`\n\n* `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),\n   hyphens (-), colons (:), or periods (.).\n* `LOCATION_ID` is the canonical ID for the queue's location.\n   The list of available locations can be obtained by calling\n   google.cloud.location.Locations.ListLocations.\n   For more information, see https:\/\/cloud.google.com\/about\/locations\/.\n* `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or\n  hyphens (-). The maximum length is 100 characters.\n\nCaller-specified and required in CreateQueueRequest, after which\nit becomes output only.",
+          "description": "The queue name.\n\nThe queue name must have the following format:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`\n\n* `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),\n   hyphens (-), colons (:), or periods (.).\n   For more information, see\n   [Identifying projects](\/resource-manager\/docs\/creating-managing-projects#identifying_projects)\n* `LOCATION_ID` is the canonical ID for the queue's location.\n   The list of available locations can be obtained by calling\n   google.cloud.location.Locations.ListLocations.\n   For more information, see https:\/\/cloud.google.com\/about\/locations\/.\n* `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or\n  hyphens (-). The maximum length is 100 characters.\n\nCaller-specified and required in CreateQueueRequest, after which\nit becomes output only.",
           "type": "string"
         },
         "appEngineHttpTarget": {
@@ -219,8 +219,8 @@
           "description": "Settings that determine the retry behavior.\n\n* For tasks created using Cloud Tasks: the queue-level retry settings\n  apply to all tasks in the queue that were created using Cloud Tasks.\n  Retry settings cannot be set on individual tasks.\n* For tasks created using the App Engine SDK: the queue-level retry\n  settings apply to all tasks in the queue which do not have retry settings\n  explicitly set on the task and were created by the App Engine SDK. See\n  [App Engine documentation](\/appengine\/docs\/standard\/python\/taskqueue\/push\/retrying-tasks).",
           "$ref": "RetryConfig"
         },
-        "queueState": {
-          "description": "Output only. The state of the queue.\n\n`queue_state` can only be changed by called\nCloudTasks.PauseQueue, CloudTasks.ResumeQueue, or uploading\n[queue.yaml](\/appengine\/docs\/python\/config\/queueref).\nCloudTasks.UpdateQueue cannot be used to change `queue_state`.",
+        "state": {
+          "description": "Output only. The state of the queue.\n\n`state` can only be changed by called\nCloudTasks.PauseQueue, CloudTasks.ResumeQueue, or uploading\n[queue.yaml](\/appengine\/docs\/python\/config\/queueref).\nCloudTasks.UpdateQueue cannot be used to change `state`.",
           "enumDescriptions": [
             "Unspecified state.",
             "The queue is running. Tasks can be dispatched.",
@@ -229,7 +229,7 @@
           ],
           "type": "string",
           "enum": [
-            "QUEUE_STATE_UNSPECIFIED",
+            "STATE_UNSPECIFIED",
             "RUNNING",
             "PAUSED",
             "DISABLED"
@@ -499,7 +499,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The task name.\n\nThe task name must have the following format:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`\n\n* `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),\n   hyphens (-), colons (:), or periods (.).\n* `LOCATION_ID` is the canonical ID for the task's location.\n   The list of available locations can be obtained by calling\n   google.cloud.location.Locations.ListLocations.\n   For more information, see https:\/\/cloud.google.com\/about\/locations\/.\n* `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or\n  hyphens (-). The maximum length is 100 characters.\n* `TASK_ID` can contain only letters ([A-Za-z]), numbers ([0-9]),\n  hyphens (-), or underscores (_). The maximum length is 500 characters.\n\nOptionally caller-specified in CreateTaskRequest.",
+          "description": "The task name.\n\nThe task name must have the following format:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`\n\n* `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),\n   hyphens (-), colons (:), or periods (.).\n   For more information, see\n   [Identifying projects](\/resource-manager\/docs\/creating-managing-projects#identifying_projects)\n* `LOCATION_ID` is the canonical ID for the task's location.\n   The list of available locations can be obtained by calling\n   google.cloud.location.Locations.ListLocations.\n   For more information, see https:\/\/cloud.google.com\/about\/locations\/.\n* `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or\n  hyphens (-). The maximum length is 100 characters.\n* `TASK_ID` can contain only letters ([A-Za-z]), numbers ([0-9]),\n  hyphens (-), or underscores (_). The maximum length is 500 characters.\n\nOptionally caller-specified in CreateTaskRequest.",
           "type": "string"
         },
         "appEngineHttpRequest": {
@@ -1097,7 +1097,7 @@
                   "description": "Updates a queue.\n\nThis method creates the queue if it does not exist and updates\nthe queue if it does exist.\n\nWARNING: Using this method may have unintended side effects if you are\nusing an App Engine `queue.yaml` or `queue.xml` file to manage your queues.\nRead\n[Overview of Queue Management and queue.yaml](\/cloud-tasks\/docs\/queue-yaml)\ncarefully before using this method.",
                   "parameters": {
                     "name": {
-                      "description": "The queue name.\n\nThe queue name must have the following format:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`\n\n* `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),\n   hyphens (-), colons (:), or periods (.).\n* `LOCATION_ID` is the canonical ID for the queue's location.\n   The list of available locations can be obtained by calling\n   google.cloud.location.Locations.ListLocations.\n   For more information, see https:\/\/cloud.google.com\/about\/locations\/.\n* `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or\n  hyphens (-). The maximum length is 100 characters.\n\nCaller-specified and required in CreateQueueRequest, after which\nit becomes output only.",
+                      "description": "The queue name.\n\nThe queue name must have the following format:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID`\n\n* `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),\n   hyphens (-), colons (:), or periods (.).\n   For more information, see\n   [Identifying projects](\/resource-manager\/docs\/creating-managing-projects#identifying_projects)\n* `LOCATION_ID` is the canonical ID for the queue's location.\n   The list of available locations can be obtained by calling\n   google.cloud.location.Locations.ListLocations.\n   For more information, see https:\/\/cloud.google.com\/about\/locations\/.\n* `QUEUE_ID` can contain letters ([A-Za-z]), numbers ([0-9]), or\n  hyphens (-). The maximum length is 100 characters.\n\nCaller-specified and required in CreateQueueRequest, after which\nit becomes output only.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/queues\/[^\/]+$",
@@ -1181,7 +1181,7 @@
                   "path": "v2beta2/{+name}:pause",
                   "flatPath": "v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:pause",
                   "httpMethod": "POST",
-                  "description": "Pauses the queue.\n\nIf a queue is paused then the system will stop executing the\ntasks in the queue until it is resumed via\nCloudTasks.ResumeQueue. Tasks can still be added when the\nqueue is paused. The state of the queue is stored in\nQueue.queue_state; if paused it will be set to\nQueue.QueueState.PAUSED.",
+                  "description": "Pauses the queue.\n\nIf a queue is paused then the system will stop executing the\ntasks in the queue until it is resumed via\nCloudTasks.ResumeQueue. Tasks can still be added when the\nqueue is paused. The state of the queue is stored in\nQueue.state; if paused it will be set to\nQueue.State.PAUSED.",
                   "parameters": {
                     "name": {
                       "description": "Required.\n\nThe queue name. For example:\n`projects\/PROJECT_ID\/location\/LOCATION_ID\/queues\/QUEUE_ID`",
@@ -1209,7 +1209,7 @@
                   "path": "v2beta2/{+name}:resume",
                   "flatPath": "v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}:resume",
                   "httpMethod": "POST",
-                  "description": "Resume a queue.\n\nThis method resumes a queue after it has been\nQueue.QueueState.PAUSED or Queue.QueueState.DISABLED. The state of\na queue is stored in Queue.queue_state; after calling this method it\nwill be set to Queue.QueueState.RUNNING.\n\nWARNING: Resuming many high-QPS queues at the same time can\nlead to target overloading. If you are resuming high-QPS\nqueues, follow the 500\/50\/5 pattern described in\n[Managing Cloud Tasks Scaling Risks](\/cloud-tasks\/pdfs\/managing-cloud-tasks-scaling-risks-2017-06-05.pdf).",
+                  "description": "Resume a queue.\n\nThis method resumes a queue after it has been\nQueue.State.PAUSED or Queue.State.DISABLED. The state of\na queue is stored in Queue.state; after calling this method it\nwill be set to Queue.State.RUNNING.\n\nWARNING: Resuming many high-QPS queues at the same time can\nlead to target overloading. If you are resuming high-QPS\nqueues, follow the 500\/50\/5 pattern described in\n[Managing Cloud Tasks Scaling Risks](\/cloud-tasks\/pdfs\/managing-cloud-tasks-scaling-risks-2017-06-05.pdf).",
                   "parameters": {
                     "name": {
                       "description": "Required.\n\nThe queue name. For example:\n`projects\/PROJECT_ID\/location\/LOCATION_ID\/queues\/QUEUE_ID`",
@@ -1577,7 +1577,7 @@
                       "path": "v2beta2/{+name}:run",
                       "flatPath": "v2beta2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks/{tasksId}:run",
                       "httpMethod": "POST",
-                      "description": "Forces a task to run now.\n\nThis command is meant to be used for manual debugging. For\nexample, CloudTasks.RunTask can be used to retry a failed\ntask after a fix has been made or to manually force a task to be\ndispatched now.\n\nWhen this method is called, Cloud Tasks will dispatch the task to its\ntarget, even if the queue is Queue.QueueState.PAUSED.\n\nThe dispatched task is returned. That is, the task that is returned\ncontains the Task.task_status after the task is dispatched but\nbefore the task is received by its target.\n\nIf Cloud Tasks receives a successful response from the task's\nhandler, then the task will be deleted; otherwise the task's\nTask.schedule_time will be reset to the time that\nCloudTasks.RunTask was called plus the retry delay specified\nin the queue and task's RetryConfig.\n\nCloudTasks.RunTask returns google.rpc.Code.NOT_FOUND when\nit is called on a task that has already succeeded or permanently\nfailed. google.rpc.Code.FAILED_PRECONDITION is returned when\nCloudTasks.RunTask is called on task that is dispatched or\nalready running.\n\nCloudTasks.RunTask cannot be called on pull tasks.",
+                      "description": "Forces a task to run now.\n\nThis command is meant to be used for manual debugging. For\nexample, CloudTasks.RunTask can be used to retry a failed\ntask after a fix has been made or to manually force a task to be\ndispatched now.\n\nWhen this method is called, Cloud Tasks will dispatch the task to its\ntarget, even if the queue is Queue.State.PAUSED.\n\nThe dispatched task is returned. That is, the task that is returned\ncontains the Task.task_status after the task is dispatched but\nbefore the task is received by its target.\n\nIf Cloud Tasks receives a successful response from the task's\nhandler, then the task will be deleted; otherwise the task's\nTask.schedule_time will be reset to the time that\nCloudTasks.RunTask was called plus the retry delay specified\nin the queue and task's RetryConfig.\n\nCloudTasks.RunTask returns google.rpc.Code.NOT_FOUND when\nit is called on a task that has already succeeded or permanently\nfailed. google.rpc.Code.FAILED_PRECONDITION is returned when\nCloudTasks.RunTask is called on task that is dispatched or\nalready running.\n\nCloudTasks.RunTask cannot be called on pull tasks.",
                       "parameters": {
                         "name": {
                           "description": "Required.\n\nThe task name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/queues\/QUEUE_ID\/tasks\/TASK_ID`",

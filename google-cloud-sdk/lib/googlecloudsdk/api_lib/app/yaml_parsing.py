@@ -216,7 +216,7 @@ class ServiceYamlInfo(_YamlInfo):
       parsed: appinfo.AppInfoExternal, parsed Application Configuration.
     """
     super(ServiceYamlInfo, self).__init__(file_path, parsed)
-    self.module = parsed.module
+    self.module = parsed.service or ServiceYamlInfo.DEFAULT_SERVICE_NAME
 
     if util.IsFlex(parsed.env):
       self.env = util.Environment.FLEX
@@ -275,7 +275,8 @@ class ServiceYamlInfo(_YamlInfo):
         raise YamlValidationError(
             'Service [{service}] uses unsupported Python 2.5 runtime. '
             'Please use [runtime: python27] instead.'.format(
-                service=parsed.module))
+                service=(
+                    parsed.service or ServiceYamlInfo.DEFAULT_SERVICE_NAME)))
       elif parsed.runtime == 'python-compat':
         raise YamlValidationError(
             '"python-compat" is not a supported runtime.')
@@ -300,11 +301,8 @@ class ServiceYamlInfo(_YamlInfo):
                'instead.  See {} for more info.'
                .format(vm_runtime, UPGRADE_FLEX_PYTHON_URL))
 
-    if parsed.module:
-      log.warn('The "module" parameter in application .yaml files is '
-               'deprecated. Please use the "service" parameter instead.')
-    else:
-      parsed.module = parsed.service or ServiceYamlInfo.DEFAULT_SERVICE_NAME
+    for warn_text in parsed.GetWarnings():
+      log.warn('In file [{0}]: {1}'.format(file_path, warn_text))
 
     if (util.IsStandard(parsed.env) and parsed.runtime == 'python27' and
         HasLib(parsed, 'ssl', '2.7')):

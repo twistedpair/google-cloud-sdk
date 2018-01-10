@@ -35,6 +35,9 @@
 root_dir: googlecloudsdk/third_party/apis
 
 apis:
+  accesscontextmanager:
+    v1alpha:
+      discovery_doc: accesscontextmanager_v1alpha.json
   apikeys:
     v1:
       discovery_doc: apikeys_v1.json
@@ -139,8 +142,8 @@ apis:
     v2beta2:
       discovery_doc: cloudtasks_v2beta2.json
   cloudscheduler:
-    v1beta1:
-      discovery_doc: cloudscheduler_v1beta1.json
+    v1alpha1:
+      discovery_doc: cloudscheduler_v1alpha1.json
   clouduseraccounts:
     alpha:
       discovery_doc: clouduseraccounts_alpha.json
@@ -324,14 +327,6 @@ apis:
     v1alpha1:
       discovery_doc: tpu_v1alpha1.json
   videointelligence:
-    v1beta2:
-      discovery_doc: videointelligence_v1beta2.json
-      resources:
-        videos: 'videos'
-    v1beta1:
-      discovery_doc: videointelligence_v1beta1.json
-      resources:
-        videos: 'videos'
     v1:
       discovery_doc: videointelligence_v1.json
       default: true

@@ -42,11 +42,12 @@ def ParseLocation(location):
       collection=constants.LOCATIONS_COLLECTION)
 
 
-def ParseQueue(queue):
+def ParseQueue(queue, location=None):
   """Parses an id or uri for a queue.
 
   Args:
     queue: An id, self-link, or relative path of a queue resource.
+    location: The location of the app associated with the active project.
 
   Returns:
     A queue resource reference, or None if passed-in queue is Falsy.
@@ -59,7 +60,8 @@ def ParseQueue(queue):
     queue_ref = resources.REGISTRY.Parse(queue,
                                          collection=constants.QUEUES_COLLECTION)
   except resources.RequiredFieldOmittedException:
-    location_ref = ParseLocation(app.ResolveAppLocation())
+    app_location = location or app.ResolveAppLocation()
+    location_ref = ParseLocation(app_location)
     queue_ref = resources.REGISTRY.Parse(
         queue, params={'projectsId': location_ref.projectsId,
                        'locationsId': location_ref.locationsId},

@@ -44,11 +44,11 @@ GCS_URL_PATTERN = (
 class InvalidNameError(ValueError):
   """Error indicating that a given name is invalid."""
 
-  def __init__(self, name, reason):
+  def __init__(self, name, reason, type_name, url):
     super(InvalidNameError, self).__init__(
         ('Invalid {type} name [{name}]: {reason}\n\n'
          'See {url} for details.').format(name=name, reason=reason,
-                                          type=self.TYPE, url=self.URL))
+                                          type=type_name, url=url))
 
 
 class InvalidBucketNameError(InvalidNameError):
@@ -56,11 +56,19 @@ class InvalidBucketNameError(InvalidNameError):
   TYPE = 'bucket'
   URL = 'https://cloud.google.com/storage/docs/naming#requirements'
 
+  def __init__(self, name, reason):
+    super(InvalidBucketNameError, self).__init__(
+        name, reason, self.TYPE, self.URL)
+
 
 class InvalidObjectNameError(InvalidNameError):
   """Error indicating that a given object name is invalid."""
   TYPE = 'object'
   URL = 'https://cloud.google.com/storage/docs/naming#objectnames'
+
+  def __init__(self, name, reason):
+    super(InvalidObjectNameError, self).__init__(
+        name, reason, self.TYPE, self.URL)
 
 
 VALID_BUCKET_CHARS_MESSAGE = """\

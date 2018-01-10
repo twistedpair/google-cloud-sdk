@@ -15,6 +15,7 @@
 # source: apphosting/api/user_service.proto
 
 from googlecloudsdk.third_party.appengine.proto import ProtocolBuffer
+import abc
 import array
 import thread
 

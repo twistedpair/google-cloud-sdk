@@ -707,6 +707,19 @@ class _SectionContainer(_Section):
         'Kubernetes Engine v1 API; if False, gcloud alpha track commands will '
         'use a v1alpha1 API client. The Kubernetes Engine v1alpha1 API is '
         'whitelist-only at this time.')
+    self.new_scopes_behavior = self._AddBool(
+        'new_scopes_behavior',
+        default=False,
+        help_text='Use new scopes behavior: if true, do not add compute-rw, '
+        'storage-ro, service-control, or service-management scopes. The '
+        'former two (compute-rw and storage-ro) only applies to clusters at '
+        'Kubernetes v1.9 and below; starting in v1.10, compute-rw and '
+        'storage-ro are not added by default regardless. Any of these scopes '
+        'may be added explicitly using --scopes. If true, '
+        '--[no-]enable-cloud-endpoints is not allowed. This will be the '
+        'default behavior in a future release. This property is ignored in '
+        'alpha and beta, which always use the new behavior. See --scopes help '
+        'for more info.')
 
     def BuildTimeoutValidator(build_timeout):
       if build_timeout is None:

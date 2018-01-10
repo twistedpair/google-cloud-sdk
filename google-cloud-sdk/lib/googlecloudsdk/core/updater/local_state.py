@@ -18,6 +18,8 @@ This tracks the installed modules along with the files they created.  It also
 provides functionality like extracting tar files into the installation and
 tracking when we check for updates.
 """
+# TODO(b/70520907): remove the attribute-error disable.
+# pytype: disable=attribute-error
 
 import compileall
 import errno
@@ -94,7 +96,7 @@ def _RaisesPermissionsError(func):
 
   def _TryFunc(*args, **kwargs):
     try:
-      return func(*args, **kwargs)
+      return func(*args, **kwargs)  # pytype: disable=missing-parameter
     except (OSError, IOError) as e:
       if e.errno == errno.EACCES:
         new_exc = PermissionsError(

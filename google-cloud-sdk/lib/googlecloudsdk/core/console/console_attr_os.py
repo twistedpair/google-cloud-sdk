@@ -13,6 +13,8 @@
 # limitations under the License.
 
 """OS specific console_attr helper functions."""
+# Ignore all type checks because of os specific imports
+# type: ignore
 
 import os
 import sys

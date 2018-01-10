@@ -148,6 +148,22 @@ class BigtableadminProjectsInstancesListRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class BigtableadminProjectsInstancesPartialUpdateInstanceRequest(_messages.Message):
+  """A BigtableadminProjectsInstancesPartialUpdateInstanceRequest object.
+
+  Fields:
+    instance: A Instance resource to be passed as the request body.
+    name: (`OutputOnly`) The unique name of the instance. Values are of the
+      form `projects/<project>/instances/a-z+[a-z0-9]`.
+    updateMask: The subset of Instance fields which should be replaced. Must
+      be explicitly set.
+  """
+
+  instance = _messages.MessageField('Instance', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class BigtableadminProjectsInstancesTablesCreateRequest(_messages.Message):
   """A BigtableadminProjectsInstancesTablesCreateRequest object.
 
@@ -542,10 +558,31 @@ class Instance(_messages.Message):
     StateValueValuesEnum: (`OutputOnly`) The current state of the instance.
     TypeValueValuesEnum: The type of the instance. Defaults to `PRODUCTION`.
 
+  Messages:
+    LabelsValue: Labels are a flexible and lightweight mechanism for
+      organizing cloud resources into groups that reflect a customer's
+      organizational needs and deployment strategies. They can be used to
+      filter resources and aggregate metrics.  * Label keys must be between 1
+      and 63 characters long and must conform to   the regular expression:
+      `\p{Ll}\p{Lo}{0,62}`. * Label values must be between 0 and 63 characters
+      long and must conform to   the regular expression:
+      `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be
+      associated with a given resource. * Keys and values must both be under
+      128 bytes.
+
   Fields:
     displayName: The descriptive name for this instance as it appears in UIs.
       Can be changed at any time, but should be kept globally unique to avoid
       confusion.
+    labels: Labels are a flexible and lightweight mechanism for organizing
+      cloud resources into groups that reflect a customer's organizational
+      needs and deployment strategies. They can be used to filter resources
+      and aggregate metrics.  * Label keys must be between 1 and 63 characters
+      long and must conform to   the regular expression: `\p{Ll}\p{Lo}{0,62}`.
+      * Label values must be between 0 and 63 characters long and must conform
+      to   the regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more
+      than 64 labels can be associated with a given resource. * Keys and
+      values must both be under 128 bytes.
     name: (`OutputOnly`) The unique name of the instance. Values are of the
       form `projects/<project>/instances/a-z+[a-z0-9]`.
     state: (`OutputOnly`) The current state of the instance.
@@ -587,10 +624,43 @@ class Instance(_messages.Message):
     PRODUCTION = 1
     DEVELOPMENT = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels are a flexible and lightweight mechanism for organizing cloud
+    resources into groups that reflect a customer's organizational needs and
+    deployment strategies. They can be used to filter resources and aggregate
+    metrics.  * Label keys must be between 1 and 63 characters long and must
+    conform to   the regular expression: `\p{Ll}\p{Lo}{0,62}`. * Label values
+    must be between 0 and 63 characters long and must conform to   the regular
+    expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be
+    associated with a given resource. * Keys and values must both be under 128
+    bytes.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   displayName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class Intersection(_messages.Message):
@@ -809,6 +879,19 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class PartialUpdateInstanceRequest(_messages.Message):
+  """Request message for BigtableInstanceAdmin.PartialUpdateInstance.
+
+  Fields:
+    instance: The Instance which will (partially) replace the current value.
+    updateMask: The subset of Instance fields which should be replaced. Must
+      be explicitly set.
+  """
+
+  instance = _messages.MessageField('Instance', 1)
+  updateMask = _messages.StringField(2)
 
 
 class Split(_messages.Message):
@@ -1062,6 +1145,22 @@ class UpdateClusterMetadata(_messages.Message):
 
   finishTime = _messages.StringField(1)
   originalRequest = _messages.MessageField('Cluster', 2)
+  requestTime = _messages.StringField(3)
+
+
+class UpdateInstanceMetadata(_messages.Message):
+  """The metadata for the Operation returned by UpdateInstance.
+
+  Fields:
+    finishTime: The time at which the operation failed or was completed
+      successfully.
+    originalRequest: The request that prompted the initiation of this
+      UpdateInstance operation.
+    requestTime: The time at which the original request was received.
+  """
+
+  finishTime = _messages.StringField(1)
+  originalRequest = _messages.MessageField('PartialUpdateInstanceRequest', 2)
   requestTime = _messages.StringField(3)
 
 

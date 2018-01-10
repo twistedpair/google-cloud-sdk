@@ -106,7 +106,8 @@ def AddSeekFlags(parser):
           cloud project.""")
 
 
-def AddPullFlags(parser, add_deprecated=False):
+def AddPullFlags(parser, add_deprecated=False, add_wait=False):
+  """Adds the main set of message pulling flags to a parser."""
   if add_deprecated:
     parser.add_argument(
         '--max-messages', type=int, default=1,
@@ -118,6 +119,11 @@ def AddPullFlags(parser, add_deprecated=False):
   parser.add_argument(
       '--auto-ack', action='store_true', default=False,
       help='Automatically ACK every message pulled from this subscription.')
+  if add_wait:
+    parser.add_argument(
+        '--wait', action='store_true', default=False,
+        help='Wait (for a bounded amount of time) for new messages from the '
+             'subscription, if there are none.')
 
 
 def AddPushEndpointFlag(parser, required=False):

@@ -6,7 +6,7 @@
   "canonicalName": "TPU",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "TPU API",
+  "title": "Cloud TPU API",
   "description": "TPU API provides customers with access to Google TPU technology.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -21,6 +21,7 @@
   "baseUrl": "https://tpu.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -278,7 +279,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The immutable name of the TPU",
+          "description": "Output only.\nThe immutable name of the TPU",
           "type": "string"
         },
         "description": {
@@ -289,15 +290,12 @@
           "description": "The type of hardware accelerators associated with this node.\nRequired.",
           "type": "string"
         },
-        "machineType": {
-          "type": "string"
-        },
         "ipAddress": {
-          "description": "The network address for the TPU Node as visible to GCE instances.\nOutput only.",
+          "description": "Output only.\nDEPRECATED! Use network_endpoints instead.\nThe network address for the TPU Node as visible to GCE instances.",
           "type": "string"
         },
         "port": {
-          "description": "The network port for the TPU Node as visible to GCE instances.\nOutput only.",
+          "description": "Output only.\nDEPRECATED! Use network_endpoints instead.\nThe network port for the TPU Node as visible to GCE instances.",
           "type": "string"
         },
         "state": {
@@ -347,28 +345,63 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "schedulingConfig": {
-          "$ref": "SchedulingConfig"
+        "networkEndpoints": {
+          "description": "Output only. The network endpoints where TPU workers can be accessed and sent work.\nIt is recommended that Tensorflow clients of the node reach out to the 0th\nentry in this map first.",
+          "type": "array",
+          "items": {
+            "$ref": "NetworkEndpoint"
+          }
         },
-        "greenVmSelflink": {
+        "health": {
+          "description": "The health status of the TPU node.",
+          "enumDescriptions": [
+            "Health status is unknown: not initialized or failed to retrieve.",
+            "The resource is healthy.",
+            "The resource is unhealthy.",
+            "The resource is unresponsive."
+          ],
+          "type": "string",
+          "enum": [
+            "HEALTH_UNSPECIFIED",
+            "HEALTHY",
+            "UNHEALTHY",
+            "TIMEOUT"
+          ]
+        }
+      }
+    },
+    "NetworkEndpoint": {
+      "id": "NetworkEndpoint",
+      "description": "A network endpoint over which a TPU worker can be reached.",
+      "type": "object",
+      "properties": {
+        "ipAddress": {
+          "description": "The IP address of this network endpoint.",
           "type": "string"
         },
-        "greenVmInstanceId": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "tensorFlowUrlOverride": {
+        "port": {
+          "description": "The port of this network endpoint.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ReimageNodeRequest": {
+      "id": "ReimageNodeRequest",
+      "description": "Request for ReimageNode.",
+      "type": "object",
+      "properties": {
+        "tensorflowVersion": {
+          "description": "The version for reimage to create.",
           "type": "string"
         }
       }
     },
-    "SchedulingConfig": {
-      "id": "SchedulingConfig",
+    "ResetNodeRequest": {
+      "id": "ResetNodeRequest",
+      "description": "Request for ResetNode.",
       "type": "object",
       "properties": {
-        "preemptible": {
-          "type": "boolean"
-        }
       }
     },
     "OperationMetadata": {
@@ -575,6 +608,31 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ]
+                },
+                "cancel": {
+                  "id": "tpu.projects.locations.operations.cancel",
+                  "path": "v1alpha1/{+name}:cancel",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ]
                 }
               }
             },
@@ -659,11 +717,6 @@
                       "description": "The unqualified resource name.",
                       "location": "query",
                       "type": "string"
-                    },
-                    "serviceAccount": {
-                      "description": "Allows user to set the service account running on the TPU node's workers.",
-                      "location": "query",
-                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -717,16 +770,14 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
                       "type": "string"
-                    },
-                    "tensorflowVersion": {
-                      "description": "The version for reimage to create.",
-                      "location": "query",
-                      "type": "string"
                     }
                   },
                   "parameterOrder": [
                     "name"
                   ],
+                  "request": {
+                    "$ref": "ReimageNodeRequest"
+                  },
                   "response": {
                     "$ref": "Operation"
                   },
@@ -752,56 +803,9 @@
                   "parameterOrder": [
                     "name"
                   ],
-                  "response": {
-                    "$ref": "Operation"
+                  "request": {
+                    "$ref": "ResetNodeRequest"
                   },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ]
-                },
-                "stop": {
-                  "id": "tpu.projects.locations.nodes.stop",
-                  "path": "v1alpha1/{+name}:stop",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:stop",
-                  "httpMethod": "POST",
-                  "description": "Stops a node.",
-                  "parameters": {
-                    "name": {
-                      "description": "The resource name.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ]
-                },
-                "start": {
-                  "id": "tpu.projects.locations.nodes.start",
-                  "path": "v1alpha1/{+name}:start",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:start",
-                  "httpMethod": "POST",
-                  "description": "Start a node.",
-                  "parameters": {
-                    "name": {
-                      "description": "The resource name.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
                   "response": {
                     "$ref": "Operation"
                   },

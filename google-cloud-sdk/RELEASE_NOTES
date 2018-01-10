@@ -1,6 +1,99 @@
 # Google Cloud SDK - Release Notes
 
-Copyright 2014-2017 Google Inc. All rights reserved.
+Copyright 2014-2018 Google Inc. All rights reserved.
+
+
+## 184.0.0 (2018-01-10)
+
+### Breaking Changes
+
+* (REMOVED) Removed `gcloud ml-engine init-project`. This step is now performed
+  automatically.
+*   Removed `--discard-local-ssd` flag from `gcloud compute instances stop`
+    (beta and GA). This flag wasn't working as intended. Stopping an instance
+    that uses a local SSD is not currently supported; delete and recreate the
+    instance instead.
+* (DEPRECATED) Deprecated `--[no-]enable-cloud-endpoints` (removed in alpha and
+  beta).
+* (MODIFIED) Added `container/new_scopes_behavior` property, which will, in a
+  future release, be the default behavior.  If set to true, `compute-rw`,
+  `devstorage-ro`, `service-control`, and `service-management` scopes are no
+  longer added to what is specified in `--scopes`, `compute-rw` is no longer
+  inluded in the default scopes, and `--[no-]enable-cloud-endpoints` flags are
+  not allowed.  This is now the default behavior for alpha and beta, so this
+  property has no effect for those tracks.
+
+
+### App Engine
+
+* Fixed an issue where `queue.yaml` deployments failed due to a permission
+  error.
+* Updated the Python SDK for App Engine to version 1.9.65.
+  * Added [SetupTools version 36.6.0](https://pypi.python.org/pypi/setuptools/36.6.0){: target="_blank" class="external"}
+    to the built-in third-party libraries.
+* Updated Java SDK to version 1.9.60.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+* Updated the Go SDK for App Engine to version 1.9.62
+  * Updated go-app-stager tool to properly support future gcloud staging protocol
+  * Added --go-version flag to go-app-stager to set Go version for manual invocations.
+* Fixed inaccurate warning about "module" in `app.yaml` configuration file
+
+### BigQuery
+
+* Fixed issue where page token switch (`-k` or `--page_token`) was not passed to
+  `list --transfer_config` command.
+* Fixed issue where `list --transfer_run` command filter condition failed due
+  to field name error.
+* Added time partitioning field to `show` command.
+
+### Cloud Datalab
+
+* Updated the `datalab` component to the 20171222 release.
+
+  Released changes are documented in its tracking issue at
+  [https://github.com/googledatalab/datalab/issues/1868](https://github.com/googledatalab/datalab/issues/1868).
+
+### Cloud Dataproc
+
+* Added boot disk type configuration flags to the
+  `gcloud beta dataproc clusters create` command:
+  * `--master-boot-disk-type`
+  * `--worker-boot-disk-type`
+  * `--preemptible-worker-boot-disk-type`
+
+### Cloud Machine Learning Engine
+
+* Added `--labels` flag to `gcloud ml-engine <models|versions> create`.
+* Added `--labels` flag to `gcloud ml-engine jobs <prediction|training> submit`.
+* Added `gcloud ml-engine <models|versions|jobs> update` commands which update
+  Cloud Machine Learning resources.
+
+### Cloud PubSub
+
+*   Added `--wait` flag to `gcloud beta pubsub subscriptions pull`.
+
+### Cloud SQL
+
+* Added `--user` flag to `gcloud beta sql import sql` to add support for
+  specifying a Postgres user to import with.
+* Added `--user` flag to `gcloud beta sql import csv` to add support for
+  specifying a Postgres user to import with.
+
+### Container Builder
+
+Added support for `.gcloudignore` files to `container builds submit` command.
+
+### Container Engine
+
+* Updated Google Kubernetes Engine's kubectl from version 1.8.4 to 1.8.6.
+* Promoted `--node-version` flag of `gcloud container <clusters|node-pools> create` to GA. Clusters/node-pools can now be created with a node version different from that of the master, via the `--node-version` flag.
+
+### Container Registry
+
+* Updated `docker-credential-gcr` to v1.4.2:
+  * Refreshes the cloud SDK's access token when retrieving it, when configured
+    to use `gcloud` as a token source.
 
 
 ## 183.0.0 (2017-12-13)

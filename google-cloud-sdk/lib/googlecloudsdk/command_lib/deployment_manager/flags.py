@@ -23,7 +23,7 @@ RESOURCES_AND_OUTPUTS_FORMAT = """
     table(
       resources:format='table(
         name,
-        type,
+        type:wrap,
         update.state.yesno(no="COMPLETED"),
         update.error.errors.group(code),
         update.intent)',

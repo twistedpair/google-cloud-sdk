@@ -19,7 +19,8 @@ class AcceleratorConfig(_messages.Message):
     acceleratorCount: The number of the guest accelerator cards exposed to
       this instance.
     acceleratorType: Full or partial URL of the accelerator type resource to
-      expose to this instance.
+      attach to this instance. If you are creating an instance template,
+      specify only the accelerator name.
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)

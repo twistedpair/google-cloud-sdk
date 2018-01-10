@@ -193,7 +193,6 @@
     },
     "SearchAnnotationSetsRequest": {
       "id": "SearchAnnotationSetsRequest",
-
       "type": "object",
       "properties": {
         "datasetIds": {
@@ -245,7 +244,6 @@
     },
     "SearchAnnotationSetsResponse": {
       "id": "SearchAnnotationSetsResponse",
-
       "type": "object",
       "properties": {
         "annotationSets": {
@@ -340,7 +338,6 @@
     },
     "VariantAnnotation": {
       "id": "VariantAnnotation",
-
       "type": "object",
       "properties": {
         "type": {
@@ -455,7 +452,6 @@
     },
     "ClinicalCondition": {
       "id": "ClinicalCondition",
-
       "type": "object",
       "properties": {
         "names": {
@@ -484,7 +480,6 @@
     },
     "ExternalId": {
       "id": "ExternalId",
-
       "type": "object",
       "properties": {
         "sourceName": {
@@ -521,7 +516,6 @@
     },
     "Exon": {
       "id": "Exon",
-
       "type": "object",
       "properties": {
         "start": {
@@ -543,7 +537,6 @@
     },
     "CodingSequence": {
       "id": "CodingSequence",
-
       "type": "object",
       "properties": {
         "start": {
@@ -560,7 +553,6 @@
     },
     "BatchCreateAnnotationsRequest": {
       "id": "BatchCreateAnnotationsRequest",
-
       "type": "object",
       "properties": {
         "annotations": {
@@ -578,7 +570,6 @@
     },
     "BatchCreateAnnotationsResponse": {
       "id": "BatchCreateAnnotationsResponse",
-
       "type": "object",
       "properties": {
         "entries": {
@@ -592,7 +583,6 @@
     },
     "Entry": {
       "id": "Entry",
-
       "type": "object",
       "properties": {
         "status": {
@@ -634,7 +624,6 @@
     },
     "SearchAnnotationsRequest": {
       "id": "SearchAnnotationsRequest",
-
       "type": "object",
       "properties": {
         "annotationSetIds": {
@@ -675,7 +664,6 @@
     },
     "SearchAnnotationsResponse": {
       "id": "SearchAnnotationsResponse",
-
       "type": "object",
       "properties": {
         "annotations": {
@@ -735,7 +723,6 @@
     },
     "UndeleteDatasetRequest": {
       "id": "UndeleteDatasetRequest",
-
       "type": "object",
       "properties": {
       }
@@ -1094,7 +1081,6 @@
     },
     "Experiment": {
       "id": "Experiment",
-
       "type": "object",
       "properties": {
         "libraryId": {
@@ -1117,7 +1103,6 @@
     },
     "Program": {
       "id": "Program",
-
       "type": "object",
       "properties": {
         "commandLine": {
@@ -1144,7 +1129,6 @@
     },
     "ListCoverageBucketsResponse": {
       "id": "ListCoverageBucketsResponse",
-
       "type": "object",
       "properties": {
         "bucketWidth": {
@@ -1401,7 +1385,6 @@
       "type": "object",
       "properties": {
         "operation": {
-
           "enumDescriptions": [
             "",
             "An alignment match indicates that a sequence can be aligned to the\nreference without evidence of an INDEL. Unlike the\n`SEQUENCE_MATCH` and `SEQUENCE_MISMATCH` operators,\nthe `ALIGNMENT_MATCH` operator does not indicate whether the\nreference and read sequences are an exact match. This operator is\nequivalent to SAM's `M`.",
@@ -1441,7 +1424,6 @@
     },
     "SearchReferenceSetsRequest": {
       "id": "SearchReferenceSetsRequest",
-
       "type": "object",
       "properties": {
         "md5checksums": {
@@ -1475,7 +1457,6 @@
     },
     "SearchReferenceSetsResponse": {
       "id": "SearchReferenceSetsResponse",
-
       "type": "object",
       "properties": {
         "referenceSets": {
@@ -1539,7 +1520,6 @@
     },
     "SearchReferencesRequest": {
       "id": "SearchReferencesRequest",
-
       "type": "object",
       "properties": {
         "md5checksums": {
@@ -1573,7 +1553,6 @@
     },
     "SearchReferencesResponse": {
       "id": "SearchReferencesResponse",
-
       "type": "object",
       "properties": {
         "references": {
@@ -1631,7 +1610,6 @@
     },
     "ListBasesResponse": {
       "id": "ListBasesResponse",
-
       "type": "object",
       "properties": {
         "offset": {
@@ -2089,7 +2067,6 @@
     },
     "MergeVariantsRequest": {
       "id": "MergeVariantsRequest",
-
       "type": "object",
       "properties": {
         "variantSetId": {

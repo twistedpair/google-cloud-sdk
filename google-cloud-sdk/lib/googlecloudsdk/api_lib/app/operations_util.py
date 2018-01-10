@@ -121,12 +121,14 @@ def GetStatus(operation):
   Returns:
     The status of the operation in string form.
   """
+  # pytype: disable=attribute-error
   if not operation.done:
     return Status.PENDING.name
   elif operation.error:
     return Status.ERROR.name
   else:
     return Status.COMPLETED.name
+  # pytype: enable=attribute-error
 
 
 def _GetInsertTime(operation):

@@ -70,7 +70,7 @@ def NormalizeForSearch(value, html=False):
   text = _Stringize(value).lower()
   # Strip HTML tags if needed.
   if html:
-    text = re.sub('<[^>]*>', '', text)
+    text = re.sub('<[^>]*>', '', text)  # pytype: disable=wrong-arg-types
   # Convert to NFKD normal form with accents stripped.
   return u''.join([c for c in unicodedata.normalize('NFKD', text)
                    if not unicodedata.combining(c)])
@@ -108,7 +108,7 @@ def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
     if value == 1 and operand.lower() == 'true':
       return True
     # Stringize float with trailing .0's stripped.
-    text = re.sub(r'\.0*$', '', _Stringize(value))
+    text = re.sub(r'\.0*$', '', _Stringize(value))  # pytype: disable=wrong-arg-types
   elif value == operand:
     return True
   elif value is None:

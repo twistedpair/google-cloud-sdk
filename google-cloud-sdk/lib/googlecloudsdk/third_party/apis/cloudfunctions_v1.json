@@ -323,6 +323,13 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "environmentVariables": {
+          "description": "Envrionment variables that shall be available during function execution.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -358,7 +365,7 @@
       "type": "object",
       "properties": {
         "eventType": {
-          "description": "Required. The type of event to observe. For example:\n`google.storage.object.finalized` and\n`google.firebase.analytics.event.log`.\n\nEvent type consists of three parts:\n 1. namespace: The domain name of the organization in reverse-domain\n    notation (e.g. `acme.net` appears as `net.acme`) and any orginization\n    specific subdivisions. If the organization's top-level domain is `com`,\n    the top-level domain is ommited (e.g. `google.com` appears as\n    `google`). For example, `google.storage` and\n    `google.firebase.analytics`.\n 2. resource type: The type of resource on which event ocurs. For\n    example, the Google Cloud Storage API includes the type `object`.\n 3. action: The action that generates the event. For example, actions for\n    a Google Cloud Storage Object include 'finalize' and 'delete'.\nThese parts are lower case and joined by '.'.",
+          "description": "Required. The type of event to observe. For example:\n`providers\/cloud.storage\/eventTypes\/object.change` and\n`providers\/cloud.pubsub\/eventTypes\/topic.publish`.\n\nEvent types match pattern `providers\/*\/eventTypes\/*.*`.\nThe pattern contains:\n 1. namespace: For example, `cloud.storage` and\n    `google.firebase.analytics`.\n 2. resource type: The type of resource on which event occurs. For\n    example, the Google Cloud Storage API includes the type `object`.\n 3. action: The action that generates the event. For example, action for\n    a Google Cloud Storage Object is 'change'.\nThese parts are lower case.",
           "type": "string"
         },
         "resource": {

@@ -480,11 +480,13 @@ class CryptoKey(_messages.Message):
       Currently, the only acceptable purpose is ENCRYPT_DECRYPT.
 
   Messages:
-    LabelsValue: Labels with user defined metadata.
+    LabelsValue: Labels with user-defined metadata. For more information, see
+      [Labeling Keys](/kms/docs/labeling-keys).
 
   Fields:
     createTime: Output only. The time at which this CryptoKey was created.
-    labels: Labels with user defined metadata.
+    labels: Labels with user-defined metadata. For more information, see
+      [Labeling Keys](/kms/docs/labeling-keys).
     name: Output only. The resource name for this CryptoKey in the format
       `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     nextRotationTime: At next_rotation_time, the Key Management Service will
@@ -517,7 +519,8 @@ class CryptoKey(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Labels with user defined metadata.
+    """Labels with user-defined metadata. For more information, see [Labeling
+    Keys](/kms/docs/labeling-keys).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

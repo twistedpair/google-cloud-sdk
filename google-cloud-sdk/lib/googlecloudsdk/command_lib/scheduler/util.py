@@ -30,7 +30,7 @@ def _GetPubsubMessages():
 
 
 def _GetSchedulerMessages():
-  return apis.GetMessagesModule('cloudscheduler', 'v1beta1')
+  return apis.GetMessagesModule('cloudscheduler', 'v1alpha1')
 
 
 def ModifyCreateJobRequest(job_ref, args, create_job_req):

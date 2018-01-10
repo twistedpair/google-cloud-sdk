@@ -18,7 +18,7 @@
 LIST_PREVIEWED_RESOURCES_FORMAT = """
     table(
       name,
-      type,
+      type:wrap,
       update.state.yesno(no="COMPLETED"),
       update.error.errors.group(code),
       update.intent
@@ -28,7 +28,7 @@ LIST_PREVIEWED_RESOURCES_FORMAT = """
 LIST_RESOURCES_FORMAT = """
     table(
       name,
-      type,
+      type:wrap,
       update.state.yesno(no="COMPLETED"),
       update.error.errors.group(code),
       runtimePolicies.list(undefined="N/A", separator=", ")
@@ -44,7 +44,7 @@ DEPLOYMENT_AND_RESOURCES_AND_OUTPUTS_FORMAT = """
       operation.error, operation.warnings, update)',
       resources:format='table(
         name:label=NAME,
-        type:label=TYPE,
+        type:wrap:label=TYPE,
         update.state.yesno(no="COMPLETED"),
         update.error.errors.group(code),
         runtimePolicies.list(undefined="N/A", separator=", "))',
@@ -63,7 +63,7 @@ PREVIEWED_DEPLOYMENT_AND_RESOURCES_AND_OUTPUTS_FORMAT = """
       operation.error, operation.warnings, update)',
       resources:format='table(
         name:label=NAME,
-        type:label=TYPE,
+        type:wrap:label=TYPE,
         update.state.yesno(no="COMPLETED"),
         update.intent)',
       outputs:format='table(
@@ -76,7 +76,7 @@ RESOURCES_AND_OUTPUTS_FORMAT = """
     table(
       resources:format='table(
         name,
-        type,
+        type:wrap,
         update.state.yesno(no="COMPLETED"),
         update.error.errors.group(code),
         update.intent.if(preview),

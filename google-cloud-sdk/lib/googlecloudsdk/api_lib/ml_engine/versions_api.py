@@ -25,11 +25,15 @@ class InvalidVersionConfigFile(exceptions.Error):
   """Error indicating an invalid Version configuration file."""
 
 
+class NoFieldsSpecifiedError(exceptions.Error):
+  """Error indicating an invalid Version configuration file."""
+
+
 class VersionsClient(object):
   """Client for the versions service of Cloud ML Engine."""
 
   _ALLOWED_YAML_FIELDS = set(['autoScaling', 'description', 'deploymentUri',
-                              'runtimeVersion', 'manualScaling'])
+                              'runtimeVersion', 'manualScaling', 'labels'])
 
   def __init__(self, client=None, messages=None):
     self.client = client or apis.GetClientInstance('ml', 'v1')
@@ -56,6 +60,20 @@ class VersionsClient(object):
         self._MakeCreateRequest(
             parent=model_ref.RelativeName(),
             version=version))
+
+  def Patch(self, version_ref, labels_update):
+    version = self.messages.GoogleCloudMlV1Version()
+    update_mask = []
+    if labels_update.needs_update:
+      version.labels = labels_update.labels
+      update_mask.append('labels')
+    if not update_mask:
+      raise NoFieldsSpecifiedError('No updates requested.')
+    return self.client.projects_models_versions.Patch(
+        self.messages.MlProjectsModelsVersionsPatchRequest(
+            name=version_ref.RelativeName(),
+            googleCloudMlV1Version=version,
+            updateMask=','.join(update_mask)))
 
   def Delete(self, version_ref):
     """Deletes a version from a model."""
@@ -85,7 +103,8 @@ class VersionsClient(object):
   def BuildVersion(self, name,
                    path=None,
                    deployment_uri=None,
-                   runtime_version=None):
+                   runtime_version=None,
+                   labels=None):
     """Create a Version object.
 
     The object is based on an optional YAML configuration file and the
@@ -101,6 +120,7 @@ class VersionsClient(object):
       path: str, the path to the YAML file.
       deployment_uri: str, the deploymentUri to set for the Version
       runtime_version: str, the runtimeVersion to set for the Version
+      labels: Version.LabelsValue, the labels to set for the version
 
     Returns:
       A Version object (for the corresponding API version).
@@ -138,6 +158,7 @@ class VersionsClient(object):
         'name': name,
         'deploymentUri': deployment_uri,
         'runtimeVersion': runtime_version,
+        'labels': labels,
     }
     for field_name, value in additional_fields.items():
       if value is not None:

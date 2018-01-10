@@ -16,6 +16,8 @@
 
 See the persistent_cache module for a detailed description.
 """
+# Pytype fails to analyze this file.
+# type: ignore
 
 import errno
 import os
@@ -151,6 +153,7 @@ class _Table(persistent_cache_base.Table):
     self._cache._db.commit()  # pylint: disable=protected-access
 
   def Select(self, row_template=None, ignore_expiration=False):
+    # type: (...) -> list[tuple]
     """Returns the list of rows that match row_template, None for all."""
     if row_template is not None:
       self._CheckRowTemplates([row_template])
@@ -179,7 +182,7 @@ class Cache(metadata_table.CacheUsingMetadataTable):
     _persistent: True if the persistent object has been committed at least once.
     _restricted: The set of restricted table names.
     _start: The cache instance start time.
-    _tables: The list of open table objects.
+    _tables: The map of open table objects.
   """
 
   _EXPECTED_MAGIC = 'SQLite format 3'

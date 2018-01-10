@@ -48,20 +48,6 @@ class BioProjectsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class BioProjectsPipelinesRunDeepVariantV1alphaRequest(_messages.Message):
-  """A BioProjectsPipelinesRunDeepVariantV1alphaRequest object.
-
-  Fields:
-    projectId: Required. The project associated with this DeepVariant pipeline
-      run.
-    runDeepVariantV1alphaRequest: A RunDeepVariantV1alphaRequest resource to
-      be passed as the request body.
-  """
-
-  projectId = _messages.StringField(1, required=True)
-  runDeepVariantV1alphaRequest = _messages.MessageField('RunDeepVariantV1alphaRequest', 2)
-
-
 class Empty(_messages.Message):
   """A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -313,86 +299,6 @@ class OperationMetadata(_messages.Message):
   request = _messages.MessageField('RequestValue', 6)
   runtimeMetadata = _messages.MessageField('RuntimeMetadataValue', 7)
   startTime = _messages.StringField(8)
-
-
-class PipelineOptions(_messages.Message):
-  """Common pipeline options.
-
-  Messages:
-    LabelsValue: User-settable labels. Applied to the Operation and any
-      associated pipeline resources, e.g. GCE VMs (if any).
-
-  Fields:
-    computeZones: Google Compute Engine availability zones in which the
-      workflow should start worker virtual machines, if any are needed for
-      this particular workflow. Must be valid Google Compute Engine zone
-      names, for example "us-east1-d".
-    labels: User-settable labels. Applied to the Operation and any associated
-      pipeline resources, e.g. GCE VMs (if any).
-    requestId: Optional. If non-empty then requests are idempotent in that
-      sending a second RunWorkflowRequest with the same project_id and
-      request_id will return the name of the same already-running operation,
-      instead of starting another. Do not reuse request_ids. Reusing a
-      (project_id, request_id) for a different request will result in an
-      error. A common way of filling this value is with a random 64-bit
-      number.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    """User-settable labels. Applied to the Operation and any associated
-    pipeline resources, e.g. GCE VMs (if any).
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  computeZones = _messages.StringField(1, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 2)
-  requestId = _messages.StringField(3)
-
-
-class RunDeepVariantV1alphaRequest(_messages.Message):
-  """A RunDeepVariantV1alphaRequest object.
-
-  Fields:
-    inputFastq1: List of Google Cloud Storage paths of forward strand FASTQ.
-      The pairs of FASTQ files must occur at the same position in both lists.
-      e.g.:    input_fastq1s = ['lane1_1.fastq', 'lane2_1.fastq',
-      'lane3_1.fastq']   input_fastq2s = ['lane1_2.fastq', 'lane2_2.fastq',
-      'lane3_2.fastq']
-    inputFastq2: List of Google Cloud Storage paths of reverse strand FASTQ.
-      The pairs of FASTQ files must occur at the same position in both lists.
-      e.g.:    input_fastq1s = ['lane1_1.fastq', 'lane2_1.fastq',
-      'lane3_1.fastq']   input_fastq2s = ['lane1_2.fastq', 'lane2_2.fastq',
-      'lane3_2.fastq']
-    options: Common pipeline options.
-    outputPath: Required. The Google Cloud Storage path for copying the final
-      output files. For example, 'gs://<user_bucket>/<sample_name>'.
-    sampleName: Required. Sample name.
-  """
-
-  inputFastq1 = _messages.StringField(1, repeated=True)
-  inputFastq2 = _messages.StringField(2, repeated=True)
-  options = _messages.MessageField('PipelineOptions', 3)
-  outputPath = _messages.StringField(4)
-  sampleName = _messages.StringField(5)
 
 
 class RuntimeMetadata(_messages.Message):

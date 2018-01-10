@@ -63,7 +63,7 @@ def _CreateTar(source_dir, gen_files, paths, gz):
   for name, contents in gen_files.iteritems():
     genfileobj = StringIO.StringIO(contents)
     tar_info = tarfile.TarInfo(name=name)
-    tar_info.size = len(genfileobj.buf)
+    tar_info.size = len(genfileobj.buf)  # pytype: disable=attribute-error
     t.addfile(tar_info, fileobj=genfileobj)
     genfileobj.close()
   t.close()

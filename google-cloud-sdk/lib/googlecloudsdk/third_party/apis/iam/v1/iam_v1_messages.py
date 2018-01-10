@@ -125,10 +125,12 @@ class CreateServiceAccountKeyRequest(_messages.Message):
       KEY_ALG_UNSPECIFIED: An unspecified key algorithm.
       KEY_ALG_RSA_1024: 1k RSA Key.
       KEY_ALG_RSA_2048: 2k RSA Key.
+      KEY_ALG_GCS_SYMMETRIC_HMAC: HMAC.
     """
     KEY_ALG_UNSPECIFIED = 0
     KEY_ALG_RSA_1024 = 1
     KEY_ALG_RSA_2048 = 2
+    KEY_ALG_GCS_SYMMETRIC_HMAC = 3
 
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
     """The output format of the private key. `GOOGLE_CREDENTIALS_FILE` is the
@@ -967,11 +969,10 @@ class ServiceAccount(_messages.Message):
   service account, specify the `project_id` and the `account_id` for the
   account.  The `account_id` is unique within the project, and is used to
   generate the service account email address and a stable `unique_id`.  If the
-  account already exists, the account's resource name is returned in
-  util::Status's ResourceInfo.resource_name in the format of
-  projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. The caller can use the name
-  in other methods to access the account.  All other methods can identify the
-  service account using the format
+  account already exists, the account's resource name is returned in the
+  format of projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. The caller can
+  use the name in other methods to access the account.  All other methods can
+  identify the service account using the format
   `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a wildcard
   for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT`
   value can be the `email` address or the `unique_id` of the service account.
@@ -988,7 +989,7 @@ class ServiceAccount(_messages.Message):
       `unique_id` of the service account.  In responses the resource name will
       always be in the format
       `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.
-    oauth2ClientId: @OutputOnly. The OAuth2 client id for the service account.
+    oauth2ClientId: @OutputOnly The OAuth2 client id for the service account.
       This is used in conjunction with the OAuth2 clientconfig API to make
       three legged OAuth2 (3LO) flows to access the data of Google users.
     projectId: @OutputOnly The id of the project that owns the service
@@ -1053,10 +1054,12 @@ class ServiceAccountKey(_messages.Message):
       KEY_ALG_UNSPECIFIED: An unspecified key algorithm.
       KEY_ALG_RSA_1024: 1k RSA Key.
       KEY_ALG_RSA_2048: 2k RSA Key.
+      KEY_ALG_GCS_SYMMETRIC_HMAC: HMAC.
     """
     KEY_ALG_UNSPECIFIED = 0
     KEY_ALG_RSA_1024 = 1
     KEY_ALG_RSA_2048 = 2
+    KEY_ALG_GCS_SYMMETRIC_HMAC = 3
 
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
     """The output format for the private key. Only provided in

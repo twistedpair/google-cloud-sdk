@@ -465,7 +465,7 @@ class _MetricsCollector(object):
     concord_event['event_name'] = event_name
     concord_event[_CLEARCUT_EVENT_METADATA_KEY] = list(
         self._clearcut_concord_event_metadata)
-    concord_event[_CLEARCUT_EVENT_METADATA_KEY].extend(event_metadata)
+    concord_event[_CLEARCUT_EVENT_METADATA_KEY].extend(event_metadata)  # pytype: disable=attribute-error
     self._clearcut_concord_events.append(concord_event)
 
   def CollectClearcutMetric(self):

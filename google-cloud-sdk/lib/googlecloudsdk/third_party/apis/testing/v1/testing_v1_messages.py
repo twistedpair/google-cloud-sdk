@@ -536,7 +536,7 @@ class Locale(_messages.Message):
     id: The id for this locale. Example: "en_US" @OutputOnly
     name: A human-friendly name for this language/locale. Example: "English"
       @OutputOnly
-    region: A human-friendy string representing the region for this locale.
+    region: A human-friendly string representing the region for this locale.
       Example: "United States" Not present for every locale. @OutputOnly
     tags: Tags for this dimension. Examples: "default"
   """

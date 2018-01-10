@@ -59,6 +59,10 @@ NO_AUTOPROVISIONING_LIMITS_ERROR_MSG = """\
 Must specify both --max-cpu and --max-memory to enable autoprovisioning.
 """
 
+MISMATCH_ACCELERATOR_TYPE_LIMITS_ERROR_MSG = """\
+Maximum and minimum accelerator limits must be set on the same accelerator type.
+"""
+
 NO_SUCH_LABEL_ERROR_MSG = """\
 No label named '{name}' found on cluster '{cluster}'."""
 
@@ -92,6 +96,10 @@ Invalid value [{key}={value}] for argument --node-taints. Node taint is of forma
 
 NODE_TAINT_INCORRECT_EFFECT_ERROR_MSG = """\
 Invalid taint effect [{effect}] for argument --node-taints. Valid effect values are NoSchedule, PreferNoSchedule, NoExecute'
+"""
+
+LOCAL_SSD_INCORRECT_FORMAT_ERROR_MSG = """\
+Invalid local SSD format [{err_format}] for argument --local-ssd-volumes. Valid formats are fs, block
 """
 
 UNKNOWN_WORKLOAD_METADATA_FROM_NODE_ERROR_MSG = """\
@@ -176,11 +184,75 @@ def InitAPIAdapter(api_version, adapter):
 
 _SERVICE_ACCOUNT_SCOPES = ('https://www.googleapis.com/auth/cloud-platform',)
 
-_REQUIRED_SCOPES = ('compute-rw', 'storage-ro')
+_OLD_REQUIRED_SCOPES = (
+    'https://www.googleapis.com/auth/compute',
+    'https://www.googleapis.com/auth/devstorage.read_only')
 
 _ENDPOINTS_SCOPES = (
     'https://www.googleapis.com/auth/servicecontrol',
     'https://www.googleapis.com/auth/service.management.readonly')
+
+
+def NodeIdentityOptionsToNodeConfig(options, node_config):
+  """Convert node identity options into node config.
+
+  If a service account was provided, use that and cloud-platform scope.
+  Otherwise, if options.new_scopes_behavior is True (we're in alpha or beta
+  track), or container/new_scopes_behavior property is set, just use what's
+  passed to --scopes (or the default).  Otherwise, emulate the deprecated
+  behavior: expand the scopes, add or remove endpoints scopes as necessary, add
+  compute-rw and devstorage-ro, sort, and return.  Print warnings as necessary.
+
+  Args:
+    options: the CreateCluster or CreateNodePool options.
+    node_config: the messages.node_config object to be populated.
+  """
+  if properties.VALUES.container.new_scopes_behavior.GetBool():
+    options.new_scopes_behavior = True
+  if options.service_account:
+    node_config.serviceAccount = options.service_account
+    options.scopes = _SERVICE_ACCOUNT_SCOPES
+  elif options.new_scopes_behavior:
+    options.scopes = ExpandScopeURIs(options.scopes)
+  else:
+    if not options.scopes:
+      options.scopes = []
+    # The interactions between --scopes, compute-rw and storage-ro, and
+    # --[no-]enable-cloud-endpoints is all kind of whacky behavior.  Expand
+    # scope aliases _before_ munging with _OLD_REQUIRED_SCOPES and endpoints
+    # scopes so we can avoid adding _OLD_REQUIRED_SCOPES if it's unnecessary,
+    # filter out scopes if the --no-enable-cloud-endpoints is set, and print
+    # only relevant deprecation warnings.  See b/69554175 and b/69431751.
+    options.scopes = ExpandScopeURIs(options.scopes)
+    # Add or remove endpoints scopes as necessary.
+    if options.enable_cloud_endpoints:
+      for scope in _ENDPOINTS_SCOPES:
+        if scope not in options.scopes:
+          log.warn("""\
+The behavior of --scopes will change in a future gcloud release: \
+service-control and service-management scopes will no longer be added to what \
+is specified in --scopes. To use these scopes, add them explicitly to \
+--scopes. To use the new behavior, set container/new_scopes_behavior property \
+to true.""")
+          options.scopes += _ENDPOINTS_SCOPES
+          break
+    else:
+      # Don't print a warning here because the only way to get here is by
+      # specifying --no-enable-cloud-endpoints explicitly, which will trigger a
+      # deprecation warning regardless.
+      options.scopes = [x for x in options.scopes if x not in _ENDPOINTS_SCOPES]
+    # Add compute-rw and devstorage-ro as necessary.
+    for scope in _OLD_REQUIRED_SCOPES:
+      if scope not in options.scopes:
+        log.warn("""\
+Starting in Kubernetes v1.10, new clusters will no longer get compute-rw and \
+storage-ro scopes added to what is specified in --scopes (though the latter \
+will remain included in the default --scopes). To use these scopes, add them \
+explicitly to --scopes. To use the new behavior, set \
+container/new_scopes_behavior property to true.""")
+        options.scopes += _OLD_REQUIRED_SCOPES
+        break
+  node_config.oauthScopes = sorted(set(options.scopes))
 
 
 def ExpandScopeURIs(scopes):
@@ -212,6 +284,7 @@ class CreateClusterOptions(object):
                node_disk_size_gb=None,
                scopes=None,
                enable_cloud_endpoints=None,
+               new_scopes_behavior=None,
                num_nodes=None,
                additional_zones=None,
                node_locations=None,
@@ -227,6 +300,7 @@ class CreateClusterOptions(object):
                addons=None,
                disable_addons=None,
                local_ssd_count=None,
+               local_ssd_volume_configs=None,
                tags=None,
                node_labels=None,
                node_taints=None,
@@ -266,6 +340,7 @@ class CreateClusterOptions(object):
     self.node_disk_size_gb = node_disk_size_gb
     self.scopes = scopes
     self.enable_cloud_endpoints = enable_cloud_endpoints
+    self.new_scopes_behavior = new_scopes_behavior
     self.num_nodes = num_nodes
     self.additional_zones = additional_zones
     self.node_locations = node_locations
@@ -281,6 +356,7 @@ class CreateClusterOptions(object):
     self.disable_addons = disable_addons
     self.addons = addons
     self.local_ssd_count = local_ssd_count
+    self.local_ssd_volume_configs = local_ssd_volume_configs
     self.tags = tags
     self.node_labels = node_labels
     self.node_taints = node_taints
@@ -381,8 +457,10 @@ class CreateNodePoolOptions(object):
                scopes=None,
                node_version=None,
                enable_cloud_endpoints=None,
+               new_scopes_behavior=None,
                num_nodes=None,
                local_ssd_count=None,
+               local_ssd_volume_configs=None,
                tags=None,
                node_labels=None,
                node_taints=None,
@@ -404,8 +482,10 @@ class CreateNodePoolOptions(object):
     self.scopes = scopes
     self.node_version = node_version
     self.enable_cloud_endpoints = enable_cloud_endpoints
+    self.new_scopes_behavior = new_scopes_behavior
     self.num_nodes = num_nodes
     self.local_ssd_count = local_ssd_count
+    self.local_ssd_volume_configs = local_ssd_volume_configs
     self.tags = tags
     self.node_labels = node_labels
     self.node_taints = node_taints
@@ -685,25 +765,7 @@ class APIAdapter(object):
     if options.node_source_image:
       raise util.Error('cannot specify node source image in container v1 api')
 
-    if options.service_account:
-      node_config.serviceAccount = options.service_account
-      node_config.oauthScopes = _SERVICE_ACCOUNT_SCOPES
-    else:
-      if not options.scopes:
-        options.scopes = []
-      options.scopes += _REQUIRED_SCOPES
-      # TODO(b/69431751) The interactions between --scopes and
-      # --[no-enable-cloud-endpoints] is all kind of whacky behavior.  Expand
-      # scope aliases _before_ munging with endpoints scopes so we can filter
-      # out scopes if the --no-enable-cloud-endpoints is set.
-      options.scopes = ExpandScopeURIs(options.scopes)
-      if options.enable_cloud_endpoints:
-        options.scopes += _ENDPOINTS_SCOPES
-      else:
-        options.scopes = [
-            x for x in options.scopes if x not in _ENDPOINTS_SCOPES
-        ]
-      node_config.oauthScopes = sorted(set(options.scopes))
+    NodeIdentityOptionsToNodeConfig(options, node_config)
 
     if options.local_ssd_count:
       node_config.localSsdCount = options.local_ssd_count
@@ -1069,6 +1131,28 @@ class APIAdapter(object):
           disabled=disable_network_policy)
     return addons
 
+  def _AddLocalSSDVolumeConfigsToNodeConfig(self, node_config, options):
+    """Add LocalSSDVolumeConfigs to nodeConfig."""
+    if options.local_ssd_volume_configs is None:
+      return
+    format_enum = self.messages.LocalSsdVolumeConfig.FormatValueValuesEnum
+    local_ssd_volume_configs_list = []
+    for config in options.local_ssd_volume_configs:
+      count = int(config['count'])
+      ssd_type = config['type'].lower()
+      if config['format'].lower() == 'fs':
+        ssd_format = format_enum.FS
+      elif config['format'].lower() == 'block':
+        ssd_format = format_enum.BLOCK
+      else:
+        raise util.Error(
+            LOCAL_SSD_INCORRECT_FORMAT_ERROR_MSG.format(
+                err_format=config['format']))
+      local_ssd_volume_configs_list.append(
+          self.messages.LocalSsdVolumeConfig(
+              count=count, type=ssd_type, format=ssd_format))
+    node_config.localSsdVolumeConfigs = local_ssd_volume_configs_list
+
   def _AddNodeTaintsToNodeConfig(self, node_config, options):
     """Add nodeTaints to nodeConfig."""
     if options.node_taints is None:
@@ -1151,28 +1235,12 @@ class APIAdapter(object):
     if options.image_type:
       node_config.imageType = options.image_type
 
-    if options.service_account:
-      node_config.serviceAccount = options.service_account
-      node_config.oauthScopes = _SERVICE_ACCOUNT_SCOPES
-    else:
-      if not options.scopes:
-        options.scopes = []
-      options.scopes += _REQUIRED_SCOPES
-      # TODO(b/69431751) The interactions between --scopes and
-      # --[no-enable-cloud-endpoints] is all kind of whacky behavior.  Expand
-      # scope aliases _before_ munging with endpoints scopes so we can filter
-      # out scopes if the --no-enable-cloud-endpoints is set.
-      options.scopes = ExpandScopeURIs(options.scopes)
-      if options.enable_cloud_endpoints:
-        options.scopes += _ENDPOINTS_SCOPES
-      else:
-        options.scopes = [
-            x for x in options.scopes if x not in _ENDPOINTS_SCOPES
-        ]
-      node_config.oauthScopes = sorted(set(options.scopes))
+    NodeIdentityOptionsToNodeConfig(options, node_config)
 
     if options.local_ssd_count:
       node_config.localSsdCount = options.local_ssd_count
+    if options.local_ssd_volume_configs:
+      self._AddLocalSSDVolumeConfigsToNodeConfig(node_config, options)
     if options.tags:
       node_config.tags = options.tags
     else:
@@ -1941,6 +2009,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     cluster = self.CreateClusterCommon(cluster_ref, options)
     if options.enable_autoprovisioning is not None:
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(options)
+    if options.local_ssd_volume_configs:
+      for pool in cluster.nodePools:
+        self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -1970,12 +2041,25 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           name='memory',
           minimum=options.min_memory,
           maximum=options.max_memory))
+    if options.max_accelerator is not None:
+      accelerator_type = options.max_accelerator.get('type')
+      min_count = 0
+      if options.min_accelerator is not None:
+        if options.min_accelerator.get('type') != accelerator_type:
+          raise util.Error(MISMATCH_ACCELERATOR_TYPE_LIMITS_ERROR_MSG)
+        min_count = options.min_accelerator.get('count', 0)
+      resource_limits.append(self.messages.ResourceLimit(
+          name=options.max_accelerator.get('type'),
+          minimum=min_count,
+          maximum=options.max_accelerator.get('count', 0)))
     return self.messages.ClusterAutoscaling(
         enableNodeAutoprovisioning=options.enable_autoprovisioning,
         resourceLimits=resource_limits)
 
   def CreateNodePool(self, node_pool_ref, options):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
+    if options.local_ssd_volume_configs:
+      self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
     if options.enable_autoprovisioning is not None:
       pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
     req = self.messages.CreateNodePoolRequest(

@@ -350,7 +350,7 @@
           "type": "string"
         },
         "region": {
-          "description": "A human-friendy string representing the region for this locale.\nExample: \"United States\"\nNot present for every locale.\n@OutputOnly",
+          "description": "A human-friendly string representing the region for this locale.\nExample: \"United States\"\nNot present for every locale.\n@OutputOnly",
           "type": "string"
         },
         "tags": {
@@ -386,11 +386,9 @@
     },
     "NetworkConfigurationCatalog": {
       "id": "NetworkConfigurationCatalog",
-
       "type": "object",
       "properties": {
         "configurations": {
-
           "type": "array",
           "items": {
             "$ref": "NetworkConfiguration"
@@ -400,7 +398,6 @@
     },
     "NetworkConfiguration": {
       "id": "NetworkConfiguration",
-
       "type": "object",
       "properties": {
         "id": {

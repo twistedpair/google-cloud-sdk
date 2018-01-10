@@ -61,8 +61,9 @@ definitions:
         items: { $ref: "#/definitions/python_hook" }
 
   argument:
-    oneOf: [ { $ref: "#/definitions/arg" },
-             { $ref: "#/definitions/arg_group" } ]
+    oneOf:
+      - { $ref: "#/definitions/arg" }
+      - { $ref: "#/definitions/arg_group" }
 
   arg:
     required: [ help_text ]
@@ -89,11 +90,24 @@ definitions:
       # parsed string value of the argument and returns the converted
       # parsed value.
       type: { $ref: "#/definitions/python_hook" }
-      # The argparse action to use for this argument. It can be either 'store',
-      # 'store_true', or the module path to a class that implements argparse's
-      # Action class. If specified, this takes precedence over the 'deprecated'
-      # attribute below.
-      action: { type: string }
+      # The argparse action to use for this argument. See inline options for
+      # this value.
+      action:
+        oneOf:
+          # One of the builtin argparse actions.
+          - enum: [ store, store_true ]
+          # The module path to a class that implements argparse's Action class.
+          - $ref: "#/definitions/python_hook"
+          # Mark this flag as being deprecated. All the sub elements here
+          # are passed as kwargs to the calliope.actions.DeprecationAction
+          # action.
+          - type: object
+            additionalProperties: false
+            properties:
+              deprecated:
+                type: object
+                patternProperties:
+                  .*: { type: string }
       # Can be set to False if you want to accept a single value even though the
       # API field is repeated. If the API field is not repeated, this attribute
       # has no effect.
@@ -105,7 +119,18 @@ definitions:
       # is one choice and the value is the value that is returned when that
       # choice is selected.
       choices:
-        type: object
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          properties:
+            # The choice as it appears on the command line.
+            arg_value: { type: [ string, number, boolean ] }
+            # The string representation of the API enum value that will be used
+            # when this choice is selected.
+            enum_value: { type: string }
+            # The help text to show next to the choice on the MAN page.
+            help_text: { type: string }
       # The default value of the argument when not provided. Mutually exclusive
       # with fallback.
       default: { type: [ string, number, boolean, array ] }
@@ -123,32 +148,29 @@ definitions:
       required: { type: boolean }
       # Whether the flag is hidden or not.
       hidden: { type: boolean }
-      # Mark this flag as being deprecated. All the sub elements here
-      # are passed as kwargs to the calliope.actions.DeprecationAction
-      # action.
-      deprecated:
-        type: object
-        patternProperties:
-          .*: { type: string }
 
   arg_group:
-    required: [ params ]
     type: object
     additionalProperties: false
     properties:
-      # The help text for the group.
-      help_text: { type: string }
-      # Whether the group is required or not.
-      required: { type: boolean }
-      # Whether the group is mutually exclusive or not.
-      mutex: { type: boolean }
-      # Whether the group is hidden or not.
-      hidden: { type: boolean }
-      # The group arguments.
-      params:
-        type: array
-        items: { $ref: "#/definitions/argument" }
-        minItems: 1
+      group:
+        required: [ params ]
+        type: object
+        additionalProperties: false
+        properties:
+          # The help text for the group.
+          help_text: { type: string }
+          # Whether the group is required or not.
+          required: { type: boolean }
+          # Whether the group is mutually exclusive or not.
+          mutex: { type: boolean }
+          # Whether the group is hidden or not.
+          hidden: { type: boolean }
+          # The group arguments.
+          params:
+            type: array
+            items: { $ref: "#/definitions/argument" }
+            minItems: 1
 
 
 type: object

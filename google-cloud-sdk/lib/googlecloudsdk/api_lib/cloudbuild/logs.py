@@ -165,8 +165,8 @@ class CloudBuildClient(object):
   """Client for interacting with the Cloud Build API (and Cloud Build logs)."""
 
   def __init__(self, client=None, messages=None):
-    self.client = client or cloudbuild_util.GetClient()
-    self.messages = messages or cloudbuild_util.GetMessages()
+    self.client = client or cloudbuild_util.GetClientInstance()
+    self.messages = messages or cloudbuild_util.GetMessagesModule()
 
   def GetBuild(self, build_ref):
     """Get a Build message.

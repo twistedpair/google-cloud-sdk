@@ -367,7 +367,7 @@ def TransformDuration(r, start='', end='', parts=3, precision=3, calendar=True,
       non-zero part.
     precision: Format the last duration part with precision digits after the
       decimal point. Trailing "0" and "." are always stripped.
-    calendar: Allow time units larger than hours in formated durations if true.
+    calendar: Allow time units larger than hours in formatted durations if true.
       Durations specifying hours or smaller units are exact across daylight
       savings time boundaries. On by default. Use calendar=false to disable.
       For example, if `calendar=true` then at the daylight savings boundary
@@ -907,7 +907,7 @@ def TransformScope(r, *args):
   """
   if not r:
     return ''
-  r = urllib2.unquote(unicode(r))
+  r = urllib2.unquote(unicode(r))  # pytype: disable=module-attr
   if '/' not in r:
     return r
   # Checking for regions and/or zones is the most common use case.
@@ -933,7 +933,7 @@ def TransformSegment(r, index=-1, undefined=''):
   """
   if not r:
     return undefined
-  r = urllib2.unquote(unicode(r))
+  r = urllib2.unquote(unicode(r))  # pytype: disable=module-attr
   segments = r.split('/')
   try:
     return segments[int(index)] or undefined

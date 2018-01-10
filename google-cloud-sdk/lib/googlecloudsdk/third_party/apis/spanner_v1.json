@@ -358,7 +358,6 @@
           "format": "byte"
         },
         "iamOwned": {
-
           "type": "boolean"
         }
       }
@@ -418,7 +417,6 @@
           "type": "string"
         },
         "exemptedMembers": {
-
           "type": "array",
           "items": {
             "type": "string"
@@ -816,7 +814,7 @@
           "type": "string"
         },
         "nodeCount": {
-          "description": "Required. The number of nodes allocated to this instance. This may be zero\nin API responses for instances that are not yet in state `READY`.\n\nEach Spanner node can provide up to 10,000 QPS of reads or 2000 QPS of\nwrites (writing single rows at 1KB data per row), and 2 TiB storage.\n\nFor optimal performance, we recommend provisioning enough nodes to keep\noverall CPU utilization under 75%.\n\nA minimum of 3 nodes is recommended for production environments.  This\nminimum is required for SLAs to apply to your instance.\n\nNote that Cloud Spanner performance is highly dependent on workload, schema\ndesign, and dataset characteristics. The performance numbers above are\nestimates, and assume [best practices](https:\/\/cloud.google.com\/spanner\/docs\/bulk-loading)\nare followed.",
+          "description": "Required. The number of nodes allocated to this instance. This may be zero\nin API responses for instances that are not yet in state `READY`.\n\nSee [the documentation](https:\/\/cloud.google.com\/spanner\/docs\/instances#node_count)\nfor more information about nodes.",
           "type": "integer",
           "format": "int32"
         },
@@ -891,11 +889,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the session.",
+          "description": "The name of the session. This is always system-assigned; values provided\nwhen creating a session are ignored.",
           "type": "string"
         },
         "labels": {
-          "description": "The labels for the session.\n\n * Label keys must be between 1 and 63 characters long and must conform to\n   the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.\n * Label values must be between 0 and 63 characters long and must conform\n   to the regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.\n * No more than 20 labels can be associated with a given session.",
+          "description": "The labels for the session.\n\n * Label keys must be between 1 and 63 characters long and must conform to\n   the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.\n * Label values must be between 0 and 63 characters long and must conform\n   to the regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.\n * No more than 64 labels can be associated with a given session.\n\nSee https:\/\/goo.gl\/xmQnxf for more information on and examples of labels.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1037,7 +1035,7 @@
           "type": "boolean"
         },
         "minReadTimestamp": {
-          "description": "Executes all reads at a timestamp >= `min_read_timestamp`.\n\nThis is useful for requesting fresher data than some previous\nread, or data that is fresh enough to observe the effects of some\npreviously committed transaction whose timestamp is known.\n\nNote that this option can only be used in single-use transactions.",
+          "description": "Executes all reads at a timestamp >= `min_read_timestamp`.\n\nThis is useful for requesting fresher data than some previous\nread, or data that is fresh enough to observe the effects of some\npreviously committed transaction whose timestamp is known.\n\nNote that this option can only be used in single-use transactions.\n\nA timestamp in RFC3339 UTC \\\"Zulu\\\" format, accurate to nanoseconds.\nExample: `\"2014-10-02T15:01:23.045123456Z\"`.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -1047,7 +1045,7 @@
           "format": "google-duration"
         },
         "readTimestamp": {
-          "description": "Executes all reads at the given timestamp. Unlike other modes,\nreads at a specific timestamp are repeatable; the same read at\nthe same timestamp always returns the same data. If the\ntimestamp is in the future, the read will block until the\nspecified timestamp, modulo the read's deadline.\n\nUseful for large scale consistent reads such as mapreduces, or\nfor coordinating many reads against a consistent snapshot of the\ndata.",
+          "description": "Executes all reads at the given timestamp. Unlike other modes,\nreads at a specific timestamp are repeatable; the same read at\nthe same timestamp always returns the same data. If the\ntimestamp is in the future, the read will block until the\nspecified timestamp, modulo the read's deadline.\n\nUseful for large scale consistent reads such as mapreduces, or\nfor coordinating many reads against a consistent snapshot of the\ndata.\n\nA timestamp in RFC3339 UTC \\\"Zulu\\\" format, accurate to nanoseconds.\nExample: `\"2014-10-02T15:01:23.045123456Z\"`.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -1185,7 +1183,7 @@
           "format": "byte"
         },
         "readTimestamp": {
-          "description": "For snapshot read-only transactions, the read timestamp chosen\nfor the transaction. Not returned by default: see\nTransactionOptions.ReadOnly.return_read_timestamp.",
+          "description": "For snapshot read-only transactions, the read timestamp chosen\nfor the transaction. Not returned by default: see\nTransactionOptions.ReadOnly.return_read_timestamp.\n\nA timestamp in RFC3339 UTC \\\"Zulu\\\" format, accurate to nanoseconds.\nExample: `\"2014-10-02T15:01:23.045123456Z\"`.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -1380,7 +1378,7 @@
           "$ref": "KeySet"
         },
         "limit": {
-          "description": "If greater than zero, only the first `limit` rows are yielded. If `limit`\nis zero, the default is no limit.\nA limit cannot be specified if partition_token is set.",
+          "description": "If greater than zero, only the first `limit` rows are yielded. If `limit`\nis zero, the default is no limit.",
           "type": "string",
           "format": "int64"
         },
@@ -1587,9 +1585,9 @@
         }
       }
     },
-    "CreateQueryPartitionsRequest": {
-      "id": "CreateQueryPartitionsRequest",
-      "description": "The request for CreateQueryPartitions",
+    "PartitionQueryRequest": {
+      "id": "PartitionQueryRequest",
+      "description": "The request for PartitionQuery",
       "type": "object",
       "properties": {
         "transaction": {
@@ -1638,9 +1636,9 @@
         }
       }
     },
-    "CreatePartitionsResponse": {
-      "id": "CreatePartitionsResponse",
-      "description": "The response for CreateQueryPartitions\nor CreateQueryPartitions",
+    "PartitionResponse": {
+      "id": "PartitionResponse",
+      "description": "The response for PartitionQuery\nor PartitionRead",
       "type": "object",
       "properties": {
         "partitions": {
@@ -1665,92 +1663,6 @@
           "description": "This token can be passed to Read, StreamingRead, ExecuteSql, or\nExecuteStreamingSql requests to restrict the results to those identified by\nthis partition token.",
           "type": "string",
           "format": "byte"
-        }
-      }
-    },
-    "PartitionQueryRequest": {
-      "id": "PartitionQueryRequest",
-      "description": "The request for PartitionQuery",
-      "type": "object",
-      "properties": {
-        "transaction": {
-          "description": "Read only snapshot transactions are supported, read\/write and single use\ntransactions are not.",
-          "$ref": "TransactionSelector"
-        },
-        "sql": {
-          "description": "The query request to generate partitions for. The request will fail if\nthe query is not root partitionable. The query plan of a root\npartitionable query has a single distributed union operator. A distributed\nunion operator conceptually divides one or more tables into multiple\nsplits, remotely evaluates a subquery independently on each split, and\nthen unions all results.",
-          "type": "string"
-        },
-        "params": {
-          "description": "The SQL query string can contain parameter placeholders. A parameter\nplaceholder consists of `'@'` followed by the parameter\nname. Parameter names consist of any combination of letters,\nnumbers, and underscores.\n\nParameters can appear anywhere that a literal value is expected.  The same\nparameter name can be used more than once, for example:\n  `\"WHERE id > @msg_id AND id < @msg_id + 100\"`\n\nIt is an error to execute an SQL query with unbound parameters.\n\nParameter values are specified using `params`, which is a JSON\nobject whose keys are parameter names, and whose values are the\ncorresponding parameter values.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object."
-          }
-        },
-        "paramTypes": {
-          "description": "It is not always possible for Cloud Spanner to infer the right SQL type\nfrom a JSON value.  For example, values of type `BYTES` and values\nof type `STRING` both appear in params as JSON strings.\n\nIn these cases, `param_types` can be used to specify the exact\nSQL type for some or all of the SQL query parameters. See the\ndefinition of Type for more information\nabout SQL types.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "Type"
-          }
-        },
-        "partitionOptions": {
-          "description": "Additional options that affect how many partitions are created.",
-          "$ref": "PartitionOptions"
-        }
-      }
-    },
-    "PartitionResponse": {
-      "id": "PartitionResponse",
-      "description": "The response for PartitionQuery\nor PartitionRead",
-      "type": "object",
-      "properties": {
-        "partitions": {
-          "description": "Partitions created by this request.",
-          "type": "array",
-          "items": {
-            "$ref": "Partition"
-          }
-        },
-        "transaction": {
-          "description": "Transaction created by this request.",
-          "$ref": "Transaction"
-        }
-      }
-    },
-    "CreateReadPartitionsRequest": {
-      "id": "CreateReadPartitionsRequest",
-      "description": "The request for CreateReadPartitions",
-      "type": "object",
-      "properties": {
-        "transaction": {
-          "description": "Read only snapshot transactions are supported, read\/write and single use\ntransactions are not.",
-          "$ref": "TransactionSelector"
-        },
-        "table": {
-          "description": "Required. The name of the table in the database to be read.",
-          "type": "string"
-        },
-        "index": {
-          "description": "If non-empty, the name of an index on table. This index is\nused instead of the table primary key when interpreting key_set\nand sorting result rows. See key_set for further information.",
-          "type": "string"
-        },
-        "columns": {
-          "description": "The columns of table to be returned for each row matching\nthis request.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "keySet": {
-          "description": "Required. `key_set` identifies the rows to be yielded. `key_set` names the\nprimary keys of the rows in table to be yielded, unless index\nis present. If index is present, then key_set instead names\nindex keys in index.\n\nRows are yielded in table primary key order (if index is empty)\nor index key order (if index is non-empty).\n\nIt is not an error for the `key_set` to name rows that do not\nexist in the database. Read yields nothing for nonexistent rows.",
-          "$ref": "KeySet"
-        },
-        "partitionOptions": {
-          "description": "Additional options that affect how many partitions are created.",
-          "$ref": "PartitionOptions"
         }
       }
     },
@@ -1779,7 +1691,7 @@
           }
         },
         "keySet": {
-          "description": "Required. `key_set` identifies the rows to be yielded. `key_set` names the\nprimary keys of the rows in table to be yielded, unless index\nis present. If index is present, then key_set instead names\nindex keys in index.\n\nRows are yielded in table primary key order (if index is empty)\nor index key order (if index is non-empty).\n\nIt is not an error for the `key_set` to name rows that do not\nexist in the database. Read yields nothing for nonexistent rows.",
+          "description": "Required. `key_set` identifies the rows to be yielded. `key_set` names the\nprimary keys of the rows in table to be yielded, unless index\nis present. If index is present, then key_set instead names\nindex keys in index.\n\nIt is not an error for the `key_set` to name rows that do not\nexist in the database. Read yields nothing for nonexistent rows.",
           "$ref": "KeySet"
         },
         "partitionOptions": {
@@ -1976,7 +1888,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "An expression for filtering the results of the request. Filter rules are\ncase insensitive. The fields eligible for filtering are:\n\n  * name\n  * display_name\n  * labels.key where key is the name of a label\n\nSome examples of using filters are:\n\n  * name:* --> The instance has a name.\n  * name:Howl --> The instance's name contains the string \"howl\".\n  * name:HOWL --> Equivalent to above.\n  * NAME:howl --> Equivalent to above.\n  * labels.env:* --> The instance has the label \"env\".\n  * labels.env:dev --> The instance has the label \"env\" and the value of\n                       the label contains the string \"dev\".\n  * name:howl labels.env:dev --> The instance's name contains \"howl\" and\n                                 it has the label \"env\" with its value\n                                 containing \"dev\".",
+                  "description": "An expression for filtering the results of the request. Filter rules are\ncase insensitive. The fields eligible for filtering are:\n\n  * `name`\n  * `display_name`\n  * `labels.key` where key is the name of a label\n\nSome examples of using filters are:\n\n  * `name:*` --> The instance has a name.\n  * `name:Howl` --> The instance's name contains the string \"howl\".\n  * `name:HOWL` --> Equivalent to above.\n  * `NAME:howl` --> Equivalent to above.\n  * `labels.env:*` --> The instance has the label \"env\".\n  * `labels.env:dev` --> The instance has the label \"env\" and the value of\n                       the label contains the string \"dev\".\n  * `name:howl labels.env:dev` --> The instance's name contains \"howl\" and\n                                 it has the label \"env\" with its value\n                                 containing \"dev\".",
                   "location": "query",
                   "type": "string"
                 }
@@ -2788,7 +2700,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "An expression for filtering the results of the request. Filter rules are\ncase insensitive. The fields eligible for filtering are:\n\n  * labels.key where key is the name of a label\n\nSome examples of using filters are:\n\n  * labels.env:* --> The session has the label \"env\".\n  * labels.env:dev --> The session has the label \"env\" and the value of\n                       the label contains the string \"dev\".",
+                          "description": "An expression for filtering the results of the request. Filter rules are\ncase insensitive. The fields eligible for filtering are:\n\n  * `labels.key` where key is the name of a label\n\nSome examples of using filters are:\n\n  * `labels.env:*` --> The session has the label \"env\".\n  * `labels.env:dev` --> The session has the label \"env\" and the value of\n                       the label contains the string \"dev\".",
                           "location": "query",
                           "type": "string"
                         }
@@ -3033,35 +2945,6 @@
                         "https://www.googleapis.com/auth/spanner.data"
                       ]
                     },
-                    "createQueryPartitions": {
-                      "id": "spanner.projects.instances.databases.sessions.createQueryPartitions",
-                      "path": "v1/{+session}:createQueryPartitions",
-                      "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:createQueryPartitions",
-                      "httpMethod": "POST",
-                      "description": "Creates a set of partition tokens that can be used to execute a query\noperation in parallel.  Each of the returned partition tokens can be used\nby ExecuteStreamingSql to specify a subset\nof the query result to read.  The same session and read-only transaction\nmust be used by the CreateQueryPartitionsRequest used to create the\npartition tokens and the ExecuteSqlRequests that use the partition tokens.\nPartition tokens become invalid when the session used to create them\nis deleted or begins a new transaction.",
-                      "parameters": {
-                        "session": {
-                          "description": "Required. The session used to create the partitions.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "session"
-                      ],
-                      "request": {
-                        "$ref": "CreateQueryPartitionsRequest"
-                      },
-                      "response": {
-                        "$ref": "CreatePartitionsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform",
-                        "https://www.googleapis.com/auth/spanner.data"
-                      ]
-                    },
                     "partitionQuery": {
                       "id": "spanner.projects.instances.databases.sessions.partitionQuery",
                       "path": "v1/{+session}:partitionQuery",
@@ -3085,35 +2968,6 @@
                       },
                       "response": {
                         "$ref": "PartitionResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform",
-                        "https://www.googleapis.com/auth/spanner.data"
-                      ]
-                    },
-                    "createReadPartitions": {
-                      "id": "spanner.projects.instances.databases.sessions.createReadPartitions",
-                      "path": "v1/{+session}:createReadPartitions",
-                      "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:createReadPartitions",
-                      "httpMethod": "POST",
-                      "description": "Creates a set of partition tokens that can be used to execute a read\noperation in parallel.  Each of the returned partition tokens can be used\nby StreamingRead to specify a subset of the read\nresult to read.  The same session and read-only transaction must be used by\nthe CreateReadPartitionsRequest used to create the partition tokens and the\nReadRequests that use the partition tokens.\nPartition tokens become invalid when the session used to create them\nis deleted or begins a new transaction.",
-                      "parameters": {
-                        "session": {
-                          "description": "Required. The session used to create the partitions.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "session"
-                      ],
-                      "request": {
-                        "$ref": "CreateReadPartitionsRequest"
-                      },
-                      "response": {
-                        "$ref": "CreatePartitionsResponse"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",

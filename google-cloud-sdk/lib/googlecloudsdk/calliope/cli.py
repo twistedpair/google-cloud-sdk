@@ -308,7 +308,9 @@ class CLILoader(object):
       try:
         # Mount each registered sub group under each release track that exists.
         for track, track_root_group in loaded_release_tracks.iteritems():
-          parent_group = self.__FindParentGroup(track_root_group, root)
+          # pylint: disable=line-too-long
+          parent_group = self.__FindParentGroup(track_root_group, root)  # type: backend.CommandGroup
+          # pylint: enable=line-too-long
           exception_if_present = None
           if not parent_group:
             if track != calliope_base.ReleaseTrack.GA:
@@ -470,27 +472,31 @@ class CLILoader(object):
         '--authority-selector',
         default=None,
         action=actions.StoreProperty(properties.VALUES.auth.authority_selector),
-        help=argparse.SUPPRESS)
+        hidden=True,
+        help='THIS ARGUMENT NEEDS HELP TEXT.')
 
     top_element.ai.add_argument(
         '--authorization-token-file',
         default=None,
         action=actions.StoreProperty(
             properties.VALUES.auth.authorization_token_file),
-        help=argparse.SUPPRESS)
+        hidden=True,
+        help='THIS ARGUMENT NEEDS HELP TEXT.')
 
     top_element.ai.add_argument(
         '--credential-file-override',
         action=actions.StoreProperty(
             properties.VALUES.auth.credential_file_override),
-        help=argparse.SUPPRESS)
+        hidden=True,
+        help='THIS ARGUMENT NEEDS HELP TEXT.')
 
     # Timeout value for HTTP requests.
     top_element.ai.add_argument(
         '--http-timeout',
         default=None,
         action=actions.StoreProperty(properties.VALUES.core.http_timeout),
-        help=argparse.SUPPRESS)
+        hidden=True,
+        help='THIS ARGUMENT NEEDS HELP TEXT.')
 
   def __MakeCLI(self, top_element):
     """Generate a CLI object from the given data.

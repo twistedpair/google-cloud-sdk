@@ -19,7 +19,8 @@ class AcceleratorConfig(_messages.Message):
     acceleratorCount: The number of the guest accelerator cards exposed to
       this instance.
     acceleratorType: Full or partial URL of the accelerator type resource to
-      expose to this instance.
+      attach to this instance. If you are creating an instance template,
+      specify only the accelerator name.
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2096,6 +2097,7 @@ class BackendBucket(_messages.Message):
 
   Fields:
     bucketName: Cloud Storage bucket name.
+    cdnPolicy: Cloud CDN Coniguration for this BackendBucket.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional textual description of the resource; provided by
@@ -2115,13 +2117,33 @@ class BackendBucket(_messages.Message):
   """
 
   bucketName = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  enableCdn = _messages.BooleanField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#backendBucket')
-  name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
+  cdnPolicy = _messages.MessageField('BackendBucketCdnPolicy', 2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  enableCdn = _messages.BooleanField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#backendBucket')
+  name = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+
+
+class BackendBucketCdnPolicy(_messages.Message):
+  """Message containing Cloud CDN configuration for a backend bucket.
+
+  Fields:
+    signedUrlCacheMaxAgeSec: Number of seconds up to which the response to a
+      signed URL request will be cached in the CDN. After this time period,
+      the Signed URL will be revalidated before being served. Defaults to 1hr
+      (3600s). If this field is set, Cloud CDN will internally act as though
+      all responses from this bucket had a ?Cache-Control: public, max-
+      age=[TTL]? header, regardless of any existing Cache-Control header. The
+      actual headers served in responses will not be altered.
+    signedUrlKeyNames: [Output Only] Names of the keys currently configured
+      for Cloud CDN Signed URL on this backend bucket.
+  """
+
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(1)
+  signedUrlKeyNames = _messages.StringField(2, repeated=True)
 
 
 class BackendBucketList(_messages.Message):
@@ -2567,9 +2589,20 @@ class BackendServiceCdnPolicy(_messages.Message):
 
   Fields:
     cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
+    signedUrlCacheMaxAgeSec: Number of seconds up to which the response to a
+      signed URL request will be cached in the CDN. After this time period,
+      the Signed URL will be revalidated before being served. Defaults to 1hr
+      (3600s). If this field is set, Cloud CDN will internally act as though
+      all responses from this backend had a ?Cache-Control: public, max-
+      age=[TTL]? header, regardless of any existing Cache-Control header. The
+      actual headers served in responses will not be altered.
+    signedUrlKeyNames: [Output Only] Names of the keys currently configured
+      for Cloud CDN Signed URL on this backend service.
   """
 
   cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 1)
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(2)
+  signedUrlKeyNames = _messages.StringField(3, repeated=True)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -3961,6 +3994,32 @@ class ComputeAutoscalersUpdateRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeBackendBucketsAddSignedUrlKeyRequest(_messages.Message):
+  """A ComputeBackendBucketsAddSignedUrlKeyRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to which the Signed URL
+      Key should be added. The name should conform to RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    signedUrlKey: A SignedUrlKey resource to be passed as the request body.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  signedUrlKey = _messages.MessageField('SignedUrlKey', 4)
+
+
 class ComputeBackendBucketsDeleteRequest(_messages.Message):
   """A ComputeBackendBucketsDeleteRequest object.
 
@@ -3982,6 +4041,32 @@ class ComputeBackendBucketsDeleteRequest(_messages.Message):
   backendBucket = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class ComputeBackendBucketsDeleteSignedUrlKeyRequest(_messages.Message):
+  """A ComputeBackendBucketsDeleteSignedUrlKeyRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to which the Signed URL
+      Key should be added. The name should conform to RFC1035.
+    keyName: The name of the Signed URL Key to delete.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  keyName = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeBackendBucketsGetRequest(_messages.Message):
@@ -4120,6 +4205,32 @@ class ComputeBackendBucketsUpdateRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeBackendServicesAddSignedUrlKeyRequest(_messages.Message):
+  """A ComputeBackendServicesAddSignedUrlKeyRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to which the Signed
+      URL Key should be added. The name should conform to RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    signedUrlKey: A SignedUrlKey resource to be passed as the request body.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  signedUrlKey = _messages.MessageField('SignedUrlKey', 4)
+
+
 class ComputeBackendServicesAggregatedListRequest(_messages.Message):
   """A ComputeBackendServicesAggregatedListRequest object.
 
@@ -4190,6 +4301,32 @@ class ComputeBackendServicesDeleteRequest(_messages.Message):
   backendService = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class ComputeBackendServicesDeleteSignedUrlKeyRequest(_messages.Message):
+  """A ComputeBackendServicesDeleteSignedUrlKeyRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to which the Signed
+      URL Key should be added. The name should conform to RFC1035.
+    keyName: The name of the Signed URL Key to delete.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  keyName = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeBackendServicesGetHealthRequest(_messages.Message):
@@ -25446,6 +25583,24 @@ class ServiceAccount(_messages.Message):
 
   email = _messages.StringField(1)
   scopes = _messages.StringField(2, repeated=True)
+
+
+class SignedUrlKey(_messages.Message):
+  """Represents a customer-supplied Signing Key used by Cloud CDN Signed URLs
+
+  Fields:
+    keyName: Name of the key. The name must be 1-63 characters long, and
+      comply with RFC1035. Specifically, the name must be 1-63 characters long
+      and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means
+      the first character must be a lowercase letter, and all following
+      characters must be a dash, lowercase letter, or digit, except the last
+      character, which cannot be a dash.
+    keyValue: 128-bit key value used for signing the URL. The key value must
+      be a valid RFC 4648 Section 5 base64url encoded string.
+  """
+
+  keyName = _messages.StringField(1)
+  keyValue = _messages.StringField(2)
 
 
 class Snapshot(_messages.Message):

@@ -50,7 +50,7 @@ class JobSubmitter(base.Command):
     job_id = util.GetJobId(args.id)
     job_ref = util.ParseJob(job_id, dataproc)
 
-    self.PopulateFilesByType(args)
+    self.PopulateFilesByType(args)  # pytype: disable=attribute-error
 
     cluster_ref = util.ParseCluster(args.cluster, dataproc)
     request = dataproc.messages.DataprocProjectsRegionsClustersGetRequest(
@@ -60,9 +60,9 @@ class JobSubmitter(base.Command):
 
     cluster = dataproc.client.projects_regions_clusters.Get(request)
 
-    self._staging_dir = self.GetStagingDir(
+    self._staging_dir = self.GetStagingDir(  # pytype: disable=attribute-error
         cluster, job_ref.jobId, bucket=args.bucket)
-    self.ValidateAndStageFiles()
+    self.ValidateAndStageFiles()  # pytype: disable=attribute-error
 
     job = dataproc.messages.Job(
         reference=dataproc.messages.JobReference(

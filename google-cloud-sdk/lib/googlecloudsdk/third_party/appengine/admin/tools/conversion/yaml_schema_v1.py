@@ -132,6 +132,7 @@ SCHEMA = s.Message(
         failure_threshold=s.Value(),
         path=s.Value(),
         host=s.Value(converter=c.ToJsonString)),
+    zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
     inbound_services=s.RepeatedField(element=s.Value(
         converter=c.EnumConverter('INBOUND_SERVICE'))),
     instance_class=s.Value(converter=c.ToJsonString),

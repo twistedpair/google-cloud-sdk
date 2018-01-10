@@ -137,10 +137,23 @@ class Location(_messages.Message):
   name = _messages.StringField(4)
 
 
+class NetworkEndpoint(_messages.Message):
+  """A network endpoint over which a TPU worker can be reached.
+
+  Fields:
+    ipAddress: The IP address of this network endpoint.
+    port: The port of this network endpoint.
+  """
+
+  ipAddress = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class Node(_messages.Message):
   """A TPU instance.
 
   Enums:
+    HealthValueValuesEnum: The health status of the TPU node.
     StateValueValuesEnum: The current state for the TPU Node. Output only.
 
   Fields:
@@ -157,29 +170,43 @@ class Node(_messages.Message):
     createTime: The time when the node was created. Output only.
     description: The user-supplied description of the TPU. Maximum of 512
       characters.
-    greenVmInstanceId: A string attribute.
-    greenVmSelflink: A string attribute.
+    health: The health status of the TPU node.
     healthDescription: If this field is populated, it contains a description
       of why the TPU Node is unhealthy. Output only.
-    ipAddress: The network address for the TPU Node as visible to GCE
-      instances. Output only.
-    machineType: A string attribute.
-    name: The immutable name of the TPU
+    ipAddress: Output only. DEPRECATED! Use network_endpoints instead. The
+      network address for the TPU Node as visible to GCE instances.
+    name: Output only. The immutable name of the TPU
     network: The name of a network they wish to peer the TPU node to. It must
       be a preexisting GCE network inside of the project on which this API has
       been activated. If none is provided, "default" will be used.
-    port: The network port for the TPU Node as visible to GCE instances.
-      Output only.
-    schedulingConfig: A SchedulingConfig attribute.
+    networkEndpoints: Output only. The network endpoints where TPU workers can
+      be accessed and sent work. It is recommended that Tensorflow clients of
+      the node reach out to the 0th entry in this map first.
+    port: Output only. DEPRECATED! Use network_endpoints instead. The network
+      port for the TPU Node as visible to GCE instances.
     serviceAccount: The service account used to run the tensor flow services
       within the node. To share resources, including Google Cloud Storage
       data, with the Tensorflow job running in the Node, this account must
       have permissions to that data. Output only.
     state: The current state for the TPU Node. Output only.
-    tensorFlowUrlOverride: A string attribute.
     tensorflowVersion: The version of Tensorflow running in the Node.
       Required.
   """
+
+  class HealthValueValuesEnum(_messages.Enum):
+    """The health status of the TPU node.
+
+    Values:
+      HEALTH_UNSPECIFIED: Health status is unknown: not initialized or failed
+        to retrieve.
+      HEALTHY: The resource is healthy.
+      UNHEALTHY: The resource is unhealthy.
+      TIMEOUT: The resource is unresponsive.
+    """
+    HEALTH_UNSPECIFIED = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+    TIMEOUT = 3
 
   class StateValueValuesEnum(_messages.Enum):
     """The current state for the TPU Node. Output only.
@@ -206,19 +233,16 @@ class Node(_messages.Message):
   cidrBlock = _messages.StringField(2)
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
-  greenVmInstanceId = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  greenVmSelflink = _messages.StringField(6)
-  healthDescription = _messages.StringField(7)
-  ipAddress = _messages.StringField(8)
-  machineType = _messages.StringField(9)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  port = _messages.StringField(12)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 13)
-  serviceAccount = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  tensorFlowUrlOverride = _messages.StringField(16)
-  tensorflowVersion = _messages.StringField(17)
+  health = _messages.EnumField('HealthValueValuesEnum', 5)
+  healthDescription = _messages.StringField(6)
+  ipAddress = _messages.StringField(7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 10, repeated=True)
+  port = _messages.StringField(11)
+  serviceAccount = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  tensorflowVersion = _messages.StringField(14)
 
 
 class Operation(_messages.Message):
@@ -355,14 +379,18 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
-class SchedulingConfig(_messages.Message):
-  """A SchedulingConfig object.
+class ReimageNodeRequest(_messages.Message):
+  """Request for ReimageNode.
 
   Fields:
-    preemptible: A boolean attribute.
+    tensorflowVersion: The version for reimage to create.
   """
 
-  preemptible = _messages.BooleanField(1)
+  tensorflowVersion = _messages.StringField(1)
+
+
+class ResetNodeRequest(_messages.Message):
+  """Request for ResetNode."""
 
 
 class StandardQueryParameters(_messages.Message):
@@ -543,14 +571,11 @@ class TpuProjectsLocationsNodesCreateRequest(_messages.Message):
     node: A Node resource to be passed as the request body.
     nodeId: The unqualified resource name.
     parent: The parent resource name.
-    serviceAccount: Allows user to set the service account running on the TPU
-      node's workers.
   """
 
   node = _messages.MessageField('Node', 1)
   nodeId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-  serviceAccount = _messages.StringField(4)
 
 
 class TpuProjectsLocationsNodesDeleteRequest(_messages.Message):
@@ -593,11 +618,12 @@ class TpuProjectsLocationsNodesReimageRequest(_messages.Message):
 
   Fields:
     name: The resource name.
-    tensorflowVersion: The version for reimage to create.
+    reimageNodeRequest: A ReimageNodeRequest resource to be passed as the
+      request body.
   """
 
   name = _messages.StringField(1, required=True)
-  tensorflowVersion = _messages.StringField(2)
+  reimageNodeRequest = _messages.MessageField('ReimageNodeRequest', 2)
 
 
 class TpuProjectsLocationsNodesResetRequest(_messages.Message):
@@ -605,26 +631,19 @@ class TpuProjectsLocationsNodesResetRequest(_messages.Message):
 
   Fields:
     name: The resource name.
+    resetNodeRequest: A ResetNodeRequest resource to be passed as the request
+      body.
   """
 
   name = _messages.StringField(1, required=True)
+  resetNodeRequest = _messages.MessageField('ResetNodeRequest', 2)
 
 
-class TpuProjectsLocationsNodesStartRequest(_messages.Message):
-  """A TpuProjectsLocationsNodesStartRequest object.
-
-  Fields:
-    name: The resource name.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class TpuProjectsLocationsNodesStopRequest(_messages.Message):
-  """A TpuProjectsLocationsNodesStopRequest object.
+class TpuProjectsLocationsOperationsCancelRequest(_messages.Message):
+  """A TpuProjectsLocationsOperationsCancelRequest object.
 
   Fields:
-    name: The resource name.
+    name: The name of the operation resource to be cancelled.
   """
 
   name = _messages.StringField(1, required=True)

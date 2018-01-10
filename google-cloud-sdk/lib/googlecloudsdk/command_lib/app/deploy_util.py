@@ -16,7 +16,6 @@
 Mostly created to selectively enable Cloud Endpoints in the beta/preview release
 tracks.
 """
-import argparse
 import re
 from apitools.base.py import exceptions as apitools_exceptions
 import enum
@@ -447,10 +446,12 @@ def ArgsDeploy(parser):
       '--skip-staging',
       action='store_true',
       default=False,
-      help=argparse.SUPPRESS)
+      hidden=True,
+      help='THIS ARGUMENT NEEDS HELP TEXT.')
   staging_group.add_argument(
       '--staging-command',
-      help=argparse.SUPPRESS)
+      hidden=True,
+      help='THIS ARGUMENT NEEDS HELP TEXT.')
 
 
 def _MakeStager(skip_staging, use_beta_stager, staging_command, staging_area):

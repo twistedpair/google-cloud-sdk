@@ -35,6 +35,7 @@ def AddBaseImportFlags(parser):
       'Path to the MySQL dump file in Google Cloud Storage from which'
       ' the import is made. The URI is in the form gs://bucketName/fileName.'
       ' Compressed gzip files (.gz) are also supported.')
+  flags.AddUser(parser, 'The PostgreSQL user for this import operation')
 
 
 def RunImportCommand(args, client, import_context):
@@ -112,7 +113,7 @@ def RunSqlImportCommand(args, client):
     or else None.
   """
   sql_import_context = import_util.SqlImportContext(
-      client.sql_messages, args.uri, args.database)
+      client.sql_messages, args.uri, args.database, args.user)
   return RunImportCommand(args, client, sql_import_context)
 
 
@@ -130,5 +131,6 @@ def RunCsvImportCommand(args, client):
     or else None.
   """
   csv_import_context = import_util.CsvImportContext(
-      client.sql_messages, args.uri, args.database, args.table, args.columns)
+      client.sql_messages, args.uri, args.database, args.table, args.columns,
+      args.user)
   return RunImportCommand(args, client, csv_import_context)

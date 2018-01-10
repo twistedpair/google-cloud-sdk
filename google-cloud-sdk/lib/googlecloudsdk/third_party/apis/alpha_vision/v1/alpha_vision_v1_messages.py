@@ -75,20 +75,27 @@ class AnnotateImageRequest(_messages.Message):
       model: `/projects/PROJECT_ID/models/MODEL_ID`, or `/models/MODEL_ID` if
       the model belongs to the current project.
     features: Requested features.
+    file: The file to be processed. If both this field and `image` are
+      specified, `image` is ignored. This cannot be set for calls to the
+      synchronous BatchAnnotateImages method; an error will be returned.  This
+      field should be set for input formats that may contain multiple images.
     image: The image to be processed.
     imageContext: Additional context that may accompany the image.
   """
 
   customLabelDetectionModels = _messages.StringField(1, repeated=True)
   features = _messages.MessageField('Feature', 2, repeated=True)
-  image = _messages.MessageField('Image', 3)
-  imageContext = _messages.MessageField('ImageContext', 4)
+  file = _messages.MessageField('FileSource', 3)
+  image = _messages.MessageField('Image', 4)
+  imageContext = _messages.MessageField('ImageContext', 5)
 
 
 class AnnotateImageResponse(_messages.Message):
   """Response to an image annotation request.
 
   Fields:
+    context: If present, contextual information is needed to understand where
+      this image comes from.
     cropHintsAnnotation: If present, crop hints have completed successfully.
     customLabelAnnotations: If present, custom annotation has completed
       successfully.
@@ -114,19 +121,46 @@ class AnnotateImageResponse(_messages.Message):
     webDetection: If present, web detection has completed successfully.
   """
 
-  cropHintsAnnotation = _messages.MessageField('CropHintsAnnotation', 1)
-  customLabelAnnotations = _messages.MessageField('CustomEntityAnnotation', 2, repeated=True)
-  error = _messages.MessageField('Status', 3)
-  faceAnnotations = _messages.MessageField('FaceAnnotation', 4, repeated=True)
-  fullTextAnnotation = _messages.MessageField('TextAnnotation', 5)
-  imagePropertiesAnnotation = _messages.MessageField('ImageProperties', 6)
-  labelAnnotations = _messages.MessageField('EntityAnnotation', 7, repeated=True)
-  landmarkAnnotations = _messages.MessageField('EntityAnnotation', 8, repeated=True)
-  logoAnnotations = _messages.MessageField('EntityAnnotation', 9, repeated=True)
-  productSearchResults = _messages.MessageField('ProductSearchResults', 10)
-  safeSearchAnnotation = _messages.MessageField('SafeSearchAnnotation', 11)
-  textAnnotations = _messages.MessageField('EntityAnnotation', 12, repeated=True)
-  webDetection = _messages.MessageField('WebDetection', 13)
+  context = _messages.MessageField('ImageAnnotationContext', 1)
+  cropHintsAnnotation = _messages.MessageField('CropHintsAnnotation', 2)
+  customLabelAnnotations = _messages.MessageField('CustomEntityAnnotation', 3, repeated=True)
+  error = _messages.MessageField('Status', 4)
+  faceAnnotations = _messages.MessageField('FaceAnnotation', 5, repeated=True)
+  fullTextAnnotation = _messages.MessageField('TextAnnotation', 6)
+  imagePropertiesAnnotation = _messages.MessageField('ImageProperties', 7)
+  labelAnnotations = _messages.MessageField('EntityAnnotation', 8, repeated=True)
+  landmarkAnnotations = _messages.MessageField('EntityAnnotation', 9, repeated=True)
+  logoAnnotations = _messages.MessageField('EntityAnnotation', 10, repeated=True)
+  productSearchResults = _messages.MessageField('ProductSearchResults', 11)
+  safeSearchAnnotation = _messages.MessageField('SafeSearchAnnotation', 12)
+  textAnnotations = _messages.MessageField('EntityAnnotation', 13, repeated=True)
+  webDetection = _messages.MessageField('WebDetection', 14)
+
+
+class AsyncBatchAnnotateImagesRequest(_messages.Message):
+  """Multiple image annotation requests are batched into a single service
+  call.
+
+  Fields:
+    outputConfig: Required. The desired output location and metadata (e.g.
+      format).
+    requests: Individual image annotation requests for this batch.
+  """
+
+  outputConfig = _messages.MessageField('OutputConfig', 1)
+  requests = _messages.MessageField('AnnotateImageRequest', 2, repeated=True)
+
+
+class AsyncBatchAnnotateImagesResponse(_messages.Message):
+  """Response to an async batch image annotation request.
+
+  Fields:
+    outputConfig: The output config where result(s) are located. This is the
+      same location as was specified in the output_config, and is provided for
+      convenience.
+  """
+
+  outputConfig = _messages.MessageField('OutputConfig', 1)
 
 
 class BatchAnnotateImagesRequest(_messages.Message):
@@ -787,6 +821,32 @@ class Feature(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class FileSource(_messages.Message):
+  """Information identifying a file to process.
+
+  Fields:
+    mimeType: The type of the file. Currently only "application/pdf" and
+      "image/tiff" are supported.
+    uri: The uri where the file can be found. Only plain GCS uris are
+      supported for now; web uris and wildcards are not supported.
+  """
+
+  mimeType = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class GcsDestination(_messages.Message):
+  """The Google Cloud Storage location where the output will be written to.
+
+  Fields:
+    uri: Google Cloud Storage URI where the results will be stored. Results
+      will be in JSON format and preceded by its corresponding input URI. All
+      the results will be in this single file.
+  """
+
+  uri = _messages.StringField(1)
+
+
 class Image(_messages.Message):
   """Client image to perform Google Cloud Vision API tasks over.
 
@@ -801,6 +861,20 @@ class Image(_messages.Message):
 
   content = _messages.BytesField(1)
   source = _messages.MessageField('ImageSource', 2)
+
+
+class ImageAnnotationContext(_messages.Message):
+  """If an image was produced from a file (e.g. a PDF), this message gives
+  information about the source of that image.
+
+  Fields:
+    pageNumber: If the file was a PDF or TIFF, this field gives the page
+      number within the file used to produce the image.
+    uri: The URI of the file used to produce the image.
+  """
+
+  pageNumber = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(2)
 
 
 class ImageContext(_messages.Message):
@@ -1148,6 +1222,50 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class OperationMetadata(_messages.Message):
+  """Contains metadata for the BatchAnnotateImages operation.
+
+  Enums:
+    StateValueValuesEnum: Current state of the batch operation.
+
+  Fields:
+    createTime: The time when the batch request was received.
+    state: Current state of the batch operation.
+    updateTime: The time when the operation result was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """Current state of the batch operation.
+
+    Values:
+      STATE_UNSPECIFIED: Invalid.
+      CREATED: Request is received.
+      RUNNING: Request is actively being processed.
+      DONE: The batch processing is done.
+      CANCELLED: The batch processing was cancelled.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATED = 1
+    RUNNING = 2
+    DONE = 3
+    CANCELLED = 4
+
+  createTime = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  updateTime = _messages.StringField(3)
+
+
+class OutputConfig(_messages.Message):
+  """The desired output location and metadata.
+
+  Fields:
+    gcsDestination: Required. The Google Cloud Storage location to write the
+      output to.
+  """
+
+  gcsDestination = _messages.MessageField('GcsDestination', 1)
 
 
 class Page(_messages.Message):

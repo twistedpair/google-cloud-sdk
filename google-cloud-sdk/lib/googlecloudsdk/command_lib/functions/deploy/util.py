@@ -132,14 +132,14 @@ def _UploadFileToGeneratedUrl(source, messages, service, function_ref):
   url = _GetUploadUrl(messages, service, function_ref)
   with open(source, 'rb') as data:
     length = os.path.getsize(source)
-    request = urllib2.Request(url, data=data)
+    request = urllib2.Request(url, data)  # pytype: disable=wrong-arg-types
     request.add_header('content-type', 'application/zip')
     # Magic header, request will fail without it. Not documented at the moment
     # this comment was being written.
     request.add_header('x-goog-content-length-range', '0,104857600')
     request.add_header('Content-Length', '%d' % length)
     request.get_method = lambda: 'PUT'
-    opener = urllib2.build_opener(urllib2.HTTPHandler)
+    opener = urllib2.build_opener(urllib2.HTTPHandler)  # pytype: disable=wrong-arg-types
     opener.open(request)
     return url
 

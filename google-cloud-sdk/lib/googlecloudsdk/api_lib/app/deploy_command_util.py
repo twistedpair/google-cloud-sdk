@@ -18,6 +18,7 @@ import json
 import os
 import re
 
+from apitools.base.py import exceptions as apitools_exceptions
 from gae_ext_runtime import ext_runtime
 
 from googlecloudsdk.api_lib.app import appengine_api_client
@@ -538,13 +539,13 @@ def PossiblyEnableFlex(project):
     # If enabling the Flexible API fails due to a permissions error, the
     # deployment fails.
     raise PrepareFailureError(PREPARE_FAILURE_MSG.format(project))
-  except api_lib_exceptions.HttpException as err:
+  except apitools_exceptions.HttpError as err:
     # The deployment should also fail if there are unforeseen errors in
     # enabling the Flexible API. If so, display detailed information.
-    err.error_format = ('Error [{status_code}] {status_message}'
-                        '{error.details?'
-                        '\nDetailed error information:\n{?}}')
-    raise err
+    raise api_lib_exceptions.HttpException(
+        err, error_format=('Error [{status_code}] {status_message}'
+                           '{error.details?'
+                           '\nDetailed error information:\n{?}}'))
 
 
 def UseSsl(handlers):

@@ -16,8 +16,8 @@
 from googlecloudsdk.api_lib.ml.products import product_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope.concepts import concept_parsers
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import resources
 
 

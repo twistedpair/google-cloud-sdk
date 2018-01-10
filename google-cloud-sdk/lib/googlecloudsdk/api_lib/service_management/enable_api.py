@@ -14,6 +14,8 @@
 
 """service-management enable helper functions."""
 
+import sys
+
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 
@@ -23,13 +25,10 @@ from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
 from googlecloudsdk.core import log
 
 
-def _HandleStatusCode(e, api_exc_class):
-  exc = api_lib_exceptions.HttpException(e)
-  if exc.payload.status_code in [403, 404]:
-    # TODO(b/36865980): When backend supports it, differentiate errors.
-    raise api_exc_class(exc)
-  else:
-    raise exc
+def _ReraiseError(err, klass):
+  """Transform and re-raise error helper."""
+  exc = api_lib_exceptions.HttpException(err)
+  raise klass, exc, sys.exc_info()[2]  # preserve traceback
 
 
 def EnableServiceApiCall(project_id, service_name):
@@ -42,8 +41,8 @@ def EnableServiceApiCall(project_id, service_name):
   Raises:
     exceptions.EnableServicePermissionDeniedException: when enabling the API
         fails.
-    api_lib_exceptions.HttpException: Another miscellaneous error with the
-        enabling service.
+    apitools_exceptions.HttpError: Another miscellaneous error with the enabling
+        service.
 
   Returns:
     The result of the Enable operation
@@ -61,8 +60,10 @@ def EnableServiceApiCall(project_id, service_name):
 
   try:
     return client.services.Enable(request)
-  except apitools_exceptions.HttpError as e:
-    _HandleStatusCode(e, exceptions.EnableServicePermissionDeniedException)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    # TODO(b/36865980): When backend supports it, differentiate errors.
+    _ReraiseError(e, exceptions.EnableServicePermissionDeniedException)
 
 
 def IsServiceEnabled(project_id, service_name):
@@ -75,8 +76,8 @@ def IsServiceEnabled(project_id, service_name):
   Raises:
     exceptions.ListServicesPermissionDeniedException: if a 403 or 404
         error is returned by the List request.
-    api_lib_exceptions.HttpException: Another miscellaneous error with the
-        listing service.
+    apitools_exceptions.HttpError: Another miscellaneous error with the listing
+        service.
 
   Returns:
     True if the service is enabled, false otherwise.
@@ -96,8 +97,10 @@ def IsServiceEnabled(project_id, service_name):
       # True, otherwise return False
       if service.serviceName.lower() == service_name.lower():
         return True
-  except apitools_exceptions.HttpError as e:
-    _HandleStatusCode(e, exceptions.ListServicesPermissionDeniedException)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    # TODO(b/36865980): When backend supports it, differentiate errors.
+    _ReraiseError(e, exceptions.ListServicesPermissionDeniedException)
   return False
 
 

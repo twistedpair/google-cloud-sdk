@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20171127",
+ "revision": "20171201",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -102,7 +102,7 @@
     },
     "acceleratorType": {
      "type": "string",
-     "description": "Full or partial URL of the accelerator type resource to expose to this instance."
+     "description": "Full or partial URL of the accelerator type resource to attach to this instance. If you are creating an instance template, specify only the accelerator name."
     }
    }
   },

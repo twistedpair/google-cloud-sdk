@@ -14,7 +14,6 @@
 """Utilities for Cloud Pub/Sub Subscriptions API."""
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import exceptions
 
@@ -178,19 +177,22 @@ class SubscriptionsClient(object):
         subscription=subscription_ref.RelativeName())
     return self._service.ModifyPushConfig(mod_req)
 
-  def Pull(self, subscription_ref, max_messages):
+  def Pull(self, subscription_ref, max_messages, return_immediately=True):
     """Pulls one or more messages from a Subscription.
 
     Args:
       subscription_ref (Resource): Resource reference for subscription to be
         pulled from.
       max_messages (int): The maximum number of messages to retrieve.
+      return_immediately (bool): Whether or not to return immediately without
+        waiting for a new message for a bounded amount of time if there is
+        nothing to pull right now.
     Returns:
       PullResponse: proto containing the received messages.
     """
     pull_req = self.messages.PubsubProjectsSubscriptionsPullRequest(
         pullRequest=self.messages.PullRequest(
-            maxMessages=max_messages, returnImmediately=True),
+            maxMessages=max_messages, returnImmediately=return_immediately),
         subscription=subscription_ref.RelativeName())
     return self._service.Pull(pull_req)
 
@@ -335,4 +337,3 @@ class SubscriptionsClient(object):
     policy = self.GetIamPolicy(subscription_ref)
     iam_util.RemoveBindingFromIamPolicy(policy, member, role)
     return self.SetIamPolicy(subscription_ref, policy)
-

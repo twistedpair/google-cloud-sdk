@@ -335,7 +335,7 @@ task after a fix has been made or to manually force a task to be
 dispatched now.
 
 When this method is called, Cloud Tasks will dispatch the task to its
-target, even if the queue is Queue.QueueState.PAUSED.
+target, even if the queue is Queue.State.PAUSED.
 
 The dispatched task is returned. That is, the task that is returned
 contains the Task.task_status after the task is dispatched but
@@ -593,8 +593,8 @@ If a queue is paused then the system will stop executing the
 tasks in the queue until it is resumed via
 CloudTasks.ResumeQueue. Tasks can still be added when the
 queue is paused. The state of the queue is stored in
-Queue.queue_state; if paused it will be set to
-Queue.QueueState.PAUSED.
+Queue.state; if paused it will be set to
+Queue.State.PAUSED.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesPauseRequest) input message
@@ -656,9 +656,9 @@ might be dispatched before the purge takes effect. A purge is irreversible.
       """Resume a queue.
 
 This method resumes a queue after it has been
-Queue.QueueState.PAUSED or Queue.QueueState.DISABLED. The state of
-a queue is stored in Queue.queue_state; after calling this method it
-will be set to Queue.QueueState.RUNNING.
+Queue.State.PAUSED or Queue.State.DISABLED. The state of
+a queue is stored in Queue.state; after calling this method it
+will be set to Queue.State.RUNNING.
 
 WARNING: Resuming many high-QPS queues at the same time can
 lead to target overloading. If you are resuming high-QPS

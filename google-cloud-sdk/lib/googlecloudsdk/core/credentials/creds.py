@@ -13,6 +13,8 @@
 # limitations under the License.
 
 """Utilities to manage credentials."""
+# Pytype fails to analyze this file.
+# type: ignore
 
 import abc
 import base64
@@ -392,6 +394,7 @@ class CredentialType(enum.Enum):
 
   @staticmethod
   def FromCredentials(creds):
+    # type: (...) -> CredentialType
     if isinstance(creds, c_devshell.DevshellCredentials):
       return CredentialType.DEVSHELL
     if isinstance(creds, oauth2client_gce.AppAssertionCredentials):

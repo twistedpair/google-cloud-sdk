@@ -35,7 +35,6 @@ class BioV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
     self.projects_operations = self.ProjectsOperationsService(self)
-    self.projects_pipelines = self.ProjectsPipelinesService(self)
     self.projects = self.ProjectsService(self)
 
   class ProjectsOperationsService(base_api.BaseApiService):
@@ -146,42 +145,6 @@ is the parent resource, without the operations collection id.
         request_field='',
         request_type_name=u'BioProjectsOperationsListRequest',
         response_type_name=u'ListOperationsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsPipelinesService(base_api.BaseApiService):
-    """Service class for the projects_pipelines resource."""
-
-    _NAME = u'projects_pipelines'
-
-    def __init__(self, client):
-      super(BioV1.ProjectsPipelinesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def RunDeepVariantV1alpha(self, request, global_params=None):
-      """Run a DeepVariant pipeline.
-
-      Args:
-        request: (BioProjectsPipelinesRunDeepVariantV1alphaRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('RunDeepVariantV1alpha')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    RunDeepVariantV1alpha.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'bio.projects.pipelines.runDeepVariantV1alpha',
-        ordered_params=[u'projectId'],
-        path_params=[u'projectId'],
-        query_params=[],
-        relative_path=u'v1/projects/{projectId}/pipelines:runDeepVariantV1alpha',
-        request_field=u'runDeepVariantV1alphaRequest',
-        request_type_name=u'BioProjectsPipelinesRunDeepVariantV1alphaRequest',
-        response_type_name=u'Operation',
         supports_download=False,
     )
 

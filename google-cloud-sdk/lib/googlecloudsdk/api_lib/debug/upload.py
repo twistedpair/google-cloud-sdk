@@ -109,11 +109,9 @@ class UploadManager(object):
                         'repoName': UPLOAD_REPO_NAME
                     }
                 },
-                'revision': {
-                    'aliasContext': {
-                        'kind': 'MOVABLE',
-                        'name': branch
-                    }
+                'aliasContext': {
+                    'kind': 'MOVABLE',
+                    'name': branch
                 }
             }
         },

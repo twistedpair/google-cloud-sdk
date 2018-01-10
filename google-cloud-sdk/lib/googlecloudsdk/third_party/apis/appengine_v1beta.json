@@ -486,11 +486,18 @@
           "type": "string"
         },
         "network": {
-          "description": "Extra network settings. Only applicable for App Engine flexible environment versions.",
+          "description": "Extra network settings. Only applicable in the App Engine flexible environment.",
           "$ref": "Network"
         },
+        "zones": {
+          "description": "The choice of gce zones to use for this App Engine Flexible version.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "resources": {
-          "description": "Machine resources for this version. Only applicable for VM runtimes.",
+          "description": "Machine resources for this version. Only applicable in the App Engine flexible environment.",
           "$ref": "Resources"
         },
         "runtime": {
@@ -540,7 +547,7 @@
           "format": "google-datetime"
         },
         "diskUsageBytes": {
-          "description": "Total size in bytes of all the files that are included in this version and curerntly hosted on the App Engine disk.@OutputOnly",
+          "description": "Total size in bytes of all the files that are included in this version and currently hosted on the App Engine disk.@OutputOnly",
           "type": "string",
           "format": "int64"
         },
@@ -586,7 +593,7 @@
           "format": "google-duration"
         },
         "healthCheck": {
-          "description": "Configures health checking for VM instances. Unhealthy instances are stopped and replaced with new instances. Only applicable for VM runtimes.Only returned in GET requests if view=FULL is set.",
+          "description": "Configures health checking for VM instances. Unhealthy instances are stopped and replaced with new instances. Only applicable in the App Engine flexible environment.Only returned in GET requests if view=FULL is set.",
           "$ref": "HealthCheck"
         },
         "readinessCheck": {
@@ -621,7 +628,7 @@
       "type": "object",
       "properties": {
         "coolDownPeriod": {
-          "description": "Amount of time that the Autoscaler (https:\/\/cloud.google.com\/compute\/docs\/autoscaler\/) should wait between changes to the number of virtual machines. Only applicable for VM runtimes.",
+          "description": "Amount of time that the Autoscaler (https:\/\/cloud.google.com\/compute\/docs\/autoscaler\/) should wait between changes to the number of virtual machines. Only applicable in the App Engine flexible environment.",
           "type": "string",
           "format": "google-duration"
         },
@@ -701,7 +708,7 @@
     },
     "RequestUtilization": {
       "id": "RequestUtilization",
-      "description": "Target scaling by request utilization. Only applicable for VM runtimes.",
+      "description": "Target scaling by request utilization. Only applicable in the App Engine flexible environment.",
       "type": "object",
       "properties": {
         "targetRequestCountPerSecond": {
@@ -718,7 +725,7 @@
     },
     "DiskUtilization": {
       "id": "DiskUtilization",
-      "description": "Target scaling by disk usage. Only applicable for VM runtimes.",
+      "description": "Target scaling by disk usage. Only applicable in the App Engine flexible environment.",
       "type": "object",
       "properties": {
         "targetWriteBytesPerSecond": {
@@ -745,7 +752,7 @@
     },
     "NetworkUtilization": {
       "id": "NetworkUtilization",
-      "description": "Target scaling by network usage. Only applicable for VM runtimes.",
+      "description": "Target scaling by network usage. Only applicable in the App Engine flexible environment.",
       "type": "object",
       "properties": {
         "targetSentBytesPerSecond": {
@@ -786,12 +793,12 @@
           "format": "double"
         },
         "minInstances": {
-          "description": "Minimum number of instances for an app version. Set to a non-positive value (0 by convention) to disable min_instances configuration.",
+          "description": "Minimum number of instances for an app version. Set to zero to disable min_instances configuration.",
           "type": "integer",
           "format": "int32"
         },
         "maxInstances": {
-          "description": "Maximum number of instances for an app version. Set to a non-positive value (0 by convention) to disable max_instances configuration.",
+          "description": "Maximum number of instances for an app version. Set to zero to disable max_instances configuration.",
           "type": "integer",
           "format": "int32"
         }
@@ -828,18 +835,18 @@
     },
     "Network": {
       "id": "Network",
-      "description": "Extra network settings. Only applicable for App Engine flexible environment versions",
+      "description": "Extra network settings. Only applicable in the App Engine flexible environment.",
       "type": "object",
       "properties": {
         "forwardedPorts": {
-          "description": "List of ports, or port pairs, to forward from the virtual machine to the application container. Only applicable for App Engine flexible environment versions.",
+          "description": "List of ports, or port pairs, to forward from the virtual machine to the application container. Only applicable in the App Engine flexible environment.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "instanceTag": {
-          "description": "Tag to apply to the VM instance during creation. Only applicable for for App Engine flexible environment versions.",
+          "description": "Tag to apply to the VM instance during creation. for Only applicable in the App Engine flexible environment.",
           "type": "string"
         },
         "name": {
@@ -883,7 +890,7 @@
     },
     "Volume": {
       "id": "Volume",
-      "description": "Volumes mounted within the app container. Only applicable for VM runtimes.",
+      "description": "Volumes mounted within the app container. Only applicable in the App Engine flexible environment.",
       "type": "object",
       "properties": {
         "name": {

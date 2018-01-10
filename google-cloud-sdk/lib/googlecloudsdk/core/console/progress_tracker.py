@@ -224,10 +224,10 @@ class CompletionProgressTracker(object):
     self._tick_delay = tick_delay
     self.__autotick = autotick
     self._background_ttl = background_ttl
+    self._ticks = 0
 
   def __enter__(self):
     if self._autotick:
-      self._ticks = 0
       self._old_handler = signal.signal(signal.SIGVTALRM, self._Spin)
       self._old_itimer = signal.setitimer(
           signal.ITIMER_VIRTUAL, self._tick_delay, self._tick_delay)
@@ -259,7 +259,7 @@ class CompletionProgressTracker(object):
       os._exit(1)  # pylint: disable=protected-access
     # Allow the child to run in the background for up to self._background_ttl
     # more seconds before being forcefully exited.
-    signal.signal(signal.SIGVTALRM, self._ExitBackground)
+    signal.signal(signal.SIGVTALRM, self._ExitBackground)  # pytype: disable=wrong-arg-types
     signal.setitimer(
         signal.ITIMER_VIRTUAL, self._background_ttl, self._background_ttl)
     # Suppress the explicit completion status channel.  stdout and stderr have

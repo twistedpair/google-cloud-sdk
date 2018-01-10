@@ -180,13 +180,13 @@ class Cache(metadata_table.CacheUsingMetadataTable):
     timeout: The default table timeout.
     version: A caller defined version string that must match the version string
       stored when the persistent object was created.
-    _lock: The cache lock object. None if no files have been comitted yet.
+    _lock: The cache lock object. None if no files have been committed yet.
     _lock_path: The cache lock meta file.
     _metadata: The metadata restricted _Table.
     _persistent: True if the persistent object has been committed at least once.
     _restricted: The set of restricted table names.
     _start: The cache instance start time.
-    _tables: The list of open table objects.
+    _tables: The map of open table objects.
   """
 
   def __init__(self, name, create=True, timeout=None, version=None):
@@ -195,7 +195,7 @@ class Cache(metadata_table.CacheUsingMetadataTable):
     lock_name = '__lock__'
     self._restricted = set([lock_name])
     self._tables = {}
-    self._metadata = None
+    self._metadata = None  # type: _Table
     self._start = persistent_cache_base.Now()
     self._lock_path = os.path.join(self.name, lock_name)
     self._lock = None
@@ -240,7 +240,7 @@ class Cache(metadata_table.CacheUsingMetadataTable):
       self._metadata._Commit()  # pylint: disable=protected-access
 
   def Close(self, commit=True):
-    """Closes the cache, optionally comitting any changes.
+    """Closes the cache, optionally committing any changes.
 
     Args:
       commit: Commits any changes before closing if True.

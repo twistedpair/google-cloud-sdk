@@ -297,6 +297,13 @@
             "PRODUCTION",
             "DEVELOPMENT"
           ]
+        },
+        "labels": {
+          "description": "Labels are a flexible and lightweight mechanism for organizing cloud\nresources into groups that reflect a customer's organizational needs and\ndeployment strategies. They can be used to filter resources and aggregate\nmetrics.\n\n* Label keys must be between 1 and 63 characters long and must conform to\n  the regular expression: `\\p{Ll}\\p{Lo}{0,62}`.\n* Label values must be between 0 and 63 characters long and must conform to\n  the regular expression: `[\\p{Ll}\\p{Lo}\\p{N}_-]{0,63}`.\n* No more than 64 labels can be associated with a given resource.\n* Keys and values must both be under 128 bytes.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -310,7 +317,7 @@
           "type": "string"
         },
         "location": {
-          "description": "(`CreationOnly`)\nThe location where this cluster's nodes and storage reside. For best\nperformance, clients should be located as close as possible to this cluster.\nCurrently only zones are supported, so values should be of the form\n`projects\/<project>\/locations\/<zone>`.",
+          "description": "(`CreationOnly`)\nThe location where this cluster's nodes and storage reside. For best\nperformance, clients should be located as close as possible to this\ncluster. Currently only zones are supported, so values should be of the\nform `projects\/<project>\/locations\/<zone>`.",
           "type": "string"
         },
         "state": {
@@ -619,6 +626,43 @@
           "description": "The time at which the operation failed or was completed successfully.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "UpdateInstanceMetadata": {
+      "id": "UpdateInstanceMetadata",
+      "description": "The metadata for the Operation returned by UpdateInstance.",
+      "type": "object",
+      "properties": {
+        "originalRequest": {
+          "description": "The request that prompted the initiation of this UpdateInstance operation.",
+          "$ref": "PartialUpdateInstanceRequest"
+        },
+        "requestTime": {
+          "description": "The time at which the original request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "finishTime": {
+          "description": "The time at which the operation failed or was completed successfully.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "PartialUpdateInstanceRequest": {
+      "id": "PartialUpdateInstanceRequest",
+      "description": "Request message for BigtableInstanceAdmin.PartialUpdateInstance.",
+      "type": "object",
+      "properties": {
+        "instance": {
+          "description": "The Instance which will (partially) replace the current value.",
+          "$ref": "Instance"
+        },
+        "updateMask": {
+          "description": "The subset of Instance fields which should be replaced.\nMust be explicitly set.",
+          "type": "string",
+          "format": "google-fieldmask"
         }
       }
     },
@@ -965,6 +1009,45 @@
               },
               "response": {
                 "$ref": "Instance"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/bigtable.admin",
+                "https://www.googleapis.com/auth/bigtable.admin.cluster",
+                "https://www.googleapis.com/auth/bigtable.admin.instance",
+                "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "partialUpdateInstance": {
+              "id": "bigtableadmin.projects.instances.partialUpdateInstance",
+              "path": "v2/{+name}",
+              "flatPath": "v2/projects/{projectsId}/instances/{instancesId}",
+              "httpMethod": "PATCH",
+              "description": "Partially updates an instance within a project.",
+              "parameters": {
+                "name": {
+                  "description": "(`OutputOnly`)\nThe unique name of the instance. Values are of the form\n`projects\/<project>\/instances\/a-z+[a-z0-9]`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "The subset of Instance fields which should be replaced.\nMust be explicitly set.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "Instance"
+              },
+              "response": {
+                "$ref": "Operation"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/bigtable.admin",

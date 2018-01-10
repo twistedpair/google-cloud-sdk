@@ -16,10 +16,10 @@
 
 from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import resource_arg_schema
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_property
 
@@ -81,16 +81,11 @@ class DeclarativeArgumentGenerator(object):
     Returns:
       The apitools message to be send to the method.
     """
-    static_fields = static_fields or {}
-    resource_method_params = resource_method_params or {}
     message_type = self.method.GetRequestType()
     message = message_type()
 
     # Insert static fields into message.
-    for field_path, value in static_fields.iteritems():
-      field = arg_utils.GetFieldFromMessage(message_type, field_path)
-      arg_utils.SetFieldInMessage(
-          message, field_path, arg_utils.ConvertValue(field, value))
+    arg_utils.ParseStaticFieldsIntoMessage(message, static_fields=static_fields)
 
     # Parse api Fields into message.
     self._ParseArguments(message, namespace)
@@ -99,25 +94,11 @@ class DeclarativeArgumentGenerator(object):
     if not ref:
       return message
 
-    # This only happens for non-list methods where the API method params don't
-    # match the resource parameters (basically only create methods). In this
-    # case, we re-parse the resource as its parent collection (to fill in the
-    # API parameters, and we insert the name of the resource itself into the
-    # correct position in the body of the request method.
-    if (self.method.resource_argument_collection.detailed_params !=
-        self.method.request_collection.detailed_params):
-      # Sets the name of the resource in the message object body.
-      arg_utils.SetFieldInMessage(
-          message, self.resource_arg.request_id_field, ref.Name())
-      # Create a reference for the parent resource to put in the API params.
-      ref = ref.Parent(
-          parent_collection=self.method.request_collection.full_name)
-
     # For each method path field, get the value from the resource reference.
-    relative_name = ref.RelativeName()
-    for p in self.method.params:
-      value = getattr(ref, resource_method_params.get(p, p), relative_name)
-      arg_utils.SetFieldInMessage(message, p, value)
+    arg_utils.ParseResourceIntoMessage(
+        ref, self.method, message,
+        resource_method_params=resource_method_params,
+        request_id_field=self.resource_arg.request_id_field)
     return message
 
   def GetRequestResourceRef(self, namespace):
@@ -365,6 +346,8 @@ class AutoArgumentGenerator(object):
         attributes = yaml_command_schema.Argument(name, name, field_help)
         arg = arg_utils.GenerateFlag(field, attributes, fix_bools=False,
                                      category='MESSAGE')
+        if not arg.kwargs.get('help'):
+          arg.kwargs['help'] = 'API doc needs help for field [{}].'.format(name)
         args.append(arg)
     return args
 

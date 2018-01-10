@@ -13,9 +13,9 @@
 # limitations under the License.
 """Shared resource flags for Cloud IoT commands."""
 
-from googlecloudsdk.calliope.concepts import concept_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
 

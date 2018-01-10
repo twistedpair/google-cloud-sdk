@@ -19,6 +19,7 @@ from googlecloudsdk.command_lib.logs import stream
 from googlecloudsdk.command_lib.ml_engine import flags
 from googlecloudsdk.command_lib.ml_engine import jobs_prep
 from googlecloudsdk.command_lib.ml_engine import log_utils
+from googlecloudsdk.command_lib.util import labels_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
@@ -107,11 +108,15 @@ def ScaleTierFlagMap():
   return _TRAINING_SCALE_TIER_MAPPER
 
 
-def Cancel(jobs_client, job):
-  job_ref = resources.REGISTRY.Parse(
+def _ParseJob(job):
+  return resources.REGISTRY.Parse(
       job,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection='ml.projects.jobs')
+
+
+def Cancel(jobs_client, job):
+  job_ref = _ParseJob(job)
   return jobs_client.Cancel(job_ref)
 
 
@@ -126,10 +131,7 @@ def PrintDescribeFollowUp(job_id):
 
 
 def Describe(jobs_client, job):
-  job_ref = resources.REGISTRY.Parse(
-      job,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection='ml.projects.jobs')
+  job_ref = _ParseJob(job)
   return jobs_client.Get(job_ref)
 
 
@@ -197,10 +199,14 @@ def GetStreamLogs(async_, stream_logs):
   return stream_logs
 
 
+def ParseCreateLabels(jobs_client, args):
+  return labels_util.ParseCreateArgs(args, jobs_client.job_class.LabelsValue)
+
+
 def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
                    packages=None, package_path=None, scale_tier=None,
                    config=None, module_name=None, runtime_version=None,
-                   stream_logs=None, user_args=None):
+                   stream_logs=None, user_args=None, labels=None):
   """Submit a training job."""
   region = properties.VALUES.compute.region.Get(required=True)
   staging_location = jobs_prep.GetStagingLocation(
@@ -228,7 +234,9 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
       job_dir=job_dir.ToUrl() if job_dir else None,
       scale_tier=scale_tier,
       user_args=user_args,
-      runtime_version=runtime_version)
+      runtime_version=runtime_version,
+      labels=labels
+  )
 
   project_ref = resources.REGISTRY.Parse(
       properties.VALUES.core.project.Get(required=True),
@@ -279,7 +287,7 @@ def SubmitPrediction(jobs_client, job,
                      model_dir=None, model=None, version=None,
                      input_paths=None, data_format=None, output_path=None,
                      region=None, runtime_version=None, max_worker_count=None,
-                     batch_size=None):
+                     batch_size=None, labels=None):
   """Submit a prediction job."""
   _ValidateSubmitPredictionArgs(model_dir, version)
 
@@ -297,7 +305,8 @@ def SubmitPrediction(jobs_client, job,
       region=region,
       runtime_version=runtime_version,
       max_worker_count=max_worker_count,
-      batch_size=batch_size)
+      batch_size=batch_size,
+      labels=labels)
   PrintSubmitFollowUp(job.jobId, print_follow_up_message=True)
   return jobs_client.Create(project_ref, job)
 
@@ -319,3 +328,27 @@ def GetSummaryFormat(job):
     else:
       return flags.GetPredictJobSummary()
   return 'yaml'  # Fallback to yaml on empty resource
+
+
+def ParseUpdateLabels(client, job_ref, args):
+  def GetLabels():
+    return client.Get(job_ref).labels
+  return labels_util.ProcessUpdateArgsLazy(
+      args, client.job_class.LabelsValue, GetLabels)
+
+
+def Update(jobs_client, operations_client, args):
+  job_ref = _ParseJob(args.job)
+  labels_update = ParseUpdateLabels(jobs_client, job_ref, args)
+  try:
+    op = jobs_client.Patch(job_ref, labels_update)
+  except jobs.NoFieldsSpecifiedError:
+    if not any(args.IsSpecified(arg) for arg in ('update_labels',
+                                                 'clear_labels',
+                                                 'remove_labels')):
+      raise
+    log.status.Print('No update to perform.')
+    return None
+  else:
+    return operations_client.WaitForOperation(
+        op, message='Updating job [{}]'.format(job_ref.Name())).response

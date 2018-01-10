@@ -117,7 +117,7 @@ def _DoParallelOperation(num_threads, tasks, method, label, show_progress_bar):
   pool = parallel.GetPool(num_threads)
   if show_progress_bar:
     progress_bar = console_io.TickableProgressBar(len(tasks), label)
-    context_mgr = contextlib.nested(progress_bar, pool)
+    context_mgr = contextlib.nested(progress_bar, pool)  # pytype: disable=wrong-arg-types
     callback = progress_bar.Tick
   else:
     context_mgr = pool

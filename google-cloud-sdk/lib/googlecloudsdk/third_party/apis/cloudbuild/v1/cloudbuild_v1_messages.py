@@ -31,6 +31,11 @@ class Build(_messages.Message):
 
   Messages:
     SubstitutionsValue: Substitutions data for Build resource.
+    TimingValue: Stores timing information for phases of the build. Valid keys
+      are:  * BUILD: time to execute all build steps * PUSH: time to push all
+      specified images. * FETCHSOURCE: time to fetch source.  If the build
+      does not specify source, or does not specify images, these keys will not
+      be included.
 
   Fields:
     buildTriggerId: The ID of the BuildTrigger that triggered this build, if
@@ -68,6 +73,11 @@ class Build(_messages.Message):
       second granularity. If this amount of time elapses, work on the build
       will cease and the build status will be TIMEOUT.  Default time is ten
       minutes.
+    timing: Stores timing information for phases of the build. Valid keys are:
+      * BUILD: time to execute all build steps * PUSH: time to push all
+      specified images. * FETCHSOURCE: time to fetch source.  If the build
+      does not specify source, or does not specify images, these keys will not
+      be included.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -117,6 +127,34 @@ class Build(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TimingValue(_messages.Message):
+    """Stores timing information for phases of the build. Valid keys are:  *
+    BUILD: time to execute all build steps * PUSH: time to push all specified
+    images. * FETCHSOURCE: time to fetch source.  If the build does not
+    specify source, or does not specify images, these keys will not be
+    included.
+
+    Messages:
+      AdditionalProperty: An additional property for a TimingValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TimingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a TimingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A TimeSpan attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('TimeSpan', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   buildTriggerId = _messages.StringField(1)
   createTime = _messages.StringField(2)
   finishTime = _messages.StringField(3)
@@ -137,6 +175,7 @@ class Build(_messages.Message):
   substitutions = _messages.MessageField('SubstitutionsValue', 18)
   tags = _messages.StringField(19, repeated=True)
   timeout = _messages.StringField(20)
+  timing = _messages.MessageField('TimingValue', 21)
 
 
 class BuildOperationMetadata(_messages.Message):
@@ -155,7 +194,8 @@ class BuildOptions(_messages.Message):
   Enums:
     LogStreamingOptionValueValuesEnum: LogStreamingOption to define build log
       streaming behavior to Google Cloud Storage.
-    MachineTypeValueValuesEnum: GCE VM size to run the build on.
+    MachineTypeValueValuesEnum: Compute Engine machine type on which to run
+      the build.
     RequestedVerifyOptionValueValuesEnum: Requested verifiability options.
     SourceProvenanceHashValueListEntryValuesEnum:
     SubstitutionOptionValueValuesEnum: SubstitutionOption to allow unmatch
@@ -171,7 +211,7 @@ class BuildOptions(_messages.Message):
       error.
     logStreamingOption: LogStreamingOption to define build log streaming
       behavior to Google Cloud Storage.
-    machineType: GCE VM size to run the build on.
+    machineType: Compute Engine machine type on which to run the build.
     requestedVerifyOption: Requested verifiability options.
     sourceProvenanceHash: Requested hash for SourceProvenance.
     substitutionOption: SubstitutionOption to allow unmatch substitutions.
@@ -193,12 +233,12 @@ class BuildOptions(_messages.Message):
     STREAM_OFF = 2
 
   class MachineTypeValueValuesEnum(_messages.Enum):
-    """GCE VM size to run the build on.
+    """Compute Engine machine type on which to run the build.
 
     Values:
       UNSPECIFIED: Standard machine type.
-      N1_HIGHCPU_8: Medium size.
-      N1_HIGHCPU_32: Large size.
+      N1_HIGHCPU_8: Highcpu machine with 8 CPUs.
+      N1_HIGHCPU_32: Highcpu machine with 32 CPUs.
     """
     UNSPECIFIED = 0
     N1_HIGHCPU_8 = 1
@@ -277,6 +317,7 @@ class BuildStep(_messages.Message):
     secretEnv: A list of environment variables which are encrypted using a
       Cloud KMS crypto key. These values must be specified in the build's
       secrets.
+    timing: Stores timing information for executing this build step.
     volumes: List of volumes to mount into the build step.  Each volume will
       be created as an empty volume prior to execution of the build step. Upon
       completion of the build, volumes and their contents will be discarded.
@@ -296,8 +337,9 @@ class BuildStep(_messages.Message):
   id = _messages.StringField(5)
   name = _messages.StringField(6)
   secretEnv = _messages.StringField(7, repeated=True)
-  volumes = _messages.MessageField('Volume', 8, repeated=True)
-  waitFor = _messages.StringField(9, repeated=True)
+  timing = _messages.MessageField('TimeSpan', 8)
+  volumes = _messages.MessageField('Volume', 9, repeated=True)
+  waitFor = _messages.StringField(10, repeated=True)
 
 
 class BuildTrigger(_messages.Message):
@@ -364,10 +406,12 @@ class BuiltImage(_messages.Message):
     digest: Docker Registry 2.0 digest.
     name: Name used to push the container image to Google Container Registry,
       as presented to `docker push`.
+    pushTiming: Stores timing information for pushing the specified image.
   """
 
   digest = _messages.StringField(1)
   name = _messages.StringField(2)
+  pushTiming = _messages.MessageField('TimeSpan', 3)
 
 
 class CancelBuildRequest(_messages.Message):
@@ -1080,6 +1124,18 @@ class StorageSource(_messages.Message):
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
+
+
+class TimeSpan(_messages.Message):
+  """Stores start and end times for a build execution phase.
+
+  Fields:
+    endTime: End of time span.
+    startTime: Start of time span.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class Volume(_messages.Message):

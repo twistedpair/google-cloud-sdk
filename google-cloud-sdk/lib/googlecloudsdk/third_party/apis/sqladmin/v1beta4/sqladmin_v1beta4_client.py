@@ -422,7 +422,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def DemoteMaster(self, request, global_params=None):
-      """Demotes the standalone instance to be a read replica Cloud SQL instance of an on-premises master.
+      """Reserved for future use.
 
       Args:
         request: (SqlInstancesDemoteMasterRequest) input message

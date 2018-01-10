@@ -34,7 +34,9 @@ OUTPUTS = 'outputs'
 class _BaseImport(object):
   """An imported DM config object."""
 
-  def __init__(self):
+  def __init__(self, full_path, name):
+    self.full_path = full_path
+    self.name = name
     self.content = None
     self.base_name = None
 
@@ -56,9 +58,8 @@ class _ImportSyntheticCompositeTypeFile(_BaseImport):
   """Performs common operations on an imported composite type."""
 
   def __init__(self, full_path, properties=None):
-    super(_ImportSyntheticCompositeTypeFile, self).__init__()
-    self.full_path = full_path
-    self.name = full_path.split(':')[1]
+    name = full_path.split(':')[1]
+    super(_ImportSyntheticCompositeTypeFile, self).__init__(full_path, name)
     self.properties = properties
 
   def GetBaseName(self):
@@ -86,9 +87,8 @@ class _ImportFile(_BaseImport):
   """Performs common operations on an imported file."""
 
   def __init__(self, full_path, name=None):
-    super(_ImportFile, self).__init__()
-    self.full_path = full_path
-    self.name = name if name else full_path
+    name = name if name else full_path
+    super(_ImportFile, self).__init__(full_path, name)
 
   def GetBaseName(self):
     if self.base_name is None:
@@ -119,9 +119,9 @@ class _ImportUrl(_BaseImport):
   """Class to perform operations on a URL import."""
 
   def __init__(self, full_path, name=None):
-    super(_ImportUrl, self).__init__()
-    self.full_path = self._ValidateUrl(full_path)
-    self.name = name if name else full_path
+    full_path = self._ValidateUrl(full_path)
+    name = name if name else full_path
+    super(_ImportUrl, self).__init__(full_path, name)
 
   def GetBaseName(self):
     if self.base_name is None:

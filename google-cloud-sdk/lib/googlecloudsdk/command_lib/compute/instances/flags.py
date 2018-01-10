@@ -858,7 +858,7 @@ def AddAddressArgs(parser,
         return network_tier
       else:
         raise exceptions.InvalidArgumentException(
-            'argument network-tier: invalid value')
+            '--network-interface', 'Invalid value for network-tier')
 
     multiple_network_interface_cards_spec['network-tier'] = ValidateNetworkTier
 
@@ -1336,6 +1336,14 @@ def AddTagsArgs(parser):
       identifying the instances to which network firewall rules will
       apply. See gcloud_compute_firewall-rules_create(1) for more
       details.
+
+      To list instances with their respective status and tags, run:
+
+        $ gcloud compute instances list --format='table(name,status,tags.list())'
+
+      To list instances tagged with a specific tag, `tag1`, run:
+
+        $ gcloud compute instances list --filter='tags:tag1'
       """)
 
 

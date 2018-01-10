@@ -133,6 +133,20 @@ class ListSubscriptionsResponse(_messages.Message):
   subscriptions = _messages.MessageField('Subscription', 2, repeated=True)
 
 
+class ListTopicSnapshotsResponse(_messages.Message):
+  """Response for the `ListTopicSnapshots` method.
+
+  Fields:
+    nextPageToken: If not empty, indicates that there may be more snapshots
+      that match the request; this value should be passed in a new
+      `ListTopicSnapshotsRequest` to get more snapshots.
+    snapshots: The names of the snapshots that match the request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  snapshots = _messages.StringField(2, repeated=True)
+
+
 class ListTopicSubscriptionsResponse(_messages.Message):
   """Response for the `ListTopicSubscriptions` method.
 
@@ -664,6 +678,23 @@ class PubsubProjectsTopicsSetIamPolicyRequest(_messages.Message):
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
+class PubsubProjectsTopicsSnapshotsListRequest(_messages.Message):
+  """A PubsubProjectsTopicsSnapshotsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of snapshot names to return.
+    pageToken: The value returned by the last `ListTopicSnapshotsResponse`;
+      indicates that this is a continuation of a prior `ListTopicSnapshots`
+      call, and that the system should return the next page of data.
+    topic: The name of the topic that snapshots are attached to. Format is
+      `projects/{project}/topics/{topic}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  topic = _messages.StringField(3, required=True)
+
+
 class PubsubProjectsTopicsSubscriptionsListRequest(_messages.Message):
   """A PubsubProjectsTopicsSubscriptionsListRequest object.
 
@@ -1163,9 +1194,12 @@ class UpdateTopicRequest(_messages.Message):
   """Request for the UpdateTopic method.
 
   Fields:
-    topic: The topic to update.
+    topic: The updated topic object.
     updateMask: Indicates which fields in the provided topic to update. Must
-      be specified and non-empty.
+      be specified and non-empty. Note that if `update_mask` contains
+      "message_storage_policy" then the new value will be determined based on
+      the policy configured at the project level. The `message_storage_policy`
+      must not be set in the `topic` provided above.
   """
 
   topic = _messages.MessageField('Topic', 1)

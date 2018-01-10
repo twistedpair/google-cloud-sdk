@@ -350,6 +350,32 @@ class StorageV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def LockRetentionPolicy(self, request, global_params=None):
+      """Locks retention policy on a bucket.
+
+      Args:
+        request: (StorageBucketsLockRetentionPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Bucket) The response message.
+      """
+      config = self.GetMethodConfig('LockRetentionPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LockRetentionPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'storage.buckets.lockRetentionPolicy',
+        ordered_params=[u'bucket', u'ifMetagenerationMatch'],
+        path_params=[u'bucket'],
+        query_params=[u'ifMetagenerationMatch', u'userProject'],
+        relative_path=u'b/{bucket}/lockRetentionPolicy',
+        request_field='',
+        request_type_name=u'StorageBucketsLockRetentionPolicyRequest',
+        response_type_name=u'Bucket',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       """Updates a bucket. Changes to the bucket will be readable immediately after writing, but configuration changes may take time to propagate. This method supports patch semantics.
 
@@ -954,21 +980,18 @@ class StorageV1(base_api.BaseApiClient):
           ),
           }
 
-    def Compose(self, request, global_params=None, download=None):
+    def Compose(self, request, global_params=None):
       """Concatenates a list of existing objects into a new object in the same bucket.
 
       Args:
         request: (StorageObjectsComposeRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-        download: (Download, default: None) If present, download
-            data from the request via this stream.
       Returns:
         (Object) The response message.
       """
       config = self.GetMethodConfig('Compose')
       return self._RunMethod(
-          config, request, global_params=global_params,
-          download=download)
+          config, request, global_params=global_params)
 
     Compose.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'POST',
@@ -980,24 +1003,21 @@ class StorageV1(base_api.BaseApiClient):
         request_field=u'composeRequest',
         request_type_name=u'StorageObjectsComposeRequest',
         response_type_name=u'Object',
-        supports_download=True,
+        supports_download=False,
     )
 
-    def Copy(self, request, global_params=None, download=None):
+    def Copy(self, request, global_params=None):
       """Copies a source object to a destination object. Optionally overrides metadata.
 
       Args:
         request: (StorageObjectsCopyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-        download: (Download, default: None) If present, download
-            data from the request via this stream.
       Returns:
         (Object) The response message.
       """
       config = self.GetMethodConfig('Copy')
       return self._RunMethod(
-          config, request, global_params=global_params,
-          download=download)
+          config, request, global_params=global_params)
 
     Copy.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'POST',
@@ -1009,7 +1029,7 @@ class StorageV1(base_api.BaseApiClient):
         request_field=u'object',
         request_type_name=u'StorageObjectsCopyRequest',
         response_type_name=u'Object',
-        supports_download=True,
+        supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
@@ -1093,7 +1113,7 @@ class StorageV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Insert(self, request, global_params=None, upload=None, download=None):
+    def Insert(self, request, global_params=None, upload=None):
       """Stores a new object and metadata.
 
       Args:
@@ -1101,8 +1121,6 @@ class StorageV1(base_api.BaseApiClient):
         global_params: (StandardQueryParameters, default: None) global arguments
         upload: (Upload, default: None) If present, upload
             this stream with the request.
-        download: (Download, default: None) If present, download
-            data from the request via this stream.
       Returns:
         (Object) The response message.
       """
@@ -1110,8 +1128,7 @@ class StorageV1(base_api.BaseApiClient):
       upload_config = self.GetUploadConfig('Insert')
       return self._RunMethod(
           config, request, global_params=global_params,
-          upload=upload, upload_config=upload_config,
-          download=download)
+          upload=upload, upload_config=upload_config)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'POST',
@@ -1123,7 +1140,7 @@ class StorageV1(base_api.BaseApiClient):
         request_field=u'object',
         request_type_name=u'StorageObjectsInsertRequest',
         response_type_name=u'Object',
-        supports_download=True,
+        supports_download=False,
     )
 
     def List(self, request, global_params=None):
@@ -1153,7 +1170,7 @@ class StorageV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an object's metadata. This method supports patch semantics.
+      """Patches an object's metadata.
 
       Args:
         request: (StorageObjectsPatchRequest) input message
@@ -1256,21 +1273,18 @@ class StorageV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Update(self, request, global_params=None, download=None):
+    def Update(self, request, global_params=None):
       """Updates an object's metadata.
 
       Args:
         request: (StorageObjectsUpdateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-        download: (Download, default: None) If present, download
-            data from the request via this stream.
       Returns:
         (Object) The response message.
       """
       config = self.GetMethodConfig('Update')
       return self._RunMethod(
-          config, request, global_params=global_params,
-          download=download)
+          config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'PUT',
@@ -1282,7 +1296,7 @@ class StorageV1(base_api.BaseApiClient):
         request_field=u'objectResource',
         request_type_name=u'StorageObjectsUpdateRequest',
         response_type_name=u'Object',
-        supports_download=True,
+        supports_download=False,
     )
 
     def WatchAll(self, request, global_params=None):

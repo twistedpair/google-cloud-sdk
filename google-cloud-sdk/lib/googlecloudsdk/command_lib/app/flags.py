@@ -45,7 +45,8 @@ IGNORE_CERTS_FLAG = base.Argument(
     '--ignore-bad-certs',
     action='store_true',
     default=False,
-    help=argparse.SUPPRESS)
+    hidden=True,
+    help='THIS ARGUMENT NEEDS HELP TEXT.')
 
 FIREWALL_PRIORITY_FLAG = base.Argument(
     'priority',
@@ -71,7 +72,8 @@ LOGS = base.Argument(
     metavar='APP_LOG',
     type=arg_parsers.ArgList(min_length=1))
 
-SERVER_FLAG = base.Argument('--server', help=argparse.SUPPRESS)
+SERVER_FLAG = base.Argument(
+    '--server', hidden=True, help='THIS ARGUMENT NEEDS HELP TEXT.')
 
 SERVICE = base.Argument(
     '--service', '-s', help='Limit to specific service.', required=False)
@@ -190,7 +192,8 @@ first to get one.
 
 DOCKER_BUILD_FLAG = base.Argument(
     '--docker-build',
-    help=argparse.SUPPRESS,
+    hidden=True,
+    help='THIS ARGUMENT NEEDS HELP TEXT.',
     type=ValidateDockerBuildFlag)
 
 

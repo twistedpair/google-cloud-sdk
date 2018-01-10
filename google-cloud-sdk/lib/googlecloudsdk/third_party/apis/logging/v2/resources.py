@@ -47,6 +47,15 @@ class Collections(enum.Enum):
       },
       [u'sinkName']
   )
+  EXCLUSIONS = (
+      'exclusions',
+      '{+name}',
+      {
+          '':
+              '{v2Id}/{v2Id1}/exclusions/{exclusionsId}',
+      },
+      [u'name']
+  )
   FOLDERS = (
       'folders',
       'folders/{foldersId}',
@@ -125,6 +134,15 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/sinks/{sinksId}',
+      },
+      [u'sinkName']
+  )
+  SINKS = (
+      'sinks',
+      '{+sinkName}',
+      {
+          '':
+              '{v2Id}/{v2Id1}/sinks/{sinksId}',
       },
       [u'sinkName']
   )

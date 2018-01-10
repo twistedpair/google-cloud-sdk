@@ -17,6 +17,7 @@
 from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.api_lib.service_management import enable_api
+from googlecloudsdk.api_lib.service_management import exceptions as sm_exceptions
 from googlecloudsdk.core import log
 
 
@@ -121,6 +122,15 @@ def DisplayProposedConfigDeployments(project, configs):
     log.status.Print(DEPLOY_CONFIG_MESSAGE_TEMPLATE.format(
         project=project, type=CONFIG_TYPES[c.config], descriptor=c.file))
 
-    if (c.name == yaml_parsing.ConfigYamlInfo.QUEUE and
-        enable_api.IsServiceEnabled(project, 'cloudtasks.googleapis.com')):
-      log.warn(QUEUE_TASKS_WARNING)
+    if c.name == yaml_parsing.ConfigYamlInfo.QUEUE:
+      # If useful, this logic can be broken out and moved to enable_api.py,
+      # under IsServiceMaybeEnabled(...) or similar.
+      try:
+        api_maybe_enabled = enable_api.IsServiceEnabled(
+            project, 'cloudtasks.googleapis.com')
+      except sm_exceptions.ListServicesPermissionDeniedException:
+        api_maybe_enabled = True  # We can't know, so presume it is enabled
+      if api_maybe_enabled:
+        # Display this warning with a false positive rate for when the Service
+        # Manangement API is not enabled or accessible.
+        log.warn(QUEUE_TASKS_WARNING)

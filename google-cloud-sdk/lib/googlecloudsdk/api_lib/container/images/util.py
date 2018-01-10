@@ -17,6 +17,7 @@ from contextlib import contextmanager
 
 import httplib
 
+# pytype: disable=import-error
 from containerregistry.client import docker_creds
 from containerregistry.client import docker_name
 # We use distinct versions of the library for v2 and v2.2 because
@@ -28,6 +29,7 @@ from containerregistry.client.v2 import docker_image as v2_image
 from containerregistry.client.v2_2 import docker_http as v2_2_docker_http
 from containerregistry.client.v2_2 import docker_image as v2_2_image
 from containerregistry.client.v2_2 import docker_image_list
+# pytype: enable=import-error
 from googlecloudsdk.api_lib.container.images import container_analysis_data_util
 from googlecloudsdk.api_lib.containeranalysis import util as containeranalysis_util
 from googlecloudsdk.api_lib.util import apis
@@ -266,7 +268,7 @@ def TransformManifests(
     for occ in occurrences.get(_ResourceUrl(repository, k), []):
       if occ.kind not in result:
         result[occ.kind] = []
-      result[occ.kind].append(occ)
+      result[occ.kind].append(occ)  # pytype: disable=attribute-error
 
     if show_occurrences and resource_urls:
       result['vuln_counts'] = {}
@@ -280,7 +282,7 @@ def TransformManifests(
       for severity_count in summary.counts:
         if severity_count.severity:
           result['vuln_counts'][str(severity_count.severity)] = (
-              severity_count.count)
+              severity_count.count)  # pytype: disable=attribute-error
 
     results.append(result)
   return results

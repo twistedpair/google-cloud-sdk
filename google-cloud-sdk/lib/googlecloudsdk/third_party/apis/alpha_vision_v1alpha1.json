@@ -350,6 +350,74 @@
         }
       }
     },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Contains metadata for the BatchAnnotateImages operation.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Current state of the batch operation.",
+          "enumDescriptions": [
+            "Invalid.",
+            "Request is received.",
+            "Request is actively being processed.",
+            "The batch processing is done.",
+            "The batch processing was cancelled."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATED",
+            "RUNNING",
+            "DONE",
+            "CANCELLED"
+          ]
+        },
+        "createTime": {
+          "description": "The time when the batch request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "The time when the operation result was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "AsyncBatchAnnotateImagesResponse": {
+      "id": "AsyncBatchAnnotateImagesResponse",
+      "description": "Response to an async batch image annotation request.",
+      "type": "object",
+      "properties": {
+        "outputConfig": {
+          "description": "The output config where result(s) are located.\nThis is the same location as was specified in the output_config, and is\nprovided for convenience.",
+          "$ref": "OutputConfig"
+        }
+      }
+    },
+    "OutputConfig": {
+      "id": "OutputConfig",
+      "description": "The desired output location and metadata.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "Required. The Google Cloud Storage location to write the output to.",
+          "$ref": "GcsDestination"
+        }
+      }
+    },
+    "GcsDestination": {
+      "id": "GcsDestination",
+      "description": "The Google Cloud Storage location where the output will be written to.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Google Cloud Storage URI where the results will be stored. Results will be\nin JSON format and preceded by its corresponding input URI. All the results\nwill be in this single file.",
+          "type": "string"
+        }
+      }
+    },
     "BatchOperationMetadata": {
       "id": "BatchOperationMetadata",
       "description": "Metadata for the batch operations such as the current state.\n\nThis is included in the `metadata` field of the `Operation` returned by the\n`GetOperation` call of the `google::longrunning::Operations` service.",

@@ -222,7 +222,7 @@
           "format": "google-duration"
         },
         "labels": {
-          "description": "Labels with user defined metadata.",
+          "description": "Labels with user-defined metadata. For more information, see\n[Labeling Keys](\/kms\/docs\/labeling-keys).",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -478,7 +478,6 @@
           "format": "byte"
         },
         "iamOwned": {
-
           "type": "boolean"
         }
       }
@@ -538,7 +537,6 @@
           "type": "string"
         },
         "exemptedMembers": {
-
           "type": "array",
           "items": {
             "type": "string"

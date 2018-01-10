@@ -294,7 +294,7 @@ class TokenRenderer(renderer.Renderer):
         if self._level >= len(self._indent):
           self._indent.append(self.Indent())
         self._indent[self._level].indent = (
-            self._indent[prev_level].indent + indent)
+            self._indent[prev_level].indent + indent)  # pytype: disable=wrong-arg-types
         if (self._level > 1 and
             self._indent[prev_level].hanging_indent ==
             self._indent[prev_level].indent):

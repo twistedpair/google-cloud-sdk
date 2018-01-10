@@ -689,8 +689,9 @@ class RuntimeConfig(_messages.Message):
     name: The resource name of a runtime config. The name must have the
       format:      projects/[PROJECT_ID]/configs/[CONFIG_NAME]  The
       `[PROJECT_ID]` must be a valid project ID, and `[CONFIG_NAME]` is an
-      arbitrary name that matches RFC 1035 segment specification. The length
-      of `[CONFIG_NAME]` must be less than 64 bytes.  You pick the
+      arbitrary name that matches the `[0-9A-
+      Za-z](?:[_.A-Za-z0-9-]{0,62}[_.A-Za-z0-9])?` regular expression. The
+      length of `[CONFIG_NAME]` must be less than 64 characters.  You pick the
       RuntimeConfig resource name, but the server will validate that the name
       adheres to this format. After you create the resource, you cannot change
       the resource's name.
@@ -1218,9 +1219,10 @@ class Variable(_messages.Message):
       separators and are not part of the `[VARIABLE_NAME]` itself, so
       `[VARIABLE_NAME]` must contain at least one non-slash character.
       Multiple slashes are coalesced into single slash character. Each path
-      segment should follow RFC 1035 segment specification. The length of a
-      `[VARIABLE_NAME]` must be less than 256 bytes.  Once you create a
-      variable, you cannot change the variable name.
+      segment should match [0-9A-Za-z](?:[_.A-Za-z0-9-]{0,62}[_.A-Za-z0-9])?
+      regular expression. The length of a `[VARIABLE_NAME]` must be less than
+      256 characters.  Once you create a variable, you cannot change the
+      variable name.
     state: [Ouput only] The current state of the variable. The variable state
       indicates the outcome of the `variables().watch` call and is visible
       through the `get` and `list` calls.

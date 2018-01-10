@@ -15,7 +15,6 @@
 """The Calliope command help document markdown generator."""
 
 import abc
-import argparse
 import re
 import StringIO
 import textwrap
@@ -198,13 +197,15 @@ class MarkdownGenerator(object):
     """
     self._command_path = command_path
     self._command_name = ' '.join(self._command_path)
+    self._subcommands = None  # type: dict
+    self._subgroups = None  # type: dict
     self._top = self._command_path[0] if self._command_path else ''
     self._buf = StringIO.StringIO()
     self._out = self._buf.write
     self._capsule = ''
     self._docstring = ''
     self._final_sections = ['EXAMPLES', 'SEE ALSO']
-    self._arg_sections = None
+    self._arg_sections = None  # type: list
     self._sections = {}
     self._file_name = '_'.join(self._command_path)
     self._global_flags = set()
@@ -409,9 +410,11 @@ class MarkdownGenerator(object):
 
   def _PrintArgDefinition(self, arg, depth=0):
     """Prints a positional or flag arg definition list item at depth."""
-    self._out(u'\n{usage}{depth}\n'.format(
-        usage=usage_text.GetArgUsage(arg, definition=True, markdown=True),
-        depth=':' * (depth + 2)))
+    usage = usage_text.GetArgUsage(arg, definition=True, markdown=True)
+    if not usage:
+      return
+    self._out(u'\n{usage}{depth}\n'.format(usage=usage,
+                                           depth=':' * (depth + 2)))
     if arg.is_required and depth:
       modal = (' This {arg_type} must be specified if any of the other '
                'arguments in this group are specified.').format(
@@ -440,7 +443,7 @@ class MarkdownGenerator(object):
       elif arg.is_required:
         heading.append('At least one of these must be specified:')
     for a in args:
-      if a.is_hidden or a.help == argparse.SUPPRESS:
+      if a.is_hidden:
         continue
       if heading:
         self._out('\n{0} {1}\n\n'.format(':' * (depth + 2), ' '.join(heading)))
@@ -840,8 +843,6 @@ class CommandMarkdownGenerator(MarkdownGenerator):
     command.LoadAllSubElements()
     # pylint: disable=protected-access
     self._root_command = command._TopCLIElement()
-    self._subcommands = command.GetSubCommandHelps()
-    self._subgroups = command.GetSubGroupHelps()
     super(CommandMarkdownGenerator, self).__init__(
         command.GetPath(),
         command.ReleaseTrack(),

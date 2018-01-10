@@ -63,7 +63,7 @@ def SocketConnResetErrno():
   """The errno value for a socket connection reset error."""
   current_os = platforms.OperatingSystem.Current()
   if current_os == platforms.OperatingSystem.WINDOWS:
-    return errno.WSAECONNRESET
+    return errno.WSAECONNRESET  # pytype: disable=module-attr
   return errno.ECONNRESET
 
 
@@ -71,7 +71,7 @@ def SocketConnRefusedErrno():
   """The errno value for a socket connection refused error."""
   current_os = platforms.OperatingSystem.Current()
   if current_os == platforms.OperatingSystem.WINDOWS:
-    return errno.WSAECONNREFUSED
+    return errno.WSAECONNREFUSED  # pytype: disable=module-attr
   return errno.ECONNREFUSED
 
 
@@ -168,7 +168,9 @@ class Broker(object):
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE,
                                        **popen_args)
+      # pytype: disable=wrong-arg-types
       self._comm_thread = threading.Thread(target=self._process.communicate)
+      # pytype: enable=wrong-arg-types
       self._comm_thread.start()
     else:
       self._process = subprocess.Popen(args, **popen_args)

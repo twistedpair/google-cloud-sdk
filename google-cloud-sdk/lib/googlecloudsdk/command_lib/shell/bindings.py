@@ -49,7 +49,8 @@ class _KeyBinding(object):
 
   def GetName(self):
     """Returns the binding display name."""
-    return re.sub('.*<(.*)>.*', r'\1', str(self.key)).replace('C-', 'ctrl-')
+    return re.sub('.*<(.*)>.*', r'\1',
+                  str(self.key)).replace('C-', 'ctrl-')  # pytype: disable=wrong-arg-types
 
   def GetLabel(self, markdown=False):
     """Returns the key binding display label containing the name and value."""

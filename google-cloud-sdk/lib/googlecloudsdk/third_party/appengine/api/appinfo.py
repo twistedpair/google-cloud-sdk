@@ -234,6 +234,7 @@ MANUAL_SCALING = 'manual_scaling'
 BASIC_SCALING = 'basic_scaling'
 VM = 'vm'
 VM_SETTINGS = 'vm_settings'
+ZONES = 'zones'
 BETA_SETTINGS = 'beta_settings'
 VM_HEALTH_CHECK = 'vm_health_check'
 HEALTH_CHECK = 'health_check'
@@ -625,8 +626,7 @@ _SUPPORTED_LIBRARIES = [
         'http://pypi.python.org/pypi/setuptools',
         'A library that provides package and module discovery capabilities.',
         ['0.6c11', '36.6.0'],
-        latest_version='0.6c11',
-        hidden_versions=['36.6.0'],
+        latest_version='36.6.0',
         ),
     _VersionedLibrary(
         'six',
@@ -641,6 +641,7 @@ _SUPPORTED_LIBRARIES = [
         'The SSL socket wrapper built-in module.',
         ['2.7', '2.7.11'],
         latest_version='2.7.11',
+        deprecated_versions=['2.7']
         ),
     _VersionedLibrary(
         'ujson',
@@ -701,7 +702,7 @@ REQUIRED_LIBRARIES = {
     ('protobuf', 'latest'): [('six', 'latest')],
     ('grpcio', '1.0.0'): [('protobuf', '3.0.0'), ('enum', '0.9.23'),
                           ('futures', '3.0.5'), ('six', '1.9.0'),
-                          ('setuptools', '0.6c11')],
+                          ('setuptools', '36.6.0')],
     ('grpcio', 'latest'): [('protobuf', 'latest'), ('enum', 'latest'),
                            ('futures', 'latest'), ('six', 'latest'),
                            ('setuptools', 'latest')]
@@ -2161,9 +2162,10 @@ class AppInfoExternal(validation.Validated):
       APPLICATION: validation.Optional(APPLICATION_RE_STRING),
       # An alias for `APPLICATION`.
       PROJECT: validation.Optional(APPLICATION_RE_STRING),
-      MODULE: validation.Optional(MODULE_ID_RE_STRING),
-      # `service` will replace `module` soon
-      SERVICE: validation.Optional(MODULE_ID_RE_STRING),
+      SERVICE: validation.Preferred(MODULE,
+                                    validation.Optional(MODULE_ID_RE_STRING)),
+      MODULE: validation.Deprecated(SERVICE,
+                                    validation.Optional(MODULE_ID_RE_STRING)),
       VERSION: validation.Optional(MODULE_VERSION_ID_RE_STRING),
       RUNTIME: validation.Optional(RUNTIME_RE_STRING),
       # A new `api_version` requires a release of the `dev_appserver`, so it
@@ -2192,7 +2194,9 @@ class AppInfoExternal(validation.Validated):
       RESOURCES: validation.Optional(Resources),
       LIVENESS_CHECK: validation.Optional(LivenessCheck),
       READINESS_CHECK: validation.Optional(ReadinessCheck),
+      ZONES: validation.Optional(validation.Repeated(validation.TYPE_STR)),
       NETWORK: validation.Optional(Network),
+      ZONES: validation.Optional(validation.Repeated(validation.TYPE_STR)),
       BUILTINS: validation.Optional(validation.Repeated(BuiltinHandler)),
       INCLUDES: validation.Optional(validation.Type(list)),
       HANDLERS: validation.Optional(validation.Repeated(URLMap), default=[]),
@@ -2248,8 +2252,6 @@ class AppInfoExternal(validation.Validated):
           present.
       RuntimeDoesNotSupportLibraries: If the libraries clause is used for a
           runtime that does not support it, such as `python25`.
-      ModuleAndServiceDefined: If both `module` and `service` keywords are used.
-          Services were formerly known as modules.
     """
     super(AppInfoExternal, self).CheckInitialized()
     if self.runtime is None and not self.IsVm():
@@ -2565,17 +2567,6 @@ def LoadSingleAppInfo(app_info):
   elif appyaml.project:
     appyaml.application = appyaml.project
     appyaml.project = None
-
-  # Allow `service: name` as an alias for `module: name`. If found, we change
-  # the `service` field to `None`.
-  # TODO (b/63629223) This is breaking gcloud presubmit after being imported
-  # to third_party code base.
-  if appyaml.service and appyaml.module:
-    raise appinfo_errors.ModuleAndServiceDefined(
-        'Cannot define both "module" and "service" in configuration')
-  elif appyaml.service:
-    appyaml.module = appyaml.service
-    appyaml.service = None
 
   appyaml.NormalizeVmSettings()
   return appyaml

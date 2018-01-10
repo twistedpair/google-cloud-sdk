@@ -15,9 +15,14 @@
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 import yaml
+
+
+class NoFieldsSpecifiedError(exceptions.Error):
+  """Error indicating that no updates were requested in a Patch operation."""
 
 
 def GetMessagesModule(version='v1'):
@@ -78,6 +83,22 @@ class JobsClient(object):
     req = self.messages.MlProjectsJobsGetRequest(name=job_ref.RelativeName())
     return self.client.projects_jobs.Get(req)
 
+  def Patch(self, job_ref, labels_update):
+    """Update a job."""
+    job = self.job_class()
+    update_mask = []
+    if labels_update.needs_update:
+      job.labels = labels_update.labels
+      update_mask.append('labels')
+    if not update_mask:
+      raise NoFieldsSpecifiedError('No updates requested.')
+    req = self.messages.MlProjectsJobsPatchRequest(
+        name=job_ref.RelativeName(),
+        googleCloudMlV1Job=job,
+        updateMask=','.join(update_mask)
+    )
+    return self.client.projects_jobs.Patch(req)
+
   def BuildTrainingJob(self,
                        path=None,
                        module_name=None,
@@ -87,7 +108,8 @@ class JobsClient(object):
                        job_dir=None,
                        scale_tier=None,
                        user_args=None,
-                       runtime_version=None):
+                       runtime_version=None,
+                       labels=None):
     """Builds a Cloud ML Engine Job from a config file and/or flag values.
 
     Args:
@@ -105,6 +127,7 @@ class JobsClient(object):
         (overrides yaml file)
         runtime_version: the runtime version in which to run the job (overrides
           yaml file)
+        labels: Job.LabelsValue, the Cloud labels for the job
     Returns:
         A constructed Job object.
     """
@@ -118,6 +141,9 @@ class JobsClient(object):
 
     if job_name:
       job.jobId = job_name
+
+    if labels is not None:
+      job.labels = labels
 
     if not job.trainingInput:
       job.trainingInput = self.training_input_class()
@@ -147,7 +173,8 @@ class JobsClient(object):
                               region=None,
                               runtime_version=None,
                               max_worker_count=None,
-                              batch_size=None):
+                              batch_size=None,
+                              labels=None):
     """Builds a Cloud ML Engine Job for batch prediction from flag values.
 
     Args:
@@ -162,6 +189,7 @@ class JobsClient(object):
         runtime_version: the runtime version in which to run the job
         max_worker_count: int, the maximum number of workers to use
         batch_size: str, the number of records per batch sent to Tensorflow
+        labels: Job.LabelsValue, the Cloud labels for the job
     Returns:
         A constructed Job object.
     """
@@ -191,5 +219,6 @@ class JobsClient(object):
 
     return self.job_class(
         jobId=job_name,
-        predictionInput=prediction_input
+        predictionInput=prediction_input,
+        labels=labels
     )

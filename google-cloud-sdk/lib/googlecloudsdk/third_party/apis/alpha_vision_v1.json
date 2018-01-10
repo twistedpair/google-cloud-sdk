@@ -240,6 +240,10 @@
           "description": "The image to be processed.",
           "$ref": "Image"
         },
+        "file": {
+          "description": "The file to be processed. If both this field and `image` are specified,\n`image` is ignored. This cannot be set for calls to the synchronous\nBatchAnnotateImages method; an error will be returned.\n\nThis field should be set for input formats that may contain multiple\nimages.",
+          "$ref": "FileSource"
+        },
         "features": {
           "description": "Requested features.",
           "type": "array",
@@ -287,6 +291,21 @@
         },
         "imageUri": {
           "description": "Image URI which supports:\n1) Google Cloud Storage image URI, which must be in the following form:\n`gs:\/\/bucket_name\/object_name` (for details, see\n[Google Cloud Storage Request\nURIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris)).\nNOTE: Cloud Storage object versioning is not supported.\n2) Publicly accessible image HTTP\/HTTPS URL.\nThis is preferred over the legacy `gcs_image_uri` above. When both\n`gcs_image_uri` and `image_uri` are specified, `image_uri` takes\nprecedence.",
+          "type": "string"
+        }
+      }
+    },
+    "FileSource": {
+      "id": "FileSource",
+      "description": "Information identifying a file to process.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "The uri where the file can be found. Only plain GCS uris are supported for\nnow; web uris and wildcards are not supported.",
+          "type": "string"
+        },
+        "mimeType": {
+          "description": "The type of the file. Currently only \"application\/pdf\" and \"image\/tiff\" are\nsupported.",
           "type": "string"
         }
       }
@@ -593,6 +612,10 @@
         "error": {
           "description": "If set, represents the error message for the operation.\nNote that filled-in image annotations are guaranteed to be\ncorrect, even when `error` is set.",
           "$ref": "Status"
+        },
+        "context": {
+          "description": "If present, contextual information is needed to understand where this image\ncomes from.",
+          "$ref": "ImageAnnotationContext"
         }
       }
     },
@@ -1675,6 +1698,108 @@
         }
       }
     },
+    "ImageAnnotationContext": {
+      "id": "ImageAnnotationContext",
+      "description": "If an image was produced from a file (e.g. a PDF), this message gives\ninformation about the source of that image.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "The URI of the file used to produce the image.",
+          "type": "string"
+        },
+        "pageNumber": {
+          "description": "If the file was a PDF or TIFF, this field gives the page number within the\nfile used to produce the image.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "AsyncBatchAnnotateImagesRequest": {
+      "id": "AsyncBatchAnnotateImagesRequest",
+      "description": "Multiple image annotation requests are batched into a single service call.",
+      "type": "object",
+      "properties": {
+        "requests": {
+          "description": "Individual image annotation requests for this batch.",
+          "type": "array",
+          "items": {
+            "$ref": "AnnotateImageRequest"
+          }
+        },
+        "outputConfig": {
+          "description": "Required. The desired output location and metadata (e.g. format).",
+          "$ref": "OutputConfig"
+        }
+      }
+    },
+    "OutputConfig": {
+      "id": "OutputConfig",
+      "description": "The desired output location and metadata.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "Required. The Google Cloud Storage location to write the output to.",
+          "$ref": "GcsDestination"
+        }
+      }
+    },
+    "GcsDestination": {
+      "id": "GcsDestination",
+      "description": "The Google Cloud Storage location where the output will be written to.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Google Cloud Storage URI where the results will be stored. Results will be\nin JSON format and preceded by its corresponding input URI. All the results\nwill be in this single file.",
+          "type": "string"
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Contains metadata for the BatchAnnotateImages operation.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Current state of the batch operation.",
+          "enumDescriptions": [
+            "Invalid.",
+            "Request is received.",
+            "Request is actively being processed.",
+            "The batch processing is done.",
+            "The batch processing was cancelled."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATED",
+            "RUNNING",
+            "DONE",
+            "CANCELLED"
+          ]
+        },
+        "createTime": {
+          "description": "The time when the batch request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "The time when the operation result was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "AsyncBatchAnnotateImagesResponse": {
+      "id": "AsyncBatchAnnotateImagesResponse",
+      "description": "Response to an async batch image annotation request.",
+      "type": "object",
+      "properties": {
+        "outputConfig": {
+          "description": "The output config where result(s) are located.\nThis is the same location as was specified in the output_config, and is\nprovided for convenience.",
+          "$ref": "OutputConfig"
+        }
+      }
+    },
     "BatchOperationMetadata": {
       "id": "BatchOperationMetadata",
       "description": "Metadata for the batch operations such as the current state.\n\nThis is included in the `metadata` field of the `Operation` returned by the\n`GetOperation` call of the `google::longrunning::Operations` service.",
@@ -1928,6 +2053,27 @@
           },
           "response": {
             "$ref": "BatchAnnotateImagesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-vision"
+          ]
+        },
+        "asyncBatchAnnotate": {
+          "id": "alpha_vision.images.asyncBatchAnnotate",
+          "path": "v1/images:asyncBatchAnnotate",
+          "flatPath": "v1/images:asyncBatchAnnotate",
+          "httpMethod": "POST",
+          "description": "Run async image detection and annotation for a batch of images.\nProgress and results can be retrieved through the\n`google.longrunning.Operations` interface.\n`Operation.metadata` contains `OperationMetadata` (metadata).\n`Operation.response` contains `AsyncBatchAnnotateImagesResponse` (results).",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "AsyncBatchAnnotateImagesRequest"
+          },
+          "response": {
+            "$ref": "Operation"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",

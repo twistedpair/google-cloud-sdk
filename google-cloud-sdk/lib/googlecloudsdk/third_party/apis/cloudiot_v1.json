@@ -137,7 +137,7 @@
           "type": "string"
         },
         "eventNotificationConfigs": {
-          "description": "The configuration for notification of telemetry events received from the\ndevice. All telemetry events that were successfully published by the\ndevice and acknowledged by Cloud IoT Core are guaranteed to be\ndelivered to Cloud Pub\/Sub. Only the first configuration is used.",
+          "description": "The configuration for notification of telemetry events received from the\ndevice. All telemetry events that were successfully published by the\ndevice and acknowledged by Cloud IoT Core are guaranteed to be\ndelivered to Cloud Pub\/Sub. Only the first configuration is used. If you\ntry to publish a device telemetry event using MQTT without specifying a\nCloud Pub\/Sub topic for the device's registry, the connection closes\nautomatically. If you try to do so using an HTTP connection, an error\nis returned.",
           "type": "array",
           "items": {
             "$ref": "EventNotificationConfig"
@@ -629,7 +629,6 @@
           "format": "byte"
         },
         "iamOwned": {
-
           "type": "boolean"
         }
       }
@@ -689,7 +688,6 @@
           "type": "string"
         },
         "exemptedMembers": {
-
           "type": "array",
           "items": {
             "type": "string"
@@ -847,7 +845,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Only updates the `device_registry` fields indicated by this mask.\nThe field mask must not be empty, and it must not contain fields that\nare immutable or only set by the server.\nMutable top-level fields: `event_notification_config`, `mqtt_config`, and\n`state_notification_config`.",
+                      "description": "Only updates the `device_registry` fields indicated by this mask.\nThe field mask must not be empty, and it must not contain fields that\nare immutable or only set by the server.\nMutable top-level fields: `event_notification_config`, `http_config`,\n`mqtt_config`, and `state_notification_config`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1064,6 +1062,12 @@
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/devices\/[^\/]+$",
                           "type": "string"
+                        },
+                        "fieldMask": {
+                          "description": "The fields of the `Device` resource to be returned in the response. If the\nfield mask is unset or empty, all fields are returned.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
                         }
                       },
                       "parameterOrder": [

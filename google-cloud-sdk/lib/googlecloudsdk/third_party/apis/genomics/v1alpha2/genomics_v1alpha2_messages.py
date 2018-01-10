@@ -759,6 +759,16 @@ class PipelineResources(_messages.Message):
   """The system resources for the pipeline run.
 
   Fields:
+    acceleratorCount: Optional. The number of accelerators of the specified
+      type to attach. By specifying this parameter, you will download and
+      install the following third-party software onto your managed Compute
+      Engine instances: NVIDIA\xae Tesla\xae drivers and NVIDIA\xae CUDA toolkit.
+    acceleratorType: Optional. The Compute Engine defined accelerator type. By
+      specifying this parameter, you will download and install the following
+      third-party software onto your managed Compute Engine instances: NVIDIA\xae
+      Tesla\xae drivers and NVIDIA\xae CUDA toolkit. Please see
+      https://cloud.google.com/compute/docs/gpus/ for a list of available
+      accelerator types.
     bootDiskSizeGb: The size of the boot disk. Defaults to 10 (GB).
     disks: Disks to attach.
     minimumCpuCores: The minimum number of cores to use. Defaults to 1.
@@ -783,13 +793,15 @@ class PipelineResources(_messages.Message):
       creation will restricted. If empty, any zone may be chosen.
   """
 
-  bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  disks = _messages.MessageField('Disk', 2, repeated=True)
-  minimumCpuCores = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minimumRamGb = _messages.FloatField(4)
-  noAddress = _messages.BooleanField(5)
-  preemptible = _messages.BooleanField(6)
-  zones = _messages.StringField(7, repeated=True)
+  acceleratorCount = _messages.IntegerField(1)
+  acceleratorType = _messages.StringField(2)
+  bootDiskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  disks = _messages.MessageField('Disk', 4, repeated=True)
+  minimumCpuCores = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  minimumRamGb = _messages.FloatField(6)
+  noAddress = _messages.BooleanField(7)
+  preemptible = _messages.BooleanField(8)
+  zones = _messages.StringField(9, repeated=True)
 
 
 class RepeatedString(_messages.Message):

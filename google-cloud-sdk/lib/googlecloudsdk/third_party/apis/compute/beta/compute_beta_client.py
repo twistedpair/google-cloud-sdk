@@ -596,6 +596,32 @@ class ComputeBeta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AddSignedUrlKey(self, request, global_params=None):
+      """Adds the given Signed URL Key to the backend bucket.
+
+      Args:
+        request: (ComputeBackendBucketsAddSignedUrlKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddSignedUrlKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddSignedUrlKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.backendBuckets.addSignedUrlKey',
+        ordered_params=[u'project', u'backendBucket'],
+        path_params=[u'backendBucket', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}/addSignedUrlKey',
+        request_field=u'signedUrlKey',
+        request_type_name=u'ComputeBackendBucketsAddSignedUrlKeyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       """Deletes the specified BackendBucket resource.
 
@@ -618,6 +644,32 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}',
         request_field='',
         request_type_name=u'ComputeBackendBucketsDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def DeleteSignedUrlKey(self, request, global_params=None):
+      """Deletes the given Signed URL Key from the backend bucket.
+
+      Args:
+        request: (ComputeBackendBucketsDeleteSignedUrlKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteSignedUrlKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteSignedUrlKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.backendBuckets.deleteSignedUrlKey',
+        ordered_params=[u'project', u'backendBucket', u'keyName'],
+        path_params=[u'backendBucket', u'project'],
+        query_params=[u'keyName', u'requestId'],
+        relative_path=u'projects/{project}/global/backendBuckets/{backendBucket}/deleteSignedUrlKey',
+        request_field='',
+        request_type_name=u'ComputeBackendBucketsDeleteSignedUrlKeyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -762,6 +814,32 @@ class ComputeBeta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AddSignedUrlKey(self, request, global_params=None):
+      """Adds the given Signed URL Key to the specified backend service.
+
+      Args:
+        request: (ComputeBackendServicesAddSignedUrlKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddSignedUrlKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddSignedUrlKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.backendServices.addSignedUrlKey',
+        ordered_params=[u'project', u'backendService'],
+        path_params=[u'backendService', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/backendServices/{backendService}/addSignedUrlKey',
+        request_field=u'signedUrlKey',
+        request_type_name=u'ComputeBackendServicesAddSignedUrlKeyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def AggregatedList(self, request, global_params=None):
       """Retrieves the list of all BackendService resources, regional and global, available to the specified project.
 
@@ -810,6 +888,32 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path=u'projects/{project}/global/backendServices/{backendService}',
         request_field='',
         request_type_name=u'ComputeBackendServicesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def DeleteSignedUrlKey(self, request, global_params=None):
+      """Deletes the given Signed URL Key from the specified backend service.
+
+      Args:
+        request: (ComputeBackendServicesDeleteSignedUrlKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteSignedUrlKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteSignedUrlKey.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.backendServices.deleteSignedUrlKey',
+        ordered_params=[u'project', u'backendService', u'keyName'],
+        path_params=[u'backendService', u'project'],
+        query_params=[u'keyName', u'requestId'],
+        relative_path=u'projects/{project}/global/backendServices/{backendService}/deleteSignedUrlKey',
+        request_field='',
+        request_type_name=u'ComputeBackendServicesDeleteSignedUrlKeyRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

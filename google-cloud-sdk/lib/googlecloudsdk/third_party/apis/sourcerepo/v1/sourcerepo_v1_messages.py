@@ -163,7 +163,7 @@ class ListReposResponse(_messages.Message):
 
 class MirrorConfig(_messages.Message):
   """Configuration to automatically mirror a repository from another hosting
-  service, for example GitHub or BitBucket.
+  service, for example GitHub or Bitbucket.
 
   Fields:
     deployKeyId: ID of the SSH deploy key at the other hosting service.
@@ -226,12 +226,14 @@ class Repo(_messages.Message):
 
   Fields:
     mirrorConfig: How this repository mirrors a repository managed by another
-      service.
+      service. Read-only field.
     name: Resource name of the repository, of the form
       `projects/<project>/repos/<repo>`.  The repo name may contain slashes.
       eg, `projects/myproject/repos/name/with/slash`
-    size: The disk usage of the repo, in bytes. Only returned by GetRepo.
+    size: The disk usage of the repo, in bytes. Read-only field. Size is only
+      returned by GetRepo.
     url: URL to clone the repository from Google Cloud Source Repositories.
+      Read-only field.
   """
 
   mirrorConfig = _messages.MessageField('MirrorConfig', 1)

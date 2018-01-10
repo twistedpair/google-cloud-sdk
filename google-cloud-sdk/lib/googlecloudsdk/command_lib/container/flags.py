@@ -14,8 +14,6 @@
 
 """Flags and helpers for the container related commands."""
 
-import argparse
-
 from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.api_lib.container import util
@@ -124,7 +122,8 @@ The default Kubernetes version is available using the following command.
 
 def AddClusterVersionFlag(parser, suppressed=False, help=None):  # pylint: disable=redefined-builtin
   """Adds a --cluster-version flag to the given parser."""
-  help_text = argparse.SUPPRESS if suppressed else help or """\
+  if help is None:
+    help = """\
 The Kubernetes version to use for the master and nodes. Defaults to
 server-specified.
 
@@ -133,7 +132,7 @@ The default Kubernetes version is available using the following command.
   $ gcloud container get-server-config
 """
 
-  return parser.add_argument('--cluster-version', help=help_text)
+  return parser.add_argument('--cluster-version', help=help, hidden=suppressed)
 
 
 def AddClusterAutoscalingFlags(parser, update_group=None, hidden=False):
@@ -204,9 +203,9 @@ Cluster Autoscaler will be able to delete the node pool if it's unneeded.""",
       action='store_true')
 
 
-def AddLocalSSDFlag(parser, suppressed=False):
+def AddLocalSSDFlag(parser, suppressed=False, help_text=''):
   """Adds a --local-ssd-count flag to the given parser."""
-  help_text = argparse.SUPPRESS if suppressed else """\
+  help_text += """\
 The number of local SSD disks to provision on each node.
 
 Local SSDs have a fixed 375 GB capacity per device. The number of disks that
@@ -216,6 +215,7 @@ https://cloud.google.com/compute/docs/disks/local-ssd for more information."""
   parser.add_argument(
       '--local-ssd-count',
       help=help_text,
+      hidden=suppressed,
       type=int,
       default=0)
 
@@ -224,24 +224,27 @@ def AddAcceleratorArgs(parser):
   """Adds Accelerator-related args."""
   parser.add_argument(
       '--accelerator',
-      type=arg_parsers.ArgDict(spec={
-          'type': str,
-          'count': int,
-      }, required_keys=['type'], max_length=2),
+      type=arg_parsers.ArgDict(
+          spec={
+              'type': str,
+              'count': int,
+          },
+          required_keys=['type'],
+          max_length=2),
       metavar='type=TYPE,[count=COUNT]',
       help="""\
       Attaches accelerators (e.g. GPUs) to all nodes.
 
       *type*::: (Required) The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
-      of accelerator to attach to the instances. Use 'gcloud compute
-      accelerator-types list' to learn about all available accelerator types.
+      of accelerator to attach to the instances. Use ```gcloud compute
+      accelerator-types list``` to learn about all available accelerator types.
 
-      *count*::: (Optional) The number of pieces of the accelerator to attach to the
+      *count*::: (Optional) The number of accelerators to attach to the
       instances. The default value is 1.
       """)
 
 
-def AddAutoprovisioningFlags(parser, update_group=None, hidden=False):
+def AddAutoprovisioningFlags(parser, hidden=False):
   """Adds node autoprovisioning related flags to parser.
 
   Autoprovisioning related flags are: --enable-autoprovisioning
@@ -249,15 +252,13 @@ def AddAutoprovisioningFlags(parser, update_group=None, hidden=False):
 
   Args:
     parser: A given parser.
-    update_group: An optional group of mutually exclusive flag options
-        to which an --enable-autoprovisioning flag is added.
     hidden: If true, suppress help text for added options.
   """
 
   group = parser.add_argument_group('Node autoprovisioning')
-  autoprovisioning_group = group if update_group is None else update_group
-  autoprovisioning_group.add_argument(
+  group.add_argument(
       '--enable-autoprovisioning',
+      required=True,
       default=None,
       help="""\
 Enables  node autoprovisioning for a cluster.
@@ -298,6 +299,47 @@ Minimum memory in the cluster.
 Minimum number of gigabytes of memory to which the cluster can scale.""",
       hidden=hidden,
       type=int)
+  accelerator_group = group.add_argument_group('Arguments to set limits on '
+                                               'accelerators:')
+  accelerator_group.add_argument(
+      '--max-accelerator',
+      type=arg_parsers.ArgDict(spec={
+          'type': str,
+          'count': int,
+      }, required_keys=['type', 'count'], max_length=2),
+      required=True,
+      metavar='type=TYPE,count=COUNT',
+      hidden=hidden,
+      help="""\
+Sets maximum limit for a single type of accelerators (e.g. GPUs) in cluster. Defaults
+to 0 for all accelerator types if it isn't set.
+
+*type*::: (Required) The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
+of accelerator for which the limit is set. Use ```gcloud compute
+accelerator-types list``` to learn about all available accelerator types.
+
+*count*::: (Required) The maximum number of accelerators
+to which the cluster can be scaled.
+""")
+  accelerator_group.add_argument(
+      '--min-accelerator',
+      type=arg_parsers.ArgDict(spec={
+          'type': str,
+          'count': int,
+      }, required_keys=['type', 'count'], max_length=2),
+      metavar='type=TYPE,count=COUNT',
+      hidden=hidden,
+      help="""\
+Sets minimum limit for a single type of accelerators (e.g. GPUs) in cluster. Defaults
+to 0 for all accelerator types if it isn't set.
+
+*type*::: (Required) The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
+of accelerator for which the limit is set. Use ```gcloud compute
+accelerator-types list``` to learn about all available accelerator types.
+
+*count*::: (Required) The minimum number of accelerators
+to which the cluster can be scaled.
+""")
 
 
 def AddEnableBinAuthzFlag(parser, hidden=True):
@@ -308,7 +350,8 @@ def AddEnableBinAuthzFlag(parser, hidden=True):
       action='store_true',
       default=None,
       help=help_text,
-      hidden=hidden,)
+      hidden=hidden,
+  )
 
 
 def AddZoneFlag(parser):
@@ -316,7 +359,8 @@ def AddZoneFlag(parser):
   # TODO(b/18105938): Add zone prompting
   """Adds the --zone flag to the parser."""
   parser.add_argument(
-      '--zone', '-z',
+      '--zone',
+      '-z',
       help='The compute zone (e.g. us-central1-a) for the cluster',
       action=actions.StoreProperty(properties.VALUES.compute.zone))
 
@@ -325,7 +369,8 @@ def AddZoneAndRegionFlags(parser, region_hidden=False):
   """Adds the --zone and --region flags to the parser."""
   group = parser.add_mutually_exclusive_group()
   group.add_argument(
-      '--zone', '-z',
+      '--zone',
+      '-z',
       help='The compute zone (e.g. us-central1-a) for the cluster',
       action=actions.StoreProperty(properties.VALUES.compute.zone))
   group.add_argument(
@@ -345,7 +390,7 @@ def AddAsyncFlag(parser):
 
 def AddEnableKubernetesAlphaFlag(parser, suppressed=False):
   """Adds a --enable-kubernetes-alpha flag to parser."""
-  help_text = argparse.SUPPRESS if suppressed else """\
+  help_text = """\
 Enable Kubernetes alpha features on this cluster. Selecting this
 option will result in the cluster having all Kubernetes alpha API groups and
 features turned on. Cluster upgrades (both manual and automatic) will be
@@ -356,7 +401,8 @@ used for production workloads."""
   parser.add_argument(
       '--enable-kubernetes-alpha',
       action='store_true',
-      help=help_text)
+      help=help_text,
+      hidden=suppressed)
 
 
 def AddNodeLabelsFlag(parser, for_node_pool=False):
@@ -382,6 +428,60 @@ See http://kubernetes.io/docs/user-guide/node-selection/ for examples."""
       '--node-labels',
       metavar='NODE_LABEL',
       type=arg_parsers.ArgDict(),
+      help=help_text)
+
+
+def AddLocalSSDAndLocalSSDVolumeConfigsFlag(parser, for_node_pool=False,
+                                            suppressed=False):
+  """Adds the --local-ssd-count and --local-ssd-volumes flags to the parser."""
+  help_text = """\
+--local-ssd-volumes enables the ability to request local SSD with variable count, interfaces, and format\n
+--local-ssd-count is the equivalent of using --local-ssd-volumes with type=scsi,format=fs
+
+"""
+  group = parser.add_mutually_exclusive_group()
+  AddLocalSSDVolumeConfigsFlag(group, for_node_pool=for_node_pool,
+                               help_text=help_text)
+  AddLocalSSDFlag(group, suppressed=suppressed, help_text=help_text)
+
+
+def AddLocalSSDVolumeConfigsFlag(parser, for_node_pool=False, help_text=''):
+  """Adds a --local-ssd-volumes flag to the given parser."""
+  help_text += """\
+Adds the requested local SSDs on all nodes in default node-pool(s) in new cluster. Example:
+
+  $ {{command}} {0} --local-ssd-volumes count=2,type=nvme,format=fs
+
+'count' must be between 1-8\n
+'type' must be either scsi or nvme\n
+'format' must be either fs or block
+
+New nodes, including ones created by resize or recreate, will have these local SSDs.
+
+Local SSDs have a fixed 375 GB capacity per device. The number of disks that
+can be attached to an instance is limited by the maximum number of disks
+available on a machine, which differs by compute zone. See
+https://cloud.google.com/compute/docs/disks/local-ssd for more information.
+""".format('node-pool-1 --cluster=example-cluster' if for_node_pool else
+           'example_cluster')
+  count_validator = arg_parsers.RegexpValidator(
+      r'^[1-8]$', 'Count must be a number between 1 and 8')
+  type_validator = arg_parsers.RegexpValidator(
+      r'^(scsi|nvme)$', 'Type must be either "scsi" or "nvme"')
+  format_validator = arg_parsers.RegexpValidator(
+      r'^(fs|block)$', 'Format must be either "fs" or "block"')
+  parser.add_argument(
+      '--local-ssd-volumes',
+      metavar='[count=COUNT],[type=TYPE],[format=FORMAT]',
+      type=arg_parsers.ArgDict(
+          spec={
+              'count': count_validator,
+              'type': type_validator,
+              'format': format_validator,
+          },
+          required_keys=['count', 'type', 'format'],
+          max_length=3),
+      action='append',
       help=help_text)
 
 
@@ -413,22 +513,19 @@ Please see https://cloud.google.com/kubernetes-engine/docs/node-taints for more 
 
 def AddPreemptibleFlag(parser, for_node_pool=False, suppressed=False):
   """Adds a --preemptible flag to parser."""
-  if suppressed:
-    help_text = argparse.SUPPRESS
-  else:
-    if for_node_pool:
-      help_text = """\
+  if for_node_pool:
+    help_text = """\
 Create nodes using preemptible VM instances in the new nodepool.
 
   $ {command} node-pool-1 --cluster=example-cluster --preemptible
 """
-    else:
-      help_text = """\
+  else:
+    help_text = """\
 Create nodes using preemptible VM instances in the new cluster.
 
   $ {command} example-cluster --preemptible
 """
-    help_text += """
+  help_text += """
 New nodes, including ones created by resize or recreate, will use preemptible
 VM instances. See https://cloud.google.com/kubernetes-engine/docs/preemptible-vm
 for more information on how to use Preemptible VMs with Kubernetes Engine."""
@@ -436,7 +533,8 @@ for more information on how to use Preemptible VMs with Kubernetes Engine."""
   parser.add_argument(
       '--preemptible',
       action='store_true',
-      help=help_text)
+      help=help_text,
+      hidden=suppressed)
 
 
 def AddNodePoolNameArg(parser, help_text):
@@ -446,10 +544,7 @@ def AddNodePoolNameArg(parser, help_text):
     parser: A given parser.
     help_text: The help text describing the operation being performed.
   """
-  parser.add_argument(
-      'name',
-      metavar='NAME',
-      help=help_text)
+  parser.add_argument('name', metavar='NAME', help=help_text)
 
 
 def AddNodePoolClusterFlag(parser, help_text):
@@ -469,22 +564,19 @@ def AddNodePoolClusterFlag(parser, help_text):
 # currently has inadequate testing.
 def AddEnableAutoRepairFlag(parser, for_node_pool=False, suppressed=False):
   """Adds a --enable-autorepair flag to parser."""
-  if suppressed:
-    help_text = argparse.SUPPRESS
-  else:
-    if for_node_pool:
-      help_text = """\
+  if for_node_pool:
+    help_text = """\
 Sets autorepair feature for a node-pool.
 
   $ {command} node-pool-1 --cluster=example-cluster --enable-autorepair
 """
-    else:
-      help_text = """\
+  else:
+    help_text = """\
 Sets autorepair feature for a cluster's default node-pool(s).
 
   $ {command} example-cluster --enable-autorepair
 """
-    help_text += """
+  help_text += """
 See https://cloud.google.com/kubernetes-engine/docs/node-auto-repair for \
 more info."""
 
@@ -492,27 +584,25 @@ more info."""
       '--enable-autorepair',
       action='store_true',
       default=None,
-      help=help_text)
+      help=help_text,
+      hidden=suppressed)
 
 
 def AddEnableAutoUpgradeFlag(parser, for_node_pool=False, suppressed=False):
   """Adds a --enable-autoupgrade flag to parser."""
-  if suppressed:
-    help_text = argparse.SUPPRESS
-  else:
-    if for_node_pool:
-      help_text = """\
+  if for_node_pool:
+    help_text = """\
 Sets autoupgrade feature for a node-pool.
 
   $ {command} node-pool-1 --cluster=example-cluster --enable-autoupgrade
 """
-    else:
-      help_text = """\
+  else:
+    help_text = """\
 Sets autoupgrade feature for a cluster's default node-pool(s).
 
   $ {command} example-cluster --enable-autoupgrade
 """
-    help_text += """
+  help_text += """
 See https://cloud.google.com/kubernetes-engine/docs/node-managament for more \
 info."""
 
@@ -520,7 +610,8 @@ info."""
       '--enable-autoupgrade',
       action='store_true',
       default=None,
-      help=help_text)
+      help=help_text,
+      hidden=suppressed)
 
 
 def AddTagsFlag(parser, help_text):
@@ -696,8 +787,7 @@ The time corresponds to the UTC time zone, and must be in HH:MM format.
     description += unset_description
 
   type_ = arg_parsers.RegexpValidator(
-      r'^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$|^None$',
-      description)
+      r'^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$|^None$', description)
   parser.add_argument(
       '--maintenance-window',
       default=None,
@@ -714,7 +804,7 @@ def AddLabelsFlag(parser, suppressed=False):
     suppressed: Whether or not to suppress help text.
   """
 
-  help_text = argparse.SUPPRESS if suppressed else """\
+  help_text = """\
 Labels to apply to the Google Cloud resources in use by the Kubernetes Engine
 cluster. These are unrelated to Kubernetes labels.
 Example:
@@ -725,7 +815,8 @@ Example:
       '--labels',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
-      help=help_text)
+      help=help_text,
+      hidden=suppressed)
 
 
 def AddUpdateLabelsFlag(parser, suppressed=False):
@@ -736,7 +827,7 @@ def AddUpdateLabelsFlag(parser, suppressed=False):
     suppressed: Whether or not to suppress help text.
   """
 
-  help_text = argparse.SUPPRESS if suppressed else """\
+  help_text = """\
 Labels to apply to the Google Cloud resources in use by the Kubernetes Engine
 cluster. These are unrelated to Kubernetes labels.
 Example:
@@ -747,7 +838,7 @@ Example:
       '--update-labels',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
-      help=help_text)
+      help=help_text, hidden=suppressed)
 
 
 def AddRemoveLabelsFlag(parser, suppressed=False):
@@ -758,7 +849,7 @@ def AddRemoveLabelsFlag(parser, suppressed=False):
     suppressed: Whether or not to suppress help text.
   """
 
-  help_text = argparse.SUPPRESS if suppressed else """\
+  help_text = """\
 Labels to remove from the Google Cloud resources in use by the Kubernetes Engine
 cluster. These are unrelated to Kubernetes labels.
 Example:
@@ -769,7 +860,8 @@ Example:
       '--remove-labels',
       metavar='KEY',
       type=arg_parsers.ArgList(),
-      help=help_text)
+      help=help_text,
+      hidden=suppressed)
 
 
 def AddDiskTypeFlag(parser, suppressed=False):
@@ -779,12 +871,13 @@ def AddDiskTypeFlag(parser, suppressed=False):
     parser: A given parser.
     suppressed: Whether or not to suppress help text.
   """
-  help_text = argparse.SUPPRESS if suppressed else """\
+  help_text = """\
 Type of the node VM boot disk.
 """
   parser.add_argument(
       '--disk-type',
       help=help_text,
+      hidden=suppressed,
       choices=['pd-standard', 'pd-ssd'])
 
 
@@ -923,10 +1016,7 @@ CPU platform selection is available only in selected zones.
 """
 
   parser.add_argument(
-      '--min-cpu-platform',
-      metavar='PLATFORM',
-      hidden=hidden,
-      help=help_text)
+      '--min-cpu-platform', metavar='PLATFORM', hidden=hidden, help=help_text)
 
 
 def AddWorkloadMetadataFromNodeFlag(parser, hidden=False):
@@ -956,9 +1046,13 @@ Sets the node metadata option for workload metadata configuration.
       help=help_text)
 
 
-def AddTagOrDigestPositional(parser, verb, repeated=True, tags_only=False,
-                             arg_name=None, metavar=None):
-  digest_str = '*.gcr.io/project_id/image_path@sha256:<digest> or'
+def AddTagOrDigestPositional(parser,
+                             verb,
+                             repeated=True,
+                             tags_only=False,
+                             arg_name=None,
+                             metavar=None):
+  digest_str = '*.gcr.io/PROJECT_ID/IMAGE_PATH@sha256:DIGEST or'
   if tags_only:
     digest_str = ''
 
@@ -972,15 +1066,15 @@ def AddTagOrDigestPositional(parser, verb, repeated=True, tags_only=False,
       nargs='+' if repeated else None,
       help=('The fully qualified name(s) of image(s) to {verb}. '
             'The name(s) should be formatted as {digest_str} '
-            '*.gcr.io/project_id/image_path[:<tag>].'.format(
+            '*.gcr.io/PROJECT_ID/IMAGE_PATH:TAG.'.format(
                 verb=verb, digest_str=digest_str)))
 
 
 def AddImagePositional(parser, verb):
   parser.add_argument(
       'image_name',
-      help=('The fully qualified image name of the image to {verb}. The name '
-            'format should be *.gcr.io/project_id/image_path. '.format(
+      help=('The name of the image to {verb}. The name format should be '
+            '*.gcr.io/PROJECT_ID/IMAGE_PATH[:TAG|@sha256:DIGEST]. '.format(
                 verb=verb)))
 
 
@@ -1020,21 +1114,38 @@ def AddLoggingServiceFlag(parser, hidden=False):
       '"none" (logs will not be exported from the cluster)')
 
 
-def AddNodeIdentityFlags(parser, example_target):
+def AddNodeIdentityFlags(parser, example_target, new_behavior=True):
   """Adds node identity flags to the given parser.
 
-  Node identity flags are --scopes, --[no-]enable-cloud-endpoints, and
-  --service-account.  --service-account is mutually exclusive with the other
-  two, which are not mutually exclusive with each other.
+  Node identity flags are --scopes, --[no-]enable-cloud-endpoints (deprecated),
+  and --service-account.  --service-account is mutually exclusive with the
+  others.  --[no-]enable-cloud-endpoints is not allowed if property
+  container/new_scopes_behavior is set to true, and is removed completely if
+  new_behavior is set to true.
 
   Args:
     parser: A given parser.
     example_target: the target for the command, e.g. mycluster.
+    new_behavior: Use new (alpha & beta) behavior: remove
+    --[no-]enable-cloud-endpoints.
   """
   node_identity_group = parser.add_group(
       mutex=True, help='Options to specify the node identity.')
   scopes_group = node_identity_group.add_group(help='Scopes options.')
 
+  if new_behavior:
+    track_help = """
+Unless container/new_scopes_behavior property is true, compute-rw and storage-ro
+are always added, even if not explicitly specified, and --enable-cloud-endpoints
+(by default) adds service-control and service-management scopes.
+
+If container/new_scopes_behavior property is true, none of the above scopes are
+added (though storage-ro, service-control, and service-management are all
+included in the default scopes.  In a future release, this will be the default
+behavior.
+"""
+  else:
+    track_help = ''
   scopes_group.add_argument(
       '--scopes',
       type=arg_parsers.ArgList(),
@@ -1044,17 +1155,14 @@ def AddNodeIdentityFlags(parser, example_target):
 Specifies scopes for the node instances. The project's default service account
 is used. Examples:
 
-  $ {{command}} {example_target} --scopes https://www.googleapis.com/auth/devstorage.read_only
+    $ {{command}} {example_target} --scopes=https://www.googleapis.com/auth/devstorage.read_only
 
-  $ {{command}} {example_target} --scopes bigquery,storage-rw,compute-ro
+    $ {{command}} {example_target} --scopes=bigquery,storage-rw,compute-ro
 
-Multiple SCOPEs can specified, separated by commas. The scopes necessary for the
-cluster to function properly (compute-rw, storage-ro), are always added, even if
-not explicitly specified.
-
---enable-cloud-endpoints by default adds service-control and service-management
-scopes.  To remove them, use --no-enable-cloud-endpoints.
-
+Multiple SCOPEs can specified, separated by commas.  logging-write and/or
+monitoring are added unless Cloud Logging and/or Cloud Monitoring are disabled
+(see --enable-cloud-logging and --enable-cloud-monitoring for more info).
+{track_help}
 SCOPE can be either the full URI of the scope or an alias. Available aliases
 are:
 
@@ -1068,7 +1176,8 @@ Alias,URI
 """.format(
     aliases=compute_constants.ScopesForHelp(),
     scope_deprecation_msg=compute_constants.DEPRECATED_SCOPES_MESSAGES,
-    example_target=example_target))
+    example_target=example_target,
+    track_help=track_help))
 
   cloud_endpoints_help_text = """\
 Automatically enable Google Cloud Endpoints to take advantage of API management
@@ -1077,17 +1186,27 @@ features by adding service-control and service-management scopes.
 If --no-enable-cloud-endpoints is set, remove service-control and
 service-management scopes, even if they are implicitly (via default) or
 explicitly set via --scopes.
+
+--[no-]enable-cloud-endpoints is not allowed if container/new_scopes_behavior
+property is set to true.
 """
   scopes_group.add_argument(
       '--enable-cloud-endpoints',
-      action='store_true',
+      action=actions.DeprecationAction(
+          '--[no-]enable-cloud-endpoints',
+          warn='Flag --[no-]enable-cloud-endpoints is deprecated and will be '
+          'removed in a future release.  Scopes necessary for Google Cloud '
+          'Endpoints are now included in the default set and may be '
+          'excluded using --scopes.',
+          removed=new_behavior,
+          action='store_true'),
       default=True,
       help=cloud_endpoints_help_text)
 
   sa_help_text = """\
 The Google Cloud Platform Service Account to be used by the node VMs.  If a \
 service account is specified, the cloud-platform scope is used. If no Service \
-Account is specified, the "default" service account is used.
+Account is specified, the project default service account is used.
 """
   node_identity_group.add_argument('--service-account', help=sa_help_text)
 
@@ -1105,6 +1224,20 @@ def AddClusterNodeIdentityFlags(parser):
   AddNodeIdentityFlags(parser, example_target='example-cluster')
 
 
+def AddDeprecatedClusterNodeIdentityFlags(parser):
+  """Adds node identity flags to the given parser.
+
+  This is a wrapper around AddNodeIdentityFlags for [alpha|beta] cluster, as it
+  provides example-cluster as the example and uses non-deprecated scopes
+  behavior.
+
+  Args:
+    parser: A given parser.
+  """
+  AddNodeIdentityFlags(
+      parser, example_target='example-cluster', new_behavior=False)
+
+
 def AddNodePoolNodeIdentityFlags(parser):
   """Adds node identity flags to the given parser.
 
@@ -1118,14 +1251,28 @@ def AddNodePoolNodeIdentityFlags(parser):
       parser, example_target='node-pool-1 --cluster=example-cluster')
 
 
+def AddDeprecatedNodePoolNodeIdentityFlags(parser):
+  """Adds node identity flags to the given parser.
+
+  This is a wrapper around AddNodeIdentityFlags for (GA) node-pools, as it
+  provides node-pool-1 as the example and uses non-deprecated scopes behavior.
+
+  Args:
+    parser: A given parser.
+  """
+  AddNodeIdentityFlags(
+      parser,
+      example_target='node-pool-1 --cluster=example-cluster',
+      new_behavior=False)
+
+
 def AddAddonsFlags(
     parser, hide_addons_flag=False, deprecate_disable_addons_flag=True):
   """Adds the --addons and --disable-addons flags to the parser."""
   group = parser.add_mutually_exclusive_group()
   group.add_argument(
       '--addons',
-      type=arg_parsers.ArgList(
-          choices=api_adapter.ADDONS_OPTIONS),
+      type=arg_parsers.ArgList(choices=api_adapter.ADDONS_OPTIONS),
       metavar='ADDON',
       hidden=hide_addons_flag,
       # TODO(b/65264376): Replace the doc link when a better doc is ready.
@@ -1143,8 +1290,7 @@ be enabled. The others will be disabled.
         'Use --addons instead.')
   group.add_argument(
       '--disable-addons',
-      type=arg_parsers.ArgList(
-          choices=api_adapter.ADDONS_OPTIONS),
+      type=arg_parsers.ArgList(choices=api_adapter.ADDONS_OPTIONS),
       metavar='DISABLE_ADDON',
       action=action,
       help='List of cluster addons to disable. Options are {0}'.format(

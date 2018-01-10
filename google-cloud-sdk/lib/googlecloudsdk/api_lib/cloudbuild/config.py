@@ -15,6 +15,7 @@
 
 """
 import os
+import re
 
 from apitools.base.protorpclite import messages as proto_messages
 from apitools.base.py import encoding as apitools_encoding
@@ -29,6 +30,9 @@ import yaml.parser
 # These correspond to map fields in our proto message, where we expect keys to
 # be sent exactly as the user typed them, without transformation to camelCase.
 _SKIP_CAMEL_CASE = ['secretEnv', 'secret_env', 'substitutions']
+
+# Regex for a valid user-defined substitution variable.
+_BUILTIN_SUBSTITUTION_REGEX = re.compile('^_[A-Z0-9_]+$')
 
 
 class NotFoundException(exceptions.Error):
@@ -200,7 +204,7 @@ def LoadCloudbuildConfigFromStream(stream, messages, params=None,
     raise ParserError(path, pe)
 
   # Transform snake_case into camelCase.
-  structured_data = _SnakeToCamel(structured_data)
+  structured_data = _SnakeToCamel(structured_data)  # type: dict
 
   # Then, turn the dict into a proto message.
   try:
@@ -212,6 +216,13 @@ def LoadCloudbuildConfigFromStream(stream, messages, params=None,
     raise BadConfigException(path, '%s' % e)
 
   subst = structured_data.get('substitutions', {})
+  # Validate the substitution keys in the message.
+  for key in subst.iterkeys():
+    if not _BUILTIN_SUBSTITUTION_REGEX.match(key):
+      raise BadConfigException(
+          path,
+          'config cannot specify built-in substitutions')
+  # Merge the substitutions passed in the flag.
   if params:
     subst.update(params)
   build.substitutions = cloudbuild_util.EncodeSubstitutions(subst, messages)

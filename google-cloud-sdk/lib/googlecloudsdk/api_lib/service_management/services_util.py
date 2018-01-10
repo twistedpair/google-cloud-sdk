@@ -589,7 +589,7 @@ def WaitForOperation(operation_ref, client):
                                   'is still pending.'.format(operation_id))
 
   # Check to see if the operation resulted in an error
-  if WaitForOperation.operation_response.error is not None:
+  if WaitForOperation.operation_response.error is not None:  # pytype: disable=none-attr
     raise exceptions.OperationErrorException(
         'The operation with ID {0} resulted in a failure.'.format(operation_id))
 
@@ -630,5 +630,5 @@ def LoadJsonOrYaml(input_string):
 def GenerateManagementUrl(service, project):
   return ('https://console.cloud.google.com/endpoints/api/'
           '{service}/overview?project={project}'.format(
-              service=urllib2.quote(service),
-              project=urllib2.quote(project)))
+              service=urllib2.quote(service),  # pytype: disable=module-attr
+              project=urllib2.quote(project)))  # pytype: disable=module-attr

@@ -427,167 +427,6 @@ class CreateInstanceRequest(_messages.Message):
   instanceId = _messages.StringField(2)
 
 
-class CreatePartitionsResponse(_messages.Message):
-  """The response for CreateQueryPartitions or CreateQueryPartitions
-
-  Fields:
-    partitions: Partitions created by this request.
-    transaction: Transaction created by this request.
-  """
-
-  partitions = _messages.MessageField('Partition', 1, repeated=True)
-  transaction = _messages.MessageField('Transaction', 2)
-
-
-class CreateQueryPartitionsRequest(_messages.Message):
-  """The request for CreateQueryPartitions
-
-  Messages:
-    ParamTypesValue: It is not always possible for Cloud Spanner to infer the
-      right SQL type from a JSON value.  For example, values of type `BYTES`
-      and values of type `STRING` both appear in params as JSON strings.  In
-      these cases, `param_types` can be used to specify the exact SQL type for
-      some or all of the SQL query parameters. See the definition of Type for
-      more information about SQL types.
-    ParamsValue: The SQL query string can contain parameter placeholders. A
-      parameter placeholder consists of `'@'` followed by the parameter name.
-      Parameter names consist of any combination of letters, numbers, and
-      underscores.  Parameters can appear anywhere that a literal value is
-      expected.  The same parameter name can be used more than once, for
-      example:   `"WHERE id > @msg_id AND id < @msg_id + 100"`  It is an error
-      to execute an SQL query with unbound parameters.  Parameter values are
-      specified using `params`, which is a JSON object whose keys are
-      parameter names, and whose values are the corresponding parameter
-      values.
-
-  Fields:
-    paramTypes: It is not always possible for Cloud Spanner to infer the right
-      SQL type from a JSON value.  For example, values of type `BYTES` and
-      values of type `STRING` both appear in params as JSON strings.  In these
-      cases, `param_types` can be used to specify the exact SQL type for some
-      or all of the SQL query parameters. See the definition of Type for more
-      information about SQL types.
-    params: The SQL query string can contain parameter placeholders. A
-      parameter placeholder consists of `'@'` followed by the parameter name.
-      Parameter names consist of any combination of letters, numbers, and
-      underscores.  Parameters can appear anywhere that a literal value is
-      expected.  The same parameter name can be used more than once, for
-      example:   `"WHERE id > @msg_id AND id < @msg_id + 100"`  It is an error
-      to execute an SQL query with unbound parameters.  Parameter values are
-      specified using `params`, which is a JSON object whose keys are
-      parameter names, and whose values are the corresponding parameter
-      values.
-    partitionOptions: Additional options that affect how many partitions are
-      created.
-    sql: The query request to generate partitions for. The request will fail
-      if the query is not root partitionable. The query plan of a root
-      partitionable query has a single distributed union operator. A
-      distributed union operator conceptually divides one or more tables into
-      multiple splits, remotely evaluates a subquery independently on each
-      split, and then unions all results.
-    transaction: Read only snapshot transactions are supported, read/write and
-      single use transactions are not.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ParamTypesValue(_messages.Message):
-    """It is not always possible for Cloud Spanner to infer the right SQL type
-    from a JSON value.  For example, values of type `BYTES` and values of type
-    `STRING` both appear in params as JSON strings.  In these cases,
-    `param_types` can be used to specify the exact SQL type for some or all of
-    the SQL query parameters. See the definition of Type for more information
-    about SQL types.
-
-    Messages:
-      AdditionalProperty: An additional property for a ParamTypesValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type ParamTypesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a ParamTypesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A Type attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('Type', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ParamsValue(_messages.Message):
-    """The SQL query string can contain parameter placeholders. A parameter
-    placeholder consists of `'@'` followed by the parameter name. Parameter
-    names consist of any combination of letters, numbers, and underscores.
-    Parameters can appear anywhere that a literal value is expected.  The same
-    parameter name can be used more than once, for example:   `"WHERE id >
-    @msg_id AND id < @msg_id + 100"`  It is an error to execute an SQL query
-    with unbound parameters.  Parameter values are specified using `params`,
-    which is a JSON object whose keys are parameter names, and whose values
-    are the corresponding parameter values.
-
-    Messages:
-      AdditionalProperty: An additional property for a ParamsValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a ParamsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  paramTypes = _messages.MessageField('ParamTypesValue', 1)
-  params = _messages.MessageField('ParamsValue', 2)
-  partitionOptions = _messages.MessageField('PartitionOptions', 3)
-  sql = _messages.StringField(4)
-  transaction = _messages.MessageField('TransactionSelector', 5)
-
-
-class CreateReadPartitionsRequest(_messages.Message):
-  """The request for CreateReadPartitions
-
-  Fields:
-    columns: The columns of table to be returned for each row matching this
-      request.
-    index: If non-empty, the name of an index on table. This index is used
-      instead of the table primary key when interpreting key_set and sorting
-      result rows. See key_set for further information.
-    keySet: Required. `key_set` identifies the rows to be yielded. `key_set`
-      names the primary keys of the rows in table to be yielded, unless index
-      is present. If index is present, then key_set instead names index keys
-      in index.  Rows are yielded in table primary key order (if index is
-      empty) or index key order (if index is non-empty).  It is not an error
-      for the `key_set` to name rows that do not exist in the database. Read
-      yields nothing for nonexistent rows.
-    partitionOptions: Additional options that affect how many partitions are
-      created.
-    table: Required. The name of the table in the database to be read.
-    transaction: Read only snapshot transactions are supported, read/write and
-      single use transactions are not.
-  """
-
-  columns = _messages.StringField(1, repeated=True)
-  index = _messages.StringField(2)
-  keySet = _messages.MessageField('KeySet', 3)
-  partitionOptions = _messages.MessageField('PartitionOptions', 4)
-  table = _messages.StringField(5)
-  transaction = _messages.MessageField('TransactionSelector', 6)
-
-
 class CreateSessionRequest(_messages.Message):
   """The request for CreateSession.
 
@@ -950,16 +789,8 @@ class Instance(_messages.Message):
       name must be between 6 and 30 characters in length.
     nodeCount: Required. The number of nodes allocated to this instance. This
       may be zero in API responses for instances that are not yet in state
-      `READY`.  Each Spanner node can provide up to 10,000 QPS of reads or
-      2000 QPS of writes (writing single rows at 1KB data per row), and 2 TiB
-      storage.  For optimal performance, we recommend provisioning enough
-      nodes to keep overall CPU utilization under 75%.  A minimum of 3 nodes
-      is recommended for production environments.  This minimum is required
-      for SLAs to apply to your instance.  Note that Cloud Spanner performance
-      is highly dependent on workload, schema design, and dataset
-      characteristics. The performance numbers above are estimates, and assume
-      [best practices](https://cloud.google.com/spanner/docs/bulk-loading) are
-      followed.
+      `READY`.  See [the documentation](https://cloud.google.com/spanner/docs/
+      instances#node_count) for more information about nodes.
     state: Output only. The current instance state. For CreateInstance, the
       state must be either omitted or set to `CREATING`. For UpdateInstance,
       the state must be either omitted or set to `READY`.
@@ -1577,10 +1408,8 @@ class PartitionReadRequest(_messages.Message):
     keySet: Required. `key_set` identifies the rows to be yielded. `key_set`
       names the primary keys of the rows in table to be yielded, unless index
       is present. If index is present, then key_set instead names index keys
-      in index.  Rows are yielded in table primary key order (if index is
-      empty) or index key order (if index is non-empty).  It is not an error
-      for the `key_set` to name rows that do not exist in the database. Read
-      yields nothing for nonexistent rows.
+      in index.  It is not an error for the `key_set` to name rows that do not
+      exist in the database. Read yields nothing for nonexistent rows.
     partitionOptions: Additional options that affect how many partitions are
       created.
     table: Required. The name of the table in the database to be read.
@@ -1815,14 +1644,17 @@ class ReadOnly(_messages.Message):
       `min_read_timestamp`.  This is useful for requesting fresher data than
       some previous read, or data that is fresh enough to observe the effects
       of some previously committed transaction whose timestamp is known.  Note
-      that this option can only be used in single-use transactions.
+      that this option can only be used in single-use transactions.  A
+      timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds.
+      Example: `"2014-10-02T15:01:23.045123456Z"`.
     readTimestamp: Executes all reads at the given timestamp. Unlike other
       modes, reads at a specific timestamp are repeatable; the same read at
       the same timestamp always returns the same data. If the timestamp is in
       the future, the read will block until the specified timestamp, modulo
       the read's deadline.  Useful for large scale consistent reads such as
       mapreduces, or for coordinating many reads against a consistent snapshot
-      of the data.
+      of the data.  A timestamp in RFC3339 UTC \"Zulu\" format, accurate to
+      nanoseconds. Example: `"2014-10-02T15:01:23.045123456Z"`.
     returnReadTimestamp: If true, the Cloud Spanner-selected read timestamp is
       included in the Transaction message that describes the transaction.
     strong: Read at a timestamp where all previously committed transactions
@@ -1854,8 +1686,7 @@ class ReadRequest(_messages.Message):
       for the `key_set` to name rows that do not exist in the database. Read
       yields nothing for nonexistent rows.
     limit: If greater than zero, only the first `limit` rows are yielded. If
-      `limit` is zero, the default is no limit. A limit cannot be specified if
-      partition_token is set.
+      `limit` is zero, the default is no limit.
     partitionToken: If present, results will be restricted to the specified
       partition previously created using PartitionRead().    There must be an
       exact match for the values of fields common to this message and the
@@ -2054,8 +1885,9 @@ class Session(_messages.Message):
       and 63 characters long and must conform to    the following regular
       expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be
       between 0 and 63 characters long and must conform    to the regular
-      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 20 labels
-      can be associated with a given session.
+      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 64 labels
+      can be associated with a given session.  See https://goo.gl/xmQnxf for
+      more information on and examples of labels.
 
   Fields:
     approximateLastUseTime: Output only. The approximate timestamp when the
@@ -2066,9 +1898,11 @@ class Session(_messages.Message):
       63 characters long and must conform to    the following regular
       expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be
       between 0 and 63 characters long and must conform    to the regular
-      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 20 labels
-      can be associated with a given session.
-    name: The name of the session.
+      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 64 labels
+      can be associated with a given session.  See https://goo.gl/xmQnxf for
+      more information on and examples of labels.
+    name: The name of the session. This is always system-assigned; values
+      provided when creating a session are ignored.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2077,8 +1911,9 @@ class Session(_messages.Message):
     characters long and must conform to    the following regular expression:
     `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be between 0 and 63
     characters long and must conform    to the regular expression
-    `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 20 labels can be
-    associated with a given session.
+    `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 64 labels can be
+    associated with a given session.  See https://goo.gl/xmQnxf for more
+    information on and examples of labels.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2373,34 +2208,6 @@ class SpannerProjectsInstancesDatabasesSessionsCommitRequest(_messages.Message):
   session = _messages.StringField(2, required=True)
 
 
-class SpannerProjectsInstancesDatabasesSessionsCreateQueryPartitionsRequest(_messages.Message):
-  """A SpannerProjectsInstancesDatabasesSessionsCreateQueryPartitionsRequest
-  object.
-
-  Fields:
-    createQueryPartitionsRequest: A CreateQueryPartitionsRequest resource to
-      be passed as the request body.
-    session: Required. The session used to create the partitions.
-  """
-
-  createQueryPartitionsRequest = _messages.MessageField('CreateQueryPartitionsRequest', 1)
-  session = _messages.StringField(2, required=True)
-
-
-class SpannerProjectsInstancesDatabasesSessionsCreateReadPartitionsRequest(_messages.Message):
-  """A SpannerProjectsInstancesDatabasesSessionsCreateReadPartitionsRequest
-  object.
-
-  Fields:
-    createReadPartitionsRequest: A CreateReadPartitionsRequest resource to be
-      passed as the request body.
-    session: Required. The session used to create the partitions.
-  """
-
-  createReadPartitionsRequest = _messages.MessageField('CreateReadPartitionsRequest', 1)
-  session = _messages.StringField(2, required=True)
-
-
 class SpannerProjectsInstancesDatabasesSessionsCreateRequest(_messages.Message):
   """A SpannerProjectsInstancesDatabasesSessionsCreateRequest object.
 
@@ -2468,9 +2275,9 @@ class SpannerProjectsInstancesDatabasesSessionsListRequest(_messages.Message):
     database: Required. The database in which to list sessions.
     filter: An expression for filtering the results of the request. Filter
       rules are case insensitive. The fields eligible for filtering are:    *
-      labels.key where key is the name of a label  Some examples of using
-      filters are:    * labels.env:* --> The session has the label "env".   *
-      labels.env:dev --> The session has the label "env" and the value of
+      `labels.key` where key is the name of a label  Some examples of using
+      filters are:    * `labels.env:*` --> The session has the label "env".
+      * `labels.env:dev` --> The session has the label "env" and the value of
       the label contains the string "dev".
     pageSize: Number of sessions to be returned in the response. If 0 or less,
       defaults to the server's maximum allowed page size.
@@ -2639,16 +2446,16 @@ class SpannerProjectsInstancesListRequest(_messages.Message):
   Fields:
     filter: An expression for filtering the results of the request. Filter
       rules are case insensitive. The fields eligible for filtering are:    *
-      name   * display_name   * labels.key where key is the name of a label
-      Some examples of using filters are:    * name:* --> The instance has a
-      name.   * name:Howl --> The instance's name contains the string "howl".
-      * name:HOWL --> Equivalent to above.   * NAME:howl --> Equivalent to
-      above.   * labels.env:* --> The instance has the label "env".   *
-      labels.env:dev --> The instance has the label "env" and the value of
-      the label contains the string "dev".   * name:howl labels.env:dev -->
-      The instance's name contains "howl" and
-      it has the label "env" with its value
-      containing "dev".
+      `name`   * `display_name`   * `labels.key` where key is the name of a
+      label  Some examples of using filters are:    * `name:*` --> The
+      instance has a name.   * `name:Howl` --> The instance's name contains
+      the string "howl".   * `name:HOWL` --> Equivalent to above.   *
+      `NAME:howl` --> Equivalent to above.   * `labels.env:*` --> The instance
+      has the label "env".   * `labels.env:dev` --> The instance has the label
+      "env" and the value of                        the label contains the
+      string "dev".   * `name:howl labels.env:dev` --> The instance's name
+      contains "howl" and                                  it has the label
+      "env" with its value                                  containing "dev".
     pageSize: Number of instances to be returned in the response. If 0 or
       less, defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token
@@ -2950,7 +2757,9 @@ class Transaction(_messages.Message):
       support multiple requests.
     readTimestamp: For snapshot read-only transactions, the read timestamp
       chosen for the transaction. Not returned by default: see
-      TransactionOptions.ReadOnly.return_read_timestamp.
+      TransactionOptions.ReadOnly.return_read_timestamp.  A timestamp in
+      RFC3339 UTC \"Zulu\" format, accurate to nanoseconds. Example:
+      `"2014-10-02T15:01:23.045123456Z"`.
   """
 
   id = _messages.BytesField(1)

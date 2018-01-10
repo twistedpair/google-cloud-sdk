@@ -28,6 +28,8 @@ string tuple
 
 where only one of the three elements need be present.
 """
+# Pytype fails to check this file.
+# type: ignore
 
 from googlecloudsdk.calliope import display_taps
 from googlecloudsdk.core import exceptions

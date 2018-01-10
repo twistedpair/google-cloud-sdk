@@ -30,7 +30,7 @@ def AddStoreResourceFlags(parser):
 def AddTaxonomyResourceFlags(parser):
   """Add taxonomy resource flags to the parser."""
   parser.add_argument(
-      '--store_id',
+      '--store-id',
       default=None,
       required=False,
       metavar='store_id',
@@ -61,8 +61,9 @@ def GetTaxonomyResourceFromArgs(args):
       args.taxonomy_resource,
       params={
           'taxonomyStoresId':
-              args.taxonomy_resource or store.GetDefaultStoreId(),
+              args.store_id
+              or store.GetDefaultStoreId(utils.GetProjectRef()),
           'taxonomiesId':
-              args.taxonomy_id,
+              args.taxonomy_resource,
       },
       collection='categorymanager.taxonomies')

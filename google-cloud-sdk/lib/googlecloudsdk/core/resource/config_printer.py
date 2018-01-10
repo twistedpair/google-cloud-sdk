@@ -127,8 +127,9 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
             v = {'I' + str(i): v}
           self._PrintEnvExport(v.iteritems(), prefix=self._Prefix(prefix, name))
       else:
+        value = pipes.quote(unicode(value))  # pytype: disable=wrong-arg-types
         self._out.write(self._env_command_format.format(
-            name=prefix + name, value=pipes.quote(unicode(value))))
+            name=prefix + name, value=value))
 
   def _PrintEnvUnset(self, items, prefix=''):
     """Prints the environment unset commands for items.

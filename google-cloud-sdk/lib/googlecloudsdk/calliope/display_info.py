@@ -103,7 +103,10 @@ class DisplayInfo(object):
         resource object.
     """
     def _TransformUri(resource, undefined=None):
-      return uri_func(resource) or undefined
+      try:
+        return uri_func(resource) or undefined
+      except (AttributeError, TypeError):
+        return undefined
 
     self.AddTransforms({'uri': _TransformUri})
 

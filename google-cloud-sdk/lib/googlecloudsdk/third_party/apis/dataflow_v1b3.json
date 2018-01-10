@@ -1851,29 +1851,14 @@
             "VALUE"
           ]
         },
-        "sideInput": {
-          "description": "ID of a side input being read from\/written to. Side inputs are identified\nby a pair of (reader, input_index). The reader is usually equal to the\noriginal name, but it may be different, if a ParDo emits its Iterator \/\nMap side input object.",
-          "$ref": "SideInputId"
-        },
-        "originalRequestingStepName": {
-          "description": "The step name requesting an operation, such as GBK.\nI.e. the ParDo causing a read\/write from shuffle to occur.",
-          "type": "string"
-        }
-      }
-    },
-    "SideInputId": {
-      "id": "SideInputId",
-      "description": "Uniquely identifies a side input.",
-      "type": "object",
-      "properties": {
-        "declaringStepName": {
-          "description": "The step that receives and usually consumes this side input.",
-          "type": "string"
-        },
         "inputIndex": {
-          "description": "The index of the side input, from the list of non_parallel_inputs.",
+          "description": "Index of an input collection that's being read from\/written to as a side\ninput.\nThe index identifies a step's side inputs starting by 1 (e.g. the first\nside input has input_index 1, the third has input_index 3).\nSide inputs are identified by a pair of (original_step_name, input_index).\nThis field helps uniquely identify them.",
           "type": "integer",
           "format": "int32"
+        },
+        "originalRequestingStepName": {
+          "description": "The step name requesting an operation, such as GBK.\nI.e. the ParDo causing a read\/write from shuffle to occur, or a\nread from side inputs.",
+          "type": "string"
         }
       }
     },

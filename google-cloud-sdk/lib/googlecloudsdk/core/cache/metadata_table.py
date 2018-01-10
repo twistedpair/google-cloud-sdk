@@ -23,6 +23,8 @@ import abc
 from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import persistent_cache_base
 
+from typing import Optional  # pylint: disable=unused-import, for pytype
+
 
 class Metadata(object):
   """Metadata table row container.
@@ -67,6 +69,8 @@ class CacheUsingMetadataTable(persistent_cache_base.Cache):
   Attributes:
     _metadata: A table containing a row for each table.
     _table_class: The cache Table class.
+    _restricted: The set of restricted table names.
+    _tables: The map of open table objects.
   """
 
   __metaclass__ = abc.ABCMeta
@@ -74,8 +78,10 @@ class CacheUsingMetadataTable(persistent_cache_base.Cache):
   def __init__(self, table, name, create=True, timeout=0, version=None):
     super(CacheUsingMetadataTable, self).__init__(
         name, create=create, timeout=timeout, version=version)
-    self._metadata = None
+    self._metadata = None  # type: persistent_cache_base.Table
     self._table_class = table
+    self._restricted = None  # type: set
+    self._tables = None  # type: dict
 
   @abc.abstractmethod
   def Delete(self):
@@ -243,6 +249,7 @@ class CacheUsingMetadataTable(persistent_cache_base.Cache):
                keys=1, timeout=0)
 
   def Select(self, name=None):
+    # type: (Optional[str]) -> list[str]
     """Returns the list of unrestricted table names matching name.
 
     Args:
@@ -253,4 +260,4 @@ class CacheUsingMetadataTable(persistent_cache_base.Cache):
       The list of unrestricted table names matching name.
     """
     rows = self._metadata.Select(Metadata.Row(name=name, restricted=False))
-    return [Metadata(row).name for row in rows]
+    return [Metadata(row).name for row in rows]  # pytype: disable=none-attr

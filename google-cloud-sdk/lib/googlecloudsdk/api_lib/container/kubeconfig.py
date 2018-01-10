@@ -189,7 +189,9 @@ def User(name, token=None, username=None, password=None, auth_provider=None,
   Raises:
     Error: if no auth info is provided (token or username AND password)
   """
-  if not auth_provider and not token and (not username or not password):
+  # TODO(b/70856999) Figure out what the correct behavior for client certs is.
+  if (not auth_provider and not token and not cert_path and not cert_data and
+      (not username or not password)):
     raise Error('either auth_provider, token or username & password must be'
                 ' provided')
   user = {}
@@ -298,4 +300,3 @@ def EmptyKubeconfig():
       'preferences': {},
       'users': [],
   }
-

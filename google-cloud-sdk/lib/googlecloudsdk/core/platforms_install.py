@@ -41,6 +41,7 @@ def _UpdatePathForWindows(bin_path):
   # pylint:disable=g-import-not-at-top, we want to only attempt these imports
   # on windows.
   try:
+    # pytype: disable=import-error
     import win32con
     import win32gui
     try:
@@ -49,6 +50,7 @@ def _UpdatePathForWindows(bin_path):
     except ImportError:
       # Python 2
       import _winreg as winreg
+    # pytype: enable=import-error
   except ImportError:
     _TraceAction("""\
 The installer is unable to automatically update your system PATH. Please add

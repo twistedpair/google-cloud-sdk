@@ -562,12 +562,6 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       A Version resource whose Deployment includes either a container pointing
         to a completed image, or a build pointing to an in-progress build.
     """
-    appinfo = service_config.parsed
-
-    # TODO(b/29453752): Remove when we want to stop supporting module
-    if appinfo.module:
-      appinfo.service = appinfo.module
-      appinfo.module = None
 
     parsed_yaml = service_config.parsed.ToYAML()
     config_dict = yaml.safe_load(parsed_yaml)

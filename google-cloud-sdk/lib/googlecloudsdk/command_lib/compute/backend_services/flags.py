@@ -14,7 +14,6 @@
 
 """Flags and helpers for the compute backend-services commands."""
 
-import argparse
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
@@ -421,34 +420,30 @@ def AddSessionAffinity(parser, internal_lb=False, target_pools=False,
             'port will go to the same VM in the backend while that VM remains '
             'healthy. This option cannot be used for HTTP(S) load balancing.'),
     })
-  if hidden:
-    help_str = argparse.SUPPRESS
-  else:
-    help_str = 'The type of session affinity to use for this backend service.'
+  help_str = 'The type of session affinity to use for this backend service.'
   parser.add_argument(
       '--session-affinity',
       choices=choices,
       # Tri-valued, None => don't include property.
       default='NONE' if target_pools else None,
       type=lambda x: x.upper(),
+      hidden=hidden,
       help=help_str)
 
 
 def AddAffinityCookieTtl(parser, hidden=False):
   """Adds affinity cookie Ttl flag to the argparse."""
-  if hidden:
-    affinity_cookie_ttl_help = argparse.SUPPRESS
-  else:
-    affinity_cookie_ttl_help = """\
-        If session-affinity is set to "generated_cookie", this flag sets
-        the TTL, in seconds, of the resulting cookie.  A setting of 0
-        indicates that the cookie should be transient.
-        """
+  affinity_cookie_ttl_help = """\
+      If session-affinity is set to "generated_cookie", this flag sets
+      the TTL, in seconds, of the resulting cookie.  A setting of 0
+      indicates that the cookie should be transient.
+      """
   parser.add_argument(
       '--affinity-cookie-ttl',
       type=arg_parsers.Duration(),
       default=None,  # Tri-valued, None => don't include property.
-      help=affinity_cookie_ttl_help
+      help=affinity_cookie_ttl_help,
+      hidden=hidden,
   )
 
 

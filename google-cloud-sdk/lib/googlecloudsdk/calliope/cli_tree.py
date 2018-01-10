@@ -14,7 +14,6 @@
 
 """A module for the Cloud SDK CLI tree external representation."""
 
-import argparse
 import json
 import os
 import re
@@ -141,15 +140,11 @@ def _GetDefaultCliCommandVersion():
 
 def _GetDescription(arg):
   """Returns the most detailed description from arg."""
-  if arg.help == argparse.SUPPRESS:
-    return ''
   return usage_text.GetArgDetails(arg)
 
 
 def _NormalizeDescription(description):
   """Normalizes description text.
-
-  argparse.SUPPRESS normalizes to None.
 
   Args:
     description: str, The text to be normalized.
@@ -159,9 +154,7 @@ def _NormalizeDescription(description):
   """
   if callable(description):
     description = description()
-  if description == argparse.SUPPRESS:
-    description = None
-  elif description:
+  if description:
     description = textwrap.dedent(description)
   return unicode(description or '')
 
@@ -184,32 +177,10 @@ class Argument(object):
     self.attr = {}
     self.description = _NormalizeDescription(_GetDescription(arg))
     self.is_group = False
-    self.is_hidden = arg.help == argparse.SUPPRESS
+    self.is_hidden = getattr(arg, 'is_hidden', getattr(arg, 'hidden', False))
     self.is_positional = False
     self.is_mutex = getattr(arg, 'is_mutex', getattr(arg, 'mutex', False))
     self.is_required = arg.is_required
-
-  def _Scrub(self):
-    """Scrubs private paths in the default value and description.
-
-    Argument default values and "The default is ..." description text are the
-    only places where dynamic private file paths can leak into the cli_tree.
-    This method is called on all args.
-
-    The test is rudimentary but effective. Any default value that looks like an
-    absolute path on unix or windows is scrubbed. The default value is set to
-    None and the trailing "The default ... is ..." sentence in the description,
-    if any, is deleted. It's OK to be conservative here and match aggressively.
-    """
-    if not isinstance(self.default, basestring):
-      return
-    if not re.match(r'/|[A-Za-z]:\\', self.default):
-      return
-    self.default = None
-    match = re.match(
-        r'(.*\.) The default (value )?is ', self.description, re.DOTALL)
-    if match:
-      self.description = match.group(1)
 
 
 class FlagOrPositional(Argument):
@@ -248,6 +219,28 @@ class FlagOrPositional(Argument):
     else:
       self.value = self.name.lstrip('-').replace('-', '_').upper()
     self._Scrub()
+
+  def _Scrub(self):
+    """Scrubs private paths in the default value and description.
+
+    Argument default values and "The default is ..." description text are the
+    only places where dynamic private file paths can leak into the cli_tree.
+    This method is called on all args.
+
+    The test is rudimentary but effective. Any default value that looks like an
+    absolute path on unix or windows is scrubbed. The default value is set to
+    None and the trailing "The default ... is ..." sentence in the description,
+    if any, is deleted. It's OK to be conservative here and match aggressively.
+    """
+    if not isinstance(self.default, basestring):
+      return
+    if not re.match(r'/|[A-Za-z]:\\', self.default):
+      return
+    self.default = None
+    match = re.match(
+        r'(.*\.) The default (value )?is ', self.description, re.DOTALL)
+    if match:
+      self.description = match.group(1)
 
 
 class Flag(FlagOrPositional):

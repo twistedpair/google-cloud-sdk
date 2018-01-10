@@ -114,18 +114,6 @@ def ArgsForClusterRef(parser, beta=False):
       exclusive with --network.
       """)
   parser.add_argument(
-      '--no-address',
-      action='store_true',
-      help="""\
-      If provided, the instances in the cluster will not be assigned external
-      IP addresses.
-
-      Note: Dataproc VMs need access to the Dataproc API. This can be achieved
-      without external IP addresses using Private Google Access
-      (https://cloud.google.com/compute/docs/private-google-access).
-      """,
-      hidden=not beta)
-  parser.add_argument(
       '--num-worker-local-ssds',
       type=int,
       help='The number of local SSDs to attach to each worker in a cluster.')
@@ -236,26 +224,28 @@ Alias,URI
     aliases=compute_helpers.SCOPE_ALIASES_FOR_HELP,
     scope_deprecation_msg=compute_constants.DEPRECATED_SCOPES_MESSAGES))
 
-  master_boot_disk = parser.add_mutually_exclusive_group()
-  worker_boot_disk = parser.add_mutually_exclusive_group()
+  master_boot_disk_size = parser.add_mutually_exclusive_group()
+  worker_boot_disk_size = parser.add_mutually_exclusive_group()
 
   # Deprecated, to be removed at a future date.
-  master_boot_disk.add_argument(
+  master_boot_disk_size.add_argument(
       '--master-boot-disk-size-gb',
       action=actions.DeprecationAction(
           '--master-boot-disk-size-gb',
           warn=('The `--master-boot-disk-size-gb` flag is deprecated. '
                 'Use `--master-boot-disk-size` flag with "GB" after value.')),
       type=int,
-      hidden=True)
-  worker_boot_disk.add_argument(
+      hidden=True,
+      help='Use `--master-boot-disk-size` flag with "GB" after value.')
+  worker_boot_disk_size.add_argument(
       '--worker-boot-disk-size-gb',
       action=actions.DeprecationAction(
           '--worker-boot-disk-size-gb',
           warn=('The `--worker-boot-disk-size-gb` flag is deprecated. '
                 'Use `--worker-boot-disk-size` flag with "GB" after value.')),
       type=int,
-      hidden=True)
+      hidden=True,
+      help='Use `--worker-boot-disk-size` flag with "GB" after value.')
 
   boot_disk_size_detailed_help = """\
       The size of the boot disk. The value must be a
@@ -264,33 +254,48 @@ Alias,URI
       ``10GB'' will produce a 10 gigabyte disk. The minimum size a boot disk
       can have is 10 GB. Disk size must be a multiple of 1 GB.
       """
-  master_boot_disk.add_argument(
+  master_boot_disk_size.add_argument(
       '--master-boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
-  worker_boot_disk.add_argument(
+  worker_boot_disk_size.add_argument(
       '--worker-boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
   parser.add_argument(
       '--preemptible-worker-boot-disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
+      help=boot_disk_size_detailed_help)
+
+  # Args that are visible only in Beta track
+  parser.add_argument(
+      '--no-address',
+      action='store_true',
       help="""\
-      The size of the boot disk. The value must be a
-      whole number followed by a size unit of ``KB'' for kilobyte, ``MB''
-      for megabyte, ``GB'' for gigabyte, or ``TB'' for terabyte. For example,
-      ``10GB'' will produce a 10 gigabyte disk. The minimum size a boot disk
-      can have is 10 GB. Disk size must be a multiple of 1 GB.
-      """)
+      If provided, the instances in the cluster will not be assigned external
+      IP addresses.
+
+      Note: Dataproc VMs need access to the Dataproc API. This can be achieved
+      without external IP addresses using Private Google Access
+      (https://cloud.google.com/compute/docs/private-google-access).
+      """,
+      hidden=not beta)
+
+  if beta:
+    boot_disk_type_detailed_help = """\
+        The type of the boot disk. The value must be ``pd-standard'' or
+        ``pd-ssd''.
+        """
+    parser.add_argument(
+        '--master-boot-disk-type', help=boot_disk_type_detailed_help)
+    parser.add_argument(
+        '--worker-boot-disk-type', help=boot_disk_type_detailed_help)
+    parser.add_argument(
+        '--preemptible-worker-boot-disk-type',
+        help=boot_disk_type_detailed_help)
 
 
-def GetClusterConfig(args,
-                     dataproc,
-                     project_id,
-                     compute_resources,
-                     use_accelerators=False,
-                     use_auto_delete_ttl=False,
-                     use_min_cpu_platform=False):
+def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
   """Get dataproc cluster configuration.
 
   Args:
@@ -298,9 +303,7 @@ def GetClusterConfig(args,
     dataproc: Dataproc object that contains client, messages, and resources
     project_id: Dataproc project ID
     compute_resources: compute resource for cluster
-    use_accelerators: use accelerators in BETA only.
-    use_auto_delete_ttl: use to configure auto-delete/TTL in BETA only.
-    use_min_cpu_platform: use to configure minimum CPU platform for instances.
+    beta: use BETA only features
 
   Returns:
     cluster_config: Dataproc cluster configuration
@@ -309,7 +312,7 @@ def GetClusterConfig(args,
   worker_accelerator_type = None
   master_accelerator_count = None
   worker_accelerator_count = None
-  if use_accelerators:
+  if beta:
     if args.master_accelerator:
       master_accelerator_type = args.master_accelerator['type']
       master_accelerator_count = args.master_accelerator.get('count', 1)
@@ -406,25 +409,34 @@ def GetClusterConfig(args,
           imageUri=image_ref and image_ref.SelfLink(),
           machineTypeUri=args.master_machine_type,
           accelerators=master_accelerators,
-          diskConfig=dataproc.messages.DiskConfig(
-              bootDiskSizeGb=master_boot_disk_size_gb,
-              numLocalSsds=args.num_master_local_ssds,),),
+          diskConfig=GetDiskConfig(
+              dataproc,
+              args.master_boot_disk_type if beta else None,
+              master_boot_disk_size_gb,
+              args.num_master_local_ssds,
+              beta,
+          )),
       workerConfig=dataproc.messages.InstanceGroupConfig(
           numInstances=args.num_workers,
           imageUri=image_ref and image_ref.SelfLink(),
           machineTypeUri=args.worker_machine_type,
           accelerators=worker_accelerators,
-          diskConfig=dataproc.messages.DiskConfig(
-              bootDiskSizeGb=worker_boot_disk_size_gb,
-              numLocalSsds=args.num_worker_local_ssds,),),
+          diskConfig=GetDiskConfig(
+              dataproc,
+              args.worker_boot_disk_type if beta else None,
+              worker_boot_disk_size_gb,
+              args.num_worker_local_ssds,
+              beta,
+          )),
       initializationActions=init_actions,
-      softwareConfig=software_config,)
+      softwareConfig=software_config,
+  )
 
-  if use_min_cpu_platform:
+  if beta:
     cluster_config.masterConfig.minCpuPlatform = args.master_min_cpu_platform
     cluster_config.workerConfig.minCpuPlatform = args.worker_min_cpu_platform
 
-  if use_auto_delete_ttl:
+  if beta:
     lifecycle_config = dataproc.messages.LifecycleConfig()
     changed_config = False
     if args.max_age is not None:
@@ -441,16 +453,51 @@ def GetClusterConfig(args,
       cluster_config.lifecycleConfig = lifecycle_config
 
   # Secondary worker group is optional. However, users may specify
-  # future pVM disk size at creation time.
+  # future pVMs configuration at creation time.
   if (args.num_preemptible_workers is not None or
-      preemptible_worker_boot_disk_size_gb is not None):
+      preemptible_worker_boot_disk_size_gb is not None or
+      (beta and (args.preemptible_worker_boot_disk_type is not None or
+                 args.worker_min_cpu_platform is not None))):
     cluster_config.secondaryWorkerConfig = (
         dataproc.messages.InstanceGroupConfig(
             numInstances=args.num_preemptible_workers,
-            diskConfig=dataproc.messages.DiskConfig(
-                bootDiskSizeGb=preemptible_worker_boot_disk_size_gb,)))
-    if use_min_cpu_platform and args.worker_min_cpu_platform:
-      secondary_worker_config = cluster_config.secondaryWorkerConfig
-      secondary_worker_config.minCpuPlatform = args.worker_min_cpu_platform
+            diskConfig=GetDiskConfig(
+                dataproc,
+                args.preemptible_worker_boot_disk_type if beta else None,
+                preemptible_worker_boot_disk_size_gb,
+                None,
+                beta,
+            )))
+    if beta and args.worker_min_cpu_platform:
+      cluster_config.secondaryWorkerConfig.minCpuPlatform = (
+          args.worker_min_cpu_platform)
 
   return cluster_config
+
+
+def GetDiskConfig(dataproc,
+                  boot_disk_type,
+                  boot_disk_size,
+                  num_local_ssds,
+                  beta=False):
+  """Get dataproc cluster disk configuration.
+
+  Args:
+    dataproc: Dataproc object that contains client, messages, and resources
+    boot_disk_type: Type of the boot disk
+    boot_disk_size: Size of the boot disk
+    num_local_ssds: Number of the Local SSDs
+    beta: Whether to use BETA features
+
+  Returns:
+    disk_config: Dataproc cluster disk configuration
+  """
+
+  if beta:
+    return dataproc.messages.DiskConfig(
+        bootDiskType=boot_disk_type,
+        bootDiskSizeGb=boot_disk_size,
+        numLocalSsds=num_local_ssds)
+
+  return dataproc.messages.DiskConfig(
+      bootDiskSizeGb=boot_disk_size, numLocalSsds=num_local_ssds)

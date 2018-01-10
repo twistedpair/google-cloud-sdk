@@ -158,6 +158,7 @@ class PromptCompleter(object):
   def Input(self):
     """Reads and returns one line of user input with TAB complation."""
     all_choices = None
+    matches = []
     response = []
     if self._prompt:
       self._out.write(self._prompt)

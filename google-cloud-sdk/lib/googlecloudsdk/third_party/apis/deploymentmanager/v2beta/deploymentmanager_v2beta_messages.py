@@ -1387,7 +1387,11 @@ class ManifestsListResponse(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """An Operation resource, used to manage asynchronous API requests.
+  """An Operation resource, used to manage asynchronous API requests. (==
+  resource_for v1.globalOperations ==) (== resource_for beta.globalOperations
+  ==) (== resource_for v1.regionOperations ==) (== resource_for
+  beta.regionOperations ==) (== resource_for v1.zoneOperations ==) (==
+  resource_for beta.zoneOperations ==)
 
   Messages:
     ErrorValue: [Output Only] If errors are generated during processing of the

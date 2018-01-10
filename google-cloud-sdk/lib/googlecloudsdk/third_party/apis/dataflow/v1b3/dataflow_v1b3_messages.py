@@ -330,20 +330,22 @@ class CounterStructuredName(_messages.Message):
       workers.
     executionStepName: Name of the stage. An execution step contains multiple
       component steps.
+    inputIndex: Index of an input collection that's being read from/written to
+      as a side input. The index identifies a step's side inputs starting by 1
+      (e.g. the first side input has input_index 1, the third has input_index
+      3). Side inputs are identified by a pair of (original_step_name,
+      input_index). This field helps uniquely identify them.
     name: Counter name. Not necessarily globally-unique, but unique within the
       context of the other fields. Required.
     origin: One of the standard Origins defined above.
     originNamespace: A string containing a more specific namespace of the
       counter's origin.
     originalRequestingStepName: The step name requesting an operation, such as
-      GBK. I.e. the ParDo causing a read/write from shuffle to occur.
+      GBK. I.e. the ParDo causing a read/write from shuffle to occur, or a
+      read from side inputs.
     originalStepName: System generated name of the original step in the user's
       graph, before optimization.
     portion: Portion of this counter, either key or value.
-    sideInput: ID of a side input being read from/written to. Side inputs are
-      identified by a pair of (reader, input_index). The reader is usually
-      equal to the original name, but it may be different, if a ParDo emits
-      its Iterator / Map side input object.
     workerId: ID of a particular worker.
   """
 
@@ -371,13 +373,13 @@ class CounterStructuredName(_messages.Message):
 
   componentStepName = _messages.StringField(1)
   executionStepName = _messages.StringField(2)
-  name = _messages.StringField(3)
-  origin = _messages.EnumField('OriginValueValuesEnum', 4)
-  originNamespace = _messages.StringField(5)
-  originalRequestingStepName = _messages.StringField(6)
-  originalStepName = _messages.StringField(7)
-  portion = _messages.EnumField('PortionValueValuesEnum', 8)
-  sideInput = _messages.MessageField('SideInputId', 9)
+  inputIndex = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  name = _messages.StringField(4)
+  origin = _messages.EnumField('OriginValueValuesEnum', 5)
+  originNamespace = _messages.StringField(6)
+  originalRequestingStepName = _messages.StringField(7)
+  originalStepName = _messages.StringField(8)
+  portion = _messages.EnumField('PortionValueValuesEnum', 9)
   workerId = _messages.StringField(10)
 
 
@@ -3208,20 +3210,6 @@ class ShellTask(_messages.Message):
 
   command = _messages.StringField(1)
   exitCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class SideInputId(_messages.Message):
-  """Uniquely identifies a side input.
-
-  Fields:
-    declaringStepName: The step that receives and usually consumes this side
-      input.
-    inputIndex: The index of the side input, from the list of
-      non_parallel_inputs.
-  """
-
-  declaringStepName = _messages.StringField(1)
-  inputIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class SideInputInfo(_messages.Message):

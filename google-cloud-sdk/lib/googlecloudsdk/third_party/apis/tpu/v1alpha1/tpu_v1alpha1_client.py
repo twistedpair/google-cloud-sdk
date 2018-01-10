@@ -68,7 +68,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
         method_id=u'tpu.projects.locations.nodes.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'nodeId', u'serviceAccount'],
+        query_params=[u'nodeId'],
         relative_path=u'v1alpha1/{+parent}/nodes',
         request_field=u'node',
         request_type_name=u'TpuProjectsLocationsNodesCreateRequest',
@@ -176,9 +176,9 @@ class TpuV1alpha1(base_api.BaseApiClient):
         method_id=u'tpu.projects.locations.nodes.reimage',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'tensorflowVersion'],
+        query_params=[],
         relative_path=u'v1alpha1/{+name}:reimage',
-        request_field='',
+        request_field=u'reimageNodeRequest',
         request_type_name=u'TpuProjectsLocationsNodesReimageRequest',
         response_type_name=u'Operation',
         supports_download=False,
@@ -205,62 +205,8 @@ class TpuV1alpha1(base_api.BaseApiClient):
         path_params=[u'name'],
         query_params=[],
         relative_path=u'v1alpha1/{+name}:reset',
-        request_field='',
+        request_field=u'resetNodeRequest',
         request_type_name=u'TpuProjectsLocationsNodesResetRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def Start(self, request, global_params=None):
-      """Start a node.
-
-      Args:
-        request: (TpuProjectsLocationsNodesStartRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Start')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Start.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:start',
-        http_method=u'POST',
-        method_id=u'tpu.projects.locations.nodes.start',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}:start',
-        request_field='',
-        request_type_name=u'TpuProjectsLocationsNodesStartRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-    def Stop(self, request, global_params=None):
-      """Stops a node.
-
-      Args:
-        request: (TpuProjectsLocationsNodesStopRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Stop')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Stop.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:stop',
-        http_method=u'POST',
-        method_id=u'tpu.projects.locations.nodes.stop',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}:stop',
-        request_field='',
-        request_type_name=u'TpuProjectsLocationsNodesStopRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -274,6 +220,42 @@ class TpuV1alpha1(base_api.BaseApiClient):
       super(TpuV1alpha1.ProjectsLocationsOperationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Cancel(self, request, global_params=None):
+      """Starts asynchronous cancellation on a long-running operation.  The server.
+makes a best effort to cancel the operation, but success is not
+guaranteed.  If the server doesn't support this method, it returns
+`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
+Operations.GetOperation or
+other methods to check whether the cancellation succeeded or whether the
+operation completed despite cancellation. On successful cancellation,
+the operation is not deleted; instead, it becomes an operation with
+an Operation.error value with a google.rpc.Status.code of 1,
+corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (TpuProjectsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method=u'POST',
+        method_id=u'tpu.projects.locations.operations.cancel',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:cancel',
+        request_field='',
+        request_type_name=u'TpuProjectsLocationsOperationsCancelRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       """Deletes a long-running operation. This method indicates that the client is.

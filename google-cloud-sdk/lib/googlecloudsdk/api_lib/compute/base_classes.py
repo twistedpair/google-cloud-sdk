@@ -15,10 +15,12 @@
 """Base classes for abstracting away common logic."""
 
 import abc
+import argparse  # pylint: disable=unused-import
 import collections
 import json
 import textwrap
 
+from apitools.base.py import base_api  # pylint: disable=unused-import
 import enum
 from googlecloudsdk.api_lib.compute import base_classes_resource_registry as resource_registry
 from googlecloudsdk.api_lib.compute import client_adapter
@@ -37,6 +39,7 @@ from googlecloudsdk.command_lib.compute import completers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import text
+from typing import Any, Generator  # pylint: disable=unused-import
 import yaml
 
 
@@ -51,7 +54,7 @@ class ComputeApiHolder(object):
     else:
       self._api_version = 'v1'
     self._client = None
-    self._resources = None
+    self._resources = None  # type: resources.Registry
 
   @property
   def client(self):
@@ -104,7 +107,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
     super(BaseCommand, self).__init__(*args, **kwargs)
 
     self.__resource_spec = None
-    self._project = properties.VALUES.core.project.Get(required=True)
+    self._project = properties.VALUES.core.project.Get(required=True)  # type: str
     self._compute_holder = ComputeApiHolder(self.ReleaseTrack())
     self._user_accounts_holder = ComputeUserAccountsApiHolder(
         self.ReleaseTrack())
@@ -140,7 +143,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   @property
   def project(self):
     """Specifies the user's project."""
-    return self._project
+    return self._project  # pytype: disable=attribute-error
 
   @property
   def batch_url(self):
@@ -160,7 +163,7 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   @property
   def resources(self):
     """Specifies the resources parser for compute resources."""
-    return self._compute_holder.resources
+    return self._compute_holder.resources   # pytype: disable=attribute-error
 
   @property
   def clouduseraccounts(self):
@@ -182,6 +185,12 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
 
 class BaseLister(base.ListCommand, BaseCommand):
   """Base class for the list subcommands."""
+
+  # Define class attributes for pytype
+  self_links = None  # type: set
+  names = None  # type: set
+  resource_refs = None  # type: list
+  service = None  # type: base_api.BaseApiService
 
   @staticmethod
   def Args(parser):
@@ -241,6 +250,7 @@ class BaseLister(base.ListCommand, BaseCommand):
       self.names.add(name)
 
   def FilterResults(self, args, items):
+    # type: (Any, list[dict[str, str]]) -> Generator[dict[str,str], Any, Any]
     """Filters the list results by name and URI."""
     for item in items:
       # If no positional arguments were given, do no filtering.
@@ -285,7 +295,8 @@ class BaseLister(base.ListCommand, BaseCommand):
     errors = []
 
     self.PopulateResourceFilteringStructures(args)
-    items = self.FilterResults(args, self.GetResources(args, errors))
+    items = self.FilterResults(
+        args, self.GetResources(args, errors))  # pytype: disable=wrong-arg-types
     items = lister.ProcessResults(
         resources=items,
         field_selector=field_selector)
@@ -668,6 +679,9 @@ def GetGlobalRegionalListerHelp(resource):
 class BaseDescriber(base.DescribeCommand, BaseCommand):
   """Base class for the describe subcommands."""
 
+  # Define class attributes for pytype
+  service = None  # type: base_api.BaseApiService
+
   @staticmethod
   def Args(parser, resource=None):
     BaseDescriber.AddArgs(parser, resource)
@@ -691,6 +705,7 @@ class BaseDescriber(base.DescribeCommand, BaseCommand):
     pass
 
   def SetNameField(self, ref, request):
+    # type: (resources.Resource, Any) -> None
     """Sets the field in the request that corresponds to the object name."""
     name_field = self.service.GetMethodConfig(self.method).ordered_params[-1]
     setattr(request, name_field, ref.Name())
@@ -702,7 +717,7 @@ class BaseDescriber(base.DescribeCommand, BaseCommand):
 
   def Run(self, args):
     """Yields JSON-serializable dicts of resources."""
-    ref = self.CreateReference(args)
+    ref = self.CreateReference(args)  # type: resources.Resource
 
     get_request_class = self.service.GetRequestType(self.method)
 

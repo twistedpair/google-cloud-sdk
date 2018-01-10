@@ -18,8 +18,9 @@ from googlecloudsdk.calliope import exceptions
 
 def ValidateInstanceName(instance_name):
   if ':' in instance_name:
-    possible_project = instance_name[:instance_name.rindex(':')]
-    possible_instance = instance_name[instance_name.rindex(':') + 1:]
+    name_components = instance_name.split(':')
+    possible_project = name_components[0]
+    possible_instance = name_components[-1]
     raise exceptions.ToolException("""\
 Instance names cannot contain the ':' character. If you meant to indicate the
 project for [{instance}], use only '{instance}' for the argument, and either add

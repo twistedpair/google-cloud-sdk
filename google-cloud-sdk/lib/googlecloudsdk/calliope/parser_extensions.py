@@ -63,6 +63,7 @@ import re
 import sys
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base  # pylint: disable=unused-import
 from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.calliope import usage_text
@@ -86,7 +87,7 @@ class Namespace(argparse.Namespace):
   """
 
   def __init__(self, **kwargs):
-    self._deepest_parser = None
+    self._deepest_parser = None  # type: ArgumentParser
     self._parsers = []
     self._specified_args = {}
     super(Namespace, self).__init__(**kwargs)
@@ -318,7 +319,7 @@ class ArgumentParser(argparse.ArgumentParser):
     self._is_group = hasattr(self._calliope_command, 'commands')
     self._remainder_action = None
     self._specified_args = {}
-    self._error_context = None
+    self._error_context = None  # type: _ErrorContext
     self._probe_error = False
     self._too_few_arguments = False
     super(ArgumentParser, self).__init__(*args, **kwargs)
@@ -903,7 +904,7 @@ class ArgumentParser(argparse.ArgumentParser):
     Returns:
       Whatever the parent method returns.
     """
-    if action.dest != argparse.SUPPRESS:
+    if action.dest != argparse.SUPPRESS:  # argparse SUPPRESS usage
       # Don't look at the action unless it is a real argument or flag. The
       # suppressed destination indicates that it is a SubParsers action.
       name = None
@@ -1020,6 +1021,7 @@ class DynamicPositionalAction(CloudSDKSubParsersAction):
   __metaclass__ = abc.ABCMeta
 
   def __init__(self, *args, **kwargs):
+    self.hidden = kwargs.pop('hidden', False)
     self._parent_ai = kwargs.pop('parent_ai')
     super(DynamicPositionalAction, self).__init__(*args, **kwargs)
 
@@ -1062,7 +1064,7 @@ class DynamicPositionalAction(CloudSDKSubParsersAction):
 
   def __call__(self, parser, namespace, values, option_string=None):
     choice = values[0]
-    args = self.GenerateArgs(namespace, choice)
+    args = self.GenerateArgs(namespace, choice)  # type: list[base.Argument]
     sub_parser = self._name_parser_map[choice]
 
     # This is tricky. When we create a new parser above, that parser does not

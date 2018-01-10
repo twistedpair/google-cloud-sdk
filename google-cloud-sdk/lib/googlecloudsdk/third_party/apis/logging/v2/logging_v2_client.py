@@ -39,10 +39,12 @@ class LoggingV2(base_api.BaseApiClient):
     self.billingAccounts_sinks = self.BillingAccountsSinksService(self)
     self.billingAccounts = self.BillingAccountsService(self)
     self.entries = self.EntriesService(self)
+    self.exclusions = self.ExclusionsService(self)
     self.folders_exclusions = self.FoldersExclusionsService(self)
     self.folders_logs = self.FoldersLogsService(self)
     self.folders_sinks = self.FoldersSinksService(self)
     self.folders = self.FoldersService(self)
+    self.logs = self.LogsService(self)
     self.monitoredResourceDescriptors = self.MonitoredResourceDescriptorsService(self)
     self.organizations_exclusions = self.OrganizationsExclusionsService(self)
     self.organizations_logs = self.OrganizationsLogsService(self)
@@ -53,6 +55,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.projects_metrics = self.ProjectsMetricsService(self)
     self.projects_sinks = self.ProjectsSinksService(self)
     self.projects = self.ProjectsService(self)
+    self.sinks = self.SinksService(self)
 
   class BillingAccountsExclusionsService(base_api.BaseApiService):
     """Service class for the billingAccounts_exclusions resource."""
@@ -507,6 +510,151 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ExclusionsService(base_api.BaseApiService):
+    """Service class for the exclusions resource."""
+
+    _NAME = u'exclusions'
+
+    def __init__(self, client):
+      super(LoggingV2.ExclusionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
+
+      Args:
+        request: (LoggingExclusionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogExclusion) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/exclusions',
+        http_method=u'POST',
+        method_id=u'logging.exclusions.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v2/{+parent}/exclusions',
+        request_field=u'logExclusion',
+        request_type_name=u'LoggingExclusionsCreateRequest',
+        response_type_name=u'LogExclusion',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes an exclusion.
+
+      Args:
+        request: (LoggingExclusionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}',
+        http_method=u'DELETE',
+        method_id=u'logging.exclusions.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingExclusionsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets the description of an exclusion.
+
+      Args:
+        request: (LoggingExclusionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogExclusion) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}',
+        http_method=u'GET',
+        method_id=u'logging.exclusions.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'LoggingExclusionsGetRequest',
+        response_type_name=u'LogExclusion',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists all the exclusions in a parent resource.
+
+      Args:
+        request: (LoggingExclusionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListExclusionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/exclusions',
+        http_method=u'GET',
+        method_id=u'logging.exclusions.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/exclusions',
+        request_field='',
+        request_type_name=u'LoggingExclusionsListRequest',
+        response_type_name=u'ListExclusionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Changes one or more properties of an existing exclusion.
+
+      Args:
+        request: (LoggingExclusionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogExclusion) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}',
+        http_method=u'PATCH',
+        method_id=u'logging.exclusions.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v2/{+name}',
+        request_field=u'logExclusion',
+        request_type_name=u'LoggingExclusionsPatchRequest',
+        response_type_name=u'LogExclusion',
+        supports_download=False,
+    )
+
   class FoldersExclusionsService(base_api.BaseApiService):
     """Service class for the folders_exclusions resource."""
 
@@ -897,6 +1045,70 @@ class LoggingV2(base_api.BaseApiClient):
       super(LoggingV2.FoldersService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class LogsService(base_api.BaseApiService):
+    """Service class for the logs resource."""
+
+    _NAME = u'logs'
+
+    def __init__(self, client):
+      super(LoggingV2.LogsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      """Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
+
+      Args:
+        request: (LoggingLogsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/logs/{logsId}',
+        http_method=u'DELETE',
+        method_id=u'logging.logs.delete',
+        ordered_params=[u'logName'],
+        path_params=[u'logName'],
+        query_params=[],
+        relative_path=u'v2/{+logName}',
+        request_field='',
+        request_type_name=u'LoggingLogsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
+
+      Args:
+        request: (LoggingLogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/logs',
+        http_method=u'GET',
+        method_id=u'logging.logs.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/logs',
+        request_field='',
+        request_type_name=u'LoggingLogsListRequest',
+        response_type_name=u'ListLogsResponse',
+        supports_download=False,
+    )
 
   class MonitoredResourceDescriptorsService(base_api.BaseApiService):
     """Service class for the monitoredResourceDescriptors resource."""
@@ -1860,3 +2072,148 @@ class LoggingV2(base_api.BaseApiClient):
       super(LoggingV2.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class SinksService(base_api.BaseApiService):
+    """Service class for the sinks resource."""
+
+    _NAME = u'sinks'
+
+    def __init__(self, client):
+      super(LoggingV2.SinksService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
+
+      Args:
+        request: (LoggingSinksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogSink) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/sinks',
+        http_method=u'POST',
+        method_id=u'logging.sinks.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'uniqueWriterIdentity'],
+        relative_path=u'v2/{+parent}/sinks',
+        request_field=u'logSink',
+        request_type_name=u'LoggingSinksCreateRequest',
+        response_type_name=u'LogSink',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
+
+      Args:
+        request: (LoggingSinksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/sinks/{sinksId}',
+        http_method=u'DELETE',
+        method_id=u'logging.sinks.delete',
+        ordered_params=[u'sinkName'],
+        path_params=[u'sinkName'],
+        query_params=[],
+        relative_path=u'v2/{+sinkName}',
+        request_field='',
+        request_type_name=u'LoggingSinksDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets a sink.
+
+      Args:
+        request: (LoggingSinksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogSink) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/sinks/{sinksId}',
+        http_method=u'GET',
+        method_id=u'logging.sinks.get',
+        ordered_params=[u'sinkName'],
+        path_params=[u'sinkName'],
+        query_params=[],
+        relative_path=u'v2/{+sinkName}',
+        request_field='',
+        request_type_name=u'LoggingSinksGetRequest',
+        response_type_name=u'LogSink',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists sinks.
+
+      Args:
+        request: (LoggingSinksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSinksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/sinks',
+        http_method=u'GET',
+        method_id=u'logging.sinks.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/sinks',
+        request_field='',
+        request_type_name=u'LoggingSinksListRequest',
+        response_type_name=u'ListSinksResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      """Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+
+      Args:
+        request: (LoggingSinksUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LogSink) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/{v2Id}/{v2Id1}/sinks/{sinksId}',
+        http_method=u'PUT',
+        method_id=u'logging.sinks.update',
+        ordered_params=[u'sinkName'],
+        path_params=[u'sinkName'],
+        query_params=[u'uniqueWriterIdentity', u'updateMask'],
+        relative_path=u'v2/{+sinkName}',
+        request_field=u'logSink',
+        request_type_name=u'LoggingSinksUpdateRequest',
+        response_type_name=u'LogSink',
+        supports_download=False,
+    )

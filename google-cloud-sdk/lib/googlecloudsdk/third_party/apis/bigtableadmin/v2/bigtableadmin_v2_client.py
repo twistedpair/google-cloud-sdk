@@ -645,6 +645,33 @@ where only some modifications have taken effect.
         supports_download=False,
     )
 
+    def PartialUpdateInstance(self, request, global_params=None):
+      """Partially updates an instance within a project.
+
+      Args:
+        request: (BigtableadminProjectsInstancesPartialUpdateInstanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PartialUpdateInstance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PartialUpdateInstance.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}',
+        http_method=u'PATCH',
+        method_id=u'bigtableadmin.projects.instances.partialUpdateInstance',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v2/{+name}',
+        request_field=u'instance',
+        request_type_name=u'BigtableadminProjectsInstancesPartialUpdateInstanceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       """Updates an instance within a project.
 

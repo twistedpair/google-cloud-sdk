@@ -17,6 +17,7 @@ from collections import OrderedDict
 import re
 
 from apitools.base.protorpclite import messages
+import enum  # pylint: disable=unused-import, for pytype
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
@@ -133,7 +134,11 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
 
   choices = None
   if attributes.choices is not None:
-    choices = sorted(attributes.choices.keys())
+    choice_map = {c.arg_value: c.help_text for c in attributes.choices}
+    # If help text is provided, give a choice map. Otherwise, just use the
+    # choice values.
+    choices = (choice_map if any(choice_map.values())
+               else sorted(choice_map.keys()))
   elif variant == messages.Variant.ENUM:
     choices = [EnumNameToChoice(name) for name in sorted(field.type.names())]
 
@@ -201,9 +206,9 @@ def ConvertValue(field, value, attributes=None):
   else:
     if attributes and attributes.choices:
       if arg_repeated:
-        value = [attributes.choices.get(v, v) for v in value]
+        value = [attributes.MapChoice(v) for v in value]
       else:
-        value = attributes.choices.get(value, value)
+        value = attributes.MapChoice(value)
     if field.variant == messages.Variant.ENUM:
       t = field.type
       if arg_repeated:
@@ -218,7 +223,56 @@ def ConvertValue(field, value, attributes=None):
   return value
 
 
+def ParseResourceIntoMessage(ref, method, message, resource_method_params=None,
+                             request_id_field=None):
+  """Set fields in message corresponding to a resource.
+
+  Args:
+    ref: googlecloudsdk.core.resources.Resource, the resource reference.
+    method: the API method.
+    message: apitools Message object.
+    resource_method_params: {str: str}, A mapping of resource ref attribute name
+      to API method parameter name, if any.
+    request_id_field: str, the name that the ID of the resource arg takes if the
+      API method params and the resource params don't match.
+  """
+  resource_method_params = resource_method_params or {}
+
+  # This only happens for non-list methods where the API method params don't
+  # match the resource parameters (basically only create methods). In this
+  # case, we re-parse the resource as its parent collection (to fill in the
+  # API parameters, and we insert the name of the resource itself into the
+  # correct position in the body of the request method.
+  if (method.resource_argument_collection.detailed_params !=
+      method.request_collection.detailed_params):
+    # Sets the name of the resource in the message object body.
+    SetFieldInMessage(message, request_id_field, ref.Name())
+    # Create a reference for the parent resource to put in the API params.
+    ref = ref.Parent(
+        parent_collection=method.request_collection.full_name)
+
+  relative_name = ref.RelativeName()
+  for p in method.params:
+    value = getattr(ref, resource_method_params.get(p, p), relative_name)
+    SetFieldInMessage(message, p, value)
+
+
+def ParseStaticFieldsIntoMessage(message, static_fields=None):
+  """Set fields in message corresponding to a dict of static field values.
+
+  Args:
+    message: the Apitools message.
+    static_fields: dict of fields to values.
+  """
+  static_fields = static_fields or {}
+  for field_path, value in static_fields.iteritems():
+    field = GetFieldFromMessage(message, field_path)
+    SetFieldInMessage(
+        message, field_path, ConvertValue(field, value))
+
+
 def ChoiceToEnum(choice, enum_type):
+  # type: (str, enum.Enum) -> enum.Enum
   """Converts the typed choice into an apitools Enum value."""
   name = choice.replace('-', '_').upper()
   return enum_type.lookup_by_name(name)

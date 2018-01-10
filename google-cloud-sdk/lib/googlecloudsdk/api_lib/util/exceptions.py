@@ -283,7 +283,7 @@ class HttpException(core_exceptions.Error):
       if log.GetVerbosity() <= logging.DEBUG:
         error_format += '{.debugInfo?\n{?}}'
     return self.payload.format(unicode(error_format).replace(
-        ':', '{' + _ESCAPED_COLON + '}'))
+        ':', '{' + _ESCAPED_COLON + '}'))  # pytype: disable=wrong-arg-types
 
   @property
   def message(self):

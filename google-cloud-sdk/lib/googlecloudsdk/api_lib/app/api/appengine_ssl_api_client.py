@@ -145,7 +145,9 @@ class AppengineSslApiClient(base.AppengineApiClientBase):
     Raises: InvalidInputError if the user does not specify both cert and key.
     """
     if bool(cert_path) ^ bool(private_key_path):
+      missing_arg = '--certificate' if not cert_path else '--private-key'
       raise exceptions.RequiredArgumentException(
+          missing_arg,
           'The certificate and the private key must both be updated together.')
 
     mask_fields = []

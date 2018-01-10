@@ -15,8 +15,8 @@
 # TODO(b/36051032) Create unittests for this module (which only run on Windows).
 import base64
 import ctypes
-from ctypes import windll
-from ctypes import wintypes
+from ctypes import windll  # pytype: disable=import-error
+from ctypes import wintypes  # pytype: disable=import-error
 
 advapi32 = windll.advapi32
 
@@ -139,7 +139,7 @@ class WinCrypt(object):
 
     # Get length of public key
     key_data = None
-    key_len = ctypes.c_ulong()
+    key_len = ctypes.c_ulong()  # pytype: disable=not-callable
     self.crypt_export_key(key,
                           user_crypto_key,
                           key_type,
@@ -179,7 +179,7 @@ class WinCrypt(object):
     """
     decoded_message = base64.b64decode(enc_message)
     little_endian_message = decoded_message[::-1]
-    data_len = ctypes.c_ulong(len(little_endian_message))
+    data_len = ctypes.c_ulong(len(little_endian_message))  # pytype: disable=not-callable
     data_buf = (ctypes.c_byte * data_len.value).from_buffer_copy(
         little_endian_message)
 

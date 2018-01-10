@@ -64,6 +64,14 @@ class APIDef(object):
 
 
 MAP = {
+    'accesscontextmanager': {
+        'v1alpha': APIDef(
+            class_path='googlecloudsdk.third_party.apis.accesscontextmanager.v1alpha',
+            client_classpath='accesscontextmanager_v1alpha_client.AccesscontextmanagerV1alpha',
+            messages_modulepath='accesscontextmanager_v1alpha_messages',
+            default_version=True
+        ),
+    },
     'alpha_vision': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.alpha_vision.v1',
@@ -237,10 +245,10 @@ MAP = {
         ),
     },
     'cloudscheduler': {
-        'v1beta1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.cloudscheduler.v1beta1',
-            client_classpath='cloudscheduler_v1beta1_client.CloudschedulerV1beta1',
-            messages_modulepath='cloudscheduler_v1beta1_messages',
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudscheduler.v1alpha1',
+            client_classpath='cloudscheduler_v1alpha1_client.CloudschedulerV1alpha1',
+            messages_modulepath='cloudscheduler_v1alpha1_messages',
             default_version=True
         ),
     },
@@ -606,18 +614,6 @@ MAP = {
             client_classpath='videointelligence_v1_client.VideointelligenceV1',
             messages_modulepath='videointelligence_v1_messages',
             default_version=True
-        ),
-        'v1beta1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.videointelligence.v1beta1',
-            client_classpath='videointelligence_v1beta1_client.VideointelligenceV1beta1',
-            messages_modulepath='videointelligence_v1beta1_messages',
-            default_version=False
-        ),
-        'v1beta2': APIDef(
-            class_path='googlecloudsdk.third_party.apis.videointelligence.v1beta2',
-            client_classpath='videointelligence_v1beta2_client.VideointelligenceV1beta2',
-            messages_modulepath='videointelligence_v1beta2_messages',
-            default_version=False
         ),
     },
     'vision': {

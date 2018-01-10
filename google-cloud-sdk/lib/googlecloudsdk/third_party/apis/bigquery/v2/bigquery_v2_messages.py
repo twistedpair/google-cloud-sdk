@@ -784,6 +784,7 @@ class ExplainQueryStage(_messages.Message):
   """A ExplainQueryStage object.
 
   Fields:
+    completedParallelInputs: Number of parallel input segments completed.
     computeMsAvg: Milliseconds the average shard spent on CPU-bound tasks.
     computeMsMax: Milliseconds the slowest shard spent on CPU-bound tasks.
     computeRatioAvg: Relative amount of time the average shard spent on CPU-
@@ -792,6 +793,7 @@ class ExplainQueryStage(_messages.Message):
       bound tasks.
     id: Unique ID for stage within plan.
     name: Human-readable name for stage.
+    parallelInputs: Number of parallel input segments to be processed.
     readMsAvg: Milliseconds the average shard spent reading input.
     readMsMax: Milliseconds the slowest shard spent reading input.
     readRatioAvg: Relative amount of time the average shard spent reading
@@ -820,30 +822,32 @@ class ExplainQueryStage(_messages.Message):
       output.
   """
 
-  computeMsAvg = _messages.IntegerField(1)
-  computeMsMax = _messages.IntegerField(2)
-  computeRatioAvg = _messages.FloatField(3)
-  computeRatioMax = _messages.FloatField(4)
-  id = _messages.IntegerField(5)
-  name = _messages.StringField(6)
-  readMsAvg = _messages.IntegerField(7)
-  readMsMax = _messages.IntegerField(8)
-  readRatioAvg = _messages.FloatField(9)
-  readRatioMax = _messages.FloatField(10)
-  recordsRead = _messages.IntegerField(11)
-  recordsWritten = _messages.IntegerField(12)
-  shuffleOutputBytes = _messages.IntegerField(13)
-  shuffleOutputBytesSpilled = _messages.IntegerField(14)
-  status = _messages.StringField(15)
-  steps = _messages.MessageField('ExplainQueryStep', 16, repeated=True)
-  waitMsAvg = _messages.IntegerField(17)
-  waitMsMax = _messages.IntegerField(18)
-  waitRatioAvg = _messages.FloatField(19)
-  waitRatioMax = _messages.FloatField(20)
-  writeMsAvg = _messages.IntegerField(21)
-  writeMsMax = _messages.IntegerField(22)
-  writeRatioAvg = _messages.FloatField(23)
-  writeRatioMax = _messages.FloatField(24)
+  completedParallelInputs = _messages.IntegerField(1)
+  computeMsAvg = _messages.IntegerField(2)
+  computeMsMax = _messages.IntegerField(3)
+  computeRatioAvg = _messages.FloatField(4)
+  computeRatioMax = _messages.FloatField(5)
+  id = _messages.IntegerField(6)
+  name = _messages.StringField(7)
+  parallelInputs = _messages.IntegerField(8)
+  readMsAvg = _messages.IntegerField(9)
+  readMsMax = _messages.IntegerField(10)
+  readRatioAvg = _messages.FloatField(11)
+  readRatioMax = _messages.FloatField(12)
+  recordsRead = _messages.IntegerField(13)
+  recordsWritten = _messages.IntegerField(14)
+  shuffleOutputBytes = _messages.IntegerField(15)
+  shuffleOutputBytesSpilled = _messages.IntegerField(16)
+  status = _messages.StringField(17)
+  steps = _messages.MessageField('ExplainQueryStep', 18, repeated=True)
+  waitMsAvg = _messages.IntegerField(19)
+  waitMsMax = _messages.IntegerField(20)
+  waitRatioAvg = _messages.FloatField(21)
+  waitRatioMax = _messages.FloatField(22)
+  writeMsAvg = _messages.IntegerField(23)
+  writeMsMax = _messages.IntegerField(24)
+  writeRatioAvg = _messages.FloatField(25)
+  writeRatioMax = _messages.FloatField(26)
 
 
 class ExplainQueryStep(_messages.Message):
@@ -1211,7 +1215,7 @@ class JobConfigurationLoad(_messages.Message):
       "Field1:Type1[,Field2:Type2]*". For example, "foo:STRING, bar:INTEGER,
       baz:FLOAT".
     schemaInlineFormat: [Deprecated] The format of the schemaInline property.
-    schemaUpdateOptions: Allows the schema of the desitination table to be
+    schemaUpdateOptions: Allows the schema of the destination table to be
       updated as a side effect of the load job if a schema is autodetected or
       supplied in the job configuration. Schema update options are supported
       in two cases: when writeDisposition is WRITE_APPEND; when
@@ -1548,6 +1552,19 @@ class JobStatistics2(_messages.Message):
     billingTier: [Output-only] Billing tier for the job.
     cacheHit: [Output-only] Whether the query result was fetched from the
       query cache.
+    ddlOperationPerformed: [Output-only, Experimental] The DDL operation
+      performed, possibly dependent on the pre-existence of the DDL target.
+      Possible values (new values might be added in the future): "CREATE": The
+      query created the DDL target. "SKIP": No-op. Example cases: the query is
+      CREATE TABLE IF NOT EXISTS while the table already exists, or the query
+      is DROP TABLE IF EXISTS while the table does not exist. "REPLACE": The
+      query replaced the DDL target. Example case: the query is CREATE OR
+      REPLACE TABLE, and the table already exists. "DROP": The query deleted
+      the DDL target.
+    ddlTargetTable: [Output-only, Experimental] The DDL target table. Present
+      only for CREATE/DROP TABLE/VIEW queries.
+    estimatedBytesProcessed: [Output-only] The original estimate of bytes
+      processed for the job.
     numDmlAffectedRows: [Output-only] The number of rows affected by a DML
       statement. Present only for DML statements INSERT, UPDATE or DELETE.
     queryPlan: [Output-only] Describes execution plan for the query.
@@ -1557,7 +1574,17 @@ class JobStatistics2(_messages.Message):
     schema: [Output-only, Experimental] The schema of the results. Present
       only for successful dry run of non-legacy SQL queries.
     statementType: [Output-only, Experimental] The type of query statement, if
-      valid.
+      valid. Possible values (new values might be added in the future):
+      "SELECT": SELECT query. "INSERT": INSERT query; see
+      https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
+      manipulation-language "UPDATE": UPDATE query; see
+      https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
+      manipulation-language "DELETE": DELETE query; see
+      https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
+      manipulation-language "CREATE_TABLE": CREATE [OR REPLACE] TABLE without
+      AS SELECT. "CREATE_TABLE_AS_SELECT": CREATE [OR REPLACE] TABLE ... AS
+      SELECT ... "DROP_TABLE": DROP TABLE query. "CREATE_VIEW": CREATE [OR
+      REPLACE] VIEW ... AS SELECT ... "DROP_VIEW": DROP VIEW query.
     totalBytesBilled: [Output-only] Total bytes billed for the job.
     totalBytesProcessed: [Output-only] Total bytes processed for the job.
     totalSlotMs: [Output-only] Slot-milliseconds for the job.
@@ -1568,15 +1595,18 @@ class JobStatistics2(_messages.Message):
 
   billingTier = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   cacheHit = _messages.BooleanField(2)
-  numDmlAffectedRows = _messages.IntegerField(3)
-  queryPlan = _messages.MessageField('ExplainQueryStage', 4, repeated=True)
-  referencedTables = _messages.MessageField('TableReference', 5, repeated=True)
-  schema = _messages.MessageField('TableSchema', 6)
-  statementType = _messages.StringField(7)
-  totalBytesBilled = _messages.IntegerField(8)
-  totalBytesProcessed = _messages.IntegerField(9)
-  totalSlotMs = _messages.IntegerField(10)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 11, repeated=True)
+  ddlOperationPerformed = _messages.StringField(3)
+  ddlTargetTable = _messages.MessageField('TableReference', 4)
+  estimatedBytesProcessed = _messages.IntegerField(5)
+  numDmlAffectedRows = _messages.IntegerField(6)
+  queryPlan = _messages.MessageField('ExplainQueryStage', 7, repeated=True)
+  referencedTables = _messages.MessageField('TableReference', 8, repeated=True)
+  schema = _messages.MessageField('TableSchema', 9)
+  statementType = _messages.StringField(10)
+  totalBytesBilled = _messages.IntegerField(11)
+  totalBytesProcessed = _messages.IntegerField(12)
+  totalSlotMs = _messages.IntegerField(13)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 14, repeated=True)
 
 
 class JobStatistics3(_messages.Message):

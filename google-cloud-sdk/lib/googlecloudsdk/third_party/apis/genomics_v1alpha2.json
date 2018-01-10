@@ -356,6 +356,15 @@
         "noAddress": {
           "description": "Whether to assign an external IP to the instance. This is an experimental\nfeature that may go away. Defaults to false.\nCorresponds to `--no_address` flag for [gcloud compute instances create]\n(https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/compute\/instances\/create).\nIn order to use this, must be true for both create time and run time.\nCannot be true at run time if false at create time. If you need to ssh into\na private IP VM for debugging, you can ssh to a public VM and then ssh into\nthe private VM's Internal IP.  If noAddress is set, this pipeline run may\nonly load docker images from Google Container Registry and not Docker Hub.\nBefore using this, you must\n[configure access to Google services from internal IPs](https:\/\/cloud.google.com\/compute\/docs\/configure-private-google-access#configuring_access_to_google_services_from_internal_ips).",
           "type": "boolean"
+        },
+        "acceleratorType": {
+          "description": "Optional. The Compute Engine defined accelerator type.\nBy specifying this parameter, you will download and install the following\nthird-party software onto your managed Compute Engine instances: NVIDIA\u00AE\nTesla\u00AE drivers and NVIDIA\u00AE CUDA toolkit.\nPlease see https:\/\/cloud.google.com\/compute\/docs\/gpus\/ for a list of\navailable accelerator types.",
+          "type": "string"
+        },
+        "acceleratorCount": {
+          "description": "Optional. The number of accelerators of the specified type to attach.\nBy specifying this parameter, you will download and install the following\nthird-party software onto your managed Compute Engine instances:\nNVIDIA\u00AE Tesla\u00AE drivers and NVIDIA\u00AE CUDA toolkit.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -532,44 +541,36 @@
       "type": "object",
       "properties": {
         "image": {
-
           "type": "string"
         },
         "cmd": {
-
           "type": "string"
         },
         "gcsLogPath": {
-
           "type": "string"
         },
         "machineType": {
-
           "type": "string"
         },
         "vars": {
-
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "disks": {
-
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "gcsSources": {
-
           "type": "object",
           "additionalProperties": {
             "$ref": "RepeatedString"
           }
         },
         "gcsSinks": {
-
           "type": "object",
           "additionalProperties": {
             "$ref": "RepeatedString"
@@ -579,11 +580,9 @@
     },
     "RepeatedString": {
       "id": "RepeatedString",
-
       "type": "object",
       "properties": {
         "values": {
-
           "type": "array",
           "items": {
             "type": "string"
@@ -597,18 +596,15 @@
       "type": "object",
       "properties": {
         "operationId": {
-
           "type": "string"
         },
         "timestampEvents": {
-
           "type": "array",
           "items": {
             "$ref": "TimestampEvent"
           }
         },
         "errorCode": {
-
           "enumDescriptions": [
             "Not an error; returned on success\n\nHTTP Mapping: 200 OK",
             "The operation was cancelled, typically by the caller.\n\nHTTP Mapping: 499 Client Closed Request",
@@ -650,11 +646,9 @@
           ]
         },
         "errorMessage": {
-
           "type": "string"
         },
         "validationToken": {
-
           "type": "string",
           "format": "uint64"
         }
