@@ -17,7 +17,6 @@
 
 from enum import Enum
 
-from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import resource_arg_schema
@@ -192,8 +191,6 @@ class Argument(object):
       generated.
   """
 
-  STATIC_ACTIONS = {'store', 'store_true'}
-
   @classmethod
   def FromData(cls, data):
     """Gets the arg definition from the spec data.
@@ -237,46 +234,16 @@ class Argument(object):
         metavar=data.get('metavar'),
         completer=util.Hook.FromData(data, 'completer'),
         is_positional=is_positional,
-        type=util.Hook.FromData(data, 'type'),
-        choices=[Choice(d) for d in choices] if choices else None,
+        type=util.ParseType(data.get('type')),
+        choices=[util.Choice(d) for d in choices] if choices else None,
         default=data.get('default'),
         fallback=util.Hook.FromData(data, 'fallback'),
         processor=util.Hook.FromData(data, 'processor'),
         required=data.get('required', False),
         hidden=data.get('hidden', False),
-        action=cls._ParseAction(data, flag_name),
+        action=util.ParseAction(data.get('action'), flag_name),
         repeated=data.get('repeated'),
     )
-
-  @classmethod
-  def _ParseAction(cls, data, flag_name):
-    """Parse the action out of the argument spec.
-
-    Args:
-      data: The argument spec data.
-      flag_name: str, The effective flag name.
-
-    Raises:
-      ValueError: If the spec is invalid.
-
-    Returns:
-      The action to use as argparse accepts it. It will either be a class that
-      implements action, or it will be a str of a builtin argparse type.
-    """
-    action = data.get('action', None)
-    if not action:
-      return None
-
-    if isinstance(action, basestring):
-      if action in cls.STATIC_ACTIONS:
-        return action
-      return util.Hook.FromPath(action)
-
-    deprecation = action.get('deprecated')
-    if deprecation:
-      return actions.DeprecationAction(flag_name, **deprecation)
-
-    raise ValueError('Unknown value for action: ' + str(action))
 
   # pylint:disable=redefined-builtin, type param needs to match the schema.
   def __init__(self, api_field=None, arg_name=None, help_text=None,
@@ -330,29 +297,10 @@ class Argument(object):
     if value is None:
       return
     field = arg_utils.GetFieldFromMessage(message, self.api_field)
-    value = arg_utils.ConvertValue(field, value, self)
+    value = arg_utils.ConvertValue(
+        field, value, repeated=self.repeated, processor=self.processor,
+        choices=util.Choice.ToChoiceMap(self.choices))
     arg_utils.SetFieldInMessage(message, self.api_field, value)
-
-  def MapChoice(self, value):
-    """Maps an choice value to the API's enum string value.
-
-    Args:
-      value: str, The value the user typed.
-
-    Returns:
-      str, The representation of the API's enum value that corresponds to this
-      choice. If no match is found, the original value is returned.
-    """
-    for c in self.choices or []:
-      arg_value = c.arg_value
-      # Accept both upper and lowercase strings for string values.
-      if isinstance(arg_value, basestring):
-        arg_value = arg_value.lower()
-      if isinstance(value, basestring):
-        value = value.lower()
-      if arg_value == value:
-        return c.enum_value
-    return value
 
 
 class ArgumentGroup(object):
@@ -422,15 +370,6 @@ class ArgumentGroup(object):
     """
     for arg in self.arguments:
       arg.Parse(message, namespace)
-
-
-class Choice(object):
-  """Holds information about a single enum choice value."""
-
-  def __init__(self, data):
-    self.arg_value = data['arg_value']
-    self.enum_value = data['enum_value']
-    self.help_text = data.get('help_text')
 
 
 class Input(object):

@@ -40,6 +40,31 @@ definitions:
     # Examples: core/project, compute/zone
     pattern: "\\w+/\\w+"
 
+  argparse_type:
+    # Something to be used as the type argument for an argparse argument.
+    oneOf:
+      # One of the builtin Python types.
+      - enum: [ str, int, long, float, bool ]
+      # The module path to a function used as the 'type' for the argument.
+      # The function takes a single parameter which is the parsed string value
+      # of the argument and returns the converted parsed value.
+      - $ref: "#/definitions/python_hook"
+
+  choices:
+    # A list of valid choices for an argument.
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      properties:
+        # The choice as it appears on the command line.
+        arg_value: { type: [ string, number, boolean ] }
+        # The string representation of the API enum value that will be used
+        # when this choice is selected.
+        enum_value: { type: string }
+        # The help text to show next to the choice on the MAN page.
+        help_text: { type: string }
+
   resource_attribute:
     # An individual resource arg attribute.
     required: [ parameter_name, attribute_name, help ]
@@ -62,8 +87,8 @@ definitions:
 
   argument:
     oneOf:
-      - { $ref: "#/definitions/arg" }
-      - { $ref: "#/definitions/arg_group" }
+      - $ref: "#/definitions/arg"
+      - $ref: "#/definitions/arg_group"
 
   arg:
     required: [ help_text ]
@@ -85,11 +110,42 @@ definitions:
       # True if this should be forced to be a positional argument
       # instead of a flag.
       is_positional: { type: boolean }
-      # The module path to a function used as the 'type' for the
-      # argument. The function takes a single parameter which is the
-      # parsed string value of the argument and returns the converted
-      # parsed value.
-      type: { $ref: "#/definitions/python_hook" }
+      # The argparse type to use for this argument. See inline options for
+      # this value.
+      type:
+        oneOf:
+          # A builtin type or hook to a type function.
+          - $ref: "#/definitions/argparse_type"
+          # First class support for making this an ArgDict.
+          - type: object
+            additionalProperties: false
+            properties:
+              arg_dict:
+                type: object
+                additionalProperties: false
+                required: [ spec ]
+                properties:
+                  # Set to True to make the ArgDict correspond to a repeated
+                  # key/value pair. For this to work, the spec must contain
+                  # exactly two items. If False, the keys in the dict will be
+                  # the arg names, and the values will be the values for those
+                  # fields. The arg is repeated by specifying the flag multiple
+                  # times.
+                  flatten: { type: boolean }
+                  spec:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required: [ api_field ]
+                      properties:
+                        api_field: { type: string }
+                        # Only applicable for non-flat dicts.
+                        arg_name: { type: string }
+                        type: { $ref: "#/definitions/argparse_type" }
+                        # Only applicable for non-flat dicts.
+                        required: { type: boolean }
+                        choices: { $ref: "#/definitions/choices" }
       # The argparse action to use for this argument. See inline options for
       # this value.
       action:
@@ -115,22 +171,8 @@ definitions:
       # The metavar for the generated argument. This will be generated
       # automatically if not provided.
       metavar: { type: string }
-      # Overrides the choices that are generated for the argument. Each key
-      # is one choice and the value is the value that is returned when that
-      # choice is selected.
-      choices:
-        type: array
-        items:
-          type: object
-          additionalProperties: false
-          properties:
-            # The choice as it appears on the command line.
-            arg_value: { type: [ string, number, boolean ] }
-            # The string representation of the API enum value that will be used
-            # when this choice is selected.
-            enum_value: { type: string }
-            # The help text to show next to the choice on the MAN page.
-            help_text: { type: string }
+      # Overrides the choices that are generated for the argument.
+      choices: { $ref: "#/definitions/choices" }
       # The default value of the argument when not provided. Mutually exclusive
       # with fallback.
       default: { type: [ string, number, boolean, array ] }

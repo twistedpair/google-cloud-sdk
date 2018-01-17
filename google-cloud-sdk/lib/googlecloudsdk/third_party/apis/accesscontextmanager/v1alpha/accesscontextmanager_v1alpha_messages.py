@@ -24,8 +24,8 @@ class AccessLevel(_messages.Message):
     description: Description of the `AccessLevel` and its use. Does not affect
       behavior.
     name: Required. Resource name for the Access Level. The `short_name`
-      component can only include alphanumeric and '_'. Format:
-      `accessPolicies/{policy_id}/accessLevels/{short_name}`
+      component must begin with a letter and only include alphanumeric and
+      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`
     title: Human readable title. Must be unique within the Policy.
     updateTime: Output only. Time the `AccessLevel` was updated in UTC.
   """
@@ -47,7 +47,7 @@ class AccessPolicy(_messages.Message):
 
   Fields:
     createTime: Output only. Time the `AccessPolicy` was created in UTC.
-    name: Read only. Resource name of the `AccessPolicy`. Format:
+    name: Output only. Resource name of the `AccessPolicy`. Format:
       `accessPolicies/{policy_id}`
     parent: Required. The parent of this `AccessPolicy` in the Cloud Resource
       Hierarchy. Currently immutable once created. Format:
@@ -72,6 +72,14 @@ class AccessZone(_messages.Message):
   to a single Access Zone. The restriction against overlapping zones may be
   lifted in the future.
 
+  Enums:
+    ZoneTypeValueValuesEnum: Zone type indicator. A single project is allowed
+      to be a member of single regular access zone, but multiple bridge access
+      zones. A project cannot be a included in a bridge access zone without
+      being included in regular access zone. For bridge access zones,
+      restricted/unrestricted service lists as well as access lists must be
+      empty.
+
   Fields:
     accessLevels: A list of `AccessLevel` resource names that allow resources
       within the `AccessZone` to be accessed from the internet. `AccessLevels`
@@ -85,8 +93,8 @@ class AccessZone(_messages.Message):
     description: Description of the `AccessZone` and its use. Does not affect
       behavior.
     name: Required. Resource name for the Access Zone.  The `short_name`
-      component can only include alphanumeric and '_'. Format:
-      `accessPolicies/{policy_id}/accessZones/{short_name}`
+      component must begin with a letter and only include alphanumeric and
+      '_'. Format: `accessPolicies/{policy_id}/accessZones/{short_name}`
     resources: A list of GCP resources that are inside of the access zone.
       Currently only projects are allowed. Format: `projects/{project_number}`
     restrictedServices: GCP services that Access Zone restrictions will be
@@ -118,7 +126,27 @@ class AccessZone(_messages.Message):
       and only if "restricted_services" list contains a "*" wildcard. For
       bridge access zones, must be empty.
     updateTime: Output only. Time the `AccessZone` was updated in UTC.
+    zoneType: Zone type indicator. A single project is allowed to be a member
+      of single regular access zone, but multiple bridge access zones. A
+      project cannot be a included in a bridge access zone without being
+      included in regular access zone. For bridge access zones,
+      restricted/unrestricted service lists as well as access lists must be
+      empty.
   """
+
+  class ZoneTypeValueValuesEnum(_messages.Enum):
+    """Zone type indicator. A single project is allowed to be a member of
+    single regular access zone, but multiple bridge access zones. A project
+    cannot be a included in a bridge access zone without being included in
+    regular access zone. For bridge access zones, restricted/unrestricted
+    service lists as well as access lists must be empty.
+
+    Values:
+      ZONE_TYPE_REGULAR: Regular zone.
+      ZONE_TYPE_BRIDGE: Bridge zone.
+    """
+    ZONE_TYPE_REGULAR = 0
+    ZONE_TYPE_BRIDGE = 1
 
   accessLevels = _messages.StringField(1, repeated=True)
   createTime = _messages.StringField(2)
@@ -129,6 +157,7 @@ class AccessZone(_messages.Message):
   title = _messages.StringField(7)
   unrestrictedServices = _messages.StringField(8, repeated=True)
   updateTime = _messages.StringField(9)
+  zoneType = _messages.EnumField('ZoneTypeValueValuesEnum', 10)
 
 
 class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Message):
@@ -244,8 +273,8 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Messa
   Fields:
     accessLevel: A AccessLevel resource to be passed as the request body.
     name: Required. Resource name for the Access Level. The `short_name`
-      component can only include alphanumeric and '_'. Format:
-      `accessPolicies/{policy_id}/accessLevels/{short_name}`
+      component must begin with a letter and only include alphanumeric and
+      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`
     updateMask: Required.  Mask to control which fields get updated. Must be
       non-empty.
   """
@@ -312,8 +341,8 @@ class AccesscontextmanagerAccessPoliciesAccessZonesPatchRequest(_messages.Messag
   Fields:
     accessZone: A AccessZone resource to be passed as the request body.
     name: Required. Resource name for the Access Zone.  The `short_name`
-      component can only include alphanumeric and '_'. Format:
-      `accessPolicies/{policy_id}/accessZones/{short_name}`
+      component must begin with a letter and only include alphanumeric and
+      '_'. Format: `accessPolicies/{policy_id}/accessZones/{short_name}`
     updateMask: Required. Mask to control which fields get updated. Must be
       non-empty.
   """
@@ -367,7 +396,7 @@ class AccesscontextmanagerAccessPoliciesPatchRequest(_messages.Message):
 
   Fields:
     accessPolicy: A AccessPolicy resource to be passed as the request body.
-    name: Read only. Resource name of the `AccessPolicy`. Format:
+    name: Output only. Resource name of the `AccessPolicy`. Format:
       `accessPolicies/{policy_id}`
     updateMask: Required. Mask to control which fields get updated. Must be
       non-empty.

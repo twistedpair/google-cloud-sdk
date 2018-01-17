@@ -80,12 +80,15 @@ class Snapshot(object):
         fm = FileMetadata(self.src_dir, fpath)
         self.files[fpath] = fm
         self.uncompressed_size += fm.size
+      # NOTICE: Modifying dirnames is explicitly allowed by os.walk(). The
+      # modified dirnames is used in the next loop iteration which is also
+      # the next os.walk() iteration.
       for dname in dirnames[:]:  # Make a copy since we modify the original.
         # Join dir paths with Linux path separators, avoiding ./ prefix.
         # GCB workers are Linux VMs so os.path.join produces incorrect output.
         dpath = '/'.join([relpath, dname]) if relpath != '.' else dname
         if not file_chooser.IsIncluded(dpath, is_dir=True):
-          dirnames.remove(dpath)  # Don't recurse into dpath at all.
+          dirnames.remove(dname)  # Don't recurse into dpath at all.
           continue
         self.dirs.append(dpath)
 

@@ -102,6 +102,14 @@ def CheckKubectlInstalled():
     log.warn(MISSING_KUBECTL_MSG)
 
 
+def GenerateClusterUrl(cluster_ref):
+  return ('https://console.cloud.google.com/kubernetes/'
+          'workload_/gcloud/{location}/{cluster}?project={project}').format(
+              location=cluster_ref.zone,
+              cluster=cluster_ref.clusterId,
+              project=cluster_ref.projectId)
+
+
 KUBECONFIG_USAGE_FMT = '''\
 kubeconfig entry generated for {cluster}.'''
 

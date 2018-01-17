@@ -144,7 +144,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Read only. Resource name of the `AccessPolicy`. Format:\n`accessPolicies\/{policy_id}`",
+          "description": "Output only. Resource name of the `AccessPolicy`. Format:\n`accessPolicies\/{policy_id}`",
           "type": "string"
         },
         "parent": {
@@ -253,7 +253,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Resource name for the Access Level. The `short_name` component\ncan only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`",
+          "description": "Required. Resource name for the Access Level. The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`",
           "type": "string"
         },
         "title": {
@@ -362,7 +362,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Resource name for the Access Zone.  The `short_name` component\ncan only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessZones\/{short_name}`",
+          "description": "Required. Resource name for the Access Zone.  The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessZones\/{short_name}`",
           "type": "string"
         },
         "title": {
@@ -410,6 +410,18 @@
           "items": {
             "type": "string"
           }
+        },
+        "zoneType": {
+          "description": "Zone type indicator. A single project is\nallowed to be a member of single regular access zone, but multiple bridge\naccess zones. A project cannot be a included in a bridge access zone\nwithout being included in regular access zone. For bridge access zones,\nrestricted\/unrestricted service lists as well as access lists must be\nempty.",
+          "enumDescriptions": [
+            "Regular zone.",
+            "Bridge zone."
+          ],
+          "type": "string",
+          "enum": [
+            "ZONE_TYPE_REGULAR",
+            "ZONE_TYPE_BRIDGE"
+          ]
         }
       }
     }
@@ -503,7 +515,7 @@
           "description": "Update an AccessPolicy. The\nlongrunning Operation from this RPC will have a successful status once the\nchanges to the AccessPolicy have propagated\nto long-lasting storage. Syntactic and basic semantic errors will be\nreturned in `metadata` as a BadRequest proto.",
           "parameters": {
             "name": {
-              "description": "Read only. Resource name of the `AccessPolicy`. Format:\n`accessPolicies\/{policy_id}`",
+              "description": "Output only. Resource name of the `AccessPolicy`. Format:\n`accessPolicies\/{policy_id}`",
               "location": "path",
               "required": true,
               "pattern": "^accessPolicies\/[^\/]+$",
@@ -676,7 +688,7 @@
               "description": "Update an Access Level. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Level have propagated\nto long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered.",
               "parameters": {
                 "name": {
-                  "description": "Required. Resource name for the Access Level. The `short_name` component\ncan only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`",
+                  "description": "Required. Resource name for the Access Level. The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`",
                   "location": "path",
                   "required": true,
                   "pattern": "^accessPolicies\/[^\/]+\/accessLevels\/[^\/]+$",
@@ -828,7 +840,7 @@
               "description": "Update an Access Zone. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Zone\nhave propagated to long-lasting storage. Access Zone containing errors\nwill result in an error response for the first error encountered.",
               "parameters": {
                 "name": {
-                  "description": "Required. Resource name for the Access Zone.  The `short_name` component\ncan only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessZones\/{short_name}`",
+                  "description": "Required. Resource name for the Access Zone.  The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessZones\/{short_name}`",
                   "location": "path",
                   "required": true,
                   "pattern": "^accessPolicies\/[^\/]+\/accessZones\/[^\/]+$",

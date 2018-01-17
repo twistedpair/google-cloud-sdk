@@ -233,7 +233,7 @@ The behavior of --scopes will change in a future gcloud release: \
 service-control and service-management scopes will no longer be added to what \
 is specified in --scopes. To use these scopes, add them explicitly to \
 --scopes. To use the new behavior, set container/new_scopes_behavior property \
-to true.""")
+(gcloud config set container/new_scopes_behavior true).""")
           options.scopes += _ENDPOINTS_SCOPES
           break
     else:
@@ -249,7 +249,8 @@ Starting in Kubernetes v1.10, new clusters will no longer get compute-rw and \
 storage-ro scopes added to what is specified in --scopes (though the latter \
 will remain included in the default --scopes). To use these scopes, add them \
 explicitly to --scopes. To use the new behavior, set \
-container/new_scopes_behavior property to true.""")
+container/new_scopes_behavior property (gcloud config set \
+container/new_scopes_behavior true).""")
         options.scopes += _OLD_REQUIRED_SCOPES
         break
   node_config.oauthScopes = sorted(set(options.scopes))
@@ -860,7 +861,9 @@ class APIAdapter(object):
       addons = self._AddonsConfig(
           disable_ingress=INGRESS not in options.addons,
           disable_hpa=HPA not in options.addons,
-          disable_dashboard=DASHBOARD not in options.addons)
+          disable_dashboard=DASHBOARD not in options.addons,
+          disable_network_policy=(
+              NETWORK_POLICY not in options.addons))
       cluster.addonsConfig = addons
     if options.enable_master_authorized_networks:
       authorized_networks = self.messages.MasterAuthorizedNetworksConfig(

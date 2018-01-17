@@ -109,7 +109,7 @@ def AddTaskLeaseDurationFlag(parser, helptext=None):
                 help=helptext).AddToParser(parser)
 
 
-def AddMaxTasksToPullFlag(parser):
+def AddMaxTasksToLeaseFlag(parser):
   # Default help for base.LIMIT_FLAG is inaccurate and confusing in this case
   base.Argument(
       '--limit', type=int, default=1000, category=base.LIST_COMMAND_FLAGS,
@@ -119,14 +119,14 @@ def AddMaxTasksToPullFlag(parser):
       """).AddToParser(parser)
 
 
-def AddFilterPulledTasksFlag(parser):
+def AddFilterLeasedTasksFlag(parser):
   tag_filter_group = parser.add_mutually_exclusive_group()
   tag_filter_group.add_argument('--tag', help="""\
-      A tag to filter each task to be pulled. If a task has the tag and the
-      task is available to be pulled, then it is listed and leased.
+      A tag to filter each task to be leased. If a task has the tag and the
+      task is available to be leased, then it is listed and leased.
       """)
   tag_filter_group.add_argument('--oldest-tag', action='store_true', help="""\
-      Only pull tasks which have the same tag as the task with the oldest
+      Only lease tasks which have the same tag as the task with the oldest
       schedule time.
       """)
 

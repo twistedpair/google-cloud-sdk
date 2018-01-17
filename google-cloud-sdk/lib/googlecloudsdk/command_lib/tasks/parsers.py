@@ -229,7 +229,7 @@ def FormatLeaseDuration(lease_duration):
   return '{}s'.format(lease_duration)
 
 
-def ParseTasksPullFilterFlags(args):
+def ParseTasksLeaseFilterFlags(args):
   if args.oldest_tag:
     return 'tag_function=oldest_tag()'
   if args.IsSpecified('tag'):

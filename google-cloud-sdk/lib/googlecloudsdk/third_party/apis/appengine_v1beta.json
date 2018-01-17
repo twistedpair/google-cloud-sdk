@@ -497,7 +497,7 @@
           }
         },
         "resources": {
-          "description": "Machine resources for this version. Only applicable in the App Engine flexible environment.",
+          "description": "Machine resources for this version. Only applicable for VM runtimes.",
           "$ref": "Resources"
         },
         "runtime": {
@@ -1312,6 +1312,10 @@
         "build": {
           "description": "Google Cloud Container Builder build information.",
           "$ref": "BuildInfo"
+        },
+        "cloudBuildOptions": {
+          "description": "Options for any Google Cloud Container Builder builds created as a part of this deployment.Note that this is orthogonal to the build parameter, where the deployment depends on an already existing cloud build. These options will only be used if a new build is created, such as when deploying to the App Engine flexible environment using files or zip.",
+          "$ref": "CloudBuildOptions"
         }
       }
     },
@@ -1369,6 +1373,22 @@
         "cloudBuildId": {
           "description": "The Google Cloud Container Builder build id. Example: \"f966068f-08b2-42c8-bdfe-74137dff2bf9\"",
           "type": "string"
+        }
+      }
+    },
+    "CloudBuildOptions": {
+      "id": "CloudBuildOptions",
+      "description": "Options for the build operations performed as a part of the version deployment. Only applicable for App Engine flexible environment when creating a version using source code directly.",
+      "type": "object",
+      "properties": {
+        "appYamlPath": {
+          "description": "Path to the yaml file used in deployment, used to determine runtime configuration details.Required for flexible environment builds.See https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/config\/appref for more details.",
+          "type": "string"
+        },
+        "cloudBuildTimeout": {
+          "description": "The Cloud Build timeout used as part of any dependent builds performed by version creation. Defaults to 10 minutes.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -1988,6 +2008,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "createVersionMetadata": {
+          "$ref": "CreateVersionMetadataV1Alpha"
+        }
+      }
+    },
+    "CreateVersionMetadataV1Alpha": {
+      "id": "CreateVersionMetadataV1Alpha",
+      "description": "Metadata for the given google.longrunning.Operation during a google.appengine.v1alpha.CreateVersionRequest.",
+      "type": "object",
+      "properties": {
+        "cloudBuildId": {
+          "description": "The Cloud Build ID if one was created as part of the version create. @OutputOnly",
+          "type": "string"
         }
       }
     },
@@ -2028,6 +2062,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "createVersionMetadata": {
+          "$ref": "CreateVersionMetadataV1Beta"
+        }
+      }
+    },
+    "CreateVersionMetadataV1Beta": {
+      "id": "CreateVersionMetadataV1Beta",
+      "description": "Metadata for the given google.longrunning.Operation during a google.appengine.v1beta.CreateVersionRequest.",
+      "type": "object",
+      "properties": {
+        "cloudBuildId": {
+          "description": "The Cloud Build ID if one was created as part of the version create. @OutputOnly",
+          "type": "string"
         }
       }
     },

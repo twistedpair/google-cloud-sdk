@@ -162,6 +162,24 @@ class ResourcePresentationSpec(PresentationSpec):
       name = name[len(util.PREFIX):].replace('-', ' ')
     return '{}'.format(name)
 
+  @property
+  def args_required(self):
+    """True if the resource is required and any arguments have no fallthroughs.
+
+    If fallthroughs can ever be configured in the ResourceInfo object,
+    a more robust solution will be needed, e.g. a GetFallthroughsForAttribute
+    method.
+
+    Returns:
+      bool, whether the argument group should be required.
+    """
+    if not self.required:
+      return False
+    for attribute in self.concept_spec.attributes:
+      if not attribute.fallthroughs:
+        return True
+    return False
+
   def GetInfo(self):
     """Overrides.
 
@@ -170,11 +188,13 @@ class ResourcePresentationSpec(PresentationSpec):
     """
     fallthroughs_map = {attribute.name: attribute.fallthroughs
                         for attribute in self.concept_spec.attributes}
+    allow_empty = not self.required
     return handlers.ResourceInfo(
         self.concept_spec,
         self.attribute_to_args_map,
         fallthroughs_map,
-        plural=self.plural)
+        plural=self.plural,
+        allow_empty=allow_empty)
 
   @staticmethod
   def GetFlagName(attribute_name, resource_name, flag_name_overrides=None,
@@ -211,8 +231,13 @@ class ResourcePresentationSpec(PresentationSpec):
         prefix += resource_name.lower().replace('_', '-') + '-'
     return prefix + attribute_name
 
-  def _KwargsForAttribute(self, name, attribute, required=False):
+  def _KwargsForAttribute(self, name, attribute, is_anchor=False):
     """Constructs the kwargs for adding an attribute to argparse."""
+    # Argument is modal if it's the anchor, unless there are fallthroughs.
+    # If fallthroughs can ever be configured in the ResourceInfo object,
+    # a more robust solution will be needed, e.g. a GetFallthroughsForAttribute
+    # method.
+    required = is_anchor and not attribute.fallthroughs
     # If this is the only argument in the group, the help text should be the
     # "group" help.
     if len(filter(bool, self.attribute_to_args_map.values())) == 1:
@@ -242,7 +267,7 @@ class ResourcePresentationSpec(PresentationSpec):
         kwargs_dict.update({'type': arg_parsers.ArgList()})
     return kwargs_dict
 
-  def _GetAttributeArg(self, attribute, required=False):
+  def _GetAttributeArg(self, attribute, is_anchor=False):
     """Creates argument for a specific attribute."""
     name = self.attribute_to_args_map.get(attribute.name, None)
     # Return None for any false value.
@@ -250,7 +275,7 @@ class ResourcePresentationSpec(PresentationSpec):
       return None
     return base.Argument(
         name,
-        **self._KwargsForAttribute(name, attribute, required=required))
+        **self._KwargsForAttribute(name, attribute, is_anchor=is_anchor))
 
   def GetAttributeArgs(self):
     """Generate args to add to the argument group."""
@@ -262,7 +287,7 @@ class ResourcePresentationSpec(PresentationSpec):
     # If the group is optional, the anchor arg is "modal": it is required only
     # if another argument in the group is specified.
     arg = self._GetAttributeArg(
-        self.concept_spec.anchor, required=True)
+        self.concept_spec.anchor, is_anchor=True)
     if arg:
       args.append(arg)
 
@@ -300,7 +325,7 @@ class ResourcePresentationSpec(PresentationSpec):
 
     group = parser.add_group(
         help=self.GetGroupHelp(),
-        required=self.required)
+        required=self.args_required)
     for arg in args:
       arg.AddToParser(group)
 

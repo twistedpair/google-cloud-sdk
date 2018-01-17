@@ -946,6 +946,25 @@ class CertificateRawData(_messages.Message):
   publicCertificate = _messages.StringField(2)
 
 
+class CloudBuildOptions(_messages.Message):
+  """Options for the build operations performed as a part of the version
+  deployment. Only applicable for App Engine flexible environment when
+  creating a version using source code directly.
+
+  Fields:
+    appYamlPath: Path to the yaml file used in deployment, used to determine
+      runtime configuration details.Required for flexible environment
+      builds.See
+      https://cloud.google.com/appengine/docs/standard/python/config/appref
+      for more details.
+    cloudBuildTimeout: The Cloud Build timeout used as part of any dependent
+      builds performed by version creation. Defaults to 10 minutes.
+  """
+
+  appYamlPath = _messages.StringField(1)
+  cloudBuildTimeout = _messages.StringField(2)
+
+
 class ContainerInfo(_messages.Message):
   """Docker image that is used to create a container and start a VM instance
   for the version that you deploy. Only applicable for instances running in
@@ -974,6 +993,30 @@ class CpuUtilization(_messages.Message):
   targetUtilization = _messages.FloatField(2)
 
 
+class CreateVersionMetadataV1Alpha(_messages.Message):
+  """Metadata for the given google.longrunning.Operation during a
+  google.appengine.v1alpha.CreateVersionRequest.
+
+  Fields:
+    cloudBuildId: The Cloud Build ID if one was created as part of the version
+      create. @OutputOnly
+  """
+
+  cloudBuildId = _messages.StringField(1)
+
+
+class CreateVersionMetadataV1Beta(_messages.Message):
+  """Metadata for the given google.longrunning.Operation during a
+  google.appengine.v1beta.CreateVersionRequest.
+
+  Fields:
+    cloudBuildId: The Cloud Build ID if one was created as part of the version
+      create. @OutputOnly
+  """
+
+  cloudBuildId = _messages.StringField(1)
+
+
 class DebugInstanceRequest(_messages.Message):
   """Request message for Instances.DebugInstance.
 
@@ -999,6 +1042,12 @@ class Deployment(_messages.Message):
 
   Fields:
     build: Google Cloud Container Builder build information.
+    cloudBuildOptions: Options for any Google Cloud Container Builder builds
+      created as a part of this deployment.Note that this is orthogonal to the
+      build parameter, where the deployment depends on an already existing
+      cloud build. These options will only be used if a new build is created,
+      such as when deploying to the App Engine flexible environment using
+      files or zip.
     container: The Docker image for the container that runs the version. Only
       applicable for instances running in the App Engine flexible environment.
     files: Manifest of the files stored in Google Cloud Storage that are
@@ -1034,9 +1083,10 @@ class Deployment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   build = _messages.MessageField('BuildInfo', 1)
-  container = _messages.MessageField('ContainerInfo', 2)
-  files = _messages.MessageField('FilesValue', 3)
-  zip = _messages.MessageField('ZipInfo', 4)
+  cloudBuildOptions = _messages.MessageField('CloudBuildOptions', 2)
+  container = _messages.MessageField('ContainerInfo', 3)
+  files = _messages.MessageField('FilesValue', 4)
+  zip = _messages.MessageField('ZipInfo', 5)
 
 
 class DiskUtilization(_messages.Message):
@@ -1860,6 +1910,7 @@ class OperationMetadataV1Alpha(_messages.Message):
   """Metadata for the given google.longrunning.Operation.
 
   Fields:
+    createVersionMetadata: A CreateVersionMetadataV1Alpha attribute.
     endTime: Time that this operation completed.@OutputOnly
     ephemeralMessage: Ephemeral message that may change every time the
       operation is polled. @OutputOnly
@@ -1873,19 +1924,21 @@ class OperationMetadataV1Alpha(_messages.Message):
       @OutputOnly
   """
 
-  endTime = _messages.StringField(1)
-  ephemeralMessage = _messages.StringField(2)
-  insertTime = _messages.StringField(3)
-  method = _messages.StringField(4)
-  target = _messages.StringField(5)
-  user = _messages.StringField(6)
-  warning = _messages.StringField(7, repeated=True)
+  createVersionMetadata = _messages.MessageField('CreateVersionMetadataV1Alpha', 1)
+  endTime = _messages.StringField(2)
+  ephemeralMessage = _messages.StringField(3)
+  insertTime = _messages.StringField(4)
+  method = _messages.StringField(5)
+  target = _messages.StringField(6)
+  user = _messages.StringField(7)
+  warning = _messages.StringField(8, repeated=True)
 
 
 class OperationMetadataV1Beta(_messages.Message):
   """Metadata for the given google.longrunning.Operation.
 
   Fields:
+    createVersionMetadata: A CreateVersionMetadataV1Beta attribute.
     endTime: Time that this operation completed.@OutputOnly
     ephemeralMessage: Ephemeral message that may change every time the
       operation is polled. @OutputOnly
@@ -1899,13 +1952,14 @@ class OperationMetadataV1Beta(_messages.Message):
       @OutputOnly
   """
 
-  endTime = _messages.StringField(1)
-  ephemeralMessage = _messages.StringField(2)
-  insertTime = _messages.StringField(3)
-  method = _messages.StringField(4)
-  target = _messages.StringField(5)
-  user = _messages.StringField(6)
-  warning = _messages.StringField(7, repeated=True)
+  createVersionMetadata = _messages.MessageField('CreateVersionMetadataV1Beta', 1)
+  endTime = _messages.StringField(2)
+  ephemeralMessage = _messages.StringField(3)
+  insertTime = _messages.StringField(4)
+  method = _messages.StringField(5)
+  target = _messages.StringField(6)
+  user = _messages.StringField(7)
+  warning = _messages.StringField(8, repeated=True)
 
 
 class OperationMetadataV1Beta5(_messages.Message):
@@ -2644,8 +2698,8 @@ class Version(_messages.Message):
     readinessCheck: Configures readiness health checking for VM instances.
       Unhealthy instances are not put into the backend traffic rotation.Only
       returned in GET requests if view=FULL is set.
-    resources: Machine resources for this version. Only applicable in the App
-      Engine flexible environment.
+    resources: Machine resources for this version. Only applicable for VM
+      runtimes.
     runtime: Desired runtime. Example: python27.
     runtimeApiVersion: The version of the API in the given runtime
       environment. Please see the app.yaml reference for valid values at https

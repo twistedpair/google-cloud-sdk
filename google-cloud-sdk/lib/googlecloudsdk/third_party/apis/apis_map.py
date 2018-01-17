@@ -252,6 +252,20 @@ MAP = {
             default_version=True
         ),
     },
+    'cloudshell': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudshell.v1',
+            client_classpath='cloudshell_v1_client.CloudshellV1',
+            messages_modulepath='cloudshell_v1_messages',
+            default_version=False
+        ),
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudshell.v1alpha1',
+            client_classpath='cloudshell_v1alpha1_client.CloudshellV1alpha1',
+            messages_modulepath='cloudshell_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'cloudtasks': {
         'v2beta2': APIDef(
             class_path='googlecloudsdk.third_party.apis.cloudtasks.v2beta2',

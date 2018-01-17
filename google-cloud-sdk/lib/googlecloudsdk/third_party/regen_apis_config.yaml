@@ -138,6 +138,12 @@ apis:
   cloudresourcesearch:
     v1:
       discovery_doc: cloudresourcesearch_v1.json
+  cloudshell:
+    v1alpha1:
+      discovery_doc: cloudshell_v1alpha1.json
+      default: true
+    v1:
+      discovery_doc: cloudshell_v1.json
   cloudtasks:
     v2beta2:
       discovery_doc: cloudtasks_v2beta2.json

@@ -49,9 +49,7 @@ from googlecloudsdk.core.util import platforms
 
 _JAVA_APPCFG_ENTRY_POINT = 'com.google.appengine.tools.admin.AppCfg'
 
-_JAVA_APPCFG_STAGE_FLAGS = [
-    '--enable_jar_splitting',
-    '--enable_jar_classes']
+_JAVA_APPCFG_STAGE_FLAGS = ['--enable_new_staging_defaults']
 
 _STAGING_COMMAND_OUTPUT_TEMPLATE = """\
 ------------------------------------ STDOUT ------------------------------------

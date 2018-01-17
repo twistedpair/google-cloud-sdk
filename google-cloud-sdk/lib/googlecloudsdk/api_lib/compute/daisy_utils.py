@@ -18,6 +18,7 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
+from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.cloudbuild import execution
@@ -132,7 +133,32 @@ def _CreateCloudBuild(build_config, client, messages):
   return build, build_ref
 
 
-def RunDaisyBuild(args, workflow, variables):
+def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None):
+  """Determine the name of the GCS bucket to use and create if necessary.
+
+  Args:
+    bucket_name: A string containing a bucket name to use, otherwise the
+      bucket will be named based on the project id.
+    storage_client: The storage_api client object.
+
+  Returns:
+    A string containing the name of the GCS bucket to use.
+  """
+  project = properties.VALUES.core.project.GetOrFail()
+  safe_project = project.replace(':', '-')
+  safe_project = safe_project.replace('.', '-')
+  bucket_name = bucket_name or '{0}-daisy-bkt'.format(safe_project)
+  safe_bucket_name = bucket_name.replace('google', 'elgoog')
+
+  if not storage_client:
+    storage_client = storage_api.StorageClient()
+
+  storage_client.CreateBucketIfNotExists(safe_bucket_name)
+
+  return safe_bucket_name
+
+
+def RunDaisyBuild(args, workflow, variables, daisy_bucket=None):
   """Run a build with Daisy on Google Cloud Builder.
 
   Args:
@@ -140,6 +166,8 @@ def RunDaisyBuild(args, workflow, variables):
       command invocation.
     workflow: The path to the Daisy workflow to run.
     variables: A string of key-value pairs to pass to Daisy.
+    daisy_bucket: A string containing the name of the GCS bucket that daisy
+      should use.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -157,14 +185,19 @@ def RunDaisyBuild(args, workflow, variables):
 
   timeout_str = '{0}s'.format(args.timeout)
 
+  daisy_bucket = daisy_bucket or GetAndCreateDaisyBucket()
+
+  daisy_args = ['-gcs_path=gs://{0}/'.format(daisy_bucket),
+                '-variables={0}'.format(variables),
+                workflow,
+               ]
+
   # First, create the build request.
   build_config = messages.Build(
       steps=[
           messages.BuildStep(
               name=_BUILDER,
-              args=['-variables={0}'.format(variables),
-                    workflow,
-                   ],
+              args=daisy_args,
           ),
       ],
       timeout=timeout_str,

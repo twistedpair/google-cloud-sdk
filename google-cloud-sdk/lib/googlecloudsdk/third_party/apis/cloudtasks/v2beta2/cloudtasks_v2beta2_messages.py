@@ -19,9 +19,9 @@ class AcknowledgeTaskRequest(_messages.Message):
 
   Fields:
     scheduleTime: Required.  The task's current schedule time, available in
-      the Task.schedule_time returned in PullTasksResponse.tasks or
-      CloudTasks.RenewLease. This restriction is to check that the caller is
-      acknowledging the correct task.
+      the Task.schedule_time returned in LeaseTasksResponse.tasks or
+      CloudTasks.RenewLease. This restriction is to ensure that your worker
+      currently holds the lease.
   """
 
   scheduleTime = _messages.StringField(1)
@@ -45,13 +45,11 @@ class AppEngineHttpRequest(_messages.Message):
   AppEngineHttpTarget.app_engine_routing_override is used for    all tasks in
   the queue, no matter what the setting is for the    task-level
   app_engine_routing.   The `url` that the task will be sent to is:  * `url =`
-  AppEngineRouting.host `+` AppEngineHttpRequest.relative_url  The task will
-  be sent to a task handler by an HTTP request using the specified
-  AppEngineHttpRequest.http_method (for example POST, HTTP GET, etc). The task
-  attempt has succeeded if the task handler returns an HTTP response code in
-  the range [200 - 299]. Error 503 is considered an App Engine system error
-  instead of an application error. Requests returning error 503 will be
-  retried regardless of retry configuration and not counted against retry
+  AppEngineRouting.host `+` AppEngineHttpRequest.relative_url  The task
+  attempt has succeeded if the app's request handler returns an HTTP response
+  code in the range [`200` - `299`]. `503` is considered an App Engine system
+  error instead of an application error. Requests returning error `503` will
+  be retried regardless of retry configuration and not counted against retry
   counts. Any other response code or a failure to receive a response before
   the deadline is a failed attempt.
 
@@ -63,9 +61,9 @@ class AppEngineHttpRequest(_messages.Message):
       [Writing a push task request
       handler](/appengine/docs/java/taskqueue/push/creating-
       handlers#writing_a_push_task_request_handler) and the documentation for
-      the request handlers in the language your app is written in e.g. [python
-      RequestHandler](/appengine/docs/python/tools/webapp/requesthandlerclass)
-      .
+      the request handlers in the language your app is written in e.g. [Python
+      Request
+      Handler](/appengine/docs/python/tools/webapp/requesthandlerclass).
 
   Messages:
     HeadersValue: HTTP request headers.  This map contains the header field
@@ -86,11 +84,16 @@ class AppEngineHttpRequest(_messages.Message):
       example, `Content-Type` can be set to `"application/json"`. * `Content-
       Length`: This is computed by Cloud Tasks. This value is   output only.
       It cannot be changed.  The headers below cannot be set or overridden:  *
-      `Host` * `X-Google-*` * `X-AppEngine-*`  In addition, some App Engine
-      headers, which contain task-specific information, are also be sent to
-      the task handler; see [request
+      `Host` * `X-Google-*` * `X-AppEngine-*`  In addition, Cloud Tasks sets
+      some headers when the task is dispatched, such as headers containing
+      information about the task; see [request
       headers](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).
+      handlers#reading_request_headers). These headers are set only when the
+      task is dispatched, so they are not visible when the task is returned in
+      a Cloud Tasks response.  Although there is no specific limit for the
+      maximum number of headers or the size, there is a limit on the maximum
+      size of the Task. For more information, see the CloudTasks.CreateTask
+      documentation.
 
   Fields:
     appEngineRouting: Task-level setting for App Engine routing.  If set,
@@ -115,20 +118,25 @@ class AppEngineHttpRequest(_messages.Message):
       example, `Content-Type` can be set to `"application/json"`. * `Content-
       Length`: This is computed by Cloud Tasks. This value is   output only.
       It cannot be changed.  The headers below cannot be set or overridden:  *
-      `Host` * `X-Google-*` * `X-AppEngine-*`  In addition, some App Engine
-      headers, which contain task-specific information, are also be sent to
-      the task handler; see [request
+      `Host` * `X-Google-*` * `X-AppEngine-*`  In addition, Cloud Tasks sets
+      some headers when the task is dispatched, such as headers containing
+      information about the task; see [request
       headers](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).
+      handlers#reading_request_headers). These headers are set only when the
+      task is dispatched, so they are not visible when the task is returned in
+      a Cloud Tasks response.  Although there is no specific limit for the
+      maximum number of headers or the size, there is a limit on the maximum
+      size of the Task. For more information, see the CloudTasks.CreateTask
+      documentation.
     httpMethod: The HTTP method to use for the request. The default is POST.
       The app's request handler for the task's target URL must be able to
       handle HTTP requests with this http_method, otherwise the task attempt
       will fail with error code 405 (Method Not Allowed). See [Writing a push
       task request handler](/appengine/docs/java/taskqueue/push/creating-
       handlers#writing_a_push_task_request_handler) and the documentation for
-      the request handlers in the language your app is written in e.g. [python
-      RequestHandler](/appengine/docs/python/tools/webapp/requesthandlerclass)
-      .
+      the request handlers in the language your app is written in e.g. [Python
+      Request
+      Handler](/appengine/docs/python/tools/webapp/requesthandlerclass).
     payload: Payload.  The payload will be sent as the HTTP message body. A
       message body, and thus a payload, is allowed only if the HTTP method is
       POST or PUT. It is an error to set a data payload on a task with an
@@ -147,8 +155,8 @@ class AppEngineHttpRequest(_messages.Message):
     error code 405 (Method Not Allowed). See [Writing a push task request
     handler](/appengine/docs/java/taskqueue/push/creating-
     handlers#writing_a_push_task_request_handler) and the documentation for
-    the request handlers in the language your app is written in e.g. [python
-    RequestHandler](/appengine/docs/python/tools/webapp/requesthandlerclass).
+    the request handlers in the language your app is written in e.g. [Python
+    Request Handler](/appengine/docs/python/tools/webapp/requesthandlerclass).
 
     Values:
       HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
@@ -185,10 +193,15 @@ class AppEngineHttpRequest(_messages.Message):
     `Content-Type` can be set to `"application/json"`. * `Content-Length`:
     This is computed by Cloud Tasks. This value is   output only. It cannot be
     changed.  The headers below cannot be set or overridden:  * `Host` *
-    `X-Google-*` * `X-AppEngine-*`  In addition, some App Engine headers,
-    which contain task-specific information, are also be sent to the task
-    handler; see [request headers](/appengine/docs/python/taskqueue/push
-    /creating-handlers#reading_request_headers).
+    `X-Google-*` * `X-AppEngine-*`  In addition, Cloud Tasks sets some headers
+    when the task is dispatched, such as headers containing information about
+    the task; see [request headers](/appengine/docs/python/taskqueue/push
+    /creating-handlers#reading_request_headers). These headers are set only
+    when the task is dispatched, so they are not visible when the task is
+    returned in a Cloud Tasks response.  Although there is no specific limit
+    for the maximum number of headers or the size, there is a limit on the
+    maximum size of the Task. For more information, see the
+    CloudTasks.CreateTask documentation.
 
     Messages:
       AdditionalProperty: An additional property for a HeadersValue object.
@@ -231,17 +244,6 @@ class AppEngineHttpTarget(_messages.Message):
       If set, AppEngineHttpTarget.app_engine_routing_override is used for all
       tasks in the queue, no matter what the setting is for the task-level
       app_engine_routing.
-  """
-
-  appEngineRoutingOverride = _messages.MessageField('AppEngineRouting', 1)
-
-
-class AppEngineQueueConfig(_messages.Message):
-  """Deprecated. Use AppEngineHttpTarget.
-
-  Fields:
-    appEngineRoutingOverride: Deprecated. Use
-      AppEngineHttpTarget.app_engine_routing_override.
   """
 
   appEngineRoutingOverride = _messages.MessageField('AppEngineRouting', 1)
@@ -328,73 +330,6 @@ class AppEngineRouting(_messages.Message):
   version = _messages.StringField(4)
 
 
-class AppEngineTaskTarget(_messages.Message):
-  """Deprecated. Use AppEngineHttpRequest.
-
-  Enums:
-    HttpMethodValueValuesEnum: Deprecated. Use
-      AppEngineHttpRequest.http_method.
-
-  Messages:
-    HeadersValue: Deprecated. Use AppEngineHttpRequest.headers.
-
-  Fields:
-    appEngineRouting: Deprecated. Use AppEngineHttpRequest.app_engine_routing.
-    headers: Deprecated. Use AppEngineHttpRequest.headers.
-    httpMethod: Deprecated. Use AppEngineHttpRequest.http_method.
-    payload: Deprecated. Use AppEngineHttpRequest.payload.
-    relativeUrl: Deprecated. Use AppEngineHttpRequest.relative_url.
-  """
-
-  class HttpMethodValueValuesEnum(_messages.Enum):
-    """Deprecated. Use AppEngineHttpRequest.http_method.
-
-    Values:
-      HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
-      POST: HTTP Post
-      GET: HTTP Get
-      HEAD: HTTP Head
-      PUT: HTTP Put
-      DELETE: HTTP Delete
-    """
-    HTTP_METHOD_UNSPECIFIED = 0
-    POST = 1
-    GET = 2
-    HEAD = 3
-    PUT = 4
-    DELETE = 5
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class HeadersValue(_messages.Message):
-    """Deprecated. Use AppEngineHttpRequest.headers.
-
-    Messages:
-      AdditionalProperty: An additional property for a HeadersValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type HeadersValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a HeadersValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  appEngineRouting = _messages.MessageField('AppEngineRouting', 1)
-  headers = _messages.MessageField('HeadersValue', 2)
-  httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 3)
-  payload = _messages.BytesField(4)
-  relativeUrl = _messages.StringField(5)
-
-
 class AttemptStatus(_messages.Message):
   """The status of a task attempt.
 
@@ -462,9 +397,9 @@ class CancelLeaseRequest(_messages.Message):
       for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
       IAM](/iam/) permission on the Task.name resource.
     scheduleTime: Required.  The task's current schedule time, available in
-      the Task.schedule_time returned in PullTasksResponse.tasks or
-      CloudTasks.RenewLease. This restriction is to check that the caller is
-      canceling the correct task.
+      the Task.schedule_time returned in LeaseTasksResponse.tasks or
+      CloudTasks.RenewLease. This restriction is to ensure that your worker
+      currently holds the lease.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
@@ -793,6 +728,20 @@ class CloudtasksProjectsLocationsQueuesTasksGetRequest(_messages.Message):
   responseView = _messages.EnumField('ResponseViewValueValuesEnum', 2)
 
 
+class CloudtasksProjectsLocationsQueuesTasksLeaseRequest(_messages.Message):
+  """A CloudtasksProjectsLocationsQueuesTasksLeaseRequest object.
+
+  Fields:
+    leaseTasksRequest: A LeaseTasksRequest resource to be passed as the
+      request body.
+    parent: Required.  The queue name. For example:
+      `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`
+  """
+
+  leaseTasksRequest = _messages.MessageField('LeaseTasksRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
   """A CloudtasksProjectsLocationsQueuesTasksListRequest object.
 
@@ -854,20 +803,6 @@ class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
   responseView = _messages.EnumField('ResponseViewValueValuesEnum', 5)
-
-
-class CloudtasksProjectsLocationsQueuesTasksPullRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesTasksPullRequest object.
-
-  Fields:
-    name: Required.  The queue name. For example:
-      `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`
-    pullTasksRequest: A PullTasksRequest resource to be passed as the request
-      body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  pullTasksRequest = _messages.MessageField('PullTasksRequest', 2)
 
 
 class CloudtasksProjectsLocationsQueuesTasksRenewLeaseRequest(_messages.Message):
@@ -1002,6 +937,94 @@ class Empty(_messages.Message):
 
 class GetIamPolicyRequest(_messages.Message):
   """Request message for `GetIamPolicy` method."""
+
+
+class LeaseTasksRequest(_messages.Message):
+  """Request message for pulling tasks using CloudTasks.LeaseTasks.
+
+  Enums:
+    ResponseViewValueValuesEnum: The response_view specifies which subset of
+      the Task will be returned.  By default response_view is Task.View.BASIC;
+      not all information is retrieved by default because some data, such as
+      payloads, might be desirable to return only when needed because of its
+      large size or because of the sensitivity of data that it contains.
+      Authorization for Task.View.FULL requires `cloudtasks.tasks.fullView`
+      [Google IAM](/iam/) permission on the Task.name resource.
+
+  Fields:
+    filter: `filter` can be used to specify a subset of tasks to lease.  When
+      `filter` is set to `tag=<my-tag>` then the LeaseTasksResponse will
+      contain only tasks whose LeaseMessage.tag is equal to `<my-tag>`. `<my-
+      tag>` must be less than 500 bytes.  When `filter` is set to
+      `tag_function=oldest_tag()`, only tasks which have the same tag as the
+      task with the oldest schedule_time will be returned.  Grammar Syntax:  *
+      `filter = "tag=" tag | "tag_function=" function`  * `tag = string |
+      bytes`  * `function = "oldest_tag()"`  The `oldest_tag()` function
+      returns tasks which have the same tag as the oldest task (ordered by
+      schedule time).
+    leaseDuration: The duration of the lease.  Each task returned in the
+      LeaseTasksResponse will have its Task.schedule_time set to the current
+      time plus the `lease_duration`. A task that has been returned in a
+      LeaseTasksResponse is leased -- that task will not be returned in a
+      different LeaseTasksResponse before the Task.schedule_time.  After the
+      worker has successfully finished the work associated with the task, the
+      worker must call CloudTasks.AcknowledgeTask. If the task is not
+      acknowledged via CloudTasks.AcknowledgeTask before the
+      Task.schedule_time then it will be returned in a later
+      LeaseTasksResponse so that another worker can process it.  The maximum
+      lease duration is 1 week. `lease_duration` will be truncated to the
+      nearest second.
+    maxTasks: The maximum number of tasks to lease. The maximum that can be
+      requested is 1000.
+    responseView: The response_view specifies which subset of the Task will be
+      returned.  By default response_view is Task.View.BASIC; not all
+      information is retrieved by default because some data, such as payloads,
+      might be desirable to return only when needed because of its large size
+      or because of the sensitivity of data that it contains.  Authorization
+      for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
+      IAM](/iam/) permission on the Task.name resource.
+  """
+
+  class ResponseViewValueValuesEnum(_messages.Enum):
+    """The response_view specifies which subset of the Task will be returned.
+    By default response_view is Task.View.BASIC; not all information is
+    retrieved by default because some data, such as payloads, might be
+    desirable to return only when needed because of its large size or because
+    of the sensitivity of data that it contains.  Authorization for
+    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google IAM](/iam/)
+    permission on the Task.name resource.
+
+    Values:
+      VIEW_UNSPECIFIED: Unspecified. Defaults to BASIC.
+      BASIC: The basic view omits fields which can be large or can contain
+        sensitive data.  This view does not include
+        (AppEngineHttpRequest.payload and PullMessage.payload). These payloads
+        are desirable to return only when needed, because they can be large
+        and because of the sensitivity of the data that you choose to store in
+        it.
+      FULL: All information is returned.  Authorization for Task.View.FULL
+        requires `cloudtasks.tasks.fullView` [Google
+        IAM](https://cloud.google.com/iam/) permission on the Queue.name
+        resource.
+    """
+    VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  filter = _messages.StringField(1)
+  leaseDuration = _messages.StringField(2)
+  maxTasks = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  responseView = _messages.EnumField('ResponseViewValueValuesEnum', 4)
+
+
+class LeaseTasksResponse(_messages.Message):
+  """Response message for leasing tasks using CloudTasks.LeaseTasks.
+
+  Fields:
+    tasks: The leased tasks.
+  """
+
+  tasks = _messages.MessageField('Task', 1, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1141,7 +1164,7 @@ class Policy(_messages.Message):
   app@appspot.gserviceaccount.com",           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
   }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     bindings: Associates a list of `members` to a `role`. `bindings` with no
@@ -1155,7 +1178,7 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
@@ -1165,14 +1188,14 @@ class Policy(_messages.Message):
 
 class PullMessage(_messages.Message):
   """The pull message contains data that can be used by the caller of
-  CloudTasks.PullTasks to process the task.  This proto can only be used for
+  CloudTasks.LeaseTasks to process the task.  This proto can only be used for
   tasks in a queue which has Queue.pull_target set.
 
   Fields:
-    payload: A data payload consumed by the task worker to execute the task.
+    payload: A data payload consumed by the worker to execute the task.
     tag: The task's tag.  Tags allow similar tasks to be processed in a batch.
-      If you label tasks with a tag, your task worker can pull tasks with the
-      same tag using PullTasksRequest.filter. For example, if you want to
+      If you label tasks with a tag, your worker can lease tasks with the same
+      tag using LeaseTasksRequest.filter. For example, if you want to
       aggregate the events associated with a specific user once a day, you
       could tag tasks with the user ID.  The task's tag can only be set when
       the task is created.  The tag must be less than 500 bytes.
@@ -1182,111 +1205,8 @@ class PullMessage(_messages.Message):
   tag = _messages.BytesField(2)
 
 
-class PullQueueConfig(_messages.Message):
-  """Deprecated. Use PullTarget."""
-
-
 class PullTarget(_messages.Message):
   """Pull target."""
-
-
-class PullTaskTarget(_messages.Message):
-  """Deprecated. Use PullMessage.
-
-  Fields:
-    payload: Deprecated. Use PullMessage.payload.
-    tag: Deprecated. Use PullMessage.tag.
-  """
-
-  payload = _messages.BytesField(1)
-  tag = _messages.BytesField(2)
-
-
-class PullTasksRequest(_messages.Message):
-  """Request message for pulling tasks using CloudTasks.PullTasks.
-
-  Enums:
-    ResponseViewValueValuesEnum: The response_view specifies which subset of
-      the Task will be returned.  By default response_view is Task.View.BASIC;
-      not all information is retrieved by default because some data, such as
-      payloads, might be desirable to return only when needed because of its
-      large size or because of the sensitivity of data that it contains.
-      Authorization for Task.View.FULL requires `cloudtasks.tasks.fullView`
-      [Google IAM](/iam/) permission on the Task.name resource.
-
-  Fields:
-    filter: `filter` can be used to specify a subset of tasks to lease.  When
-      `filter` is set to `tag=<my-tag>` then the PullTasksResponse will
-      contain only tasks whose PullMessage.tag is equal to `<my-tag>`. `<my-
-      tag>` must be less than 500 bytes.  When `filter` is set to
-      `tag_function=oldest_tag()`, only tasks which have the same tag as the
-      task with the oldest schedule_time will be returned.  Grammar Syntax:  *
-      `filter = "tag=" tag | "tag_function=" function`  * `tag = string |
-      bytes`  * `function = "oldest_tag()"`  The `oldest_tag()` function
-      returns tasks which have the same tag as the oldest task (ordered by
-      schedule time).
-    leaseDuration: The duration of the lease.  Each task returned in the
-      PullTasksResponse will have its Task.schedule_time set to the current
-      time plus the `lease_duration`. A task that has been returned in a
-      PullTasksResponse is leased -- that task will not be returned in a
-      different PullTasksResponse before the Task.schedule_time.  After the
-      lease holder has successfully finished the work associated with the
-      task, the lease holder must call CloudTasks.AcknowledgeTask. If the task
-      is not acknowledged via CloudTasks.AcknowledgeTask before the
-      Task.schedule_time then it will be returned in a later PullTasksResponse
-      so that another lease holder can process it.  The maximum lease duration
-      is 1 week. `lease_duration` will be truncated to the nearest second.
-    maxTasks: The maximum number of tasks to lease. The maximum that can be
-      requested is 1000.
-    responseView: The response_view specifies which subset of the Task will be
-      returned.  By default response_view is Task.View.BASIC; not all
-      information is retrieved by default because some data, such as payloads,
-      might be desirable to return only when needed because of its large size
-      or because of the sensitivity of data that it contains.  Authorization
-      for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
-      IAM](/iam/) permission on the Task.name resource.
-  """
-
-  class ResponseViewValueValuesEnum(_messages.Enum):
-    """The response_view specifies which subset of the Task will be returned.
-    By default response_view is Task.View.BASIC; not all information is
-    retrieved by default because some data, such as payloads, might be
-    desirable to return only when needed because of its large size or because
-    of the sensitivity of data that it contains.  Authorization for
-    Task.View.FULL requires `cloudtasks.tasks.fullView` [Google IAM](/iam/)
-    permission on the Task.name resource.
-
-    Values:
-      VIEW_UNSPECIFIED: Unspecified. Defaults to BASIC.
-      BASIC: The basic view omits fields which can be large or can contain
-        sensitive data.  This view does not include
-        (AppEngineHttpRequest.payload and PullMessage.payload). These payloads
-        are desirable to return only when needed, because they can be large
-        and because of the sensitivity of the data that you choose to store in
-        it.
-      FULL: All information is returned.  Authorization for Task.View.FULL
-        requires `cloudtasks.tasks.fullView` [Google
-        IAM](https://cloud.google.com/iam/) permission on the Queue.name
-        resource.
-    """
-    VIEW_UNSPECIFIED = 0
-    BASIC = 1
-    FULL = 2
-
-  filter = _messages.StringField(1)
-  leaseDuration = _messages.StringField(2)
-  maxTasks = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  responseView = _messages.EnumField('ResponseViewValueValuesEnum', 4)
-
-
-class PullTasksResponse(_messages.Message):
-  """Response message for pulling tasks using CloudTasks.PullTasks.
-
-  Fields:
-    tasks: The leased tasks.
-  """
-
-  tasks = _messages.MessageField('Task', 1, repeated=True)
 
 
 class PurgeQueueRequest(_messages.Message):
@@ -1307,7 +1227,6 @@ class Queue(_messages.Message):
   Fields:
     appEngineHttpTarget: App Engine HTTP target.  An App Engine queue is a
       queue that has an AppEngineHttpTarget.
-    appEngineQueueConfig: Deprecated. Use Queue.app_engine_http_target.
     name: The queue name.  The queue name must have the following format:
       `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *
       `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),    hyphens
@@ -1320,7 +1239,6 @@ class Queue(_messages.Message):
       can contain letters ([A-Za-z]), numbers ([0-9]), or   hyphens (-). The
       maximum length is 100 characters.  Caller-specified and required in
       CreateQueueRequest, after which it becomes output only.
-    pullQueueConfig: Deprecated. Use Queue.pull_target.
     pullTarget: Pull target.  A pull queue is a queue that has a PullTarget.
     purgeTime: Output only. The last time this queue was purged.  All tasks
       that were created before this time were purged.  A queue can be purged
@@ -1361,17 +1279,22 @@ class Queue(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: Unspecified state.
-      RUNNING: The queue is running. Tasks can be dispatched.
+      RUNNING: The queue is running. Tasks can be dispatched.  If the queue
+        was created using Cloud Tasks and the queue has had no activity
+        (method calls or task dispatches) for 30 days, the queue may take a
+        few minutes to re-activate. Some method calls may return
+        google.rpc.Code.NOT_FOUND and tasks may not be dispatched for a few
+        minutes until the queue has been re-activated.
       PAUSED: Tasks are paused by the user. If the queue is paused then Cloud
         Tasks will stop delivering tasks from it, but more tasks can still be
         added to it by the user. When a pull queue is paused, all
-        CloudTasks.PullTasks calls will return a `FAILED_PRECONDITION` error.
+        CloudTasks.LeaseTasks calls will return a `FAILED_PRECONDITION` error.
       DISABLED: The queue is disabled.  A queue becomes `DISABLED` when
         [queue.yaml](/appengine/docs/python/config/queueref) or
         [queue.xml](appengine/docs/standard/java/config/queueref) is uploaded
         which does not contain the queue. You cannot directly disable a queue.
         When a queue is disabled, tasks can still be added to a queue but the
-        tasks are not dispatched and CloudTasks.PullTasks calls return a
+        tasks are not dispatched and CloudTasks.LeaseTasks calls return a
         `FAILED_PRECONDITION` error.  To permanently delete this queue and all
         of its tasks, call CloudTasks.DeleteQueue.
     """
@@ -1381,14 +1304,12 @@ class Queue(_messages.Message):
     DISABLED = 3
 
   appEngineHttpTarget = _messages.MessageField('AppEngineHttpTarget', 1)
-  appEngineQueueConfig = _messages.MessageField('AppEngineQueueConfig', 2)
-  name = _messages.StringField(3)
-  pullQueueConfig = _messages.MessageField('PullQueueConfig', 4)
-  pullTarget = _messages.MessageField('PullTarget', 5)
-  purgeTime = _messages.StringField(6)
-  rateLimits = _messages.MessageField('RateLimits', 7)
-  retryConfig = _messages.MessageField('RetryConfig', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  name = _messages.StringField(2)
+  pullTarget = _messages.MessageField('PullTarget', 3)
+  purgeTime = _messages.StringField(4)
+  rateLimits = _messages.MessageField('RateLimits', 5)
+  retryConfig = _messages.MessageField('RetryConfig', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class RateLimits(_messages.Message):
@@ -1425,8 +1346,8 @@ class RateLimits(_messages.Message):
       App Engine queues, this field is 1 by default. * For pull queues, this
       field is output only and always 10,000.   In addition to the
       `max_tasks_dispatched_per_second` limit, a maximum of   10 QPS of
-      CloudTasks.PullTasks requests are allowed per queue.  This field has the
-      same meaning as [rate in
+      CloudTasks.LeaseTasks requests are allowed per queue.  This field has
+      the same meaning as [rate in
       queue.yaml](/appengine/docs/standard/python/config/queueref#rate).
   """
 
@@ -1459,9 +1380,9 @@ class RenewLeaseRequest(_messages.Message):
       for Task.View.FULL requires `cloudtasks.tasks.fullView` [Google
       IAM](/iam/) permission on the Task.name resource.
     scheduleTime: Required.  The task's current schedule time, available in
-      the Task.schedule_time returned in PullTasksResponse.tasks or
-      CloudTasks.RenewLease. This restriction is to check that the caller is
-      renewing the correct task.
+      the Task.schedule_time returned in LeaseTasksResponse.tasks or
+      CloudTasks.RenewLease. This restriction is to ensure that your worker
+      currently holds the lease.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
@@ -1786,7 +1707,6 @@ class Task(_messages.Message):
     appEngineHttpRequest: App Engine HTTP request that is sent to the task's
       target. Can be set only if Queue.app_engine_http_target is set.  An App
       Engine task is a task that has AppEngineHttpRequest set.
-    appEngineTaskTarget: Deprecated. Use Task.app_engine_http_request.
     createTime: Output only. The time that the task was created.
       `create_time` will be truncated to the nearest second.
     name: The task name.  The task name must have the following format:
@@ -1804,18 +1724,17 @@ class Task(_messages.Message):
       maximum length is 500 characters.  Optionally caller-specified in
       CreateTaskRequest.
     pullMessage: Pull message contains data that should be used by the caller
-      of CloudTasks.PullTasks to process the task. Can be set only if
+      of CloudTasks.LeaseTasks to process the task. Can be set only if
       Queue.pull_target is set.  A pull task is a task that has PullMessage
       set.
-    pullTaskTarget: Deprecated. Use Task.pull_message.
     scheduleTime: The time when the task is scheduled to be attempted.  For
-      pull queues, this is the time when the task is available to be leased;
-      if a task is currently leased, this is the time when the current lease
-      expires, that is, the time that the task was leased plus the
-      PullTasksRequest.lease_duration.  For App Engine queues, this is when
-      the task will be attempted or retried.  `schedule_time` will be
-      truncated to the nearest microsecond.
-    taskStatus: Output only. The task status.
+      App Engine queues, this is when the task will be attempted or retried.
+      For pull queues, this is the time when the task is available to be
+      leased; if a task is currently leased, this is the time when the current
+      lease expires, that is, the time that the task was leased plus the
+      LeaseTasksRequest.lease_duration.  `schedule_time` will be truncated to
+      the nearest microsecond.
+    status: Output only. The task status.
     view: Output only. The view specifies which subset of the Task has been
       returned.
   """
@@ -1842,14 +1761,12 @@ class Task(_messages.Message):
     FULL = 2
 
   appEngineHttpRequest = _messages.MessageField('AppEngineHttpRequest', 1)
-  appEngineTaskTarget = _messages.MessageField('AppEngineTaskTarget', 2)
-  createTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  pullMessage = _messages.MessageField('PullMessage', 5)
-  pullTaskTarget = _messages.MessageField('PullTaskTarget', 6)
-  scheduleTime = _messages.StringField(7)
-  taskStatus = _messages.MessageField('TaskStatus', 8)
-  view = _messages.EnumField('ViewValueValuesEnum', 9)
+  createTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  pullMessage = _messages.MessageField('PullMessage', 4)
+  scheduleTime = _messages.StringField(5)
+  status = _messages.MessageField('TaskStatus', 6)
+  view = _messages.EnumField('ViewValueValuesEnum', 7)
 
 
 class TaskStatus(_messages.Message):
@@ -1871,8 +1788,8 @@ class TaskStatus(_messages.Message):
       tasks](google.cloud.tasks.v2beta2.PullTaskTarget).
   """
 
-  attemptDispatchCount = _messages.IntegerField(1)
-  attemptResponseCount = _messages.IntegerField(2)
+  attemptDispatchCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  attemptResponseCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   firstAttemptStatus = _messages.MessageField('AttemptStatus', 3)
   lastAttemptStatus = _messages.MessageField('AttemptStatus', 4)
 

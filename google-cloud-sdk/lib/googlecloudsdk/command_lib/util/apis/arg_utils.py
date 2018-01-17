@@ -39,6 +39,15 @@ class UnknownFieldError(Error):
                 ', '.join(f.name for f in message.all_fields())))
 
 
+class ArgumentGenerationError(Error):
+  """Generic error when we can't auto generate an argument for an api field."""
+
+  def __init__(self, field_name, reason):
+    super(ArgumentGenerationError, self).__init__(
+        'Failed to generate argument for field [{}]: {}'
+        .format(field_name, reason))
+
+
 def GetFieldFromMessage(message, field_path):
   """Digs into the given message to extract the dotted field.
 
@@ -115,6 +124,36 @@ def PageSize(method, namespace):
     return getattr(namespace, 'page_size')
 
 
+class RepeatedMessageBindableType(object):
+  """An interface for custom type generators that bind directly to a message.
+
+  An argparse type function converts the parsed string into an object. Some
+  types (like ArgDicts) can only be generated once we know what message it will
+  be bound to (because the spec of the ArgDict depends on the fields and types
+  in the message. This interface allows encapsulating the logic to generate a
+  type function at the point when the message it is being bound to is known.
+  """
+
+  def GenerateType(self, message):
+    """Generates an argparse type function to use to parse the argument.
+
+    Args:
+      message: The apitools message class.
+    """
+    pass
+
+  def Action(self):
+    """The argparse action to use for this argument.
+
+    'store' is the default action, but sometimes something like 'append' might
+    be required to allow the argument to be repeated and all values collected.
+
+    Returns:
+      str, The argparse action to use.
+    """
+    return 'store'
+
+
 def GenerateFlag(field, attributes, fix_bools=True, category=None):
   """Generates a flag for a single field in a message.
 
@@ -125,6 +164,10 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
     fix_bools: True to generate boolean flags as switches that take a value or
       False to just generate them as regular string flags.
     category: The help category to put the flag in.
+
+  Raises:
+    ArgumentGenerationError: When an argument could not be generated from the
+      API field.
 
   Returns:
     calliope.base.Argument, The generated argument.
@@ -143,17 +186,52 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
     choices = [EnumNameToChoice(name) for name in sorted(field.type.names())]
 
   action = attributes.action
-  if fix_bools and not action and variant == messages.Variant.BOOL:
+  if t == bool and fix_bools and not action:
+    # For boolean flags, we want to create a flag with action 'store_true'
+    # rather than a flag that takes a value and converts it to a boolean. Only
+    # do this if not using a custom action.
     action = 'store_true'
+  # Default action is store if one was not provided.
+  action = action or 'store'
 
-  # Note that a field will never be a message at this point, always a scalar.
   # pylint: disable=g-explicit-bool-comparison, only an explicit False should
   # override this, None just means to do the default.
-  if (field and field.repeated) and attributes.repeated != False:
-    t = arg_parsers.ArgList(element_type=t, choices=choices)
+  repeated = (field and field.repeated) and attributes.repeated != False
+
+  if repeated:
+    if action != 'store':
+      raise ArgumentGenerationError(
+          field.name,
+          'The field is repeated but is but is using a custom action. You might'
+          ' want to set repeated: False in your arg spec.')
+    if t:
+      # A special ArgDict wrapper type was given, bind it to the message so it
+      # can generate the message from the key/value pairs.
+      if isinstance(t, RepeatedMessageBindableType):
+        action = t.Action()
+        t = t.GenerateType(field.type)
+      # If a simple type was provided, just use a list of that type (even if it
+      # is a message). The type function will be responsible for converting to
+      # the correct value. If type is an ArgList or ArgDict, don't try to wrap
+      # it.
+      elif not isinstance(t, arg_parsers.ArgList):
+        t = arg_parsers.ArgList(element_type=t, choices=choices)
+        # Don't register the choices on the argparse arg because it is validated
+        # by the ArgList.
+        choices = None
+  elif isinstance(t, RepeatedMessageBindableType):
+    raise ArgumentGenerationError(
+        field.name, 'The given type can only be used on repeated fields.')
+
+  if field and not t and action == 'store' and not attributes.processor:
+    # The type is unknown and there is no custom action or processor, we don't
+    # know what to do with this.
+    raise ArgumentGenerationError(
+        field.name, 'The field is of an unknown type. You can specify a type '
+                    'function or a processor to manually handle this argument.')
+
   name = attributes.arg_name
   arg = base.Argument(
-      # TODO(b/38000796): Consider not using camel case for flags.
       name if attributes.is_positional else '--' + name,
       category=category if not attributes.is_positional else None,
       action=action,
@@ -177,7 +255,7 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
   return arg
 
 
-def ConvertValue(field, value, attributes=None):
+def ConvertValue(field, value, repeated=None, processor=None, choices=None):
   """Coverts the parsed value into something to insert into a request message.
 
   If a processor is registered, that is called on the value.
@@ -190,25 +268,27 @@ def ConvertValue(field, value, attributes=None):
     field: The apitools field object.
     value: The parsed value. This must be a scalar for scalar fields and a list
       for repeated fields.
-    attributes: yaml_command_schema.Argument, The attributes used to
-        generate the arg.
+    repeated: bool, Set to False if this arg was forced to be singular even
+      though the API field it corresponds to is repeated.
+    processor: A function to process the value before putting it into the
+      message.
+    choices: {str: str} A mapping of argument value, to enum API enum value.
 
   Returns:
     The value to insert into the message.
   """
   # pylint: disable=g-explicit-bool-comparison, only an explicit False should
   # override this, None just means to do the default.
-  arg_repeated = field.repeated and (not attributes or
-                                     attributes.repeated != False)
+  arg_repeated = field.repeated and repeated != False
 
-  if attributes and attributes.processor:
-    value = attributes.processor(value)
+  if processor:
+    value = processor(value)
   else:
-    if attributes and attributes.choices:
+    if choices:
       if arg_repeated:
-        value = [attributes.MapChoice(v) for v in value]
+        value = [_MapChoice(choices, v) for v in value]
       else:
-        value = attributes.MapChoice(value)
+        value = _MapChoice(choices, value)
     if field.variant == messages.Variant.ENUM:
       t = field.type
       if arg_repeated:
@@ -221,6 +301,12 @@ def ConvertValue(field, value, attributes=None):
     # wrap it in a list.
     value = [value]
   return value
+
+
+def _MapChoice(choices, value):
+  if isinstance(value, basestring):
+    value = value.lower()
+  return choices.get(value, value)
 
 
 def ParseResourceIntoMessage(ref, method, message, resource_method_params=None,
@@ -296,12 +382,10 @@ TYPES = {
     messages.Variant.SINT32: int,
 
     messages.Variant.STRING: str,
+    messages.Variant.BOOL: bool,
 
-    # TODO(b/38000796): Do something with bytes.
-    messages.Variant.BYTES: None,
-    # For boolean flags, we wan't to create a flag with action 'store_true'
-    # rather than a flag that takes a value and converts it to a boolean.
-    messages.Variant.BOOL: None,
+    # TODO(b/70980549): Do something better with bytes.
+    messages.Variant.BYTES: str,
     # For enums, we want to accept upper and lower case from the user, but
     # always compare against lowercase enum choices.
     messages.Variant.ENUM: EnumNameToChoice,

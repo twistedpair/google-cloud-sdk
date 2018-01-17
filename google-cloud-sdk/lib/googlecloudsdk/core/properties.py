@@ -226,15 +226,16 @@ class _Sections(object):
       self.flag = flag
 
   def __init__(self):
-    self.api_endpoint_overrides = _SectionApiEndpointOverrides()
+    self.access_context_manager = _SectionAccessContextManager()
     self.api_client_overrides = _SectionApiClientOverrides()
+    self.api_endpoint_overrides = _SectionApiEndpointOverrides()
     self.app = _SectionApp()
     self.auth = _SectionAuth()
     self.billing = _SectionBilling()
-    self.core = _SectionCore()
     self.component_manager = _SectionComponentManager()
     self.compute = _SectionCompute()
     self.container = _SectionContainer()
+    self.core = _SectionCore()
     self.dataproc = _SectionDataproc()
     self.devshell = _SectionDevshell()
     self.emulator = _SectionEmulator()
@@ -243,18 +244,35 @@ class _Sections(object):
     self.interactive = _SectionInteractive()
     self.metrics = _SectionMetrics()
     self.ml_engine = _SectionMlEngine()
-    self.pubsub = _SectionPubsub()
     self.proxy = _SectionProxy()
+    self.pubsub = _SectionPubsub()
     self.spanner = _SectionSpanner()
     self.test = _SectionTest()
 
-    self.__sections = dict(
-        (section.name, section) for section in
-        [self.api_endpoint_overrides, self.api_client_overrides, self.app,
-         self.auth, self.billing, self.core, self.component_manager,
-         self.compute, self.container, self.dataproc, self.devshell,
-         self.emulator, self.experimental, self.functions, self.interactive,
-         self.metrics, self.ml_engine, self.proxy, self.spanner, self.test])
+    sections = [
+        self.access_context_manager,
+        self.api_client_overrides,
+        self.api_endpoint_overrides,
+        self.app,
+        self.auth,
+        self.billing,
+        self.component_manager,
+        self.compute,
+        self.container,
+        self.core,
+        self.dataproc,
+        self.devshell,
+        self.emulator,
+        self.experimental,
+        self.functions,
+        self.interactive,
+        self.metrics,
+        self.ml_engine,
+        self.proxy,
+        self.spanner,
+        self.test,
+    ]
+    self.__sections = {section.name: section for section in sections}
     self.__invocation_value_stack = [{}]
 
   @property
@@ -1359,6 +1377,19 @@ class _SectionEmulator(_Section):
                                       default='localhost:8085')
     self.bigtable_host_port = self._Add('bigtable_host_port',
                                         default='localhost:8086')
+
+
+class _SectionAccessContextManager(_Section):
+  """Contains the properties for the 'access_context_manager' section."""
+
+  def __init__(self):
+    super(_SectionAccessContextManager, self).__init__('access_context_manager',
+                                                       hidden=True)
+    self.policy = self._Add(
+        'policy',
+        help_text=('The ID of the policy resource to operate on. Can be found '
+                   'by running the `access-context-manager policies list` '
+                   'command.'))
 
 
 class _Property(object):

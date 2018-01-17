@@ -117,7 +117,7 @@ class ResourceInfo(object):
   """Holds information for a resource argument."""
 
   def __init__(self, concept_spec, attribute_to_args_map,
-               fallthroughs_map, plural=False):
+               fallthroughs_map, plural=False, allow_empty=False):
     """Initializes the ConceptInfo.
 
     Args:
@@ -128,11 +128,14 @@ class ResourceInfo(object):
       fallthroughs_map: {str: [deps_lib.Fallthrough]} A map of attribute names
         to non-argument fallthroughs.
       plural: bool, True if multiple resources can be parsed, False otherwise.
+      allow_empty: bool, True if resource parsing is allowed to return no
+        resource, otherwise False.
     """
     self.concept_spec = concept_spec
     self.attribute_to_args_map = attribute_to_args_map
     self.fallthroughs_map = fallthroughs_map
     self.plural = plural
+    self.allow_empty = allow_empty
 
   def _BuildFullFallthroughsMap(self, parsed_args=None):
     """Helper method to build all fallthroughs including arg names."""
@@ -191,26 +194,36 @@ class ResourceInfo(object):
     fallthroughs_map = self._BuildFullFallthroughsMap(parsed_args)
 
     if not self.plural:
-      return self.concept_spec.Initialize(deps_lib.Deps(fallthroughs_map))
+      try:
+        return self.concept_spec.Initialize(deps_lib.Deps(fallthroughs_map))
+      except concepts.InitializeError:
+        if self.allow_empty:
+          return None
+        raise
 
     anchor = self.concept_spec.anchor.name
-    anchor_arg_name = self.attribute_to_args_map.get(anchor)
     anchor_fallthroughs = fallthroughs_map.get(anchor, [])
-    anchor_arg_values = None
-
-    # Remove the original ArgFallthrough that contains all the anchor values.
-    if anchor_arg_name and anchor_fallthroughs:
-      anchor_arg_fallthrough = anchor_fallthroughs.pop(0)
-      if (isinstance(anchor_arg_fallthrough, deps_lib.ArgFallthrough)
-          and anchor_arg_fallthrough.arg_name == anchor_arg_name):
-        anchor_arg_values = anchor_arg_fallthrough.arg_value
 
     # Iterate through the values provided to the anchor argument, creating for
     # each a separate parsed resource.
     resources = []
-    for arg_value in anchor_arg_values:
-      fallthrough = deps_lib.ArgFallthrough(anchor_arg_name, arg_value)
-      fallthroughs_map[anchor] = [fallthrough] + anchor_fallthroughs
-      resources.append(self.concept_spec.Initialize(deps_lib.Deps(
-          fallthroughs_map)))
-    return resources
+    for i, fallthrough in enumerate(anchor_fallthroughs):
+
+      try:
+        anchor_values = fallthrough.GetValue()
+      except deps_lib.FallthroughNotFoundError:
+        continue
+      for arg_value in anchor_values:
+        def F(return_value=arg_value):
+          return return_value
+        fallthrough = deps_lib.Fallthrough(F, fallthrough.hint)
+        fallthroughs_map[anchor] = (
+            anchor_fallthroughs[:i] + [fallthrough] +
+            anchor_fallthroughs[i:])
+        resources.append(self.concept_spec.Initialize(deps_lib.Deps(
+            fallthroughs_map)))
+      return resources
+    if self.allow_empty:
+      return resources
+    return self.concept_spec.Initialize(deps_lib.Deps(
+        fallthroughs_map))

@@ -31,9 +31,9 @@ _TASK_LIST_FORMAT = '''table(
     tasktype():label=TYPE,
     createTime,
     scheduleTime,
-    taskStatus.attemptDispatchCount.yesno(no="0"):label="DISPATCH_ATTEMPTS",
-    taskStatus.attemptResponseCount.yesno(no="0"):label="RESPONSE_ATTEMPTS",
-    taskStatus.lastAttemptStatus.responseStatus.message.yesno(no="Unknown")
+    status.attemptDispatchCount.yesno(no="0"):label="DISPATCH_ATTEMPTS",
+    status.attemptResponseCount.yesno(no="0"):label="RESPONSE_ATTEMPTS",
+    status.lastAttemptStatus.responseStatus.message.yesno(no="Unknown")
         :label="LAST_ATTEMPT_STATUS")'''
 
 
@@ -68,11 +68,11 @@ def _IsAppEngineQueue(r):
 
 
 def _IsPullTask(r):
-  return 'pullTaskTarget' in r or 'pullMessage' in r
+  return 'pullMessage' in r
 
 
 def _IsAppEngineTask(r):
-  return 'appEngineTaskTarget' in r or 'appEngineHttpRequest' in r
+  return 'appEngineHttpRequest' in r
 
 
 def _TranformQueueType(r):

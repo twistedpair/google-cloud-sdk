@@ -1266,15 +1266,13 @@ def AddDeprecatedNodePoolNodeIdentityFlags(parser):
       new_behavior=False)
 
 
-def AddAddonsFlags(
-    parser, hide_addons_flag=False, deprecate_disable_addons_flag=True):
+def AddAddonsFlags(parser, add_disable_addons_flag=False):
   """Adds the --addons and --disable-addons flags to the parser."""
   group = parser.add_mutually_exclusive_group()
   group.add_argument(
       '--addons',
       type=arg_parsers.ArgList(choices=api_adapter.ADDONS_OPTIONS),
       metavar='ADDON',
-      hidden=hide_addons_flag,
       # TODO(b/65264376): Replace the doc link when a better doc is ready.
       help="""\
 Default set of addons includes {0}. Addons
@@ -1282,12 +1280,11 @@ Default set of addons includes {0}. Addons
 are additional Kubernetes cluster components. Addons specified by this flag will
 be enabled. The others will be disabled.
 """.format(', '.join(api_adapter.DEFAULT_ADDONS)))
-  action = None
-  if deprecate_disable_addons_flag:
-    action = actions.DeprecationAction(
-        'disable-addons',
-        warn='This flag is deprecated. '
-        'Use --addons instead.')
+  action = actions.DeprecationAction(
+      'disable-addons',
+      removed=not add_disable_addons_flag,
+      warn='This flag is deprecated. '
+      'Use --addons instead.')
   group.add_argument(
       '--disable-addons',
       type=arg_parsers.ArgList(choices=api_adapter.ADDONS_OPTIONS),

@@ -3,26 +3,59 @@
 Copyright 2014-2018 Google Inc. All rights reserved.
 
 
+## 185.0.0 (2018-01-17)
+
+### Cloud Datalab
+
+* Updated the `datalab` component to the 20180105 release.
+
+  Released changes are documented in its tracking issue at
+    [https://github.com/googledatalab/datalab/issues/1892](https://github.com/googledatalab/datalab/issues/1892).
+
+### Compute Engine
+
+*   Promoted `gcloud compute os-login` commands to GA.
+
+*   Promoted SSL policy commands to beta
+    *   Promoted `compute ssl-policies` to beta.
+    *   Promoted `--ssl-policy` flag in `compute target-https-proxies create`
+        and `compute target-ssl-proxies create` to beta.
+    *   Promoted `--ssl-policy` and `--clear-ssl-policy` flags in
+        `compute target-https-proxies update` and
+        `compute target-ssl-proxies update` to beta.
+
+### Container Registry
+
+* Added `staging-k8s.gcr.io` to the default set of registries authenticated by
+  `gcloud docker`.
+
+### Kubernetes Engine
+
+* Removed `--disable-addons` flag in gcloud container alpha|beta clusters create.
+* Added `--addons` flag to gcloud container clusters create.
+* Deprecated `--disable-addons` flag in gcloud container clusters create.
+
+
 ## 184.0.0 (2018-01-10)
 
 ### Breaking Changes
 
 * (REMOVED) Removed `gcloud ml-engine init-project`. This step is now performed
   automatically.
-*   Removed `--discard-local-ssd` flag from `gcloud compute instances stop`
-    (beta and GA). This flag wasn't working as intended. Stopping an instance
-    that uses a local SSD is not currently supported; delete and recreate the
-    instance instead.
-* (DEPRECATED) Deprecated `--[no-]enable-cloud-endpoints` (removed in alpha and
-  beta).
-* (MODIFIED) Added `container/new_scopes_behavior` property, which will, in a
-  future release, be the default behavior.  If set to true, `compute-rw`,
-  `devstorage-ro`, `service-control`, and `service-management` scopes are no
-  longer added to what is specified in `--scopes`, `compute-rw` is no longer
-  inluded in the default scopes, and `--[no-]enable-cloud-endpoints` flags are
-  not allowed.  This is now the default behavior for alpha and beta, so this
-  property has no effect for those tracks.
-
+* Removed `--discard-local-ssd` flag from `gcloud compute instances stop`
+  (beta and GA). This flag wasn't working as intended. Stopping an instance
+  that uses a local SSD is not currently supported; delete and recreate the
+  instance instead.
+* (DEPRECATED) Deprecated the `gcloud container` `--[no-]enable-cloud-endpoints`
+  flag (removed in alpha and beta).
+* (MODIFIED) Added the `gcloud container` `container/new_scopes_behavior`
+  property, which will, in a future release, be the default behavior. If set
+  to true, `compute-rw`, `devstorage-ro`, `service-control`, and
+  `service-management` scopes are no longer added to what is specified in
+  `--scopes`, `compute-rw` is no longer inluded in the default scopes, and
+  `--[no-]enable-cloud-endpoints` flags are not allowed. This is now the
+  default behavior for alpha and beta, so this property has no effect for
+  those tracks.
 
 ### App Engine
 
@@ -35,8 +68,7 @@ Copyright 2014-2018 Google Inc. All rights reserved.
   Please visit the following release notes for details:
   https://cloud.google.com/appengine/docs/java/release-notes
 * Updated the Go SDK for App Engine to version 1.9.62
-  * Updated go-app-stager tool to properly support future gcloud staging protocol
-  * Added --go-version flag to go-app-stager to set Go version for manual invocations.
+  * Includes internal updates for how applications are deployed.
 * Fixed inaccurate warning about "module" in `app.yaml` configuration file
 
 ### BigQuery
@@ -87,7 +119,9 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 ### Container Engine
 
 * Updated Google Kubernetes Engine's kubectl from version 1.8.4 to 1.8.6.
-* Promoted `--node-version` flag of `gcloud container <clusters|node-pools> create` to GA. Clusters/node-pools can now be created with a node version different from that of the master, via the `--node-version` flag.
+* Promoted `--node-version` flag of `gcloud container <clusters|node-pools>
+  create` to GA. Clusters/node-pools can now be created with a node version
+  different from that of the master, via the `--node-version` flag.
 
 ### Container Registry
 
@@ -121,7 +155,7 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 
 ### App Engine
 
-*  Updated GAE Python components to 1.9.64.
+*  Updated App Engine Python components to 1.9.64.
    Please visit the following release notes for details:
    <https://cloud.google.com/appengine/docs/python/release-notes>
 
@@ -729,38 +763,53 @@ Added support for `.gcloudignore` files to `container builds submit` command.
 
 ### Google Cloud Dataproc
 
-*    Added `gcloud beta dataproc clusters get-iam-policy` and `gcloud beta dataproc clusters set-iam-policy` commands to manage IAM permissions on a cluster.
+*    Added `gcloud beta dataproc clusters get-iam-policy` and
+     `gcloud beta dataproc clusters set-iam-policy` commands to manage IAM
+     permissions on a cluster.
 
 ### Google Cloud IOT
 
 *   `gcloud iot` is now in public beta.
-*   The --enable-device boolean flag for `beta iot device create/update` is now deprecated and renamed to --blocked.
+*   The --enable-device boolean flag for `beta iot device create/update` is
+    now deprecated and renamed to --blocked.
 *   Added `--enable-http-config` flag to `beta iot registries create/update`.
-*   Added new flag `--state-pubsub-topic` flag to `beta iot registries create/update`
-*   Added two new key types for `iot device` credentials and renamed existing types.
+*   Added new flag `--state-pubsub-topic` flag to
+    `beta iot registries create/update`
+*   Added two new key types for
+    `iot device` credentials and renamed existing types.
 *   Added --metadata[-from-file] flag to `beta iot devices create/update`.
-*   Added `beta iot registries credentials` command group and added the `--public-key-path` flag to `beta iot registries create`.
+*   Added `beta iot registries credentials` command group and added the
+    `--public-key-path` flag to `beta iot registries create`.
 *   Added `beta iot devices states list` surface.
 
 ### Google Compute Engine
 
-*   Fix validation in `gcloud compute routers update-interface` to disallow --mask-length to be specified without --ip-address.
+*   Fix validation in `gcloud compute routers update-interface` to disallow
+    --mask-length to be specified without --ip-address.
 *   Add `--zones` flag to `beta compute instance-groups managed create` command.
 
 ### Google Container Engine
 
-*   The `--enable-network-policy` flag is now available in the `gcloud beta container clusters update` command. To use this command on an existing cluster, first run `gcloud beta container clusters update --update-addons network-policy=ENABLED`.
-*   Added --maintenance-window flag to `gcloud beta container clusters create` and `gcloud beta container clusters update`.
+*   The `--enable-network-policy` flag is now available in the
+    `gcloud beta container clusters update` command. To use this command on an
+    existing cluster, first run
+    `gcloud beta container clusters update --update-addons network-policy=ENABLED`.
+*   Added --maintenance-window flag to `gcloud beta container clusters create`
+    and `gcloud beta container clusters update`.
 *   Updated Google Container Engine's kubectl from version 1.7.5 to 1.7.6.
-*   The `--enable-autoupgrade` flag is now GA, available for `gcloud container cluster create`, `gcloud container node-pools create` and `gcloud container node-pools update` commands.
+*   The `--enable-autoupgrade` flag is now GA, available for
+    `gcloud container cluster create`, `gcloud container node-pools create`
+    and `gcloud container node-pools update` commands.
 
 ### Google Container Registry
 
-*   gcloud auth configure-docker is now in BETA. This is the new preferred method to configure gcloud/docker integration.
+*   gcloud auth configure-docker is now in BETA. This is the new preferred
+    method to configure gcloud/docker integration.
 
 ### Google Cloud Machine Learning Engine
 
-*   Added `--summarize` flag to `gcloud ml-engine jobs describe` command. Prints job resource in human readable table format.
+*   Added `--summarize` flag to `gcloud ml-engine jobs describe` command.
+    Prints job resource in human readable table format.
 
 ### Google Cloud Machine Learning Language
 

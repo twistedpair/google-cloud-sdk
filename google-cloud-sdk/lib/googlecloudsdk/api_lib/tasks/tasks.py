@@ -110,25 +110,27 @@ class Tasks(object):
                           name=task_ref.RelativeName())
     return self.api.tasks_service.CancelLease(request)
 
-  def Pull(self, queue_ref, lease_duration, filter_string=None, max_tasks=None):
-    """Constructs and sends a PullTasks request to the Cloud Tasks API.
+  def Lease(self, queue_ref, lease_duration, filter_string=None,
+            max_tasks=None):
+    """Constructs and sends a LeaseTasks request to the Cloud Tasks API.
 
     Args:
       queue_ref: A cloudtasks.projects.locations.queues resource reference
       lease_duration: string of an integer followed by 's', (e.g. '10s') for the
                       number of seconds for the new leases
-      filter_string: string with an expression to filter which tasks are pulled
-      max_tasks: the maximum number of tasks to pull
+      filter_string: string with an expression to filter which tasks are leased
+      max_tasks: the maximum number of tasks to lease
 
     Returns:
-      The response of the PullTasks request
+      The response of the LeaseTasks request
     """
-    pull_tasks_request = self.api.messages.PullTasksRequest(
+    lease_tasks_request = self.api.messages.LeaseTasksRequest(
         filter=filter_string, leaseDuration=lease_duration, maxTasks=max_tasks)
     request = (
-        self.api.messages.CloudtasksProjectsLocationsQueuesTasksPullRequest(
-            pullTasksRequest=pull_tasks_request, name=queue_ref.RelativeName()))
-    return self.api.tasks_service.Pull(request)
+        self.api.messages.CloudtasksProjectsLocationsQueuesTasksLeaseRequest(
+            leaseTasksRequest=lease_tasks_request,
+            parent=queue_ref.RelativeName()))
+    return self.api.tasks_service.Lease(request)
 
   def Acknowledge(self, task_ref, schedule_time):
     """Constructs and sends a tasks Acknowledge request to the Cloud Tasks API.
