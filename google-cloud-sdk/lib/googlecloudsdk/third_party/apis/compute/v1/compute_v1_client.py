@@ -1336,7 +1336,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates the specified firewall rule with the data included in the request. Using PUT method, can only update following fields of firewall rule: allowed, description, sourceRanges, sourceTags, targetTags.
+      """Updates the specified firewall rule with the data included in the request. The PUT method can only update the following fields of firewall rule: allowed, description, sourceRanges, sourceTags, targetTags.
 
       Args:
         request: (ComputeFirewallsUpdateRequest) input message
@@ -3182,7 +3182,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified instance template. If you delete an instance template that is being referenced from another instance group, the instance group will not be able to create or recreate virtual machine instances. Deleting an instance template is permanent and cannot be undone.
+      """Deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It's not possible to delete templates which are in use by an instance group.
 
       Args:
         request: (ComputeInstanceTemplatesDeleteRequest) input message
@@ -3555,6 +3555,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def ListReferrers(self, request, global_params=None):
+      """Retrieves the list of referrers to instances contained within the specified zone.
+
+      Args:
+        request: (ComputeInstancesListReferrersRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceListReferrers) The response message.
+      """
+      config = self.GetMethodConfig('ListReferrers')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListReferrers.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.instances.listReferrers',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/referrers',
+        request_field='',
+        request_type_name=u'ComputeInstancesListReferrersRequest',
+        response_type_name=u'InstanceListReferrers',
+        supports_download=False,
+    )
+
     def Reset(self, request, global_params=None):
       """Performs a reset on the instance. For more information, see Resetting an instance.
 
@@ -3915,6 +3941,32 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/stop',
         request_field='',
         request_type_name=u'ComputeInstancesStopRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def UpdateAccessConfig(self, request, global_params=None):
+      """Updates the specified access config from an instance's network interface with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeInstancesUpdateAccessConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateAccessConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateAccessConfig.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.updateAccessConfig',
+        ordered_params=[u'project', u'zone', u'instance', u'networkInterface'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'networkInterface', u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/updateAccessConfig',
+        request_field=u'accessConfig',
+        request_type_name=u'ComputeInstancesUpdateAccessConfigRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

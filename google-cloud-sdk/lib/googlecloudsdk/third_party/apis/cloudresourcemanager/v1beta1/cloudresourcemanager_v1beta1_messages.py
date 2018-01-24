@@ -42,7 +42,8 @@ class AuditConfig(_messages.Message):
   "user:bar@gmail.com"               ]             }           ]         }
   ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
   ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
-  and bar@gmail.com from DATA_WRITE logging.
+  and bar@gmail.com from DATA_WRITE logging. This message is only visible as
+  GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -537,10 +538,11 @@ class Policy(_messages.Message):
   app@appspot.gserviceaccount.com",           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
   }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
+      This field is only visible as GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
     bindings: Associates a list of `members` to a `role`. `bindings` with no
       members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
@@ -552,7 +554,7 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -596,11 +598,11 @@ class Project(_messages.Message):
       characters. Allowed characters are: lowercase and uppercase letters,
       numbers, hyphen, single-quote, double-quote, space, and exclamation
       point.  Example: <code>My Project</code> Read-write.
-    parent: An optional reference to a parent Resource.  The only supported
-      parent type is "organization". Once set, the parent cannot be modified.
-      The `parent` can be set on creation or using the `UpdateProject` method;
-      the end user must have the `resourcemanager.projects.create` permission
-      on the parent.  Read-write.
+    parent: An optional reference to a parent Resource.  Supported parent
+      types include "organization" and "folder". Once set, the parent cannot
+      be cleared. The `parent` can be set on creation or using the
+      `UpdateProject` method; the end user must have the
+      `resourcemanager.projects.create` permission on the parent.  Read-write.
     projectId: The unique, user-assigned ID of the Project. It must be 6 to 30
       lowercase letters, digits, or hyphens. It must start with a letter.
       Trailing hyphens are prohibited.  Example: <code>tokyo-rain-123</code>

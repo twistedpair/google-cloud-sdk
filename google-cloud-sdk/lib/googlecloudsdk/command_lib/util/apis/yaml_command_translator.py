@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import command_loading
 from googlecloudsdk.command_lib.util.apis import arg_marshalling
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
 from googlecloudsdk.core import exceptions
@@ -590,8 +591,9 @@ class AsyncOperationPoller(waiter.OperationPoller):
     result = operation
     if self.resource_ref:
       method = self._ResourceGetMethod()
-      result = method.Call(method.GetRequestType()(
-          **self.resource_ref.AsDict()))
+      request = method.GetRequestType()()
+      arg_utils.ParseResourceIntoMessage(self.resource_ref, method, request)
+      result = method.Call(request)
     return _GetAttribute(result, self.spec.async.result_attribute)
 
   def _ResourceGetMethod(self):

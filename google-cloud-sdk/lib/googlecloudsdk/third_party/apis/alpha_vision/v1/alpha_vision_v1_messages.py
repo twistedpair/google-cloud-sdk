@@ -237,10 +237,11 @@ class Block(_messages.Message):
       of top-left, top-right, bottom-right, bottom-left. When a rotation of
       the bounding box is detected the rotation is represented as around the
       top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      orientation. For example:  * when the text is horizontal it might look
+      like:          0----1         |    |         3----2  * when it's rotated
+      180 degrees around the top-left corner it becomes:          2----3
+      |    |         1----0    and the vertice order will still be (0, 1, 2,
+      3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
       text).
@@ -511,10 +512,10 @@ class EntityAnnotation(_messages.Message):
   Fields:
     boundingPoly: Image region to which this entity belongs. Not produced for
       `LABEL_DETECTION` features.
-    confidence: The accuracy of the entity detection in an image. For example,
-      for an image in which the "Eiffel Tower" entity is detected, this field
-      represents the confidence that there is a tower in the query image.
-      Range [0, 1].
+    confidence: **Deprecated. Use `score` instead.** The accuracy of the
+      entity detection in an image. For example, for an image in which the
+      "Eiffel Tower" entity is detected, this field represents the confidence
+      that there is a tower in the query image. Range [0, 1].
     description: Entity textual description, expressed in its `locale`
       language.
     locale: The language code for the locale in which the entity textual
@@ -766,16 +767,16 @@ class FaceAnnotation(_messages.Message):
 
 
 class Feature(_messages.Message):
-  """Users describe the type of Google Cloud Vision API tasks to perform over
-  images by using *Feature*s. Each Feature indicates a type of image detection
-  task to perform. Features encode the Cloud Vision API vertical to operate on
-  and the number of top-scoring results to return.
+  """The type of Google Cloud Vision API detection to perform, and the maximum
+  number of results to return for that type. Multiple `Feature` objects can be
+  specified in the `features` list.
 
   Enums:
     TypeValueValuesEnum: The feature type.
 
   Fields:
-    maxResults: Maximum number of results of this type.
+    maxResults: Maximum number of results of this type. Does not apply to
+      `TEXT_DETECTION`, `DOCUMENT_TEXT_DETECTION`, or `CROP_HINTS`.
     model: Model to use for the feature. Supported values: "builtin/stable"
       (the default if unset) and "builtin/latest".
     type: The feature type.
@@ -790,16 +791,19 @@ class Feature(_messages.Message):
       LANDMARK_DETECTION: Run landmark detection.
       LOGO_DETECTION: Run logo detection.
       LABEL_DETECTION: Run label detection.
-      TEXT_DETECTION: Run OCR.
+      TEXT_DETECTION: Run text detection / optical character recognition
+        (OCR). Text detection is optimized for areas of text within a larger
+        image; if the image is a document, use `DOCUMENT_TEXT_DETECTION`
+        instead.
       DOCUMENT_TEXT_DETECTION: Run dense text document OCR. Takes precedence
-        when both DOCUMENT_TEXT_DETECTION and TEXT_DETECTION are present.
-      SAFE_SEARCH_DETECTION: Run computer vision models to compute image safe-
-        search properties.
+        when both `DOCUMENT_TEXT_DETECTION` and `TEXT_DETECTION` are present.
+      SAFE_SEARCH_DETECTION: Run Safe Search to detect potentially unsafe or
+        undesirable content.
       IMAGE_PROPERTIES: Compute a set of image properties, such as the image's
         dominant colors.
       CROP_HINTS: Run crop hints.
       WEB_DETECTION: Run web detection.
-      PRODUCT_SEARCH: Run product-search.
+      PRODUCT_SEARCH: Run Product Search.
       CUSTOM_LABEL_DETECTION: Run custom label detection.
     """
     TYPE_UNSPECIFIED = 0
@@ -851,12 +855,12 @@ class Image(_messages.Message):
   """Client image to perform Google Cloud Vision API tasks over.
 
   Fields:
-    content: Image content, represented as a stream of bytes. Note: as with
+    content: Image content, represented as a stream of bytes. Note: As with
       all `bytes` fields, protobuffers use a pure binary representation,
       whereas JSON representations use base64.
-    source: Google Cloud Storage image location. If both `content` and
-      `source` are provided for an image, `content` takes precedence and is
-      used to perform the image annotation request.
+    source: Google Cloud Storage image location, or publicly-accessible image
+      URL. If both `content` and `source` are provided for an image, `content`
+      takes precedence and is used to perform the image annotation request.
   """
 
   content = _messages.BytesField(1)
@@ -913,21 +917,25 @@ class ImageProperties(_messages.Message):
 
 
 class ImageSource(_messages.Message):
-  """External image source (Google Cloud Storage image location).
+  """External image source (Google Cloud Storage or web URL image location).
 
   Fields:
-    gcsImageUri: NOTE: For new code `image_uri` below is preferred. Google
-      Cloud Storage image URI, which must be in the following form:
-      `gs://bucket_name/object_name` (for details, see [Google Cloud Storage
-      Request URIs](https://cloud.google.com/storage/docs/reference-uris)).
-      NOTE: Cloud Storage object versioning is not supported.
-    imageUri: Image URI which supports: 1) Google Cloud Storage image URI,
-      which must be in the following form: `gs://bucket_name/object_name` (for
-      details, see [Google Cloud Storage Request
-      URIs](https://cloud.google.com/storage/docs/reference-uris)). NOTE:
-      Cloud Storage object versioning is not supported. 2) Publicly accessible
-      image HTTP/HTTPS URL. This is preferred over the legacy `gcs_image_uri`
-      above. When both `gcs_image_uri` and `image_uri` are specified,
+    gcsImageUri: **Use `image_uri` instead.**  The Google Cloud Storage  URI
+      of the form `gs://bucket_name/object_name`. Object versioning is not
+      supported. See [Google Cloud Storage Request
+      URIs](https://cloud.google.com/storage/docs/reference-uris) for more
+      info.
+    imageUri: The URI of the source image. Can be either:  1. A Google Cloud
+      Storage URI of the form    `gs://bucket_name/object_name`. Object
+      versioning is not supported. See    [Google Cloud Storage Request
+      URIs](https://cloud.google.com/storage/docs/reference-uris) for more
+      info.  2. A publicly-accessible image HTTP/HTTPS URL. When fetching
+      images from    HTTP/HTTPS URLs, Google cannot guarantee that the request
+      will be    completed. Your request may fail if the specified host denies
+      the    request (e.g. due to request throttling or DOS prevention), or if
+      Google    throttles requests to the site for abuse prevention. You
+      should not    depend on externally-hosted images for production
+      applications.  When both `gcs_image_uri` and `image_uri` are specified,
       `image_uri` takes precedence.
   """
 
@@ -1326,7 +1334,7 @@ class Position(_messages.Message):
 
 
 class Product(_messages.Message):
-  """Information about a product.
+  """Information about a product. .
 
   Fields:
     imageUri: The URI of the image which matched the query image.  This field
@@ -1355,8 +1363,8 @@ class ProductSearchParams(_messages.Message):
   Fields:
     boundingPoly: The bounding polygon around the area of interest in the
       image. Optional. It is inferred by the system if it is not specified. If
-      `product_category` is specified without `bounding_poly`, the inferred
-      bounding polygon is the entire image.
+      the system detects multiple areas of interest, the largest one is
+      selected.
     catalogName: The resource name of the catalog to search.  Format is:
       `productSearch/catalogs/CATALOG_NAME`.
     category: The category to search in. Optional. It is inferred by the
@@ -1415,6 +1423,7 @@ class ProductSearchResults(_messages.Message):
     indexTime: Timestamp of the index which provided these results. Changes
       made after this time are not reflected in the current results.
     productCategory: Product category. Supported values are `bag` and `shoe`.
+      [Deprecated] `product_category` is provided in each Product.
     products: List of detected products.
   """
 

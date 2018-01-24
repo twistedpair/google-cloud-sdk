@@ -21,10 +21,6 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core.util import platforms
 
 
-def BuildRemoteDestination(bucket, path):
-  return '{0}{1}'.format(bucket, path)
-
-
 def _GetGsutilPath():
   """Builds path to gsutil tool.
 

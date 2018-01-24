@@ -52,8 +52,9 @@ class CloudbillingV1(base_api.BaseApiClient):
 
     def List(self, request, global_params=None):
       """Lists the projects associated with a billing account. The current.
-authenticated user must be an [owner of the billing
-account](https://support.google.com/cloud/answer/4430947).
+authenticated user must have the "billing.resourceAssociations.list" IAM
+permission, which is often given to billing account
+[viewers](https://support.google.com/cloud/answer/4430947).
 
       Args:
         request: (CloudbillingBillingAccountsProjectsListRequest) input message

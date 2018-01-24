@@ -48,7 +48,8 @@ class AcceleratorType(_messages.Message):
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     zone: [Output Only] The name of the zone where the accelerator type
-      resides, such as us-central1-a.
+      resides, such as us-central1-a. You must specify this field as part of
+      the HTTP request URL. It is not settable as a field in the request body.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -553,7 +554,9 @@ class Address(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     region: [Output Only] URL of the region where the regional address
-      resides. This field is not applicable to global addresses.
+      resides. This field is not applicable to global addresses. You must
+      specify this field as part of the HTTP request URL. You cannot set this
+      field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] The status of the address, which can be one of
       RESERVING, RESERVED, or IN_USE. An address that is RESERVING is
@@ -1104,6 +1107,9 @@ class AttachedDisk(_messages.Message):
       the disk later.  Instance templates do not store customer-supplied
       encryption keys, so you cannot use your own keys to encrypt disks in a
       managed instance group.
+    guestOsFeatures: A list of features to enable on the guest operating
+      system. Applicable only for bootable images. Read  Enabling guest
+      operating system features to see a list of available options.
     index: [Output Only] A zero-based index to this disk, where 0 is reserved
       for the boot disk. If you have many disks attached to an instance, each
       disk would have a unique index number.
@@ -1175,14 +1181,15 @@ class AttachedDisk(_messages.Message):
   boot = _messages.BooleanField(2)
   deviceName = _messages.StringField(3)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
-  index = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 6)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 7)
-  kind = _messages.StringField(8, default=u'compute#attachedDisk')
-  licenses = _messages.StringField(9, repeated=True)
-  mode = _messages.EnumField('ModeValueValuesEnum', 10)
-  source = _messages.StringField(11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
+  index = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 7)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 8)
+  kind = _messages.StringField(9, default=u'compute#attachedDisk')
+  licenses = _messages.StringField(10, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 11)
+  source = _messages.StringField(12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -1195,6 +1202,11 @@ class AttachedDiskInitializeParams(_messages.Message):
   Enums:
     DiskStorageTypeValueValuesEnum: [Deprecated] Storage type of the disk.
 
+  Messages:
+    LabelsValue: Labels to apply to this disk. These can be later modified by
+      the disks.setLabels method. This field is only applicable for persistent
+      disks.
+
   Fields:
     diskName: Specifies the disk name. If not specified, the default is to use
       the name of the instance.
@@ -1202,24 +1214,27 @@ class AttachedDiskInitializeParams(_messages.Message):
     diskStorageType: [Deprecated] Storage type of the disk.
     diskType: Specifies the disk type to use to create the instance. If not
       specified, the default is pd-standard, specified using the full URL. For
-      example:  https://www.googleapis.com/compute/v1/projects/project/zones/z
-      one/diskTypes/pd-standard   Other values include pd-ssd and local-ssd.
-      If you define this field, you can provide either the full or partial
-      URL. For example, the following are valid values:   - https://www.google
-      apis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
+      example: https://www.googleapis.com/compute/v1/projects/project/zones/zo
+      ne/diskTypes/pd-standard   Other values include pd-ssd and local-ssd. If
+      you define this field, you can provide either the full or partial URL.
+      For example, the following are valid values:   - https://www.googleapis.
+      com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
       projects/project/zones/zone/diskTypes/diskType  -
       zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is
       the name of the disk type, not URL.
+    labels: Labels to apply to this disk. These can be later modified by the
+      disks.setLabels method. This field is only applicable for persistent
+      disks.
     sourceImage: The source image to create this disk. When creating a new
       instance, one of initializeParams.sourceImage or disks.source is
       required except for local SSD.  To create a disk with one of the public
       operating system images, specify the image by its family name. For
       example, specify family/debian-8 to use the latest Debian 8 image:
       projects/debian-cloud/global/images/family/debian-8   Alternatively, use
-      a specific version of a public operating system image:  projects/debian-
+      a specific version of a public operating system image: projects/debian-
       cloud/global/images/debian-8-jessie-vYYYYMMDD   To create a disk with a
       custom image that you created, specify the image name in the following
-      format:  global/images/my-custom-image   You can also specify a custom
+      format: global/images/my-custom-image   You can also specify a custom
       image by its image family, which returns the latest version of the image
       in that family. Replace the image name with family/family-name:
       global/images/family/my-image-family   If the source image is deleted
@@ -1242,12 +1257,39 @@ class AttachedDiskInitializeParams(_messages.Message):
     HDD = 0
     SSD = 1
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this disk. These can be later modified by the
+    disks.setLabels method. This field is only applicable for persistent
+    disks.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   diskName = _messages.StringField(1)
   diskSizeGb = _messages.IntegerField(2)
   diskStorageType = _messages.EnumField('DiskStorageTypeValueValuesEnum', 3)
   diskType = _messages.StringField(4)
-  sourceImage = _messages.StringField(5)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
+  labels = _messages.MessageField('LabelsValue', 5)
+  sourceImage = _messages.StringField(6)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
 
 
 class AuditConfig(_messages.Message):
@@ -1266,7 +1308,8 @@ class AuditConfig(_messages.Message):
   "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] }  For
   fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
   logging. It also exempts foo@gmail.com from DATA_READ logging, and
-  bar@gmail.com from DATA_WRITE logging.
+  bar@gmail.com from DATA_WRITE logging. This message is only visible as
+  GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -2343,7 +2386,9 @@ class BackendService(_messages.Message):
       HTTP.  For internal load balancing, the possible values are TCP and UDP,
       and the default is TCP.
     region: [Output Only] URL of the region where the regional backend service
-      resides. This field is not applicable to global backend services.
+      resides. This field is not applicable to global backend services. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
     securityPolicy: [Output Only] The resource URL for the security policy
       associated with this backend service.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -2881,7 +2926,8 @@ class Binding(_messages.Message):
     condition: The condition that is associated with this binding. NOTE: an
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
-      independently. This field is GOOGLE_INTERNAL.
+      independently. This field is only visible as GOOGLE_INTERNAL or
+      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -8376,6 +8422,34 @@ class ComputeInterconnectAttachmentsListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeInterconnectAttachmentsSetLabelsRequest(_messages.Message):
+  """A ComputeInterconnectAttachmentsSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
+
+
 class ComputeInterconnectAttachmentsTestIamPermissionsRequest(_messages.Message):
   """A ComputeInterconnectAttachmentsTestIamPermissionsRequest object.
 
@@ -8585,6 +8659,21 @@ class ComputeInterconnectsPatchRequest(_messages.Message):
   interconnectResource = _messages.MessageField('Interconnect', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeInterconnectsSetLabelsRequest(_messages.Message):
+  """A ComputeInterconnectsSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeInterconnectsTestIamPermissionsRequest(_messages.Message):
@@ -9518,8 +9607,8 @@ class ComputeRegionBackendServicesGetHealthRequest(_messages.Message):
   """A ComputeRegionBackendServicesGetHealthRequest object.
 
   Fields:
-    backendService: Name of the BackendService resource to which the queried
-      instance belongs.
+    backendService: Name of the BackendService resource for which to get
+      health.
     project: A string attribute.
     region: Name of the region scoping this request.
     resourceGroupReference: A ResourceGroupReference resource to be passed as
@@ -14184,6 +14273,9 @@ class Disk(_messages.Message):
       the disk.  If you do not provide an encryption key when creating the
       disk, then the disk will be encrypted using an automatically generated
       key and you do not need to provide a key to use the disk later.
+    guestOsFeatures: A list of features to enable on the guest operating
+      system. Applicable only for bootable images. Read  Enabling guest
+      operating system features to see a list of available options.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#disk for disks.
@@ -14224,14 +14316,14 @@ class Disk(_messages.Message):
       image is deleted, this field will not be set.  To create a disk with one
       of the public operating system images, specify the image by its family
       name. For example, specify family/debian-8 to use the latest Debian 8
-      image:  projects/debian-cloud/global/images/family/debian-8
+      image: projects/debian-cloud/global/images/family/debian-8
       Alternatively, use a specific version of a public operating system
-      image:  projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
+      image: projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
       To create a disk with a custom image that you created, specify the image
-      name in the following format:  global/images/my-custom-image   You can
+      name in the following format: global/images/my-custom-image   You can
       also specify a custom image by its image family, which returns the
       latest version of the image in that family. Replace the image name with
-      family/family-name:  global/images/family/my-image-family
+      family/family-name: global/images/family/my-image-family
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. Required if the source image is protected by a customer-
       supplied encryption key.
@@ -14261,7 +14353,9 @@ class Disk(_messages.Message):
       create the disk. Provide this when creating the disk.
     users: [Output Only] Links to the users of the disk (attached instances)
       in form: project/zones/zone/instances/instance
-    zone: [Output Only] URL of the zone where the disk resides.
+    zone: [Output Only] URL of the zone where the disk resides. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -14316,29 +14410,30 @@ class Disk(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#disk')
-  labelFingerprint = _messages.BytesField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  lastAttachTimestamp = _messages.StringField(8)
-  lastDetachTimestamp = _messages.StringField(9)
-  licenseCodes = _messages.IntegerField(10, repeated=True)
-  licenses = _messages.StringField(11, repeated=True)
-  name = _messages.StringField(12)
-  options = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  sizeGb = _messages.IntegerField(15)
-  sourceImage = _messages.StringField(16)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceImageId = _messages.StringField(18)
-  sourceSnapshot = _messages.StringField(19)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
-  sourceSnapshotId = _messages.StringField(21)
-  status = _messages.EnumField('StatusValueValuesEnum', 22)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 23)
-  type = _messages.StringField(24)
-  users = _messages.StringField(25, repeated=True)
-  zone = _messages.StringField(26)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 4, repeated=True)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#disk')
+  labelFingerprint = _messages.BytesField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  lastAttachTimestamp = _messages.StringField(9)
+  lastDetachTimestamp = _messages.StringField(10)
+  licenseCodes = _messages.IntegerField(11, repeated=True)
+  licenses = _messages.StringField(12, repeated=True)
+  name = _messages.StringField(13)
+  options = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  sizeGb = _messages.IntegerField(16)
+  sourceImage = _messages.StringField(17)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
+  sourceImageId = _messages.StringField(19)
+  sourceSnapshot = _messages.StringField(20)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceSnapshotId = _messages.StringField(22)
+  status = _messages.EnumField('StatusValueValuesEnum', 23)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 24)
+  type = _messages.StringField(25)
+  users = _messages.StringField(26, repeated=True)
+  zone = _messages.StringField(27)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -14504,12 +14599,12 @@ class DiskInstantiationConfig(_messages.Message):
     autoDelete: Specifies whether the disk will be auto-deleted when the
       instance is deleted (but not when the disk is detached from the
       instance).
+    customImage: The custom source image to be used to restore this disk when
+      instantiating this instance template.
     deviceName: Specifies the device name of the disk to which the
       configurations apply to.
     instantiateFrom: Specifies whether to include the disk and what image to
       use.
-    sourceImage: The custom source image to be used to restore this disk when
-      instantiating this instance template.
   """
 
   class InstantiateFromValueValuesEnum(_messages.Enum):
@@ -14518,24 +14613,24 @@ class DiskInstantiationConfig(_messages.Message):
     Values:
       ATTACH_READ_ONLY: <no description>
       BLANK: <no description>
+      CUSTOM_IMAGE: <no description>
       DEFAULT: <no description>
       DO_NOT_INCLUDE: <no description>
-      IMAGE_URL: <no description>
       SOURCE_IMAGE: <no description>
       SOURCE_IMAGE_FAMILY: <no description>
     """
     ATTACH_READ_ONLY = 0
     BLANK = 1
-    DEFAULT = 2
-    DO_NOT_INCLUDE = 3
-    IMAGE_URL = 4
+    CUSTOM_IMAGE = 2
+    DEFAULT = 3
+    DO_NOT_INCLUDE = 4
     SOURCE_IMAGE = 5
     SOURCE_IMAGE_FAMILY = 6
 
   autoDelete = _messages.BooleanField(1)
-  deviceName = _messages.StringField(2)
-  instantiateFrom = _messages.EnumField('InstantiateFromValueValuesEnum', 3)
-  sourceImage = _messages.StringField(4)
+  customImage = _messages.StringField(2)
+  deviceName = _messages.StringField(3)
+  instantiateFrom = _messages.EnumField('InstantiateFromValueValuesEnum', 4)
 
 
 class DiskList(_messages.Message):
@@ -14702,7 +14797,9 @@ class DiskType(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     validDiskSize: [Output Only] An optional textual description of the valid
       disk size, such as "10GB-10TB".
-    zone: [Output Only] URL of the zone where the disk type resides.
+    zone: [Output Only] URL of the zone where the disk type resides. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -15297,7 +15394,7 @@ class Firewall(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     denied: The list of DENY rules specified by this firewall. Each rule
-      specifies a protocol and port-range tuple that describes a permitted
+      specifies a protocol and port-range tuple that describes a denied
       connection.
     description: An optional description of this resource. Provide this
       property when you create the resource.
@@ -15695,7 +15792,7 @@ class ForwardingRule(_messages.Message):
       TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetTcpProxy:
       25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1883, 5222  -
       TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
-      1883, 5222  - TargetVpnGateway: 500, 4500 -
+      1883, 5222  - TargetVpnGateway: 500, 4500
     ports: This field is used along with the backend_service field for
       internal load balancing.  When the load balancing scheme is INTERNAL, a
       single port or a comma separated list of ports can be configured. Only
@@ -15703,7 +15800,9 @@ class ForwardingRule(_messages.Message):
       configured with this forwarding rule.  You may specify a maximum of up
       to 5 ports.
     region: [Output Only] URL of the region where the regional forwarding rule
-      resides. This field is not applicable to global forwarding rules.
+      resides. This field is not applicable to global forwarding rules. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     serviceLabel: An optional prefix to the service name for this Forwarding
       Rule. If specified, will be the first label of the fully qualified
@@ -15726,8 +15825,7 @@ class ForwardingRule(_messages.Message):
       regional forwarding rules, this target must live in the same region as
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object.  This field is not used for internal
-      load balancing.
+      appropriate to the target object.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -17117,6 +17215,18 @@ class Image(_messages.Message):
     sourceImageId: [Output Only] The ID value of the image used to create this
       image. This value may be used to determine whether the image was taken
       from the current or a previous instance of a given image name.
+    sourceSnapshot: URL of the source snapshot used to create this image. This
+      can be a full or valid partial URL. You must provide exactly one of:   -
+      this property, or   - the sourceImage property, or   - the
+      rawDisk.source property, or   - the sourceDisk property   in order to
+      create an image.
+    sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
+      source snapshot. Required if the source snapshot is protected by a
+      customer-supplied encryption key.
+    sourceSnapshotId: [Output Only] The ID value of the snapshot used to
+      create this image. This value may be used to determine whether the
+      snapshot was taken from the current or a previous instance of a given
+      snapshot name.
     sourceType: The type of the image used to create this disk. The default
       and only value is RAW
     status: [Output Only] The status of the image. An image can be used to
@@ -17232,8 +17342,11 @@ class Image(_messages.Message):
   sourceImage = _messages.StringField(21)
   sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
   sourceImageId = _messages.StringField(23)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 24, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 25)
+  sourceSnapshot = _messages.StringField(24)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
+  sourceSnapshotId = _messages.StringField(26)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 27, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 28)
 
 
 class ImageList(_messages.Message):
@@ -17404,12 +17517,12 @@ class Instance(_messages.Message):
     machineType: Full or partial URL of the machine type resource to use for
       this instance, in the format: zones/zone/machineTypes/machine-type. This
       is provided by the client when the instance is created. For example, the
-      following is a valid partial url to a predefined machine type:  zones
-      /us-central1-f/machineTypes/n1-standard-1   To create a custom machine
-      type, provide a URL to a machine type in the following format, where
-      CPUS is 1 or an even number up to 32 (2, 4, 6, ... 24, etc), and MEMORY
-      is the total memory for this instance. Memory must be a multiple of 256
-      MB and must be supplied in MB (e.g. 5 GB of memory is 5120 MB):
+      following is a valid partial url to a predefined machine type: zones/us-
+      central1-f/machineTypes/n1-standard-1   To create a custom machine type,
+      provide a URL to a machine type in the following format, where CPUS is 1
+      or an even number up to 32 (2, 4, 6, ... 24, etc), and MEMORY is the
+      total memory for this instance. Memory must be a multiple of 256 MB and
+      must be supplied in MB (e.g. 5 GB of memory is 5120 MB):
       zones/zone/machineTypes/custom-CPUS-MEMORY   For example: zones/us-
       central1-f/machineTypes/custom-4-5120   For a full list of restrictions,
       read the Specifications for custom machine types.
@@ -17447,7 +17560,9 @@ class Instance(_messages.Message):
       valid sources or targets for network firewalls and are specified by the
       client during instance creation. The tags can be later modified by the
       setTags method. Each tag within the list must comply with RFC1035.
-    zone: [Output Only] URL of the zone where the instance resides.
+    zone: [Output Only] URL of the zone where the instance resides. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -18151,9 +18266,8 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
       group that are scheduled to be restarted or are currently being
       restarted.
     verifying: [Output Only] The number of instances in the managed instance
-      group that are being verified. More details regarding verification
-      process are covered in the documentation of
-      ManagedInstance.InstanceAction.VERIFYING enum field.
+      group that are being verified. See the managedInstances[].currentAction
+      property in the listManagedInstances method documentation.
   """
 
   abandoning = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -19931,6 +20045,11 @@ class Interconnect(_messages.Message):
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this Interconnect is functional.
 
+  Messages:
+    LabelsValue: Labels to apply to this Interconnect resource. These can be
+      later modified by the setLabels method. Each label key/value must comply
+      with RFC1035. Label values may be empty.
+
   Fields:
     adminEnabled: Administrative status of the interconnect. When this is set
       to true, the Interconnect is functional and can carry traffic. When set
@@ -19959,6 +20078,16 @@ class Interconnect(_messages.Message):
       deprecated in favor of "DEDICATED"
     kind: [Output Only] Type of the resource. Always compute#interconnect for
       interconnects.
+    labelFingerprint: A fingerprint for the labels being applied to this
+      Interconnect, which is essentially a hash of the labels set used for
+      optimistic locking. The fingerprint is initially generated by Compute
+      Engine and changes after every request to modify or update labels. You
+      must always provide an up-to-date fingerprint hash in order to update or
+      change labels.  To see the latest fingerprint, make a get() request to
+      retrieve an Interconnect.
+    labels: Labels to apply to this Interconnect resource. These can be later
+      modified by the setLabels method. Each label key/value must comply with
+      RFC1035. Label values may be empty.
     linkType: Type of link requested. This field indicates speed of each of
       the links in the bundle, not the entire bundle. Only 10G per link is
       allowed for a dedicated interconnect. Options: Ethernet_10G_LR
@@ -20020,6 +20149,32 @@ class Interconnect(_messages.Message):
     OS_ACTIVE = 0
     OS_UNPROVISIONED = 1
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this Interconnect resource. These can be later
+    modified by the setLabels method. Each label key/value must comply with
+    RFC1035. Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   adminEnabled = _messages.BooleanField(1)
   circuitInfos = _messages.MessageField('InterconnectCircuitInfo', 2, repeated=True)
   creationTimestamp = _messages.StringField(3)
@@ -20032,15 +20187,17 @@ class Interconnect(_messages.Message):
   interconnectAttachments = _messages.StringField(10, repeated=True)
   interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 11)
   kind = _messages.StringField(12, default=u'compute#interconnect')
-  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 13)
-  location = _messages.StringField(14)
-  name = _messages.StringField(15)
-  nocContactEmail = _messages.StringField(16)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 17)
-  peerIpAddress = _messages.StringField(18)
-  provisionedLinkCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  requestedLinkCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(21)
+  labelFingerprint = _messages.BytesField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 15)
+  location = _messages.StringField(16)
+  name = _messages.StringField(17)
+  nocContactEmail = _messages.StringField(18)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 19)
+  peerIpAddress = _messages.StringField(20)
+  provisionedLinkCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  requestedLinkCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(23)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -20052,6 +20209,11 @@ class InterconnectAttachment(_messages.Message):
   Enums:
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this interconnect attachment is functional.
+
+  Messages:
+    LabelsValue: Labels to apply to this InterconnectAttachment resource.
+      These can be later modified by the setLabels method. Each label
+      key/value must comply with RFC1035. Label values may be empty.
 
   Fields:
     cloudRouterIpAddress: [Output Only] IPv4 address + prefix length to be
@@ -20071,6 +20233,16 @@ class InterconnectAttachment(_messages.Message):
       attachment's traffic will traverse through.
     kind: [Output Only] Type of the resource. Always
       compute#interconnectAttachment for interconnect attachments.
+    labelFingerprint: A fingerprint for the labels being applied to this
+      InterconnectAttachment, which is essentially a hash of the labels set
+      used for optimistic locking. The fingerprint is initially generated by
+      Compute Engine and changes after every request to modify or update
+      labels. You must always provide an up-to-date fingerprint hash in order
+      to update or change labels.  To see the latest fingerprint, make a get()
+      request to retrieve an InterconnectAttachment.
+    labels: Labels to apply to this InterconnectAttachment resource. These can
+      be later modified by the setLabels method. Each label key/value must
+      comply with RFC1035. Label values may be empty.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -20084,7 +20256,8 @@ class InterconnectAttachment(_messages.Message):
       InterconnectAttachment. This property is populated if the interconnect
       that this is attached to is of type DEDICATED.
     region: [Output Only] URL of the region where the regional interconnect
-      attachment resides.
+      attachment resides. You must specify this field as part of the HTTP
+      request URL. It is not settable as a field in the request body.
     router: URL of the cloud router to be used for dynamic routing. This
       router must be in the same region as this InterconnectAttachment. The
       InterconnectAttachment will automatically connect the Interconnect to
@@ -20103,6 +20276,32 @@ class InterconnectAttachment(_messages.Message):
     OS_ACTIVE = 0
     OS_UNPROVISIONED = 1
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this InterconnectAttachment resource. These can be
+    later modified by the setLabels method. Each label key/value must comply
+    with RFC1035. Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   cloudRouterIpAddress = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
   customerRouterIpAddress = _messages.StringField(3)
@@ -20111,12 +20310,14 @@ class InterconnectAttachment(_messages.Message):
   id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
   interconnect = _messages.StringField(7)
   kind = _messages.StringField(8, default=u'compute#interconnectAttachment')
-  name = _messages.StringField(9)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 10)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 11)
-  region = _messages.StringField(12)
-  router = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
+  labelFingerprint = _messages.BytesField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 12)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 13)
+  region = _messages.StringField(14)
+  router = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -21780,7 +21981,8 @@ class ManagedInstance(_messages.Message):
       instance.  - REFRESHING The managed instance group is applying
       configuration changes to the instance without stopping it. For example,
       the group can update the target pool list for an instance without
-      stopping that instance.
+      stopping that instance.  - VERIFYING The managed instance group has
+      created the instance and it is in the process of being verified.
     InstanceStatusValueValuesEnum: [Output Only] The status of the instance.
       This field is empty when the instance does not exist.
 
@@ -21803,7 +22005,8 @@ class ManagedInstance(_messages.Message):
       instance.  - REFRESHING The managed instance group is applying
       configuration changes to the instance without stopping it. For example,
       the group can update the target pool list for an instance without
-      stopping that instance.
+      stopping that instance.  - VERIFYING The managed instance group has
+      created the instance and it is in the process of being verified.
     id: [Output only] The unique identifier for this resource. This field is
       empty when instance does not exist.
     instance: [Output Only] The URL of the instance. The URL can exist even if
@@ -21833,7 +22036,8 @@ class ManagedInstance(_messages.Message):
     restarting the instance.  - REFRESHING The managed instance group is
     applying configuration changes to the instance without stopping it. For
     example, the group can update the target pool list for an instance without
-    stopping that instance.
+    stopping that instance.  - VERIFYING The managed instance group has
+    created the instance and it is in the process of being verified.
 
     Values:
       ABANDONING: <no description>
@@ -22388,7 +22592,9 @@ class Operation(_messages.Message):
       operation will be complete. This number should monotonically increase as
       the operation progresses.
     region: [Output Only] The URL of the region where the operation resides.
-      Only available when performing regional operations.
+      Only available when performing regional operations. You must specify
+      this field as part of the HTTP request URL. It is not settable as a
+      field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     startTime: [Output Only] The time that this operation was started by the
       server. This value is in RFC3339 text format.
@@ -22406,7 +22612,9 @@ class Operation(_messages.Message):
     warnings: [Output Only] If warning messages are generated during
       processing of the operation, this field will be populated.
     zone: [Output Only] The URL of the zone where the operation resides. Only
-      available when performing per-zone operations.
+      available when performing per-zone operations. You must specify this
+      field as part of the HTTP request URL. It is not settable as a field in
+      the request body.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -23013,10 +23221,11 @@ class Policy(_messages.Message):
   "domain:google.com", "serviceAccount:my-other-
   app@appspot.gserviceaccount.com", ] }, { "role": "roles/viewer", "members":
   ["user:sean@example.com"] } ] }  For a description of IAM and its features,
-  see the [IAM developer's guide](https://cloud.google.com/iam).
+  see the [IAM developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
+      This field is only visible as GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
     bindings: Associates a list of `members` to a `role`. `bindings` with no
       members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
@@ -23036,7 +23245,7 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
       will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -23048,10 +23257,9 @@ class Policy(_messages.Message):
 
 
 class Project(_messages.Message):
-  """A Project resource. Projects can only be created in the Google Cloud
-  Platform Console. Unless marked otherwise, values can only be modified in
-  the console. (== resource_for v1.projects ==) (== resource_for beta.projects
-  ==)
+  """A Project resource. For an overview of projects, see  Cloud Platform
+  Resource Hierarchy. (== resource_for v1.projects ==) (== resource_for
+  beta.projects ==)
 
   Enums:
     XpnProjectStatusValueValuesEnum: [Output Only] The role this project has
@@ -24519,7 +24727,9 @@ class Router(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     network: URI of the network to which this router belongs.
-    region: [Output Only] URI of the region where the router resides.
+    region: [Output Only] URI of the region where the router resides. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
@@ -26468,8 +26678,7 @@ class Subnetwork(_messages.Message):
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
       must be provided in order to update the Subnetwork.
     gatewayAddress: [Output Only] The gateway address for default routes to
-      reach destination addresses outside this subnetwork. This field can be
-      set only at resource creation time.
+      reach destination addresses outside this subnetwork.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ipCidrRange: The range of internal addresses that are owned by this
@@ -27451,7 +27660,9 @@ class TargetInstance(_messages.Message):
     natPolicy: NAT option controlling how IPs are NAT'ed to the instance.
       Currently only NO_NAT (default value) is supported.
     selfLink: [Output Only] Server-defined URL for the resource.
-    zone: [Output Only] URL of the zone where the target instance resides.
+    zone: [Output Only] URL of the zone where the target instance resides. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
   """
 
   class NatPolicyValueValuesEnum(_messages.Enum):
@@ -28924,7 +29135,8 @@ class TargetVpnGateway(_messages.Message):
     network: URL of the network to which this VPN gateway is attached.
       Provided by the client when the VPN gateway is created.
     region: [Output Only] URL of the region where the target VPN gateway
-      resides.
+      resides. You must specify this field as part of the HTTP request URL. It
+      is not settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] The status of the VPN gateway.
     tunnels: [Output Only] A list of URLs to VpnTunnel resources. VpnTunnels
@@ -29466,8 +29678,9 @@ class UrlMap(_messages.Message):
       cannot be a dash.
     pathMatchers: The list of named PathMatchers to use against the URL.
     selfLink: [Output Only] Server-defined URL for the resource.
-    tests: The list of expected URL mappings. Request to update this UrlMap
-      will succeed only if all of the test cases pass.
+    tests: The list of expected URL mapping tests. Request to update this
+      UrlMap will succeed only if all of the test cases pass. You can specify
+      a maximum of 100 tests per UrlMap.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -29742,7 +29955,9 @@ class VpnTunnel(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     peerIp: IP address of the peer VPN gateway. Only IPv4 is supported.
-    region: [Output Only] URL of the region where the VPN tunnel resides.
+    region: [Output Only] URL of the region where the VPN tunnel resides. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
     remoteTrafficSelector: Remote traffic selectors to use when establishing
       the VPN tunnel with peer VPN gateway. The value should be a CIDR
       formatted string, for example: 192.168.0.0/16. The ranges should be
@@ -29753,8 +29968,8 @@ class VpnTunnel(_messages.Message):
       Cloud VPN gateway and the peer VPN gateway.
     sharedSecretHash: Hash of the shared secret.
     status: [Output Only] The status of the VPN tunnel.
-    targetVpnGateway: URL of the VPN gateway with which this VPN tunnel is
-      associated. Provided by the client when the VPN tunnel is created.
+    targetVpnGateway: URL of the Target VPN gateway with which this VPN tunnel
+      is associated. Provided by the client when the VPN tunnel is created.
   """
 
   class StatusValueValuesEnum(_messages.Enum):

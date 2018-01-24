@@ -23,7 +23,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 FAMILY_PREFIX = 'family/'
-GUEST_OS_FEATURES = ['VIRTIO_SCSI_MULTIQUEUE',
+GUEST_OS_FEATURES = ['MULTI_IP_SUBNET',
+                     'VIRTIO_SCSI_MULTIQUEUE',
                      'WINDOWS',
                     ]
 GUEST_OS_FEATURES_BETA = ['MULTI_IP_SUBNET',

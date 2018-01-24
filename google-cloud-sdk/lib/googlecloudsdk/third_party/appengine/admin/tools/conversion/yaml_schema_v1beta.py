@@ -66,7 +66,14 @@ SCHEMA = s.Message(
         target_disk_read_ops_per_sec=s.Value(
             'target_read_ops_per_sec'),
         target_request_count_per_sec=s.Value(),
-        target_concurrent_requests=s.Value()),
+        target_concurrent_requests=s.Value(),
+        custom_metrics=s.RepeatedField(element=s.Message(
+            metric_name=s.Value(converter=c.ToJsonString),
+            target_type=s.Value(converter=c.ToJsonString),
+            target_utilization=s.Value('target_utilization'),
+            single_instance_assignment=s.Value('single_instance_assignment'),
+            filter=s.Value(converter=c.ToJsonString))),
+    ),
     basic_scaling=s.Message(
         idle_timeout=s.Value(converter=c.IdleTimeoutToDuration),
         max_instances=s.Value(converter=c.StringToInt())),
@@ -134,7 +141,6 @@ SCHEMA = s.Message(
         failure_threshold=s.Value(),
         path=s.Value(),
         host=s.Value(converter=c.ToJsonString)),
-    zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
     inbound_services=s.RepeatedField(element=s.Value(
         converter=c.EnumConverter('INBOUND_SERVICE'))),
     instance_class=s.Value(converter=c.ToJsonString),
@@ -151,6 +157,7 @@ SCHEMA = s.Message(
                                                         c.ToJsonString)),
         session_affinity=s.Value()
     ),
+    zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
     nobuild_files=s.Value('nobuild_files_regex', converter=c.ToJsonString),
     resources=s.Message(
         memory_gb=s.Value(),

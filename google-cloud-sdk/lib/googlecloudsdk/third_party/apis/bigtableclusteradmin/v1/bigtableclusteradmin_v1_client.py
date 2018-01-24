@@ -315,32 +315,6 @@ class BigtableclusteradminV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Undelete(self, request, global_params=None):
-      """Cancels the scheduled deletion of an cluster and begins preparing it to resume serving. The returned operation will also be embedded as the cluster's "current_operation". Immediately upon completion of this request: * The cluster's "delete_time" field will be unset, protecting it from automatic deletion. Until completion of the returned operation: * The operation cannot be cancelled. Upon completion of the returned operation: * Billing for the cluster's resources will resume. * All tables within the cluster will be available. [UndeleteClusterMetadata][google.bigtable.admin.cluster.v1.UndeleteClusterMetadata] The embedded operation's "response" field type is [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful.
-
-      Args:
-        request: (BigtableclusteradminProjectsZonesClustersUndeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Undelete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'bigtableclusteradmin.projects.zones.clusters.undelete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'{+name}:undelete',
-        request_field='',
-        request_type_name=u'BigtableclusteradminProjectsZonesClustersUndeleteRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def Update(self, request, global_params=None):
       """Updates a cluster, and begins allocating or releasing resources as requested. The returned cluster embeds as its "current_operation" a long-running operation which can be used to track the progress of updating the cluster. Immediately upon completion of this request: * For resource types where a decrease in the cluster's allocation has been requested, billing will be based on the newly-requested level. Until completion of the embedded operation: * Cancelling the operation will set its metadata's "cancelled_at_time", and begin restoring resources to their pre-request values. The operation is guaranteed to succeed at undoing all resource changes, after which point it will terminate with a CANCELLED status. * All other attempts to modify or delete the cluster will be rejected. * Reading the cluster via the API will continue to give the pre-request resource levels. Upon completion of the embedded operation: * Billing will begin for all successfully-allocated resources (some types may have lower than the requested levels). * All newly-reserved resources will be available for serving the cluster's tables. * The cluster's new resource levels will be readable via the API. [UpdateClusterMetadata][google.bigtable.admin.cluster.v1.UpdateClusterMetadata] The embedded operation's "response" field type is [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful.
 

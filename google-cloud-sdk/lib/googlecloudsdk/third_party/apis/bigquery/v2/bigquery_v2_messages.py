@@ -1050,10 +1050,10 @@ class JobConfiguration(_messages.Message):
   """A JobConfiguration object.
 
   Messages:
-    LabelsValue: [Experimental] The labels associated with this job. You can
-      use these to organize and group your jobs. Label keys and values can be
-      no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes. International characters are
+    LabelsValue: The labels associated with this job. You can use these to
+      organize and group your jobs. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
       allowed. Label values are optional. Label keys must start with a letter
       and each label in the list must have a different key.
 
@@ -1064,24 +1064,24 @@ class JobConfiguration(_messages.Message):
       invalid query will return the same error it would if it wasn't a dry
       run. Behavior of non-query jobs is undefined.
     extract: [Pick one] Configures an extract job.
-    labels: [Experimental] The labels associated with this job. You can use
-      these to organize and group your jobs. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes. International characters are
-      allowed. Label values are optional. Label keys must start with a letter
-      and each label in the list must have a different key.
+    labels: The labels associated with this job. You can use these to organize
+      and group your jobs. Label keys and values can be no longer than 63
+      characters, can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter and each label
+      in the list must have a different key.
     load: [Pick one] Configures a load job.
     query: [Pick one] Configures a query job.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """[Experimental] The labels associated with this job. You can use these
-    to organize and group your jobs. Label keys and values can be no longer
-    than 63 characters, can only contain lowercase letters, numeric
-    characters, underscores and dashes. International characters are allowed.
-    Label values are optional. Label keys must start with a letter and each
-    label in the list must have a different key.
+    """The labels associated with this job. You can use these to organize and
+    group your jobs. Label keys and values can be no longer than 63
+    characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. Label values
+    are optional. Label keys must start with a letter and each label in the
+    list must have a different key.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1585,6 +1585,7 @@ class JobStatistics2(_messages.Message):
       AS SELECT. "CREATE_TABLE_AS_SELECT": CREATE [OR REPLACE] TABLE ... AS
       SELECT ... "DROP_TABLE": DROP TABLE query. "CREATE_VIEW": CREATE [OR
       REPLACE] VIEW ... AS SELECT ... "DROP_VIEW": DROP VIEW query.
+    timeline: [Output-only] Describes a timeline of job execution.
     totalBytesBilled: [Output-only] Total bytes billed for the job.
     totalBytesProcessed: [Output-only] Total bytes processed for the job.
     totalSlotMs: [Output-only] Slot-milliseconds for the job.
@@ -1603,10 +1604,11 @@ class JobStatistics2(_messages.Message):
   referencedTables = _messages.MessageField('TableReference', 8, repeated=True)
   schema = _messages.MessageField('TableSchema', 9)
   statementType = _messages.StringField(10)
-  totalBytesBilled = _messages.IntegerField(11)
-  totalBytesProcessed = _messages.IntegerField(12)
-  totalSlotMs = _messages.IntegerField(13)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 14, repeated=True)
+  timeline = _messages.MessageField('QueryTimelineSample', 11, repeated=True)
+  totalBytesBilled = _messages.IntegerField(12)
+  totalBytesProcessed = _messages.IntegerField(13)
+  totalSlotMs = _messages.IntegerField(14)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 15, repeated=True)
 
 
 class JobStatistics3(_messages.Message):
@@ -1939,6 +1941,30 @@ class QueryResponse(_messages.Message):
   totalRows = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
 
 
+class QueryTimelineSample(_messages.Message):
+  """A QueryTimelineSample object.
+
+  Fields:
+    activeInputs: Total number of active workers. This does not correspond
+      directly to slot usage. This is the largest value observed since the
+      last sample.
+    completedInputs: Total parallel units of work completed by this query.
+    completedInputsForActiveStages: Total parallel units of work completed by
+      the currently active stages.
+    elapsedMs: Milliseconds elapsed since the start of query execution.
+    pendingInputs: Total parallel units of work remaining for the active
+      stages.
+    totalSlotMs: Cumulative slot-ms consumed by the query.
+  """
+
+  activeInputs = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  completedInputs = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  completedInputsForActiveStages = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  elapsedMs = _messages.IntegerField(4)
+  pendingInputs = _messages.IntegerField(5)
+  totalSlotMs = _messages.IntegerField(6)
+
+
 class StandardQueryParameters(_messages.Message):
   """Query parameters accepted by all methods.
 
@@ -2002,10 +2028,10 @@ class Table(_messages.Message):
   """A Table object.
 
   Messages:
-    LabelsValue: [Experimental] The labels associated with this table. You can
-      use these to organize and group your tables. Label keys and values can
-      be no longer than 63 characters, can only contain lowercase letters,
-      numeric characters, underscores and dashes. International characters are
+    LabelsValue: The labels associated with this table. You can use these to
+      organize and group your tables. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
       allowed. Label values are optional. Label keys must start with a letter
       and each label in the list must have a different key.
 
@@ -2019,7 +2045,9 @@ class Table(_messages.Message):
     expirationTime: [Optional] The time when this table expires, in
       milliseconds since the epoch. If not present, the table will persist
       indefinitely. Expired tables will be deleted and their storage
-      reclaimed.
+      reclaimed. The defaultTableExpirationMs property of the encapsulating
+      dataset can be used to set a default expirationTime on newly created
+      tables.
     externalDataConfiguration: [Optional] Describes the data format, location,
       and other properties of a table stored outside of BigQuery. By defining
       these properties, the data source can then be queried as if it were a
@@ -2027,9 +2055,9 @@ class Table(_messages.Message):
     friendlyName: [Optional] A descriptive name for this table.
     id: [Output-only] An opaque ID uniquely identifying the table.
     kind: [Output-only] The type of the resource.
-    labels: [Experimental] The labels associated with this table. You can use
-      these to organize and group your tables. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
+    labels: The labels associated with this table. You can use these to
+      organize and group your tables. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
       characters, underscores and dashes. International characters are
       allowed. Label values are optional. Label keys must start with a letter
       and each label in the list must have a different key.
@@ -2063,12 +2091,12 @@ class Table(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """[Experimental] The labels associated with this table. You can use these
-    to organize and group your tables. Label keys and values can be no longer
-    than 63 characters, can only contain lowercase letters, numeric
-    characters, underscores and dashes. International characters are allowed.
-    Label values are optional. Label keys must start with a letter and each
-    label in the list must have a different key.
+    """The labels associated with this table. You can use these to organize
+    and group your tables. Label keys and values can be no longer than 63
+    characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. Label values
+    are optional. Label keys must start with a letter and each label in the
+    list must have a different key.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2259,8 +2287,8 @@ class TableList(_messages.Message):
     """A TablesValueListEntry object.
 
     Messages:
-      LabelsValue: [Experimental] The labels associated with this table. You
-        can use these to organize and group your tables.
+      LabelsValue: The labels associated with this table. You can use these to
+        organize and group your tables.
       ViewValue: Additional details for a view.
 
     Fields:
@@ -2273,8 +2301,8 @@ class TableList(_messages.Message):
       friendlyName: The user-friendly name for this table.
       id: An opaque ID of the table
       kind: The resource type.
-      labels: [Experimental] The labels associated with this table. You can
-        use these to organize and group your tables.
+      labels: The labels associated with this table. You can use these to
+        organize and group your tables.
       tableReference: A reference uniquely identifying the table.
       timePartitioning: The time-based partitioning for this table.
       type: The type of table. Possible values are: TABLE, VIEW.
@@ -2283,8 +2311,8 @@ class TableList(_messages.Message):
 
     @encoding.MapUnrecognizedFields('additionalProperties')
     class LabelsValue(_messages.Message):
-      """[Experimental] The labels associated with this table. You can use
-      these to organize and group your tables.
+      """The labels associated with this table. You can use these to organize
+      and group your tables.
 
       Messages:
         AdditionalProperty: An additional property for a LabelsValue object.

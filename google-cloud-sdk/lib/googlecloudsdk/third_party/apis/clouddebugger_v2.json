@@ -116,7 +116,7 @@
           "description": "View and manage your data across Google Cloud Platform services"
         },
         "https://www.googleapis.com/auth/cloud_debugger": {
-          "description": "Manage cloud debugger"
+          "description": "Use Stackdriver Debugger"
         }
       }
     }
@@ -178,7 +178,7 @@
           }
         },
         "extSourceContexts": {
-          "description": "References to the locations and revisions of the source code used in the\ndeployed application.\n\nNOTE: this field is experimental and can be ignored.",
+          "description": "References to the locations and revisions of the source code used in the\ndeployed application.",
           "type": "array",
           "items": {
             "$ref": "ExtendedSourceContext"

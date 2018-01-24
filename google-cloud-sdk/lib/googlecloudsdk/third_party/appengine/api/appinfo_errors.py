@@ -175,6 +175,14 @@ class TooManyScalingSettingsError(Error):
   """Raised when more than one scaling settings section is present."""
 
 
+class TooManyAutoscalingUtilizationTargetsError(Error):
+  """Raised when too many custom metric autoscaling targets are present."""
+
+
+class NotEnoughAutoscalingUtilizationTargetsError(Error):
+  """Raised when not enough custom metric autoscaling targets are present."""
+
+
 class MissingRuntimeError(Error):
   """Raised when the "runtime" field is omitted for a non-vm."""
 

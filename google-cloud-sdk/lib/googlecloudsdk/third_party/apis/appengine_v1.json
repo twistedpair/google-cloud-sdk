@@ -494,7 +494,7 @@
           }
         },
         "resources": {
-          "description": "Machine resources for this version. Only applicable in the App Engine flexible environment.",
+          "description": "Machine resources for this version. Only applicable for VM runtimes.",
           "$ref": "Resources"
         },
         "runtime": {
@@ -1918,6 +1918,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "createVersionMetadata": {
+          "$ref": "CreateVersionMetadataV1Alpha"
+        }
+      }
+    },
+    "CreateVersionMetadataV1Alpha": {
+      "id": "CreateVersionMetadataV1Alpha",
+      "description": "Metadata for the given google.longrunning.Operation during a google.appengine.v1alpha.CreateVersionRequest.",
+      "type": "object",
+      "properties": {
+        "cloudBuildId": {
+          "description": "The Cloud Build ID if one was created as part of the version create. @OutputOnly",
+          "type": "string"
         }
       }
     },
@@ -1958,6 +1972,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "createVersionMetadata": {
+          "$ref": "CreateVersionMetadataV1Beta"
+        }
+      }
+    },
+    "CreateVersionMetadataV1Beta": {
+      "id": "CreateVersionMetadataV1Beta",
+      "description": "Metadata for the given google.longrunning.Operation during a google.appengine.v1beta.CreateVersionRequest.",
+      "type": "object",
+      "properties": {
+        "cloudBuildId": {
+          "description": "The Cloud Build ID if one was created as part of the version create. @OutputOnly",
+          "type": "string"
         }
       }
     },

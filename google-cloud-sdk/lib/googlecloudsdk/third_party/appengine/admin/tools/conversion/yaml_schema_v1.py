@@ -132,7 +132,6 @@ SCHEMA = s.Message(
         failure_threshold=s.Value(),
         path=s.Value(),
         host=s.Value(converter=c.ToJsonString)),
-    zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
     inbound_services=s.RepeatedField(element=s.Value(
         converter=c.EnumConverter('INBOUND_SERVICE'))),
     instance_class=s.Value(converter=c.ToJsonString),
@@ -147,6 +146,7 @@ SCHEMA = s.Message(
         subnetwork_name=s.Value(converter=c.ToJsonString),
         forwarded_ports=s.RepeatedField(element=s.Value(converter=
                                                         c.ToJsonString))),
+    zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
     nobuild_files=s.Value('nobuild_files_regex', converter=c.ToJsonString),
     resources=s.Message(
         memory_gb=s.Value(),

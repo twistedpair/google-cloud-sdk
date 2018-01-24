@@ -5,7 +5,7 @@
  "name": "clouduseraccounts",
  "canonicalName": "Cloud User Accounts",
  "version": "beta",
- "revision": "20171201",
+ "revision": "20180116",
  "title": "Cloud User Accounts API",
  "description": "Creates and manages users and groups for accessing Google Compute Engine virtual machines.",
  "ownerDomain": "google.com",
@@ -393,7 +393,7 @@
     },
     "region": {
      "type": "string",
-     "description": "[Output Only] The URL of the region where the operation resides. Only available when performing regional operations."
+     "description": "[Output Only] The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body."
     },
     "selfLink": {
      "type": "string",
@@ -520,7 +520,7 @@
     },
     "zone": {
      "type": "string",
-     "description": "[Output Only] The URL of the zone where the operation resides. Only available when performing per-zone operations."
+     "description": "[Output Only] The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body."
     }
    }
   },

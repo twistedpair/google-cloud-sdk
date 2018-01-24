@@ -241,13 +241,6 @@ class ProtocolMessage:
     """Returns the protocol buffer as a human-readable string."""
     return self._CToASCII(ProtocolMessage._SYMBOLIC_FULL_ASCII)
 
-  def ToCompactASCII(self):
-    """Returns the protocol buffer as an ASCII string.
-    Tag numbers are used instead of field names.
-    Defers to the C++ ProtocolPrinter class in NUMERIC mode.
-    """
-    return self._CToASCII(ProtocolMessage._NUMERIC_ASCII)
-
   def ToShortASCII(self):
     """Returns the protocol buffer as an ASCII string.
     The output is short, leaving out newlines and some other niceties.

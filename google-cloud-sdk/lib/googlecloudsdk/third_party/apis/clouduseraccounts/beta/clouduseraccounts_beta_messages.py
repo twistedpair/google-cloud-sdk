@@ -595,7 +595,9 @@ class Operation(_messages.Message):
       operation will be complete. This number should monotonically increase as
       the operation progresses.
     region: [Output Only] The URL of the region where the operation resides.
-      Only available when performing regional operations.
+      Only available when performing regional operations. You must specify
+      this field as part of the HTTP request URL. It is not settable as a
+      field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     startTime: [Output Only] The time that this operation was started by the
       server. This value is in RFC3339 text format.
@@ -613,7 +615,9 @@ class Operation(_messages.Message):
     warnings: [Output Only] If warning messages are generated during
       processing of the operation, this field will be populated.
     zone: [Output Only] The URL of the zone where the operation resides. Only
-      available when performing per-zone operations.
+      available when performing per-zone operations. You must specify this
+      field as part of the HTTP request URL. It is not settable as a field in
+      the request body.
   """
 
   class StatusValueValuesEnum(_messages.Enum):

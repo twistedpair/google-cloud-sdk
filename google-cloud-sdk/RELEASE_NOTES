@@ -3,6 +3,44 @@
 Copyright 2014-2018 Google Inc. All rights reserved.
 
 
+## 186.0.0 (2018-01-24)
+
+### Breaking Changes
+
+* **(REMOVED)** Removed support for the format `--scopes=[ACCOUNT=]SCOPE,[[ACCOUNT=]SCOPE,…]]` in `gcloud compute instances <create|create-with-container>` and `gcloud compute instance-templates <create|create-with-container>`. Please use `--scopes=[SCOPE, …]` and `--service-account=ACCOUNT` instead.
+
+*   **(MODIFIED)** Added cautionary 'y/n' prompts to
+    `gcloud beta iam roles create`, `gcloud beta iam roles update`, and
+    `gcloud beta iam roles copy` commands when using permissions with `TESTING`
+    `customRolesSupportLevel`. The prompt needs to be answered to finish the
+    request. Specify `--quiet` to prevent prompting confirming intent.
+
+
+### Cloud Datastore Emulator
+
+*   Released Cloud Datastore Emulator version 1.4.0.
+    *   The emulator now returns error codes that match the Cloud Datastore
+        service for two scenarios: inserts of entities that already exist and
+        updates to ones that don't.
+
+### Cloud Functions
+
+* Modified behaviour of `gcloud beta functions deploy` when
+  re-deploying existing function without --source flag. `beta functions deploy`
+  will now always upload source code (whether or not --source flag is supplied)
+  from current directory if function was previously deployed from local source.
+
+### Cloud SDK
+
+* The `[all-box]` attribute has been added to the table format. It draws a rule
+  around all table cells and may be useful for visualizing list data or data
+  with embedded newlines. Usage: `--format="table[all-box](...)`
+* Added `gcloudignore/enabled` property to allow turning off default
+  file-skipping behavior on commands that upload source. Run
+  `$ gcloud config set gcloudignore/enabled false` (and see
+  `$ gcloud topic gcloudignore` for more details).
+
+
 ## 185.0.0 (2018-01-17)
 
 ### Cloud Datalab

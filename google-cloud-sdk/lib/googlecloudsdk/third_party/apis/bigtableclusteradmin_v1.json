@@ -554,30 +554,6 @@
           "https://www.googleapis.com/auth/cloud-platform"
          ]
         },
-        "undelete": {
-         "id": "bigtableclusteradmin.projects.zones.clusters.undelete",
-         "path": "{+name}:undelete",
-         "httpMethod": "POST",
-         "description": "Cancels the scheduled deletion of an cluster and begins preparing it to resume serving. The returned operation will also be embedded as the cluster's \"current_operation\". Immediately upon completion of this request: * The cluster's \"delete_time\" field will be unset, protecting it from automatic deletion. Until completion of the returned operation: * The operation cannot be cancelled. Upon completion of the returned operation: * Billing for the cluster's resources will resume. * All tables within the cluster will be available. [UndeleteClusterMetadata][google.bigtable.admin.cluster.v1.UndeleteClusterMetadata] The embedded operation's \"response\" field type is [Cluster][google.bigtable.admin.cluster.v1.Cluster], if successful.",
-         "parameters": {
-          "name": {
-           "type": "string",
-           "required": true,
-           "location": "path"
-          }
-         },
-         "parameterOrder": [
-          "name"
-         ],
-         "response": {
-          "$ref": "Operation"
-         },
-         "scopes": [
-          "https://www.googleapis.com/auth/cloud-bigtable.admin",
-          "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
-          "https://www.googleapis.com/auth/cloud-platform"
-         ]
-        },
         "update": {
          "id": "bigtableclusteradmin.projects.zones.clusters.update",
          "path": "{+name}",

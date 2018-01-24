@@ -108,8 +108,9 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
   title, if any, is printed before the first table.
 
   Printer attributes:
-    box: Prints a box around the entire table and each cell, including the
+    all-box: Prints a box around the entire table and each cell, including the
       title if any.
+    box: Prints a box around the entire table and the title cells if any.
     format=_FORMAT-STRING_: Prints the key data indented by 4 spaces using
       _FORMAT-STRING_ which can reference any of the supported formats.
     no-heading: Disables the column headings.
@@ -277,7 +278,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       return
 
     # Border box decorations.
-    if 'box' in self.attributes:
+    all_box = 'all-box' in self.attributes
+    if all_box or 'box' in self.attributes:
       box = self._console_attr.GetBoxLineCharacters()
       table_column_pad = 1
     else:
@@ -466,9 +468,13 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     for row in heading + rows:
       if first:
         first = False
-      elif box and self._subformats:
-        self._out.write(t_rule)
-        self._out.write('\n')
+      elif box:
+        if self._subformats:
+          self._out.write(t_rule)
+          self._out.write('\n')
+        elif all_box:
+          self._out.write(m_rule)
+          self._out.write('\n')
       row_finished = False
       while not row_finished:
         pad = 0

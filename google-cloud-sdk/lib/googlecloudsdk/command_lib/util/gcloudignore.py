@@ -34,6 +34,7 @@ import enum
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 
@@ -527,6 +528,10 @@ def GetFileChooserForDir(
     FileChooser: the FileChooser for the directory. If there is no .gcloudignore
     file and it can't be created the returned FileChooser will choose all files.
   """
+  if not properties.VALUES.gcloudignore.enabled.GetBool():
+    log.info('Not using a .gcloudignore file since gcloudignore is globally '
+             'disabled.')
+    return FileChooser([])
   gcloudignore_path = os.path.join(directory, IGNORE_FILE_NAME)
   try:
     return FileChooser.FromFile(gcloudignore_path)

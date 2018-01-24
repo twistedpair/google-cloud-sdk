@@ -51,6 +51,15 @@ class Collections(enum.Enum):
       },
       [u'name']
   )
+  OPERATIONS = (
+      'operations',
+      '{+name}',
+      {
+          '':
+              'operations/{operationsId}',
+      },
+      [u'name']
+  )
 
   def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name

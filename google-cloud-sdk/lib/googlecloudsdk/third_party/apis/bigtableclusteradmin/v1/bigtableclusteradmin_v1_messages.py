@@ -91,16 +91,6 @@ class BigtableclusteradminProjectsZonesClustersGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class BigtableclusteradminProjectsZonesClustersUndeleteRequest(_messages.Message):
-  """A BigtableclusteradminProjectsZonesClustersUndeleteRequest object.
-
-  Fields:
-    name: A string attribute.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class BigtableclusteradminProjectsZonesListRequest(_messages.Message):
   """A BigtableclusteradminProjectsZonesListRequest object.
 

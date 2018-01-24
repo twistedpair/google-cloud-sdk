@@ -58,15 +58,18 @@ class YAMLResourceArgument(object):
         data['spec'],
         data['help_text'],
         is_positional=data.get('is_positional', True),
+        is_parent_resource=data.get('is_parent_resource', False),
         removed_flags=data.get('removed_flags')
     )
 
-  def __init__(self, data, group_help, is_positional=True, removed_flags=None):
+  def __init__(self, data, group_help, is_positional=True, removed_flags=None,
+               is_parent_resource=False):
     self.name = data['name']
     self.request_id_field = data.get('request_id_field')
 
     self.group_help = group_help
     self.is_positional = is_positional
+    self.is_parent_resource = is_parent_resource
     self.removed_flags = removed_flags or []
 
     self._full_collection_name = data['collection']
@@ -95,6 +98,11 @@ class YAMLResourceArgument(object):
       concepts.ResourceSpec, The generated specification that can be added to
       a parser.
     """
+    if self.is_parent_resource:
+      parent_collection, _, _ = resource_collection.full_name.rpartition('.')
+      resource_collection = registry.GetAPICollection(
+          parent_collection, api_version=self._api_version)
+
     if resource_collection:
       # Validate that the expected collection matches what was registered for
       # the resource argument specification.

@@ -15,6 +15,7 @@
 # source: net/proto/opaquemessage.proto
 
 from googlecloudsdk.third_party.appengine.proto import ProtocolBuffer
+import abc
 import array
 import base64
 import thread

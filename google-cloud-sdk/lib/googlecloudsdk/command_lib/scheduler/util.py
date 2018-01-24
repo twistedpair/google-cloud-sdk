@@ -33,14 +33,7 @@ def _GetSchedulerMessages():
   return apis.GetMessagesModule('cloudscheduler', 'v1alpha1')
 
 
-def ModifyCreateJobRequest(job_ref, args, create_job_req):
-  """Change the job.name field to a RelativeName."""
-  del args  # Unused in _Foo
-  create_job_req.job.name = job_ref.RelativeName()
-  return create_job_req
-
-
-def ModifyCreatePubsubJobRequest(job_ref, args, create_job_req):
+def ModifyCreatePubsubJobRequest(location_ref, args, create_job_req):
   """Add the pubsubMessage field to the given request.
 
   Because the Cloud Scheduler API has a reference to a PubSub message, but
@@ -48,7 +41,8 @@ def ModifyCreatePubsubJobRequest(job_ref, args, create_job_req):
   insert it into the request.
 
   Args:
-    job_ref: Resource reference to the Job to create (unused)
+    location_ref: Resource reference to the Location where the job will be
+        created (unused)
     args: argparse namespace with the parsed arguments from the command line. In
         particular, we expect args.message_body and args.attributes (optional)
         to be AdditionalProperty types.
@@ -59,8 +53,8 @@ def ModifyCreatePubsubJobRequest(job_ref, args, create_job_req):
     CloudschedulerProjectsLocationsJobsCreateRequest: the given request but with
         the job.pubsubTarget.pubsubMessage field populated.
   """
-
-  ModifyCreateJobRequest(job_ref, args, create_job_req)
+  # Unused in ModifyCreatePubsubJobRequest; API will assign a name
+  del location_ref
   pubsub_message_type = create_job_req.job.pubsubTarget.PubsubMessageValue
   props = [
       pubsub_message_type.AdditionalProperty(

@@ -48,7 +48,8 @@ class AcceleratorType(_messages.Message):
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     zone: [Output Only] The name of the zone where the accelerator type
-      resides, such as us-central1-a.
+      resides, such as us-central1-a. You must specify this field as part of
+      the HTTP request URL. It is not settable as a field in the request body.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -473,6 +474,11 @@ class AccessConfig(_messages.Message):
       field undefined to use an IP from a shared ephemeral IP address pool. If
       you specify a static external IP address, it must live in the same
       region as the zone of the instance.
+    publicPtrDomainName: The DNS domain name for the public PTR record. This
+      field can only be set when the set_public_ptr field is enabled.
+    setPublicPtr: Specifies whether a public DNS ?PTR? record should be
+      created to map the external IP address of the instance to a DNS domain
+      name.
     type: The type of configuration. The default and only option is
       ONE_TO_ONE_NAT.
   """
@@ -489,7 +495,9 @@ class AccessConfig(_messages.Message):
   kind = _messages.StringField(1, default=u'compute#accessConfig')
   name = _messages.StringField(2)
   natIP = _messages.StringField(3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4, default=u'ONE_TO_ONE_NAT')
+  publicPtrDomainName = _messages.StringField(4)
+  setPublicPtr = _messages.BooleanField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6, default=u'ONE_TO_ONE_NAT')
 
 
 class Address(_messages.Message):
@@ -531,7 +539,9 @@ class Address(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     region: [Output Only] URL of the region where the regional address
-      resides. This field is not applicable to global addresses.
+      resides. This field is not applicable to global addresses. You must
+      specify this field as part of the HTTP request URL. You cannot set this
+      field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] The status of the address, which can be one of
       RESERVING, RESERVED, or IN_USE. An address that is RESERVING is
@@ -1142,30 +1152,38 @@ class AttachedDiskInitializeParams(_messages.Message):
   exclusive with the source property; you can only define one or the other,
   but not both.
 
+  Messages:
+    LabelsValue: Labels to apply to this disk. These can be later modified by
+      the disks.setLabels method. This field is only applicable for persistent
+      disks.
+
   Fields:
     diskName: Specifies the disk name. If not specified, the default is to use
       the name of the instance.
     diskSizeGb: Specifies the size of the disk in base-2 GB.
     diskType: Specifies the disk type to use to create the instance. If not
       specified, the default is pd-standard, specified using the full URL. For
-      example:  https://www.googleapis.com/compute/v1/projects/project/zones/z
-      one/diskTypes/pd-standard   Other values include pd-ssd and local-ssd.
-      If you define this field, you can provide either the full or partial
-      URL. For example, the following are valid values:   - https://www.google
-      apis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
+      example: https://www.googleapis.com/compute/v1/projects/project/zones/zo
+      ne/diskTypes/pd-standard   Other values include pd-ssd and local-ssd. If
+      you define this field, you can provide either the full or partial URL.
+      For example, the following are valid values:   - https://www.googleapis.
+      com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
       projects/project/zones/zone/diskTypes/diskType  -
       zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is
       the name of the disk type, not URL.
+    labels: Labels to apply to this disk. These can be later modified by the
+      disks.setLabels method. This field is only applicable for persistent
+      disks.
     sourceImage: The source image to create this disk. When creating a new
       instance, one of initializeParams.sourceImage or disks.source is
       required except for local SSD.  To create a disk with one of the public
       operating system images, specify the image by its family name. For
       example, specify family/debian-8 to use the latest Debian 8 image:
       projects/debian-cloud/global/images/family/debian-8   Alternatively, use
-      a specific version of a public operating system image:  projects/debian-
+      a specific version of a public operating system image: projects/debian-
       cloud/global/images/debian-8-jessie-vYYYYMMDD   To create a disk with a
       custom image that you created, specify the image name in the following
-      format:  global/images/my-custom-image   You can also specify a custom
+      format: global/images/my-custom-image   You can also specify a custom
       image by its image family, which returns the latest version of the image
       in that family. Replace the image name with family/family-name:
       global/images/family/my-image-family   If the source image is deleted
@@ -1178,11 +1196,38 @@ class AttachedDiskInitializeParams(_messages.Message):
       keys.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this disk. These can be later modified by the
+    disks.setLabels method. This field is only applicable for persistent
+    disks.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   diskName = _messages.StringField(1)
   diskSizeGb = _messages.IntegerField(2)
   diskType = _messages.StringField(3)
-  sourceImage = _messages.StringField(4)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 5)
+  labels = _messages.MessageField('LabelsValue', 4)
+  sourceImage = _messages.StringField(5)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
 
 
 class Autoscaler(_messages.Message):
@@ -2125,7 +2170,9 @@ class BackendService(_messages.Message):
       HTTP.  For internal load balancing, the possible values are TCP and UDP,
       and the default is TCP.
     region: [Output Only] URL of the region where the regional backend service
-      resides. This field is not applicable to global backend services.
+      resides. This field is not applicable to global backend services. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     sessionAffinity: Type of session affinity to use. The default is NONE.
       When the load balancing scheme is EXTERNAL, can be NONE, CLIENT_IP, or
@@ -6807,6 +6854,60 @@ class ComputeInstancesInsertRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstancesListReferrersRequest(_messages.Message):
+  """A ComputeInstancesListReferrersRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    instance: Name of the target instance scoping this request, or '-' if the
+      request should span over all instances in the container.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  filter = _messages.StringField(1)
+  instance = _messages.StringField(2, required=True)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  zone = _messages.StringField(7, required=True)
+
+
 class ComputeInstancesListRequest(_messages.Message):
   """A ComputeInstancesListRequest object.
 
@@ -7238,6 +7339,36 @@ class ComputeInstancesStopRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstancesUpdateAccessConfigRequest(_messages.Message):
+  """A ComputeInstancesUpdateAccessConfigRequest object.
+
+  Fields:
+    accessConfig: A AccessConfig resource to be passed as the request body.
+    instance: The instance name for this request.
+    networkInterface: The name of the network interface where the access
+      config is attached.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  accessConfig = _messages.MessageField('AccessConfig', 1)
+  instance = _messages.StringField(2, required=True)
+  networkInterface = _messages.StringField(3, required=True)
+  project = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
@@ -8376,8 +8507,8 @@ class ComputeRegionBackendServicesGetHealthRequest(_messages.Message):
   """A ComputeRegionBackendServicesGetHealthRequest object.
 
   Fields:
-    backendService: Name of the BackendService resource to which the queried
-      instance belongs.
+    backendService: Name of the BackendService resource for which to get
+      health.
     project: A string attribute.
     region: Name of the region scoping this request.
     resourceGroupReference: A ResourceGroupReference resource to be passed as
@@ -12039,14 +12170,14 @@ class Disk(_messages.Message):
       image is deleted, this field will not be set.  To create a disk with one
       of the public operating system images, specify the image by its family
       name. For example, specify family/debian-8 to use the latest Debian 8
-      image:  projects/debian-cloud/global/images/family/debian-8
+      image: projects/debian-cloud/global/images/family/debian-8
       Alternatively, use a specific version of a public operating system
-      image:  projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
+      image: projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
       To create a disk with a custom image that you created, specify the image
-      name in the following format:  global/images/my-custom-image   You can
+      name in the following format: global/images/my-custom-image   You can
       also specify a custom image by its image family, which returns the
       latest version of the image in that family. Replace the image name with
-      family/family-name:  global/images/family/my-image-family
+      family/family-name: global/images/family/my-image-family
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. Required if the source image is protected by a customer-
       supplied encryption key.
@@ -12075,7 +12206,9 @@ class Disk(_messages.Message):
       create the disk. Provide this when creating the disk.
     users: [Output Only] Links to the users of the disk (attached instances)
       in form: project/zones/zone/instances/instance
-    zone: [Output Only] URL of the zone where the disk resides.
+    zone: [Output Only] URL of the zone where the disk resides. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -12458,7 +12591,9 @@ class DiskType(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     validDiskSize: [Output Only] An optional textual description of the valid
       disk size, such as "10GB-10TB".
-    zone: [Output Only] URL of the zone where the disk type resides.
+    zone: [Output Only] URL of the zone where the disk type resides. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -13007,7 +13142,7 @@ class Firewall(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     denied: The list of DENY rules specified by this firewall. Each rule
-      specifies a protocol and port-range tuple that describes a permitted
+      specifies a protocol and port-range tuple that describes a denied
       connection.
     description: An optional description of this resource. Provide this
       property when you create the resource.
@@ -13368,7 +13503,7 @@ class ForwardingRule(_messages.Message):
       TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetTcpProxy:
       25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1883, 5222  -
       TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
-      1883, 5222  - TargetVpnGateway: 500, 4500 -
+      1883, 5222  - TargetVpnGateway: 500, 4500
     ports: This field is used along with the backend_service field for
       internal load balancing.  When the load balancing scheme is INTERNAL, a
       single port or a comma separated list of ports can be configured. Only
@@ -13376,7 +13511,9 @@ class ForwardingRule(_messages.Message):
       configured with this forwarding rule.  You may specify a maximum of up
       to 5 ports.
     region: [Output Only] URL of the region where the regional forwarding rule
-      resides. This field is not applicable to global forwarding rules.
+      resides. This field is not applicable to global forwarding rules. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     subnetwork: This field is not used for external load balancing.  For
       internal load balancing, this field identifies the subnetwork that the
@@ -13388,8 +13525,7 @@ class ForwardingRule(_messages.Message):
       regional forwarding rules, this target must live in the same region as
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object.  This field is not used for internal
-      load balancing.
+      appropriate to the target object.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -13931,12 +14067,14 @@ class GuestOsFeature(_messages.Message):
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
+      MULTI_IP_SUBNET: <no description>
       VIRTIO_SCSI_MULTIQUEUE: <no description>
       WINDOWS: <no description>
     """
     FEATURE_TYPE_UNSPECIFIED = 0
-    VIRTIO_SCSI_MULTIQUEUE = 1
-    WINDOWS = 2
+    MULTI_IP_SUBNET = 1
+    VIRTIO_SCSI_MULTIQUEUE = 2
+    WINDOWS = 3
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -15015,12 +15153,12 @@ class Instance(_messages.Message):
     machineType: Full or partial URL of the machine type resource to use for
       this instance, in the format: zones/zone/machineTypes/machine-type. This
       is provided by the client when the instance is created. For example, the
-      following is a valid partial url to a predefined machine type:  zones
-      /us-central1-f/machineTypes/n1-standard-1   To create a custom machine
-      type, provide a URL to a machine type in the following format, where
-      CPUS is 1 or an even number up to 32 (2, 4, 6, ... 24, etc), and MEMORY
-      is the total memory for this instance. Memory must be a multiple of 256
-      MB and must be supplied in MB (e.g. 5 GB of memory is 5120 MB):
+      following is a valid partial url to a predefined machine type: zones/us-
+      central1-f/machineTypes/n1-standard-1   To create a custom machine type,
+      provide a URL to a machine type in the following format, where CPUS is 1
+      or an even number up to 32 (2, 4, 6, ... 24, etc), and MEMORY is the
+      total memory for this instance. Memory must be a multiple of 256 MB and
+      must be supplied in MB (e.g. 5 GB of memory is 5120 MB):
       zones/zone/machineTypes/custom-CPUS-MEMORY   For example: zones/us-
       central1-f/machineTypes/custom-4-5120   For a full list of restrictions,
       read the Specifications for custom machine types.
@@ -15058,7 +15196,9 @@ class Instance(_messages.Message):
       valid sources or targets for network firewalls and are specified by the
       client during instance creation. The tags can be later modified by the
       setTags method. Each tag within the list must comply with RFC1035.
-    zone: [Output Only] URL of the zone where the instance resides.
+    zone: [Output Only] URL of the zone where the instance resides. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -16630,6 +16770,131 @@ class InstanceList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class InstanceListReferrers(_messages.Message):
+  """Contains a list of instance referrers.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of Reference resources.
+    kind: [Output Only] Type of resource. Always compute#instanceListReferrers
+      for lists of Instance referrers.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('Reference', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#instanceListReferrers')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
 class InstanceMoveRequest(_messages.Message):
   """A InstanceMoveRequest object.
 
@@ -17327,7 +17592,8 @@ class InterconnectAttachment(_messages.Message):
       InterconnectAttachment. This property is populated if the interconnect
       that this is attached to is of type DEDICATED.
     region: [Output Only] URL of the region where the regional interconnect
-      attachment resides.
+      attachment resides. You must specify this field as part of the HTTP
+      request URL. It is not settable as a field in the request body.
     router: URL of the cloud router to be used for dynamic routing. This
       router must be in the same region as this InterconnectAttachment. The
       InterconnectAttachment will automatically connect the Interconnect to
@@ -18729,7 +18995,8 @@ class ManagedInstance(_messages.Message):
       instance.  - REFRESHING The managed instance group is applying
       configuration changes to the instance without stopping it. For example,
       the group can update the target pool list for an instance without
-      stopping that instance.
+      stopping that instance.  - VERIFYING The managed instance group has
+      created the instance and it is in the process of being verified.
     InstanceStatusValueValuesEnum: [Output Only] The status of the instance.
       This field is empty when the instance does not exist.
 
@@ -18752,7 +19019,8 @@ class ManagedInstance(_messages.Message):
       instance.  - REFRESHING The managed instance group is applying
       configuration changes to the instance without stopping it. For example,
       the group can update the target pool list for an instance without
-      stopping that instance.
+      stopping that instance.  - VERIFYING The managed instance group has
+      created the instance and it is in the process of being verified.
     id: [Output only] The unique identifier for this resource. This field is
       empty when instance does not exist.
     instance: [Output Only] The URL of the instance. The URL can exist even if
@@ -18781,7 +19049,8 @@ class ManagedInstance(_messages.Message):
     restarting the instance.  - REFRESHING The managed instance group is
     applying configuration changes to the instance without stopping it. For
     example, the group can update the target pool list for an instance without
-    stopping that instance.
+    stopping that instance.  - VERIFYING The managed instance group has
+    created the instance and it is in the process of being verified.
 
     Values:
       ABANDONING: <no description>
@@ -19314,7 +19583,9 @@ class Operation(_messages.Message):
       operation will be complete. This number should monotonically increase as
       the operation progresses.
     region: [Output Only] The URL of the region where the operation resides.
-      Only available when performing regional operations.
+      Only available when performing regional operations. You must specify
+      this field as part of the HTTP request URL. It is not settable as a
+      field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     startTime: [Output Only] The time that this operation was started by the
       server. This value is in RFC3339 text format.
@@ -19332,7 +19603,9 @@ class Operation(_messages.Message):
     warnings: [Output Only] If warning messages are generated during
       processing of the operation, this field will be populated.
     zone: [Output Only] The URL of the zone where the operation resides. Only
-      available when performing per-zone operations.
+      available when performing per-zone operations. You must specify this
+      field as part of the HTTP request URL. It is not settable as a field in
+      the request body.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -19929,10 +20202,9 @@ class PathRule(_messages.Message):
 
 
 class Project(_messages.Message):
-  """A Project resource. Projects can only be created in the Google Cloud
-  Platform Console. Unless marked otherwise, values can only be modified in
-  the console. (== resource_for v1.projects ==) (== resource_for beta.projects
-  ==)
+  """A Project resource. For an overview of projects, see  Cloud Platform
+  Resource Hierarchy. (== resource_for v1.projects ==) (== resource_for
+  beta.projects ==)
 
   Enums:
     XpnProjectStatusValueValuesEnum: [Output Only] The role this project has
@@ -20155,6 +20427,24 @@ class Quota(_messages.Message):
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
   usage = _messages.FloatField(3)
+
+
+class Reference(_messages.Message):
+  """Represents a reference to a resource.
+
+  Fields:
+    kind: [Output Only] Type of the resource. Always compute#reference for
+      references.
+    referenceType: A description of the reference type with no implied
+      semantics. Possible values include:   - MEMBER_OF
+    referrer: URL of the resource which refers to the target.
+    target: URL of the resource to which this reference points.
+  """
+
+  kind = _messages.StringField(1, default=u'compute#reference')
+  referenceType = _messages.StringField(2)
+  referrer = _messages.StringField(3)
+  target = _messages.StringField(4)
 
 
 class Region(_messages.Message):
@@ -21322,7 +21612,9 @@ class Router(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     network: URI of the network to which this router belongs.
-    region: [Output Only] URI of the region where the router resides.
+    region: [Output Only] URI of the region where the router resides. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
@@ -22484,8 +22776,7 @@ class Subnetwork(_messages.Message):
       property when you create the resource. This field can be set only at
       resource creation time.
     gatewayAddress: [Output Only] The gateway address for default routes to
-      reach destination addresses outside this subnetwork. This field can be
-      set only at resource creation time.
+      reach destination addresses outside this subnetwork.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ipCidrRange: The range of internal addresses that are owned by this
@@ -23399,7 +23690,9 @@ class TargetInstance(_messages.Message):
     natPolicy: NAT option controlling how IPs are NAT'ed to the instance.
       Currently only NO_NAT (default value) is supported.
     selfLink: [Output Only] Server-defined URL for the resource.
-    zone: [Output Only] URL of the zone where the target instance resides.
+    zone: [Output Only] URL of the zone where the target instance resides. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
   """
 
   class NatPolicyValueValuesEnum(_messages.Enum):
@@ -24853,7 +25146,8 @@ class TargetVpnGateway(_messages.Message):
     network: URL of the network to which this VPN gateway is attached.
       Provided by the client when the VPN gateway is created.
     region: [Output Only] URL of the region where the target VPN gateway
-      resides.
+      resides. You must specify this field as part of the HTTP request URL. It
+      is not settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] The status of the VPN gateway.
     tunnels: [Output Only] A list of URLs to VpnTunnel resources. VpnTunnels
@@ -25325,8 +25619,9 @@ class UrlMap(_messages.Message):
       cannot be a dash.
     pathMatchers: The list of named PathMatchers to use against the URL.
     selfLink: [Output Only] Server-defined URL for the resource.
-    tests: The list of expected URL mappings. Request to update this UrlMap
-      will succeed only if all of the test cases pass.
+    tests: The list of expected URL mapping tests. Request to update this
+      UrlMap will succeed only if all of the test cases pass. You can specify
+      a maximum of 100 tests per UrlMap.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -25586,7 +25881,9 @@ class VpnTunnel(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     peerIp: IP address of the peer VPN gateway. Only IPv4 is supported.
-    region: [Output Only] URL of the region where the VPN tunnel resides.
+    region: [Output Only] URL of the region where the VPN tunnel resides. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
     remoteTrafficSelector: Remote traffic selectors to use when establishing
       the VPN tunnel with peer VPN gateway. The value should be a CIDR
       formatted string, for example: 192.168.0.0/16. The ranges should be
@@ -25597,8 +25894,8 @@ class VpnTunnel(_messages.Message):
       Cloud VPN gateway and the peer VPN gateway.
     sharedSecretHash: Hash of the shared secret.
     status: [Output Only] The status of the VPN tunnel.
-    targetVpnGateway: URL of the VPN gateway with which this VPN tunnel is
-      associated. Provided by the client when the VPN tunnel is created.
+    targetVpnGateway: URL of the Target VPN gateway with which this VPN tunnel
+      is associated. Provided by the client when the VPN tunnel is created.
   """
 
   class StatusValueValuesEnum(_messages.Enum):

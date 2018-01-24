@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Api client adapter containers commands."""
-from collections import deque
 import httplib
 from os import linesep
 import time
@@ -170,16 +169,11 @@ def InitAPIAdapter(api_version, adapter):
   api_client.check_response_func = CheckResponse
   messages = core_apis.GetMessagesModule('container', api_version)
 
-  api_compute_client = core_apis.GetClientInstance('compute', 'v1')
-  api_compute_client.check_response_func = CheckResponse
-  compute_messages = core_apis.GetMessagesModule('compute', 'v1')
-
   registry = cloud_resources.REGISTRY.Clone()
   registry.RegisterApiByName('container', api_version)
   registry.RegisterApiByName('compute', 'v1')
 
-  return adapter(registry, api_client, messages, api_compute_client,
-                 compute_messages)
+  return adapter(registry, api_client, messages)
 
 
 _SERVICE_ACCOUNT_SCOPES = ('https://www.googleapis.com/auth/cloud-platform',)
@@ -532,13 +526,10 @@ class UpdateNodePoolOptions(object):
 class APIAdapter(object):
   """Handles making api requests in a version-agnostic way."""
 
-  def __init__(self, registry, client, messages, compute_client,
-               compute_messages):
+  def __init__(self, registry, client, messages):
     self.registry = registry
     self.client = client
     self.messages = messages
-    self.compute_client = compute_client
-    self.compute_messages = compute_messages
 
   def ParseCluster(self, name, location):
     # TODO(b/63383536): Migrate to container.projects.locations.clusters when
@@ -550,15 +541,6 @@ class APIAdapter(object):
             'zone': location,
         },
         collection='container.projects.zones.clusters')
-
-  def PrintClusters(self, clusters):
-    raise NotImplementedError('PrintClusters is not overridden')
-
-  def PrintOperations(self, operations):
-    raise NotImplementedError('PrintOperations is not overridden')
-
-  def PrintNodePools(self, node_pools):
-    raise NotImplementedError('PrintNodePools is not overridden')
 
   def ParseOperation(self, operation_id, location):
     # TODO(b/63383536): Migrate to container.projects.locations.operations when
@@ -582,10 +564,6 @@ class APIAdapter(object):
             'zone': location,
         },
         collection='container.projects.zones.clusters.nodePools')
-
-  def ParseIGM(self, igm_id):
-    return self.registry.Parse(igm_id,
-                               collection='compute.instanceGroupManagers')
 
   def GetCluster(self, cluster_ref):
     raise NotImplementedError('GetCluster is not overridden')
@@ -628,13 +606,6 @@ class APIAdapter(object):
 
   def GetOperation(self, operation_ref):
     raise NotImplementedError('GetOperation is not overridden')
-
-  def GetComputeOperation(self, project, zone, operation_id):
-    req = self.compute_messages.ComputeZoneOperationsGetRequest(
-        operation=operation_id,
-        project=project,
-        zone=zone)
-    return self.compute_client.zoneOperations.Get(req)
 
   def WaitForOperation(self, operation_ref, message,
                        timeout_s=1200, poll_period_s=5):
@@ -684,75 +655,8 @@ class APIAdapter(object):
 
     return operation
 
-  def IsComputeOperationFinished(self, operation):
-    return (operation.status ==
-            self.compute_messages.Operation.StatusValueValuesEnum.DONE)
-
-  def WaitForComputeOperations(self, project, zone, operation_ids, message,
-                               timeout_s=1200, poll_period_s=5):
-    """Poll Compute Operations until their status is done or timeout reached.
-
-    Args:
-      project: project on which the operation is performed
-      zone: zone on which the operation is performed
-      operation_ids: list/set of ids of the compute operations to wait for
-      message: str, message to display to user while polling.
-      timeout_s: number, seconds to poll with retries before timing out.
-      poll_period_s: number, delay in seconds between requests.
-
-    Returns:
-      Operations: list of the last successful operations.getrequest for each op.
-
-    Raises:
-      Error: if the operation times out or finishes with an error.
-    """
-    operation_ids = deque(operation_ids)
-    operations = {}
-    errors = []
-    with progress_tracker.ProgressTracker(message, autotick=True):
-      start_time = time.clock()
-      ops_to_retry = []
-      while timeout_s > (time.clock() - start_time) and operation_ids:
-        op_id = operation_ids.popleft()
-        try:
-          operation = self.GetComputeOperation(project, zone, op_id)
-          operations[op_id] = operation
-          if not self.IsComputeOperationFinished(operation):
-            # Operation is still in progress.
-            ops_to_retry.append(op_id)
-            continue
-
-          log.debug('Operation %s succeeded after %.3f seconds', operation,
-                    (time.clock() - start_time))
-          error = self.GetOperationError(operation)
-          if error:
-            # Operation Failed!
-            msg = 'Operation [{0}] finished with error: {1}'.format(op_id,
-                                                                    error)
-            log.debug(msg)
-            errors.append(msg)
-        except apitools_exceptions.HttpError as error:
-          log.debug('GetComputeOperation failed: %s', error)
-          # Keep trying until we timeout in case error is transient.
-          # TODO(b/36050235): add additional backoff if server is returning 500s
-        if not operation_ids and ops_to_retry:
-          operation_ids = deque(ops_to_retry)
-          ops_to_retry = []
-          time.sleep(poll_period_s)
-
-    operation_ids.extend(ops_to_retry)
-    for op_id in operation_ids:
-      errors.append('Operation [{0}] is still running'.format(op_id))
-    if errors:
-      raise util.Error(linesep.join(errors))
-
-    return operations.values()
-
   def Zone(self, cluster_ref):
     return cluster_ref.zone
-
-  def Version(self, cluster):
-    return cluster.currentMasterVersion
 
   def CreateClusterCommon(self, cluster_ref, options):
     """Returns a CreateCluster operation."""
@@ -1371,14 +1275,6 @@ class APIAdapter(object):
 
   def GetServerConfig(self, project, zone):
     raise NotImplementedError('GetServerConfig is not overridden')
-
-  def ResizeCluster(self, project, zone, group_name, size):
-    req = self.compute_messages.ComputeInstanceGroupManagersResizeRequest(
-        instanceGroupManager=group_name,
-        project=project,
-        size=size,
-        zone=zone)
-    return self.compute_client.instanceGroupManagers.Resize(req)
 
   def ResizeNodePool(self, cluster_ref, pool_name, size):
     raise NotImplementedError('ResizeNodePool is not overridden')

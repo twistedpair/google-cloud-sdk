@@ -2,8 +2,19 @@ policy:
   name: policy
   collection: accesscontextmanager.accessPolicies
   attributes:
-    - parameter_name: accessPoliciesId
+    - &policy
+      parameter_name: accessPoliciesId
       attribute_name: policy
       help: |
         The ID of the access policy.
       property: access_context_manager/policy
+level:
+  name: level
+  request_id_field: accessLevel.name
+  collection: accesscontextmanager.accessPolicies.accessLevels
+  attributes:
+    - *policy
+    - parameter_name: accessLevelsId
+      attribute_name: level
+      help: |
+        The ID of the access level.

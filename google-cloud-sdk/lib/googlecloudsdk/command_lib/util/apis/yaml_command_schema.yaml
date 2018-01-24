@@ -419,6 +419,10 @@ properties:
           # even though it would normally be a positional. This should normally
           # not be required for well formed API methods.
           is_positional: { type: boolean }
+          # Set to True if the resource spec is for the parent of the request
+          # collection instead of for the collection itself.  This allows for
+          # create commands that do not require a name for the new resource.
+          is_parent_resource: { type: boolean }
           # List of resource arg attributes to not generate flags for.
           removed_flags:
             type: array

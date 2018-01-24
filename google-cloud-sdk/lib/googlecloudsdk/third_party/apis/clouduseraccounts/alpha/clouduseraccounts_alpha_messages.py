@@ -27,7 +27,8 @@ class AuditConfig(_messages.Message):
   "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] }  For
   fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
   logging. It also exempts foo@gmail.com from DATA_READ logging, and
-  bar@gmail.com from DATA_WRITE logging.
+  bar@gmail.com from DATA_WRITE logging. This message is only visible as
+  GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -126,7 +127,8 @@ class Binding(_messages.Message):
     condition: The condition that is associated with this binding. NOTE: an
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
-      independently. This field is GOOGLE_INTERNAL.
+      independently. This field is only visible as GOOGLE_INTERNAL or
+      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -1001,7 +1003,9 @@ class Operation(_messages.Message):
       operation will be complete. This number should monotonically increase as
       the operation progresses.
     region: [Output Only] The URL of the region where the operation resides.
-      Only available when performing regional operations.
+      Only available when performing regional operations. You must specify
+      this field as part of the HTTP request URL. It is not settable as a
+      field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     startTime: [Output Only] The time that this operation was started by the
       server. This value is in RFC3339 text format.
@@ -1019,7 +1023,9 @@ class Operation(_messages.Message):
     warnings: [Output Only] If warning messages are generated during
       processing of the operation, this field will be populated.
     zone: [Output Only] The URL of the zone where the operation resides. Only
-      available when performing per-zone operations.
+      available when performing per-zone operations. You must specify this
+      field as part of the HTTP request URL. It is not settable as a field in
+      the request body.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -1320,10 +1326,11 @@ class Policy(_messages.Message):
   "domain:google.com", "serviceAccount:my-other-
   app@appspot.gserviceaccount.com", ] }, { "role": "roles/viewer", "members":
   ["user:sean@example.com"] } ] }  For a description of IAM and its features,
-  see the [IAM developer's guide](https://cloud.google.com/iam).
+  see the [IAM developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
+      This field is only visible as GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
     bindings: Associates a list of `members` to a `role`. `bindings` with no
       members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
@@ -1343,7 +1350,7 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
       will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)

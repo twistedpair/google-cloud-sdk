@@ -120,53 +120,6 @@
     }
   },
   "schemas": {
-    "ListAccessPoliciesResponse": {
-      "id": "ListAccessPoliciesResponse",
-      "description": "A response to `ListAccessPoliciesRequest`.",
-      "type": "object",
-      "properties": {
-        "accessPolicies": {
-          "description": "List of the AccessPolicy instances.",
-          "type": "array",
-          "items": {
-            "$ref": "AccessPolicy"
-          }
-        },
-        "nextPageToken": {
-          "description": "The pagination token to retrieve the next page of results. If the value is\nempty, no further results remain.",
-          "type": "string"
-        }
-      }
-    },
-    "AccessPolicy": {
-      "id": "AccessPolicy",
-      "description": "`AccessPolicy` is a container for `AccessLevels` (which define the necessary\nattributes to use GCP services) and `AccessZones` (which define regions of\nservices able to freely pass data within a zone). An access policy is\nglobally visible within an organization, and the restrictions it specifies\napply to all projects within an organization.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. Resource name of the `AccessPolicy`. Format:\n`accessPolicies\/{policy_id}`",
-          "type": "string"
-        },
-        "parent": {
-          "description": "Required. The parent of this `AccessPolicy` in the Cloud Resource\nHierarchy. Currently immutable once created. Format:\n`organizations\/{organization_id}`",
-          "type": "string"
-        },
-        "title": {
-          "description": "Human readable title. Does not affect behavior.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. Time the `AccessPolicy` was created in UTC.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Time the `AccessPolicy` was updated in UTC.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
@@ -226,6 +179,53 @@
               "description": "Properties of the object. Contains field @type with type URL."
             }
           }
+        }
+      }
+    },
+    "ListAccessPoliciesResponse": {
+      "id": "ListAccessPoliciesResponse",
+      "description": "A response to `ListAccessPoliciesRequest`.",
+      "type": "object",
+      "properties": {
+        "accessPolicies": {
+          "description": "List of the AccessPolicy instances.",
+          "type": "array",
+          "items": {
+            "$ref": "AccessPolicy"
+          }
+        },
+        "nextPageToken": {
+          "description": "The pagination token to retrieve the next page of results. If the value is\nempty, no further results remain.",
+          "type": "string"
+        }
+      }
+    },
+    "AccessPolicy": {
+      "id": "AccessPolicy",
+      "description": "`AccessPolicy` is a container for `AccessLevels` (which define the necessary\nattributes to use GCP services) and `AccessZones` (which define regions of\nservices able to freely pass data within a zone). An access policy is\nglobally visible within an organization, and the restrictions it specifies\napply to all projects within an organization.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the `AccessPolicy`. Format:\n`accessPolicies\/{policy_id}`",
+          "type": "string"
+        },
+        "parent": {
+          "description": "Required. The parent of this `AccessPolicy` in the Cloud Resource\nHierarchy. Currently immutable once created. Format:\n`organizations\/{organization_id}`",
+          "type": "string"
+        },
+        "title": {
+          "description": "Human readable title. Does not affect behavior.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time the `AccessPolicy` was created in UTC.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Time the `AccessPolicy` was updated in UTC.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -427,6 +427,35 @@
     }
   },
   "resources": {
+    "operations": {
+      "methods": {
+        "get": {
+          "id": "accesscontextmanager.operations.get",
+          "path": "v1alpha/{+name}",
+          "flatPath": "v1alpha/operations/{operationsId}",
+          "httpMethod": "GET",
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
+          "parameters": {
+            "name": {
+              "description": "The name of the operation resource.",
+              "location": "path",
+              "required": true,
+              "pattern": "^operations\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ]
+        }
+      }
+    },
     "accessPolicies": {
       "methods": {
         "list": {

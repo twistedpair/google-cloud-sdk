@@ -296,7 +296,7 @@ def ConvertValue(field, value, repeated=None, processor=None, choices=None):
       else:
         value = ChoiceToEnum(value, t)
 
-  if field.repeated and not arg_repeated:
+  if field.repeated and not arg_repeated and not isinstance(value, list):
     # If we manually made this arg singular, but it is actually a repeated field
     # wrap it in a list.
     value = [value]
@@ -329,8 +329,8 @@ def ParseResourceIntoMessage(ref, method, message, resource_method_params=None,
   # case, we re-parse the resource as its parent collection (to fill in the
   # API parameters, and we insert the name of the resource itself into the
   # correct position in the body of the request method.
-  if (method.resource_argument_collection.detailed_params !=
-      method.request_collection.detailed_params):
+  if (request_id_field and method.resource_argument_collection.detailed_params
+      != method.request_collection.detailed_params):
     # Sets the name of the resource in the message object body.
     SetFieldInMessage(message, request_id_field, ref.Name())
     # Create a reference for the parent resource to put in the API params.

@@ -1,4 +1,4 @@
-# Copyright 2015 Google Inc. All Rights Reserved.
+# Copyright 2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,19 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""API utilities for access context manager."""
+from googlecloudsdk.api_lib.util import apis
 
-"""Wrapper for user-visible error exceptions to raise in the CLI."""
-
-from googlecloudsdk.core import exceptions
-
-
-class FunctionsError(exceptions.Error):
-  """Exceptions for Functions errors."""
+_API_NAME = 'accesscontextmanager'
 
 
-class OversizedDeployment(FunctionsError):
+def _GetDefaultVersion():
+  return apis.ResolveVersion(_API_NAME)
 
-  def __init__(self, actual_size, max_allowed_size):
-    super(OversizedDeployment, self).__init__(
-        'Uncompressed deployment is {}, bigger than maximum allowed size of {}.'
-        .format(actual_size, max_allowed_size))
+
+def GetMessages(version=None):
+  version = version or _GetDefaultVersion()
+  return apis.GetMessagesModule(_API_NAME, version)
+
+
+def GetClient(version=None):
+  version = version or _GetDefaultVersion()
+  return apis.GetClientInstance(_API_NAME, version)

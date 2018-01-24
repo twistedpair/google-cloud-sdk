@@ -407,6 +407,16 @@ class AccesscontextmanagerAccessPoliciesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class AccesscontextmanagerOperationsGetRequest(_messages.Message):
+  """A AccesscontextmanagerOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class BasicLevel(_messages.Message):
   """`BasicLevel` is an `AccessLevel` using a set of recommended features.
 

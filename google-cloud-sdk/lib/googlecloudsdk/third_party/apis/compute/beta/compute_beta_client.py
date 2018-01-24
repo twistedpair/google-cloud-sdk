@@ -1625,7 +1625,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates the specified firewall rule with the data included in the request. Using PUT method, can only update following fields of firewall rule: allowed, description, sourceRanges, sourceTags, targetTags.
+      """Updates the specified firewall rule with the data included in the request. The PUT method can only update the following fields of firewall rule: allowed, description, sourceRanges, sourceTags, targetTags.
 
       Args:
         request: (ComputeFirewallsUpdateRequest) input message
@@ -3891,7 +3891,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified instance template. If you delete an instance template that is being referenced from another instance group, the instance group will not be able to create or recreate virtual machine instances. Deleting an instance template is permanent and cannot be undone.
+      """Deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It's not possible to delete templates which are in use by an instance group.
 
       Args:
         request: (ComputeInstanceTemplatesDeleteRequest) input message
@@ -4898,6 +4898,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on an InterconnectAttachment. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeInterconnectAttachmentsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnectAttachments.setLabels',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{resource}/setLabels',
+        request_field=u'regionSetLabelsRequest',
+        request_type_name=u'ComputeInterconnectAttachmentsSetLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on the specified resource.
 
@@ -5122,6 +5148,32 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/global/interconnects/{interconnect}',
         request_field=u'interconnectResource',
         request_type_name=u'ComputeInterconnectsPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      """Sets the labels on an Interconnect. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeInterconnectsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.interconnects.setLabels',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/interconnects/{resource}/setLabels',
+        request_field=u'globalSetLabelsRequest',
+        request_type_name=u'ComputeInterconnectsSetLabelsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

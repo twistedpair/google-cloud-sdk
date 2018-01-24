@@ -270,27 +270,27 @@
       "type": "object",
       "properties": {
         "content": {
-          "description": "Image content, represented as a stream of bytes.\nNote: as with all `bytes` fields, protobuffers use a pure binary\nrepresentation, whereas JSON representations use base64.",
+          "description": "Image content, represented as a stream of bytes.\nNote: As with all `bytes` fields, protobuffers use a pure binary\nrepresentation, whereas JSON representations use base64.",
           "type": "string",
           "format": "byte"
         },
         "source": {
-          "description": "Google Cloud Storage image location. If both `content` and `source`\nare provided for an image, `content` takes precedence and is\nused to perform the image annotation request.",
+          "description": "Google Cloud Storage image location, or publicly-accessible image\nURL. If both `content` and `source` are provided for an image, `content`\ntakes precedence and is used to perform the image annotation request.",
           "$ref": "ImageSource"
         }
       }
     },
     "ImageSource": {
       "id": "ImageSource",
-      "description": "External image source (Google Cloud Storage image location).",
+      "description": "External image source (Google Cloud Storage or web URL image location).",
       "type": "object",
       "properties": {
         "gcsImageUri": {
-          "description": "NOTE: For new code `image_uri` below is preferred.\nGoogle Cloud Storage image URI, which must be in the following form:\n`gs:\/\/bucket_name\/object_name` (for details, see\n[Google Cloud Storage Request\nURIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris)).\nNOTE: Cloud Storage object versioning is not supported.",
+          "description": "**Use `image_uri` instead.**\n\nThe Google Cloud Storage  URI of the form\n`gs:\/\/bucket_name\/object_name`. Object versioning is not supported. See\n[Google Cloud Storage Request\nURIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris) for more info.",
           "type": "string"
         },
         "imageUri": {
-          "description": "Image URI which supports:\n1) Google Cloud Storage image URI, which must be in the following form:\n`gs:\/\/bucket_name\/object_name` (for details, see\n[Google Cloud Storage Request\nURIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris)).\nNOTE: Cloud Storage object versioning is not supported.\n2) Publicly accessible image HTTP\/HTTPS URL.\nThis is preferred over the legacy `gcs_image_uri` above. When both\n`gcs_image_uri` and `image_uri` are specified, `image_uri` takes\nprecedence.",
+          "description": "The URI of the source image. Can be either:\n\n1. A Google Cloud Storage URI of the form\n   `gs:\/\/bucket_name\/object_name`. Object versioning is not supported. See\n   [Google Cloud Storage Request\n   URIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris) for more\n   info.\n\n2. A publicly-accessible image HTTP\/HTTPS URL. When fetching images from\n   HTTP\/HTTPS URLs, Google cannot guarantee that the request will be\n   completed. Your request may fail if the specified host denies the\n   request (e.g. due to request throttling or DOS prevention), or if Google\n   throttles requests to the site for abuse prevention. You should not\n   depend on externally-hosted images for production applications.\n\nWhen both `gcs_image_uri` and `image_uri` are specified, `image_uri` takes\nprecedence.",
           "type": "string"
         }
       }
@@ -305,14 +305,14 @@
           "type": "string"
         },
         "mimeType": {
-          "description": "The type of the file. Currently only \"application\/pdf\" and \"image\/tiff\" are\nsupported.",
+          "description": "The type of the file. Currently only \"application\/pdf\" and \"image\/tiff\"\nare supported.",
           "type": "string"
         }
       }
     },
     "Feature": {
       "id": "Feature",
-      "description": "Users describe the type of Google Cloud Vision API tasks to perform over\nimages by using *Feature*s. Each Feature indicates a type of image\ndetection task to perform. Features encode the Cloud Vision API\nvertical to operate on and the number of top-scoring results to return.",
+      "description": "The type of Google Cloud Vision API detection to perform, and the maximum\nnumber of results to return for that type. Multiple `Feature` objects can\nbe specified in the `features` list.",
       "type": "object",
       "properties": {
         "type": {
@@ -323,13 +323,13 @@
             "Run landmark detection.",
             "Run logo detection.",
             "Run label detection.",
-            "Run OCR.",
-            "Run dense text document OCR. Takes precedence when both\nDOCUMENT_TEXT_DETECTION and TEXT_DETECTION are present.",
-            "Run computer vision models to compute image safe-search properties.",
-            "Compute a set of image properties, such as the image's dominant colors.",
+            "Run text detection \/ optical character recognition (OCR). Text detection\nis optimized for areas of text within a larger image; if the image is\na document, use `DOCUMENT_TEXT_DETECTION` instead.",
+            "Run dense text document OCR. Takes precedence when both\n`DOCUMENT_TEXT_DETECTION` and `TEXT_DETECTION` are present.",
+            "Run Safe Search to detect potentially unsafe\nor undesirable content.",
+            "Compute a set of image properties, such as the\nimage's dominant colors.",
             "Run crop hints.",
             "Run web detection.",
-            "Run product-search.",
+            "Run Product Search.",
             "Run custom label detection."
           ],
           "type": "string",
@@ -350,7 +350,7 @@
           ]
         },
         "maxResults": {
-          "description": "Maximum number of results of this type.",
+          "description": "Maximum number of results of this type. Does not apply to\n`TEXT_DETECTION`, `DOCUMENT_TEXT_DETECTION`, or `CROP_HINTS`.",
           "type": "integer",
           "format": "int32"
         },
@@ -465,7 +465,7 @@
           "type": "string"
         },
         "boundingPoly": {
-          "description": "The bounding polygon around the area of interest in the image.\nOptional. It is inferred by the system if it is not specified.\nIf `product_category` is specified without `bounding_poly`, the inferred\nbounding polygon is the entire image.",
+          "description": "The bounding polygon around the area of interest in the image.\nOptional. It is inferred by the system if it is not specified. If the\nsystem detects multiple areas of interest, the largest one is selected.",
           "$ref": "NormalizedBoundingPoly"
         },
         "view": {
@@ -971,7 +971,7 @@
           "format": "float"
         },
         "confidence": {
-          "description": "The accuracy of the entity detection in an image.\nFor example, for an image in which the \"Eiffel Tower\" entity is detected,\nthis field represents the confidence that there is a tower in the query\nimage. Range [0, 1].",
+          "description": "**Deprecated. Use `score` instead.**\nThe accuracy of the entity detection in an image.\nFor example, for an image in which the \"Eiffel Tower\" entity is detected,\nthis field represents the confidence that there is a tower in the query\nimage. Range [0, 1].",
           "type": "number",
           "format": "float"
         },
@@ -1177,7 +1177,7 @@
           "$ref": "TextProperty"
         },
         "boundingBox": {
-          "description": "The bounding box for the block.\nThe vertices are in the order of top-left, top-right, bottom-right,\nbottom-left. When a rotation of the bounding box is detected the rotation\nis represented as around the top-left corner as defined when the text is\nread in the 'natural' orientation.\nFor example:\n  * when the text is horizontal it might look like:\n     0----1\n     |    |\n     3----2\n  * when it's rotated 180 degrees around the top-left corner it becomes:\n     2----3\n     |    |\n     1----0\n  and the vertice order will still be (0, 1, 2, 3).",
+          "description": "The bounding box for the block.\nThe vertices are in the order of top-left, top-right, bottom-right,\nbottom-left. When a rotation of the bounding box is detected the rotation\nis represented as around the top-left corner as defined when the text is\nread in the 'natural' orientation.\nFor example:\n\n* when the text is horizontal it might look like:\n\n        0----1\n        |    |\n        3----2\n\n* when it's rotated 180 degrees around the top-left corner it becomes:\n\n        2----3\n        |    |\n        1----0\n\n  and the vertice order will still be (0, 1, 2, 3).",
           "$ref": "BoundingPoly"
         },
         "paragraphs": {
@@ -1661,7 +1661,7 @@
           ]
         },
         "productCategory": {
-          "description": "Product category.\nSupported values are `bag` and `shoe`.",
+          "description": "Product category.\nSupported values are `bag` and `shoe`.\n[Deprecated] `product_category` is provided in each Product.",
           "type": "string"
         },
         "indexTime": {
@@ -1680,7 +1680,7 @@
     },
     "Product": {
       "id": "Product",
-      "description": "Information about a product.",
+      "description": "Information about a product.\n.",
       "type": "object",
       "properties": {
         "productId": {
@@ -1708,7 +1708,7 @@
           "type": "string"
         },
         "pageNumber": {
-          "description": "If the file was a PDF or TIFF, this field gives the page number within the\nfile used to produce the image.",
+          "description": "If the file was a PDF or TIFF, this field gives the page number within\nthe file used to produce the image.",
           "type": "integer",
           "format": "int32"
         }

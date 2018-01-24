@@ -52,7 +52,7 @@ class CloudFunction(_messages.Message):
     StatusValueValuesEnum: Output only. Status of the function deployment.
 
   Messages:
-    EnvironmentVariablesValue: Envrionment variables that shall be available
+    EnvironmentVariablesValue: Environment variables that shall be available
       during function execution.
     LabelsValue: Labels associated with this Cloud Function.
 
@@ -66,7 +66,7 @@ class CloudFunction(_messages.Message):
       the system will try to use function named "function". For Node.js this
       is name of a function exported by the module specified in
       `source_location`.
-    environmentVariables: Envrionment variables that shall be available during
+    environmentVariables: Environment variables that shall be available during
       function execution.
     eventTrigger: A source that fires events in response to a condition in
       another service.
@@ -115,7 +115,7 @@ class CloudFunction(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvironmentVariablesValue(_messages.Message):
-    """Envrionment variables that shall be available during function
+    """Environment variables that shall be available during function
     execution.
 
     Messages:
@@ -291,7 +291,8 @@ class CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest(_messages
     generateUploadUrlRequest: A GenerateUploadUrlRequest resource to be passed
       as the request body.
     parent: The project and location in which the Google Cloud Storage signed
-      URL should be generated, specified in the format `projects/*/locations/*
+      URL should be generated, specified in the format
+      `projects/*/locations/*`.
   """
 
   generateUploadUrlRequest = _messages.MessageField('GenerateUploadUrlRequest', 1)
@@ -387,10 +388,10 @@ class EventTrigger(_messages.Message):
       `providers/cloud.pubsub/eventTypes/topic.publish`.  Event types match
       pattern `providers/*/eventTypes/*.*`. The pattern contains:  1.
       namespace: For example, `cloud.storage` and
-      `google.firebase.analytics`.  2. resource type: The type of resource on
-      which event occurs. For     example, the Google Cloud Storage API
-      includes the type `object`.  3. action: The action that generates the
-      event. For example, action for     a Google Cloud Storage Object is
+      `google.firebase.analytics`. 2. resource type: The type of resource on
+      which event occurs. For    example, the Google Cloud Storage API
+      includes the type `object`. 3. action: The action that generates the
+      event. For example, action for    a Google Cloud Storage Object is
       'change'. These parts are lower case.
     failurePolicy: Specifies policy for failed executions.
     resource: Required. The resource(s) from which to observe events, for

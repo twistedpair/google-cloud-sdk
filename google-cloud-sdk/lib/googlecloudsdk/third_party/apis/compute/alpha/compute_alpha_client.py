@@ -66,6 +66,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.maintenancePolicies = self.MaintenancePoliciesService(self)
     self.networkEndpointGroups = self.NetworkEndpointGroupsService(self)
     self.networks = self.NetworksService(self)
+    self.nodeTemplates = self.NodeTemplatesService(self)
     self.projects = self.ProjectsService(self)
     self.regionAutoscalers = self.RegionAutoscalersService(self)
     self.regionBackendServices = self.RegionBackendServicesService(self)
@@ -1798,7 +1799,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates the specified firewall rule with the data included in the request. Using PUT method, can only update following fields of firewall rule: allowed, description, sourceRanges, sourceTags, targetTags.
+      """Updates the specified firewall rule with the data included in the request. The PUT method can only update the following fields of firewall rule: allowed, description, sourceRanges, sourceTags, targetTags.
 
       Args:
         request: (ComputeFirewallsUpdateRequest) input message
@@ -4578,7 +4579,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the specified instance template. If you delete an instance template that is being referenced from another instance group, the instance group will not be able to create or recreate virtual machine instances. Deleting an instance template is permanent and cannot be undone.
+      """Deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It's not possible to delete templates which are in use by an instance group.
 
       Args:
         request: (ComputeInstanceTemplatesDeleteRequest) input message
@@ -7407,6 +7408,94 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+  class NodeTemplatesService(base_api.BaseApiService):
+    """Service class for the nodeTemplates resource."""
+
+    _NAME = u'nodeTemplates'
+
+    def __init__(self, client):
+      super(ComputeAlpha.NodeTemplatesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeNodeTemplatesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.nodeTemplates.getIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/nodeTemplates/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeNodeTemplatesGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      """Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeNodeTemplatesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.nodeTemplates.setIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/nodeTemplates/{resource}/setIamPolicy',
+        request_field=u'policy',
+        request_type_name=u'ComputeNodeTemplatesSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeNodeTemplatesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.nodeTemplates.testIamPermissions',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/nodeTemplates/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeNodeTemplatesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -9859,7 +9948,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.securityPolicies.addRule',
         ordered_params=[u'project', u'securityPolicy'],
         path_params=[u'project', u'securityPolicy'],
-        query_params=[],
+        query_params=[u'validateOnly'],
         relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/addRule',
         request_field=u'securityPolicyRule',
         request_type_name=u'ComputeSecurityPoliciesAddRuleRequest',
@@ -10041,7 +10130,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.securityPolicies.patchRule',
         ordered_params=[u'project', u'securityPolicy'],
         path_params=[u'project', u'securityPolicy'],
-        query_params=[u'priority'],
+        query_params=[u'priority', u'validateOnly'],
         relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/patchRule',
         request_field=u'securityPolicyRule',
         request_type_name=u'ComputeSecurityPoliciesPatchRuleRequest',

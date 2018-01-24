@@ -241,6 +241,7 @@ class _Sections(object):
     self.emulator = _SectionEmulator()
     self.experimental = _SectionExperimental()
     self.functions = _SectionFunctions()
+    self.gcloudignore = _SectionGcloudignore()
     self.interactive = _SectionInteractive()
     self.metrics = _SectionMetrics()
     self.ml_engine = _SectionMlEngine()
@@ -265,6 +266,7 @@ class _Sections(object):
         self.emulator,
         self.experimental,
         self.functions,
+        self.gcloudignore,
         self.interactive,
         self.metrics,
         self.ml_engine,
@@ -602,6 +604,20 @@ class _SectionFunctions(_Section):
         'valid choices, run `gcloud functions regions list`.',
         completer=('googlecloudsdk.command_lib.functions.flags:'
                    'LocationsCompleter'))
+
+
+class _SectionGcloudignore(_Section):
+  """Contains the properties for the 'gcloudignore' section."""
+
+  def __init__(self):
+    super(_SectionGcloudignore, self).__init__('gcloudignore')
+    self.enabled = self._AddBool(
+        'enabled',
+        default=True,
+        help_text=(
+            'Whether to enable .gcloudignore files (see `$ gcloud topic '
+            'gcloudignore`). If false, turn off the gcloudignore mechanism '
+            'entirely and upload all files.'))
 
 
 class _SectionApp(_Section):

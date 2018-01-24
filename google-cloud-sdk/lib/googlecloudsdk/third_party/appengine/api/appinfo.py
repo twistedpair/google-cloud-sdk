@@ -246,6 +246,7 @@ VERSION = 'version'
 MAJOR_VERSION = 'major_version'
 MINOR_VERSION = 'minor_version'
 RUNTIME = 'runtime'
+RUNTIME_CHANNEL = 'runtime_channel'
 API_VERSION = 'api_version'
 ENDPOINTS_API_SERVICE = 'endpoints_api_service'
 ENV = 'env'
@@ -312,6 +313,14 @@ TARGET_DISK_READ_BYTES_PER_SEC = 'target_disk_read_bytes_per_sec'
 TARGET_DISK_READ_OPS_PER_SEC = 'target_disk_read_ops_per_sec'
 TARGET_REQUEST_COUNT_PER_SEC = 'target_request_count_per_sec'
 TARGET_CONCURRENT_REQUESTS = 'target_concurrent_requests'
+# Custom Metric autoscaling. These are supported for Flex only.
+CUSTOM_METRICS = 'custom_metrics'
+METRIC_NAME = 'metric_name'
+TARGET_TYPE = 'target_type'
+TARGET_TYPE_REGEX = r'^(GAUGE|DELTA_PER_SECOND|DELTA_PER_MINUTE)$'
+CUSTOM_METRIC_UTILIZATION = 'target_utilization'
+SINGLE_INSTANCE_ASSIGNMENT = 'single_instance_assignment'
+FILTER = 'filter'
 
 
 # Attributes for ManualScaling
@@ -1588,6 +1597,38 @@ class CpuUtilization(validation.Validated):
   }
 
 
+class CustomMetric(validation.Validated):
+  """Class representing CustomMetrics in AppInfoExternal."""
+
+  ATTRIBUTES = {
+      METRIC_NAME: validation.Regex(_NON_WHITE_SPACE_REGEX),
+      TARGET_TYPE: validation.Regex(TARGET_TYPE_REGEX),
+      CUSTOM_METRIC_UTILIZATION: validation.Optional(validation.TYPE_FLOAT),
+      SINGLE_INSTANCE_ASSIGNMENT: validation.Optional(validation.TYPE_FLOAT),
+      FILTER: validation.Optional(validation.TYPE_STR),
+  }
+
+  def CheckInitialized(self):
+    """Determines if the CustomMetric is not valid.
+
+    Raises:
+      appinfo_errors.TooManyAutoscalingUtilizationTargetsError: If too many
+      scaling targets are set.
+      appinfo_errors.NotEnoughAutoscalingUtilizationTargetsError: If no scaling
+      targets are set.
+    """
+    super(CustomMetric, self).CheckInitialized()
+    if bool(self.target_utilization) and bool(self.single_instance_assignment):
+      raise appinfo_errors.TooManyAutoscalingUtilizationTargetsError(
+          ("There may be only one of '%s' or '%s'." % CUSTOM_METRIC_UTILIZATION,
+           SINGLE_INSTANCE_ASSIGNMENT))
+    elif not (bool(self.target_utilization) or
+              bool(self.single_instance_assignment)):
+      raise appinfo_errors.NotEnoughAutoscalingUtilizationTargetsError(
+          ("There must be one of '%s' or '%s'." % CUSTOM_METRIC_UTILIZATION,
+           SINGLE_INSTANCE_ASSIGNMENT))
+
+
 class EndpointsApiService(validation.Validated):
   """Class representing EndpointsApiService in AppInfoExternal."""
   ATTRIBUTES = {
@@ -1672,6 +1713,7 @@ class AutomaticScaling(validation.Validated):
           validation.Optional(validation.Range(1, sys.maxint)),
       TARGET_CONCURRENT_REQUESTS:
           validation.Optional(validation.Range(1, sys.maxint)),
+      CUSTOM_METRICS: validation.Optional(validation.Repeated(CustomMetric)),
   }
 
 
@@ -2168,6 +2210,7 @@ class AppInfoExternal(validation.Validated):
                                     validation.Optional(MODULE_ID_RE_STRING)),
       VERSION: validation.Optional(MODULE_VERSION_ID_RE_STRING),
       RUNTIME: validation.Optional(RUNTIME_RE_STRING),
+      RUNTIME_CHANNEL: validation.Optional(validation.Type(str)),
       # A new `api_version` requires a release of the `dev_appserver`, so it
       # is ok to hardcode the version names here.
       API_VERSION: validation.Optional(API_VERSION_RE_STRING),
@@ -2194,7 +2237,6 @@ class AppInfoExternal(validation.Validated):
       RESOURCES: validation.Optional(Resources),
       LIVENESS_CHECK: validation.Optional(LivenessCheck),
       READINESS_CHECK: validation.Optional(ReadinessCheck),
-      ZONES: validation.Optional(validation.Repeated(validation.TYPE_STR)),
       NETWORK: validation.Optional(Network),
       ZONES: validation.Optional(validation.Repeated(validation.TYPE_STR)),
       BUILTINS: validation.Optional(validation.Repeated(BuiltinHandler)),

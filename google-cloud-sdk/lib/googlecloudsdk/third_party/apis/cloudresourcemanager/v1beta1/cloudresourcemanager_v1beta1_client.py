@@ -365,6 +365,9 @@ The caller must have read permissions for this Project.
       """Returns the IAM access control policy for the specified Project.
 Permission is denied if the policy or the resource does not exist.
 
+For additional information about resource structure and identification,
+see [Resource Names](/apis/design/resource_names).
+
       Args:
         request: (CloudresourcemanagerProjectsGetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -391,7 +394,10 @@ Permission is denied if the policy or the resource does not exist.
     def List(self, request, global_params=None):
       """Lists Projects that are visible to the user and satisfy the.
 specified filter. This method returns Projects in an unspecified order.
-New Projects do not necessarily appear at the end of the list.
+This method is eventually consistent with project mutations; this means
+that a newly created project may not appear in the results or recent
+updates to an existing project may not be reflected in the results. To
+retrieve the latest state of a project, use the GetProjectmethod.
 
       Args:
         request: (CloudresourcemanagerProjectsListRequest) input message
@@ -417,7 +423,7 @@ New Projects do not necessarily appear at the end of the list.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the IAM access control policy for the specified Project. Replaces.
+      """Sets the IAM access control policy for the specified Project. Overwrites.
 any existing policy.
 
 The following constraints apply when using `setIamPolicy()`:
@@ -449,7 +455,8 @@ projects that no longer have owners who have accepted the ToS. Edits to
 IAM policies will be rejected until the lack of a ToS-accepting owner is
 rectified.
 
-+ Calling this method requires enabling the App Engine Admin API.
++ This method will replace the existing policy, and cannot be used to
+append additional IAM settings.
 
 Note: Removing service accounts from policies or changing their roles
 can render services completely inoperable. It is important to understand

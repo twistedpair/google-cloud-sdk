@@ -29,7 +29,6 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags
 from googlecloudsdk.command_lib.util.ssh import ssh
-from googlecloudsdk.core import log
 import ipaddr
 
 
@@ -164,12 +163,8 @@ def CheckCustomCpuRamRatio(compute_client, project, zone, machine_type_name):
 
 def CreateServiceAccountMessages(messages, scopes, service_account):
   """Returns a list of ServiceAccount messages corresponding to scopes."""
-  silence_deprecation_warning = False
   if scopes is None:
     scopes = constants.DEFAULT_SCOPES
-  # if user provided --no-service-account, it is already verified that
-  # scopes == [] and thus service_account value will not be used
-  service_account_specified = service_account is not None
   if service_account is None:
     service_account = 'default'
 
@@ -180,25 +175,16 @@ def CreateServiceAccountMessages(messages, scopes, service_account):
       account = service_account
       scope_uri = scope
     elif len(parts) == 2:
-      account, scope_uri = parts
-      if service_account_specified:
-        raise exceptions.InvalidArgumentException(
-            '--scopes',
-            'It is illegal to mix old --scopes flag format '
-            '[--scopes {0}={1}] with [--service-account ACCOUNT] flag. Use '
-            '[--scopes {1} --service-account {2}] instead.'
-            .format(account, scope_uri, service_account))
-      # TODO(b/33688878) Remove support for this deprecated format
-      if not silence_deprecation_warning:
-        log.warning(
-            'Flag format --scopes [ACCOUNT=]SCOPE, [[ACCOUNT=]SCOPE, ...] is '
-            'deprecated and will be removed 24th Jan 2018. Use --scopes SCOPE'
-            '[, SCOPE...] --service-account ACCOUNT instead.')
-        silence_deprecation_warning = True  # Do not warn again for each scope
+      # TODO(b/33688878) Remove exception for this deprecated format
+      raise exceptions.InvalidArgumentException(
+          '--scopes',
+          'Flag format --scopes [ACCOUNT=]SCOPE,[[ACCOUNT=]SCOPE, ...] is '
+          'removed. Use --scopes [SCOPE,...] --service-account ACCOUNT '
+          'instead.')
     else:
       raise exceptions.ToolException(
           '[{0}] is an illegal value for [--scopes]. Values must be of the '
-          'form [SCOPE] or [ACCOUNT=SCOPE].'.format(scope))
+          'form [SCOPE].'.format(scope))
 
     if service_account != 'default' and not ssh.Remote.FromArg(service_account):
       raise exceptions.InvalidArgumentException(

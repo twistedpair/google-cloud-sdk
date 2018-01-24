@@ -325,7 +325,7 @@
           }
         },
         "environmentVariables": {
-          "description": "Envrionment variables that shall be available during function execution.",
+          "description": "Environment variables that shall be available during function execution.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -365,7 +365,7 @@
       "type": "object",
       "properties": {
         "eventType": {
-          "description": "Required. The type of event to observe. For example:\n`providers\/cloud.storage\/eventTypes\/object.change` and\n`providers\/cloud.pubsub\/eventTypes\/topic.publish`.\n\nEvent types match pattern `providers\/*\/eventTypes\/*.*`.\nThe pattern contains:\n 1. namespace: For example, `cloud.storage` and\n    `google.firebase.analytics`.\n 2. resource type: The type of resource on which event occurs. For\n    example, the Google Cloud Storage API includes the type `object`.\n 3. action: The action that generates the event. For example, action for\n    a Google Cloud Storage Object is 'change'.\nThese parts are lower case.",
+          "description": "Required. The type of event to observe. For example:\n`providers\/cloud.storage\/eventTypes\/object.change` and\n`providers\/cloud.pubsub\/eventTypes\/topic.publish`.\n\nEvent types match pattern `providers\/*\/eventTypes\/*.*`.\nThe pattern contains:\n\n1. namespace: For example, `cloud.storage` and\n   `google.firebase.analytics`.\n2. resource type: The type of resource on which event occurs. For\n   example, the Google Cloud Storage API includes the type `object`.\n3. action: The action that generates the event. For example, action for\n   a Google Cloud Storage Object is 'change'.\nThese parts are lower case.",
           "type": "string"
         },
         "resource": {
@@ -998,10 +998,10 @@
                   "path": "v1/{+parent}/functions:generateUploadUrl",
                   "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/functions:generateUploadUrl",
                   "httpMethod": "POST",
-                  "description": "Returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control\/signed-urls\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.",
+                  "description": "Returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control\/signed-urls.\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.\n\nWhen uploading source code to the generated signed URL, please follow\nthese restrictions:\n\n* Source file type should be a zip file.\n* Source file size should not exceed 100MB limit.\n\nWhen making a HTTP PUT request, these two headers need to be specified:\n\n* `content-type: application\/zip`\n* `x-google-content-length-range: 0,104857600`",
                   "parameters": {
                     "parent": {
-                      "description": "The project and location in which the Google Cloud Storage signed URL\nshould be generated, specified in the format `projects\/*\/locations\/*",
+                      "description": "The project and location in which the Google Cloud Storage signed URL\nshould be generated, specified in the format `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",

@@ -1310,7 +1310,7 @@
           "$ref": "ZipInfo"
         },
         "build": {
-          "description": "Google Cloud Container Builder build information.",
+          "description": "Google Cloud Container Builder build information. Only applicable for instances running in the App Engine flexible environment.",
           "$ref": "BuildInfo"
         },
         "cloudBuildOptions": {

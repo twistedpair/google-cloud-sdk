@@ -710,3 +710,39 @@ def SetRoleStageIfAlpha(role):
   """
   if role.stage is None:
     role.stage = StageTypeFromString('alpha')
+
+
+def GetResourceReference(project, organization):
+  """Get the resource reference of a project or organization.
+
+  Args:
+    project: A project name string.
+    organization: An organization id string.
+
+  Returns:
+    The resource reference of the given project or organization.
+  """
+  if project:
+    return resources.REGISTRY.Parse(
+        project, collection='cloudresourcemanager.projects')
+  else:
+    return resources.REGISTRY.Parse(
+        organization, collection='cloudresourcemanager.organizations')
+
+
+def TestingPermissionsWarning(permissions):
+  """Prompt a warning for TESTING permissions with a 'y/n' question.
+
+  Args:
+    permissions: A list of permissions that need to be warned.
+  """
+  if permissions:
+    msg = ('Warning: permissions [' + ', '.join(permissions) +
+           '] are in \'TESTING\' stage which means '
+           'the functionality is not mature and they can go away in the '
+           'future. This can break your workflows, so do not use them in '
+           'production systems!')
+    console_io.PromptContinue(
+        message=msg,
+        prompt_string='Are you sure to make this change',
+        cancel_on_no=True)

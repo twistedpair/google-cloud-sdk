@@ -48,7 +48,8 @@ class AcceleratorType(_messages.Message):
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     zone: [Output Only] The name of the zone where the accelerator type
-      resides, such as us-central1-a.
+      resides, such as us-central1-a. You must specify this field as part of
+      the HTTP request URL. It is not settable as a field in the request body.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -597,7 +598,9 @@ class Address(_messages.Message):
       Address and can only take the following values: PREMIUM , STANDARD.  If
       this field is not specified, it is assumed to be PREMIUM.
     region: [Output Only] URL of the region where the regional address
-      resides. This field is not applicable to global addresses.
+      resides. This field is not applicable to global addresses. You must
+      specify this field as part of the HTTP request URL. You cannot set this
+      field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] The status of the address, which can be one of
       RESERVING, RESERVED, or IN_USE. An address that is RESERVING is
@@ -1285,6 +1288,11 @@ class AttachedDiskInitializeParams(_messages.Message):
   Enums:
     DiskStorageTypeValueValuesEnum: [Deprecated] Storage type of the disk.
 
+  Messages:
+    LabelsValue: Labels to apply to this disk. These can be later modified by
+      the disks.setLabels method. This field is only applicable for persistent
+      disks.
+
   Fields:
     diskName: Specifies the disk name. If not specified, the default is to use
       the name of the instance.
@@ -1292,24 +1300,27 @@ class AttachedDiskInitializeParams(_messages.Message):
     diskStorageType: [Deprecated] Storage type of the disk.
     diskType: Specifies the disk type to use to create the instance. If not
       specified, the default is pd-standard, specified using the full URL. For
-      example:  https://www.googleapis.com/compute/v1/projects/project/zones/z
-      one/diskTypes/pd-standard   Other values include pd-ssd and local-ssd.
-      If you define this field, you can provide either the full or partial
-      URL. For example, the following are valid values:   - https://www.google
-      apis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
+      example: https://www.googleapis.com/compute/v1/projects/project/zones/zo
+      ne/diskTypes/pd-standard   Other values include pd-ssd and local-ssd. If
+      you define this field, you can provide either the full or partial URL.
+      For example, the following are valid values:   - https://www.googleapis.
+      com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
       projects/project/zones/zone/diskTypes/diskType  -
       zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is
       the name of the disk type, not URL.
+    labels: Labels to apply to this disk. These can be later modified by the
+      disks.setLabels method. This field is only applicable for persistent
+      disks.
     sourceImage: The source image to create this disk. When creating a new
       instance, one of initializeParams.sourceImage or disks.source is
       required except for local SSD.  To create a disk with one of the public
       operating system images, specify the image by its family name. For
       example, specify family/debian-8 to use the latest Debian 8 image:
       projects/debian-cloud/global/images/family/debian-8   Alternatively, use
-      a specific version of a public operating system image:  projects/debian-
+      a specific version of a public operating system image: projects/debian-
       cloud/global/images/debian-8-jessie-vYYYYMMDD   To create a disk with a
       custom image that you created, specify the image name in the following
-      format:  global/images/my-custom-image   You can also specify a custom
+      format: global/images/my-custom-image   You can also specify a custom
       image by its image family, which returns the latest version of the image
       in that family. Replace the image name with family/family-name:
       global/images/family/my-image-family   If the source image is deleted
@@ -1332,12 +1343,39 @@ class AttachedDiskInitializeParams(_messages.Message):
     HDD = 0
     SSD = 1
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Labels to apply to this disk. These can be later modified by the
+    disks.setLabels method. This field is only applicable for persistent
+    disks.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   diskName = _messages.StringField(1)
   diskSizeGb = _messages.IntegerField(2)
   diskStorageType = _messages.EnumField('DiskStorageTypeValueValuesEnum', 3)
   diskType = _messages.StringField(4)
-  sourceImage = _messages.StringField(5)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
+  labels = _messages.MessageField('LabelsValue', 5)
+  sourceImage = _messages.StringField(6)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
 
 
 class AuditConfig(_messages.Message):
@@ -1356,7 +1394,8 @@ class AuditConfig(_messages.Message):
   "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] }  For
   fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
   logging. It also exempts foo@gmail.com from DATA_READ logging, and
-  bar@gmail.com from DATA_WRITE logging.
+  bar@gmail.com from DATA_WRITE logging. This message is only visible as
+  GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -2524,7 +2563,9 @@ class BackendService(_messages.Message):
       HTTP.  For internal load balancing, the possible values are TCP and UDP,
       and the default is TCP.
     region: [Output Only] URL of the region where the regional backend service
-      resides. This field is not applicable to global backend services.
+      resides. This field is not applicable to global backend services. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
     securityPolicy: [Output Only] The resource URL for the security policy
       associated with this backend service.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -3139,7 +3180,8 @@ class Binding(_messages.Message):
     condition: The condition that is associated with this binding. NOTE: an
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
-      independently. This field is GOOGLE_INTERNAL.
+      independently. This field is only visible as GOOGLE_INTERNAL or
+      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -10949,6 +10991,53 @@ class ComputeNetworksTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeNodeTemplatesGetIamPolicyRequest(_messages.Message):
+  """A ComputeNodeTemplatesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeNodeTemplatesSetIamPolicyRequest(_messages.Message):
+  """A ComputeNodeTemplatesSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeNodeTemplatesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeNodeTemplatesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeProjectsDisableXpnHostRequest(_messages.Message):
   """A ComputeProjectsDisableXpnHostRequest object.
 
@@ -11460,8 +11549,8 @@ class ComputeRegionBackendServicesGetHealthRequest(_messages.Message):
   """A ComputeRegionBackendServicesGetHealthRequest object.
 
   Fields:
-    backendService: Name of the BackendService resource to which the queried
-      instance belongs.
+    backendService: Name of the BackendService resource for which to get
+      health.
     project: A string attribute.
     region: Name of the region scoping this request.
     resourceGroupReference: A ResourceGroupReference resource to be passed as
@@ -13318,11 +13407,13 @@ class ComputeSecurityPoliciesAddRuleRequest(_messages.Message):
     securityPolicy: Name of the security policy to update.
     securityPolicyRule: A SecurityPolicyRule resource to be passed as the
       request body.
+    validateOnly: If true, the request will not be committed.
   """
 
   project = _messages.StringField(1, required=True)
   securityPolicy = _messages.StringField(2, required=True)
   securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class ComputeSecurityPoliciesDeleteRequest(_messages.Message):
@@ -13483,12 +13574,14 @@ class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
     securityPolicy: Name of the security policy to update.
     securityPolicyRule: A SecurityPolicyRule resource to be passed as the
       request body.
+    validateOnly: If true, the request will not be committed.
   """
 
   priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   project = _messages.StringField(2, required=True)
   securityPolicy = _messages.StringField(3, required=True)
   securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class ComputeSecurityPoliciesRemoveRuleRequest(_messages.Message):
@@ -16693,7 +16786,9 @@ class Disk(_messages.Message):
       supported values, but even a supported value may be allowed for only
       some projects.
     region: [Output Only] URL of the region where the disk resides. Only
-      applicable for regional resources.
+      applicable for regional resources. You must specify this field as part
+      of the HTTP request URL. It is not settable as a field in the request
+      body.
     replicaZones: URLs of the zones where the disk should be replicated to.
       Only applicable for regional resources.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
@@ -16709,14 +16804,14 @@ class Disk(_messages.Message):
       image is deleted, this field will not be set.  To create a disk with one
       of the public operating system images, specify the image by its family
       name. For example, specify family/debian-8 to use the latest Debian 8
-      image:  projects/debian-cloud/global/images/family/debian-8
+      image: projects/debian-cloud/global/images/family/debian-8
       Alternatively, use a specific version of a public operating system
-      image:  projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
+      image: projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
       To create a disk with a custom image that you created, specify the image
-      name in the following format:  global/images/my-custom-image   You can
+      name in the following format: global/images/my-custom-image   You can
       also specify a custom image by its image family, which returns the
       latest version of the image in that family. Replace the image name with
-      family/family-name:  global/images/family/my-image-family
+      family/family-name: global/images/family/my-image-family
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. Required if the source image is protected by a customer-
       supplied encryption key.
@@ -16746,7 +16841,9 @@ class Disk(_messages.Message):
       create the disk. Provide this when creating the disk.
     users: [Output Only] Links to the users of the disk (attached instances)
       in form: project/zones/zone/instances/instance
-    zone: [Output Only] URL of the zone where the disk resides.
+    zone: [Output Only] URL of the zone where the disk resides. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -16993,12 +17090,12 @@ class DiskInstantiationConfig(_messages.Message):
     autoDelete: Specifies whether the disk will be auto-deleted when the
       instance is deleted (but not when the disk is detached from the
       instance).
+    customImage: The custom source image to be used to restore this disk when
+      instantiating this instance template.
     deviceName: Specifies the device name of the disk to which the
       configurations apply to.
     instantiateFrom: Specifies whether to include the disk and what image to
       use.
-    sourceImage: The custom source image to be used to restore this disk when
-      instantiating this instance template.
   """
 
   class InstantiateFromValueValuesEnum(_messages.Enum):
@@ -17007,24 +17104,24 @@ class DiskInstantiationConfig(_messages.Message):
     Values:
       ATTACH_READ_ONLY: <no description>
       BLANK: <no description>
+      CUSTOM_IMAGE: <no description>
       DEFAULT: <no description>
       DO_NOT_INCLUDE: <no description>
-      IMAGE_URL: <no description>
       SOURCE_IMAGE: <no description>
       SOURCE_IMAGE_FAMILY: <no description>
     """
     ATTACH_READ_ONLY = 0
     BLANK = 1
-    DEFAULT = 2
-    DO_NOT_INCLUDE = 3
-    IMAGE_URL = 4
+    CUSTOM_IMAGE = 2
+    DEFAULT = 3
+    DO_NOT_INCLUDE = 4
     SOURCE_IMAGE = 5
     SOURCE_IMAGE_FAMILY = 6
 
   autoDelete = _messages.BooleanField(1)
-  deviceName = _messages.StringField(2)
-  instantiateFrom = _messages.EnumField('InstantiateFromValueValuesEnum', 3)
-  sourceImage = _messages.StringField(4)
+  customImage = _messages.StringField(2)
+  deviceName = _messages.StringField(3)
+  instantiateFrom = _messages.EnumField('InstantiateFromValueValuesEnum', 4)
 
 
 class DiskList(_messages.Message):
@@ -17191,7 +17288,9 @@ class DiskType(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     validDiskSize: [Output Only] An optional textual description of the valid
       disk size, such as "10GB-10TB".
-    zone: [Output Only] URL of the zone where the disk type resides.
+    zone: [Output Only] URL of the zone where the disk type resides. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -17786,7 +17885,7 @@ class Firewall(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     denied: The list of DENY rules specified by this firewall. Each rule
-      specifies a protocol and port-range tuple that describes a permitted
+      specifies a protocol and port-range tuple that describes a denied
       connection.
     description: An optional description of this resource. Provide this
       property when you create the resource.
@@ -18213,7 +18312,7 @@ class ForwardingRule(_messages.Message):
       TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetTcpProxy:
       25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1883, 5222  -
       TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
-      1883, 5222  - TargetVpnGateway: 500, 4500 -
+      1883, 5222  - TargetVpnGateway: 500, 4500
     ports: This field is used along with the backend_service field for
       internal load balancing.  When the load balancing scheme is INTERNAL, a
       single port or a comma separated list of ports can be configured. Only
@@ -18221,7 +18320,9 @@ class ForwardingRule(_messages.Message):
       configured with this forwarding rule.  You may specify a maximum of up
       to 5 ports.
     region: [Output Only] URL of the region where the regional forwarding rule
-      resides. This field is not applicable to global forwarding rules.
+      resides. This field is not applicable to global forwarding rules. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     serviceLabel: An optional prefix to the service name for this Forwarding
       Rule. If specified, will be the first label of the fully qualified
@@ -18244,8 +18345,7 @@ class ForwardingRule(_messages.Message):
       regional forwarding rules, this target must live in the same region as
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object.  This field is not used for internal
-      load balancing.
+      appropriate to the target object.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -19434,7 +19534,7 @@ class Host(_messages.Message):
     hostType: Full or partial URL of the host type resource to use for this
       host, in the format: zones/zone/hostTypes/host-type. This is provided by
       the client when the host is created. For example, the following is a
-      valid partial url to a predefined host type:  zones/us-
+      valid partial url to a predefined host type: zones/us-
       central1-b/hostTypes/n1-host-64-416
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -21143,12 +21243,12 @@ class Instance(_messages.Message):
     machineType: Full or partial URL of the machine type resource to use for
       this instance, in the format: zones/zone/machineTypes/machine-type. This
       is provided by the client when the instance is created. For example, the
-      following is a valid partial url to a predefined machine type:  zones
-      /us-central1-f/machineTypes/n1-standard-1   To create a custom machine
-      type, provide a URL to a machine type in the following format, where
-      CPUS is 1 or an even number up to 32 (2, 4, 6, ... 24, etc), and MEMORY
-      is the total memory for this instance. Memory must be a multiple of 256
-      MB and must be supplied in MB (e.g. 5 GB of memory is 5120 MB):
+      following is a valid partial url to a predefined machine type: zones/us-
+      central1-f/machineTypes/n1-standard-1   To create a custom machine type,
+      provide a URL to a machine type in the following format, where CPUS is 1
+      or an even number up to 32 (2, 4, 6, ... 24, etc), and MEMORY is the
+      total memory for this instance. Memory must be a multiple of 256 MB and
+      must be supplied in MB (e.g. 5 GB of memory is 5120 MB):
       zones/zone/machineTypes/custom-CPUS-MEMORY   For example: zones/us-
       central1-f/machineTypes/custom-4-5120   For a full list of restrictions,
       read the Specifications for custom machine types.
@@ -21190,7 +21290,9 @@ class Instance(_messages.Message):
       valid sources or targets for network firewalls and are specified by the
       client during instance creation. The tags can be later modified by the
       setTags method. Each tag within the list must comply with RFC1035.
-    zone: [Output Only] URL of the zone where the instance resides.
+    zone: [Output Only] URL of the zone where the instance resides. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -21903,9 +22005,8 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
       group that are scheduled to be restarted or are currently being
       restarted.
     verifying: [Output Only] The number of instances in the managed instance
-      group that are being verified. More details regarding verification
-      process are covered in the documentation of
-      ManagedInstance.InstanceAction.VERIFYING enum field.
+      group that are being verified. See the managedInstances[].currentAction
+      property in the listManagedInstances method documentation.
   """
 
   abandoning = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -24307,7 +24408,8 @@ class InterconnectAttachment(_messages.Message):
       InterconnectAttachment. This property is populated if the interconnect
       that this is attached to is of type DEDICATED.
     region: [Output Only] URL of the region where the regional interconnect
-      attachment resides.
+      attachment resides. You must specify this field as part of the HTTP
+      request URL. It is not settable as a field in the request body.
     router: URL of the cloud router to be used for dynamic routing. This
       router must be in the same region as this InterconnectAttachment. The
       InterconnectAttachment will automatically connect the Interconnect to
@@ -26720,7 +26822,8 @@ class ManagedInstance(_messages.Message):
       instance.  - REFRESHING The managed instance group is applying
       configuration changes to the instance without stopping it. For example,
       the group can update the target pool list for an instance without
-      stopping that instance.
+      stopping that instance.  - VERIFYING The managed instance group has
+      created the instance and it is in the process of being verified.
     InstanceStatusValueValuesEnum: [Output Only] The status of the instance.
       This field is empty when the instance does not exist.
     StandbyModeValueValuesEnum: [Output Only] Standby mode of the instance.
@@ -26745,7 +26848,8 @@ class ManagedInstance(_messages.Message):
       instance.  - REFRESHING The managed instance group is applying
       configuration changes to the instance without stopping it. For example,
       the group can update the target pool list for an instance without
-      stopping that instance.
+      stopping that instance.  - VERIFYING The managed instance group has
+      created the instance and it is in the process of being verified.
     id: [Output only] The unique identifier for this resource. This field is
       empty when instance does not exist.
     instance: [Output Only] The URL of the instance. The URL can exist even if
@@ -26782,7 +26886,8 @@ class ManagedInstance(_messages.Message):
     restarting the instance.  - REFRESHING The managed instance group is
     applying configuration changes to the instance without stopping it. For
     example, the group can update the target pool list for an instance without
-    stopping that instance.
+    stopping that instance.  - VERIFYING The managed instance group has
+    created the instance and it is in the process of being verified.
 
     Values:
       ABANDONING: <no description>
@@ -26899,8 +27004,16 @@ class ManagedInstanceOverride(_messages.Message):
     OriginValueValuesEnum: [Output Only] Indicates where does the override
       come from.
 
+  Messages:
+    MetadataValueListEntry: A MetadataValueListEntry object.
+
   Fields:
-    disks: Disk overrides defined for this instance
+    disks: Disk overrides defined for this instance. According to
+      documentation the maximum number of disks attached to an instance is
+      128: https://cloud.google.com/compute/docs/disks/ However, compute API
+      defines the limit at 140, so this is what we check.
+    metadata: Metadata overrides defined for this instance. TODO(b/69785416)
+      validate the total length is <9 KB
     origin: [Output Only] Indicates where does the override come from.
   """
 
@@ -26914,8 +27027,27 @@ class ManagedInstanceOverride(_messages.Message):
     AUTO_GENERATED = 0
     USER_PROVIDED = 1
 
+  class MetadataValueListEntry(_messages.Message):
+    """A MetadataValueListEntry object.
+
+    Fields:
+      key: Key for the metadata entry. Keys must conform to the following
+        regexp: [a-zA-Z0-9-_]+, and be less than 128 bytes in length. This is
+        reflected as part of a URL in the metadata server. Additionally, to
+        avoid ambiguity, keys must not conflict with any other metadata keys
+        for the project.
+      value: Value for the metadata entry. These are free-form strings, and
+        only have meaning as interpreted by the image running in the instance.
+        The only restriction placed on values is that their size must be less
+        than or equal to 262144 bytes (256 KiB).
+    """
+
+    key = _messages.StringField(1)
+    value = _messages.StringField(2)
+
   disks = _messages.MessageField('ManagedInstanceOverrideDiskOverride', 1, repeated=True)
-  origin = _messages.EnumField('OriginValueValuesEnum', 2)
+  metadata = _messages.MessageField('MetadataValueListEntry', 2, repeated=True)
+  origin = _messages.EnumField('OriginValueValuesEnum', 3)
 
 
 class ManagedInstanceOverrideDiskOverride(_messages.Message):
@@ -28133,7 +28265,9 @@ class Operation(_messages.Message):
       operation will be complete. This number should monotonically increase as
       the operation progresses.
     region: [Output Only] The URL of the region where the operation resides.
-      Only available when performing regional operations.
+      Only available when performing regional operations. You must specify
+      this field as part of the HTTP request URL. It is not settable as a
+      field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     startTime: [Output Only] The time that this operation was started by the
       server. This value is in RFC3339 text format.
@@ -28151,7 +28285,9 @@ class Operation(_messages.Message):
     warnings: [Output Only] If warning messages are generated during
       processing of the operation, this field will be populated.
     zone: [Output Only] The URL of the zone where the operation resides. Only
-      available when performing per-zone operations.
+      available when performing per-zone operations. You must specify this
+      field as part of the HTTP request URL. It is not settable as a field in
+      the request body.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -28771,10 +28907,11 @@ class Policy(_messages.Message):
   "domain:google.com", "serviceAccount:my-other-
   app@appspot.gserviceaccount.com", ] }, { "role": "roles/viewer", "members":
   ["user:sean@example.com"] } ] }  For a description of IAM and its features,
-  see the [IAM developer's guide](https://cloud.google.com/iam).
+  see the [IAM developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
+      This field is only visible as GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
     bindings: Associates a list of `members` to a `role`. `bindings` with no
       members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
@@ -28794,7 +28931,7 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
       will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -28806,10 +28943,9 @@ class Policy(_messages.Message):
 
 
 class Project(_messages.Message):
-  """A Project resource. Projects can only be created in the Google Cloud
-  Platform Console. Unless marked otherwise, values can only be modified in
-  the console. (== resource_for v1.projects ==) (== resource_for beta.projects
-  ==)
+  """A Project resource. For an overview of projects, see  Cloud Platform
+  Resource Hierarchy. (== resource_for v1.projects ==) (== resource_for
+  beta.projects ==)
 
   Enums:
     DefaultNetworkTierValueValuesEnum: This signifies the default network tier
@@ -30671,7 +30807,9 @@ class Router(_messages.Message):
     nats: List of Nat services created in this router. The maximum number of
       Nat services within a Router is 3 for Alpha.
     network: URI of the network to which this router belongs.
-    region: [Output Only] URI of the region where the router resides.
+    region: [Output Only] URI of the region where the router resides. You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
@@ -32270,6 +32408,11 @@ class SslCertificate(_messages.Message):
   from the user. (== resource_for beta.sslCertificates ==) (== resource_for
   v1.sslCertificates ==)
 
+  Enums:
+    TypeValueValuesEnum: (Optional) Specifies the type of SSL certificate,
+      either "SELF_MANAGED" or "MANAGED". If not specified, the certificate is
+      self-managed and the fields certificate and private_key are used.
+
   Fields:
     certificate: A local certificate file. The certificate must be in PEM
       format. The certificate chain must be no greater than 5 certs long. The
@@ -32278,10 +32421,12 @@ class SslCertificate(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    expiryTime: [Output Only] Expiry time of the certificate. RFC3339
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#sslCertificate
       for SSL certificates.
+    managed: Configuration and status of a managed SSL certificate.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -32292,16 +32437,41 @@ class SslCertificate(_messages.Message):
     privateKey: A write-only private key in PEM format. Only insert requests
       will include this field.
     selfLink: [Output only] Server-defined URL for the resource.
+    selfManaged: Configuration and status of a self-managed SSL certificate.
+    subjectAlternativeNames: [Output Only] Domains associated with the
+      certificate via Subject Alternative Name.
+    type: (Optional) Specifies the type of SSL certificate, either
+      "SELF_MANAGED" or "MANAGED". If not specified, the certificate is self-
+      managed and the fields certificate and private_key are used.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """(Optional) Specifies the type of SSL certificate, either "SELF_MANAGED"
+    or "MANAGED". If not specified, the certificate is self-managed and the
+    fields certificate and private_key are used.
+
+    Values:
+      MANAGED: <no description>
+      SELF_MANAGED: <no description>
+      TYPE_UNKNOWN: <no description>
+    """
+    MANAGED = 0
+    SELF_MANAGED = 1
+    TYPE_UNKNOWN = 2
 
   certificate = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#sslCertificate')
-  name = _messages.StringField(6)
-  privateKey = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
+  expiryTime = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#sslCertificate')
+  managed = _messages.MessageField('SslCertificateManagedSslCertificate', 7)
+  name = _messages.StringField(8)
+  privateKey = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  selfManaged = _messages.MessageField('SslCertificateSelfManagedSslCertificate', 11)
+  subjectAlternativeNames = _messages.StringField(12, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
 
 
 class SslCertificateList(_messages.Message):
@@ -32426,6 +32596,110 @@ class SslCertificateList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class SslCertificateManagedSslCertificate(_messages.Message):
+  """Configuration and status of a managed SSL certificate.
+
+  Enums:
+    StatusValueValuesEnum: [Output only] Status of the managed certificate
+      resource.
+
+  Messages:
+    DomainStatusValue: [Output only] Detailed statuses of the domains
+      specified for managed certificate resource.
+
+  Fields:
+    domainStatus: [Output only] Detailed statuses of the domains specified for
+      managed certificate resource.
+    domains: The domains for which a managed SSL certificate will be
+      generated. Currently only single-domain certs are supported.
+    status: [Output only] Status of the managed certificate resource.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    """[Output only] Status of the managed certificate resource.
+
+    Values:
+      ACTIVE: <no description>
+      PROVISIONING: <no description>
+      PROVISIONING_FAILED: <no description>
+      PROVISIONING_FAILED_PERMANENTLY: <no description>
+      RENEWAL_FAILED: <no description>
+      STATUS_UNKNOWN: <no description>
+    """
+    ACTIVE = 0
+    PROVISIONING = 1
+    PROVISIONING_FAILED = 2
+    PROVISIONING_FAILED_PERMANENTLY = 3
+    RENEWAL_FAILED = 4
+    STATUS_UNKNOWN = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DomainStatusValue(_messages.Message):
+    """[Output only] Detailed statuses of the domains specified for managed
+    certificate resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a DomainStatusValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DomainStatusValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a DomainStatusValue object.
+
+      Enums:
+        ValueValueValuesEnum:
+
+      Fields:
+        key: Name of the additional property.
+        value: A ValueValueValuesEnum attribute.
+      """
+
+      class ValueValueValuesEnum(_messages.Enum):
+        """ValueValueValuesEnum enum type.
+
+        Values:
+          ACTIVE: <no description>
+          DOMAIN_STATUS_UNKNOWN: <no description>
+          FAILED_CAA_FORBIDDEN: <no description>
+          FAILED_NOT_VISIBLE: <no description>
+          FAILED_RATE_LIMITED: <no description>
+          PROVISIONING: <no description>
+        """
+        ACTIVE = 0
+        DOMAIN_STATUS_UNKNOWN = 1
+        FAILED_CAA_FORBIDDEN = 2
+        FAILED_NOT_VISIBLE = 3
+        FAILED_RATE_LIMITED = 4
+        PROVISIONING = 5
+
+      key = _messages.StringField(1)
+      value = _messages.EnumField('ValueValueValuesEnum', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  domainStatus = _messages.MessageField('DomainStatusValue', 1)
+  domains = _messages.StringField(2, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
+class SslCertificateSelfManagedSslCertificate(_messages.Message):
+  """Configuration and status of a self-managed SSL certificate..
+
+  Fields:
+    certificate: A local certificate file. The certificate must be in PEM
+      format. The certificate chain must be no greater than 5 certs long. The
+      chain must include at least one intermediate cert.
+    privateKey: A write-only private key in PEM format. Only insert requests
+      will include this field.
+  """
+
+  certificate = _messages.StringField(1)
+  privateKey = _messages.StringField(2)
 
 
 class SslPoliciesList(_messages.Message):
@@ -32865,13 +33139,13 @@ class Subnetwork(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource. This field can be set only at
       resource creation time.
+    enableFlowLogs: Whether to enable flow logging for this subnetwork.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
       must be provided in order to update the Subnetwork.
     gatewayAddress: [Output Only] The gateway address for default routes to
-      reach destination addresses outside this subnetwork. This field can be
-      set only at resource creation time.
+      reach destination addresses outside this subnetwork.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ipCidrRange: The range of internal addresses that are owned by this
@@ -32908,17 +33182,18 @@ class Subnetwork(_messages.Message):
   allowSubnetCidrRoutesOverlap = _messages.BooleanField(1)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
-  fingerprint = _messages.BytesField(4)
-  gatewayAddress = _messages.StringField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  ipCidrRange = _messages.StringField(7)
-  kind = _messages.StringField(8, default=u'compute#subnetwork')
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  privateIpGoogleAccess = _messages.BooleanField(11)
-  region = _messages.StringField(12)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 13, repeated=True)
-  selfLink = _messages.StringField(14)
+  enableFlowLogs = _messages.BooleanField(4)
+  fingerprint = _messages.BytesField(5)
+  gatewayAddress = _messages.StringField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  ipCidrRange = _messages.StringField(8)
+  kind = _messages.StringField(9, default=u'compute#subnetwork')
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  privateIpGoogleAccess = _messages.BooleanField(12)
+  region = _messages.StringField(13)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 14, repeated=True)
+  selfLink = _messages.StringField(15)
 
 
 class SubnetworkAggregatedList(_messages.Message):
@@ -33893,7 +34168,9 @@ class TargetInstance(_messages.Message):
     natPolicy: NAT option controlling how IPs are NAT'ed to the instance.
       Currently only NO_NAT (default value) is supported.
     selfLink: [Output Only] Server-defined URL for the resource.
-    zone: [Output Only] URL of the zone where the target instance resides.
+    zone: [Output Only] URL of the zone where the target instance resides. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
   """
 
   class NatPolicyValueValuesEnum(_messages.Enum):
@@ -35369,7 +35646,8 @@ class TargetVpnGateway(_messages.Message):
     network: URL of the network to which this VPN gateway is attached.
       Provided by the client when the VPN gateway is created.
     region: [Output Only] URL of the region where the target VPN gateway
-      resides.
+      resides. You must specify this field as part of the HTTP request URL. It
+      is not settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] The status of the VPN gateway.
     tunnels: [Output Only] A list of URLs to VpnTunnel resources. VpnTunnels
@@ -35911,8 +36189,9 @@ class UrlMap(_messages.Message):
       cannot be a dash.
     pathMatchers: The list of named PathMatchers to use against the URL.
     selfLink: [Output Only] Server-defined URL for the resource.
-    tests: The list of expected URL mappings. Request to update this UrlMap
-      will succeed only if all of the test cases pass.
+    tests: The list of expected URL mapping tests. Request to update this
+      UrlMap will succeed only if all of the test cases pass. You can specify
+      a maximum of 100 tests per UrlMap.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -36341,7 +36620,9 @@ class VpnTunnel(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     peerIp: IP address of the peer VPN gateway. Only IPv4 is supported.
-    region: [Output Only] URL of the region where the VPN tunnel resides.
+    region: [Output Only] URL of the region where the VPN tunnel resides. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
     remoteTrafficSelector: Remote traffic selectors to use when establishing
       the VPN tunnel with peer VPN gateway. The value should be a CIDR
       formatted string, for example: 192.168.0.0/16. The ranges should be
@@ -36352,8 +36633,8 @@ class VpnTunnel(_messages.Message):
       Cloud VPN gateway and the peer VPN gateway.
     sharedSecretHash: Hash of the shared secret.
     status: [Output Only] The status of the VPN tunnel.
-    targetVpnGateway: URL of the VPN gateway with which this VPN tunnel is
-      associated. Provided by the client when the VPN tunnel is created.
+    targetVpnGateway: URL of the Target VPN gateway with which this VPN tunnel
+      is associated. Provided by the client when the VPN tunnel is created.
   """
 
   class StatusValueValuesEnum(_messages.Enum):

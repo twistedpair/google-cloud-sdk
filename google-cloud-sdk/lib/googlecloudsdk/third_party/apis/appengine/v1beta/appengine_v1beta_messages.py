@@ -1041,7 +1041,8 @@ class Deployment(_messages.Message):
       credentials supplied with this call.
 
   Fields:
-    build: Google Cloud Container Builder build information.
+    build: Google Cloud Container Builder build information. Only applicable
+      for instances running in the App Engine flexible environment.
     cloudBuildOptions: Options for any Google Cloud Container Builder builds
       created as a part of this deployment.Note that this is orthogonal to the
       build parameter, where the deployment depends on an already existing

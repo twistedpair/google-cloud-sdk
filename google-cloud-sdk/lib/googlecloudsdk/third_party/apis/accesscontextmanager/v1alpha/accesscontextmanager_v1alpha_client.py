@@ -37,6 +37,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     self.accessPolicies_accessLevels = self.AccessPoliciesAccessLevelsService(self)
     self.accessPolicies_accessZones = self.AccessPoliciesAccessZonesService(self)
     self.accessPolicies = self.AccessPoliciesService(self)
+    self.operations = self.OperationsService(self)
 
   class AccessPoliciesAccessLevelsService(base_api.BaseApiService):
     """Service class for the accessPolicies_accessLevels resource."""
@@ -504,6 +505,45 @@ returned in `metadata` as a BadRequest proto.
         relative_path=u'v1alpha/{+name}',
         request_field=u'accessPolicy',
         request_type_name=u'AccesscontextmanagerAccessPoliciesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class OperationsService(base_api.BaseApiService):
+    """Service class for the operations resource."""
+
+    _NAME = u'operations'
+
+    def __init__(self, client):
+      super(AccesscontextmanagerV1alpha.OperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Gets the latest state of a long-running operation.  Clients can use this.
+method to poll the operation result at intervals as recommended by the API
+service.
+
+      Args:
+        request: (AccesscontextmanagerOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha/operations/{operationsId}',
+        http_method=u'GET',
+        method_id=u'accesscontextmanager.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha/{+name}',
+        request_field='',
+        request_type_name=u'AccesscontextmanagerOperationsGetRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
