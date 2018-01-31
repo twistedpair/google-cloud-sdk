@@ -22,8 +22,7 @@ from apitools.base.py import encoding as apitools_encoding
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.core import exceptions
-import yaml
-import yaml.parser
+from googlecloudsdk.core import yaml
 
 
 # Don't apply camel case to keys for dict or list values with these field names.
@@ -197,11 +196,11 @@ def LoadCloudbuildConfigFromStream(stream, messages, params=None,
   """
   # Turn the data into a dict
   try:
-    structured_data = yaml.safe_load(stream)
-    if not isinstance(structured_data, dict):
-      raise ParserError(path, 'Could not parse into a message.')
-  except yaml.parser.ParserError as pe:
-    raise ParserError(path, pe)
+    structured_data = yaml.load(stream, file_hint=path)
+  except yaml.Error as e:
+    raise ParserError(path, e.inner_error)
+  if not isinstance(structured_data, dict):
+    raise ParserError(path, 'Could not parse into a message.')
 
   # Transform snake_case into camelCase.
   structured_data = _SnakeToCamel(structured_data)  # type: dict

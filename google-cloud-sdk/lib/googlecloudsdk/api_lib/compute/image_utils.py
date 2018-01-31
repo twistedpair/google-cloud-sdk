@@ -24,6 +24,8 @@ from googlecloudsdk.core.console import console_io
 
 FAMILY_PREFIX = 'family/'
 GUEST_OS_FEATURES = ['MULTI_IP_SUBNET',
+                     'SECURE_BOOT',
+                     'UEFI_COMPATIBLE',
                      'VIRTIO_SCSI_MULTIQUEUE',
                      'WINDOWS',
                     ]
@@ -336,4 +338,29 @@ def AddGuestOsFeaturesArg(parser, release_track):
       metavar='GUEST_OS_FEATURE',
       type=arg_parsers.ArgList(
           element_type=lambda x: x.upper(), choices=guest_os_features),
-      help=('One or more features supported by the OS.'))
+      help="""\
+      This parameter enables one or more features for VM instances that use the
+      image for their boot disks. The following features are available:
+
+       * MULTI_IP_SUBNET - For configuring interfaces with a netmask other than
+         /32.
+
+       * SECURE_BOOT - Enables UEFI secure boot, which restrics unsigned
+         software from booting or unsigned drivers from loading on the VM
+         instance.
+
+       * UEFI_COMPATIBLE - Enables UEFI booting, which is an alternative system
+         boot method. Most public images use the GRUB bootloader as their
+         primary boot method.
+
+       * VIRTIO_SCSI_MULTIQUEUE - Enables multiqueue SCSI capabilities for
+         Local SSD devices. This option is an alternative to NVMe.
+          * For Linux images, you can enable VIRTIO_SCSI_MULTIQUEUE on images
+            with kernel versions 3.17 and higher.
+          * For Windows images, you can enable VIRTIO_SCSI_MULTIQUEUE on images
+            with driver version 1.2.0.1621 or higher.
+
+       * WINDOWS - Required for Windows Server images. Newer public images for
+         Windows server include the WINDOWS parameter to indicate that it is a
+         Windows image.
+        """)

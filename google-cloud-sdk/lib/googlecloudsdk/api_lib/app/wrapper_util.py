@@ -19,7 +19,7 @@ Functions for parsing app.yaml files and installing the required components.
 import os
 
 from googlecloudsdk.core import log
-import yaml
+from googlecloudsdk.core import yaml
 
 # Runtime ID to component mapping. python27-libs is a special token indicating
 # that the real runtime id is python27, and that a libraries section has been
@@ -79,23 +79,23 @@ def GetRuntimes(args):
           yaml_candidate = fullname
 
     if yaml_candidate:
-      with open(yaml_candidate) as f:
-        try:
-          info = yaml.safe_load(f)
-          # safe_load can return arbitrary objects, we need a dict.
-          if not isinstance(info, dict):
-            continue
-          # Grab the runtime from the yaml, if it exists.
-          if 'runtime' in info:
-            runtime = info.get('runtime')
-            if type(runtime) == str:
-              if runtime == 'python27' and info.get('libraries'):
-                runtimes.add('python27-libs')
-              runtimes.add(runtime)
-              if runtime in _WARNING_RUNTIMES:
-                log.warn(_WARNING_RUNTIMES[runtime])
-        except yaml.YAMLError:
-          continue
+      try:
+        info = yaml.load_path(yaml_candidate)
+      except yaml.Error:
+        continue
+
+      # safe_load can return arbitrary objects, we need a dict.
+      if not isinstance(info, dict):
+        continue
+      # Grab the runtime from the yaml, if it exists.
+      if 'runtime' in info:
+        runtime = info.get('runtime')
+        if type(runtime) == str:
+          if runtime == 'python27' and info.get('libraries'):
+            runtimes.add('python27-libs')
+          runtimes.add(runtime)
+          if runtime in _WARNING_RUNTIMES:
+            log.warn(_WARNING_RUNTIMES[runtime])
     elif os.path.isfile(os.path.join(arg, 'WEB-INF', 'appengine-web.xml')):
       # For unstanged Java App Engine apps, which may not have any yaml files.
       runtimes.add('java')

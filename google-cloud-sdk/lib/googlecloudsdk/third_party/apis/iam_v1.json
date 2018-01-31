@@ -238,15 +238,13 @@
           "enumDescriptions": [
             "An unspecified key algorithm.",
             "1k RSA Key.",
-            "2k RSA Key.",
-            "HMAC."
+            "2k RSA Key."
           ],
           "type": "string",
           "enum": [
             "KEY_ALG_UNSPECIFIED",
             "KEY_ALG_RSA_1024",
-            "KEY_ALG_RSA_2048",
-            "KEY_ALG_GCS_SYMMETRIC_HMAC"
+            "KEY_ALG_RSA_2048"
           ]
         },
         "privateKeyData": {
@@ -277,7 +275,7 @@
       "type": "object",
       "properties": {
         "privateKeyType": {
-          "description": "The output format of the private key. `GOOGLE_CREDENTIALS_FILE` is the\ndefault output format.",
+          "description": "The output format of the private key. The default value is\n`TYPE_GOOGLE_CREDENTIALS_FILE`, which is the Google Credentials File\nformat.",
           "enumDescriptions": [
             "Unspecified. Equivalent to `TYPE_GOOGLE_CREDENTIALS_FILE`.",
             "PKCS12 format.\nThe password for the PKCS12 file is `notasecret`.\nFor more information, see https:\/\/tools.ietf.org\/html\/rfc7292.",
@@ -295,15 +293,13 @@
           "enumDescriptions": [
             "An unspecified key algorithm.",
             "1k RSA Key.",
-            "2k RSA Key.",
-            "HMAC."
+            "2k RSA Key."
           ],
           "type": "string",
           "enum": [
             "KEY_ALG_UNSPECIFIED",
             "KEY_ALG_RSA_1024",
-            "KEY_ALG_RSA_2048",
-            "KEY_ALG_GCS_SYMMETRIC_HMAC"
+            "KEY_ALG_RSA_2048"
           ]
         }
       }
@@ -364,11 +360,11 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of\n`members` to a `role`, where the members can be user accounts, Google groups,\nGoogle domains, and service accounts. A `role` is a named list of permissions\ndefined by IAM.\n\n**Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/owner\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-other-app@appspot.gserviceaccount.com\",\n          ]\n        },\n        {\n          \"role\": \"roles\/viewer\",\n          \"members\": [\"user:sean@example.com\"]\n        }\n      ]\n    }\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam).",
+      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of\n`members` to a `role`, where the members can be user accounts, Google groups,\nGoogle domains, and service accounts. A `role` is a named list of permissions\ndefined by IAM.\n\n**Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/owner\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-other-app@appspot.gserviceaccount.com\",\n          ]\n        },\n        {\n          \"role\": \"roles\/viewer\",\n          \"members\": [\"user:sean@example.com\"]\n        }\n      ]\n    }\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam\/docs).",
       "type": "object",
       "properties": {
         "version": {
-          "description": "Version of the `Policy`. The default version is 0.",
+          "description": "Deprecated.",
           "type": "integer",
           "format": "int32"
         },
@@ -680,6 +676,46 @@
             "TESTING",
             "NOT_SUPPORTED"
           ]
+        },
+        "apiDisabled": {
+          "description": "The service API associated with the permission is not enabled.",
+          "type": "boolean"
+        }
+      }
+    },
+    "QueryAuditableServicesRequest": {
+      "id": "QueryAuditableServicesRequest",
+      "description": "A request to get the list of auditable services for a resource.",
+      "type": "object",
+      "properties": {
+        "fullResourceName": {
+          "description": "Required. The full resource name to query from the list of auditable\nservices.\n\nThe name follows the Google Cloud Platform resource format.\nFor example, a Cloud Platform project with id `my-project` will be named\n`\/\/cloudresourcemanager.googleapis.com\/projects\/my-project`.",
+          "type": "string"
+        }
+      }
+    },
+    "QueryAuditableServicesResponse": {
+      "id": "QueryAuditableServicesResponse",
+      "description": "A response containing a list of auditable services for a resource.",
+      "type": "object",
+      "properties": {
+        "services": {
+          "description": "The auditable services for a resource.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditableService"
+          }
+        }
+      }
+    },
+    "AuditableService": {
+      "id": "AuditableService",
+      "description": "Contains information about an auditable service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Public name of the service.\nFor example, the service name for Cloud IAM is 'iam.googleapis.com'.",
+          "type": "string"
         }
       }
     },
@@ -733,33 +769,6 @@
         },
         "member": {
           "description": "A single identity requesting access for a Cloud Platform resource.\nFollows the same format of Binding.members.\nRequired",
-          "type": "string"
-        },
-        "condition": {
-          "description": "The condition that is associated with this binding.\nThis field is GOOGLE_INTERNAL.\nThis field is not logged in IAM side because it's only for audit logging.\nOptional",
-          "$ref": "Expr"
-        }
-      }
-    },
-    "Expr": {
-      "id": "Expr",
-      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
-      "type": "object",
-      "properties": {
-        "expression": {
-          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
-          "type": "string"
-        },
-        "title": {
-          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
-          "type": "string"
-        },
-        "description": {
-          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
-          "type": "string"
-        },
-        "location": {
-          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
           "type": "string"
         }
       }
@@ -1701,6 +1710,30 @@
           },
           "response": {
             "$ref": "QueryTestablePermissionsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ]
+        }
+      }
+    },
+    "iamPolicies": {
+      "methods": {
+        "queryAuditableServices": {
+          "id": "iam.iamPolicies.queryAuditableServices",
+          "path": "v1/iamPolicies:queryAuditableServices",
+          "flatPath": "v1/iamPolicies:queryAuditableServices",
+          "httpMethod": "POST",
+          "description": "Returns a list of services that support service level audit logging\nconfiguration for the given resource.",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "QueryAuditableServicesRequest"
+          },
+          "response": {
+            "$ref": "QueryAuditableServicesResponse"
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"

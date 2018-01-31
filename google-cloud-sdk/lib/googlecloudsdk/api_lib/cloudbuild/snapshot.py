@@ -25,6 +25,14 @@ from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 
+_IGNORED_FILE_MESSAGE = """\
+Some files were not included in the source upload.
+
+Check the gcloud log [{log_file}] to see which files and the contents of the
+default gcloudignore file used (see `$ gcloud topic gcloudignore` to learn
+more).
+"""
+
 
 class FileMetadata(object):
   """FileMetadata contains information about a file destined for GCP upload.
@@ -66,16 +74,20 @@ class Snapshot(object):
     self.uncompressed_size = 0
     self._client = core_apis.GetClientInstance('storage', 'v1')
     self._messages = core_apis.GetMessagesModule('storage', 'v1')
-    file_chooser = gcloudignore.GetFileChooserForDir(self.src_dir)
+    file_chooser = gcloudignore.GetFileChooserForDir(self.src_dir,
+                                                     write_on_disk=False)
+    self.any_files_ignored = False
     for (dirpath, dirnames, filenames) in os.walk(self.src_dir):
       relpath = os.path.relpath(dirpath, self.src_dir)
       if not file_chooser.IsIncluded(relpath, is_dir=True):
+        self.any_files_ignored = True
         continue
       for fname in filenames:
         # Join file paths with Linux path separators, avoiding ./ prefix.
         # GCB workers are Linux VMs so os.path.join produces incorrect output.
         fpath = '/'.join([relpath, fname]) if relpath != '.' else fname
         if not file_chooser.IsIncluded(fpath):
+          self.any_files_ignored = True
           continue
         fm = FileMetadata(self.src_dir, fpath)
         self.files[fpath] = fm
@@ -129,6 +141,14 @@ class Snapshot(object):
         archive_path = os.path.join(tmp, 'file.tgz')
         tf = self._MakeTarball(archive_path)
         tf.close()
+        ignore_file_path = os.path.join(self.src_dir,
+                                        gcloudignore.IGNORE_FILE_NAME)
+        if self.any_files_ignored:
+          if os.path.exists(ignore_file_path):
+            log.info('Using gcloudignore file [{}]'.format(ignore_file_path))
+          else:
+            log.status.Print(_IGNORED_FILE_MESSAGE.format(
+                log_file=log.GetLogFilePath()))
         log.status.write(
             'Uploading tarball of [{src_dir}] to '
             '[gs://{bucket}/{object}]\n'.format(

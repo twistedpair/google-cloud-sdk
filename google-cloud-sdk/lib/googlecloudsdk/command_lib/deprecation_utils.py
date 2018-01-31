@@ -24,7 +24,7 @@ _COMMAND_ALT_MSG = ' Please use {0} as an alternative.'
 
 def DeprecateCommandAtVersion(remove_version,
                               remove=False,
-                              alt_command=None):
+                              alt_command=None):  # pylint: disable=common_typos_disable
   """Decorator that marks a GCloud command as deprecated.
 
   Args:

@@ -21,8 +21,8 @@ from googlecloudsdk.api_lib.dns import util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
-import yaml
 
 
 DEFAULT_PATH = 'transaction.yaml'
@@ -84,8 +84,8 @@ def ChangeFromYamlFile(yaml_file, api_version='v1'):
   """
   messages = apis.GetMessagesModule('dns', api_version)
   try:
-    change_dict = yaml.safe_load(yaml_file) or {}
-  except yaml.error.YAMLError:
+    change_dict = yaml.load(yaml_file) or {}
+  except yaml.YAMLParseError:
     raise CorruptedTransactionFileError()
   if (change_dict.get('additions') is None or
       change_dict.get('deletions') is None):
@@ -152,7 +152,7 @@ class TransactionFile(object):
   def __exit__(self, typ, value, traceback):
     self.__trans_file.close()
 
-    if typ is IOError or typ is yaml.YAMLError:
+    if typ is IOError or typ is yaml.Error:
       msg = 'unable to read/write transaction [{0}] because [{1}]'
       msg = msg.format(self.__trans_file_path, value)
       raise exceptions.ToolException(msg)

@@ -27,13 +27,13 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.updater import local_state
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 import portpicker
-import yaml
 
 
 _IPV6_RE = re.compile(r'\[(.*)\]:(\d*)')
@@ -132,7 +132,7 @@ def ReadEnvYaml(output_dir):
   env_file_path = os.path.join(output_dir, 'env.yaml')
   try:
     with open(env_file_path, 'r') as env_file:
-      return yaml.safe_load(env_file)
+      return yaml.load(env_file)
   except IOError as err:
     if err.errno == errno.ENOENT:
       raise NoEnvYamlError(output_dir)

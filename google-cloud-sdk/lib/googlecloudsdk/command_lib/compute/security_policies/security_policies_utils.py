@@ -18,8 +18,8 @@ import base64
 import json
 
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
-import yaml
 
 
 def SecurityPolicyFromFile(input_file, messages, file_format):
@@ -35,11 +35,7 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
   """
 
   if file_format == 'yaml':
-    try:
-      parsed_security_policy = yaml.safe_load(input_file)
-    except yaml.YAMLError as e:
-      raise exceptions.BadFileException(
-          'Error parsing YAML: {0}'.format(str(e)))
+    parsed_security_policy = yaml.load(input_file)
   else:
     try:
       parsed_security_policy = json.load(input_file)

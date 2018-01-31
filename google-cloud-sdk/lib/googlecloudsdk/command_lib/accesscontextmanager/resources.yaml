@@ -18,3 +18,13 @@ level:
       attribute_name: level
       help: |
         The ID of the access level.
+zone:
+  name: zone
+  request_id_field: accessZone.name
+  collection: accesscontextmanager.accessPolicies.accessZones
+  attributes:
+    - *policy
+    - parameter_name: accessZonesId
+      attribute_name: zone
+      help: |
+        The ID of the access zone.

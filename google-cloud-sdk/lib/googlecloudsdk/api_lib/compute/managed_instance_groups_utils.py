@@ -110,18 +110,19 @@ def AddAutoscalerArgs(
                       help='Autoscaler will aim to maintain the load balancing '
                       'utilization level (greater than 0.0).')
   custom_metric_utilization_help = """\
-      Adds a target metric value for the Autoscaler to use.
+Adds a target metric value for the Autoscaler to use.
 
-      *metric*::: Protocol-free URL of a Google Cloud Monitoring metric.
+*metric*::: Protocol-free URL of a Google Cloud Monitoring metric.
 
-      *utilization-target*::: Value of the metric Autoscaler will aim to
-      maintain (greater than 0.0).
+*utilization-target*::: Value of the metric Autoscaler will aim to
+  maintain (greater than 0.0).
 
-      *utilization-target-type*::: How target is expressed. Valid values: {0}.
-      """.format(', '.join(_ALLOWED_UTILIZATION_TARGET_TYPES))
+*utilization-target-type*::: How target is expressed. Valid values: {0}.
+""".format(', '.join(_ALLOWED_UTILIZATION_TARGET_TYPES))
   if stackdriver_metrics_flags:
-    custom_metric_utilization_help += (
-        '\nMutually exclusive with `--update-stackdriver-metric`.')
+    custom_metric_utilization_help += """
+Mutually exclusive with `--update-stackdriver-metric`.
+"""
   parser.add_argument(
       '--custom-metric-utilization',
       type=arg_parsers.ArgDict(

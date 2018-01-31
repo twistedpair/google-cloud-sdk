@@ -79,7 +79,11 @@ def _GetProject(project_id):
 
 
 def SnapshotUriFunc(snapshot):
-  return ParseSnapshot(snapshot['name']).SelfLink()
+  if isinstance(snapshot, dict):
+    name = snapshot['name']
+  else:
+    name = snapshot
+  return ParseSnapshot(name).SelfLink()
 
 
 def SubscriptionUriFunc(subscription):

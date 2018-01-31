@@ -4,7 +4,7 @@
  "id": "dns:v1alpha2",
  "name": "dns",
  "version": "v1alpha2",
- "revision": "20171201",
+ "revision": "20180123",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -366,6 +366,13 @@
      "type": "string",
      "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZone\".",
      "default": "dns#managedZone"
+    },
+    "labels": {
+     "type": "object",
+     "description": "User labels.",
+     "additionalProperties": {
+      "type": "string"
+     }
     },
     "name": {
      "type": "string",
@@ -831,6 +838,26 @@
      "description": "Maximum allowed number of managed zones in the project.",
      "format": "int32"
     },
+    "managedZonesPerNetwork": {
+     "type": "integer",
+     "description": "Maximum allowed number of managed zones which can be attached to a network.",
+     "format": "int32"
+    },
+    "networksPerManagedZone": {
+     "type": "integer",
+     "description": "Maximum allowed number of networks to which a privately scoped zone can be attached.",
+     "format": "int32"
+    },
+    "networksPerPolicy": {
+     "type": "integer",
+     "description": "Maximum allowed number of networks per policy.",
+     "format": "int32"
+    },
+    "policies": {
+     "type": "integer",
+     "description": "Maximum allowed number of policies per project.",
+     "format": "int32"
+    },
     "resourceRecordsPerRrset": {
      "type": "integer",
      "description": "Maximum allowed number of ResourceRecords per ResourceRecordSet.",
@@ -849,6 +876,16 @@
     "rrsetsPerManagedZone": {
      "type": "integer",
      "description": "Maximum allowed number of ResourceRecordSets per zone in the project.",
+     "format": "int32"
+    },
+    "targetNameServersPerManagedZone": {
+     "type": "integer",
+     "description": "Maximum allowed number of target name servers per managed forwarding zone.",
+     "format": "int32"
+    },
+    "targetNameServersPerPolicy": {
+     "type": "integer",
+     "description": "Maximum allowed number of alternative target name servers per policy.",
      "format": "int32"
     },
     "totalRrdataSizePerChange": {

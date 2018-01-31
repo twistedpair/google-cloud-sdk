@@ -349,7 +349,10 @@ class FileChooser(object):
         if path_prefix_map[path_prefix] is Match.IGNORE:
           parent_match = Match.IGNORE
 
-    return path_prefix_map[path] is not Match.IGNORE
+    included = path_prefix_map[path] is not Match.IGNORE
+    if not included:
+      log.debug('Skipping file [{}]'.format(path))
+    return included
 
   def GetIncludedFiles(self, upload_directory, include_dirs=True):
     """Yields the files in the given directory that this FileChooser includes.
@@ -534,13 +537,19 @@ def GetFileChooserForDir(
     return FileChooser([])
   gcloudignore_path = os.path.join(directory, IGNORE_FILE_NAME)
   try:
-    return FileChooser.FromFile(gcloudignore_path)
+    chooser = FileChooser.FromFile(gcloudignore_path)
   except BadFileError:
     pass
+  else:
+    log.info('Using .gcloudignore file at [{}].'.format(gcloudignore_path))
+    return chooser
   if not gcloud_ignore_creation_predicate(directory):
+    log.info('Not using a .gcloudignore file.')
     return FileChooser([])
 
   ignore_contents = _GetIgnoreFileContents(default_ignore_file, directory)
+  log.info('Using default gcloudignore file:\n{0}\n{1}\n{0}'.format(
+      '--------------------------------------------------', ignore_contents))
   if write_on_disk:
     try:
       files.WriteFileContents(gcloudignore_path, ignore_contents,

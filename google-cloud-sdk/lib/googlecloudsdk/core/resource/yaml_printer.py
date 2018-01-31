@@ -49,7 +49,7 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
   def __init__(self, *args, **kwargs):
     super(YamlPrinter, self).__init__(*args, retain_none_values=True, **kwargs)
     # pylint:disable=g-import-not-at-top, Delay import for performance.
-    import yaml
+    from ruamel import yaml
     self._yaml = yaml
     null = self.attributes.get('null')
 

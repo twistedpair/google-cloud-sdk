@@ -36,6 +36,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers)
     self.projects_locations_nodes = self.ProjectsLocationsNodesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_tensorflowVersions = self.ProjectsLocationsTensorflowVersionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -211,6 +212,60 @@ class TpuV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Start(self, request, global_params=None):
+      """Start a node.
+
+      Args:
+        request: (TpuProjectsLocationsNodesStartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Start.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:start',
+        http_method=u'POST',
+        method_id=u'tpu.projects.locations.nodes.start',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:start',
+        request_field=u'startNodeRequest',
+        request_type_name=u'TpuProjectsLocationsNodesStartRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Stop(self, request, global_params=None):
+      """Stops a node.
+
+      Args:
+        request: (TpuProjectsLocationsNodesStopRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Stop')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Stop.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:stop',
+        http_method=u'POST',
+        method_id=u'tpu.projects.locations.nodes.stop',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:stop',
+        request_field=u'stopNodeRequest',
+        request_type_name=u'TpuProjectsLocationsNodesStopRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -349,6 +404,70 @@ is the parent resource, without the operations collection id.
         request_field='',
         request_type_name=u'TpuProjectsLocationsOperationsListRequest',
         response_type_name=u'ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTensorflowVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_tensorflowVersions resource."""
+
+    _NAME = u'projects_locations_tensorflowVersions'
+
+    def __init__(self, client):
+      super(TpuV1alpha1.ProjectsLocationsTensorflowVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Gets TensorFlow Version.
+
+      Args:
+        request: (TpuProjectsLocationsTensorflowVersionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TensorFlowVersion) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorflowVersions/{tensorflowVersionsId}',
+        http_method=u'GET',
+        method_id=u'tpu.projects.locations.tensorflowVersions.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'TpuProjectsLocationsTensorflowVersionsGetRequest',
+        response_type_name=u'TensorFlowVersion',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """List TensorFlow versions.
+
+      Args:
+        request: (TpuProjectsLocationsTensorflowVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTensorFlowVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorflowVersions',
+        http_method=u'GET',
+        method_id=u'tpu.projects.locations.tensorflowVersions.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/{+parent}/tensorflowVersions',
+        request_field='',
+        request_type_name=u'TpuProjectsLocationsTensorflowVersionsListRequest',
+        response_type_name=u'ListTensorFlowVersionsResponse',
         supports_download=False,
     )
 

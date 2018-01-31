@@ -1385,7 +1385,7 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted.  Example Policy with
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:  { "audit_configs": [ { "service": "allServices"
   "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
   "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
@@ -1394,8 +1394,7 @@ class AuditConfig(_messages.Message):
   "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] }  For
   fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
   logging. It also exempts foo@gmail.com from DATA_READ logging, and
-  bar@gmail.com from DATA_WRITE logging. This message is only visible as
-  GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
+  bar@gmail.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -10991,6 +10990,53 @@ class ComputeNetworksTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeNodeGroupsGetIamPolicyRequest(_messages.Message):
+  """A ComputeNodeGroupsGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ComputeNodeGroupsSetIamPolicyRequest(_messages.Message):
+  """A ComputeNodeGroupsSetIamPolicyRequest object.
+
+  Fields:
+    policy: A Policy resource to be passed as the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeNodeGroupsTestIamPermissionsRequest(_messages.Message):
+  """A ComputeNodeGroupsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeNodeTemplatesGetIamPolicyRequest(_messages.Message):
   """A ComputeNodeTemplatesGetIamPolicyRequest object.
 
@@ -16542,6 +16588,7 @@ class Condition(_messages.Message):
       APPROVER: <no description>
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
+      CREDENTIALS_TYPE: <no description>
       JUSTIFICATION_TYPE: <no description>
       NO_ATTR: <no description>
       SECURITY_REALM: <no description>
@@ -16549,9 +16596,10 @@ class Condition(_messages.Message):
     APPROVER = 0
     ATTRIBUTION = 1
     AUTHORITY = 2
-    JUSTIFICATION_TYPE = 3
-    NO_ATTR = 4
-    SECURITY_REALM = 5
+    CREDENTIALS_TYPE = 3
+    JUSTIFICATION_TYPE = 4
+    NO_ATTR = 5
+    SECURITY_REALM = 6
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -16838,7 +16886,8 @@ class Disk(_messages.Message):
     status: [Output Only] The status of disk creation.
     storageType: [Deprecated] Storage type of the persistent disk.
     type: URL of the disk type resource describing which disk type to use to
-      create the disk. Provide this when creating the disk.
+      create the disk. Provide this when creating the disk. For example:
+      project/zones/zone/diskTypes/pd-standard or pd-ssd
     users: [Output Only] Links to the users of the disk (attached instances)
       in form: project/zones/zone/instances/instance
     zone: [Output Only] URL of the zone where the disk resides. You must
@@ -18310,9 +18359,9 @@ class ForwardingRule(_messages.Message):
       same [IPAddress, IPProtocol] pair must have disjoint port ranges.  Some
       types of forwarding target have constraints on the acceptable ports:   -
       TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetTcpProxy:
-      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1883, 5222  -
+      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222  -
       TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
-      1883, 5222  - TargetVpnGateway: 500, 4500
+      1688, 1883, 5222  - TargetVpnGateway: 500, 4500
     ports: This field is used along with the backend_service field for
       internal load balancing.  When the load balancing scheme is INTERNAL, a
       single port or a comma separated list of ports can be configured. Only
@@ -23616,6 +23665,8 @@ class InstanceProperties(_messages.Message):
       tokens for these service accounts are available to the instances that
       are created from this template. Use metadata queries to obtain the
       access tokens for these instances.
+    shieldedVmConfig: Specifies the Shielded VM options for the instances that
+      are created from this template.
     tags: A list of tags to apply to the instances that are created from this
       template. The tags identify valid sources or targets for network
       firewalls. The setTags method can modify this list of tags. Each tag
@@ -23657,7 +23708,8 @@ class InstanceProperties(_messages.Message):
   networkInterfaces = _messages.MessageField('NetworkInterface', 9, repeated=True)
   scheduling = _messages.MessageField('Scheduling', 10)
   serviceAccounts = _messages.MessageField('ServiceAccount', 11, repeated=True)
-  tags = _messages.MessageField('Tags', 12)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 12)
+  tags = _messages.MessageField('Tags', 13)
 
 
 class InstanceReference(_messages.Message):
@@ -24337,6 +24389,14 @@ class InterconnectAttachment(_messages.Message):
   Enums:
     AvailabilityZoneValueValuesEnum:
     BandwidthValueValuesEnum:
+    EdgeAvailabilityDomainValueValuesEnum: Desired availability domain for the
+      attachment. Can only be specified when creating PARTNER-type
+      InterconnectAttachments.  For improved reliability, customers should
+      configure a pair of attachments with one per availability domain. The
+      selected availability domain will be provided to the Partner via the
+      pairing key so that the provisioned circuit will lie in the specified
+      domain. If not specified, the value will default to
+      AVAILABILITY_DOMAIN_ANY.
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this interconnect attachment is functional.
     StateValueValuesEnum: [Output Only] The current state of whether or not
@@ -24369,6 +24429,14 @@ class InterconnectAttachment(_messages.Message):
       configured on the customer router subinterface for this interconnect
       attachment.
     description: An optional description of this resource.
+    edgeAvailabilityDomain: Desired availability domain for the attachment.
+      Can only be specified when creating PARTNER-type
+      InterconnectAttachments.  For improved reliability, customers should
+      configure a pair of attachments with one per availability domain. The
+      selected availability domain will be provided to the Partner via the
+      pairing key so that the provisioned circuit will lie in the specified
+      domain. If not specified, the value will default to
+      AVAILABILITY_DOMAIN_ANY.
     googleReferenceId: [Output Only] Google reference ID, to be used when
       raising support tickets with Google or otherwise to debug backend
       connectivity issues.
@@ -24462,6 +24530,24 @@ class InterconnectAttachment(_messages.Message):
     BPS_50M = 8
     BPS_5G = 9
 
+  class EdgeAvailabilityDomainValueValuesEnum(_messages.Enum):
+    """Desired availability domain for the attachment. Can only be specified
+    when creating PARTNER-type InterconnectAttachments.  For improved
+    reliability, customers should configure a pair of attachments with one per
+    availability domain. The selected availability domain will be provided to
+    the Partner via the pairing key so that the provisioned circuit will lie
+    in the specified domain. If not specified, the value will default to
+    AVAILABILITY_DOMAIN_ANY.
+
+    Values:
+      AVAILABILITY_DOMAIN_1: <no description>
+      AVAILABILITY_DOMAIN_2: <no description>
+      AVAILABILITY_DOMAIN_ANY: <no description>
+    """
+    AVAILABILITY_DOMAIN_1 = 0
+    AVAILABILITY_DOMAIN_2 = 1
+    AVAILABILITY_DOMAIN_ANY = 2
+
   class OperationalStatusValueValuesEnum(_messages.Enum):
     """[Output Only] The current status of whether or not this interconnect
     attachment is functional.
@@ -24540,24 +24626,25 @@ class InterconnectAttachment(_messages.Message):
   creationTimestamp = _messages.StringField(6)
   customerRouterIpAddress = _messages.StringField(7)
   description = _messages.StringField(8)
-  googleReferenceId = _messages.StringField(9)
-  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  interconnect = _messages.StringField(11)
-  kind = _messages.StringField(12, default=u'compute#interconnectAttachment')
-  labelFingerprint = _messages.BytesField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  name = _messages.StringField(15)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 16)
-  pairingKey = _messages.StringField(17)
-  partnerAsn = _messages.IntegerField(18)
-  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 19)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 20)
-  region = _messages.StringField(21)
-  router = _messages.StringField(22)
-  selfLink = _messages.StringField(23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  type = _messages.EnumField('TypeValueValuesEnum', 25)
-  vlanTag8021q = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 9)
+  googleReferenceId = _messages.StringField(10)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(12)
+  kind = _messages.StringField(13, default=u'compute#interconnectAttachment')
+  labelFingerprint = _messages.BytesField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  name = _messages.StringField(16)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 17)
+  pairingKey = _messages.StringField(18)
+  partnerAsn = _messages.IntegerField(19)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 20)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 21)
+  region = _messages.StringField(22)
+  router = _messages.StringField(23)
+  selfLink = _messages.StringField(24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  type = _messages.EnumField('TypeValueValuesEnum', 26)
+  vlanTag8021q = _messages.IntegerField(27, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -28911,7 +28998,6 @@ class Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-      This field is only visible as GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
     bindings: Associates a list of `members` to a `role`. `bindings` with no
       members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
@@ -32421,7 +32507,7 @@ class SslCertificate(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    expiryTime: [Output Only] Expiry time of the certificate. RFC3339
+    expireTime: [Output Only] Expire time of the certificate. RFC3339
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#sslCertificate
@@ -32453,16 +32539,16 @@ class SslCertificate(_messages.Message):
     Values:
       MANAGED: <no description>
       SELF_MANAGED: <no description>
-      TYPE_UNKNOWN: <no description>
+      TYPE_UNSPECIFIED: <no description>
     """
     MANAGED = 0
     SELF_MANAGED = 1
-    TYPE_UNKNOWN = 2
+    TYPE_UNSPECIFIED = 2
 
   certificate = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
-  expiryTime = _messages.StringField(4)
+  expireTime = _messages.StringField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(6, default=u'compute#sslCertificate')
   managed = _messages.MessageField('SslCertificateManagedSslCertificate', 7)
@@ -32622,18 +32708,18 @@ class SslCertificateManagedSslCertificate(_messages.Message):
 
     Values:
       ACTIVE: <no description>
+      MANAGED_CERTIFICATE_STATUS_UNSPECIFIED: <no description>
       PROVISIONING: <no description>
       PROVISIONING_FAILED: <no description>
       PROVISIONING_FAILED_PERMANENTLY: <no description>
       RENEWAL_FAILED: <no description>
-      STATUS_UNKNOWN: <no description>
     """
     ACTIVE = 0
-    PROVISIONING = 1
-    PROVISIONING_FAILED = 2
-    PROVISIONING_FAILED_PERMANENTLY = 3
-    RENEWAL_FAILED = 4
-    STATUS_UNKNOWN = 5
+    MANAGED_CERTIFICATE_STATUS_UNSPECIFIED = 1
+    PROVISIONING = 2
+    PROVISIONING_FAILED = 3
+    PROVISIONING_FAILED_PERMANENTLY = 4
+    RENEWAL_FAILED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DomainStatusValue(_messages.Message):
@@ -32664,14 +32750,14 @@ class SslCertificateManagedSslCertificate(_messages.Message):
 
         Values:
           ACTIVE: <no description>
-          DOMAIN_STATUS_UNKNOWN: <no description>
+          DOMAIN_STATUS_UNSPECIFIED: <no description>
           FAILED_CAA_FORBIDDEN: <no description>
           FAILED_NOT_VISIBLE: <no description>
           FAILED_RATE_LIMITED: <no description>
           PROVISIONING: <no description>
         """
         ACTIVE = 0
-        DOMAIN_STATUS_UNKNOWN = 1
+        DOMAIN_STATUS_UNSPECIFIED = 1
         FAILED_CAA_FORBIDDEN = 2
         FAILED_NOT_VISIBLE = 3
         FAILED_RATE_LIMITED = 4
@@ -33140,6 +33226,9 @@ class Subnetwork(_messages.Message):
       property when you create the resource. This field can be set only at
       resource creation time.
     enableFlowLogs: Whether to enable flow logging for this subnetwork.
+    enablePrivateV6Access: Whether the VMs in this subnet can directly access
+      Google services via internal IPv6 addresses. This field can be both set
+      at resource creation time and updated using patch.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
@@ -33183,17 +33272,18 @@ class Subnetwork(_messages.Message):
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   enableFlowLogs = _messages.BooleanField(4)
-  fingerprint = _messages.BytesField(5)
-  gatewayAddress = _messages.StringField(6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  ipCidrRange = _messages.StringField(8)
-  kind = _messages.StringField(9, default=u'compute#subnetwork')
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  privateIpGoogleAccess = _messages.BooleanField(12)
-  region = _messages.StringField(13)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 14, repeated=True)
-  selfLink = _messages.StringField(15)
+  enablePrivateV6Access = _messages.BooleanField(5)
+  fingerprint = _messages.BytesField(6)
+  gatewayAddress = _messages.StringField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  ipCidrRange = _messages.StringField(9)
+  kind = _messages.StringField(10, default=u'compute#subnetwork')
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  privateIpGoogleAccess = _messages.BooleanField(13)
+  region = _messages.StringField(14)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 15, repeated=True)
+  selfLink = _messages.StringField(16)
 
 
 class SubnetworkAggregatedList(_messages.Message):

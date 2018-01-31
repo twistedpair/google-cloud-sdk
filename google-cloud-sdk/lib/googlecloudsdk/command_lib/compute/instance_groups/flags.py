@@ -296,33 +296,30 @@ def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
   if for_update:
     stateful_disks_help += """
       Use this argument multiple times to update multiple disks.
+
+      If stateful disk with given `device-name` exists in current instance
+      config, its properties will be replaced by the newly provided ones. In
+      other case new stateful disk definition will be added to the instance
+      config.
       """
+    stateful_disk_argument_name = '--update-stateful-disk'
   else:
     stateful_disks_help += """
       Use this argument multiple times to attach more disks.
       """
+    stateful_disk_argument_name = '--stateful-disk'
   stateful_disks_help += """
       *device-name*::: Name under which disk is or will be attached.
 
       *source*::: Optional argument used to specify URI of existing persistent
-      disk to attach under specified ``device-name''.
+      disk to attach under specified `device-name`.
 
       *mode*::: Specifies the mode of the disk to attach. Supported options are
-      ``ro'' for read-only and ``rw'' for read-write. If omitted when source is
-      specified, ``rw'' is used as a default.
+      `ro` for read-only and `rw` for read-write. If omitted when source is
+      specified, `rw` is used as a default.
       """
-  if for_update:
-    stateful_disks_help += """
-      If stateful disk with given ``device-name'' exists in current instance
-      config, its properties will be replaced by the newly provided ones. In
-      other case new stateful disk definition will be added to the instance
-      config.
-    """
-    argument_name = '--update-stateful-disk'
-  else:
-    argument_name = '--stateful-disk'
   parser.add_argument(
-      argument_name,
+      stateful_disk_argument_name,
       type=arg_parsers.ArgDict(spec={
           'device-name': str,
           'source': str,
@@ -336,8 +333,52 @@ def AddMigStatefulFlagsForInstanceConfigs(parser, for_update=False):
         '--remove-stateful-disks',
         metavar='DEVICE_NAME',
         type=arg_parsers.ArgList(min_length=1),
-        help=('List all device names which should be removed from current'
+        help=('List all device names which should be removed from current '
               'instance config.'),
+    )
+
+  if for_update:
+    stateful_metadata_argument_name = '--update-stateful-metadata'
+  else:
+    stateful_metadata_argument_name = '--stateful-metadata'
+  stateful_metadata_help = """
+      Additional metadata to be made available to the guest operating system
+      on top of the metadata defined in the instance template.
+
+      Stateful metadata may be used to define a key/value pair specific for
+      the one given instance to differentiate it from the other instances in
+      the managed instance group.
+
+      Stateful metadata have priority over the metadata defined in the
+      instance template. It means that stateful metadata defined for the keys
+      already existing in the instance template override their values.
+
+      Each metadata entry is a key/value pair separated by an equals sign.
+      Metadata keys must be unique and less than 128 bytes in length. Multiple
+      entries can be passed to this flag, e.g.,
+      ``{argument_name} key-1=value-1,key-2=value-2,key-3=value-3''.
+  """.format(argument_name=stateful_metadata_argument_name)
+  if for_update:
+    stateful_metadata_help += """
+      If stateful metadata with the given key exists in current instance config,
+      its value will be overridden with the newly provided one. If the key does
+      not exist in the current instance config, a new key/value pair will be
+      added.
+    """
+  parser.add_argument(
+      stateful_metadata_argument_name,
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      action=arg_parsers.StoreOnceAction,
+      metavar='KEY=VALUE',
+      help=stateful_metadata_help)
+  if for_update:
+    parser.add_argument(
+        '--remove-stateful-metadata',
+        metavar='KEY',
+        type=arg_parsers.ArgList(min_length=1),
+        help=('List all stateful metadata keys which should be removed from '
+              'current instance config.'),
     )
 
 
@@ -406,6 +447,17 @@ def ValidateMigStatefulFlagsForInstanceConfigs(args, for_update=False):
                      ' removed in one command call'.format(
                          stateful_disk_to_update.get('device-name'))))
 
+    remove_stateful_metadata_set = set(args.remove_stateful_metadata or [])
+    update_stateful_metadata_set = set(args.update_stateful_metadata.keys())
+    keys_intersection = remove_stateful_metadata_set.intersection(
+        update_stateful_metadata_set)
+    if keys_intersection:
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name,
+          message=('the same metadata key(s) `{0}` cannot be updated and'
+                   ' removed in one command call'.format(
+                       ', '.join(keys_intersection))))
+
 
 def AddMigUpdateStatefulFlags(parser):
   """Add --add-stateful-disks and --remove-stateful-disks to the parser."""
@@ -430,6 +482,14 @@ def AddMigUpdateStatefulFlags(parser):
 
 def GetValidatedUpdateStatefulPolicyParams(args, current_stateful_policy):
   """Check stateful properties of update request; returns final device list."""
+  if not (args.add_stateful_disks or args.remove_stateful_disks or
+          args.IsSpecified('stateful_names')):
+    raise exceptions.InvalidArgumentException(
+        parameter_name='update',
+        message='No update specified, you need to use at least one flag from:'
+        ' --add-stateful-disks, --remove-stateful-disks, --stateful-names,'
+        ' --no-stateful-names')
+
   current_device_names = set(
       managed_instance_groups_utils.GetDeviceNamesFromStatefulPolicy(
           current_stateful_policy))

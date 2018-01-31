@@ -150,7 +150,12 @@ class Configuration(object):
     return cls(content, version, path)
 
 
-def _SupportedRegistries():
+def DefaultAuthenticatedRegistries():
+  """Return list of default gcloud credential helper registires."""
+  return constants.DEFAULT_REGISTRIES_TO_AUTHENTICATE
+
+
+def SupportedRegistries():
   """Return list of gcloud credential helper supported Docker registires."""
   return constants.ALL_SUPPORTED_REGISTRIES
 
@@ -167,10 +172,8 @@ def GetOrderedCredentialHelperRegistries():
   # Based on Docker credHelper docs this should work on Windows transparently
   # so we do not need to register .exe files seperately, see
   # https://docs.docker.com/engine/reference/commandline/login/#credential-helpers
-  return collections.OrderedDict([
-      (registry, 'gcloud')
-      for registry in _SupportedRegistries()
-  ])
+  return collections.OrderedDict(
+      [(registry, 'gcloud') for registry in DefaultAuthenticatedRegistries()])
 
 
 def GetGcloudCredentialHelperConfig():

@@ -24,10 +24,9 @@ from googlecloudsdk.command_lib.iam import completers
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
-
-import yaml
 
 msgs = core_apis.GetMessagesModule('iam', 'v1')
 MANAGED_BY = (msgs.IamProjectsServiceAccountsKeysListRequest
@@ -181,13 +180,8 @@ def ConstructUpdateMaskFromPolicy(policy_file_path):
     are present in the input file.
   """
   policy_file = files.GetFileContents(policy_file_path)
-  try:
-    # Since json is a subset of yaml, parse file as yaml.
-    policy = yaml.load(policy_file)
-  except yaml.YAMLError as e:
-    raise gcloud_exceptions.BadFileException(
-        'Policy file {0} is not a properly formatted JSON or YAML policy file'
-        '. {1}'.format(policy_file_path, str(e)))
+  # Since json is a subset of yaml, parse file as yaml.
+  policy = yaml.load(policy_file)
 
   # The IAM update mask should only contain top level fields. Sort the fields
   # for testing purposes.
@@ -231,21 +225,7 @@ def ParseYamlorJsonPolicyFile(policy_file_path, policy_message_type):
     BadFileException if the YAML or JSON file is malformed.
     IamEtagReadError if the etag is badly formatted.
   """
-  try:
-    with open(policy_file_path) as policy_file:
-      policy_to_parse = yaml.safe_load(policy_file)
-  except EnvironmentError:
-    # EnvironmnetError is parent of IOError, OSError and WindowsError.
-    # Raised when file does not exist or can't be opened/read.
-    raise core_exceptions.Error('Unable to read policy file {0}'.format(
-        policy_file_path))
-  except (yaml.scanner.ScannerError, yaml.parser.ParserError) as e:
-    # Raised when the YAML file is not properly formatted.
-    # Also works for JSON format validation since JSON is a subset of YAML.
-    raise gcloud_exceptions.BadFileException(
-        'Policy file [{0}] is not a properly formatted YAML or '
-        'JSON policy file. {1}'
-        .format(policy_file_path, str(e)))
+  policy_to_parse = yaml.load_path(policy_file_path)
   try:
     policy = encoding.PyValueToMessage(policy_message_type, policy_to_parse)
   except (AttributeError) as e:
@@ -274,19 +254,7 @@ def ParseYamlToRole(file_path, role_message_type):
   Raises:
     BadFileException if the Yaml file is malformed or does not exist.
   """
-  try:
-    with open(file_path) as role_file:
-      role_to_parse = yaml.safe_load(role_file)
-  except EnvironmentError:
-    # EnvironmnetError is parent of IOError, OSError and WindowsError.
-    # Raised when file does not exist or can't be opened/read.
-    raise core_exceptions.Error(
-        'Unable to read the role file {0}'.format(file_path))
-  except (yaml.scanner.ScannerError, yaml.parser.ParserError) as e:
-    # Raised when the YAML file is not properly formatted.
-    raise gcloud_exceptions.BadFileException(
-        'Role file {0} is not a properly formatted YAML role file. {1}'
-        .format(file_path, str(e)))
+  role_to_parse = yaml.load_path(file_path)
   if 'stage' in role_to_parse:
     role_to_parse['stage'] = role_to_parse['stage'].upper()
   try:

@@ -55,6 +55,18 @@ class SnapshotsClient(object):
         name=snapshot_ref.RelativeName())
     return self._service.Create(create_req)
 
+  def Get(self, snapshot_ref):
+    """Gets a Snapshot.
+
+    Args:
+      snapshot_ref (Resource): Resource reference to the Snapshot to get.
+    Returns:
+      Snapshot: The snapshot.
+    """
+    get_req = self.messages.PubsubProjectsSnapshotsGetRequest(
+        snapshot=snapshot_ref.RelativeName())
+    return self._service.Get(get_req)
+
   def Delete(self, snapshot_ref):
     """Deletes a Snapshot."""
     delete_req = self.messages.PubsubProjectsSnapshotsDeleteRequest(

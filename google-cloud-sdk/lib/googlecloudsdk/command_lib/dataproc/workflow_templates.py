@@ -15,7 +15,7 @@
 
 from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.command_lib.util import labels_util
+from googlecloudsdk.command_lib.util.args import labels_util
 
 
 def AddWorkflowTemplatesArgs(parser):

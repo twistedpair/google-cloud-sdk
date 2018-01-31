@@ -20,7 +20,7 @@ from dns import rdatatype
 from dns import zone
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
-import yaml
+from googlecloudsdk.core import yaml
 
 
 def _AddressTranslation(rdata, unused_origin):
@@ -296,7 +296,7 @@ def RecordSetsFromYamlFile(yaml_file, api_version='v1'):
   record_sets = {}
   messages = core_apis.GetMessagesModule('dns', api_version)
 
-  yaml_record_sets = yaml.safe_load_all(yaml_file)
+  yaml_record_sets = yaml.load_all(yaml_file)
   for yaml_record_set in yaml_record_sets:
     rdata_type = rdatatype.from_text(yaml_record_set['type'])
     if GetRdataTranslation(rdata_type) is None:

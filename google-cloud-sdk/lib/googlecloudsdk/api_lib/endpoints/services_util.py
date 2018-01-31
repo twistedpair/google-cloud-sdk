@@ -28,10 +28,9 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import retry
-
-import yaml
 
 
 EMAIL_REGEX = re.compile(r'^.+@([^.@][^@]+)$')
@@ -583,9 +582,9 @@ def LoadJsonOrYaml(input_string):
   def TryYaml():
     try:
       return yaml.load(input_string)
-    except yaml.YAMLError as e:
-      if hasattr(e, 'problem_mark'):
-        mark = e.problem_mark
+    except yaml.YAMLParseError as e:
+      if hasattr(e.inner_error, 'problem_mark'):
+        mark = e.inner_error.problem_mark
         log.error('Service config YAML had an error at position (%s:%s)'
                   % (mark.line+1, mark.column+1))
 

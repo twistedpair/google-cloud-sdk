@@ -22,8 +22,8 @@ from googlecloudsdk.api_lib.compute import file_utils
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import times
-import yaml
 
 USER_INIT_TEMPLATE = """#cloud-config
 runcmd:
@@ -424,7 +424,7 @@ def _CreateContainerManifest(args, instance_name):
 
 def DumpYaml(data):
   """Dumps data dict to YAML in format expected by Konlet."""
-  return yaml.dump(data, default_flow_style=False)
+  return yaml.dump(data)
 
 
 def _CreateYamlContainerManifest(args, instance_name):
@@ -491,7 +491,7 @@ def UpdateMetadata(metadata, args):
     manifest['spec']['restartPolicy'] = RESTART_POLICY_API[
         args.container_restart_policy]
 
-  metadata.value = yaml.dump(manifest, default_flow_style=False)
+  metadata.value = yaml.dump(manifest)
 
 
 def _UpdateMounts(manifest, remove_container_mounts, container_mount_host_path,

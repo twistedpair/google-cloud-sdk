@@ -158,7 +158,7 @@ def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None):
   return safe_bucket_name
 
 
-def RunDaisyBuild(args, workflow, variables, daisy_bucket=None):
+def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None):
   """Run a build with Daisy on Google Cloud Builder.
 
   Args:
@@ -168,6 +168,7 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None):
     variables: A string of key-value pairs to pass to Daisy.
     daisy_bucket: A string containing the name of the GCS bucket that daisy
       should use.
+    tags: A list of strings for adding tags to the Argo build.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -192,6 +193,10 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None):
                 workflow,
                ]
 
+  build_tags = ['gce-daisy']
+  if tags:
+    build_tags.extend(tags)
+
   # First, create the build request.
   build_config = messages.Build(
       steps=[
@@ -200,6 +205,7 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None):
               args=daisy_args,
           ),
       ],
+      tags=build_tags,
       timeout=timeout_str,
   )
   if args.log_location:

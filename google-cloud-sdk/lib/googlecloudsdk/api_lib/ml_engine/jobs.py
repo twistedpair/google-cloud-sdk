@@ -18,7 +18,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-import yaml
+from googlecloudsdk.core import yaml
 
 
 class NoFieldsSpecifiedError(exceptions.Error):
@@ -134,8 +134,7 @@ class JobsClient(object):
     job = self.job_class()
 
     if path:
-      with open(path) as config_file:
-        data = yaml.load(config_file)
+      data = yaml.load_path(path)
       if data:
         job = encoding.DictToMessage(data, self.job_class)
 

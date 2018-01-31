@@ -460,6 +460,13 @@ class AccessConfig(_messages.Message):
   one access config per instance is supported.
 
   Enums:
+    NetworkTierValueValuesEnum: This signifies the networking tier used for
+      configuring this access configuration and can only take the following
+      values: PREMIUM, STANDARD.  If an AccessConfig is specified without a
+      valid external IP address, an ephemeral IP will be created with this
+      networkTier.  If an AccessConfig with a valid external IP address is
+      specified, it must match that of the networkTier associated with the
+      Address resource owning that IP.
     TypeValueValuesEnum: The type of configuration. The default and only
       option is ONE_TO_ONE_NAT.
 
@@ -474,6 +481,13 @@ class AccessConfig(_messages.Message):
       field undefined to use an IP from a shared ephemeral IP address pool. If
       you specify a static external IP address, it must live in the same
       region as the zone of the instance.
+    networkTier: This signifies the networking tier used for configuring this
+      access configuration and can only take the following values: PREMIUM,
+      STANDARD.  If an AccessConfig is specified without a valid external IP
+      address, an ephemeral IP will be created with this networkTier.  If an
+      AccessConfig with a valid external IP address is specified, it must
+      match that of the networkTier associated with the Address resource
+      owning that IP.
     publicPtrDomainName: The DNS domain name for the public PTR record. This
       field can only be set when the set_public_ptr field is enabled.
     setPublicPtr: Specifies whether a public DNS ?PTR? record should be
@@ -482,6 +496,21 @@ class AccessConfig(_messages.Message):
     type: The type of configuration. The default and only option is
       ONE_TO_ONE_NAT.
   """
+
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    """This signifies the networking tier used for configuring this access
+    configuration and can only take the following values: PREMIUM, STANDARD.
+    If an AccessConfig is specified without a valid external IP address, an
+    ephemeral IP will be created with this networkTier.  If an AccessConfig
+    with a valid external IP address is specified, it must match that of the
+    networkTier associated with the Address resource owning that IP.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
 
   class TypeValueValuesEnum(_messages.Enum):
     """The type of configuration. The default and only option is
@@ -495,9 +524,10 @@ class AccessConfig(_messages.Message):
   kind = _messages.StringField(1, default=u'compute#accessConfig')
   name = _messages.StringField(2)
   natIP = _messages.StringField(3)
-  publicPtrDomainName = _messages.StringField(4)
-  setPublicPtr = _messages.BooleanField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6, default=u'ONE_TO_ONE_NAT')
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 4)
+  publicPtrDomainName = _messages.StringField(5)
+  setPublicPtr = _messages.BooleanField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7, default=u'ONE_TO_ONE_NAT')
 
 
 class Address(_messages.Message):
@@ -511,6 +541,10 @@ class Address(_messages.Message):
     IpVersionValueValuesEnum: The IP Version that will be used by this
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
+    NetworkTierValueValuesEnum: This signifies the networking tier used for
+      configuring this Address and can only take the following values: PREMIUM
+      , STANDARD.  If this field is not specified, it is assumed to be
+      PREMIUM.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -553,6 +587,9 @@ class Address(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    networkTier: This signifies the networking tier used for configuring this
+      Address and can only take the following values: PREMIUM , STANDARD.  If
+      this field is not specified, it is assumed to be PREMIUM.
     region: [Output Only] URL of the region where the regional address
       resides. This field is not applicable to global addresses. You must
       specify this field as part of the HTTP request URL. You cannot set this
@@ -596,6 +633,18 @@ class Address(_messages.Message):
     IPV4 = 0
     IPV6 = 1
     UNSPECIFIED_VERSION = 2
+
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    """This signifies the networking tier used for configuring this Address
+    and can only take the following values: PREMIUM , STANDARD.  If this field
+    is not specified, it is assumed to be PREMIUM.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
 
   class StatusValueValuesEnum(_messages.Enum):
     """[Output Only] The status of the address, which can be one of RESERVING,
@@ -647,11 +696,12 @@ class Address(_messages.Message):
   labelFingerprint = _messages.BytesField(8)
   labels = _messages.MessageField('LabelsValue', 9)
   name = _messages.StringField(10)
-  region = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  subnetwork = _messages.StringField(14)
-  users = _messages.StringField(15, repeated=True)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 11)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  subnetwork = _messages.StringField(15)
+  users = _messages.StringField(16, repeated=True)
 
 
 class AddressAggregatedList(_messages.Message):
@@ -1299,7 +1349,7 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted.  Example Policy with
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:  { "audit_configs": [ { "service": "allServices"
   "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
   "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
@@ -1308,8 +1358,7 @@ class AuditConfig(_messages.Message):
   "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] }  For
   fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
   logging. It also exempts foo@gmail.com from DATA_READ logging, and
-  bar@gmail.com from DATA_WRITE logging. This message is only visible as
-  GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
+  bar@gmail.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -9366,6 +9415,31 @@ class ComputeProjectsSetCommonInstanceMetadataRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
+class ComputeProjectsSetDefaultNetworkTierRequest(_messages.Message):
+  """A ComputeProjectsSetDefaultNetworkTierRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    projectsSetDefaultNetworkTierRequest: A
+      ProjectsSetDefaultNetworkTierRequest resource to be passed as the
+      request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  project = _messages.StringField(1, required=True)
+  projectsSetDefaultNetworkTierRequest = _messages.MessageField('ProjectsSetDefaultNetworkTierRequest', 2)
+  requestId = _messages.StringField(3)
+
+
 class ComputeProjectsSetUsageExportBucketRequest(_messages.Message):
   """A ComputeProjectsSetUsageExportBucketRequest object.
 
@@ -14087,6 +14161,7 @@ class Condition(_messages.Message):
       APPROVER: <no description>
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
+      CREDENTIALS_TYPE: <no description>
       JUSTIFICATION_TYPE: <no description>
       NO_ATTR: <no description>
       SECURITY_REALM: <no description>
@@ -14094,9 +14169,10 @@ class Condition(_messages.Message):
     APPROVER = 0
     ATTRIBUTION = 1
     AUTHORITY = 2
-    JUSTIFICATION_TYPE = 3
-    NO_ATTR = 4
-    SECURITY_REALM = 5
+    CREDENTIALS_TYPE = 3
+    JUSTIFICATION_TYPE = 4
+    NO_ATTR = 5
+    SECURITY_REALM = 6
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -14350,7 +14426,8 @@ class Disk(_messages.Message):
     status: [Output Only] The status of disk creation.
     storageType: [Deprecated] Storage type of the persistent disk.
     type: URL of the disk type resource describing which disk type to use to
-      create the disk. Provide this when creating the disk.
+      create the disk. Provide this when creating the disk. For example:
+      project/zones/zone/diskTypes/pd-standard or pd-ssd
     users: [Output Only] Links to the users of the disk (attached instances)
       in form: project/zones/zone/instances/instance
     zone: [Output Only] URL of the zone where the disk resides. You must
@@ -15712,6 +15789,13 @@ class ForwardingRule(_messages.Message):
       Network Load Balancing (TCP, UDP). The value of EXTERNAL means that this
       will be used for External Load Balancing (HTTP(S) LB, External TCP/UDP
       LB, SSL Proxy)
+    NetworkTierValueValuesEnum: This signifies the networking tier used for
+      configuring this load balancer and can only take the following values:
+      PREMIUM , STANDARD.  For regional ForwardingRule, the valid values are
+      PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is
+      PREMIUM.  If this field is not specified, it is assumed to be PREMIUM.
+      If IPAddress is specified, this value must be equal to the networkTier
+      of the Address.
 
   Messages:
     LabelsValue: Labels to apply to this resource. These can be later modified
@@ -15782,6 +15866,12 @@ class ForwardingRule(_messages.Message):
       load balancing, this field identifies the network that the load balanced
       IP should belong to for this Forwarding Rule. If this field is not
       specified, the default network will be used.
+    networkTier: This signifies the networking tier used for configuring this
+      load balancer and can only take the following values: PREMIUM ,
+      STANDARD.  For regional ForwardingRule, the valid values are PREMIUM and
+      STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.  If this
+      field is not specified, it is assumed to be PREMIUM. If IPAddress is
+      specified, this value must be equal to the networkTier of the Address.
     portRange: This field is used along with the target field for
       TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy,
       TargetVpnGateway, TargetPool, TargetInstance.  Applicable only when
@@ -15790,9 +15880,9 @@ class ForwardingRule(_messages.Message):
       same [IPAddress, IPProtocol] pair must have disjoint port ranges.  Some
       types of forwarding target have constraints on the acceptable ports:   -
       TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetTcpProxy:
-      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1883, 5222  -
+      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222  -
       TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
-      1883, 5222  - TargetVpnGateway: 500, 4500
+      1688, 1883, 5222  - TargetVpnGateway: 500, 4500
     ports: This field is used along with the backend_service field for
       internal load balancing.  When the load balancing scheme is INTERNAL, a
       single port or a comma separated list of ports can be configured. Only
@@ -15877,6 +15967,21 @@ class ForwardingRule(_messages.Message):
     INTERNAL = 1
     INVALID = 2
 
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    """This signifies the networking tier used for configuring this load
+    balancer and can only take the following values: PREMIUM , STANDARD.  For
+    regional ForwardingRule, the valid values are PREMIUM and STANDARD. For
+    GlobalForwardingRule, the valid value is PREMIUM.  If this field is not
+    specified, it is assumed to be PREMIUM. If IPAddress is specified, this
+    value must be equal to the networkTier of the Address.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels to apply to this resource. These can be later modified by the
@@ -15916,14 +16021,15 @@ class ForwardingRule(_messages.Message):
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 11)
   name = _messages.StringField(12)
   network = _messages.StringField(13)
-  portRange = _messages.StringField(14)
-  ports = _messages.StringField(15, repeated=True)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  serviceLabel = _messages.StringField(18)
-  serviceName = _messages.StringField(19)
-  subnetwork = _messages.StringField(20)
-  target = _messages.StringField(21)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 14)
+  portRange = _messages.StringField(15)
+  ports = _messages.StringField(16, repeated=True)
+  region = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  serviceLabel = _messages.StringField(19)
+  serviceName = _messages.StringField(20)
+  subnetwork = _messages.StringField(21)
+  target = _messages.StringField(22)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -23225,7 +23331,6 @@ class Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-      This field is only visible as GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
     bindings: Associates a list of `members` to a `role`. `bindings` with no
       members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
@@ -23262,6 +23367,10 @@ class Project(_messages.Message):
   beta.projects ==)
 
   Enums:
+    DefaultNetworkTierValueValuesEnum: This signifies the default network tier
+      used for configuring resources of the project and can only take the
+      following values: PREMIUM, STANDARD. Initially the default network tier
+      is PREMIUM.
     XpnProjectStatusValueValuesEnum: [Output Only] The role this project has
       in a shared VPC configuration. Currently only HOST projects are
       differentiated.
@@ -23272,6 +23381,10 @@ class Project(_messages.Message):
       information.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    defaultNetworkTier: This signifies the default network tier used for
+      configuring resources of the project and can only take the following
+      values: PREMIUM, STANDARD. Initially the default network tier is
+      PREMIUM.
     defaultServiceAccount: [Output Only] Default service account used by VMs
       running in this project.
     description: An optional textual description of the resource.
@@ -23291,6 +23404,18 @@ class Project(_messages.Message):
       configuration. Currently only HOST projects are differentiated.
   """
 
+  class DefaultNetworkTierValueValuesEnum(_messages.Enum):
+    """This signifies the default network tier used for configuring resources
+    of the project and can only take the following values: PREMIUM, STANDARD.
+    Initially the default network tier is PREMIUM.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
+
   class XpnProjectStatusValueValuesEnum(_messages.Enum):
     """[Output Only] The role this project has in a shared VPC configuration.
     Currently only HOST projects are differentiated.
@@ -23304,16 +23429,17 @@ class Project(_messages.Message):
 
   commonInstanceMetadata = _messages.MessageField('Metadata', 1)
   creationTimestamp = _messages.StringField(2)
-  defaultServiceAccount = _messages.StringField(3)
-  description = _messages.StringField(4)
-  enabledFeatures = _messages.StringField(5, repeated=True)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#project')
-  name = _messages.StringField(8)
-  quotas = _messages.MessageField('Quota', 9, repeated=True)
-  selfLink = _messages.StringField(10)
-  usageExportLocation = _messages.MessageField('UsageExportLocation', 11)
-  xpnProjectStatus = _messages.EnumField('XpnProjectStatusValueValuesEnum', 12)
+  defaultNetworkTier = _messages.EnumField('DefaultNetworkTierValueValuesEnum', 3)
+  defaultServiceAccount = _messages.StringField(4)
+  description = _messages.StringField(5)
+  enabledFeatures = _messages.StringField(6, repeated=True)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default=u'compute#project')
+  name = _messages.StringField(9)
+  quotas = _messages.MessageField('Quota', 10, repeated=True)
+  selfLink = _messages.StringField(11)
+  usageExportLocation = _messages.MessageField('UsageExportLocation', 12)
+  xpnProjectStatus = _messages.EnumField('XpnProjectStatusValueValuesEnum', 13)
 
 
 class ProjectsDisableXpnResourceRequest(_messages.Message):
@@ -23367,6 +23493,29 @@ class ProjectsListXpnHostsRequest(_messages.Message):
   """
 
   organization = _messages.StringField(1)
+
+
+class ProjectsSetDefaultNetworkTierRequest(_messages.Message):
+  """A ProjectsSetDefaultNetworkTierRequest object.
+
+  Enums:
+    NetworkTierValueValuesEnum: Default network tier to be set.
+
+  Fields:
+    networkTier: Default network tier to be set.
+  """
+
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    """Default network tier to be set.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
+
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 1)
 
 
 class Quota(_messages.Message):

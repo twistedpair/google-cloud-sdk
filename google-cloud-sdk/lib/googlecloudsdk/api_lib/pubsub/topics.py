@@ -71,7 +71,7 @@ class TopicsClient(object):
     """Gets a Topic.
 
     Args:
-      topic_ref (Resource): Resource reference to the Topic to delete.
+      topic_ref (Resource): Resource reference to the Topic to get.
     Returns:
       Topic: The topic.
     """
@@ -109,6 +109,26 @@ class TopicsClient(object):
     return list_pager.YieldFromList(
         self._service, list_req, batch_size=page_size,
         field='topics', batch_size_attribute='pageSize')
+
+  def ListSnapshots(self, topic_ref, page_size=100):
+    """Lists Snapshots for a given topic.
+
+    Args:
+      topic_ref (Resource): Resource reference to Topic to list
+        snapshots from.
+      page_size (int): the number of entries in each batch (affects requests
+        made, but not the yielded results).
+    Returns:
+      A generator of Snapshots for the Topic.
+    """
+    list_req = self.messages.PubsubProjectsTopicsSnapshotsListRequest(
+        topic=topic_ref.RelativeName(),
+        pageSize=page_size
+    )
+    list_snaps_service = self.client.projects_topics_snapshots
+    return list_pager.YieldFromList(
+        list_snaps_service, list_req, batch_size=page_size,
+        field='snapshots', batch_size_attribute='pageSize')
 
   def ListSubscriptions(self, topic_ref, page_size=100):
     """Lists Subscriptions for a given topic.

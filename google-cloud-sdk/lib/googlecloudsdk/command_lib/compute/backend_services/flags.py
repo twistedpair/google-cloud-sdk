@@ -498,10 +498,10 @@ def AddPortName(parser):
       """)
 
 
-def AddProtocol(parser, default='HTTP'):
+def AddProtocol(parser, default='HTTP', choices=None):
   parser.add_argument(
       '--protocol',
-      choices=['HTTP', 'HTTPS', 'SSL', 'TCP', 'UDP'],
+      choices=choices or ['HTTP', 'HTTPS', 'SSL', 'TCP', 'UDP'],
       default=default,
       type=lambda x: x.upper(),
       help='The protocol for incoming requests.')

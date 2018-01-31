@@ -16,7 +16,6 @@
 
 import abc
 import argparse  # pylint: disable=unused-import
-import collections
 import json
 import textwrap
 
@@ -38,9 +37,9 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import completers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import text
 from typing import Any, Generator  # pylint: disable=unused-import
-import yaml
 
 
 class ComputeApiHolder(object):
@@ -816,15 +815,7 @@ def SerializeDict(value, fmt):
         sort_keys=True,
         separators=(',', ': '))
   else:
-    yaml.add_representer(
-        collections.OrderedDict,
-        yaml.dumper.SafeRepresenter.represent_dict,
-        Dumper=yaml.dumper.SafeDumper)
-    return yaml.safe_dump(
-        value,
-        indent=2,
-        default_flow_style=False,
-        width=70)
+    return yaml.dump(value)
 
 
 def DeserializeValue(value, fmt):

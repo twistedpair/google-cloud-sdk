@@ -13,6 +13,9 @@ package = 'dns'
 class Change(_messages.Message):
   """An atomic update to a collection of ResourceRecordSets.
 
+  Enums:
+    StatusValueValuesEnum: Status of the operation (output only).
+
   Fields:
     additions: Which ResourceRecordSets to add?
     deletions: Which ResourceRecordSets to remove? Must match existing data
@@ -26,12 +29,22 @@ class Change(_messages.Message):
     status: Status of the operation (output only).
   """
 
+  class StatusValueValuesEnum(_messages.Enum):
+    """Status of the operation (output only).
+
+    Values:
+      done: <no description>
+      pending: <no description>
+    """
+    done = 0
+    pending = 1
+
   additions = _messages.MessageField('ResourceRecordSet', 1, repeated=True)
   deletions = _messages.MessageField('ResourceRecordSet', 2, repeated=True)
   id = _messages.StringField(3)
   kind = _messages.StringField(4, default=u'dns#change')
   startTime = _messages.StringField(5)
-  status = _messages.StringField(6)
+  status = _messages.EnumField('StatusValueValuesEnum', 6)
 
 
 class ChangesListResponse(_messages.Message):

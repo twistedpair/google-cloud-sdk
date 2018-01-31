@@ -19,10 +19,9 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
-
-import yaml
 
 
 class Error(core_exceptions.Error):
@@ -80,7 +79,7 @@ class Kubeconfig(object):
           'don\'t have the permission to open kubeconfig file {0}: {1}'.format(
               self._filename, error))
     with os.fdopen(fd, 'w') as fp:
-      yaml.safe_dump(self._data, fp, default_flow_style=False)
+      yaml.dump(self._data, fp)
 
   def SetCurrentContext(self, context):
     self._data['current-context'] = context
@@ -100,13 +99,12 @@ class Kubeconfig(object):
   @classmethod
   def LoadFromFile(cls, filename):
     try:
-      with open(filename, 'r') as fp:
-        data = yaml.load(fp)
-        cls._Validate(data)
-        return cls(data, filename)
-    except yaml.YAMLError as error:
+      data = yaml.load_path(filename)
+    except yaml.Error as error:
       raise Error('unable to load kubeconfig for {0}: {1}'.format(
-          filename, error))
+          filename, error.inner_error))
+    cls._Validate(data)
+    return cls(data, filename)
 
   @classmethod
   def LoadOrCreate(cls, filename):
@@ -129,7 +127,7 @@ class Kubeconfig(object):
     """Return default path for kubeconfig file."""
 
     if os.environ.get('KUBECONFIG'):
-      return os.environ['KUBECONFIG']
+      return os.path.abspath(os.environ['KUBECONFIG'])
 
     # This follows the same resolution process as kubectl for the config file.
     home_dir = os.environ.get('HOME')

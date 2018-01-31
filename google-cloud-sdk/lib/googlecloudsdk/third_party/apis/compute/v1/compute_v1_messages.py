@@ -1064,6 +1064,9 @@ class AttachedDisk(_messages.Message):
       the disk later.  Instance templates do not store customer-supplied
       encryption keys, so you cannot use your own keys to encrypt disks in a
       managed instance group.
+    guestOsFeatures: A list of features to enable on the guest operating
+      system. Applicable only for bootable images. Read  Enabling guest
+      operating system features to see a list of available options.
     index: [Output Only] A zero-based index to this disk, where 0 is reserved
       for the boot disk. If you have many disks attached to an instance, each
       disk would have a unique index number.
@@ -1135,14 +1138,15 @@ class AttachedDisk(_messages.Message):
   boot = _messages.BooleanField(2)
   deviceName = _messages.StringField(3)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
-  index = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 6)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 7)
-  kind = _messages.StringField(8, default=u'compute#attachedDisk')
-  licenses = _messages.StringField(9, repeated=True)
-  mode = _messages.EnumField('ModeValueValuesEnum', 10)
-  source = _messages.StringField(11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
+  index = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 7)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 8)
+  kind = _messages.StringField(9, default=u'compute#attachedDisk')
+  licenses = _messages.StringField(10, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 11)
+  source = _messages.StringField(12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -12132,6 +12136,9 @@ class Disk(_messages.Message):
       the disk.  If you do not provide an encryption key when creating the
       disk, then the disk will be encrypted using an automatically generated
       key and you do not need to provide a key to use the disk later.
+    guestOsFeatures: A list of features to enable on the guest operating
+      system. Applicable only for bootable images. Read  Enabling guest
+      operating system features to see a list of available options.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#disk for disks.
@@ -12203,7 +12210,8 @@ class Disk(_messages.Message):
       version of the snapshot that was used.
     status: [Output Only] The status of disk creation.
     type: URL of the disk type resource describing which disk type to use to
-      create the disk. Provide this when creating the disk.
+      create the disk. Provide this when creating the disk. For example:
+      project/zones/zone/diskTypes/pd-standard or pd-ssd
     users: [Output Only] Links to the users of the disk (attached instances)
       in form: project/zones/zone/instances/instance
     zone: [Output Only] URL of the zone where the disk resides. You must
@@ -12253,27 +12261,28 @@ class Disk(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#disk')
-  labelFingerprint = _messages.BytesField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  lastAttachTimestamp = _messages.StringField(8)
-  lastDetachTimestamp = _messages.StringField(9)
-  licenses = _messages.StringField(10, repeated=True)
-  name = _messages.StringField(11)
-  options = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  sizeGb = _messages.IntegerField(14)
-  sourceImage = _messages.StringField(15)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
-  sourceImageId = _messages.StringField(17)
-  sourceSnapshot = _messages.StringField(18)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
-  sourceSnapshotId = _messages.StringField(20)
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
-  type = _messages.StringField(22)
-  users = _messages.StringField(23, repeated=True)
-  zone = _messages.StringField(24)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 4, repeated=True)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#disk')
+  labelFingerprint = _messages.BytesField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  lastAttachTimestamp = _messages.StringField(9)
+  lastDetachTimestamp = _messages.StringField(10)
+  licenses = _messages.StringField(11, repeated=True)
+  name = _messages.StringField(12)
+  options = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  sizeGb = _messages.IntegerField(15)
+  sourceImage = _messages.StringField(16)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
+  sourceImageId = _messages.StringField(18)
+  sourceSnapshot = _messages.StringField(19)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
+  sourceSnapshotId = _messages.StringField(21)
+  status = _messages.EnumField('StatusValueValuesEnum', 22)
+  type = _messages.StringField(23)
+  users = _messages.StringField(24, repeated=True)
+  zone = _messages.StringField(25)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -13501,9 +13510,9 @@ class ForwardingRule(_messages.Message):
       same [IPAddress, IPProtocol] pair must have disjoint port ranges.  Some
       types of forwarding target have constraints on the acceptable ports:   -
       TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetTcpProxy:
-      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1883, 5222  -
+      25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222  -
       TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
-      1883, 5222  - TargetVpnGateway: 500, 4500
+      1688, 1883, 5222  - TargetVpnGateway: 500, 4500
     ports: This field is used along with the backend_service field for
       internal load balancing.  When the load balancing scheme is INTERNAL, a
       single port or a comma separated list of ports can be configured. Only
@@ -14068,13 +14077,17 @@ class GuestOsFeature(_messages.Message):
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
       MULTI_IP_SUBNET: <no description>
+      SECURE_BOOT: <no description>
+      UEFI_COMPATIBLE: <no description>
       VIRTIO_SCSI_MULTIQUEUE: <no description>
       WINDOWS: <no description>
     """
     FEATURE_TYPE_UNSPECIFIED = 0
     MULTI_IP_SUBNET = 1
-    VIRTIO_SCSI_MULTIQUEUE = 2
-    WINDOWS = 3
+    SECURE_BOOT = 2
+    UEFI_COMPATIBLE = 3
+    VIRTIO_SCSI_MULTIQUEUE = 4
+    WINDOWS = 5
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -14867,6 +14880,18 @@ class Image(_messages.Message):
     sourceImageId: [Output Only] The ID value of the image used to create this
       image. This value may be used to determine whether the image was taken
       from the current or a previous instance of a given image name.
+    sourceSnapshot: URL of the source snapshot used to create this image. This
+      can be a full or valid partial URL. You must provide exactly one of:   -
+      this property, or   - the sourceImage property, or   - the
+      rawDisk.source property, or   - the sourceDisk property   in order to
+      create an image.
+    sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
+      source snapshot. Required if the source snapshot is protected by a
+      customer-supplied encryption key.
+    sourceSnapshotId: [Output Only] The ID value of the snapshot used to
+      create this image. This value may be used to determine whether the
+      snapshot was taken from the current or a previous instance of a given
+      snapshot name.
     sourceType: The type of the image used to create this disk. The default
       and only value is RAW
     status: [Output Only] The status of the image. An image can be used to
@@ -14981,8 +15006,11 @@ class Image(_messages.Message):
   sourceImage = _messages.StringField(20)
   sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
   sourceImageId = _messages.StringField(22)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 23, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  sourceSnapshot = _messages.StringField(23)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
+  sourceSnapshotId = _messages.StringField(25)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 26, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 27)
 
 
 class ImageList(_messages.Message):

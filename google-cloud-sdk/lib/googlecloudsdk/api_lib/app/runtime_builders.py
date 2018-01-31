@@ -97,7 +97,7 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-import yaml
+from googlecloudsdk.core import yaml
 
 
 # "test-{ga,beta}" runtimes are canaries for unit testing
@@ -387,7 +387,7 @@ class Manifest(object):
     """
     log.debug('Loading runtimes manifest from [%s]', uri)
     with _Read(uri) as f:
-      data = yaml.load(f)
+      data = yaml.load(f, file_hint=uri)
     return cls(uri, data)
 
   def __init__(self, uri, data):

@@ -17,8 +17,8 @@ from apitools.base.protorpclite.messages import DecodeError
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.resource_manager import exceptions
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
-import yaml
 
 CONSTRAINTS_PREFIX = 'constraints/'
 ORG_POLICIES_API_VERSION = 'v1'
@@ -54,7 +54,7 @@ def GetFileAsMessage(path, message):
   # Parse it, first trying YAML then JSON.
   try:
     result = encoding.PyValueToMessage(message, yaml.load(in_text))
-  except (ValueError, AttributeError, yaml.YAMLError) as e:
+  except (ValueError, AttributeError, yaml.YAMLParseError):
     try:
       result = encoding.JsonToMessage(message, in_text)
     except (ValueError, DecodeError) as e:

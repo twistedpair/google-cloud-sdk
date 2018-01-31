@@ -220,7 +220,7 @@ class Policy(_messages.Message):
   app@appspot.gserviceaccount.com",           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
   }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     bindings: Associates a list of `members` to a `role`. `bindings` with no
@@ -234,7 +234,7 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
@@ -352,6 +352,17 @@ class PubsubProjectsSnapshotsGetIamPolicyRequest(_messages.Message):
   """
 
   resource = _messages.StringField(1, required=True)
+
+
+class PubsubProjectsSnapshotsGetRequest(_messages.Message):
+  """A PubsubProjectsSnapshotsGetRequest object.
+
+  Fields:
+    snapshot: The name of the snapshot to get. Format is
+      `projects/{project}/snapshots/{snap}`.
+  """
+
+  snapshot = _messages.StringField(1, required=True)
 
 
 class PubsubProjectsSnapshotsListRequest(_messages.Message):
@@ -1198,8 +1209,8 @@ class UpdateTopicRequest(_messages.Message):
     updateMask: Indicates which fields in the provided topic to update. Must
       be specified and non-empty. Note that if `update_mask` contains
       "message_storage_policy" then the new value will be determined based on
-      the policy configured at the project level. The `message_storage_policy`
-      must not be set in the `topic` provided above.
+      the policy configured at the project or organization level. The
+      `message_storage_policy` must not be set in the `topic` provided above.
   """
 
   topic = _messages.MessageField('Topic', 1)

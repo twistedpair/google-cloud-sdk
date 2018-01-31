@@ -25,6 +25,17 @@ class AuditData(_messages.Message):
   policyDelta = _messages.MessageField('PolicyDelta', 1)
 
 
+class AuditableService(_messages.Message):
+  """Contains information about an auditable service.
+
+  Fields:
+    name: Public name of the service. For example, the service name for Cloud
+      IAM is 'iam.googleapis.com'.
+  """
+
+  name = _messages.StringField(1)
+
+
 class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
@@ -60,9 +71,6 @@ class BindingDelta(_messages.Message):
 
   Fields:
     action: The action that was performed on a Binding. Required
-    condition: The condition that is associated with this binding. This field
-      is GOOGLE_INTERNAL. This field is not logged in IAM side because it's
-      only for audit logging. Optional
     member: A single identity requesting access for a Cloud Platform resource.
       Follows the same format of Binding.members. Required
     role: Role that is assigned to `members`. For example, `roles/viewer`,
@@ -82,9 +90,8 @@ class BindingDelta(_messages.Message):
     REMOVE = 2
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
-  condition = _messages.MessageField('Expr', 2)
-  member = _messages.StringField(3)
-  role = _messages.StringField(4)
+  member = _messages.StringField(2)
+  role = _messages.StringField(3)
 
 
 class CreateRoleRequest(_messages.Message):
@@ -106,15 +113,17 @@ class CreateServiceAccountKeyRequest(_messages.Message):
     KeyAlgorithmValueValuesEnum: Which type of key and algorithm to use for
       the key. The default is currently a 2K RSA key.  However this may change
       in the future.
-    PrivateKeyTypeValueValuesEnum: The output format of the private key.
-      `GOOGLE_CREDENTIALS_FILE` is the default output format.
+    PrivateKeyTypeValueValuesEnum: The output format of the private key. The
+      default value is `TYPE_GOOGLE_CREDENTIALS_FILE`, which is the Google
+      Credentials File format.
 
   Fields:
     keyAlgorithm: Which type of key and algorithm to use for the key. The
       default is currently a 2K RSA key.  However this may change in the
       future.
-    privateKeyType: The output format of the private key.
-      `GOOGLE_CREDENTIALS_FILE` is the default output format.
+    privateKeyType: The output format of the private key. The default value is
+      `TYPE_GOOGLE_CREDENTIALS_FILE`, which is the Google Credentials File
+      format.
   """
 
   class KeyAlgorithmValueValuesEnum(_messages.Enum):
@@ -125,16 +134,15 @@ class CreateServiceAccountKeyRequest(_messages.Message):
       KEY_ALG_UNSPECIFIED: An unspecified key algorithm.
       KEY_ALG_RSA_1024: 1k RSA Key.
       KEY_ALG_RSA_2048: 2k RSA Key.
-      KEY_ALG_GCS_SYMMETRIC_HMAC: HMAC.
     """
     KEY_ALG_UNSPECIFIED = 0
     KEY_ALG_RSA_1024 = 1
     KEY_ALG_RSA_2048 = 2
-    KEY_ALG_GCS_SYMMETRIC_HMAC = 3
 
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
-    """The output format of the private key. `GOOGLE_CREDENTIALS_FILE` is the
-    default output format.
+    """The output format of the private key. The default value is
+    `TYPE_GOOGLE_CREDENTIALS_FILE`, which is the Google Credentials File
+    format.
 
     Values:
       TYPE_UNSPECIFIED: Unspecified. Equivalent to
@@ -176,30 +184,6 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
-
-
-class Expr(_messages.Message):
-  """Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
-
-  Fields:
-    description: An optional description of the expression. This is a longer
-      text which describes the expression, e.g. when hovered over it in a UI.
-    expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
-      error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
-  """
-
-  description = _messages.StringField(1)
-  expression = _messages.StringField(2)
-  location = _messages.StringField(3)
-  title = _messages.StringField(4)
 
 
 class IamOrganizationsRolesCreateRequest(_messages.Message):
@@ -744,6 +728,8 @@ class Permission(_messages.Message):
     StageValueValuesEnum: The current launch stage of the permission.
 
   Fields:
+    apiDisabled: The service API associated with the permission is not
+      enabled.
     customRolesSupportLevel: The current custom role support level.
     description: A brief description of what this Permission is used for.
     name: The name of this Permission.
@@ -779,12 +765,13 @@ class Permission(_messages.Message):
     GA = 2
     DEPRECATED = 3
 
-  customRolesSupportLevel = _messages.EnumField('CustomRolesSupportLevelValueValuesEnum', 1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  onlyInPredefinedRoles = _messages.BooleanField(4)
-  stage = _messages.EnumField('StageValueValuesEnum', 5)
-  title = _messages.StringField(6)
+  apiDisabled = _messages.BooleanField(1)
+  customRolesSupportLevel = _messages.EnumField('CustomRolesSupportLevelValueValuesEnum', 2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+  onlyInPredefinedRoles = _messages.BooleanField(5)
+  stage = _messages.EnumField('StageValueValuesEnum', 6)
+  title = _messages.StringField(7)
 
 
 class Policy(_messages.Message):
@@ -800,7 +787,7 @@ class Policy(_messages.Message):
   app@appspot.gserviceaccount.com",           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
   }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     bindings: Associates a list of `members` to a `role`. `bindings` with no
@@ -814,7 +801,7 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
@@ -830,6 +817,30 @@ class PolicyDelta(_messages.Message):
   """
 
   bindingDeltas = _messages.MessageField('BindingDelta', 1, repeated=True)
+
+
+class QueryAuditableServicesRequest(_messages.Message):
+  """A request to get the list of auditable services for a resource.
+
+  Fields:
+    fullResourceName: Required. The full resource name to query from the list
+      of auditable services.  The name follows the Google Cloud Platform
+      resource format. For example, a Cloud Platform project with id `my-
+      project` will be named `//cloudresourcemanager.googleapis.com/projects
+      /my-project`.
+  """
+
+  fullResourceName = _messages.StringField(1)
+
+
+class QueryAuditableServicesResponse(_messages.Message):
+  """A response containing a list of auditable services for a resource.
+
+  Fields:
+    services: The auditable services for a resource.
+  """
+
+  services = _messages.MessageField('AuditableService', 1, repeated=True)
 
 
 class QueryGrantableRolesRequest(_messages.Message):
@@ -1054,12 +1065,10 @@ class ServiceAccountKey(_messages.Message):
       KEY_ALG_UNSPECIFIED: An unspecified key algorithm.
       KEY_ALG_RSA_1024: 1k RSA Key.
       KEY_ALG_RSA_2048: 2k RSA Key.
-      KEY_ALG_GCS_SYMMETRIC_HMAC: HMAC.
     """
     KEY_ALG_UNSPECIFIED = 0
     KEY_ALG_RSA_1024 = 1
     KEY_ALG_RSA_2048 = 2
-    KEY_ALG_GCS_SYMMETRIC_HMAC = 3
 
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
     """The output format for the private key. Only provided in

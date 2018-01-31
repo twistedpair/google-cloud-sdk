@@ -14,7 +14,7 @@
 """Utilities for ml-engine models commands."""
 from googlecloudsdk.api_lib.ml_engine import models
 from googlecloudsdk.command_lib.iam import iam_util
-from googlecloudsdk.command_lib.util import labels_util
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources

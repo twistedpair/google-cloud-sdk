@@ -264,8 +264,9 @@ properties:
       api_version: { type: string }
       # The name of the method to call to perform the operation.
       method: { type: string }
-      # A mapping of method parameter to resource reference field for
-      # references or APIs that use non-standard naming.
+      # A mapping of method parameter to resource reference field (or '', to use
+      # the full method name) for references or APIs that use non-standard
+      # naming.
       resource_method_params:
         type: object
         patternProperties:

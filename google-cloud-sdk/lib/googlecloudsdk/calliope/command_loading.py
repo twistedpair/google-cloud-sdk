@@ -22,7 +22,8 @@ import sys
 import googlecloudsdk
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core.util import pkg_resources
-import yaml
+
+from ruamel import yaml
 
 
 class CommandLoadFailure(Exception):
@@ -194,8 +195,7 @@ def _GetAllImplementations(impl_paths, path, construction_id, is_command,
         raise CommandLoadFailure(
             '.'.join(path),
             Exception('Command groups cannot be implemented in yaml'))
-      data = yaml.load(pkg_resources.GetData(impl_file),
-                       Loader=CreateYamlLoader(impl_file))
+      data = CreateYamlLoader(impl_file).load(pkg_resources.GetData(impl_file))
       implementations.extend((_ImplementationsFromYaml(
           path, data, yaml_command_translator)))
     else:
@@ -218,10 +218,10 @@ def CreateYamlLoader(impl_path):
   common_file_path = os.path.join(os.path.dirname(impl_path), '__init__.yaml')
   common_data = None
   if os.path.exists(common_file_path):
-    common_data = yaml.load(pkg_resources.GetData(common_file_path))
+    common_data = yaml.safe_load(pkg_resources.GetData(common_file_path))
 
-  class Loader(yaml.Loader):
-    """A custom yaml loader.
+  class Constructor(yaml.Constructor):
+    """A custom yaml constructor.
 
     It adds 2 different import capabilities. Assuming __init__.yaml has the
     contents:
@@ -288,14 +288,11 @@ def CreateYamlLoader(impl_path):
     INCLUDE_REF_MACRO = '!REF'
     MERGE_REF_MACRO = '_REF_'
 
-    def __init__(self, stream):
-      super(Loader, self).__init__(stream)
-
     def construct_mapping(self, *args, **kwargs):
-      data = super(Loader, self).construct_mapping(*args, **kwargs)
-      data = self._ConstructMappingHelper(Loader.MERGE_COMMON_MACRO,
+      data = super(Constructor, self).construct_mapping(*args, **kwargs)
+      data = self._ConstructMappingHelper(Constructor.MERGE_COMMON_MACRO,
                                           self._GetCommonData, data)
-      return self._ConstructMappingHelper(Loader.MERGE_REF_MACRO,
+      return self._ConstructMappingHelper(Constructor.MERGE_REF_MACRO,
                                           self._GetRefData, data)
 
     def _ConstructMappingHelper(self, macro, source_func, data):
@@ -311,10 +308,10 @@ def CreateYamlLoader(impl_path):
       return modified_data
 
     def construct_sequence(self, *args, **kwargs):
-      data = super(Loader, self).construct_sequence(*args, **kwargs)
-      data = self._ConstructSequenceHelper(Loader.MERGE_COMMON_MACRO,
+      data = super(Constructor, self).construct_sequence(*args, **kwargs)
+      data = self._ConstructSequenceHelper(Constructor.MERGE_COMMON_MACRO,
                                            self._GetCommonData, data)
-      return self._ConstructSequenceHelper(Loader.MERGE_REF_MACRO,
+      return self._ConstructSequenceHelper(Constructor.MERGE_REF_MACRO,
                                            self._GetRefData, data)
 
     def _ConstructSequenceHelper(self, macro, source_func, data):
@@ -369,7 +366,7 @@ def CreateYamlLoader(impl_path):
       yaml_path = os.path.join(root, *parts[0].split('.'))
       yaml_path += '.yaml'
       try:
-        data = yaml.load(pkg_resources.GetData(yaml_path))
+        data = yaml.safe_load(pkg_resources.GetData(yaml_path))
       except IOError as e:
         raise LayoutException(
             'Failed to load Yaml reference file [{}]: {}'.format(yaml_path, e))
@@ -387,9 +384,13 @@ def CreateYamlLoader(impl_path):
               .format(impl_path, location, attribute, attribute_path))
       return value
 
-  Loader.add_constructor(Loader.INCLUDE_COMMON_MACRO, Loader.IncludeCommon)
-  Loader.add_constructor(Loader.INCLUDE_REF_MACRO, Loader.IncludeRef)
-  return Loader
+  loader = yaml.YAML()
+  loader.Constructor = Constructor
+  loader.constructor.add_constructor(Constructor.INCLUDE_COMMON_MACRO,
+                                     Constructor.IncludeCommon)
+  loader.constructor.add_constructor(Constructor.INCLUDE_REF_MACRO,
+                                     Constructor.IncludeRef)
+  return loader
 
 
 def _GetModuleFromPath(impl_file, path, construction_id):

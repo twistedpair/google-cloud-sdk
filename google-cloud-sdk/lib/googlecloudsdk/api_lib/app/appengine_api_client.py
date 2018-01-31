@@ -32,9 +32,8 @@ from googlecloudsdk.api_lib.cloudbuild import build as cloud_build
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
+from googlecloudsdk.core import yaml
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
-
-import yaml
 
 
 APPENGINE_VERSIONS_MAP = {
@@ -564,7 +563,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     """
 
     parsed_yaml = service_config.parsed.ToYAML()
-    config_dict = yaml.safe_load(parsed_yaml)
+    config_dict = yaml.load(parsed_yaml)
     try:
       # pylint: disable=protected-access
       schema_parser = convert_yaml.GetSchemaParser(self.client._VERSION)

@@ -20,9 +20,8 @@ from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
-
-import yaml
 
 
 MAX_RESOURCE_TO_DISPLAY = 50

@@ -40,6 +40,11 @@ KUBERNETES_API_MISMATCH_PROMPT_TEMPLATE = (
     "If you intended to use {api} API instead, please set "
     "container/use_v1_api_client property to false.")
 
+KUBERNETES_GPU_LIMITATION_MSG = (
+    "Machines with GPUs have certain limitations "
+    "which may affect your workflow.\nLearn more at "
+    "https://cloud.google.com/kubernetes-engine/docs/concepts/gpus\n"
+)
 USERNAME_PASSWORD_ERROR_MSG = (
     "Cannot specify --password with empty --username or --no-enable-basic-auth."
 )

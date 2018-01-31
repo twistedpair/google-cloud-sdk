@@ -74,7 +74,7 @@ def ReplaceImageUrlScheme(image_url, scheme):
 
   # If there is neither a scheme nor a netloc, this means that an unqualified
   # URL was passed, like 'gcr.io/foo/bar'.  In this case we canonicalize the URL
-  # by prefixing '//', which will cause urlparse it to correctly pick up the
+  # by prefixing '//', which will cause urlparse to correctly pick up the
   # netloc.
   if not parsed_url.netloc:
     parsed_url = urlparse.urlparse('//{}'.format(image_url))

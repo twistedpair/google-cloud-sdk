@@ -121,6 +121,33 @@ snapshot or its subscription, unless the same subscription is specified.
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      """Gets the configuration details of a snapshot.
+
+      Args:
+        request: (PubsubProjectsSnapshotsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Snapshot) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/snapshots/{snapshotsId}',
+        http_method=u'GET',
+        method_id=u'pubsub.projects.snapshots.get',
+        ordered_params=[u'snapshot'],
+        path_params=[u'snapshot'],
+        query_params=[],
+        relative_path=u'v1/{+snapshot}',
+        request_field='',
+        request_type_name=u'PubsubProjectsSnapshotsGetRequest',
+        response_type_name=u'Snapshot',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       """Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy

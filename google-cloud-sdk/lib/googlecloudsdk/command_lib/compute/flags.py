@@ -773,6 +773,11 @@ def AddRegexArg(parser):
       """)
 
 
+def AddPolicyFileFlag(parser):
+  parser.add_argument('policy_file', help="""\
+      JSON or YAML file containing the IAM policy.""")
+
+
 def RewriteFilter(args, message=None, frontend_fields=None):
   """Rewrites args.filter into client and server filter expression strings.
 

@@ -27,10 +27,9 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import files
-
-import yaml
 
 GCS_PREFIX = 'gs://'
 
@@ -139,7 +138,7 @@ def GetFileAsMessage(path, message, client):
   # Parse it, first trying YAML then JSON.
   try:
     result = encoding.PyValueToMessage(message, yaml.load(in_text))
-  except (ValueError, AttributeError, yaml.YAMLError) as e:
+  except (ValueError, AttributeError, yaml.YAMLParseError):
     try:
       result = encoding.JsonToMessage(message, in_text)
     except (ValueError, DecodeError) as e:

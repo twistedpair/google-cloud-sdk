@@ -80,8 +80,7 @@ from googlecloudsdk.api_lib.firebase.test import arg_validate
 from googlecloudsdk.api_lib.firebase.test import exceptions
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
-
-import yaml
+from googlecloudsdk.core import yaml
 
 
 _ARG_GROUP_PATTERN = re.compile(r'^[a-zA-Z0-9._\-]+\Z')
@@ -112,11 +111,7 @@ def GetArgsFromArgFile(argspec, all_test_args_set):
     return {}
 
   arg_file, group_name = _SplitArgFileAndGroup(argspec)
-  try:
-    all_arg_groups = _ReadArgGroupsFromFile(arg_file)
-  except IOError as err:
-    raise calliope_exceptions.BadFileException(
-        'Error reading argument file [{f}]: {e}'.format(f=arg_file, e=err))
+  all_arg_groups = _ReadArgGroupsFromFile(arg_file)
   _ValidateArgGroupNames(all_arg_groups.keys())
 
   args_from_file = {}
@@ -148,23 +143,19 @@ def _ReadArgGroupsFromFile(arg_file):
     A dict containing all arg-groups found in the arg_file.
 
   Raises:
-    BadFileException: the yaml package encountered a ScannerError.
+    yaml.Error: If the YAML file could not be read or parsed.
+    BadFileException: If the contents of the file are not valid.
   """
-  with open(arg_file, 'r') as data:
-    yaml_generator = yaml.safe_load_all(data)
-    all_groups = {}
-    try:
-      for d in yaml_generator:
-        if d is None:
-          log.warning('Ignoring empty yaml document.')
-        elif isinstance(d, dict):
-          all_groups.update(d)
-        else:
-          raise yaml.scanner.ScannerError(
-              '[{0}] is not a valid argument group.'.format(str(d)))
-    except yaml.scanner.ScannerError as error:
+  all_groups = {}
+  for d in yaml.load_all_path(arg_file):
+    if d is None:
+      log.warning('Ignoring empty yaml document.')
+    elif isinstance(d, dict):
+      all_groups.update(d)
+    else:
       raise calliope_exceptions.BadFileException(
-          'Error parsing YAML file [{0}]: {1}'.format(arg_file, str(error)))
+          'Failed to parse YAML file [{}]: [{}] is not a valid argument '
+          'group.'.format(arg_file, str(d)))
   return all_groups
 
 
@@ -260,6 +251,6 @@ def ArgSpecCompleter(prefix, parsed_args, **kwargs):
     return []
   try:
     groups = _ReadArgGroupsFromFile(arg_file).keys()
-  except IOError:
+  except yaml.FileLoadError:
     return []
   return [(arg_file + ':' + g) for g in groups if g.startswith(group_prefix)]

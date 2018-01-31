@@ -60,6 +60,18 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListTensorFlowVersionsResponse(_messages.Message):
+  """Response for ListTensorFlowVersions.
+
+  Fields:
+    nextPageToken: The next page token or empty if none.
+    tensorflowVersions: The listed nodes.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tensorflowVersions = _messages.MessageField('TensorFlowVersion', 2, repeated=True)
+
+
 class Location(_messages.Message):
   """A resource that represents Google Cloud Platform location.
 
@@ -154,7 +166,10 @@ class Node(_messages.Message):
 
   Enums:
     HealthValueValuesEnum: The health status of the TPU node.
-    StateValueValuesEnum: The current state for the TPU Node. Output only.
+    StateValueValuesEnum: Output only. The current state for the TPU Node.
+
+  Messages:
+    LabelsValue: Resource labels to represent user-provided metadata.
 
   Fields:
     acceleratorType: The type of hardware accelerators associated with this
@@ -167,14 +182,15 @@ class Node(_messages.Message):
       block conflicts with any subnetworks in the user's provided network, or
       the provided network is peered with another network that is using that
       CIDR block. Required.
-    createTime: The time when the node was created. Output only.
+    createTime: Output only. The time when the node was created.
     description: The user-supplied description of the TPU. Maximum of 512
       characters.
     health: The health status of the TPU node.
-    healthDescription: If this field is populated, it contains a description
-      of why the TPU Node is unhealthy. Output only.
+    healthDescription: Output only. If this field is populated, it contains a
+      description of why the TPU Node is unhealthy.
     ipAddress: Output only. DEPRECATED! Use network_endpoints instead. The
       network address for the TPU Node as visible to GCE instances.
+    labels: Resource labels to represent user-provided metadata.
     name: Output only. The immutable name of the TPU
     network: The name of a network they wish to peer the TPU node to. It must
       be a preexisting GCE network inside of the project on which this API has
@@ -184,11 +200,11 @@ class Node(_messages.Message):
       the node reach out to the 0th entry in this map first.
     port: Output only. DEPRECATED! Use network_endpoints instead. The network
       port for the TPU Node as visible to GCE instances.
-    serviceAccount: The service account used to run the tensor flow services
-      within the node. To share resources, including Google Cloud Storage
-      data, with the Tensorflow job running in the Node, this account must
-      have permissions to that data. Output only.
-    state: The current state for the TPU Node. Output only.
+    serviceAccount: Output only. The service account used to run the tensor
+      flow services within the node. To share resources, including Google
+      Cloud Storage data, with the Tensorflow job running in the Node, this
+      account must have permissions to that data.
+    state: Output only. The current state for the TPU Node.
     tensorflowVersion: The version of Tensorflow running in the Node.
       Required.
   """
@@ -209,7 +225,7 @@ class Node(_messages.Message):
     TIMEOUT = 3
 
   class StateValueValuesEnum(_messages.Enum):
-    """The current state for the TPU Node. Output only.
+    """Output only. The current state for the TPU Node.
 
     Values:
       STATE_UNSPECIFIED: TPU node state is not known/set.
@@ -229,6 +245,30 @@ class Node(_messages.Message):
     DELETING = 5
     REPAIRING = 6
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    """Resource labels to represent user-provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   acceleratorType = _messages.StringField(1)
   cidrBlock = _messages.StringField(2)
   createTime = _messages.StringField(3)
@@ -236,13 +276,14 @@ class Node(_messages.Message):
   health = _messages.EnumField('HealthValueValuesEnum', 5)
   healthDescription = _messages.StringField(6)
   ipAddress = _messages.StringField(7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  networkEndpoints = _messages.MessageField('NetworkEndpoint', 10, repeated=True)
-  port = _messages.StringField(11)
-  serviceAccount = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  tensorflowVersion = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 11, repeated=True)
+  port = _messages.StringField(12)
+  serviceAccount = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  tensorflowVersion = _messages.StringField(15)
 
 
 class Operation(_messages.Message):
@@ -460,6 +501,10 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(14)
 
 
+class StartNodeRequest(_messages.Message):
+  """Request for StartNode."""
+
+
 class Status(_messages.Message):
   """The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -536,6 +581,22 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StopNodeRequest(_messages.Message):
+  """Request for StopNode."""
+
+
+class TensorFlowVersion(_messages.Message):
+  """A tensorflow version that a Node can be configured with.
+
+  Fields:
+    name: The resource name.
+    version: the tensorflow version.
+  """
+
+  name = _messages.StringField(1)
+  version = _messages.StringField(2)
 
 
 class TpuProjectsLocationsGetRequest(_messages.Message):
@@ -639,6 +700,32 @@ class TpuProjectsLocationsNodesResetRequest(_messages.Message):
   resetNodeRequest = _messages.MessageField('ResetNodeRequest', 2)
 
 
+class TpuProjectsLocationsNodesStartRequest(_messages.Message):
+  """A TpuProjectsLocationsNodesStartRequest object.
+
+  Fields:
+    name: The resource name.
+    startNodeRequest: A StartNodeRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  startNodeRequest = _messages.MessageField('StartNodeRequest', 2)
+
+
+class TpuProjectsLocationsNodesStopRequest(_messages.Message):
+  """A TpuProjectsLocationsNodesStopRequest object.
+
+  Fields:
+    name: The resource name.
+    stopNodeRequest: A StopNodeRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  stopNodeRequest = _messages.MessageField('StopNodeRequest', 2)
+
+
 class TpuProjectsLocationsOperationsCancelRequest(_messages.Message):
   """A TpuProjectsLocationsOperationsCancelRequest object.
 
@@ -683,6 +770,35 @@ class TpuProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class TpuProjectsLocationsTensorflowVersionsGetRequest(_messages.Message):
+  """A TpuProjectsLocationsTensorflowVersionsGetRequest object.
+
+  Fields:
+    name: The resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TpuProjectsLocationsTensorflowVersionsListRequest(_messages.Message):
+  """A TpuProjectsLocationsTensorflowVersionsListRequest object.
+
+  Fields:
+    filter: List filter.
+    orderBy: Sort results.
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: The parent resource name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 encoding.AddCustomJsonFieldMapping(

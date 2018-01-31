@@ -24,8 +24,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log as sdk_log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-
-import yaml
+from googlecloudsdk.core import yaml
 
 
 class Error(exceptions.Error):
@@ -34,10 +33,6 @@ class Error(exceptions.Error):
 
 class InvalidJSONValueError(Error):
   """Invalid JSON value error."""
-
-
-class ConfigFileError(Error):
-  """Unable to open or locate file."""
 
 
 def GetClient():
@@ -264,13 +259,6 @@ def PrintPermissionInstructions(destination, writer_identity):
                        'cloud.google.com/logging/docs/export/configure_export')
 
 
-def _LoadConfigFile(data):
-  try:
-    return yaml.safe_load(data)
-  except yaml.YAMLError, exc:
-    raise ConfigFileError('Unable to load config file: {}.'.format(exc))
-
-
 def CreateLogMetric(metric_name, description=None, log_filter=None, data=None):
   """Returns a LogMetric message based on a data stream or a description/filter.
 
@@ -285,7 +273,7 @@ def CreateLogMetric(metric_name, description=None, log_filter=None, data=None):
   """
   messages = GetMessages()
   if data:
-    contents = _LoadConfigFile(data)
+    contents = yaml.load(data)
     metric_msg = encoding.DictToMessage(contents,
                                         messages.LogMetric)
     metric_msg.name = metric_name
@@ -315,7 +303,7 @@ def UpdateLogMetric(metric, description=None, log_filter=None, data=None):
     metric.filter = log_filter
   if data:
     # Update the top-level fields only.
-    update_data = _LoadConfigFile(data)
+    update_data = yaml.load(data)
     metric_diff = encoding.DictToMessage(update_data, messages.LogMetric)
     for field_name in update_data:
       setattr(metric, field_name, getattr(metric_diff, field_name))

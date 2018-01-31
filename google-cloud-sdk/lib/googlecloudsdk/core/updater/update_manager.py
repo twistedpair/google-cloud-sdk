@@ -27,6 +27,7 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
@@ -39,8 +40,6 @@ from googlecloudsdk.core.updater import update_check
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
-
-import yaml
 
 # These are components that used to exist, but we removed.  In order to prevent
 # scripts and installers that use them from getting errors, we will just warn
@@ -373,7 +372,7 @@ class UpdateManager(object):
                                 filename)
     # Check if file exists.
     if os.path.isfile(mapping_path):
-      return yaml.load(file_utils.GetFileContents(mapping_path))
+      return yaml.load_path(mapping_path)
 
   def _ComputeMappingMessage(self, command, commands_map, components_map,
                              components=None):
@@ -1574,5 +1573,5 @@ def RestartCommand(command=None, args=None, python=None, block=True):
         # out asynchronously over the next commands (without the new window).
         def Quote(s):
           return '"' + s + '"'
-        args = 'cmd.exe /c "{0} && pause"'.format(' '.join(map(Quote, args)))
+        args = 'cmd.exe /c "{0} & pause"'.format(' '.join(map(Quote, args)))
     subprocess.Popen(args, shell=True, **popen_args)

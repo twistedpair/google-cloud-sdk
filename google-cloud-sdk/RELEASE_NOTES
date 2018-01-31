@@ -3,6 +3,82 @@
 Copyright 2014-2018 Google Inc. All rights reserved.
 
 
+## 187.0.0 (2018-01-31)
+
+### App Engine
+
+
+* Updated the Java SDK to version 1.9.61.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+
+### App Engine Flexible Environment
+
+* Added `--use-container-optimized-os` flag to `gcloud alpha|beta app update` to
+  enable Container-Optimized OS(https://cloud.google.com/container-optimized-os/docs/)
+  as Flex VM base image by default on new deployments.
+
+### Cloud DNS
+
+*   Added Cloud labels flags to `gcloud beta managed-zones <create|update>`
+    commands.
+
+### Cloud Datalab
+
+
+### Cloud Interconnect
+
+* Promoted support for labels on interconnects to beta.
+
+### Cloud PubSub
+
+* Added `gcloud alpha pubsub snapshots describe` command.
+
+### Cloud Tpu
+
+* Promoted `gcloud compute tpus` to beta.
+
+### Compute Engine
+
+* Promoted `gcloud compute target-vpn-gateways update` and `gcloud compute
+vpn-tunnels update` to beta. These commands allow adding/modifying/clearing
+labels.
+* Promoted `stackdriver-metric` flag family of `gcloud compute instance-groups
+  managed set-autoscaling` to beta. These flags allow setting up per-group
+  autoscaling and metric filtering, as well as provide an improved interface to
+  the existing per-instance autoscaling.
+* Promoted `--source-snapshot` flag of `gcloud compute images create` command to
+  beta. This flag allows creating images from snapshots.
+* Promoted `--guest-os-features` flag of `gcloud compute disks create` to beta.
+  This flag allows create disks with additional specified GuestOS features.
+* Promoted `--licenses` flag of `gcloud compute disks create` to GA.
+  This flag allows create disks with additional specified licenses.
+
+### Container Builder
+
+* Changed `gcloud container builds submit` command to no longer create a
+  `.gcloudignore` file on disk. Git files are still ignored by default, see
+  `gcloud topic gcloudignore` to learn more.
+
+### Container Engine
+
+* Promoted `--accelerator` flag of `gcloud container clusters create` and `gcloud container node-pools create` to beta.
+
+### Container Registry
+
+* Removed public read-only endpoints from default registries used by
+  `gcloud docker` and `docker-credential-gcloud` for authentication.
+
+### Kubernetes Engine
+
+* Fixed an issue causing relative `KUBECONFIG` paths to fail when used with the
+  `gcloud container clusters get-credentials` command.
+
+### Miscellaneous
+
+* Fixed crash when attempting to use a SOCKS proxy (https://issuetracker.google.com/72407295).
+
+
 ## 186.0.0 (2018-01-24)
 
 ### Breaking Changes
@@ -15,6 +91,13 @@ Copyright 2014-2018 Google Inc. All rights reserved.
     `customRolesSupportLevel`. The prompt needs to be answered to finish the
     request. Specify `--quiet` to prevent prompting confirming intent.
 
+
+### Cloud Datalab
+
+* Updated the `datalab` component to the 20180119 release.
+
+  Released changes are documented in its tracking issue at
+  [https://github.com/googledatalab/datalab/issues/1921](https://github.com/googledatalab/datalab/issues/1921).
 
 ### Cloud Datastore Emulator
 

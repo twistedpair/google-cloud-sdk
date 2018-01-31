@@ -317,12 +317,13 @@ def ParseResourceIntoMessage(ref, method, message, resource_method_params=None,
     ref: googlecloudsdk.core.resources.Resource, the resource reference.
     method: the API method.
     message: apitools Message object.
-    resource_method_params: {str: str}, A mapping of resource ref attribute name
-      to API method parameter name, if any.
+    resource_method_params: {str: str}, A mapping of API method parameter name
+      to resource ref attribute name, if any
     request_id_field: str, the name that the ID of the resource arg takes if the
       API method params and the resource params don't match.
   """
   resource_method_params = resource_method_params or {}
+  resource_method_params = resource_method_params.copy()
 
   # This only happens for non-list methods where the API method params don't
   # match the resource parameters (basically only create methods). In this
@@ -339,8 +340,11 @@ def ParseResourceIntoMessage(ref, method, message, resource_method_params=None,
 
   relative_name = ref.RelativeName()
   for p in method.params:
-    value = getattr(ref, resource_method_params.get(p, p), relative_name)
+    value = getattr(ref, resource_method_params.pop(p, p), relative_name)
     SetFieldInMessage(message, p, value)
+  for message_field_name, ref_param_name in resource_method_params.items():
+    value = getattr(ref, ref_param_name, relative_name)
+    SetFieldInMessage(message, message_field_name, value)
 
 
 def ParseStaticFieldsIntoMessage(message, static_fields=None):

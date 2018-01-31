@@ -29,11 +29,16 @@ class _BaseInstances(object):
   """Common utility functions for sql instances."""
 
   @staticmethod
-  def GetDatabaseInstances():
+  def GetDatabaseInstances(limit=None, batch_size=None):
     """Gets SQL instances in a given project.
 
     Modifies current state of an individual instance to 'STOPPED' if
     activationPolicy is 'NEVER'.
+
+    Args:
+      limit: int, The maximum number of records to yield. None if all available
+          records should be yielded.
+      batch_size: int, The number of items to retrieve per request.
 
     Returns:
       List of yielded sql_messages.DatabaseInstance instances.
@@ -44,9 +49,15 @@ class _BaseInstances(object):
     sql_messages = client.sql_messages
     project_id = properties.VALUES.core.project.Get(required=True)
 
+    params = {}
+    if limit is not None:
+      params['limit'] = limit
+    if batch_size is not None:
+      params['batch_size'] = batch_size
+
     yielded = list_pager.YieldFromList(
         sql_client.instances,
-        sql_messages.SqlInstancesListRequest(project=project_id))
+        sql_messages.SqlInstancesListRequest(project=project_id), **params)
 
     def YieldInstancesWithAModifiedState():
       for result in yielded:

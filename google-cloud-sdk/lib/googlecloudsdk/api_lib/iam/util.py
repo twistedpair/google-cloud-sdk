@@ -15,6 +15,7 @@
 """Utilities for IAM commands to call IAM APIs."""
 
 from apitools.base.py import list_pager
+from googlecloudsdk.command_lib.iam import iam_util
 
 
 def GetTestablePermissions(iam_client, messages, resource):
@@ -31,7 +32,7 @@ def GetTestablePermissions(iam_client, messages, resource):
   return list_pager.YieldFromList(
       iam_client.permissions,
       messages.QueryTestablePermissionsRequest(
-          fullResourceName=resource.SelfLink(), pageSize=1000),
+          fullResourceName=iam_util.GetResourceName(resource), pageSize=1000),
       batch_size=1000,
       method='QueryTestablePermissions',
       field='permissions',

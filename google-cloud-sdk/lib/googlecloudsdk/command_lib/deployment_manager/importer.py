@@ -22,8 +22,8 @@ import urlparse
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.deployment_manager import exceptions
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
+from googlecloudsdk.core import yaml
 import requests
-import yaml
 
 IMPORTS = 'imports'
 PATH = 'path'
@@ -76,7 +76,7 @@ class _ImportSyntheticCompositeTypeFile(_BaseImport):
       resources = {'resources': [{'type': self.full_path, 'name': self.name}]}
       if self.properties:
         resources['resources'][0]['properties'] = self.properties
-      self.content = yaml.dump(resources, default_flow_style=False)
+      self.content = yaml.dump(resources)
     return self.content
 
   def BuildChildPath(self, unused_child_path):
@@ -248,25 +248,21 @@ def _GetYamlImports(import_object):
    ConfigError: If we cannont read the file, the yaml is malformed, or
        the import object does not contain a 'path' field.
   """
-  try:
-    content = import_object.GetContent()
-    yaml_content = yaml.safe_load(content)
-    imports = []
-    if yaml_content and IMPORTS in yaml_content:
-      imports = yaml_content[IMPORTS]
-      # Validate the yaml imports, and make sure the optional name is set.
-      for i in imports:
-        if PATH not in i:
-          raise exceptions.ConfigError(
-              'Missing required field %s in import in file %s.'
-              % (PATH, import_object.full_path))
-        # Populate the name field.
-        if NAME not in i:
-          i[NAME] = i[PATH]
-    return imports
-  except yaml.YAMLError as e:
-    raise exceptions.ConfigError(
-        'Invalid yaml file %s. %s' % (import_object.full_path, str(e)))
+  content = import_object.GetContent()
+  yaml_content = yaml.load(content)
+  imports = []
+  if yaml_content and IMPORTS in yaml_content:
+    imports = yaml_content[IMPORTS]
+    # Validate the yaml imports, and make sure the optional name is set.
+    for i in imports:
+      if PATH not in i:
+        raise exceptions.ConfigError(
+            'Missing required field %s in import in file %s.'
+            % (PATH, import_object.full_path))
+      # Populate the name field.
+      if NAME not in i:
+        i[NAME] = i[PATH]
+  return imports
 
 
 def _GetImportObjects(parent_object):
@@ -477,22 +473,17 @@ def BuildConfig(config=None, template=None,
   if schema_object.Exists():
     schema_content = schema_object.GetContent()
     config_name = custom_resource['name']
-    try:
-      yaml_schema = yaml.safe_load(schema_content)
-      if yaml_schema and OUTPUTS in yaml_schema:
-        for output_name in yaml_schema[OUTPUTS].keys():
-          custom_outputs.append(
-              {'name': output_name,
-               'value': '$(ref.' + config_name + '.' + output_name + ')'})
-    except yaml.YAMLError as e:
-      raise exceptions.ConfigError(
-          'Invalid schema file %s. %s' % (schema_path, str(e)))
+    yaml_schema = yaml.load(schema_content, file_hint=schema_path)
+    if yaml_schema and OUTPUTS in yaml_schema:
+      for output_name in yaml_schema[OUTPUTS].keys():
+        custom_outputs.append(
+            {'name': output_name,
+             'value': '$(ref.' + config_name + '.' + output_name + ')'})
 
   if custom_outputs:
     custom_dict['outputs'] = custom_outputs
 
-  # Dump using default_flow_style=False to use spacing instead of '{ }'
-  custom_content = yaml.dump(custom_dict, default_flow_style=False)
+  custom_content = yaml.dump(custom_dict)
 
   # Override the template_object with it's new config_content
   return config_obj.SetContent(custom_content)
@@ -581,6 +572,6 @@ def BuildTargetConfigFromManifest(client, messages, project_id, deployment_id,
     existing_properties = single_resource['properties']
     for key, value in properties.iteritems():
       existing_properties[key] = value
-    config_file.content = yaml.dump(config_yaml, default_flow_style=False)
+    config_file.content = yaml.dump(config_yaml)
 
   return messages.TargetConfiguration(config=config_file, imports=imports)

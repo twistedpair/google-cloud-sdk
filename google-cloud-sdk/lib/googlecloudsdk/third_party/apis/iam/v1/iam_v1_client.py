@@ -34,6 +34,7 @@ class IamV1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.iamPolicies = self.IamPoliciesService(self)
     self.organizations_roles = self.OrganizationsRolesService(self)
     self.organizations = self.OrganizationsService(self)
     self.permissions = self.PermissionsService(self)
@@ -42,6 +43,43 @@ class IamV1(base_api.BaseApiClient):
     self.projects_serviceAccounts = self.ProjectsServiceAccountsService(self)
     self.projects = self.ProjectsService(self)
     self.roles = self.RolesService(self)
+
+  class IamPoliciesService(base_api.BaseApiService):
+    """Service class for the iamPolicies resource."""
+
+    _NAME = u'iamPolicies'
+
+    def __init__(self, client):
+      super(IamV1.IamPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def QueryAuditableServices(self, request, global_params=None):
+      """Returns a list of services that support service level audit logging.
+configuration for the given resource.
+
+      Args:
+        request: (QueryAuditableServicesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryAuditableServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryAuditableServices')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryAuditableServices.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'iam.iamPolicies.queryAuditableServices',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/iamPolicies:queryAuditableServices',
+        request_field='<request>',
+        request_type_name=u'QueryAuditableServicesRequest',
+        response_type_name=u'QueryAuditableServicesResponse',
+        supports_download=False,
+    )
 
   class OrganizationsRolesService(base_api.BaseApiService):
     """Service class for the organizations_roles resource."""

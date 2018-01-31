@@ -31,9 +31,12 @@ class Collections(enum.Enum):
   )
   PROJECTS_SNAPSHOTS = (
       'projects.snapshots',
-      'projects/{projectsId}/snapshots/{snapshotsId}',
-      {},
-      ['projectsId', 'snapshotsId']
+      '{+snapshot}',
+      {
+          '':
+              'projects/{projectsId}/snapshots/{snapshotsId}',
+      },
+      [u'snapshot']
   )
   PROJECTS_SUBSCRIPTIONS = (
       'projects.subscriptions',

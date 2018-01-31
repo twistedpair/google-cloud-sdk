@@ -57,6 +57,16 @@ class Collections(enum.Enum):
       },
       [u'name']
   )
+  PROJECTS_LOCATIONS_TENSORFLOWVERSIONS = (
+      'projects.locations.tensorflowVersions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'tensorflowVersions/{tensorflowVersionsId}',
+      },
+      [u'name']
+  )
 
   def __init__(self, collection_name, path, flat_paths, params):
     self.collection_name = collection_name

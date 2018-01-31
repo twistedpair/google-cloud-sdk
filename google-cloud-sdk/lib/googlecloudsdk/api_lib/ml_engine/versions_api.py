@@ -16,9 +16,8 @@ from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import text
-
-import yaml
 
 
 class InvalidVersionConfigFile(exceptions.Error):
@@ -132,12 +131,11 @@ class VersionsClient(object):
 
     if path:
       try:
-        with open(path) as config_file:
-          data = yaml.load(config_file)
-      except (IOError, OSError, yaml.error.YAMLError) as err:
+        data = yaml.load_path(path)
+      except (yaml.Error) as err:
         raise InvalidVersionConfigFile(
             'Could not read Version configuration file [{path}]:\n\n'
-            '{err}'.format(path=path, err=str(err)))
+            '{err}'.format(path=path, err=str(err.inner_error)))
       if data:
         version = encoding.DictToMessage(data, self.version_class)
 
