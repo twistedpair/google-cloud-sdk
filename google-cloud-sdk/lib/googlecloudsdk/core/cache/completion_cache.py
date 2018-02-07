@@ -45,12 +45,17 @@ encapsulated in resource specific Completer objects.
 # Ignore type because this file implements an abstract class.
 # type: ignore
 
+from __future__ import absolute_import
+from __future__ import division
 import abc
 
 from googlecloudsdk.core.cache import resource_cache
 
+import six
 
-class Completer(resource_cache.Updater):
+
+@six.add_metaclass(abc.ABCMeta)
+class Completer(resource_cache.Updater):  # pytype: disable=ignored-abstractmethod
   """A completion cache resource string completer.
 
   Along with the Complete() method, a completer has two main functions, each
@@ -59,8 +64,6 @@ class Completer(resource_cache.Updater):
   (2) Retrieve the current list of resources for the collection. See
       resource_cache.Updater for details.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def StringToRow(self, string):

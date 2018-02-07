@@ -52,8 +52,9 @@ def AddCommonArgs(parser):
       help="""\
       Start time of a four-hour window in which maintenance activity should
       start in given cadence. Valid choices are 00:00, 04:00, 08:00,12:00,
-      16:00 and 20:00 UTC. This flag accepts values in ISO 8601 format. For
-      example, `--start-time="03:00-05"` (which gets converted to 08:00 UTC).
+      16:00 and 20:00 UTC. See $ gcloud topic datetimes for information on
+      time formats. For example, `--start-time="03:00-05"`
+      (which gets converted to 08:00 UTC).
       """)
 
 

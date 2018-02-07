@@ -14,6 +14,8 @@
 
 """Cloud resource list filter expression evaluator backend."""
 
+from __future__ import absolute_import
+from __future__ import division
 import abc
 import re
 import unicodedata
@@ -24,6 +26,8 @@ from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import times
+
+import six
 
 
 def _ReCompile(pattern, flags=0):
@@ -50,9 +54,9 @@ def _Stringize(value):
   """Returns the unicode string representation for value."""
   if value is None:
     return u'null'
-  if not isinstance(value, basestring):
+  if not isinstance(value, six.string_types):
     value = repr(value)
-  return unicode(encoding.Decode(value))
+  return six.text_type(encoding.Decode(value))
 
 
 def NormalizeForSearch(value, html=False):
@@ -167,8 +171,8 @@ def _WordMatch(backend, key, op, warned_attribute, value, pattern):
   if isinstance(value, dict):
     values = []
     if value:
-      values.extend(value.keys())
-      values.extend(value.values())
+      values.extend(six.iterkeys(value))
+      values.extend(six.itervalues(value))
   elif isinstance(value, (list, tuple)):
     values = value
   else:
@@ -271,10 +275,9 @@ class Backend(object):
 # _Expr* class instantiations are done by the Backend.Expr* methods.
 
 
-class _Expr(object):
+@six.add_metaclass(abc.ABCMeta)
+class _Expr(object):  # pytype: disable=ignored-abstractmethod
   """Expression base class."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, backend):
     self.backend = backend
@@ -413,7 +416,7 @@ class _ExprOperand(object):
             _ExprOperand(self.backend, val, normalize=normalize))
     elif value and normalize:
       self.string_value = normalize(value)
-    elif isinstance(value, basestring):
+    elif isinstance(value, six.string_types):
       self.string_value = value
       try:
         self.numeric_value = self._NUMERIC_CONSTANTS[value.lower()]
@@ -431,7 +434,8 @@ class _ExprOperand(object):
       self.numeric_value = value
 
 
-class _ExprOperator(_Expr):
+@six.add_metaclass(abc.ABCMeta)
+class _ExprOperator(_Expr):  # pytype: disable=ignored-abstractmethod
   """Base term (<key operator operand>) node.
 
   ExprOperator subclasses must define the function Apply(self, value, operand)
@@ -443,8 +447,6 @@ class _ExprOperator(_Expr):
     _operand: The term ExprOperand operand.
     _transform: Optional key value transform calls.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, backend, key, operand, transform):
     super(_ExprOperator, self).__init__(backend)
@@ -544,7 +546,7 @@ class _ExprOperator(_Expr):
         except (AttributeError, ValueError):
           pass
         except TypeError:
-          if (not isinstance(value, (basestring, dict, list)) and
+          if (not isinstance(value, (six.string_types, dict, list)) and
               self.Apply(_Stringize(value), operand.string_value)):
             return True
 
@@ -768,7 +770,7 @@ class _ExprRE(_ExprOperator):
     self.pattern = _ReCompile(self._operand.string_value)
 
   def Apply(self, value, unused_operand):
-    if not isinstance(value, basestring):
+    if not isinstance(value, six.string_types):
       # This exception is caught by Evaluate().
       raise TypeError('RE match subject value must be a string.')
     return self.pattern.search(value) is not None
@@ -782,7 +784,7 @@ class _ExprNotRE(_ExprOperator):
     self.pattern = _ReCompile(self._operand.string_value)
 
   def Apply(self, value, unused_operand):
-    if not isinstance(value, basestring):
+    if not isinstance(value, six.string_types):
       # This exception is caught by Evaluate().
       raise TypeError('RE match subject value must be a string.')
     return self.pattern.search(value) is None

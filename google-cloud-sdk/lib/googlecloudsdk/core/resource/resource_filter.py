@@ -78,6 +78,8 @@ Example:
       ProcessMatchedResource(resource)
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import re
 
 from googlecloudsdk.core.resource import resource_exceptions
@@ -85,6 +87,8 @@ from googlecloudsdk.core.resource import resource_expr
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_property
+
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 class _Parser(object):

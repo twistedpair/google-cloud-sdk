@@ -72,7 +72,11 @@ class ReleaseTrack(object):
   ALPHA = _TRACK(
       'ALPHA', 'alpha',
       '{0}(ALPHA){0} '.format(MARKDOWN_BOLD),
-      'This command is currently in ALPHA and may change without notice.')
+      'This command is currently in ALPHA and may change without notice. '
+      'Usually, users of ALPHA commands and flags need to apply for access, '
+      'agree to applicable terms, and have their projects whitelisted. '
+      'Contact Google or sign up on a product\'s page for ALPHA access. '
+      'Product pages can be found at https://cloud.google.com/products/.')
   _ALL = [GA, BETA, ALPHA]
 
   @staticmethod

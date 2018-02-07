@@ -15,12 +15,17 @@
 """Generate usage text for displaying to the user."""
 
 import argparse
+from collections import OrderedDict
 import copy
 import difflib
 import re
 import StringIO
 import sys
 import textwrap
+
+
+import enum
+
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -190,7 +195,14 @@ def _FilterFlagNames(names):
   return names
 
 
-def GetFlagUsage(arg, brief=False, markdown=False, inverted=False, value=True):
+class InvertedValue(enum.Enum):
+  NORMAL = 0
+  INVERTED = 1
+  BOTH = 2
+
+
+def GetFlagUsage(arg, brief=False, markdown=False,
+                 inverted=InvertedValue.NORMAL, value=True):
   """Returns the usage string for a flag arg.
 
   Args:
@@ -198,13 +210,16 @@ def GetFlagUsage(arg, brief=False, markdown=False, inverted=False, value=True):
     brief: bool, If true, only display one version of a flag that has
         multiple versions, and do not display the default value.
     markdown: bool, If true add markdowns.
-    inverted: bool, If true display the --no-* inverted name.
+    inverted: InvertedValue, If INVERTED display the --no-* inverted name. If
+        NORMAL display the normal name. If BOTH, display both.
     value: bool, If true display flag name=value for non-Boolean flags.
 
   Returns:
     str, The string representation for printing.
   """
-  if inverted:
+  if inverted is InvertedValue.BOTH:
+    names = [x.replace('--', '--[no-]', 1) for x in sorted(arg.option_strings)]
+  elif inverted is InvertedValue.INVERTED:
     names = [x.replace('--', '--no-', 1) for x in sorted(arg.option_strings)]
   else:
     names = sorted(arg.option_strings)
@@ -295,13 +310,16 @@ def GetArgDetails(arg):
       # TBD I guess?
       one_of = '(currently only one value is supported)'
     if isinstance(choices, dict):
+      choices_iteritems = choices.iteritems()
+      if not isinstance(choices, OrderedDict):
+        choices_iteritems = sorted(choices_iteritems)
       extra_help.append(
           u'_{metavar}_ must be {one_of}:\n\n{choices}\n\n'.format(
               metavar=metavar,
               one_of=one_of,
               choices='\n'.join(
                   [u'*{name}*::: {desc}'.format(name=name, desc=desc)
-                   for name, desc in sorted(choices.iteritems())])))
+                   for name, desc in choices_iteritems])))
     else:
       extra_help.append(u'_{metavar}_ must be {one_of}: {choices}.'.format(
           metavar=metavar,
@@ -314,6 +332,11 @@ def GetArgDetails(arg):
     extra_help.append(
         'Enabled by default, use *{0}* to disable.'.format(
             _GetInvertedFlagName(arg)))
+  elif isinstance(arg, arg_parsers.StoreTrueFalseAction):
+    # This would be a "tri-valued" (True, False, None) command.
+    extra_help.append(
+        'Use *{0}* to enable and *{1}* to disable.'.format(
+            arg.option_strings[0], _GetInvertedFlagName(arg)))
 
   if extra_help:
     help_message = help_message.rstrip()
@@ -453,7 +476,13 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
     if arg.is_positional:
       usage = GetPositionalUsage(arg, markdown=markdown)
     else:
-      inverted = not definition and getattr(arg, 'inverted_synopsis', False)
+      if isinstance(arg, arg_parsers.StoreTrueFalseAction):
+        inverted = InvertedValue.BOTH
+      else:
+        if not definition and getattr(arg, 'inverted_synopsis', False):
+          inverted = InvertedValue.INVERTED
+        else:
+          inverted = InvertedValue.NORMAL
       usage = GetFlagUsage(arg, brief=brief, markdown=markdown,
                            inverted=inverted, value=value)
     if usage and top and not arg.is_required:
@@ -494,7 +523,8 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
           usage = _MarkOptional(usage)
         if usage not in optional_usage:
           optional_usage.append(usage)
-  all_usage = []
+  positional_usage = []
+  all_other_usage = []
   nesting = 0
   optional_positionals = False
   if positional_args:
@@ -509,21 +539,24 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
         usage = _MarkOptional(usage)
         if usage != usage_orig:
           nesting += 1
-      all_usage.append(usage)
+      positional_usage.append(usage)
     if nesting:
-      all_usage[-1] = u'{}{}'.format(all_usage[-1], ']' * nesting)
+      positional_usage[-1] = u'{}{}'.format(positional_usage[-1], ']' * nesting)
   if required_usage:
-    all_usage.append(sep.join(required_usage))
+    all_other_usage.append(sep.join(required_usage))
   if optional_usage:
     if optional:
       if not top and (positional_args and not optional_positionals
                       or required_usage):
-        all_usage.append(':')
-      all_usage.append(sep.join(optional_usage))
+        all_other_usage.append(':')
+      all_other_usage.append(sep.join(optional_usage))
     elif brief and top:
-      all_usage.append('[optional flags]')
+      all_other_usage.append('[optional flags]')
   if brief:
-    all_usage = sorted(all_usage, key=_GetArgUsageSortKey)
+    all_usage = positional_usage + sorted(all_other_usage,
+                                          key=_GetArgUsageSortKey)
+  else:
+    all_usage = positional_usage + all_other_usage
   if remainder_usage and include_remainder_usage:
     all_usage.append(' '.join(remainder_usage))
   usage = ' '.join(all_usage)

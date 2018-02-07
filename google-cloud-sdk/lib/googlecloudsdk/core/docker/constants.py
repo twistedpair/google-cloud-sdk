@@ -13,6 +13,10 @@
 # limitations under the License.
 """Default value constants exposed by core utilities."""
 
+from __future__ import absolute_import
+from __future__ import division
+
+
 DEFAULT_REGISTRY = 'gcr.io'
 REGIONAL_REGISTRIES = ['us.gcr.io', 'eu.gcr.io', 'asia.gcr.io']
 LAUNCHER_REGISTRIES = ['l.gcr.io', 'launcher.gcr.io']

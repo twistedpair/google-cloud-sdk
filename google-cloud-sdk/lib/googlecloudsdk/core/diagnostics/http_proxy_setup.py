@@ -14,11 +14,15 @@
 
 """A module for changing Cloud SDK proxy settings interactively."""
 
+from __future__ import absolute_import
+from __future__ import division
+
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import http_proxy_types
+
 import httplib2
 
 

@@ -14,6 +14,8 @@
 
 """Contains object representations of the JSON data for components."""
 
+from __future__ import absolute_import
+from __future__ import division
 import re
 import time
 
@@ -21,6 +23,8 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import semver
+
+import six
 
 
 class Error(Exception):
@@ -141,7 +145,7 @@ class DictionaryParser(object):
         raise ParseError('Expected a dict for field [{0}] in component [{1}]'
                          .format(field, self.__cls))
       if func:
-        value = dict((k, func(v)) for k, v in value.iteritems())
+        value = dict((k, func(v)) for k, v in six.iteritems(value))
     self.__args[field] = value
 
 
@@ -207,7 +211,7 @@ class DictionaryWriter(object):
         writing it to the dictionary.
     """
     def DictMapper(values):
-      return dict((k, func(v)) for k, v in values.iteritems())
+      return dict((k, func(v)) for k, v in six.iteritems(values))
     dict_func = DictMapper if func else None
     self.Write(field, func=dict_func)
 

@@ -153,14 +153,16 @@ def AddRotationPeriodFlag(parser):
   parser.add_argument(
       '--rotation-period',
       type=arg_parsers.Duration(lower_bound='1d'),
-      help='Automatic rotation period of the key.')
+      help=('Automatic rotation period of the key. See '
+            '$ gcloud topic datetimes for information on duration formats.'))
 
 
 def AddNextRotationTimeFlag(parser):
   parser.add_argument(
       '--next-rotation-time',
       type=arg_parsers.Datetime.Parse,
-      help='Next automatic rotation time of the key.')
+      help=('Next automatic rotation time of the key. See '
+            '$ gcloud topic datetimes for information on time formats.'))
 
 
 def AddRemoveRotationScheduleFlag(parser):

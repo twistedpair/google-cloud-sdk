@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Code that's shared between multiple security policies subcommands."""
 
 import base64
@@ -22,13 +21,14 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
 
 
-def SecurityPolicyFromFile(input_file, messages, file_format):
+def SecurityPolicyFromFile(input_file, messages, file_format, is_create=False):
   """Returns the security policy read from the given file.
 
   Args:
     input_file: file, A file with a security policy config.
     messages: messages, The set of available messages.
     file_format: string, the format of the file to read from
+    is_create: boolean, whether the config is used to create a security policy
 
   Returns:
     A security policy resource.
@@ -40,14 +40,17 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
     try:
       parsed_security_policy = json.load(input_file)
     except ValueError as e:
-      raise exceptions.BadFileException(
-          'Error parsing JSON: {0}'.format(str(e)))
+      raise exceptions.BadFileException('Error parsing JSON: {0}'.format(
+          str(e)))
 
   security_policy = messages.SecurityPolicy()
+  if is_create:
+    security_policy.name = parsed_security_policy['name']
   if 'description' in parsed_security_policy:
     security_policy.description = parsed_security_policy['description']
-  security_policy.fingerprint = base64.urlsafe_b64decode(
-      parsed_security_policy['fingerprint'].encode('ascii'))
+  if not is_create and 'fingerprint' in parsed_security_policy:
+    security_policy.fingerprint = base64.urlsafe_b64decode(
+        parsed_security_policy['fingerprint'].encode('ascii'))
 
   rules = []
   for rule in parsed_security_policy['rules']:
@@ -56,7 +59,15 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
     if 'description' in rule:
       security_policy_rule.description = rule['description']
     match = messages.SecurityPolicyRuleMatcher()
-    match.srcIpRanges = rule['match']['srcIpRanges']
+    if 'srcIpRanges' in rule['match']:
+      match.srcIpRanges = rule['match']['srcIpRanges']
+    if 'versionedExpr' in rule['match']:
+      match.versionedExpr = ConvertToEnum(rule['match']['versionedExpr'],
+                                          messages)
+    if 'config' in rule['match']:
+      if 'srcIpRanges' in rule['match']['config']:
+        match.config = messages.SecurityPolicyRuleMatcherConfig(
+            srcIpRanges=rule['match']['config']['srcIpRanges'])
     security_policy_rule.match = match
     security_policy_rule.priority = rule['priority']
     security_policy_rule.preview = rule['preview']
@@ -65,6 +76,20 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
   security_policy.rules = rules
 
   return security_policy
+
+
+def ConvertToEnum(versioned_expr, messages):
+  """Converts a string version of a versioned expr to the enum representation.
+
+  Args:
+    versioned_expr: string, string version of versioned expr to convert.
+    messages: messages, The set of available messages.
+
+  Returns:
+    A versioned expression enum.
+  """
+  return messages.SecurityPolicyRuleMatcher.VersionedExprValueValuesEnum(
+      versioned_expr)
 
 
 def WriteToFile(output_file, security_policy, file_format):

@@ -13,6 +13,7 @@
 # limitations under the License.
 """API utilities for access context manager."""
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 
 _API_NAME = 'accesscontextmanager'
 
@@ -29,3 +30,16 @@ def GetMessages(version=None):
 def GetClient(version=None):
   version = version or _GetDefaultVersion()
   return apis.GetClientInstance(_API_NAME, version)
+
+
+class OperationPoller(waiter.CloudOperationPoller):
+
+  def __init__(self, result_service, operation_service, resource_ref):
+    super(OperationPoller, self).__init__(result_service, operation_service)
+    self.resource_ref = resource_ref
+
+  def GetResult(self, operation):
+    del operation  # Unused in GetResult
+    request_type = self.result_service.GetRequestType('Get')
+    return self.result_service.Get(request_type(
+        name=self.resource_ref.RelativeName()))

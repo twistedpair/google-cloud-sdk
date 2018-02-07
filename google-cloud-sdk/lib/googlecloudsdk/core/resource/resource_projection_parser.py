@@ -14,6 +14,8 @@
 
 """A class for parsing a resource projection expression."""
 
+from __future__ import absolute_import
+from __future__ import division
 import copy
 import re
 
@@ -22,6 +24,8 @@ from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_transform
+
+import six
 
 
 class Parser(object):
@@ -154,7 +158,7 @@ class Parser(object):
       self._snake_re = re.compile('((?<=[a-z0-9])[A-Z]+|(?!^)[A-Z](?=[a-z]))')
     label = ''
     for index in reversed(key):
-      if isinstance(index, basestring):
+      if isinstance(index, six.string_types):
         key_snake = self._snake_re.sub(r'_\1', index).upper()
         if label:
           label = key_snake + '_' + label
@@ -206,7 +210,7 @@ class Parser(object):
       if not self.__key_attributes_only or not attribute.order:
         # Only an attributes_only attribute with explicit :sort=N can be hidden.
         attribute.hidden = False
-    elif isinstance(name, (int, long)) and None in tree:
+    elif isinstance(name, six.integer_types) and None in tree:
       # New projection for explicit name using slice defaults.
       tree[name] = copy.deepcopy(tree[None])
       attribute = tree[name].attribute

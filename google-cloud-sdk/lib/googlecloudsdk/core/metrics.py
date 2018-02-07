@@ -14,6 +14,8 @@
 
 """Used to collect anonymous SDK metrics."""
 
+from __future__ import absolute_import
+from __future__ import division
 import atexit
 import json
 import os
@@ -36,6 +38,8 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+
+import six
 
 
 _GA_ENDPOINT = 'https://ssl.google-analytics.com/batch'
@@ -441,8 +445,9 @@ class _MetricsCollector(object):
         ('el', event.label),
         ('ev', event.value),
     ]
-    custom_dimensions = [(k, v) for k, v in event.custom_dimensions.iteritems()
-                         if v is not None]
+    custom_dimensions = [
+        (k, v) for k, v in six.iteritems(event.custom_dimensions)
+        if v is not None]
     params.extend(sorted(custom_dimensions))
     params.extend(self._ga_event_params)
     data = urllib.urlencode(params)
@@ -607,7 +612,7 @@ def CaptureAndLogException(func):
       return func(*args, **kwds)
     # pylint:disable=bare-except
     except:
-      log.debug('Exception captured in %s', func.func_name, exc_info=True)
+      log.debug('Exception captured in %s', func.__name__, exc_info=True)
   return Wrapper
 
 

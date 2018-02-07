@@ -132,7 +132,8 @@ def ArgsForClusterRef(parser, beta=False):
       type=arg_parsers.Duration(),
       metavar='TIMEOUT',
       default='10m',
-      help='The maximum duration of each initialization action.')
+      help=('The maximum duration of each initialization action. See '
+            '$ gcloud topic datetimes for information on duration formats.'))
   parser.add_argument(
       '--num-masters',
       type=arg_parsers.CustomFunctionValidator(

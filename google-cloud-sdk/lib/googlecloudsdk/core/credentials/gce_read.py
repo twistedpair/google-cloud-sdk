@@ -14,10 +14,14 @@
 
 """Utility functions for opening a GCE URL and getting contents."""
 
+from __future__ import absolute_import
+from __future__ import division
 import os
-import urllib2
 
 from googlecloudsdk.core import properties
+
+from six.moves import urllib
+
 
 GOOGLE_GCE_METADATA_URI = 'http://{}/computeMetadata/v1'.format(
     os.getenv('GCE_METADATA_ROOT', 'metadata.google.internal'))
@@ -45,8 +49,8 @@ GOOGLE_GCE_METADATA_HEADERS = {'Metadata-Flavor': 'Google'}
 
 def ReadNoProxy(uri):
   """Opens a URI with metadata headers, without a proxy, and reads all data.."""
-  request = urllib2.Request(uri, headers=GOOGLE_GCE_METADATA_HEADERS)
+  request = urllib.request.Request(uri, headers=GOOGLE_GCE_METADATA_HEADERS)
   timeout_property = (
       properties.VALUES.compute.gce_metadata_read_timeout_sec.GetInt())
-  return urllib2.build_opener(urllib2.ProxyHandler({})).open(
+  return urllib.request.build_opener(urllib.request.ProxyHandler({})).open(
       request, timeout=timeout_property).read()

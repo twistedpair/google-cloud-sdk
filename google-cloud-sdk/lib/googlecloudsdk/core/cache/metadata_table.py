@@ -18,11 +18,14 @@ Used by persistent cache implementations that maintain a metadata table to keep
 track of cache tables.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import abc
 
 from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import persistent_cache_base
 
+import six
 from typing import Optional  # pylint: disable=unused-import, for pytype
 
 
@@ -63,7 +66,8 @@ class Metadata(object):
     return (name, columns, keys, timeout, modified, restricted, version)
 
 
-class CacheUsingMetadataTable(persistent_cache_base.Cache):
+@six.add_metaclass(abc.ABCMeta)
+class CacheUsingMetadataTable(persistent_cache_base.Cache):  # pytype: disable=ignored-abstractmethod
   """A persistent cache metadata table implementation layer.
 
   Attributes:
@@ -72,8 +76,6 @@ class CacheUsingMetadataTable(persistent_cache_base.Cache):
     _restricted: The set of restricted table names.
     _tables: The map of open table objects.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, table, name, create=True, timeout=0, version=None):
     super(CacheUsingMetadataTable, self).__init__(

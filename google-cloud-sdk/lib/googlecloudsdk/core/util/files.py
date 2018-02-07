@@ -14,6 +14,8 @@
 
 """Some general file utilities used that can be used by the Cloud SDK."""
 
+from __future__ import absolute_import
+from __future__ import division
 import contextlib
 import errno
 import hashlib
@@ -29,6 +31,9 @@ import traceback
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
+
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
 NUM_RETRIES = 10
 
@@ -87,7 +92,7 @@ def CopyTree(src, dst):
     raise shutil.Error(errors)
 
 
-def MakeDir(path, mode=0777):
+def MakeDir(path, mode=0o777):
   """Creates the given directory and its parents and does not fail if it exists.
 
   Args:
@@ -221,7 +226,7 @@ def _HandleRemoveError(func, failed_path, exc_info):
     # Always raise the original error.
     # raises is weird in that you can raise exc_info directly even though it's
     # a tuple.
-    raise exc_info[0], exc_info[1], exc_info[2]
+    six.reraise(exc_info[0], exc_info[1], exc_info[2])
 
 
 def RmTree(path):
@@ -237,7 +242,7 @@ def RmTree(path):
   # containing unicode characters. If the arg to shutil.rmtree() is not unicode
   # then any child unicode files will raise an exception. Coercing dir_path to
   # unicode makes shutil.rmtree() play nice with unicode.
-  path = unicode(path)
+  path = six.text_type(path)
   shutil.rmtree(path, onerror=_HandleRemoveError)
   retries_left = NUM_RETRIES
   while os.path.isdir(path) and retries_left > 0:
@@ -504,7 +509,7 @@ def HasWriteAccessInDir(directory):
   for _ in range(10):
 
     try:
-      fd = os.open(path, os.O_RDWR | os.O_CREAT, 0666)
+      fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o666)
       os.close(fd)
     except OSError as e:
       if e.errno == errno.EACCES:
@@ -568,7 +573,7 @@ class TemporaryDirectory(object):
               encoding.Decode(traceback.format_exc()),
               prev_exc_type,
               encoding.Decode(prev_exc_val)))
-      raise prev_exc_type, message, prev_exc_trace
+      six.reraise(prev_exc_type, message, prev_exc_trace)
     # always return False so any exceptions will be re-raised
     return False
 
@@ -633,7 +638,7 @@ class Checksum(object):
     # containing unicode characters. If the arg to os.walk() is not unicode then
     # any child unicode files will raise an exception. Coercing dir_path to
     # unicode makes os.walk() play nice with unicode.
-    dir_path = unicode(dir_path)
+    dir_path = six.text_type(dir_path)
     for root, dirs, files in os.walk(dir_path):
       dirs.sort(key=os.path.normcase)
       files.sort(key=os.path.normcase)
@@ -715,7 +720,7 @@ def OpenForWritingPrivate(path, binary=False):
   parent_dir_path, _ = os.path.split(path)
   full_parent_dir_path = encoding.Decode(
       os.path.realpath(os.path.expanduser(parent_dir_path)))
-  MakeDir(full_parent_dir_path, mode=0700)
+  MakeDir(full_parent_dir_path, mode=0o700)
 
   flags = os.O_RDWR | os.O_CREAT | os.O_TRUNC
   # Accommodate Windows; stolen from python2.6/tempfile.py.
@@ -724,7 +729,7 @@ def OpenForWritingPrivate(path, binary=False):
     if binary:
       flags |= os.O_BINARY
 
-  fd = os.open(path, flags, 0600)
+  fd = os.open(path, flags, 0o600)
   return os.fdopen(fd, 'w')
 
 
@@ -989,7 +994,7 @@ def WriteFileAtomically(file_name, contents):
     raise ValueError('Empty file_name [{}] or contents [{}].'.format(
         file_name, contents))
 
-  if not isinstance(contents, basestring):
+  if not isinstance(contents, six.string_types):
     raise TypeError('Invalid contents [{}].'.format(contents))
 
   if platforms.OperatingSystem.IsWindows():

@@ -14,6 +14,9 @@
 
 """Iterable peek utilities."""
 
+from __future__ import absolute_import
+from __future__ import division
+
 
 class Peeker(object):
   """Peeks the first element from an iterable.
@@ -45,8 +48,8 @@ class Peeker(object):
     """Peeks the first item from the iterable."""
     try:
       # Object is a generator or iterator.
-      return self._iterable.next()
-    except AttributeError:
+      return next(self._iterable)
+    except TypeError:
       pass
     except StopIteration:
       self._peek_seen = True
@@ -66,8 +69,8 @@ class Peeker(object):
       return self._peek
     try:
       # Object is a generator or iterator.
-      return self._iterable.next()
-    except AttributeError:
+      return next(self._iterable)
+    except TypeError:
       pass
     try:
       # Object is a list.
@@ -171,8 +174,8 @@ class Tapper(object):
       return self._injected_value
     try:
       # Object is a generator or iterator.
-      return self._iterable.next()
-    except AttributeError:
+      return next(self._iterable)
+    except TypeError:
       pass
     except StopIteration:
       self._tap.Done()

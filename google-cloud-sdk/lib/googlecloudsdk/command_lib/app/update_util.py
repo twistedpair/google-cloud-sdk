@@ -15,6 +15,7 @@
 """Utilities for `gcloud app update` command."""
 
 from googlecloudsdk.api_lib.app.api import appengine_app_update_api_client
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import progress_tracker
 
@@ -22,13 +23,13 @@ from googlecloudsdk.core.console import progress_tracker
 def AddAppUpdateFlags(parser, enable_use_container_optimized_os=False):
   """Add the common flags to a app update command."""
 
-  parser.add_argument('--split-health-checks', action='store_true',
-                      default=None,
+  parser.add_argument('--split-health-checks',
+                      action=arg_parsers.StoreTrueFalseAction,
                       help='Enables/disables split health checks by default '
                            'on new deployments.')
   if enable_use_container_optimized_os:
-    parser.add_argument('--use-container-optimized-os', action='store_true',
-                        default=None,
+    parser.add_argument('--use-container-optimized-os',
+                        action=arg_parsers.StoreTrueFalseAction,
                         help='Enables/disables Container-Optimized OS as Flex '
                              'base VM image by default on new deployments.')
 

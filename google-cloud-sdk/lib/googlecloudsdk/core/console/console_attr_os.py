@@ -16,6 +16,8 @@
 # Ignore all type checks because of os specific imports
 # type: ignore
 
+from __future__ import absolute_import
+from __future__ import division
 import os
 import sys
 

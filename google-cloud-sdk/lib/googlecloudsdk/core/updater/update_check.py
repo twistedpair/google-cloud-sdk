@@ -31,6 +31,8 @@ about the last update check.  The general process is as follows:
    in the component snapshot.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import json
 import os
 import time
@@ -38,6 +40,8 @@ import time
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core.updater import schemas
+
+import six
 
 
 class UpdateCheckData(object):
@@ -201,7 +205,7 @@ class UpdateCheckData(object):
     self._data.last_nag_times = (
         dict(
             (name, value)
-            for name, value in self._data.last_nag_times.iteritems()
+            for name, value in six.iteritems(self._data.last_nag_times)
             if name in activated_ids))
 
   def Notify(self, command_path):

@@ -1324,11 +1324,13 @@ class NodeConfig(_messages.Message):
       than 128 bytes in length. These are reflected as part of a URL in the
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
-      four reserved keys: "instance-template", "kube-env", "startup-script",
-      and "user-data"  Values are free-form strings, and only have meaning as
-      interpreted by the image running in the instance. The only restriction
-      placed on them is that each value's size must be less than or equal to
-      32 KB.  The total size of all keys and values must be less than 512 KB.
+      reserved keys:  "cluster-name"  "cluster-uid"  "configure-sh"  "gci-
+      update-strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-
+      env"  "startup-script"  "user-data"  Values are free-form strings, and
+      only have meaning as interpreted by the image running in the instance.
+      The only restriction placed on them is that each value's size must be
+      less than or equal to 32 KB.  The total size of all keys and values must
+      be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -1364,11 +1366,13 @@ class NodeConfig(_messages.Message):
       than 128 bytes in length. These are reflected as part of a URL in the
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
-      four reserved keys: "instance-template", "kube-env", "startup-script",
-      and "user-data"  Values are free-form strings, and only have meaning as
-      interpreted by the image running in the instance. The only restriction
-      placed on them is that each value's size must be less than or equal to
-      32 KB.  The total size of all keys and values must be less than 512 KB.
+      reserved keys:  "cluster-name"  "cluster-uid"  "configure-sh"  "gci-
+      update-strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-
+      env"  "startup-script"  "user-data"  Values are free-form strings, and
+      only have meaning as interpreted by the image running in the instance.
+      The only restriction placed on them is that each value's size must be
+      less than or equal to 32 KB.  The total size of all keys and values must
+      be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -1439,12 +1443,13 @@ class NodeConfig(_messages.Message):
     Keys must conform to the regexp [a-zA-Z0-9-_]+ and be less than 128 bytes
     in length. These are reflected as part of a URL in the metadata server.
     Additionally, to avoid ambiguity, keys must not conflict with any other
-    metadata keys for the project or be one of the four reserved keys:
-    "instance-template", "kube-env", "startup-script", and "user-data"  Values
-    are free-form strings, and only have meaning as interpreted by the image
-    running in the instance. The only restriction placed on them is that each
-    value's size must be less than or equal to 32 KB.  The total size of all
-    keys and values must be less than 512 KB.
+    metadata keys for the project or be one of the reserved keys:  "cluster-
+    name"  "cluster-uid"  "configure-sh"  "gci-update-strategy"  "gci-ensure-
+    gke-docker"  "instance-template"  "kube-env"  "startup-script"  "user-
+    data"  Values are free-form strings, and only have meaning as interpreted
+    by the image running in the instance. The only restriction placed on them
+    is that each value's size must be less than or equal to 32 KB.  The total
+    size of all keys and values must be less than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.

@@ -14,6 +14,8 @@
 
 """A class that creates resource projection specification."""
 
+from __future__ import absolute_import
+from __future__ import division
 import copy
 import sys
 

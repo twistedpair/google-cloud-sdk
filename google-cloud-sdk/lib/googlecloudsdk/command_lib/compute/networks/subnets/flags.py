@@ -59,8 +59,7 @@ def AddUpdateArgs(parser, include_secondary_ranges=False):
 
   updated_field.add_argument(
       '--enable-private-ip-google-access',
-      action='store_true',
-      default=None,  # Tri-valued, None => do not change.
+      action=arg_parsers.StoreTrueFalseAction,
       help=('Enable/disable access to Google Cloud APIs from this subnet for '
             'instances without a public ip address.'))
 

@@ -40,16 +40,21 @@ Pythonicness of the Transform*() methods:
       Exceptions for arguments explicitly under the caller's control are OK.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import base64
 import datetime
 import re
-import StringIO
-import urllib2
 
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import times
+
+import six
+from six.moves import map  # pylint: disable=redefined-builtin
+from six.moves import StringIO
+from six.moves import urllib
 
 
 def GetBooleanArgValue(arg):
@@ -124,7 +129,7 @@ def TransformBaseName(r, undefined=''):
   """
   if not r:
     return undefined
-  s = unicode(r)
+  s = six.text_type(r)
   for separator in ('/', '\\'):
     i = s.rfind(separator)
     if i >= 0:
@@ -170,7 +175,7 @@ def TransformColor(r, red=None, yellow=None, green=None, blue=None, **kwargs):
     For the resource string "CAUTION means GO FASTER" displays the
     substring "CAUTION" in yellow.
   """
-  string = unicode(r)
+  string = six.text_type(r)
   for color, pattern in (('red', red), ('yellow', yellow), ('green', green),
                          ('blue', blue)):
     if pattern and re.search(pattern, string):
@@ -248,7 +253,7 @@ def TransformDate(r, format='%Y-%m-%dT%H:%M:%S', unit=1, undefined='',
 
   # Check if r is a serialized datetime object.
   original_repr = resource_property.Get(r, ['datetime'], None)
-  if original_repr and isinstance(original_repr, basestring):
+  if original_repr and isinstance(original_repr, six.string_types):
     r = original_repr
 
   tz_out = times.GetTimeZone(tz) if tz else None
@@ -487,7 +492,7 @@ def TransformEnum(r, projection, enums, inverse=False, undefined=''):
     if normal:
       # Create the inverse dict and memoize it in projection.symbols.
       descriptions = {}
-      for k, v in normal.iteritems():
+      for k, v in six.iteritems(normal):
         descriptions[v] = k
       projection.symbols[type_name] = descriptions
   return descriptions.get(r, undefined) if descriptions else undefined
@@ -505,7 +510,7 @@ def TransformError(r, message=None):
     Error: This will not generate a stack trace.
   """
   if message is None:
-    message = unicode(r)
+    message = six.text_type(r)
   raise resource_exceptions.Error(message)
 
 
@@ -662,7 +667,7 @@ def TransformGroup(r, *keys):
   """
   if not r:
     return '[]'
-  buf = StringIO.StringIO()
+  buf = StringIO()
   sep = None
   parsed_keys = [_GetParsedKey(key) for key in keys]
   for item in r:
@@ -671,7 +676,7 @@ def TransformGroup(r, *keys):
     else:
       sep = ' '
     if not parsed_keys:
-      buf.write('[{0}]'.format(unicode(item)))
+      buf.write('[{0}]'.format(six.text_type(item)))
     else:
       buf.write('[')
       sub = None
@@ -683,7 +688,7 @@ def TransformGroup(r, *keys):
           sub = ': '
         value = resource_property.Get(item, key, None)
         if value is not None:
-          buf.write(unicode(value))
+          buf.write(six.text_type(value))
       buf.write(']')
   return buf.getvalue()
 
@@ -742,7 +747,7 @@ def TransformJoin(r, sep='/', undefined=''):
     Returns "a!b!c!d".
   """
   try:
-    parts = [unicode(i) for i in r]
+    parts = [six.text_type(i) for i in r]
     return sep.join(parts) or undefined
   except (AttributeError, TypeError):
     return undefined
@@ -780,14 +785,15 @@ def TransformList(r, show='', undefined='', separator=','):
   """
   if isinstance(r, dict):
     if show == 'keys':
-      return separator.join([unicode(k) for k in sorted(r)])
+      return separator.join([six.text_type(k) for k in sorted(r)])
     elif show == 'values':
-      return separator.join([unicode(v) for _, v in sorted(r.iteritems())])
+      return separator.join(
+          [six.text_type(v) for _, v in sorted(six.iteritems(r))])
     else:
       return separator.join([u'{k}={v}'.format(k=k, v=v)
                              for k, v in sorted(r.iteritems())])
   if isinstance(r, list):
-    return separator.join(map(unicode, r))
+    return separator.join(map(six.text_type, r))
   return r or undefined
 
 
@@ -907,7 +913,7 @@ def TransformScope(r, *args):
   """
   if not r:
     return ''
-  r = urllib2.unquote(unicode(r))  # pytype: disable=module-attr
+  r = urllib.parse.unquote(six.text_type(r))  # pytype: disable=module-attr
   if '/' not in r:
     return r
   # Checking for regions and/or zones is the most common use case.
@@ -933,7 +939,7 @@ def TransformSegment(r, index=-1, undefined=''):
   """
   if not r:
     return undefined
-  r = urllib2.unquote(unicode(r))  # pytype: disable=module-attr
+  r = urllib.parse.unquote(six.text_type(r))  # pytype: disable=module-attr
   segments = r.split('/')
   try:
     return segments[int(index)] or undefined
@@ -1245,9 +1251,9 @@ def TransformUri(r, undefined='.'):
       attr = attr()
     except TypeError:
       pass
-    return attr if isinstance(attr, (basestring, buffer)) else None
+    return attr if isinstance(attr, (six.string_types, buffer)) else None
 
-  if isinstance(r, (basestring, buffer)):
+  if isinstance(r, (six.string_types, buffer)):
     if r.startswith('https://'):
       return r
   elif r:

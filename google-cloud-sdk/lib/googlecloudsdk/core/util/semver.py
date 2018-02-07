@@ -37,6 +37,8 @@ operators, we follow the SemVer spec of precedence and ignore the build number
 and case of alphanumeric strings.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import re
 
 

@@ -24,3 +24,11 @@ def SetFieldFromArg(api_field, arg_name):
         req, api_field, arg_utils.GetFromNamespace(args, arg_name))
     return req
   return Process
+
+
+def SetFieldFromRelativeName(api_field):
+  def Process(ref, args, request):
+    del args  # Unused in Process
+    arg_utils.SetFieldInMessage(request, api_field, ref.RelativeName())
+    return request
+  return Process

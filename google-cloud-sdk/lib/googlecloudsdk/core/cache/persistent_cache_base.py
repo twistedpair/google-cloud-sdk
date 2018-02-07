@@ -58,11 +58,15 @@ disables expiry check. These can be used by meta commands/functions to view
 and debug cache data without modifying the underlying persistent data.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import abc
 import time
 import urllib
 
 from googlecloudsdk.core.cache import exceptions
+
+import six
 
 
 def Now():
@@ -70,7 +74,8 @@ def Now():
   return time.time()
 
 
-class Table(object):
+@six.add_metaclass(abc.ABCMeta)
+class Table(object):  # pytype: disable=ignored-abstractmethod
   """A persistent cache table object.
 
   This object should only be instantiated by a Cache object.
@@ -89,8 +94,6 @@ class Table(object):
     timeout: A float number of seconds. Tables older than (modified+timeout)
       are invalid. 0 means no timeout.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, cache, name, columns=1, keys=1, timeout=0, modified=0,
                restricted=False):
@@ -244,7 +247,8 @@ class Table(object):
     pass
 
 
-class Cache(object):
+@six.add_metaclass(abc.ABCMeta)
+class Cache(object):  # pytype: disable=ignored-abstractmethod
   r"""A persistent cache object.
 
   This class is also a context manager. Changes are automaticaly committed if
@@ -260,8 +264,6 @@ class Cache(object):
     version: A caller defined version string that must match the version string
       stored when the persistent object was created.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, name, create=True, timeout=None, version=None):
     self.name = Cache.EncodeName(name)

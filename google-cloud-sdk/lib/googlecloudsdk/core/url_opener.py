@@ -14,14 +14,18 @@
 
 """Helper function to open a url using a proxy using httlib2 connections."""
 
-import urllib2
+from __future__ import absolute_import
+from __future__ import division
 
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import properties
+
 import httplib2
+from six.moves import urllib
 
 
-class HttplibConnectionHandler(urllib2.HTTPHandler, urllib2.HTTPSHandler):
+class HttplibConnectionHandler(urllib.request.HTTPHandler,
+                               urllib.request.HTTPSHandler):
   """urllib2 Handler Class to use httplib2 connections.
 
   This handler makes urllib2 use httplib2.HTTPSConnectionWithTimeout. The
@@ -68,6 +72,6 @@ def urlopen(req, data=None, timeout=60):
   # We do the proxy detection in http_proxy.GetHttpProxyInfo and pass it to
   # httplib2.HTTPSConnectionWithTimeout via proxy info object.
   # httplib2.HTTPSConnectionWithTimeout takes care of handling proxies.
-  opener = urllib2.build_opener(urllib2.ProxyHandler({}),
-                                HttplibConnectionHandler())
+  opener = urllib.request.build_opener(urllib.request.ProxyHandler({}),
+                                       HttplibConnectionHandler())
   return opener.open(req, data, timeout)

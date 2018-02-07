@@ -16,6 +16,7 @@
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.core.util import text
 
 
 class ClusterCompleter(completers.ListCommandCompleter):
@@ -92,9 +93,13 @@ class ArgAdder(object):
         required=True)
     return self
 
-  def AddInstance(self, positional=True, required=True, multiple=False):
+  def AddInstance(self, positional=True, required=True, multiple=False,
+                  additional_help=None):
     """Add argument for instance ID to parser."""
-    help_text = 'ID of the instance.'
+    help_text = 'ID of the {}.'.format(text.Pluralize(2 if multiple else 1,
+                                                      'instance'))
+    if additional_help:
+      help_text = ' '.join([help_text, additional_help])
     name = 'instance' if positional else '--instance'
     args = {
         'completer': InstanceCompleter,

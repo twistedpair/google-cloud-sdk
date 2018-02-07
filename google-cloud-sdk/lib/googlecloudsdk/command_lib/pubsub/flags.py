@@ -92,8 +92,8 @@ def AddSeekFlags(parser):
           The time to seek to. Messages in the subscription that
           were published before this time are marked as acknowledged, and
           messages retained in the subscription that were published after
-          this time are marked as unacknowledged. See `gcloud topic
-          datetimes` for information on time formats.""")
+          this time are marked as unacknowledged.
+          See $ gcloud topic datetimes for information on time formats.""")
   seek_to_group.add_argument(
       '--snapshot',
       help='The name of the snapshot. The snapshot\'s topic must be the same '

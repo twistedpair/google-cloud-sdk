@@ -39,51 +39,85 @@ def GetTestablePermissions(iam_client, messages, resource):
       batch_size_attribute='pageSize')
 
 
-def GetTestingPermissions(iam_client, messages, resource, permissions):
-  """Returns the TESTING permissions among the permissions provided.
+class PermissionsHelper(object):
+  """Get different kinds of permissions list from permissions provided.
 
-  Args:
-    iam_client: The iam client.
+  Attributes:
     messages: The iam messages.
-    resource: Resource reference for the project/organization whose permissions
-    are being inspected.
-    permissions: A list of permissions to inspect.
-
-  Returns:
-    List of TESTING permissions among the given permissions.
+    source_permissions: A list of permissions to inspect.
+    testable_permissions_map: A dict maps from permissions name string to
+        Permission message provided by the API.
   """
-  return GetValidAndTestingPermissions(iam_client, messages, resource,
-                                       permissions)[1]
 
+  def __init__(self, iam_client, messages, resource, permissions):
+    """Create a PermissionsHelper object.
 
-def GetValidAndTestingPermissions(iam_client, messages, resource, permissions):
-  """Returns the valid and TESTING permissions among the permissions provided.
+    To get the testable permissions for the given resource and store as a dict.
 
-  Args:
-    iam_client: The iam client.
-    messages: The iam messages.
-    resource: Resource reference for the project/organization whose permissions
-    are being inspected.
-    permissions: A list of permissions to inspect.
+    Args:
+      iam_client: The iam client.
+      messages: The iam messages.
+      resource: Resource reference for the project/organization whose
+      permissions are being inspected.
+      permissions: A list of permissions to inspect.
+    """
 
-  Returns:
-    List of valid permissions to create among the given permissions.
-    List of TESTING permissions among the given permissions.
-  """
-  if not permissions:
-    return [], []
-  valid_permissions = []
-  testing_permissions = []
-  source_permissions = set(permissions)
-  testable_permissions = GetTestablePermissions(iam_client, messages, resource)
-  for testable_permission in testable_permissions:
-    if (testable_permission.name in source_permissions and
-        (testable_permission.customRolesSupportLevel !=
-         messages.Permission.CustomRolesSupportLevelValueValuesEnum.
-         NOT_SUPPORTED)):
-      valid_permissions.append(testable_permission.name)
-    if (testable_permission.name in source_permissions and
-        (testable_permission.customRolesSupportLevel == messages.
-         Permission.CustomRolesSupportLevelValueValuesEnum.TESTING)):
-      testing_permissions.append(testable_permission.name)
-  return valid_permissions, testing_permissions
+    self.messages = messages
+    self.source_permissions = permissions
+    self.testable_permissions_map = {}
+    if permissions:
+      for permission in GetTestablePermissions(iam_client, messages, resource):
+        self.testable_permissions_map[permission.name] = permission
+
+  def GetTestingPermissions(self):
+    """Returns the TESTING permissions among the permissions provided."""
+    testing_permissions = []
+    for permission in self.source_permissions:
+      if (permission in self.testable_permissions_map and
+          (self.testable_permissions_map[permission].customRolesSupportLevel ==
+           self.messages.Permission.CustomRolesSupportLevelValueValuesEnum.
+           TESTING)):
+        testing_permissions.append(permission)
+    return testing_permissions
+
+  def GetValidPermissions(self):
+    """Returns the valid permissions among the permissions provided."""
+    valid_permissions = []
+    for permission in self.source_permissions:
+      if (permission in self.testable_permissions_map and
+          (self.testable_permissions_map[permission].customRolesSupportLevel !=
+           self.messages.Permission.CustomRolesSupportLevelValueValuesEnum.
+           NOT_SUPPORTED)):
+        valid_permissions.append(permission)
+    return valid_permissions
+
+  def GetNotSupportedPermissions(self):
+    """Returns the not supported permissions among the permissions provided."""
+    not_supported_permissions = []
+    for permission in self.source_permissions:
+      if (permission in self.testable_permissions_map and
+          (self.testable_permissions_map[permission].customRolesSupportLevel ==
+           self.messages.Permission.CustomRolesSupportLevelValueValuesEnum.
+           NOT_SUPPORTED)):
+        not_supported_permissions.append(permission)
+    return not_supported_permissions
+
+  def GetApiDisabledPermissons(self):
+    """Returns the API disabled permissions among the permissions provided."""
+    api_disabled_permissions = []
+    for permission in self.source_permissions:
+      if (permission in self.testable_permissions_map and
+          (self.testable_permissions_map[permission].customRolesSupportLevel !=
+           self.messages.Permission.CustomRolesSupportLevelValueValuesEnum.
+           NOT_SUPPORTED) and
+          self.testable_permissions_map[permission].apiDisabled):
+        api_disabled_permissions.append(permission)
+    return api_disabled_permissions
+
+  def GetNotApplicablePermissions(self):
+    """Returns the not applicable permissions among the permissions provided."""
+    not_applicable_permissions = []
+    for permission in self.source_permissions:
+      if permission not in self.testable_permissions_map:
+        not_applicable_permissions.append(permission)
+    return not_applicable_permissions

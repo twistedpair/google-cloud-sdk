@@ -14,6 +14,8 @@
 
 """Credentials for use with the developer shell."""
 
+from __future__ import absolute_import
+from __future__ import division
 import datetime
 import json
 import os
@@ -21,7 +23,9 @@ import os
 from apitools.base.protorpclite import messages
 
 from googlecloudsdk.core import config
+
 from oauth2client import client
+import six
 
 
 DEVSHELL_ENV = 'DEVSHELL_CLIENT_PORT'
@@ -58,7 +62,7 @@ def MessageToPBLiteList(msg):
   max_index = max(index_keys.keys())
   json_list = [None] * max_index
 
-  for index, key in index_keys.iteritems():
+  for index, key in six.iteritems(index_keys):
     value = getattr(msg, key, None)
     if isinstance(value, messages.Message):
       value = MessageToPBLiteList(value)

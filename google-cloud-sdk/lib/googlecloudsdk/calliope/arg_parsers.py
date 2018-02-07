@@ -1300,3 +1300,26 @@ class BufferedFileInput(object):
     except (IOError, OSError) as e:
       raise ArgumentTypeError(
           "Can't open '{0}': {1}".format(name, e))
+
+
+class StoreTrueFalseAction(argparse._StoreTrueAction):  # pylint: disable=protected-access
+  """Argparse action that acts as a combination of store_true and store_false.
+
+  Calliope already gives any bool-type arguments the standard and `--no-`
+  variants. In most cases we only want to document the option that does
+  something---if we have `default=False`, we don't want to show `--no-foo`,
+  since it won't do anything.
+
+  But in some cases we *do* want to show both variants: one example is when
+  `--foo` means "enable," `--no-foo` means "disable," and neither means "do
+  nothing." The obvious way to represent this is `default=None`; however, (1)
+  the default value of `default` is already None, so most boolean actions would
+  have this setting by default (not what we want), and (2) we still want an
+  option to have this True/False/None behavior *without* the flag documentation.
+
+  To get around this, we have an opt-in version of the same thing that documents
+  both the flag and its inverse.
+  """
+
+  def __init__(self, *args, **kwargs):
+    super(StoreTrueFalseAction, self).__init__(*args, default=None, **kwargs)

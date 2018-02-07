@@ -17,6 +17,8 @@
 A detailed description of auth.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import datetime
 import json
 import os
@@ -31,6 +33,7 @@ from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.util import files
+
 import httplib2
 from oauth2client import client
 from oauth2client.contrib import gce as oauth2client_gce

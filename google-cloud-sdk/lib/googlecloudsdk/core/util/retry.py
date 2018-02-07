@@ -14,12 +14,16 @@
 
 """Implementation of retrying logic."""
 
+from __future__ import absolute_import
+from __future__ import division
 import collections
 import functools
 import itertools
 import random
 import sys
 import time
+
+import six
 
 
 _DEFAULT_JITTER_MS = 1000
@@ -171,7 +175,7 @@ class Retryer(object):
         TryFunc, should_retry_if=should_retry, sleep_ms=sleep_ms)
     if exc_info:
       # Exception that was not retried was raised. Re-raise.
-      raise exc_info[0], exc_info[1], exc_info[2]
+      six.reraise(exc_info[0], exc_info[1], exc_info[2])
     return result
 
   def RetryOnResult(self, func, args=None, kwargs=None,
@@ -212,7 +216,7 @@ class Retryer(object):
       result = func(*args, **kwargs)
       time_passed_ms = _GetCurrentTimeMs() - start_time_ms
       try:
-        sleep_from_gen = sleep_gen.next()
+        sleep_from_gen = next(sleep_gen)
       except StopIteration:
         time_to_wait_ms = -1
       else:
@@ -282,7 +286,7 @@ def RetryOnException(f=None, max_retrials=None, max_wait_ms=None,
                                       sleep_ms=sleep_ms)
     except MaxRetrialsException as mre:
       to_reraise = mre.last_result[1]
-      raise to_reraise[0], to_reraise[1], to_reraise[2]
+      six.reraise(to_reraise[0], to_reraise[1], to_reraise[2])
 
   return DecoratedFunction
 

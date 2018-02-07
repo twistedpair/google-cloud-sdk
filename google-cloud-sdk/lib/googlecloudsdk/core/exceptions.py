@@ -14,6 +14,8 @@
 
 """Base exceptions for the Cloud SDK."""
 
+from __future__ import absolute_import
+from __future__ import division
 import os
 
 from googlecloudsdk.core.util import platforms

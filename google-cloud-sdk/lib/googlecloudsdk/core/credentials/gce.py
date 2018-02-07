@@ -14,12 +14,15 @@
 
 """Fetching GCE metadata."""
 
-import mutex
-import urllib2
+from __future__ import absolute_import
+from __future__ import division
+import threading
 
 from googlecloudsdk.core.credentials import gce_cache
 from googlecloudsdk.core.credentials import gce_read
 from googlecloudsdk.core.util import retry
+
+from six.moves import urllib
 
 
 class Error(Exception):
@@ -39,11 +42,11 @@ def _ReadNoProxyWithCleanFailures(uri, http_errors_to_ignore=()):
   """Reads data from a URI with no proxy, yielding cloud-sdk exceptions."""
   try:
     return gce_read.ReadNoProxy(uri)
-  except urllib2.HTTPError as e:
+  except urllib.request.HTTPError as e:
     if e.code in http_errors_to_ignore:
       return None
     raise MetadataServerException(e)
-  except urllib2.URLError as e:
+  except urllib.request.URLError as e:
     raise CannotConnectToMetadataServerException(e)
 
 
@@ -186,7 +189,7 @@ class _GCEMetadata(object):
 
 
 _metadata = None  # type: _GCEMetadata
-_metadata_lock = mutex.mutex()
+_metadata_lock = threading.Lock()
 
 
 def Metadata():
@@ -196,10 +199,8 @@ def Metadata():
     _GCEMetadata, An object used to collect information from the GCE metadata
     server.
   """
-  def _CreateMetadata(unused_none):
+  with _metadata_lock:
     global _metadata
     if not _metadata:
       _metadata = _GCEMetadata()
-  _metadata_lock.lock(function=_CreateMetadata, argument=None)
-  _metadata_lock.unlock()
   return _metadata

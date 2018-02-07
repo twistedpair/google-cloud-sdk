@@ -69,7 +69,7 @@ def ValidateArgFromFile(arg_internal_name, arg_value):
 POSITIVE_INT_PARSER = arg_parsers.BoundedInt(1, sys.maxint)
 NONNEGATIVE_INT_PARSER = arg_parsers.BoundedInt(0, sys.maxint)
 TIMEOUT_PARSER = arg_parsers.Duration(lower_bound='1m', upper_bound='6h')
-ORIENTATION_LIST = ['portrait', 'landscape']
+ORIENTATION_LIST = ['portrait', 'landscape', 'default']
 
 
 def ValidateStringList(arg_internal_name, arg_value):
@@ -172,7 +172,7 @@ def _ValidatePositiveIntList(arg_internal_name, arg_value):
 
 
 def _ValidateOrientationList(arg_internal_name, arg_value):
-  """Validates that 'orientations' only contains 'portrait' and 'landscape'."""
+  """Validates that 'orientations' only contains allowable values."""
   arg_value = ValidateStringList(arg_internal_name, arg_value)
   for orientation in arg_value:
     _ValidateOrientation(orientation)

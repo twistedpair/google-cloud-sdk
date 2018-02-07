@@ -17,9 +17,12 @@
 A detailed description of auth.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import json
 
 from googlecloudsdk.core import config
+
 from oauth2client import service_account
 
 

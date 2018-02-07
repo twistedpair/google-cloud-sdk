@@ -273,8 +273,9 @@ def _GetDeviceCredentialFlags(combine_flags=True, only_modifiable=False):
     ])
   flags.append(
       base.Argument('--expiration-time', type=arg_parsers.Datetime.Parse,
-                    help=('The expiration time for the key in ISO 8601 '
-                          '(ex. `2017-01-01T00:00Z`) format.')))
+                    help=('The expiration time for the key. See '
+                          '$ gcloud topic datetimes for information on '
+                          'time formats.')))
   if not combine_flags:
     return flags
 

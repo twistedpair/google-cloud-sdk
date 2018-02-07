@@ -14,7 +14,9 @@
 
 """A utility for tokenizing strings."""
 
-import cStringIO
+from __future__ import absolute_import
+from __future__ import division
+import io
 
 __all__ = ['Literal', 'Separator', 'Tokenize']
 
@@ -55,8 +57,8 @@ def Tokenize(string, separators):
       Separator.
   """
   tokens = []
-  curr = cStringIO.StringIO()
-  buf = cStringIO.StringIO(string)
+  curr = io.BytesIO()
+  buf = io.BytesIO(string)
 
   while True:
     c = buf.read(1)
@@ -73,7 +75,7 @@ def Tokenize(string, separators):
     elif c in separators:
       tokens.append(Literal(curr.getvalue()))
       tokens.append(Separator(c))
-      curr = cStringIO.StringIO()
+      curr = io.BytesIO()
     else:
       curr.write(c)
 

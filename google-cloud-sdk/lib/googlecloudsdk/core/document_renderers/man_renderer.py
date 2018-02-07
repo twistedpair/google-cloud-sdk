@@ -14,6 +14,9 @@
 
 """Cloud SDK markdown document man page format renderer."""
 
+from __future__ import absolute_import
+from __future__ import division
+
 from googlecloudsdk.core.document_renderers import renderer
 
 

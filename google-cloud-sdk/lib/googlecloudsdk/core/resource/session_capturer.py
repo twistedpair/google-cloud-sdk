@@ -14,15 +14,14 @@
 
 """Session Dumper."""
 
-import __builtin__
+from __future__ import absolute_import
+from __future__ import division
 import abc
 import copy
 import io
 import json
 import random
-import StringIO
 import sys
-import types
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -31,6 +30,10 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import yaml_printer
 from googlecloudsdk.core.util import files
+
+import six
+from six.moves import builtins
+from six.moves import StringIO
 
 
 class _Mock(object):
@@ -56,7 +59,7 @@ class _StreamCapturerBase(io.IOBase):
 
   def __init__(self, real_stream):
     self._real_stream = real_stream
-    self._capturing_stream = StringIO.StringIO()
+    self._capturing_stream = StringIO()
 
   def isatty(self, *args, **kwargs):
     return True
@@ -100,17 +103,17 @@ class InputStreamCapturer(_StreamCapturerBase):
     return result
 
 
-class FileIoCapturerBase(object):
+@six.add_metaclass(abc.ABCMeta)
+class FileIoCapturerBase(object):  # pytype: disable=ignored-abstractmethod
   """A base class to capture fileIO."""
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self):
     self._outputs = []
     self._private_outputs = []
-    self._real_open = __builtin__.open
+    self._real_open = builtins.open
     self._real_private = files.OpenForWritingPrivate
     self._mocks = (
-        _Mock(__builtin__, 'open', new=self.Open),
+        _Mock(builtins, 'open', new=self.Open),
         _Mock(files, 'OpenForWritingPrivate', new=self.OpenForWritingPrivate),
     )
 
@@ -215,9 +218,9 @@ class SessionDeterminer(object):
     cls._mocks = []
 
 
-class _StateMock(object):
+@six.add_metaclass(abc.ABCMeta)
+class _StateMock(object):  # pytype: disable=ignored-abstractmethod
   """A class to represent a simple mock."""
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, default_value):
     self.default_value = default_value
@@ -285,7 +288,7 @@ def GetHttpRequestDict(uri, method, body, headers):
 
 def _FilterHeaders(headers):
   return {
-      k: v for k, v in headers.iteritems() if _KeepHeader(k)
+      k: v for k, v in six.iteritems(headers) if _KeepHeader(k)
   }
 
 
@@ -333,9 +336,9 @@ class SessionCapturer(object):
     """Captures command line args."""
     specified_args = {}
     command = args.command_path[1:]
-    for k, v in args.GetSpecifiedArgs().iteritems():
+    for k, v in six.iteritems(args.GetSpecifiedArgs()):
       if not k.startswith('--'):
-        if isinstance(v, basestring):
+        if isinstance(v, six.string_types):
           command.append(v)
         elif isinstance(v, list):
           command += v
@@ -366,7 +369,7 @@ class SessionCapturer(object):
 
   def CaptureState(self):
     state = {}
-    for k, v in self.STATE_MOCKS.iteritems():
+    for k, v in six.iteritems(self.STATE_MOCKS):
       result = v.Capture()
       if result != v.default_value:
         state[k] = result
@@ -377,7 +380,7 @@ class SessionCapturer(object):
   def CaptureProperties(self, all_values):
     values = copy.deepcopy(all_values)
     for k in ('capture_session_file', 'account'):
-      if values['core'].has_key(k):
+      if k in values['core']:
         values['core'].pop(k)
     self._records.append({
         'properties': values
@@ -427,12 +430,13 @@ class SessionCapturer(object):
 
   @staticmethod
   def _FinalizePrimitive(primitive):
-    if isinstance(primitive, basestring):
+    if isinstance(primitive, six.string_types):
       project = properties.VALUES.core.project.Get()
       if not project:
         return primitive
       return primitive.replace(project, 'fake-project')
-    elif isinstance(primitive, (int, long, float, types.NoneType,)):
+    elif (isinstance(primitive, (float, type(None))) or
+          isinstance(primitive, six.integer_types)):
       return primitive
     else:
       raise Exception('Unknown primitive type {}'.format(type(primitive)))
@@ -441,7 +445,7 @@ class SessionCapturer(object):
     if isinstance(records, dict):
       return {
           self._FinalizePrimitive(k):
-              self._FinalizeRecords(v) for k, v in records.iteritems()
+              self._FinalizeRecords(v) for k, v in six.iteritems(records)
       }
     elif isinstance(records, (list, tuple)):
       return [

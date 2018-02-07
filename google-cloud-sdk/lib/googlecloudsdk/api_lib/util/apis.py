@@ -17,7 +17,7 @@
 import re
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper
-from googlecloudsdk.api_lib.service_management import enable_api
+from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions

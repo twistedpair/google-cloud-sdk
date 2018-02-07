@@ -16,7 +16,11 @@
 
 """A module for dealing with unknown string and environment encodings."""
 
+from __future__ import absolute_import
+from __future__ import division
 import sys
+
+import six
 
 
 def Decode(string, encoding=None):
@@ -33,7 +37,7 @@ def Decode(string, encoding=None):
   Returns:
     The string with non-ASCII characters decoded to UNICODE.
   """
-  if isinstance(string, unicode):
+  if isinstance(string, six.text_type):
     # Our work is done here.
     return string
 
@@ -44,7 +48,7 @@ def Decode(string, encoding=None):
   except AttributeError:
     # The string does not have a decode method.
     try:
-      return unicode(string)
+      return six.text_type(string)
     except (TypeError, UnicodeError):
       # The string cannot be converted to unicode -- default to str() which will
       # catch objects with special __str__ methods.
@@ -138,7 +142,7 @@ def SetEncodedValue(env, name, value):
   if value is None:
     env.pop(name, None)
     return
-  if isinstance(value, unicode):
+  if isinstance(value, six.text_type):
     encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
     value = value.encode(encoding)
   env[name] = value

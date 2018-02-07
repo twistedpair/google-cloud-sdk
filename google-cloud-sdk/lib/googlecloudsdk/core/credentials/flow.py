@@ -16,13 +16,17 @@
 
 """
 
-from httplib import ResponseNotReady
+from __future__ import absolute_import
+from __future__ import division
+
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import pkg_resources
 from googlecloudsdk.core.util import platforms
 
 from oauth2client import client
 from oauth2client import tools
+from six.moves import input  # pylint: disable=redefined-builtin
+from six.moves.http_client import ResponseNotReady
 
 
 try:
@@ -172,7 +176,7 @@ def Run(flow, launch_browser=True, http=None,
         url=authorize_url,
     ))
     try:
-      code = raw_input('Enter verification code: ').strip()
+      code = input('Enter verification code: ').strip()
     except EOFError as e:
       raise AuthRequestRejectedException(e)
 

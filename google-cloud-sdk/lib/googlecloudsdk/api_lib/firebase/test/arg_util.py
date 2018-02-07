@@ -331,7 +331,7 @@ def AddMatrixArgs(parser):
       ```
       --device model=Nexus6
       --device version=23,orientation=portrait
-      --device model=shamu,version=22,locale=zh_CN,orientation=landscape
+      --device model=shamu,version=22,locale=zh_CN,orientation=default
       ```
       """)
   parser.add_argument(
@@ -367,7 +367,9 @@ def AddMatrixArgs(parser):
           min_length=1, max_length=2, choices=arg_validate.ORIENTATION_LIST),
       completer=arg_parsers.GetMultiCompleter(OrientationsCompleter),
       metavar='ORIENTATION',
-      help='The device orientation(s) to test against (default: portrait).')
+      help='The device orientation(s) to test against (default: portrait). '
+      'Specifying \'default\' will pick the preferred orientation '
+      'for the app.')
 
 
 def OrientationsCompleter(prefix, unused_parsed_args, unused_kwargs):

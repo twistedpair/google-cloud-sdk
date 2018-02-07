@@ -13,6 +13,9 @@
 # limitations under the License.
 
 """Module with logging related functionality for calliope."""
+
+from __future__ import absolute_import
+from __future__ import division
 from collections import OrderedDict
 import datetime
 import errno
@@ -26,6 +29,9 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import times
+
+import six
+
 
 DEFAULT_VERBOSITY = logging.WARNING
 DEFAULT_VERBOSITY_STRING = 'warning'
@@ -170,7 +176,7 @@ class _ConsoleWriter(object):
   def write(self, msg):
     log_msg = msg
     stream_msg = msg
-    if isinstance(msg, unicode):
+    if isinstance(msg, six.text_type):
       log_msg = msg.encode('utf8')
       stream_msg = msg.encode(self.encoding or 'utf8', 'replace')
 
@@ -276,7 +282,7 @@ class _JsonFormatter(logging.Formatter):
     """
     message_dict = OrderedDict()
     # This perserves the order in the output for each JSON message
-    for outfield, logfield in self.required_fields.iteritems():
+    for outfield, logfield in six.iteritems(self.required_fields):
       if outfield == 'version':
         message_dict[outfield] = STRUCTURED_RECORD_VERSION
       else:
@@ -722,7 +728,7 @@ def GetVerbosityName(verbosity=None):
   """
   if verbosity is None:
     verbosity = GetVerbosity()
-  for name, num in VALID_VERBOSITY_STRINGS.iteritems():
+  for name, num in six.iteritems(VALID_VERBOSITY_STRINGS):
     if verbosity == num:
       return name
   return None
@@ -892,7 +898,8 @@ def _PrintResourceChange(operation,
 
   if kind:
     msg.append(kind)
-  msg.append(u'[{0}]'.format(unicode(resource)))
+  if resource:
+    msg.append(u'[{0}]'.format(unicode(resource)))
   if details:
     msg.append(details)
   if failed:

@@ -46,7 +46,9 @@ def AddTimeoutFlag(parser, default='10m'):
       '--timeout',
       type=arg_parsers.Duration(),
       default=default,
-      help='Client side timeout on how long to wait for Datproc operations.',
+      help=('Client side timeout on how long to wait for Datproc operations. '
+            'See $ gcloud topic datetimes for information on duration '
+            'formats.'),
       hidden=True)
 
 

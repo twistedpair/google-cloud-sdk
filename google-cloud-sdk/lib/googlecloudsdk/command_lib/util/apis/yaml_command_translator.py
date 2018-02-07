@@ -220,15 +220,20 @@ class CommandBuilder(object):
       def Run(self_, args):
         ref, response = self._CommonRun(args)
         if self.spec.async:
+          if ref is not None:
+            request_string = 'Create request issued for: [{{{}}}]'.format(
+                yaml_command_schema.NAME_FORMAT_KEY)
+          else:
+            request_string = 'Create request issued'
           response = self._HandleAsync(
               args, ref, response,
-              request_string='Create request issued for: [{{{}}}]'
-              .format(yaml_command_schema.NAME_FORMAT_KEY))
+              request_string=request_string)
           if args.async:
             return self._HandleResponse(response)
 
         response = self._HandleResponse(response)
-        log.CreatedResource(ref.Name(), kind=self.resource_type)
+        log.CreatedResource(ref.Name() if ref else None,
+                            kind=self.resource_type)
         return response
 
     return Command

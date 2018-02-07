@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utility library for working with docker clients."""
+
+from __future__ import absolute_import
+from __future__ import division
 import errno
 import json
 import os
@@ -20,6 +23,7 @@ import sys
 import urlparse
 
 from distutils import version as distutils_version
+
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import platforms
 

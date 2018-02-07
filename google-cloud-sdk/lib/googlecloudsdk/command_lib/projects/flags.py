@@ -24,3 +24,8 @@ def GetProjectFlag(verb):
       metavar='PROJECT_ID',
       completer=completers.ProjectCompleter,
       help='ID for the project you want to {0}.'.format(verb))
+
+
+CREATE_DELETE_IN_CONSOLE_SEE_ALSO = (
+    'See https://support.google.com/cloud/answer/6251787 for information on '
+    'creating or deleting projects from the Google Cloud Platform Console.')

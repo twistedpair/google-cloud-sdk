@@ -14,9 +14,13 @@
 
 """Add, replace or delete the cached resource URIs from a single collection."""
 
+from __future__ import absolute_import
+from __future__ import division
 import abc
 
 from googlecloudsdk.core.cache import resource_cache
+
+import six
 
 
 class _TableRows(object):
@@ -27,10 +31,9 @@ class _TableRows(object):
     self.rows = []
 
 
-class _UpdateCacheOp(object):
+@six.add_metaclass(abc.ABCMeta)
+class _UpdateCacheOp(object):  # pytype: disable=ignored-abstractmethod
   """The cache update operation base class."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, completer):
     self._completer_class = completer
@@ -49,7 +52,7 @@ class _UpdateCacheOp(object):
             entry = _TableRows(table)
             tables[table.name] = entry
           entry.rows.append(row)
-        for table, rows in tables.iteritems():
+        for table, rows in six.iteritems(tables):
           self.UpdateRows(table, rows)
     except Exception:  # pylint: disable=broad-except
       pass

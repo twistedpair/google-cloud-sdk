@@ -17,6 +17,8 @@ Sets docker up to authenticate with the Google Container Registry using the
 active gcloud credential.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import base64
 import json
 import os

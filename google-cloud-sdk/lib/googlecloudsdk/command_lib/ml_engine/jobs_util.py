@@ -58,6 +58,17 @@ _PREDICTION_DATA_FORMAT_MAPPER = arg_utils.ChoiceEnumMapper(
     help_str='Data format of the input files.',
     required=True)
 
+_ACCELERATOR_MAP = arg_utils.ChoiceEnumMapper(
+    '--accelerator-type',
+    jobs.GetMessagesModule(
+    ).GoogleCloudMlV1AcceleratorConfig.TypeValueValuesEnum,
+    custom_mappings={
+        'NVIDIA_TESLA_K80': ('nvidia-tesla-k80', 'NVIDIA Tesla K80 GPU'),
+        'NVIDIA_TESLA_P100': ('nvidia-tesla-p100', 'NVIDIA Tesla P100 GPU.')
+    },
+    help_str='The available types of accelerators.',
+    required=True)
+
 _SCALE_TIER_CHOICES = {
     'BASIC': ('basic', ('A single worker instance. This tier is suitable for '
                         'learning how to use Cloud ML Engine, and for '
@@ -101,6 +112,11 @@ _TRAINING_SCALE_TIER_MAPPER = arg_utils.ChoiceEnumMapper(
 def DataFormatFlagMap():
   """Return the ChoiceEnumMapper for the --data-format flag."""
   return _PREDICTION_DATA_FORMAT_MAPPER
+
+
+def AcceleratorFlagMap():
+  """Return the ChoiceEnumMapper for the --accelerator-type flag."""
+  return _ACCELERATOR_MAP
 
 
 def ScaleTierFlagMap():
@@ -287,7 +303,8 @@ def SubmitPrediction(jobs_client, job,
                      model_dir=None, model=None, version=None,
                      input_paths=None, data_format=None, output_path=None,
                      region=None, runtime_version=None, max_worker_count=None,
-                     batch_size=None, labels=None):
+                     batch_size=None, labels=None, accelerator_count=None,
+                     accelerator_type=None):
   """Submit a prediction job."""
   _ValidateSubmitPredictionArgs(model_dir, version)
 
@@ -306,7 +323,10 @@ def SubmitPrediction(jobs_client, job,
       runtime_version=runtime_version,
       max_worker_count=max_worker_count,
       batch_size=batch_size,
-      labels=labels)
+      labels=labels,
+      accelerator_count=accelerator_count,
+      accelerator_type=_ACCELERATOR_MAP.GetEnumForChoice(accelerator_type)
+  )
   PrintSubmitFollowUp(job.jobId, print_follow_up_message=True)
   return jobs_client.Create(project_ref, job)
 

@@ -35,6 +35,7 @@ class MlV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
     self.projects_jobs = self.ProjectsJobsService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_models_versions = self.ProjectsModelsVersionsService(self)
     self.projects_models = self.ProjectsModelsService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
@@ -163,6 +164,9 @@ set.
     def List(self, request, global_params=None):
       """Lists the jobs in the project.
 
+If there are no jobs that match the request parameters, the list
+request returns an empty response body: {}.
+
       Args:
         request: (MlProjectsJobsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -274,6 +278,71 @@ may "fail open" without warning.
         request_field=u'googleIamV1TestIamPermissionsRequest',
         request_type_name=u'MlProjectsJobsTestIamPermissionsRequest',
         response_type_name=u'GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = u'projects_locations'
+
+    def __init__(self, client):
+      super(MlV1.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Get the complete list of CMLE capabilities in a location, along with their.
+location-specific properties.
+
+      Args:
+        request: (MlProjectsLocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1Location) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}',
+        http_method=u'GET',
+        method_id=u'ml.projects.locations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'MlProjectsLocationsGetRequest',
+        response_type_name=u'GoogleCloudMlV1Location',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """List all locations that provides at least one type of CMLE capability.
+
+      Args:
+        request: (MlProjectsLocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudMlV1ListLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations',
+        http_method=u'GET',
+        method_id=u'ml.projects.locations.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+parent}/locations',
+        request_field='',
+        request_type_name=u'MlProjectsLocationsListRequest',
+        response_type_name=u'GoogleCloudMlV1ListLocationsResponse',
         supports_download=False,
     )
 
@@ -389,9 +458,12 @@ versions of a model.
     def List(self, request, global_params=None):
       """Gets basic information about all the versions of a model.
 
-If you expect that a model has a lot of versions, or if you need to handle
+If you expect that a model has many versions, or if you need to handle
 only a limited number of results at a time, you can request that the list
-be retrieved in batches (called pages):
+be retrieved in batches (called pages).
+
+If there are no versions that match the request parameters, the list
+request returns an empty response body: {}.
 
       Args:
         request: (MlProjectsModelsVersionsListRequest) input message
@@ -615,6 +687,9 @@ set.
 
 Each project can contain multiple models, and each model can have multiple
 versions.
+
+If there are no models that match the request parameters, the list request
+returns an empty response body: {}.
 
       Args:
         request: (MlProjectsModelsListRequest) input message
@@ -915,8 +990,8 @@ for training the model with Google Cloud Machine Learning.
     def Predict(self, request, global_params=None):
       """Performs prediction on the data in the request.
 Cloud ML Engine implements a custom `predict` verb on top of an HTTP POST
-method. For details of the format, see the **guide to the
-[predict request format](/ml-engine/docs/v1/predict-request)**.
+method. <p>For details of the request and response format, see the **guide
+to the [predict request format](/ml-engine/docs/v1/predict-request)**.
 
       Args:
         request: (MlProjectsPredictRequest) input message

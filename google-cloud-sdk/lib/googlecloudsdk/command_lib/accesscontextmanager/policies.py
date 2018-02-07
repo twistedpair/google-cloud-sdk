@@ -14,6 +14,7 @@
 """Command line processing utilities for access policies."""
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
 
@@ -23,3 +24,28 @@ def GetAttributeConfig():
       name='policy',
       help_text='The ID of the access policy.',
       fallthroughs=[deps.PropertyFallthrough(property_)])
+
+
+def GetResourceSpec():
+  return concepts.ResourceSpec(
+      'accesscontextmanager.accessPolicies',
+      resource_name='policy',
+      accessPoliciesId=GetAttributeConfig())
+
+
+def AddResourceArg(parser, verb):
+  """Add a resource argument for an access policy.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'policy',
+      GetResourceSpec(),
+      'The access policy {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+

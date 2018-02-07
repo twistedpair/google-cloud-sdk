@@ -323,11 +323,11 @@ class GlobalLister(BaseLister):
 
 def GetGlobalListerHelp(resource):
   """Returns the detailed help dict for a global list command."""
-  return {
+  detailed_help = {
       'brief': 'List Google Compute Engine ' + resource,
       'DESCRIPTION': """\
           *{{command}}* displays all Google Compute Engine {0} in a project.
-          """.format(resource),
+""".format(resource),
       'EXAMPLES': """\
           To list all {0} in a project in table form, run:
 
@@ -336,8 +336,16 @@ def GetGlobalListerHelp(resource):
           To list the URIs of all {0} in a project, run:
 
             $ {{command}} --uri
-            """.format(resource)
+""".format(resource)
   }
+  if resource == 'images':
+    detailed_help['EXAMPLES'] += """
+          To list the names of {0} older than one year from oldest to newest
+          (`-P1Y` is an [ISO8601 duration](https://en.wikipedia.org/wiki/ISO_8601)):
+
+            $ {{command}} --format="value(NAME)" --filter="creationTimestamp < -P1Y"
+""".format(resource)
+  return detailed_help
 
 
 class RegionalLister(BaseLister):

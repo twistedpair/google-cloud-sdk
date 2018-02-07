@@ -14,11 +14,15 @@
 
 """config format resource printer."""
 
+from __future__ import absolute_import
+from __future__ import division
 import pipes
-import StringIO
 
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.util import platforms
+
+import six
+from six.moves import StringIO
 
 
 class ConfigPrinter(resource_printer_base.ResourcePrinter):
@@ -63,12 +67,12 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       items: The items to list for label, either dict iteritems, an enumerated
         list, or a scalar value.
     """
-    top = StringIO.StringIO()
-    sub = StringIO.StringIO()
+    top = StringIO()
+    sub = StringIO()
     for name, value in sorted(items):
-      name = unicode(name)
+      name = six.text_type(name)
       try:
-        values = value.iteritems()
+        values = six.iteritems(value)
         self._PrintCategory(sub, label + [name], values)
         continue
       except AttributeError:
@@ -115,9 +119,9 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       prefix: Parent name prefix, prepended to each item name.
     """
     for name, value in sorted(items):
-      name = unicode(name)
+      name = six.text_type(name)
       if isinstance(value, dict):
-        self._PrintEnvExport(value.iteritems(),
+        self._PrintEnvExport(six.iteritems(value),
                              prefix=self._Prefix(prefix, name))
       elif value is None:
         self._out.write(u'{name} (unset)\n'.format(name=prefix + name))
@@ -125,9 +129,10 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
         for i, v in enumerate(value):
           if not isinstance(v, dict):
             v = {'I' + str(i): v}
-          self._PrintEnvExport(v.iteritems(), prefix=self._Prefix(prefix, name))
+          self._PrintEnvExport(six.iteritems(v),
+                               prefix=self._Prefix(prefix, name))
       else:
-        value = pipes.quote(unicode(value))  # pytype: disable=wrong-arg-types
+        value = pipes.quote(six.text_type(value))  # pytype: disable=wrong-arg-types
         self._out.write(self._env_command_format.format(
             name=prefix + name, value=value))
 
@@ -139,15 +144,16 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       prefix: Parent name prefix, prepended to each item name.
     """
     for name, value in sorted(items):
-      name = unicode(name)
+      name = six.text_type(name)
       if isinstance(value, dict):
-        self._PrintEnvUnset(value.iteritems(),
+        self._PrintEnvUnset(six.iteritems(value),
                             prefix=self._Prefix(prefix, name))
       elif isinstance(value, list):
         for i, v in enumerate(value):
           if not isinstance(v, dict):
             v = {'I' + str(i): v}
-          self._PrintEnvUnset(v.iteritems(), prefix=self._Prefix(prefix, name))
+          self._PrintEnvUnset(six.iteritems(v),
+                              prefix=self._Prefix(prefix, name))
       else:
         self._out.write(self._env_command_format.format(name=prefix + name))
 
@@ -161,6 +167,6 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       delimit: Ignored.
     """
     try:
-      self._add_items(record.iteritems())
+      self._add_items(six.iteritems(record))
     except AttributeError:
       pass

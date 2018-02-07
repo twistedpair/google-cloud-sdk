@@ -79,7 +79,8 @@ class Snapshot(object):
     self.any_files_ignored = False
     for (dirpath, dirnames, filenames) in os.walk(self.src_dir):
       relpath = os.path.relpath(dirpath, self.src_dir)
-      if not file_chooser.IsIncluded(relpath, is_dir=True):
+      if (dirpath != self.src_dir and  # don't ever ignore the main source dir!
+          not file_chooser.IsIncluded(relpath, is_dir=True)):
         self.any_files_ignored = True
         continue
       for fname in filenames:

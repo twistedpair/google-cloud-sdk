@@ -21,6 +21,8 @@ tracking when we check for updates.
 # TODO(b/70520907): remove the attribute-error disable.
 # pytype: disable=attribute-error
 
+from __future__ import absolute_import
+from __future__ import division
 import compileall
 import errno
 import logging
@@ -37,6 +39,8 @@ from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import snapshots
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
+
+import six
 
 
 class Error(exceptions.Error):
@@ -102,7 +106,7 @@ def _RaisesPermissionsError(func):
         new_exc = PermissionsError(
             message=e.strerror, path=os.path.abspath(e.filename))
         # Maintain original stack trace.
-        raise new_exc, None, sys.exc_info()[2]
+        six.reraise(new_exc, None, sys.exc_info()[2])
       raise
     except shutil.Error as e:
       args = e.args[0][0]
@@ -113,7 +117,7 @@ def _RaisesPermissionsError(func):
         new_exc = PermissionsError(
             message=args[2], path=os.path.abspath(args[0]))
         # Maintain original stack trace.
-        raise new_exc, None, sys.exc_info()[2]
+        six.reraise(new_exc, None, sys.exc_info()[2])
       raise
   return _TryFunc
 
@@ -305,7 +309,7 @@ class InstallationState(object):
       def __init__(self, progress_callback, total):
         self.count = 0
         self.progress_callback = progress_callback
-        self.total = float(total)
+        self.total = total
 
       # This function must match the signature that shutil expects for the
       # ignore function.
@@ -318,7 +322,7 @@ class InstallationState(object):
       # This takes a little time, so only do it if we are going to report
       # progress.
       dirs = set()
-      for _, manifest in self.InstalledComponents().iteritems():
+      for _, manifest in six.iteritems(self.InstalledComponents()):
         dirs.update(manifest.InstalledDirectories())
       # There is always the root directory itself and the .install directory.
       # In general, there could be in the SDK (if people just put stuff in there
@@ -542,7 +546,7 @@ class InstallationState(object):
     """
     manifest = InstallationManifest(self._state_directory, component_id)
     paths = manifest.InstalledPaths()
-    total_paths = float(len(paths))
+    total_paths = len(paths)
     root = self.__sdk_root
 
     dirs_to_remove = set()

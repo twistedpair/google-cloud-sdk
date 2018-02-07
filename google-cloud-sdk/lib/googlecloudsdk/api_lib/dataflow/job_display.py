@@ -16,7 +16,15 @@
 """
 
 from googlecloudsdk.api_lib.dataflow import apis
-from googlecloudsdk.command_lib.dataflow import time_util
+from googlecloudsdk.core.util import times
+
+
+def FormatDateTime(string):
+  """Returns a yyyy-mm-dd hh:mm:ss formatted date/time for string."""
+  dt = times.ParseDateTime(string)
+  if not times.GetTimeStampFromDateTime(dt):
+    return None
+  return times.FormatDateTime(dt, '%Y-%m-%d %H:%M:%S')
 
 
 class DisplayInfo(object):
@@ -48,8 +56,8 @@ class DisplayInfo(object):
     # Don't worry, be happy.
     #
     # pylint: disable=invalid-name
-    self.stateTime = time_util.FormatTimestamp(job.currentStateTime)
-    self.creationTime = time_util.FormatTimestamp(job.createTime)
+    self.stateTime = FormatDateTime(job.currentStateTime)
+    self.creationTime = FormatDateTime(job.createTime)
     # pylint: enable=invalid-name
 
   @staticmethod

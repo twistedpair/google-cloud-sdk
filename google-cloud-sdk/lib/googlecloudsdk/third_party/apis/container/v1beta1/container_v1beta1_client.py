@@ -272,7 +272,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the version and/or iamge type of a specific node pool.
+      """Updates the version and/or image type of a specific node pool.
 
       Args:
         request: (UpdateNodePoolRequest) input message
@@ -1139,7 +1139,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the version and/or iamge type of a specific node pool.
+      """Updates the version and/or image type of a specific node pool.
 
       Args:
         request: (UpdateNodePoolRequest) input message

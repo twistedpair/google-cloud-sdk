@@ -19,6 +19,8 @@ https://tools.ietf.org/html/rfc3339
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import datetime
 
 
@@ -63,23 +65,6 @@ def DaysInCalendarMonth(year, month):
   """
   return _DAYS_IN_MONTH[month - 1] + (
       1 if month == 2 and IsLeapYear(year) else 0)
-
-
-def GetTotalSecondsFromTimeDelta(delta):
-  """Returns the signed total seconds from a timedelta.
-
-  Args:
-    delta: A datetime.timedelta object.
-
-  Returns:
-    The signed total seconds from a timedelta.
-  """
-  if not hasattr(delta, 'total_seconds'):
-    # Python <= 2.6.
-    return (((delta.days * _SECONDS_PER_DAY + delta.seconds) *
-             _MICROSECONDS_PER_SECOND + delta.microseconds) /
-            float(_MICROSECONDS_PER_SECOND))
-  return delta.total_seconds()
 
 
 def _FormatNumber(result, number, suffix='', precision=3):
@@ -138,7 +123,7 @@ class Duration(object):
     self.microseconds = microseconds
     self.total_seconds = 0
     if delta:
-      self.seconds += GetTotalSecondsFromTimeDelta(delta)
+      self.seconds += delta.total_seconds()
     self.calendar = calendar
     self._Normalize()
 
@@ -183,22 +168,21 @@ class Duration(object):
       self.microseconds = int(_MICROSECONDS_PER_SECOND * fraction)
     self.seconds = int(self.seconds)
 
-    # Adjust ranges to carry over to larger units. The floating point divisors
-    # avoid truncation for integer dividends.
+    # Adjust ranges to carry over to larger units.
 
     self.total_seconds = 0.0
 
-    carry = int(self.microseconds / float(_MICROSECONDS_PER_SECOND))
+    carry = int(self.microseconds / _MICROSECONDS_PER_SECOND)
     self.microseconds -= int(carry * _MICROSECONDS_PER_SECOND)
-    self.total_seconds += self.microseconds / float(_MICROSECONDS_PER_SECOND)
+    self.total_seconds += self.microseconds / _MICROSECONDS_PER_SECOND
     self.seconds += carry
 
-    carry = int(self.seconds / float(_SECONDS_PER_MINUTE))
+    carry = int(self.seconds / _SECONDS_PER_MINUTE)
     self.seconds -= carry * _SECONDS_PER_MINUTE
     self.total_seconds += self.seconds
     self.minutes += carry
 
-    carry = int(self.minutes / float(_MINUTES_PER_HOUR))
+    carry = int(self.minutes / _MINUTES_PER_HOUR)
     self.minutes -= carry * _MINUTES_PER_HOUR
     self.total_seconds += self.minutes * _SECONDS_PER_MINUTE
     self.hours += carry
@@ -210,7 +194,7 @@ class Duration(object):
         self.total_seconds += self.hours * _SECONDS_PER_HOUR
         return
 
-    carry = int(self.hours / float(_HOURS_PER_DAY))
+    carry = int(self.hours / _HOURS_PER_DAY)
     self.hours -= carry * _HOURS_PER_DAY
     self.total_seconds += self.hours * _SECONDS_PER_HOUR
     self.days += carry
@@ -228,14 +212,14 @@ class Duration(object):
     self.total_seconds += self.days * _SECONDS_PER_DAY
     self.years += carry
 
-    carry = int(self.months / float(_MONTHS_PER_YEAR))
+    carry = int(self.months / _MONTHS_PER_YEAR)
     self.months -= carry * _MONTHS_PER_YEAR
     self.total_seconds += self.months * _SECONDS_PER_MONTH
     self.years += carry
     self.total_seconds += self.years * _SECONDS_PER_YEAR
 
     self.total_seconds = (round(self.total_seconds, 0) +
-                          self.microseconds / float(_MICROSECONDS_PER_SECOND))
+                          self.microseconds / _MICROSECONDS_PER_SECOND)
 
   def Parse(self, string):
     """Parses an ISO 8601 duration from string and returns a Duration object.
@@ -385,7 +369,7 @@ class Duration(object):
       count += 1
       _FormatNumber(result,
                     (abs(self.seconds) + abs(self.microseconds) /
-                     float(_MICROSECONDS_PER_SECOND)),
+                     _MICROSECONDS_PER_SECOND),
                     'S',
                     precision=precision)
 
@@ -409,7 +393,7 @@ class Duration(object):
     """
     if calendar is not None:
       self.calendar = calendar
-    self.seconds += GetTotalSecondsFromTimeDelta(delta)
+    self.seconds += delta.total_seconds()
     self._Normalize()
     return self
 
@@ -456,7 +440,7 @@ class Duration(object):
       hour -= 1
 
     # Non-calendar hours can be > 23 so we normalize here.
-    carry = int((hour + self.hours) / float(_HOURS_PER_DAY))
+    carry = int((hour + self.hours) / _HOURS_PER_DAY)
     hour += self.hours - carry * _HOURS_PER_DAY
     if hour < 0:
       hour += _HOURS_PER_DAY

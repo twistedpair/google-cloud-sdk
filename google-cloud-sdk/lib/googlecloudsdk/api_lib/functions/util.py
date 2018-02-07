@@ -15,6 +15,7 @@
 """A library that is used to support Functions commands."""
 
 import functools
+import itertools
 import json
 import os
 import re
@@ -119,20 +120,30 @@ class TriggerEvent(object):
 # By convention, first event type is default.
 _BETA_PROVIDERS = [
     TriggerProvider('cloud.pubsub', [
-        TriggerEvent('topic.publish', Resources.TOPIC),
+        TriggerEvent('providers/cloud.pubsub/eventTypes/topic.publish',
+                     Resources.TOPIC),
+        TriggerEvent('google.pubsub.topic.publish', Resources.TOPIC),
     ]),
     TriggerProvider('cloud.storage', [
-        TriggerEvent('object.change', Resources.BUCKET),
+        TriggerEvent('providers/cloud.storage/eventTypes/object.change',
+                     Resources.BUCKET),
+        TriggerEvent('google.storage.object.finalize', Resources.BUCKET),
+        TriggerEvent('google.storage.object.archive', Resources.BUCKET),
+        TriggerEvent('google.storage.object.delete', Resources.BUCKET),
+        TriggerEvent('google.storage.object.metadataUpdate', Resources.BUCKET),
     ]),
 ]
 
 _ALPHA_PROVIDERS = [
     TriggerProvider('firebase.auth', [
-        TriggerEvent('user.create', Resources.PROJECT),
-        TriggerEvent('user.delete', Resources.PROJECT),
+        TriggerEvent('providers/firebase.auth/eventTypes/user.create',
+                     Resources.PROJECT),
+        TriggerEvent('providers/firebase.auth/eventTypes/user.delete',
+                     Resources.PROJECT),
     ]),
     TriggerProvider('firebase.database', [
-        TriggerEvent('data.write', Resources.PROJECT),
+        TriggerEvent('providers/firebase.auth/eventTypes/data.write',
+                     Resources.PROJECT),
     ])
 ]
 
@@ -152,8 +163,18 @@ class _TriggerProviderRegistry(object):
   def EventsLabels(self, provider):
     return (e.label for e in self.Provider(provider).events)
 
+  def AllEventLabels(self):
+    all_events = (self.EventsLabels(p.label) for p in self.providers)
+    return itertools.chain.from_iterable(all_events)
+
   def Event(self, provider, event):
     return next((e for e in self.Provider(provider).events if e.label == event))
+
+  def ProviderForEvent(self, event_label):
+    for p in self.providers:
+      if event_label in self.EventsLabels(p.label):
+        return p
+    return None
 
 
 output_trigger_provider_registry = _TriggerProviderRegistry(_BETA_PROVIDERS)

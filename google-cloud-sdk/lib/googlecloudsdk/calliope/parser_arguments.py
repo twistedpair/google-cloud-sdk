@@ -26,6 +26,26 @@ from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core.cache import completion_cache
 
 
+# pylint: disable=protected-access
+def _IsStoreTrueAction(action):  # pylint: disable=invalid-name
+  return (action == 'store_true' or
+          isinstance(action, argparse._StoreTrueAction) or
+          (isinstance(action, type) and
+           issubclass(action, argparse._StoreTrueAction)))
+
+
+# pylint: disable=protected-access
+def _IsStoreFalseAction(action):  # pylint: disable=invalid-name
+  return (action == 'store_false' or
+          isinstance(action, argparse._StoreFalseAction) or
+          (isinstance(action, type) and
+           issubclass(action, argparse._StoreFalseAction)))
+
+
+def _IsStoreBoolAction(action):  # pylint: disable=invalid-name
+  return _IsStoreTrueAction(action) or _IsStoreFalseAction(action)
+
+
 class Argument(object):
   """Parsed argument base class with help generation attributess.
 
@@ -463,11 +483,9 @@ class ArgumentInterceptor(Argument):
       inverted_synopsis = False
 
     kwargs = dict(original_kwargs)
-    if (action == 'store_true' or
-        action == argparse._StoreTrueAction):  # pylint: disable=protected-access
+    if _IsStoreTrueAction(action):
       action = 'store_false'
-    elif (action == 'store_false' or
-          action == argparse._StoreFalseAction):  # pylint: disable=protected-access
+    elif _IsStoreFalseAction(action):
       action = 'store_true'
 
     # This is a hacky workaround to get actions.DeprecationAction to properly
@@ -519,9 +537,7 @@ class ArgumentInterceptor(Argument):
     if '--no-' + name[2:] in self.parser._option_string_actions:  # pylint: disable=protected-access
       # Don't override explicit --no-* inverted flag.
       return False, None
-    if (action in ('store_true', 'store_false') or
-        action == argparse._StoreTrueAction or  # pylint: disable=protected-access
-        action == argparse._StoreFalseAction):  # pylint: disable=protected-access
+    if _IsStoreBoolAction(action):
       return True, None
     prop, kind, _ = getattr(action, 'store_property', (None, None, None))
     if prop:

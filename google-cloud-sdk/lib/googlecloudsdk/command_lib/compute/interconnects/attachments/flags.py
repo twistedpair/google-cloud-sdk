@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags and helpers for the compute interconnects commands."""
+from collections import OrderedDict
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -19,18 +20,18 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
-_BANDWIDTH_CHOICES = {
-    'bps-50m': '50 Mbit/s',
-    'bps-100m': '100 Mbit/s',
-    'bps-200m': '200 Mbit/s',
-    'bps-300m': '300 Mbit/s',
-    'bps-400m': '400 Mbit/s',
-    'bps-500m': '500 Mbit/s',
-    'bps-1g': '1 Gbit/s',
-    'bps-2g': '2 Gbit/s',
-    'bps-5g': '5 Gbit/s',
-    'bps-10g': '10 Gbit/s',
-}
+_BANDWIDTH_CHOICES = OrderedDict([
+    ('bps-50m', '50 Mbit/s'),
+    ('bps-100m', '100 Mbit/s'),
+    ('bps-200m', '200 Mbit/s'),
+    ('bps-300m', '300 Mbit/s'),
+    ('bps-400m', '400 Mbit/s'),
+    ('bps-500m', '500 Mbit/s'),
+    ('bps-1g', '1 Gbit/s'),
+    ('bps-2g', '2 Gbit/s'),
+    ('bps-5g', '5 Gbit/s'),
+    ('bps-10g', '10 Gbit/s'),
+])
 
 _EDGE_AVAILABILITY_DOMAIN_CHOICES = {
     'availability-domain-1': 'Edge Availability Domain 1',

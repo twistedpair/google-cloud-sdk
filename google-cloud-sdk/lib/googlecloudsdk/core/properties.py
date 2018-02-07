@@ -14,6 +14,8 @@
 
 """Read and write properties for the CloudSDK."""
 
+from __future__ import absolute_import
+from __future__ import division
 import functools
 import os
 import re
@@ -28,6 +30,8 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import times
+
+import six
 
 
 # Try to parse the command line flags at import time to see if someone provided
@@ -95,7 +99,7 @@ _VALID_ENDPOINT_OVERRIDE_REGEX = re.compile(
 
 
 def Stringize(value):
-  if isinstance(value, basestring):
+  if isinstance(value, six.string_types):
     return value
   return str(value)
 
@@ -338,7 +342,7 @@ class _Sections(object):
     Returns:
       [str], The section names.
     """
-    return [name for name, value in self.__sections.iteritems()
+    return [name for name, value in six.iteritems(self.__sections)
             if not value.is_hidden or include_hidden]
 
   def AllValues(self, list_unset=False, include_hidden=False,
@@ -379,7 +383,7 @@ class _Sections(object):
     sections = [self.default_section]
     default_section_name = self.default_section.name
     sections.extend(
-        sorted([s for name, s in self.__sections.iteritems()
+        sorted([s for name, s in six.iteritems(self.__sections)
                 if name != default_section_name and not s.is_hidden]))
     for section in sections:
       props = sorted([p for p in section if not p.is_hidden])
@@ -415,6 +419,9 @@ class _Section(object):
 
   def __iter__(self):
     return iter(self.__properties.values())
+
+  def __hash__(self):
+    return hash(self.name)
 
   def __eq__(self, other):
     return self.name == other.name
@@ -491,7 +498,7 @@ class _Section(object):
     Returns:
       [str], The property names.
     """
-    return [name for name, prop in self.__properties.iteritems()
+    return [name for name, prop in six.iteritems(self.__properties)
             if include_hidden or not prop.is_hidden]
 
   def AllValues(self, list_unset=False, include_hidden=False,
@@ -604,6 +611,16 @@ class _SectionFunctions(_Section):
         'valid choices, run `gcloud functions regions list`.',
         completer=('googlecloudsdk.command_lib.functions.flags:'
                    'LocationsCompleter'))
+
+    self.use_new_object_trigger = self._AddBool(
+        'use_new_object_trigger',
+        help_text='If True, will set the trigger_event to use when '
+        'deploying a Cloud Function using a Google Cloud Storage bucket '
+        'trigger (e.g. `--trigger_bucket`) to `object.finalize`. If False, '
+        'trigger_event will be set to `object.change`. Default is False. '
+        'Please see '
+        'https://cloud.google.com/storage/docs/pubsub-notifications for '
+        'more details on trigger_event types.')
 
 
 class _SectionGcloudignore(_Section):
@@ -921,7 +938,7 @@ class _SectionCore(_Section):
       """Validates if session could be captured to given file."""
       if filename is None:
         return
-      if not isinstance(filename, basestring):
+      if not isinstance(filename, six.string_types):
         raise InvalidValueError('Filename is not string')
       dirname = os.path.dirname(os.path.realpath(filename))
       if not os.path.exists(dirname):
@@ -999,7 +1016,7 @@ class _SectionCore(_Section):
       if project is None:
         return
 
-      if not isinstance(project, basestring):
+      if not isinstance(project, six.string_types):
         raise InvalidValueError('project must be a string')
       if project == '':  # pylint: disable=g-explicit-bool-comparison
         raise InvalidProjectError('The project property is set to the '
@@ -1487,6 +1504,9 @@ class _Property(object):
   @property
   def completer(self):
     return self.__completer
+
+  def __hash__(self):
+    return hash(self.section) + hash(self.name)
 
   def __eq__(self, other):
     return self.section == other.section and self.name == other.name

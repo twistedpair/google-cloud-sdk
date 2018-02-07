@@ -42,6 +42,8 @@ naiive datetimes specify tzinfo=None in all calls that have a timezone kwarg.
 The datetime and/or dateutil modules should have covered all of this.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import datetime
 import re
 
@@ -53,6 +55,9 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times_data
+
+import six
+
 
 try:
   from dateutil import tzwin  # pylint: disable=g-import-not-at-top, Windows
@@ -94,7 +99,7 @@ def _StrFtime(dt, fmt):
   try:
     return dt.strftime(fmt)
   except (AttributeError, OverflowError, TypeError, ValueError) as e:
-    raise DateTimeValueError(unicode(e))
+    raise DateTimeValueError(six.text_type(e))
 
 
 def _StrPtime(string, fmt):
@@ -102,9 +107,9 @@ def _StrPtime(string, fmt):
   try:
     return datetime.datetime.strptime(string, fmt)
   except (AttributeError, OverflowError, TypeError) as e:
-    raise DateTimeValueError(unicode(e))
+    raise DateTimeValueError(six.text_type(e))
   except ValueError as e:
-    raise DateTimeSyntaxError(unicode(e))
+    raise DateTimeSyntaxError(six.text_type(e))
 
 
 def FormatDuration(duration, parts=3, precision=3):
@@ -196,9 +201,9 @@ def ParseDuration(string, calendar=False):
   try:
     return iso_duration.Duration(calendar=calendar).Parse(string)
   except (AttributeError, OverflowError) as e:
-    raise DurationValueError(unicode(e))
+    raise DurationValueError(six.text_type(e))
   except ValueError as e:
-    raise DurationSyntaxError(unicode(e))
+    raise DurationSyntaxError(six.text_type(e))
 
 
 def GetDurationFromTimeDelta(delta, calendar=False):
@@ -456,7 +461,7 @@ def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
     return ParseDuration(string).GetRelativeDateTime(Now(tzinfo=tzinfo))
   except Error:
     # Not a duration - reraise the datetime parse error.
-    raise exc(unicode(e))
+    raise exc(six.text_type(e))
 
 
 def GetDateTimeFromTimeStamp(timestamp, tzinfo=LOCAL):
@@ -476,7 +481,7 @@ def GetDateTimeFromTimeStamp(timestamp, tzinfo=LOCAL):
   try:
     return datetime.datetime.fromtimestamp(timestamp, tzinfo)
   except ValueError as e:
-    raise DateTimeValueError(unicode(e))
+    raise DateTimeValueError(six.text_type(e))
 
 
 def GetTimeStampFromDateTime(dt, tzinfo=LOCAL):
@@ -492,7 +497,7 @@ def GetTimeStampFromDateTime(dt, tzinfo=LOCAL):
   if not dt.tzinfo and tzinfo:
     dt = dt.replace(tzinfo=tzinfo)
   delta = dt - datetime.datetime.fromtimestamp(0, UTC)
-  return iso_duration.GetTotalSecondsFromTimeDelta(delta)
+  return delta.total_seconds()
 
 
 def LocalizeDateTime(dt, tzinfo=LOCAL):

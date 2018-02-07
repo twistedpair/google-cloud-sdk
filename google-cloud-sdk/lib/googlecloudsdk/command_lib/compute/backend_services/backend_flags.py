@@ -151,12 +151,14 @@ def AddCapacityLimits(parser):
   capacity_group.add_argument(
       '--max-connections',
       type=int,
-      help='Maximum concurrent connections that the group can handle.')
+      help=('Maximum concurrent connections that the group can handle. '
+            'Valid only for TCP/SSL connections.'))
 
   capacity_group.add_argument(
       '--max-connections-per-instance',
       type=int,
-      help='The maximum concurrent connections per-instance.')
+      help=('The maximum concurrent connections per instance. '
+            'Valid only for TCP/SSL connections.'))
 
 
 def AddCapacityScalar(parser):

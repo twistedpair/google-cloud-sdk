@@ -14,9 +14,14 @@
 
 """CSV resource printer."""
 
+from __future__ import absolute_import
+from __future__ import division
+
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import encoding
+
+import six
 
 
 class CsvPrinter(resource_printer_base.ResourcePrinter):
@@ -103,9 +108,9 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
         val = ''
       elif isinstance(col, dict):
         val = self._delimiter.join(
-            [self._QuoteField(u'{0}={1}'.format(
+            [self._QuoteField('{0}={1}'.format(
                 encoding.Decode(k), encoding.Decode(v)))
-             for k, v in sorted(col.iteritems())])
+             for k, v in sorted(six.iteritems(col))])
       elif isinstance(col, list):
         val = self._delimiter.join(
             [self._QuoteField(encoding.Decode(x)) for x in col])

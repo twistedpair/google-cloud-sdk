@@ -28,10 +28,26 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import http as http_utils
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import archive
 from googlecloudsdk.core.util import files as file_utils
+
+
+TRIGGER_BUCKET_NOTICE = (
+    'The default trigger_event for `--trigger-bucket` will soon '
+    'change to `object.finalize` from `object.change`. '
+    'To opt-in to the new behavior early, run'
+    '`gcloud config set functions/use_new_object_trigger True`. To restore old '
+    'behavior you can run '
+    '`gcloud config set functions/use_new_object_trigger False` '
+    'or use the `--trigger-event` flag e.g. '
+    '`gcloud functions deploy --trigger-event '
+    'providers/cloud.storage/eventTypes/object.change '
+    '--trigger-resource gs://...`'
+    'Please see https://cloud.google.com/storage/docs/pubsub-notifications'
+    'for more information on storage event types.')
 
 
 def _CleanOldSourceInfo(function):
@@ -262,7 +278,7 @@ def DeduceAndCheckArgs(args):
   # 2. _CheckArgs() is invoked from Run() and ArgumentParsingError thrown
   #    from Run are not caught.
   _ValidateTriggerArgs(args)
-  return _CheckTriggerProviderArgs(args)
+  return _CheckTriggerEventArgs(args)
 
 
 def _ValidateTriggerArgs(args):
@@ -273,35 +289,22 @@ def _ValidateTriggerArgs(args):
   Raises:
     FunctionsError.
   """
+  # checked that Event Type is valid
   trigger_event = args.trigger_event
-  trigger_provider = args.trigger_provider
-  trigger_resource = args. trigger_resource
-
-  if trigger_provider is None:
-    if args.trigger_event is not None or args.trigger_resource is not None:
+  trigger_resource = args.trigger_resource
+  if trigger_event:
+    trigger_provider = util.input_trigger_provider_registry.ProviderForEvent(
+        trigger_event).label
+    if not trigger_provider:
       raise exceptions.FunctionsError(
-          '--trigger-event, --trigger-resource, and --trigger-path may only '
-          'be used with --trigger-provider')
-  else:
-    if trigger_event is None:
-      trigger_event = util.input_trigger_provider_registry.Provider(
-          trigger_provider).default_event.label
-    event_labels = list(util.input_trigger_provider_registry.EventsLabels(
-        trigger_provider))
-    if trigger_event not in event_labels:
-      raise exceptions.FunctionsError(
-          'You can use only one of [{}] with --trigger-provider={}'.format(
-              ','.join(event_labels), trigger_provider))
-    # checked that Event Type is correct
+          'Unsupported trigger_event {}'.format(trigger_event))
 
     resource_type = util.input_trigger_provider_registry.Event(
         trigger_provider, trigger_event).resource_type
     if trigger_resource is None and resource_type != util.Resources.PROJECT:
       raise exceptions.FunctionsError(
           'You must provide --trigger-resource when using '
-          '--trigger-provider={} and --trigger-event={}'.format(
-              trigger_provider, trigger_event))
-    # checked if Resource Type and Path were provided or not as required
+          '--trigger-event={}'.format(trigger_event))
 
   if args.IsSpecified('retry') and args.IsSpecified('trigger_http'):
     raise calliope_exceptions.ConflictingArgumentsException(
@@ -310,9 +313,15 @@ def _ValidateTriggerArgs(args):
 
 def _BucketTrigger(trigger_bucket):
   bucket_name = trigger_bucket[5:-1]
+  new_behavior = properties.VALUES.functions.use_new_object_trigger.GetBool()
+  if new_behavior is None:
+    log.warn(TRIGGER_BUCKET_NOTICE)
+
   return {
       'trigger_provider': 'cloud.storage',
-      'trigger_event': 'object.change',
+      'trigger_event':
+          ('google.storage.object.finalize' if new_behavior
+           else 'providers/cloud.storage/eventTypes/object.change'),
       'trigger_resource': bucket_name,
   }
 
@@ -320,22 +329,18 @@ def _BucketTrigger(trigger_bucket):
 def _TopicTrigger(trigger_topic):
   return {
       'trigger_provider': 'cloud.pubsub',
-      'trigger_event': 'topic.publish',
+      'trigger_event': 'providers/cloud.pubsub/eventTypes/topic.publish',
       'trigger_resource': trigger_topic,
   }
 
 
-def _CheckTriggerProviderArgs(args):
-  """Check --trigger-provider dependent arguments and deduce if possible.
+def _CheckTriggerEventArgs(args):
+  """Check --trigger-*  arguments and deduce if possible.
 
-  0. Check if --trigger-provider is correct.
-  1. Check if --trigger-event is present, assign default if not.
-  2. Check if --trigger-event is correct WRT to --trigger-provider.
-  3. Check if --trigger-resource is present if necessary.
-  4. Check if --trigger-resource is correct WRT to *-provider and *-event.
-  5. Check if --trigger-path is present if necessary.
-  6. Check if --trigger-path is not present if forbidden.
-  7. Check if --trigger-path is correct if present.
+  0. if --trigger-http is return None.
+  1. if --trigger-bucket return bucket trigger args (_BucketTrigger)
+  2. if --trigger-topic return pub-sub trigger args (_TopicTrigger)
+  3. if --trigger-event, deduce provider and resource from registry and return
 
   Args:
     args: The argument namespace.
@@ -350,17 +355,13 @@ def _CheckTriggerProviderArgs(args):
     return _BucketTrigger(args.trigger_bucket)
   if args.trigger_topic:
     return _TopicTrigger(args.trigger_topic)
-  if args.trigger_provider is None:
+  if not args.trigger_event:
     return None
 
-  trigger_provider = args.trigger_provider
   trigger_event = args.trigger_event
+  trigger_provider = util.input_trigger_provider_registry.ProviderForEvent(
+      trigger_event).label
   trigger_resource = args.trigger_resource
-  # check and infer correct usage of flags accompanying --trigger-provider
-  if trigger_event is None:
-    trigger_event = util.input_trigger_provider_registry.Provider(
-        trigger_provider).default_event.label
-
   resource_type = util.input_trigger_provider_registry.Event(
       trigger_provider, trigger_event).resource_type
   if resource_type == util.Resources.TOPIC:

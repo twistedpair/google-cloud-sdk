@@ -67,8 +67,8 @@ class Client(object):
     )
     operation = self.client.accessPolicies_accessLevels.Patch(request)
 
-    poller = waiter.CloudOperationPoller(
-        self.client.accessPolicies_accessLevels, self.client.operations)
+    poller = util.OperationPoller(self.client.accessPolicies_accessLevels,
+                                  self.client.operations, level_ref)
     operation_ref = resources.REGISTRY.Parse(
         operation.name, collection='accesscontextmanager.operations')
     return waiter.WaitFor(

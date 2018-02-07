@@ -18,6 +18,8 @@ This module forces everything to use version 1.1 of the YAML spec.
 It also prevents use of unsafe loading and dumping.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import collections
 
 from googlecloudsdk.core import exceptions

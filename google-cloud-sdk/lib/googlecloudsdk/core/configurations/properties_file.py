@@ -13,11 +13,14 @@
 # limitations under the License.
 """Low level reading and writing of property files."""
 
-import ConfigParser
+from __future__ import absolute_import
+from __future__ import division
 import os
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files
+
+from six.moves import configparser
 
 
 class Error(exceptions.Error):
@@ -52,10 +55,10 @@ class PropertiesFile(object):
     Args:
       properties_path: str, Path to the file containing properties info.
     """
-    parsed_config = ConfigParser.ConfigParser()
+    parsed_config = configparser.ConfigParser()
     try:
       parsed_config.read(properties_path)
-    except ConfigParser.ParsingError as e:
+    except configparser.ParsingError as e:
       raise PropertiesParseError(e.message)
 
     for section in parsed_config.sections():
@@ -93,7 +96,7 @@ def PersistProperty(file_path, section, name, value):
     name: str, The name of the property to set.
     value: str, The value to set for the given property, or None to unset it.
   """
-  parsed_config = ConfigParser.ConfigParser()
+  parsed_config = configparser.ConfigParser()
   parsed_config.read(file_path)
 
   if not parsed_config.has_section(section):

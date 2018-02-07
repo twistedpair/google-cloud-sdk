@@ -13,6 +13,8 @@
 # limitations under the License.
 """Support functions for the handling of named configurations."""
 
+from __future__ import absolute_import
+from __future__ import division
 import errno
 import os
 import re

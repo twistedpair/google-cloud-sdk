@@ -14,6 +14,9 @@
 
 """list format resource printer."""
 
+from __future__ import absolute_import
+from __future__ import division
+
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.util import encoding
 

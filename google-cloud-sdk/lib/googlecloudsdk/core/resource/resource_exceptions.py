@@ -14,6 +14,9 @@
 
 """Resource execeptions."""
 
+from __future__ import absolute_import
+from __future__ import division
+
 from googlecloudsdk.core import exceptions
 
 

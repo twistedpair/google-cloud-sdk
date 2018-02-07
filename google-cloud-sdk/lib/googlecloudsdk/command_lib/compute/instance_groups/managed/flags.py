@@ -70,8 +70,9 @@ def AddMinReadyArg(parser):
       '--min-ready',
       type=arg_parsers.Duration(lower_bound='0s'),
       help=('Minimum time for which a newly created instance '
-            'should be ready to be considered available. If units not given '
-            '(for example: `10s`), assumes seconds.'))
+            'should be ready to be considered available. For example `10s` '
+            'for 10 seconds. See $ gcloud topic datetimes for information '
+            'on duration formats.'))
 
 
 def AddForceArg(parser):

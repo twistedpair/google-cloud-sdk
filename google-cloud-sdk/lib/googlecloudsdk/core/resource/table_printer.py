@@ -14,15 +14,20 @@
 
 """Table format resource printer."""
 
+from __future__ import absolute_import
+from __future__ import division
 import json
 import operator
 import re
-import StringIO
 
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_transform
+
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
+from six.moves import StringIO
 
 
 # Table output column padding.
@@ -36,12 +41,12 @@ def _Stringify(value):  # pylint: disable=invalid-name
     return ''
   elif isinstance(value, console_attr.Colorizer):
     return value
-  elif isinstance(value, basestring):
+  elif isinstance(value, six.string_types):
     return console_attr.DecodeFromConsole(value)
   elif isinstance(value, float):
     return resource_transform.TransformFloat(value)
   elif hasattr(value, '__str__'):
-    return unicode(value)
+    return six.text_type(value)
   else:
     return json.dumps(value, sort_keys=True)
 
@@ -168,7 +173,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       for col in self.column_attributes.Columns():
         if col.attribute.subformat:
           # This initializes a nested Printer to a string stream.
-          out = self._out if self._aggregate else StringIO.StringIO()
+          out = self._out if self._aggregate else StringIO()
           wrap = None
           printer = self.Printer(col.attribute.subformat, out=out,
                                  console_attr=self._console_attr,
@@ -391,7 +396,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         available_width = total_col_width - non_wrappable_width
         for i, col_width in enumerate(col_widths):
           if i in wrap:
-            col_widths[i] = max(int((available_width * 1.0)/len(wrap)), 1)
+            col_widths[i] = max(available_width // len(wrap), 1)
 
     # Print the title if specified.
     title = self.attributes.get('title') if self._page_count <= 1 else None
@@ -407,7 +412,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         sep = 3
       if width < self._console_attr.DisplayWidth(title) and not wrap:
         # Title is wider than the table => pad each column to make room.
-        pad = ((self._console_attr.DisplayWidth(title) + len(col_widths) - 1) /
+        pad = ((self._console_attr.DisplayWidth(title) + len(col_widths) - 1) //
                len(col_widths))
         width += len(col_widths) * pad
         if box:
@@ -487,9 +492,10 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
           # Wrap text if needed.
           s = row[i]
           is_colorizer = isinstance(s, console_attr.Colorizer)
-          if self._console_attr.DisplayWidth(s) > width or '\n' in unicode(s):
+          if (self._console_attr.DisplayWidth(s) > width or
+              '\n' in six.text_type(s)):
             cell_value, remainder = self._GetNextLineAndRemainder(
-                unicode(s), width, include_all_whitespace=is_colorizer)
+                six.text_type(s), width, include_all_whitespace=is_colorizer)
             if is_colorizer:
               # pylint:disable=protected-access
               cell = console_attr.Colorizer(cell_value, s._color, s._justify)

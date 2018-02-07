@@ -40,7 +40,7 @@ Cloud SDK.
 
 Usage:
 
-  import StringIO
+  from six.moves import StringIO
 
   from googlecloudsdk.core.document_renderers import token_renderer
   from googlecloudsdk.core.document_renderers import render_document
@@ -48,14 +48,18 @@ Usage:
   markdown = <markdown document string>
   tokens = render_document.MarkdownRenderer(
       token_renderer.TokenRenderer(width=W, height=H),
-      StringIO.StringIO(markdown)).Run()
+      StringIO(markdown)).Run()
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import re
 
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.document_renderers import renderer
+
 from prompt_toolkit.token import Token
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 class TokenRenderer(renderer.Renderer):

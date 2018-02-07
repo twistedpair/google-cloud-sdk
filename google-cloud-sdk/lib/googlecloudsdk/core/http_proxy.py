@@ -15,10 +15,15 @@
 """A module to get an http proxy information."""
 
 
+from __future__ import absolute_import
+from __future__ import division
 import urllib
+
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import http_proxy_types
+
 import httplib2
+import six
 
 
 def GetDefaultProxyInfo(method='http'):
@@ -40,7 +45,7 @@ def GetDefaultProxyInfo(method='http'):
   if not proxy_url:
     return None
 
-  if isinstance(proxy_url, unicode):
+  if isinstance(proxy_url, six.text_type):
     proxy_url = proxy_url.encode('idna')
 
   pi = httplib2.proxy_info_from_url(proxy_url, method)
@@ -65,7 +70,8 @@ def GetProxyProperties():
   proxy_address = properties.VALUES.proxy.address.Get()
   proxy_port = properties.VALUES.proxy.port.GetInt()
 
-  proxy_prop_set = len(filter(None, (proxy_type, proxy_address, proxy_port)))
+  proxy_prop_set = len(
+      [f for f in (proxy_type, proxy_address, proxy_port) if f])
   if proxy_prop_set > 0 and proxy_prop_set != 3:
     raise properties.InvalidValueError(
         'Please set all or none of the following properties: '

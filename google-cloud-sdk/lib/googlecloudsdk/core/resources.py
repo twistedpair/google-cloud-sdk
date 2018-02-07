@@ -20,11 +20,11 @@ will be accepted, and a consistent python object will be returned for use in
 code.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import collections
 import copy
 import re
-import types
-import urllib
 
 # pytype: disable=import-error
 from googlecloudsdk.api_lib.util import apis_internal
@@ -34,6 +34,10 @@ from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 
+import six
+from six.moves import map  # pylint: disable=redefined-builtin
+from six.moves import urllib
+from six.moves import zip  # pylint: disable=redefined-builtin
 import uritemplate
 
 _COLLECTION_SUB_RE = r'[a-zA-Z_]+(?:\.[a-zA-Z0-9_]+)+'
@@ -201,7 +205,7 @@ class _ResourceParser(object):
     params = self.collection_info.GetParams(subcollection)
     fields = match.groups()
     if url_unescape:
-      fields = map(urllib.unquote, fields)
+      fields = map(urllib.parse.unquote, fields)
 
     return Resource(self.registry, self.collection_info, subcollection,
                     param_values=dict(zip(params, fields)),
@@ -338,7 +342,7 @@ class Resource(object):
     self._subcollection = subcollection
     self._path = collection_info.GetPath(subcollection)
     self._params = collection_info.GetParams(subcollection)
-    for param, value in param_values.iteritems():
+    for param, value in six.iteritems(param_values):
       if value is None:
         raise RequiredFieldOmittedException(collection_info.full_name, param)
       setattr(self, param, value)
@@ -348,7 +352,7 @@ class Resource(object):
     if (self._collection_info.api_name
         in ('compute', 'clouduseraccounts', 'storage')):
       # TODO(b/15425944): Unquote URLs for now for these apis.
-      self._self_link = urllib.unquote(self._self_link)
+      self._self_link = urllib.parse.unquote(self._self_link)
     self._initialized = True
 
   def __setattr__(self, key, value):
@@ -395,13 +399,13 @@ class Resource(object):
        then relative name is
          projects/myprj/topics/mytopic.
     """
-    escape_func = urllib.quote if url_escape else lambda x, safe: x
+    escape_func = urllib.parse.quote if url_escape else lambda x, safe: x
 
     effective_params = dict(
         [(k, escape_func(getattr(self, k), safe=''))
          for k in self._params])
 
-    return urllib.unquote(
+    return urllib.parse.unquote(
         uritemplate.expand(self._path, effective_params))
 
   def AsDict(self):
@@ -456,7 +460,7 @@ class Resource(object):
     else:
       # Auto resolve the parent collection by finding the collection with
       # matching parameters.
-      for collection, parser in all_collections.iteritems():
+      for collection, parser in six.iteritems(all_collections):
         if parser.collection_info.GetParams('') == parent_params:
           parent_collection = collection
           break
@@ -494,9 +498,9 @@ def _GRIsAreEnabled():
 
 
 def _CopyNestedDictSpine(maybe_dictionary):
-  if isinstance(maybe_dictionary, types.DictType):
+  if isinstance(maybe_dictionary, dict):
     result = {}
-    for key, val in maybe_dictionary.iteritems():
+    for key, val in six.iteritems(maybe_dictionary):
       result[key] = _CopyNestedDictSpine(val)
     return result
   else:
@@ -801,7 +805,7 @@ class Registry(object):
     if not collection_subpaths:
       collection_subpaths = {'': collection_info.path}
 
-    for subname, path in collection_subpaths.iteritems():
+    for subname, path in six.iteritems(collection_subpaths):
       collection_name = collection_info.full_name + (
           '.' + subname if subname else '')
       existing_parser = collection_parsers.get(collection_name)
@@ -1003,7 +1007,7 @@ class Registry(object):
 
       # If the literal token is not here, see if this can be a parameter.
       param, next_level = '', {}  # Predefine these to silence linter.
-      for param, next_level in cur_level.iteritems():
+      for param, next_level in six.iteritems(cur_level):
         if param == '{}':
           break
       else:
@@ -1013,12 +1017,12 @@ class Registry(object):
       if len(next_level) == 1 and None in next_level:
         # This is the last parameter so we can combine the remaining tokens.
         token = '/'.join(tokens[i:])
-        params.append(urllib.unquote(token))
+        params.append(urllib.parse.unquote(token))
         cur_level = next_level
         break
 
       # Clean up the provided value
-      params.append(urllib.unquote(token))
+      params.append(urllib.parse.unquote(token))
 
       # Keep digging down.
       cur_level = next_level

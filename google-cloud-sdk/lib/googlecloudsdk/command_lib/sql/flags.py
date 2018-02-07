@@ -32,6 +32,11 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.util import completers
 
 
+_CIDR_REGEX = (r'(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})'
+               r'(\.(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}'
+               r'(\/([0-9]|[1-2][0-9]|3[0-2]))$')
+
+
 class DatabaseCompleter(completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
@@ -140,17 +145,16 @@ def AddActivationPolicy(parser):
       default=None,
       help=('The activation policy for this instance. This specifies when '
             'the instance should be activated and is applicable only when '
-            'the instance state is RUNNABLE. More information on activation '
-            'policies can be found here: '
+            'the instance state is RUNNABLE. The default is ON_DEMAND. '
+            'More information on activation policies can be found here: '
             'https://cloud.google.com/sql/faq#activation_policy'))
 
 
-def AddAssignIp(parser):
+def AddAssignIp(parser, show_negated_in_help=False):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--assign-ip',
-      action='store_true',
-      default=None,  # Tri-valued: None => don't change the setting.
-      help='The instance must be assigned an IP address.')
+      help='The instance must be assigned an IP address.', **kwargs)
 
 
 def AddAuthorizedGAEApps(parser):
@@ -165,9 +169,12 @@ def AddAuthorizedGAEApps(parser):
 
 
 def AddAuthorizedNetworks(parser):
+  cidr_validator = arg_parsers.RegexpValidator(
+      _CIDR_REGEX, ('Must be specified in CIDR notation, also known as '
+                    '\'slash\' notation (e.g. 192.168.100.0/24).'))
   parser.add_argument(
       '--authorized-networks',
-      type=arg_parsers.ArgList(min_length=1),
+      type=arg_parsers.ArgList(min_length=1, element_type=cidr_validator),
       metavar='NETWORK',
       required=False,
       default=[],
@@ -210,15 +217,27 @@ def AddCPU(parser):
             'omitted.'))
 
 
-def AddEnableBinLog(parser):
+def _GetKwargsForBoolFlag(show_negated_in_help):
+  if show_negated_in_help:
+    return {
+        'action': arg_parsers.StoreTrueFalseAction,
+    }
+  else:
+    return {
+        'action': 'store_true',
+        'default': None
+    }
+
+
+def AddEnableBinLog(parser, show_negated_in_help=False):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--enable-bin-log',
       required=False,
-      action='store_true',
-      default=None,  # Tri-valued: None => don't change the setting.
       help=(
           'Specified if binary log should be enabled. If backup '
-          'configuration is disabled, binary log must be disabled as well.'))
+          'configuration is disabled, binary log must be disabled as well.'),
+      **kwargs)
 
 
 def AddFollowGAEApp(parser):
@@ -243,7 +262,9 @@ def AddMaintenanceReleaseChannel(parser):
                      'to the production release.'
       },
       type=str.lower,
-      help="Which channel's updates to apply during the maintenance window.")
+      help="Which channel's updates to apply during the maintenance window. "
+           "If not specified, Cloud SQL chooses the timing of updates to your "
+           "instance.")
 
 
 def AddMaintenanceWindowDay(parser):
@@ -279,7 +300,8 @@ def AddReplication(parser):
       required=False,
       choices=['SYNCHRONOUS', 'ASYNCHRONOUS'],
       default=None,
-      help='The type of replication this instance uses.')
+      help='The type of replication this instance uses. The default is '
+           'SYNCHRONOUS.')
 
 
 def AddStorageAutoIncrease(parser):
@@ -293,7 +315,7 @@ def AddStorageAutoIncrease(parser):
             'can result in permanently increased storage costs for your '
             'instance. However, if an instance runs out of available space, '
             'it can result in the instance going offline, dropping existing '
-            'connections.'))
+            'connections. This setting is enabled by default.'))
 
 
 def AddStorageSize(parser):
@@ -304,7 +326,8 @@ def AddStorageSize(parser):
           upper_bound='10230GB',
           suggested_binary_size_scales=['GB']),
       help=('Amount of storage allocated to the instance. Must be an integer '
-            'number of GB between 10GB and 10230GB inclusive.'))
+            'number of GB between 10GB and 10230GB inclusive. The default is '
+            '10GB.'))
 
 
 # Database specific flags

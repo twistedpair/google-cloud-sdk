@@ -38,6 +38,15 @@ class Collections(enum.Enum):
       },
       [u'name']
   )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}',
+      },
+      [u'name']
+  )
   PROJECTS_MODELS = (
       'projects.models',
       '{+name}',

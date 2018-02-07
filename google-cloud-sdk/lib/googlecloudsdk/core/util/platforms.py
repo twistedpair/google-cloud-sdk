@@ -14,6 +14,8 @@
 
 """Utilities for determining the current platform and architecture."""
 
+from __future__ import absolute_import
+from __future__ import division
 import os
 import platform
 import subprocess

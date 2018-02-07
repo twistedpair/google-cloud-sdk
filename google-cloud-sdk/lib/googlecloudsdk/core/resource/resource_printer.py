@@ -33,6 +33,9 @@ Example:
       --format='table[box](name, networkInterfaces[0].networkIP)'
 """
 
+from __future__ import absolute_import
+from __future__ import division
+
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.resource import config_printer
 from googlecloudsdk.core.resource import csv_printer

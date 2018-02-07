@@ -41,13 +41,11 @@ class SecurityPolicy(object):
             self._messages.ComputeSecurityPoliciesGetRequest(
                 project=self.ref.project, securityPolicy=self.ref.Name()))
 
-  def _MakeCreateRequestTuple(self, description, rules):
+  def _MakeCreateRequestTuple(self, security_policy):
     return (self._client.securityPolicies, 'Insert',
             self._messages.ComputeSecurityPoliciesInsertRequest(
                 project=self.ref.project,
-                securityPolicy=self._messages.SecurityPolicy(
-                    name=self.ref.Name(), description=description,
-                    rules=rules)))
+                securityPolicy=security_policy))
 
   def _MakePatchRequestTuple(self, security_policy):
     return (self._client.securityPolicies, 'Patch',
@@ -68,8 +66,8 @@ class SecurityPolicy(object):
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def Create(self, description='', rules=(), only_generate_request=False):
-    requests = [self._MakeCreateRequestTuple(description, rules)]
+  def Create(self, security_policy=None, only_generate_request=False):
+    requests = [self._MakeCreateRequestTuple(security_policy)]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests

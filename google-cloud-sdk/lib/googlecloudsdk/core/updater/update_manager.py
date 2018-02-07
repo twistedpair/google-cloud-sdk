@@ -14,6 +14,8 @@
 
 """Higher level functions to support updater operations at the CLI level."""
 
+from __future__ import absolute_import
+from __future__ import division
 import hashlib
 import os
 import shutil
@@ -40,6 +42,9 @@ from googlecloudsdk.core.updater import update_check
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
+
+import six
+from six.moves import map  # pylint: disable=redefined-builtin
 
 # These are components that used to exist, but we removed.  In order to prevent
 # scripts and installers that use them from getting errors, we will just warn
@@ -605,7 +610,7 @@ version [{1}].  To clear your fixed version setting, run:
     current_state = self._GetInstallState()
     versions = {}
     installed_components = current_state.InstalledComponents()
-    for component_id, component in installed_components.iteritems():
+    for component_id, component in six.iteritems(installed_components):
       component_def = component.ComponentDefinition()
       if component_def.is_configuration or component_def.is_hidden:
         continue
@@ -889,7 +894,7 @@ version [{1}].  To clear your fixed version setting, run:
     if update_seed:
       update_seed = self._HandleInvalidUpdateSeeds(diff, version, update_seed)
     else:
-      update_seed = diff.current.components.keys()
+      update_seed = list(diff.current.components.keys())
 
     to_remove = diff.ToRemove(update_seed)
     to_install = diff.ToInstall(update_seed)
@@ -1165,7 +1170,7 @@ To revert your SDK to the previously installed version, you may run:
           .format(components=', '.join(not_installed)))
 
     required_components = set(
-        c_id for c_id, component in snapshot.components.iteritems()
+        c_id for c_id, component in six.iteritems(snapshot.components)
         if c_id in id_set and component.is_required)
     if required_components:
       raise InvalidComponentError(

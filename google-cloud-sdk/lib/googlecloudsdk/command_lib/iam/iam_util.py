@@ -58,6 +58,26 @@ class IamPolicyBindingNotFound(core_exceptions.Error):
   """Raised when the specified IAM policy binding is not found."""
 
 
+def _AddMemberFlag(parser, verb, required=True):
+  """Create --member flag and add to parser."""
+  help_str = (
+      """\
+The member {verb}. Should be of the form `user|group|serviceAccount:email` or
+`domain:domain`.
+
+Examples: `user:test-user@gmail.com`, `group:admins@example.com`,
+`serviceAccount:my-sa@test-123.iam.gserviceaccount.com`, or
+`domain:example.com`.
+
+Can also be one of the following special values:
+* `allUsers` - anyone who is on the internet, with or without a Google account.
+* `allAuthenticatedUsers` - anyone who is authenticated with a Google account or
+   a service account.
+      """
+  ).format(verb=verb)
+  parser.add_argument('--member', required=required, help=help_str)
+
+
 def AddArgsForAddIamPolicyBinding(parser, completer=None):
   """Adds the IAM policy binding arguments for role and members.
 
@@ -73,11 +93,7 @@ def AddArgsForAddIamPolicyBinding(parser, completer=None):
   parser.add_argument(
       '--role', required=True, completer=completer,
       help='Define the role of the member.')
-  parser.add_argument(
-      '--member', required=True,
-      help='The member to add to the binding. '
-      'Should be of the form `user:user_email` '
-      '(e.g. `user:test-user@gmail.com.`)')
+  _AddMemberFlag(parser, 'to add the binding for')
 
 
 def AddArgsForRemoveIamPolicyBinding(parser, completer=None):
@@ -95,13 +111,7 @@ def AddArgsForRemoveIamPolicyBinding(parser, completer=None):
   parser.add_argument(
       '--role', required=True, completer=completer,
       help='The role to remove the member from.')
-  parser.add_argument(
-      '--member', required=True,
-      help='The member to add to the binding. '
-      'Should be of the form `user:user_email` or '
-      '`serviceAccount:service_account_identifier` '
-      '(e.g. `user:test-user@gmail.com` or '
-      '`serviceAccount:my-iam-account@PROJECT_ID.iam.gserviceaccount.com`.)')
+  _AddMemberFlag(parser, 'to remove the binding for')
 
 
 def AddBindingToIamPolicy(binding_message_type, policy, member, role):
@@ -273,7 +283,7 @@ def ParseYamlToRole(file_path, role_message_type):
 
 
 def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more='',
-                                   additional_flags=''):
+                                   additional_flags='', use_an=False):
   """Returns a detailed_help for a set-iam-policy command.
 
   Args:
@@ -284,6 +294,8 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more='',
         includes a default reference to IAM managing-policies documentation
     additional_flags: str, additional flags to include in the example command
         (after the command name and before the ID of the resource).
+     use_an: If True, uses "an" instead of "a" for the article preceding uses of
+         the collection.
   Returns:
     a dict with boilerplate help text for the set-iam-policy command
   """
@@ -293,23 +305,24 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more='',
           of the policy file format and contents."""
 
   additional_flags = additional_flags + ' ' if additional_flags else ''
+  a = 'an' if use_an else 'a'
   return {
-      'brief': 'Set IAM policy for a {0}.'.format(collection),
+      'brief': 'Set IAM policy for {0} {1}.'.format(a, collection),
       'DESCRIPTION': '{description}',
       'EXAMPLES': """\
           The following command will read an IAM policy defined in a JSON file
-          'policy.json' and set it for a {collection} with identifier '{id}'
+          'policy.json' and set it for {a} {collection} with identifier '{id}'
 
             $ {{command}} {flags}{id} policy.json
 
           {see_more}""".format(collection=collection, id=example_id,
                                see_more=example_see_more,
-                               flags=additional_flags)
+                               flags=additional_flags, a=a)
   }
 
 
 def GetDetailedHelpForAddIamPolicyBinding(collection, example_id,
-                                          role='roles/editor'):
+                                          role='roles/editor', use_an=False):
   """Returns a detailed_help for an add-iam-policy-binding command.
 
   Args:
@@ -319,15 +332,18 @@ def GetDetailedHelpForAddIamPolicyBinding(collection, example_id,
     role: The sample role to use in the documentation. The default of
         'roles/editor' is usually sufficient, but if your command group's
         users would more likely use a different role, you can override it here.
+     use_an: If True, uses "an" instead of "a" for the article preceding uses of
+         the collection.
   Returns:
     a dict with boilerplate help text for the add-iam-policy-binding command
   """
+  a = 'an' if use_an else 'a'
   return {
-      'brief': 'Add IAM policy binding for a {0}.'.format(collection),
+      'brief': 'Add IAM policy binding for {0} {1}.'.format(a, collection),
       'DESCRIPTION': '{description}',
       'EXAMPLES': """\
           The following command will add an IAM policy binding for the role
-          of '{role}' for the user 'test-user@gmail.com' on a {collection} with
+          of '{role}' for the user 'test-user@gmail.com' on {a} {collection} with
           identifier '{example_id}'
 
             $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}'
@@ -338,14 +354,21 @@ def GetDetailedHelpForAddIamPolicyBinding(collection, example_id,
 
             $ {{command}} test-123 --member='serviceAccount:my-sa@test-123.iam.gserviceaccount.com' --role='{role}'
 
+          The following command will add an IAM policy binding for the role of
+          '{role}' for all authenticated users on {a} {collection} with
+          identifier '{example_id}':
+
+            $ {{command}} {example_id} --member='allAuthenticatedUsers' --role='{role}'
+
           See https://cloud.google.com/iam/docs/managing-policies for details
           of policy role and member types.
-          """.format(collection=collection, example_id=example_id, role=role)
+          """.format(collection=collection, example_id=example_id, role=role,
+                     a=a)
   }
 
 
 def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id,
-                                             role='roles/editor'):
+                                             role='roles/editor', use_an=False):
   """Returns a detailed_help for a remove-iam-policy-binding command.
 
   Args:
@@ -355,18 +378,27 @@ def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id,
     role: The sample role to use in the documentation. The default of
         'roles/editor' is usually sufficient, but if your command group's
         users would more likely use a different role, you can override it here.
+     use_an: If True, uses "an" instead of "a" for the article preceding uses of
+         the collection.
   Returns:
     a dict with boilerplate help text for the remove-iam-policy-binding command
   """
+  a = 'an' if use_an else 'a'
   return {
-      'brief': 'Remove IAM policy binding for a {0}.'.format(collection),
+      'brief': 'Remove IAM policy binding for {0} {1}.'.format(a, collection),
       'DESCRIPTION': '{description}',
       'EXAMPLES': """\
-          The following command will remove a IAM policy binding for the role
+          The following command will remove an IAM policy binding for the role
           of '{role}' for the user 'test-user@gmail.com' on {collection} with
           identifier '{example_id}'
 
             $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}'
+
+          The following command will remove an IAM policy binding for the role
+          of '{role}' from all authenticated users on {collection}
+          '{example_id}':
+
+            $ {{command}} {example_id} --member='allAuthenticatedUsers' --role='{role}'
 
           See https://cloud.google.com/iam/docs/managing-policies for details
           of policy role and member types.
@@ -705,12 +737,25 @@ def TestingPermissionsWarning(permissions):
     permissions: A list of permissions that need to be warned.
   """
   if permissions:
-    msg = ('Warning: permissions [' + ', '.join(permissions) +
+    msg = ('Note: permissions [' + ', '.join(permissions) +
            '] are in \'TESTING\' stage which means '
            'the functionality is not mature and they can go away in the '
            'future. This can break your workflows, so do not use them in '
            'production systems!')
     console_io.PromptContinue(
         message=msg,
-        prompt_string='Are you sure to make this change',
+        prompt_string='Are you sure you want to make this change?',
         cancel_on_no=True)
+
+
+def ApiDisabledPermissionsWarning(permissions):
+  """Prompt a warning for API diabled permissions.
+
+  Args:
+    permissions: A list of permissions that need to be warned.
+  """
+  if permissions:
+    msg = (
+        'API is not enabled for permissions: [' + ', '.join(permissions) +
+        ']. Please enable the corresponding APIs to use those permissions.\n')
+    log.warn(msg)

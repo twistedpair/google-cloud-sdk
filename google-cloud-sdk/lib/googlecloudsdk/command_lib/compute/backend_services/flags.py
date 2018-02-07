@@ -188,8 +188,7 @@ def AddConnectionDrainingTimeout(parser):
       accepted. Set timeout to zero to disable connection draining. Enable
       feature by specifying a timeout of up to one hour.
       If the flag is omitted API default value (0s) will be used.
-      Valid units for this flag are `s` for seconds, `m` for minutes, and
-      `h` for hours.
+      See $ gcloud topic datetimes for information on duration formats.
       """)
 
 
@@ -437,6 +436,7 @@ def AddAffinityCookieTtl(parser, hidden=False):
       If session-affinity is set to "generated_cookie", this flag sets
       the TTL, in seconds, of the resulting cookie.  A setting of 0
       indicates that the cookie should be transient.
+      See $ gcloud topic datetimes for information on duration formats.
       """
   parser.add_argument(
       '--affinity-cookie-ttl',
@@ -468,8 +468,8 @@ def AddTimeout(parser, default='30s'):
       closes the connection or times out before sending response headers to the
       proxy. If the backend produces any response headers, the load balancer
       does not retry. If the backend does not reply at all, the load balancer
-      returns a `502 Bad Gateway` error to the client. Valid units for this flag
-      are `s` for seconds, `m` for minutes, and `h` for hours.
+      returns a `502 Bad Gateway` error to the client.
+      See $ gcloud topic datetimes for information on duration formats.
       """)
 
 
@@ -547,9 +547,8 @@ def AddSignedUrlCacheMaxAge(
       will not be altered.{}
 
       For example, specifying `12h` will cause the responses to signed URL
-      requests to be cached in the CDN up to 12 hours. Valid units for this flag
-      are `s` for seconds, `m` for minutes, `h` for hours, and `d` for
-      days.
+      requests to be cached in the CDN up to 12 hours.
+      See $ gcloud topic datetimes for information on duration formats.
       """.format(unspecified_help))
 
 

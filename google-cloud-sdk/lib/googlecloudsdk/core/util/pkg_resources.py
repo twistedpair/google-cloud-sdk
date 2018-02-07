@@ -14,6 +14,8 @@
 
 """Utilities for accessing local pakage resources."""
 
+from __future__ import absolute_import
+from __future__ import division
 import imp
 import os
 import pkgutil
@@ -152,7 +154,7 @@ def _LoadModule(importer, module_path, module_name, name_to_give):
                   ('', '', imp.PKG_DIRECTORY))  # pytype: disable=wrong-arg-types
 
   # pylint: disable=exec-used
-  exec code in module.__dict__
+  exec(code, module.__dict__)
   sys.modules[name_to_give] = module
   return module
 

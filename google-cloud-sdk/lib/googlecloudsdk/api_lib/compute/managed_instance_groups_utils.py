@@ -85,7 +85,8 @@ def AddAutoscalerArgs(
             'collecting information from a new instance. This prevents the '
             'autoscaler from collecting information when the instance is '
             'initializing, during which the collected usage would not be '
-            'reliable. The default is 60 seconds.'))
+            'reliable. The default is 60s. See $ gcloud topic datetimes '
+            'for information on duration formats.'))
   parser.add_argument('--description', help='Notes about Autoscaler.')
   parser.add_argument('--min-num-replicas',
                       type=arg_parsers.BoundedInt(0, sys.maxint),
@@ -543,14 +544,14 @@ def AutoscalersForMigs(migs, autoscalers):
 
 
 def AutoscalerForMigByRef(client, resources, igm_ref):
-  """Returns autoscaler targetting given instance group manager.
+  """Returns autoscaler targeting given instance group manager.
 
   Args:
     client: a GCE client
     resources: a GCE resource registry
     igm_ref: reference to instance group manager
   Returns:
-    Autoscaler message with autoscaler targetting the IGM refferenced by
+    Autoscaler message with autoscaler targeting the IGM refferenced by
     igm_ref or None if there isn't one.
   """
   if igm_ref.Collection() == 'compute.instanceGroupManagers':
@@ -575,10 +576,10 @@ def AutoscalerForMigByRef(client, resources, igm_ref):
 
 
 def AutoscalerForMig(mig_name, autoscalers, location, scope_type):
-  """Finds Autoscaler targetting given IGM.
+  """Finds Autoscaler targeting given IGM.
 
   Args:
-    mig_name: Name of MIG targetted by Autoscaler.
+    mig_name: Name of MIG targeted by Autoscaler.
     autoscalers: A list of Autoscalers to search among.
     location: Target location reference.
     scope_type: Target scope type.
@@ -843,7 +844,7 @@ def AdjustAutoscalerNameForCreation(autoscaler_resource, igm_ref):
 
   Args:
     autoscaler_resource: Autoscaler resource to be created.
-    igm_ref: reference to Instance Group Manager targetted by the Autoscaler.
+    igm_ref: reference to Instance Group Manager targeted by the Autoscaler.
   """
   if autoscaler_resource.name is None:
     autoscaler_resource.name = igm_ref.Name()

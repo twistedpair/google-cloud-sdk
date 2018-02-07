@@ -14,6 +14,9 @@
 
 """A module to get an unauthenticated gRPC stub."""
 
+from __future__ import absolute_import
+from __future__ import division
+
 from googlecloudsdk.core import http
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import store as cred_store

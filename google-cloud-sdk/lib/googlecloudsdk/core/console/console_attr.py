@@ -87,12 +87,16 @@ Usage:
 """
 
 
+from __future__ import absolute_import
+from __future__ import division
 import os
 import sys
 import unicodedata
 
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.util import encoding as encoding_util
+
+import six
 
 
 class BoxLineCharacters(object):
@@ -287,9 +291,9 @@ class ConsoleAttr(object):
     Returns:
       The console output string buf converted to unicode.
     """
-    if isinstance(buf, unicode):
+    if isinstance(buf, six.text_type):
       buf = buf.encode(self._encoding)
-    return unicode(buf, self._encoding, 'replace')
+    return six.text_type(buf, self._encoding, 'replace')
 
   def GetBoxLineCharacters(self):
     """Returns the box/line drawing characters object.
@@ -396,7 +400,7 @@ class ConsoleAttr(object):
     Returns:
       The display width of buf, handling unicode and ANSI controls.
     """
-    if not isinstance(buf, basestring):
+    if not isinstance(buf, six.string_types):
       # Handle non-string objects like Colorizer().
       return len(buf)
     width = 0
@@ -587,7 +591,7 @@ def GetCharacterDisplayWidth(char):
   Returns:
     The monospaced terminal display width of char: either 0, 1, or 2.
   """
-  if not isinstance(char, unicode):
+  if not isinstance(char, six.text_type):
     # Non-unicode chars have width 1. Don't use this function on control chars.
     return 1
 
@@ -637,7 +641,7 @@ def EncodeForConsole(string, encoding=None, escape=True):
   except AttributeError:
     # The string does not have a decode method.
     try:
-      string = unicode(string)
+      string = six.text_type(string)
     except (TypeError, UnicodeError):
       # The string cannot be converted to unicode -- default to str() which will
       # catch objects with special __str__ methods.

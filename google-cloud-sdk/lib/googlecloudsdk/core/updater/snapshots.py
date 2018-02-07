@@ -20,18 +20,22 @@ module lets you do operations on snapshots like getting dependency closures,
 as well as diff'ing snapshots.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import collections
 import json
 import os
 import re
 import ssl
-import urllib2
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import schemas
+
+import six
+from six.moves import urllib
 
 
 class Error(exceptions.Error):
@@ -190,7 +194,7 @@ class ComponentSnapshot(object):
     extra_repo = url if is_extra_repo else None
     try:
       response = installers.ComponentInstaller.MakeRequest(url, command_path)
-    except (urllib2.HTTPError, urllib2.URLError, ssl.SSLError):
+    except (urllib.error.HTTPError, urllib.error.URLError, ssl.SSLError):
       log.debug('Could not fetch [{url}]'.format(url=url), exc_info=True)
       response = None
     except ValueError as e:
@@ -290,12 +294,12 @@ class ComponentSnapshot(object):
     deps = dict((c.id, set(c.dependencies)) for c in sdk_definition.components)
     self.__dependencies = {}
     # Prune out unknown dependencies
-    for comp, dep_ids in deps.iteritems():
+    for comp, dep_ids in six.iteritems(deps):
       self.__dependencies[comp] = set(dep_id for dep_id in dep_ids
                                       if dep_id in deps)
 
     self.__consumers = dict((id, set()) for id in self.__dependencies)
-    for component_id, dep_ids in self.__dependencies.iteritems():
+    for component_id, dep_ids in six.iteritems(self.__dependencies):
       for dep_id in dep_ids:
         self.__consumers[dep_id].add(component_id)
 
@@ -368,7 +372,7 @@ class ComponentSnapshot(object):
     Returns:
       set(str), The matching component ids.
     """
-    return set(c_id for c_id, component in self.components.iteritems()
+    return set(c_id for c_id, component in six.iteritems(self.components)
                if component.platform.Matches(platform_filter))
 
   def DependencyClosureForComponents(self, component_ids, platform_filter=None):
@@ -673,7 +677,7 @@ class ComponentSnapshotDiff(object):
     Returns:
       set of str, The component ids that should be removed.
     """
-    installed_components = self.current.components.keys()
+    installed_components = list(self.current.components.keys())
     local_connected = self.current.ConnectedComponents(
         update_seed, platform_filter=self.__platform_filter)
     all_required = self.latest.DependencyClosureForComponents(

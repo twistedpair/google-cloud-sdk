@@ -15,6 +15,9 @@
 """A module to get a credentialed http object for making API calls."""
 
 
+from __future__ import absolute_import
+from __future__ import division
+
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log

@@ -31,8 +31,8 @@ from googlecloudsdk.api_lib.app.appinfo import appinfo
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
 from googlecloudsdk.api_lib.cloudbuild import build as cloudbuild_build
-from googlecloudsdk.api_lib.service_management import enable_api
-from googlecloudsdk.api_lib.service_management import exceptions as sm_exceptions
+from googlecloudsdk.api_lib.services import enable_api
+from googlecloudsdk.api_lib.services import exceptions as s_exceptions
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
 from googlecloudsdk.command_lib.app import exceptions as app_exc
@@ -522,7 +522,7 @@ def PossiblyEnableFlex(project):
   try:
     enable_api.EnableServiceIfDisabled(project,
                                        'appengineflex.googleapis.com')
-  except sm_exceptions.ListServicesPermissionDeniedException:
+  except s_exceptions.ListServicesPermissionDeniedException:
     # If we can't find out whether the Flexible API is enabled, proceed with
     # a warning.
     warning = FLEXIBLE_SERVICE_VERIFY_WARNING.format(project)
@@ -535,7 +535,7 @@ def PossiblyEnableFlex(project):
                           creds.CredentialType.P12_SERVICE_ACCOUNT):
         warning += '\n\n{}'.format(FLEXIBLE_SERVICE_VERIFY_WITH_SERVICE_ACCOUNT)
     log.warn(warning)
-  except sm_exceptions.EnableServicePermissionDeniedException:
+  except s_exceptions.EnableServicePermissionDeniedException:
     # If enabling the Flexible API fails due to a permissions error, the
     # deployment fails.
     raise PrepareFailureError(PREPARE_FAILURE_MSG.format(project))

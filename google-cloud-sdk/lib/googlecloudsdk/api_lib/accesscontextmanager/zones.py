@@ -91,8 +91,8 @@ class Client(object):
     )
     operation = self.client.accessPolicies_accessZones.Patch(request)
 
-    poller = waiter.CloudOperationPoller(
-        self.client.accessPolicies_accessZones, self.client.operations)
+    poller = util.OperationPoller(self.client.accessPolicies_accessZones,
+                                  self.client.operations, zone_ref)
     operation_ref = core_resources.REGISTRY.Parse(
         operation.name, collection='accesscontextmanager.operations')
     return waiter.WaitFor(

@@ -14,12 +14,17 @@
 
 """Common resource topic text."""
 
+from __future__ import absolute_import
+from __future__ import division
 import pkgutil
 import textwrap
 
 from googlecloudsdk import api_lib  # pytype: disable=import-error
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_transform
+
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 def ResourceDescription(name):
@@ -66,7 +71,7 @@ def ResourceDescription(name):
     raise ValueError('Expected one of [{topics}], got [{name}].'.format(
         topics=','.join(sorted(topics)), name=name))
   see = {}
-  for topic, command in topics.iteritems():
+  for topic, command in six.iteritems(topics):
     if topic == name:
       see[topic] = 'Resource {topic}s are described in detail below.'.format(
           topic=topic)
@@ -218,7 +223,8 @@ def FormatRegistryDescriptions():
   """Returns help markdown for all registered resource printer formats."""
   # Generate the printer markdown.
   descriptions = ['The formats and format specific attributes are:\n']
-  for name, printer in sorted(resource_printer.GetFormatRegistry().iteritems()):
+  for name, printer in sorted(
+      six.iteritems(resource_printer.GetFormatRegistry())):
     description, attributes, example = _ParseFormatDocString(printer)
     descriptions.append('\n*{name}*::\n{description}\n'.format(
         name=name, description=description))
@@ -377,7 +383,7 @@ def TransformsDescriptions(transforms):
     The resource transform help text markdown for transforms.
   """
   descriptions = []
-  for name, transform in sorted(transforms.iteritems()):
+  for name, transform in sorted(six.iteritems(transforms)):
     description, prototype, args, example = _ParseTransformDocString(transform)
     if not description:
       continue

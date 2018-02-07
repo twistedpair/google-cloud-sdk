@@ -22,6 +22,8 @@ Example usage:
     OperateOnProjectedResource(obj)
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import datetime
 import json
 
@@ -31,6 +33,8 @@ from apitools.base.py import encoding as protorpc_encoding
 from googlecloudsdk.core.resource import resource_projection_parser
 from googlecloudsdk.core.resource import resource_property
 
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 from google.protobuf import json_format as protobuf_encoding
 from google.protobuf import message as protobuf_message
 
@@ -148,7 +152,7 @@ class Projector(object):
       # The datetime.tzinfo object does not serialize, so we save the original
       # string representation, which by default has enough information to
       # reconstruct tzinfo.
-      r['datetime'] = unicode(obj)
+      r['datetime'] = six.text_type(obj)
       # Exclude tzinfo and the default recursive attributes that really should
       # be external constants anyway.
       exclude.update(('max', 'min', 'resolution', 'tzinfo'))
@@ -195,10 +199,10 @@ class Projector(object):
       return obj
     res = {}
     try:
-      obj.iteritems()
+      six.iteritems(obj)
     except ValueError:
       return None
-    for key, val in obj.iteritems():
+    for key, val in six.iteritems(obj):
       f = flag
       if key in projection.tree:
         child_projection = projection.tree[key]
@@ -215,7 +219,7 @@ class Projector(object):
           f >= self._projection.PROJECT and self._columns):
         # Explicit projection paths always show none values.
         try:
-          res[unicode(key)] = val
+          res[six.text_type(key)] = val
         except UnicodeError:
           res[key] = val
     return res or None
@@ -265,8 +269,8 @@ class Projector(object):
           if (flag >= self._projection.PROJECT or
               projection.tree[index].attribute.flag):
             sliced = projection.tree[index]
-        elif (isinstance(index, (int, long)) and
-              index in xrange(-len(obj), len(obj))):
+        elif (isinstance(index, six.integer_types) and
+              index in range(-len(obj), len(obj))):
           indices.add(index)
 
     # Everything below a PROJECT node is projected.
@@ -365,7 +369,7 @@ class Projector(object):
       return None
     elif obj is None:
       pass
-    elif isinstance(obj, basestring):
+    elif isinstance(obj, six.string_types):
       # Check for {" because valid compact JSON keys are always "..." quoted.
       if (self._json_decode and (
           obj.startswith('{"') and obj.endswith('}') or
@@ -375,12 +379,13 @@ class Projector(object):
         except ValueError:
           # OK if it's not JSON.
           pass
-    elif isinstance(obj, (bool, int, long, float, complex)):
+    elif (isinstance(obj, (bool, float, complex)) or
+          isinstance(obj, six.integer_types)):
       # primitive data type
       pass
     elif isinstance(obj, bytearray):
       # bytearray copied to disassociate from original obj.
-      obj = unicode(obj)
+      obj = six.text_type(obj)
     else:
       self._been_here_done_that.append(obj)
       if isinstance(obj, protorpc_message.Message):

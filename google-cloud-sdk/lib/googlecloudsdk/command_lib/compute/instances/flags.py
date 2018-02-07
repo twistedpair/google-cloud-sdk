@@ -219,12 +219,13 @@ def AddImageArgs(parser):
           device name and size, respectively.
           """
 
-  image_group = parser.add_mutually_exclusive_group()
+  image_parent_group = parser.add_group()
+  image_group = image_parent_group.add_mutually_exclusive_group()
   image_group.add_argument(
       '--image',
       help=AddImageHelp,
       metavar='IMAGE')
-  image_utils.AddImageProjectFlag(parser)
+  image_utils.AddImageProjectFlag(image_parent_group)
 
   image_group.add_argument(
       '--image-family',
@@ -574,31 +575,29 @@ def AddCreateDiskArgs(parser, enable_kms=False):
 
 def AddCustomMachineTypeArgs(parser):
   """Adds arguments related to custom machine types for instances."""
-  parser.add_argument(
+  custom_group = parser.add_group(
+      help='Custom machine type extensions.')
+  custom_group.add_argument(
       '--custom-cpu',
       type=int,
+      required=True,
       help="""\
       A whole number value indicating how many cores are desired in the custom
-      machine type. Both --custom-cpu and --custom-memory must be specified if
-      a custom machine type is desired, and the --machine-type flag must be
-      omitted.
+      machine type.
       """)
-  parser.add_argument(
+  custom_group.add_argument(
       '--custom-memory',
       type=arg_parsers.BinarySize(),
+      required=True,
       help="""\
       A whole number value indicating how much memory is desired in the custom
       machine type. A size unit should be provided (eg. 3072MB or 9GB) - if no
-      units are specified, GB is assumed. Both --custom-cpu and --custom-memory
-      must be specified if a custom machine type is desired, and the
-      --machine-type flag must be omitted.
+      units are specified, GB is assumed.
       """)
-  parser.add_argument(
+  custom_group.add_argument(
       '--custom-extensions',
       action='store_true',
-      help=('If provided, uses extended custom machine type. Both --custom-cpu'
-            ' and --custom-memory must be specified if --custom-extensions is'
-            ' provided.'))
+      help='Use the extended custom machine type.')
 
 
 def _GetAddress(compute_client, address_ref):
@@ -865,9 +864,9 @@ def AddAddressArgs(parser,
   if multiple_network_interface_cards:
     multiple_network_interface_cards_spec['aliases'] = str
     network_interface_help = """\
-        Adds a network interface to the instance. Mutually exclusive with
-        --address, --network, --network-tier, --subnet, and --private-network-ip
-        flags.
+        Adds a network interface to the instance. Mutually exclusive with any
+        of these flags: *--address*, *--network*, *--network-tier*, *--subnet*,
+        *--private-network-ip*.
 
         The following keys are allowed:
         *address*::: Assigns the given external address to the instance that is
@@ -1022,7 +1021,8 @@ def AddPrivateNetworkIpArgs(parser):
       """)
 
 
-def AddServiceAccountAndScopeArgs(parser, instance_exists):
+def AddServiceAccountAndScopeArgs(parser, instance_exists,
+                                  extra_scopes_help=''):
   """Add args for configuring service account and scopes.
 
   This should replace AddScopeArgs (b/30802231).
@@ -1030,6 +1030,7 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
   Args:
     parser: ArgumentParser, parser to which flags will be added.
     instance_exists: bool, If instance already exists and we are modifying it.
+    extra_scopes_help: str, Extra help text for the scopes flag.
   """
   service_account_group = parser.add_mutually_exclusive_group()
   service_account_group.add_argument(
@@ -1061,7 +1062,7 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
   scopes_not_exists = 'be assigned the default scopes, described below'
   scopes_default_list = '- ' + '\n      - '.join(constants.DEFAULT_SCOPES)
   scopes_help = """\
-  If not provided, the instance will {0}.
+  If not provided, the instance will {0}. {1}
 
   SCOPE can be either the full URI of the scope or an alias. Available
   aliases are:
@@ -1129,6 +1130,7 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists):
 
     {scope_deprecation_msg}
     """.format(scopes_exists if instance_exists else scopes_not_exists,
+               extra_scopes_help,
                scopes_default_list=scopes_default_list,
                scope_deprecation_msg=constants.DEPRECATED_SCOPES_MESSAGES)
   scopes_group.add_argument(
@@ -1691,42 +1693,48 @@ def AddDeletionProtectionFlag(parser, use_default_value=True):
         that no update needs to be done for deletion protection.
   """
   help_text = ('Enables deletion protection for the instance.')
-  if use_default_value:
-    help_text += ' Deletion protection is disabled by default.'
-  else:
-    help_text += (' To disable deletion protection, use '
-                  '`--no-deletion-protection`.')
+  action = ('store_true' if use_default_value else
+            arg_parsers.StoreTrueFalseAction)
   parser.add_argument(
       '--deletion-protection',
       help=help_text,
-      action='store_true',
-      default=False if use_default_value else None)
+      action=action)
 
 
-def AddShieldedVMConfigArgs(parser):
+def AddShieldedVMConfigArgs(parser, use_default_value=True):
   """Adds flags for shielded VM configuration.
 
   Args:
     parser: ArgumentParser, parser to which flags will be added.
+    use_default_value: Bool, if True, flag will be given the default value
+        False, else None. Update uses None as an indicator that no update needs
+        to be done for deletion protection.
   """
+  if use_default_value:
+    kwargs = {
+        'action': 'store_true',
+        'default': None
+    }
+  else:
+    kwargs = {
+        'action': arg_parsers.StoreTrueFalseAction
+    }
   parser.add_argument(
       '--shielded-vm-secure-boot',
-      action='store_true',
-      default=None,  # Tri-valued: None => don't change the setting.
       help="""\
       The instance will boot with secure boot enabled. Changes to this setting
       (via the update command) will only take effect after stopping and starting
       the instance.
-      """)
+      """,
+      **kwargs)
 
   parser.add_argument(
       '--shielded-vm-vtpm',
-      action='store_true',
-      default=None,  # Tri-valued: None => don't change the setting.
       help="""\
       The instance will boot with the TPM (Trusted Platform Module) enabled.
       Changes to this setting (via the update command) will only take effect
       after stopping and starting the instance. A TPM is a hardware module that
       can be used for different security operations such as remote attestation,
       encryption and sealing of keys.
-    """)
+    """,
+      **kwargs)

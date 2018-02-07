@@ -14,6 +14,9 @@
 
 """Cloud SDK markdown document markdown renderer (markdown in markdown out)."""
 
+from __future__ import absolute_import
+from __future__ import division
+
 from googlecloudsdk.core.document_renderers import renderer
 
 

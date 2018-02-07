@@ -114,7 +114,6 @@ def AddSignedUrlCacheMaxAge(parser, unspecified_help=None):
       will not be altered.{}
 
       For example, specifying `12h` will cause the responses to signed URL
-      requests to be cached in the CDN up to 12 hours. Valid units for this flag
-      are `s` for seconds, `m` for minutes, `h` for hours, and `d` for
-      days.
+      requests to be cached in the CDN up to 12 hours.
+      See $ gcloud topic datetimes for information on duration formats.
       """.format(unspecified_help))

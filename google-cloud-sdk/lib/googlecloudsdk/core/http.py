@@ -15,11 +15,11 @@
 """A module to get an unauthenticated http object."""
 
 
+from __future__ import absolute_import
+from __future__ import division
 import copy
 import platform
 import time
-import urllib
-import urlparse
 import uuid
 
 from googlecloudsdk.core import config
@@ -30,7 +30,11 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import session_capturer
 from googlecloudsdk.core.util import platforms
+
 import httplib2
+import six
+from six.moves import urllib
+from six.moves import zip  # pylint: disable=redefined-builtin
 
 
 def Http(timeout='unset'):
@@ -323,15 +327,15 @@ class Modifiers(object):
     """
     def _AddQueryParam(args, unused_kwargs):
       """Replacement http.request() method."""
-      url_parts = urlparse.urlsplit(args[0])
-      query_params = urlparse.parse_qs(url_parts.query)
+      url_parts = urllib.parse.urlsplit(args[0])
+      query_params = urllib.parse.parse_qs(url_parts.query)
       query_params[param] = value
       # Need to do this to convert a SplitResult into a list so it can be
       # modified.
       url_parts = list(url_parts)
-      url_parts[3] = urllib.urlencode(query_params, doseq=True)
+      url_parts[3] = urllib.parse.urlencode(query_params, doseq=True)
       modified_args = list(args)
-      modified_args[0] = urlparse.urlunsplit(url_parts)
+      modified_args[0] = urllib.parse.urlunsplit(url_parts)
       return Modifiers.Result(args=modified_args)
     return _AddQueryParam
 
@@ -352,7 +356,7 @@ class Modifiers(object):
       log.status.Print('uri: {uri}'.format(uri=uri))
       log.status.Print('method: {method}'.format(method=method))
       log.status.Print('== headers start ==')
-      for h, v in sorted(headers.iteritems()):
+      for h, v in sorted(six.iteritems(headers)):
         log.status.Print('{0}: {1}'.format(h, v))
       log.status.Print('== headers end ==')
       log.status.Print('== body start ==')
@@ -396,7 +400,7 @@ class Modifiers(object):
       headers, content = response
       log.status.Print('---- response start ----')
       log.status.Print('-- headers start --')
-      for h, v in sorted(headers.iteritems()):
+      for h, v in sorted(six.iteritems(headers)):
         log.status.Print('{0}: {1}'.format(h, v))
       log.status.Print('-- headers end --')
       log.status.Print('-- body start --')

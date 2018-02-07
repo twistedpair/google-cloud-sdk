@@ -18,6 +18,10 @@ All scripts in the SCRIPTS list will be inserted into each DevSite document
 <head> section.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+
+
 SCRIPTS = (
     # Each element is a (comment, script) tuple.
     ('Cloud SDK reference documentation consumer survey snippet.',

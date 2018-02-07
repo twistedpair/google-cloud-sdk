@@ -22,6 +22,9 @@ To scrub filter_expression_string:
   _, scrubbed_expression_string = scrubber.Rewrite(filter_expression_string)
 """
 
+from __future__ import absolute_import
+from __future__ import division
+
 from googlecloudsdk.core.resource import resource_expr_rewrite
 
 

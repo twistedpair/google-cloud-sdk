@@ -15,6 +15,10 @@
 """Exceptions for the Cloud SDK persistent cache module."""
 
 
+from __future__ import absolute_import
+from __future__ import division
+
+
 class Error(Exception):
   """Base for all persistent cache exceptions."""
 

@@ -21,6 +21,7 @@
   "baseUrl": "https://ml.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -203,7 +204,7 @@
     },
     "GoogleCloudMlV1__TrainingInput": {
       "id": "GoogleCloudMlV1__TrainingInput",
-      "description": "Represents input parameters for a training job.",
+      "description": "Represents input parameters for a training job. When using the\ngcloud command to submit your training job, you can specify\nthe input parameters as command-line arguments and\/or in a YAML configuration\nfile referenced from the --config command-line argument. For\ndetails, see the guide to\n<a href=\"\/ml-engine\/docs\/training-jobs\">submitting a training job<\/a>.",
       "type": "object",
       "properties": {
         "scaleTier": {
@@ -227,7 +228,7 @@
           ]
         },
         "masterType": {
-          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_s<\/code>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_m<\/code>.\n  <\/dd>\n  <dt>standard_gpu<\/dt>\n  <dd>\n  A machine equivalent to <code suppresswarning=\"true\">standard<\/code> that\n  also includes a single NVIDIA Tesla K80 GPU. See more about\n  <a href=\"\/ml-engine\/docs\/how-tos\/using-gpus\">\n  using GPUs for training your model<\/a>.\n  <\/dd>\n  <dt>complex_model_m_gpu<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">complex_model_m<\/code> that also includes\n  four NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>complex_model_l_gpu<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">complex_model_l<\/code> that also includes\n  eight NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>standard_p100<\/dt>\n  <dd>\n  A machine equivalent to <code suppresswarning=\"true\">standard<\/code> that\n  also includes a single NVIDIA Tesla P100 GPU. The availability of these\n  GPUs is in the Alpha launch stage.\n  <\/dd>\n  <dt>complex_model_m_p100<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">complex_model_m<\/code> that also includes\n  four NVIDIA Tesla P100 GPUs. The availability of these GPUs is in\n  the Alpha launch stage.\n  <\/dd>\n<\/dl>\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
+          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_s<\/code>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_m<\/code>.\n  <\/dd>\n  <dt>standard_gpu<\/dt>\n  <dd>\n  A machine equivalent to <code suppresswarning=\"true\">standard<\/code> that\n  also includes a single NVIDIA Tesla K80 GPU. See more about\n  <a href=\"\/ml-engine\/docs\/how-tos\/using-gpus\">\n  using GPUs for training your model<\/a>.\n  <\/dd>\n  <dt>complex_model_m_gpu<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">complex_model_m<\/code> that also includes\n  four NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>complex_model_l_gpu<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">complex_model_l<\/code> that also includes\n  eight NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>standard_p100<\/dt>\n  <dd>\n  A machine equivalent to <code suppresswarning=\"true\">standard<\/code> that\n  also includes a single NVIDIA Tesla P100 GPU. The availability of these\n  GPUs is in the Beta launch stage.\n  <\/dd>\n  <dt>complex_model_m_p100<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">complex_model_m<\/code> that also includes\n  four NVIDIA Tesla P100 GPUs. The availability of these GPUs is in\n  the Beta launch stage.\n  <\/dd>\n<\/dl>\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
           "type": "string"
         },
         "workerType": {
@@ -271,7 +272,7 @@
           "$ref": "GoogleCloudMlV1__HyperparameterSpec"
         },
         "region": {
-          "description": "Required. The Google Compute Engine region to run the training job in.",
+          "description": "Required. The Google Compute Engine region to run the training job in.\nSee the <a href=\"\/ml-engine\/docs\/regions\">available regions<\/a> for\nML Engine services.",
           "type": "string"
         },
         "jobDir": {
@@ -283,7 +284,7 @@
           "type": "string"
         },
         "pythonVersion": {
-          "description": "Optional. The version of Python used in training. If not set, the default\nversion is '2.7'.",
+          "description": "Optional. The version of Python used in training. If not set, the default\nversion is '2.7'. Python '3.5' is available when `runtime_version` is set\nto '1.4' and above. Python '2.7' works with all supported runtime versions.",
           "type": "string"
         }
       }
@@ -327,6 +328,14 @@
         "hyperparameterMetricTag": {
           "description": "Optional. The Tensorflow summary tag name to use for optimizing trials. For\ncurrent versions of Tensorflow, this tag name should exactly match what is\nshown in Tensorboard, including all scopes.  For versions of Tensorflow\nprior to 0.12, this should be only the tag passed to tf.Summary.\nBy default, \"training\/hptuning\/metric\" will be used.",
           "type": "string"
+        },
+        "resumePreviousJobId": {
+          "description": "Optional. The prior hyperparameter tuning job id that users hope to\ncontinue with. The job id will be used to find the corresponding vizier\nstudy guid and resume the study.",
+          "type": "string"
+        },
+        "enableTrialEarlyStopping": {
+          "description": "Optional. Indicates if the hyperparameter tuning job enables auto trial\nearly stopping.",
+          "type": "boolean"
         }
       }
     },
@@ -452,7 +461,7 @@
           "format": "int64"
         },
         "region": {
-          "description": "Required. The Google Compute Engine region to run the prediction job in.",
+          "description": "Required. The Google Compute Engine region to run the prediction job in.\nSee the <a href=\"\/ml-engine\/docs\/regions\">available regions<\/a> for\nML Engine services.",
           "type": "string"
         },
         "runtimeVersion": {
@@ -467,6 +476,36 @@
         "signatureName": {
           "description": "Optional. The name of the signature defined in the SavedModel to use for\nthis job. Please refer to\n[SavedModel](https:\/\/tensorflow.github.io\/serving\/serving_basic.html)\nfor information about how to use signatures.\n\nDefaults to\n[DEFAULT_SERVING_SIGNATURE_DEF_KEY](https:\/\/www.tensorflow.org\/api_docs\/python\/tf\/saved_model\/signature_constants)\n, which is \"serving_default\".",
           "type": "string"
+        },
+        "accelerator": {
+          "description": "Optional. The type and number of accelerators to be attached to each\nmachine running the job.",
+          "$ref": "GoogleCloudMlV1__AcceleratorConfig"
+        }
+      }
+    },
+    "GoogleCloudMlV1__AcceleratorConfig": {
+      "id": "GoogleCloudMlV1__AcceleratorConfig",
+      "description": "Represents a hardware accelerator request config.",
+      "type": "object",
+      "properties": {
+        "count": {
+          "description": "The number of accelerators to attach to the machines.",
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "description": "The available types of accelerators.",
+          "enumDescriptions": [
+            "Unspecified accelerator type. Default to no GPU.",
+            "Nvidia tesla k80 GPU.",
+            "Nvidia tesla P100 GPU."
+          ],
+          "type": "string",
+          "enum": [
+            "ACCELERATOR_TYPE_UNSPECIFIED",
+            "NVIDIA_TESLA_K80",
+            "NVIDIA_TESLA_P100"
+          ]
         }
       }
     },
@@ -517,6 +556,10 @@
         "finalMetric": {
           "description": "The final objective metric seen for this trial.",
           "$ref": "GoogleCloudMlV1_HyperparameterOutput_HyperparameterMetric"
+        },
+        "isTrialStoppedEarly": {
+          "description": "True if the trial is stopped early.",
+          "type": "boolean"
         },
         "allMetrics": {
           "description": "All recorded object metrics for this trial. This field is not currently\npopulated.",
@@ -600,6 +643,77 @@
       "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudMlV1__Location": {
+      "id": "GoogleCloudMlV1__Location",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "capabilities": {
+          "description": "Capabilities available in the location.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudMlV1__Capability"
+          }
+        }
+      }
+    },
+    "GoogleCloudMlV1__Capability": {
+      "id": "GoogleCloudMlV1__Capability",
+      "type": "object",
+      "properties": {
+        "type": {
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            ""
+          ],
+          "type": "string",
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "TRAINING",
+            "BATCH_PREDICTION",
+            "ONLINE_PREDICTION"
+          ]
+        },
+        "availableAccelerators": {
+          "description": "Available accelerators for the capability.",
+          "enumDescriptions": [
+            "Unspecified accelerator type. Default to no GPU.",
+            "Nvidia tesla k80 GPU.",
+            "Nvidia tesla P100 GPU."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ACCELERATOR_TYPE_UNSPECIFIED",
+              "NVIDIA_TESLA_K80",
+              "NVIDIA_TESLA_P100"
+            ]
+          }
+        }
+      }
+    },
+    "GoogleCloudMlV1__ListLocationsResponse": {
+      "id": "GoogleCloudMlV1__ListLocationsResponse",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "Locations where at least one type of CMLE capability is available.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudMlV1__Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "Optional. Pass this token as the `page_token` field of the request for a\nsubsequent call.",
+          "type": "string"
+        }
       }
     },
     "GoogleLongrunning__ListOperationsResponse": {
@@ -700,7 +814,7 @@
           "$ref": "GoogleCloudMlV1__Version"
         },
         "regions": {
-          "description": "Optional. The list of regions where the model is going to be deployed.\nCurrently only one region per model is supported.\nDefaults to 'us-central1' if nothing is set.\nNote:\n*   No matter where a model is deployed, it can always be accessed by\n    users from anywhere, both for online and batch prediction.\n*   The region for a batch prediction job is set by the region field when\n    submitting the batch prediction job and does not take its value from\n    this field.",
+          "description": "Optional. The list of regions where the model is going to be deployed.\nCurrently only one region per model is supported.\nDefaults to 'us-central1' if nothing is set.\nSee the <a href=\"\/ml-engine\/docs\/regions\">available regions<\/a> for\nML Engine services.\nNote:\n*   No matter where a model is deployed, it can always be accessed by\n    users from anywhere, both for online and batch prediction.\n*   The region for a batch prediction job is set by the region field when\n    submitting the batch prediction job and does not take its value from\n    this field.",
           "type": "array",
           "items": {
             "type": "string"
@@ -759,6 +873,10 @@
           "description": "Optional. The Google Cloud ML runtime version to use for this deployment.\nIf not set, Google Cloud ML will choose a version.",
           "type": "string"
         },
+        "machineType": {
+          "description": "Optional. The type of machine on which to serve the model.\nThe following are currently supported:\n  mls1-highmem-1    1 core    2 Gb RAM\n  mls1-highcpu-4    4 core    2 Gb RAM\nIf not set, mls1-highmem-1 is used. Currently only applies to\nonline prediction.",
+          "type": "string"
+        },
         "autoScaling": {
           "description": "Automatically scale the number of nodes used to serve the model in\nresponse to increases and decreases in traffic. Care should be\ntaken to ramp up traffic according to the model's ability to scale\nor you will start seeing increases in latency and 429 response codes.",
           "$ref": "GoogleCloudMlV1__AutoScaling"
@@ -772,9 +890,10 @@
           "enumDescriptions": [
             "The version state is unspecified.",
             "The version is ready for prediction.",
-            "The version is in the process of creation.",
+            "The version is being created. New UpdateVersion and DeleteVersion\nrequests will fail if a version is in the CREATING state.",
             "The version failed to be created, possibly cancelled.\n`error_message` should contain the details of the failure.",
-            "The version is in the process of deletion."
+            "The version is being deleted. New UpdateVersion and DeleteVersion\nrequests will fail if a version is in the DELETING state.",
+            "The version is being updated. New UpdateVersion and DeleteVersion\nrequests will fail if a version is in the UPDATING state."
           ],
           "type": "string",
           "enum": [
@@ -782,7 +901,8 @@
             "READY",
             "CREATING",
             "FAILED",
-            "DELETING"
+            "DELETING",
+            "UPDATING"
           ]
         },
         "errorMessage": {
@@ -942,11 +1062,11 @@
     },
     "GoogleIamV1__Policy": {
       "id": "GoogleIamV1__Policy",
-      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of\n`members` to a `role`, where the members can be user accounts, Google groups,\nGoogle domains, and service accounts. A `role` is a named list of permissions\ndefined by IAM.\n\n**Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/owner\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-other-app@appspot.gserviceaccount.com\",\n          ]\n        },\n        {\n          \"role\": \"roles\/viewer\",\n          \"members\": [\"user:sean@example.com\"]\n        }\n      ]\n    }\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam).",
+      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of\n`members` to a `role`, where the members can be user accounts, Google groups,\nGoogle domains, and service accounts. A `role` is a named list of permissions\ndefined by IAM.\n\n**Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/owner\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-other-app@appspot.gserviceaccount.com\",\n          ]\n        },\n        {\n          \"role\": \"roles\/viewer\",\n          \"members\": [\"user:sean@example.com\"]\n        }\n      ]\n    }\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam\/docs).",
       "type": "object",
       "properties": {
         "version": {
-          "description": "Version of the `Policy`. The default version is 0.",
+          "description": "Deprecated.",
           "type": "integer",
           "format": "int32"
         },
@@ -957,20 +1077,10 @@
             "$ref": "GoogleIamV1__Binding"
           }
         },
-        "auditConfigs": {
-          "description": "Specifies cloud audit logging configuration for this policy.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamV1__AuditConfig"
-          }
-        },
         "etag": {
           "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten blindly.",
           "type": "string",
           "format": "byte"
-        },
-        "iamOwned": {
-          "type": "boolean"
         }
       }
     },
@@ -991,7 +1101,7 @@
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.\nThis field is GOOGLE_INTERNAL.",
+          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.\nThis field is only visible as GOOGLE_INTERNAL or CONDITION_TRUSTED_TESTER.",
           "$ref": "GoogleType__Expr"
         }
       }
@@ -1016,60 +1126,6 @@
         "location": {
           "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
           "type": "string"
-        }
-      }
-    },
-    "GoogleIamV1__AuditConfig": {
-      "id": "GoogleIamV1__AuditConfig",
-      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
-      "type": "object",
-      "properties": {
-        "service": {
-          "description": "Specifies a service that will be enabled for audit logging.\nFor example, `storage.googleapis.com`, `cloudsql.googleapis.com`.\n`allServices` is a special value that covers all services.",
-          "type": "string"
-        },
-        "exemptedMembers": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "auditLogConfigs": {
-          "description": "The configuration for logging of each type of permission.\nNext ID: 4",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamV1__AuditLogConfig"
-          }
-        }
-      }
-    },
-    "GoogleIamV1__AuditLogConfig": {
-      "id": "GoogleIamV1__AuditLogConfig",
-      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\nfoo@gmail.com from DATA_READ logging.",
-      "type": "object",
-      "properties": {
-        "logType": {
-          "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
-          "type": "string",
-          "enum": [
-            "LOG_TYPE_UNSPECIFIED",
-            "ADMIN_READ",
-            "DATA_WRITE",
-            "DATA_READ"
-          ]
-        },
-        "exemptedMembers": {
-          "description": "Specifies the identities that do not cause logging for this type of\npermission.\nFollows the same format of Binding.members.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -1178,7 +1234,7 @@
           "path": "v1/{+name}:predict",
           "flatPath": "v1/projects/{projectsId}:predict",
           "httpMethod": "POST",
-          "description": "Performs prediction on the data in the request.\nCloud ML Engine implements a custom `predict` verb on top of an HTTP POST\nmethod. For details of the format, see the **guide to the\n[predict request format](\/ml-engine\/docs\/v1\/predict-request)**.",
+          "description": "Performs prediction on the data in the request.\nCloud ML Engine implements a custom `predict` verb on top of an HTTP POST\nmethod. <p>For details of the request and response format, see the **guide\nto the [predict request format](\/ml-engine\/docs\/v1\/predict-request)**.",
           "parameters": {
             "name": {
               "description": "Required. The resource name of a model or a version.\n\nAuthorization: requires the `predict` permission on the specified resource.",
@@ -1264,7 +1320,7 @@
               "path": "v1/{+parent}/jobs",
               "flatPath": "v1/projects/{projectsId}/jobs",
               "httpMethod": "GET",
-              "description": "Lists the jobs in the project.",
+              "description": "Lists the jobs in the project.\n\nIf there are no jobs that match the request parameters, the list\nrequest returns an empty response body: {}.",
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project for which to list jobs.",
@@ -1274,7 +1330,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "Optional. Specifies the subset of jobs to retrieve.",
+                  "description": "Optional. Specifies the subset of jobs to retrieve.\nYou can filter on the value of one or more attributes of the job object.\nFor example, retrieve jobs with a job identifier that starts with 'census':\n<p><code>gcloud ml-engine jobs list --filter='jobId:census*'<\/code>\n<p>List all failed jobs with names that start with 'rnn':\n<p><code>gcloud ml-engine jobs list --filter='jobId:rnn*\nAND state:FAILED'<\/code>\n<p>For more examples, see the guide to\n<a href=\"\/ml-engine\/docs\/monitor-training\">monitoring jobs<\/a>.",
                   "location": "query",
                   "type": "string"
                 },
@@ -1470,6 +1526,71 @@
             }
           }
         },
+        "locations": {
+          "methods": {
+            "get": {
+              "id": "ml.projects.locations.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "description": "Get the complete list of CMLE capabilities in a location, along with their\nlocation-specific properties.",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the location.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudMlV1__Location"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "list": {
+              "id": "ml.projects.locations.list",
+              "path": "v1/{+parent}/locations",
+              "flatPath": "v1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "description": "List all locations that provides at least one type of CMLE capability.",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The name of the project for which available locations are to be\nlisted (since some locations might be whitelisted for specific projects).",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageToken": {
+                  "description": "Optional. A page token to request the next page of results.\n\nYou get the token from the `next_page_token` field of the response from\nthe previous call.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. The number of locations to retrieve per \"page\" of results. If there\nare more remaining results than this number, the response message will\ncontain a valid value in the `next_page_token` field.\n\nThe default value is 20, and the maximum page size is 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GoogleCloudMlV1__ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            }
+          }
+        },
         "operations": {
           "methods": {
             "list": {
@@ -1625,7 +1746,7 @@
               "path": "v1/{+parent}/models",
               "flatPath": "v1/projects/{projectsId}/models",
               "httpMethod": "GET",
-              "description": "Lists the models in a project.\n\nEach project can contain multiple models, and each model can have multiple\nversions.",
+              "description": "Lists the models in a project.\n\nEach project can contain multiple models, and each model can have multiple\nversions.\n\nIf there are no models that match the request parameters, the list request\nreturns an empty response body: {}.",
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project whose models are to be listed.",
@@ -1874,7 +1995,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Specifies the path, relative to `Version`, of the field to\nupdate. Must be present and non-empty.\n\nFor example, to change the description of a version to \"foo\", the\n`update_mask` parameter would be specified as `description`, and the\n`PATCH` request body would specify the new value, as follows:\n    {\n      \"description\": \"foo\"\n    }\nIn this example, the version is blindly overwritten since no etag is given.\n\nTo adopt etag mechanism, include `etag` field in the mask, and include the\n`etag` value in your version resource.\n\nCurrently the only supported update masks are `description`, `labels`, and\n`etag`.",
+                      "description": "Required. Specifies the path, relative to `Version`, of the field to\nupdate. Must be present and non-empty.\n\nFor example, to change the description of a version to \"foo\", the\n`update_mask` parameter would be specified as `description`, and the\n`PATCH` request body would specify the new value, as follows:\n    {\n      \"description\": \"foo\"\n    }\nIn this example, the version is blindly overwritten since no etag is given.\n\nTo adopt etag mechanism, include `etag` field in the mask, and include the\n`etag` value in your version resource.\n\nCurrently the only supported update masks are `description`, `labels`, and\n`etag`, and `expire_time`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1898,7 +2019,7 @@
                   "path": "v1/{+parent}/versions",
                   "flatPath": "v1/projects/{projectsId}/models/{modelsId}/versions",
                   "httpMethod": "GET",
-                  "description": "Gets basic information about all the versions of a model.\n\nIf you expect that a model has a lot of versions, or if you need to handle\nonly a limited number of results at a time, you can request that the list\nbe retrieved in batches (called pages):",
+                  "description": "Gets basic information about all the versions of a model.\n\nIf you expect that a model has many versions, or if you need to handle\nonly a limited number of results at a time, you can request that the list\nbe retrieved in batches (called pages).\n\nIf there are no versions that match the request parameters, the list\nrequest returns an empty response body: {}.",
                   "parameters": {
                     "parent": {
                       "description": "Required. The name of the model for which to list the version.",

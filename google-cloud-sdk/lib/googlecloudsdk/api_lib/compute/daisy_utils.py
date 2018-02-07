@@ -58,8 +58,7 @@ def AddCommonDaisyArgs(parser):
       help="""\
           Maximum time a build can last before it is failed as "TIMEOUT".
           For example, specifying ``2h'' will fail the process after  2 hours.
-          Valid units for this flag are ``s'' for seconds, ``m'' for minutes,
-          and ``h'' for hours. If no unit is specified, seconds is assumed.
+          See $ gcloud topic datetimes for information on duration formats.
           """
   )
   base.ASYNC_FLAG.AddToParser(parser)

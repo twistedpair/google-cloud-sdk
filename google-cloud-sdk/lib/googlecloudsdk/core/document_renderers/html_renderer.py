@@ -14,6 +14,8 @@
 
 """Cloud SDK markdown document HTML renderer."""
 
+from __future__ import absolute_import
+from __future__ import division
 import collections
 import re
 

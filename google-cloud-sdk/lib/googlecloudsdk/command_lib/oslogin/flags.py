@@ -42,9 +42,9 @@ def AddTtlFlag(parser, required=False):
       help="""\
           The amount of time before the SSH key expires. For example,
           specifying ``30m'' will set the expiration time on the SSH key for
-          30 minutes from the current time. Valid units for this flag are
-          ``s'' for seconds, ``m'' for minutes, ``h'' for hours, and ``d''
-          for days. A value of 0 will result in no expiration time.
+          30 minutes from the current time. A value of 0 will result in no
+          expiration time.
+          See $ gcloud topic datetimes for information on duration formats.
           """)
 
 

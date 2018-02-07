@@ -217,6 +217,7 @@ class Cluster(_messages.Message):
       and nodes. The cluster has no SLA for uptime and master/node upgrades
       are disabled. Alpha enabled clusters are automatically deleted thirty
       days after creation.
+    enableTpu: Enable the ability to use Cloud TPUs in this cluster.
     endpoint: [Output only] The IP address of this cluster's master endpoint.
       The endpoint can be accessed from the internet at
       `https://username:password@endpoint/`.  See the `masterAuth` property of
@@ -371,39 +372,40 @@ class Cluster(_messages.Message):
   currentNodeVersion = _messages.StringField(9)
   description = _messages.StringField(10)
   enableKubernetesAlpha = _messages.BooleanField(11)
-  endpoint = _messages.StringField(12)
-  expireTime = _messages.StringField(13)
-  initialClusterVersion = _messages.StringField(14)
-  initialNodeCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(16, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 17)
-  labelFingerprint = _messages.StringField(18)
-  legacyAbac = _messages.MessageField('LegacyAbac', 19)
-  location = _messages.StringField(20)
-  locations = _messages.StringField(21, repeated=True)
-  loggingService = _messages.StringField(22)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 23)
-  masterAuth = _messages.MessageField('MasterAuth', 24)
-  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 25)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 26)
-  masterIpv4CidrBlock = _messages.StringField(27)
-  monitoringService = _messages.StringField(28)
-  name = _messages.StringField(29)
-  network = _messages.StringField(30)
-  networkConfig = _messages.MessageField('NetworkConfig', 31)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 32)
-  nodeConfig = _messages.MessageField('NodeConfig', 33)
-  nodeIpv4CidrSize = _messages.IntegerField(34, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 35, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 36)
-  privateCluster = _messages.BooleanField(37)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 38)
-  selfLink = _messages.StringField(39)
-  servicesIpv4Cidr = _messages.StringField(40)
-  status = _messages.EnumField('StatusValueValuesEnum', 41)
-  statusMessage = _messages.StringField(42)
-  subnetwork = _messages.StringField(43)
-  zone = _messages.StringField(44)
+  enableTpu = _messages.BooleanField(12)
+  endpoint = _messages.StringField(13)
+  expireTime = _messages.StringField(14)
+  initialClusterVersion = _messages.StringField(15)
+  initialNodeCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(17, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 18)
+  labelFingerprint = _messages.StringField(19)
+  legacyAbac = _messages.MessageField('LegacyAbac', 20)
+  location = _messages.StringField(21)
+  locations = _messages.StringField(22, repeated=True)
+  loggingService = _messages.StringField(23)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 24)
+  masterAuth = _messages.MessageField('MasterAuth', 25)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 26)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 27)
+  masterIpv4CidrBlock = _messages.StringField(28)
+  monitoringService = _messages.StringField(29)
+  name = _messages.StringField(30)
+  network = _messages.StringField(31)
+  networkConfig = _messages.MessageField('NetworkConfig', 32)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 33)
+  nodeConfig = _messages.MessageField('NodeConfig', 34)
+  nodeIpv4CidrSize = _messages.IntegerField(35, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 36, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 37)
+  privateCluster = _messages.BooleanField(38)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 39)
+  selfLink = _messages.StringField(40)
+  servicesIpv4Cidr = _messages.StringField(41)
+  status = _messages.EnumField('StatusValueValuesEnum', 42)
+  statusMessage = _messages.StringField(43)
+  subnetwork = _messages.StringField(44)
+  zone = _messages.StringField(45)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -512,6 +514,7 @@ class ClusterUpdate(_messages.Message):
       supported by the server.
     desiredPodSecurityPolicyConfig: The desired configuration options for the
       PodSecurityPolicy feature.
+    desiredUseIpAliases: The desired use of IP aliases in a cluster.
   """
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
@@ -531,6 +534,7 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolId = _messages.StringField(15)
   desiredNodeVersion = _messages.StringField(16)
   desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 17)
+  desiredUseIpAliases = _messages.BooleanField(18)
 
 
 class ClusterUpdateOptions(_messages.Message):
@@ -1166,7 +1170,7 @@ class GoogleIamV1AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted.  Example Policy with
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
@@ -1237,7 +1241,8 @@ class GoogleIamV1Binding(_messages.Message):
     condition: The condition that is associated with this binding. NOTE: an
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
-      independently. This field is GOOGLE_INTERNAL.
+      independently. This field is only visible as GOOGLE_INTERNAL or
+      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -1337,6 +1342,12 @@ class GoogleIamV1Condition(_messages.Message):
         justification conditions can only be used in a "positive" context
         (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple justifications, e.g., a
         Buganizer ID and a manually-entered reason, are normal and supported.
+      CREDENTIALS_TYPE: What type of credentials have been supplied with this
+        request. String values should match enum names from
+        security_loas_l2.CredentialsType - currently, only
+        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
+        based on the *absence* of a credentials type, so the conditions can
+        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
     """
     NO_ATTR = 0
     AUTHORITY = 1
@@ -1344,6 +1355,7 @@ class GoogleIamV1Condition(_messages.Message):
     SECURITY_REALM = 3
     APPROVER = 4
     JUSTIFICATION_TYPE = 5
+    CREDENTIALS_TYPE = 6
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -1483,7 +1495,7 @@ class GoogleIamV1Policy(_messages.Message):
   app@appspot.gserviceaccount.com",           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
   }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -1506,7 +1518,7 @@ class GoogleIamV1Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
       Logging will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('GoogleIamV1AuditConfig', 1, repeated=True)
@@ -1699,6 +1711,15 @@ class IPAllocationPolicy(_messages.Message):
     subnetworkName: A custom subnetwork name to be used if `create_subnetwork`
       is true.  If this field is empty, then an automatic name will be chosen
       for the new subnetwork.
+    tpuIpv4CidrBlock: The IP address range of the Cloud TPUs in this cluster.
+      If unspecified, a range will be automatically chosen with the default
+      size.  This field is only applicable when `use_ip_aliases` is true.
+      Unspecified to have a range chosen with the default size `/20`.  Set to
+      /netmask (e.g. `/14`) to have a range chosen with a specific netmask.
+      Set to a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
+      Domain_Routing) notation (e.g. `10.96.0.0/14`) from the RFC-1918 private
+      networks (e.g. `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick
+      a specific range to use.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
   """
 
@@ -1713,7 +1734,8 @@ class IPAllocationPolicy(_messages.Message):
   servicesIpv4CidrBlock = _messages.StringField(9)
   servicesSecondaryRangeName = _messages.StringField(10)
   subnetworkName = _messages.StringField(11)
-  useIpAliases = _messages.BooleanField(12)
+  tpuIpv4CidrBlock = _messages.StringField(12)
+  useIpAliases = _messages.BooleanField(13)
 
 
 class KubernetesDashboard(_messages.Message):
@@ -1974,11 +1996,13 @@ class NodeConfig(_messages.Message):
       than 128 bytes in length. These are reflected as part of a URL in the
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
-      four reserved keys: "instance-template", "kube-env", "startup-script",
-      and "user-data"  Values are free-form strings, and only have meaning as
-      interpreted by the image running in the instance. The only restriction
-      placed on them is that each value's size must be less than or equal to
-      32 KB.  The total size of all keys and values must be less than 512 KB.
+      reserved keys:  "cluster-name"  "cluster-uid"  "configure-sh"  "gci-
+      update-strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-
+      env"  "startup-script"  "user-data"  Values are free-form strings, and
+      only have meaning as interpreted by the image running in the instance.
+      The only restriction placed on them is that each value's size must be
+      less than or equal to 32 KB.  The total size of all keys and values must
+      be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -2016,11 +2040,13 @@ class NodeConfig(_messages.Message):
       than 128 bytes in length. These are reflected as part of a URL in the
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
-      four reserved keys: "instance-template", "kube-env", "startup-script",
-      and "user-data"  Values are free-form strings, and only have meaning as
-      interpreted by the image running in the instance. The only restriction
-      placed on them is that each value's size must be less than or equal to
-      32 KB.  The total size of all keys and values must be less than 512 KB.
+      reserved keys:  "cluster-name"  "cluster-uid"  "configure-sh"  "gci-
+      update-strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-
+      env"  "startup-script"  "user-data"  Values are free-form strings, and
+      only have meaning as interpreted by the image running in the instance.
+      The only restriction placed on them is that each value's size must be
+      less than or equal to 32 KB.  The total size of all keys and values must
+      be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -2091,12 +2117,13 @@ class NodeConfig(_messages.Message):
     Keys must conform to the regexp [a-zA-Z0-9-_]+ and be less than 128 bytes
     in length. These are reflected as part of a URL in the metadata server.
     Additionally, to avoid ambiguity, keys must not conflict with any other
-    metadata keys for the project or be one of the four reserved keys:
-    "instance-template", "kube-env", "startup-script", and "user-data"  Values
-    are free-form strings, and only have meaning as interpreted by the image
-    running in the instance. The only restriction placed on them is that each
-    value's size must be less than or equal to 32 KB.  The total size of all
-    keys and values must be less than 512 KB.
+    metadata keys for the project or be one of the reserved keys:  "cluster-
+    name"  "cluster-uid"  "configure-sh"  "gci-update-strategy"  "gci-ensure-
+    gke-docker"  "instance-template"  "kube-env"  "startup-script"  "user-
+    data"  Values are free-form strings, and only have meaning as interpreted
+    by the image running in the instance. The only restriction placed on them
+    is that each value's size must be less than or equal to 32 KB.  The total
+    size of all keys and values must be less than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -2328,6 +2355,7 @@ class Operation(_messages.Message):
       SET_NODE_POOL_SIZE: Set node pool size.
       SET_NETWORK_POLICY: Updates network policy for a cluster.
       SET_MAINTENANCE_POLICY: Set the maintenance policy.
+      UPDATE_ROUTES_TO_IP_ALIASES: Update to IP aliases from routes.
     """
     TYPE_UNSPECIFIED = 0
     CREATE_CLUSTER = 1
@@ -2346,6 +2374,7 @@ class Operation(_messages.Message):
     SET_NODE_POOL_SIZE = 14
     SET_NETWORK_POLICY = 15
     SET_MAINTENANCE_POLICY = 16
+    UPDATE_ROUTES_TO_IP_ALIASES = 17
 
   class StatusValueValuesEnum(_messages.Enum):
     """The current status of the operation.

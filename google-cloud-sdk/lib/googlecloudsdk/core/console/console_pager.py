@@ -14,6 +14,8 @@
 
 """Simple console pager."""
 
+from __future__ import absolute_import
+from __future__ import division
 import re
 import sys
 
@@ -186,7 +188,7 @@ class Pager(object):
         self._out.write('\n'.join(self._lines[pos:nxt]) + '\n')
 
       # Handle the prompt response.
-      percent = self._prompt.format(percent=100 * nxt / len(self._lines))
+      percent = self._prompt.format(percent=100 * nxt // len(self._lines))
       digits = ''
       while True:
         # We want to reset prev values if we just exited out of the while loop

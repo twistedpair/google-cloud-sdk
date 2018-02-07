@@ -14,6 +14,8 @@
 
 """General console printing utilities used by the Cloud SDK."""
 
+from __future__ import absolute_import
+from __future__ import division
 import contextlib
 import os
 import re
@@ -29,6 +31,10 @@ from googlecloudsdk.core.console import console_pager
 from googlecloudsdk.core.console import prompt_completer
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+
+from six.moves import input  # pylint: disable=redefined-builtin
+from six.moves import map  # pylint: disable=redefined-builtin
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 class Error(exceptions.Error):
@@ -99,7 +105,7 @@ def _RawInput(prompt=None):
     sys.stderr.write(_DoWrap(prompt))
 
   try:
-    return raw_input()
+    return input()
   except EOFError:
     return None
 
@@ -322,7 +328,7 @@ def _ParseAnswer(answer, options, allow_freeform):
     return None
 
   try:
-    return map(str, options).index(answer) + 1
+    return list(map(str, options)).index(answer) + 1
   except ValueError:
     # Answer not an entry in the options list
     pass
@@ -623,7 +629,7 @@ class ProgressBar(object):
         original_callback(already_done + (done_fraction * weight))
       return Callback
 
-    total = float(sum(weights))
+    total = sum(weights)
     callbacks = []
     already_done = 0
     for weight in weights:
@@ -784,4 +790,4 @@ class TickableProgressBar(object):
 
   def Tick(self):
     self.completed += 1
-    self._progress_bar.SetProgress(float(self.completed) / self.total)
+    self._progress_bar.SetProgress(self.completed / self.total)

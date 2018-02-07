@@ -67,6 +67,8 @@ Typical resource usage:
     Process(key, args, operator, operand)
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import copy
 import re
 
@@ -74,6 +76,10 @@ from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_projection_spec
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.resource import resource_transform
+
+import six
+from six.moves import map  # pylint: disable=redefined-builtin
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 # Resource keys cannot contain unquoted operator characters.
@@ -845,7 +851,7 @@ def GetKeyName(key, quote=True, omit_indices=False):
       if parts:
         parts[-1] += part
         continue
-    elif isinstance(part, (int, long)):
+    elif isinstance(part, six.integer_types):
       if omit_indices:
         continue
       part = '[{part}]'.format(part=part)

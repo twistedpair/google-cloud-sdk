@@ -14,6 +14,8 @@
 
 """Functions to help with shelling out to other commands."""
 
+from __future__ import absolute_import
+from __future__ import division
 import contextlib
 import errno
 import os
@@ -31,6 +33,8 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
+
+import six
 
 
 class PermissionError(exceptions.Error):
@@ -491,7 +495,7 @@ def _KillPID(pid):
     # Raise original stack trace.
     if 'No such process' not in error.strerror:
       (_, i, st) = sys.exc_info()
-      raise i, None, st
+      six.reraise(i, None, st)
 
 
 def _IsStillRunning(pid):
@@ -511,5 +515,5 @@ def _IsStillRunning(pid):
     # Raise original stack trace.
     if 'No child processes' not in error.strerror:
       (_, i, st) = sys.exc_info()
-      raise i, None, st
+      six.reraise(i, None, st)
   return False

@@ -14,6 +14,8 @@
 
 """Config for Google Cloud Platform CLIs."""
 
+from __future__ import absolute_import
+from __future__ import division
 import json
 import os
 import time
@@ -76,13 +78,7 @@ class InstallationConfig(object):
       InstallationSpecificData: The loaded data.
     """
     data = json.loads(pkg_resources.GetResource(__name__, 'config.json'))
-
-    # Python versions prior to 2.6.5 do not allow the keys in a kwargs dict to
-    # be unicode strings.  The json module parses files as unicode.  We are not
-    # using any unicode in the keys for our config properties so a simple
-    # conversion to str is safe.
-    non_unicode_data = dict([(str(k), v) for k, v in data.iteritems()])
-    return InstallationConfig(**non_unicode_data)
+    return InstallationConfig(**data)
 
   @staticmethod
   def FormatRevision(time_struct):
@@ -92,12 +88,12 @@ class InstallationConfig(object):
       time_struct: time.struct_time, The time you want to format.
 
     Returns:
-      long, A revision number from a component snapshot.  This is a long int but
+      int, A revision number from a component snapshot.  This is a int but
       formatted as an actual date in seconds (i.e 20151009132504).  It is *NOT*
       seconds since the epoch.
     """
-    return long(time.strftime(InstallationConfig.REVISION_FORMAT_STRING,
-                              time_struct))
+    return int(time.strftime(
+        InstallationConfig.REVISION_FORMAT_STRING, time_struct))
 
   @staticmethod
   def ParseRevision(revision):

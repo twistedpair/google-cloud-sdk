@@ -3,6 +3,61 @@
 Copyright 2014-2018 Google Inc. All rights reserved.
 
 
+## 188.0.0 (2018-02-07)
+
+### Breaking Changes
+
+* **(REMOVED)** Removed deprecated `gcloud service-management`. Use
+  `gcloud endpoints` and `gcloud services` instead.
+*  **(MODIFIED)** The default trigger event behavior for `--trigger-bucket` flag
+    on the `gcloud functions deploy` command will soon change.
+    `google.storage.object.finalize` will replace
+    `providers/cloud.storage/eventTypes/object.change` as default trigger event.
+    To opt-in to the new behavior early, run
+    `gcloud config set functions/use_new_object_trigger True`.
+
+
+### Cloud SDK
+
+* Added `gcloud topic command-conventions` for details on command line
+  conventions and processing.
+
+### Compute Engine
+
+* Promoted `gcloud compute security-policies rules` to beta.
+* Added `--file-name` and `--file-format` flags to
+  `gcloud compute security-policies create`. These flags allow creating security
+  policies from predefined templates by importing from the specified file.
+* Modified the default file format for `gcloud compute security-policies import`
+  and `gcloud compute security-policies export` from json to yaml.
+
+### Container Builder
+
+* Fixed issue where a `.gcloudignore` entry matching "." caused `gcloud
+  container builds submit` to not upload any files.
+
+### Firebase Test Lab
+
+* Added default`as a possible device orientation. When orientation is
+  `default`, the most appropriate orientation for your app is picked.
+   Usually, this is any app-specified orientation for the main activity or
+  `portrait`, if none is specified in the app manifest.
+
+### Identity and Access Management
+
+*   **(MODIFIED)** Promoted `gcloud beta iam roles`,
+    `gcloud beta iam list-testable-permissions` to GA.
+
+### Miscellaneous
+
+* Updated the Pubsub Emulator
+  * Pubsub emulator now spams the console less.
+  * Pubsub emulator properly sets the default value for Subscription.message_retention_duration.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 187.0.0 (2018-01-31)
 
 ### App Engine
@@ -10,21 +65,18 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 
 * Updated the Java SDK to version 1.9.61.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  [https://cloud.google.com/appengine/docs/java/release-notes](https://cloud.google.com/appengine/docs/java/release-notes)
 
 ### App Engine Flexible Environment
 
 * Added `--use-container-optimized-os` flag to `gcloud alpha|beta app update` to
-  enable Container-Optimized OS(https://cloud.google.com/container-optimized-os/docs/)
+  enable [Container-Optimized OS](https://cloud.google.com/container-optimized-os/docs/)
   as Flex VM base image by default on new deployments.
 
 ### Cloud DNS
 
 *   Added Cloud labels flags to `gcloud beta managed-zones <create|update>`
     commands.
-
-### Cloud Datalab
-
 
 ### Cloud Interconnect
 
@@ -34,7 +86,7 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 
 * Added `gcloud alpha pubsub snapshots describe` command.
 
-### Cloud Tpu
+### Cloud TPU
 
 * Promoted `gcloud compute tpus` to beta.
 
@@ -76,7 +128,7 @@ labels.
 
 ### Miscellaneous
 
-* Fixed crash when attempting to use a SOCKS proxy (https://issuetracker.google.com/72407295).
+* Fixed crash when attempting to use a SOCKS proxy [https://issuetracker.google.com/72407295](https://issuetracker.google.com/72407295).
 
 
 ## 186.0.0 (2018-01-24)

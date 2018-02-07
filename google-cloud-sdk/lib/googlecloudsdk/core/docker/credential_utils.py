@@ -12,13 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utility library for configuring docker credential helpers."""
+
+from __future__ import absolute_import
+from __future__ import division
 import collections
 import json
 
 from distutils import version as distutils_version
+
 from googlecloudsdk.core.docker import client_lib as client_utils
 from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.util import files
+
 
 MIN_DOCKER_CONFIG_HELPER_VERSION = distutils_version.LooseVersion('1.13')
 CREDENTIAL_HELPER_KEY = 'credHelpers'
@@ -142,7 +147,7 @@ class Configuration(object):
     try:
       version = str(client_utils.GetDockerVersion())
       content = client_utils.ReadConfigurationFile(path)
-    except (ValueError, client_utils.DockerError)  as err:
+    except (ValueError, client_utils.DockerError) as err:
       raise client_utils.InvalidDockerConfigError(
           ('Docker configuration file [{}] could not be read as JSON: {}'
           ).format(path, str(err)))

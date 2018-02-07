@@ -19,6 +19,8 @@ See the persistent_cache module for a detailed description.
 # Pytype fails to analyze this file.
 # type: ignore
 
+from __future__ import absolute_import
+from __future__ import division
 import errno
 import os
 
@@ -26,6 +28,8 @@ from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import metadata_table
 from googlecloudsdk.core.cache import persistent_cache_base
 
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 import sqlite3
 
 
@@ -59,7 +63,7 @@ def _Where(row_template=None):
       term = row_template[index]
       if term is None:
         continue
-      if isinstance(term, basestring):
+      if isinstance(term, six.string_types):
         pattern = term.replace('*', '%').replace('.', '_').replace('"', '""')
         terms.append(u'{field} LIKE "{pattern}"'.format(
             field=_FieldRef(index), pattern=pattern))

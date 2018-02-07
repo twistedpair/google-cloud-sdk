@@ -14,10 +14,14 @@
 
 """Prompt completion support module."""
 
+from __future__ import absolute_import
+from __future__ import division
 import os
 import sys
 
 from googlecloudsdk.core.console import console_attr
+
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 def _IntegerCeilingDivide(numerator, denominator):

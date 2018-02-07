@@ -65,6 +65,8 @@ aggregate parameters for the List API, and the number of values each aggregate
 parameter can take on.
 """
 
+from __future__ import absolute_import
+from __future__ import division
 import abc
 import os
 
@@ -75,6 +77,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import file_cache
 from googlecloudsdk.core.util import files
+
+import six
 
 # Rollout hedge just in case a cache implementation causes problems.
 try:
@@ -185,6 +189,7 @@ class BaseUpdater(object):
   """A base object for thin updater wrappers."""
 
 
+@six.add_metaclass(abc.ABCMeta)
 class Updater(BaseUpdater):
   """A resource cache table updater.
 
@@ -202,8 +207,6 @@ class Updater(BaseUpdater):
     timeout: The resource table timeout in seconds, 0 for no timeout (0 is easy
       to represent in a persistent cache tuple which holds strings and numbers).
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, cache=None, collection=None, columns=0, column=0,
                parameters=None, timeout=DEFAULT_TIMEOUT):

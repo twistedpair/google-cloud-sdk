@@ -92,5 +92,4 @@ def MakeGetNoteRequest(note_name, default_project):
   request = messages.ContaineranalysisProvidersNotesGetRequest(
       name=note_ref.RelativeName(),
   )
-  print 2, client
   return client.providers_notes.Get(request)

@@ -1326,3 +1326,42 @@ When enabled, `--cluster-ipv4-cidr` must be fully specified (e.g. `10.96.0.0/14`
       action='store_true',
       default=None,
       help=help_text)
+
+
+def AddTpuFlags(parser, hidden=False):
+  """Adds flags related to TPUs to the parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Whether or not to hide the help text.
+  """
+
+  tpu_group = parser.add_group(help='TPU')
+
+  tpu_group.add_argument(
+      '--enable-tpu',
+      action='store_true',
+      hidden=hidden,
+      help="""\
+Enable Cloud TPUs for this cluster.
+
+Can not be specified unless `--enable-kubernetes-alpha` and `--enable-ip-alias`
+are also specified.
+""")
+
+  tpu_group.add_argument(
+      '--tpu-ipv4-cidr',
+      metavar='CIDR',
+      hidden=hidden,
+      help="""\
+Set the IP range for the Cloud TPUs.
+
+Can be specified as a netmask size (e.g. '/20') or as in CIDR notion
+(e.g. '10.100.0.0/20'). If given as a netmask size, the IP range will be chosen
+automatically from the available space in the network.
+
+If unspecified, the TPU CIDR range will use automatic default '/20'.
+
+Can not be specified unless '--enable-tpu' and '--enable-ip-alias' are also
+specified.
+""")

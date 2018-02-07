@@ -14,10 +14,13 @@
 
 """Unified diff resource printer."""
 
+from __future__ import absolute_import
+from __future__ import division
 import difflib
-import StringIO
 
 from googlecloudsdk.core.resource import resource_printer_base
+
+from six.moves import StringIO
 
 
 class DiffPrinter(resource_printer_base.ResourcePrinter):
@@ -59,11 +62,11 @@ class DiffPrinter(resource_printer_base.ResourcePrinter):
       new: The new changed resource.
     """
     # Fill a buffer with the object as rendered originally.
-    buf_old = StringIO.StringIO()
+    buf_old = StringIO()
     printer = self.Printer(self._print_format, out=buf_old)
     printer.PrintSingleRecord(old)
     # Fill a buffer with the object as rendered after the change.
-    buf_new = StringIO.StringIO()
+    buf_new = StringIO()
     printer = self.Printer(self._print_format, out=buf_new)
     printer.PrintSingleRecord(new)
     # Send these two buffers to the unified_diff() function for printing.

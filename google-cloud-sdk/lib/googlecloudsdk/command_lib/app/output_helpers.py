@@ -16,8 +16,8 @@
 
 from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.api_lib.app import yaml_parsing
-from googlecloudsdk.api_lib.service_management import enable_api
-from googlecloudsdk.api_lib.service_management import exceptions as sm_exceptions
+from googlecloudsdk.api_lib.services import enable_api
+from googlecloudsdk.api_lib.services import exceptions as s_exceptions
 from googlecloudsdk.core import log
 
 
@@ -128,7 +128,7 @@ def DisplayProposedConfigDeployments(project, configs):
       try:
         api_maybe_enabled = enable_api.IsServiceEnabled(
             project, 'cloudtasks.googleapis.com')
-      except sm_exceptions.ListServicesPermissionDeniedException:
+      except s_exceptions.ListServicesPermissionDeniedException:
         api_maybe_enabled = True  # We can't know, so presume it is enabled
       if api_maybe_enabled:
         # Display this warning with a false positive rate for when the Service

@@ -34,12 +34,19 @@ The general usage is as follows:
 Errors are raised at the time of the Get() call on the future (which is implicit
 for Apply() and Map()).
 """
+
+from __future__ import absolute_import
+from __future__ import division
 import abc
 import pickle
-import Queue
 import sys
 import threading
 import time
+
+import six
+from six.moves import map  # pylint: disable=redefined-builtin
+from six.moves import queue   # pylint: disable=redefined-builtin
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 ################################################################################
@@ -62,7 +69,8 @@ class InvalidStateException(Exception):
     super(InvalidStateException, self).__init__(msg)
 
 
-class BasePool(object):
+@six.add_metaclass(abc.ABCMeta)
+class BasePool(object):  # pytype: disable=ignored-abstractmethod
   """Base class for parallel pools.
 
   Provides a limited subset of the multiprocessing.Pool API.
@@ -72,8 +80,6 @@ class BasePool(object):
   >>> with pool:
   ...  assert pool.Map(str, [1, 2, 3]) == ['1', '2', '3']
   """
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def Start(self):
@@ -110,10 +116,9 @@ class BasePool(object):
     self.Join()
 
 
-class BaseFuture(object):
+@six.add_metaclass(abc.ABCMeta)
+class BaseFuture(object):  # pytype: disable=ignored-abstractmethod
   """A future object containing a value that may not be available yet."""
-
-  __metaclass__ = abc.ABCMeta
 
   def Get(self):
     return self.GetResult().GetOrRaise()
@@ -155,7 +160,7 @@ class _Result(object):
     elif self.error:
       raise self.error  # pylint: disable=raising-bad-type
     else:
-      raise self.exc_info[0], self.exc_info[1], self.exc_info[2]
+      six.reraise(self.exc_info[0], self.exc_info[1], self.exc_info[2])
 
   def ToPickleableResult(self):
     """Return a pickleable version of this _Result.
@@ -191,7 +196,8 @@ class MultiError(Exception):
   def __init__(self, errors):
     self.errors = errors
     super(MultiError, self).__init__(
-        'One or more errors occurred:\n' + '\n\n'.join(map(unicode, errors)))
+        'One or more errors occurred:\n' +
+        '\n\n'.join(map(six.text_type, errors)))
 
 
 class _MultiFuture(BaseFuture):
@@ -342,7 +348,7 @@ class ThreadPool(BasePool):
 
   def __init__(self, num_threads):
     self.num_threads = num_threads
-    self._task_queue = Queue.Queue()
+    self._task_queue = queue.Queue()
     self.worker_threads = []
     self._results_map = {}
 

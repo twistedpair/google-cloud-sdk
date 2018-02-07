@@ -14,16 +14,21 @@
 
 """Caching logic for checking if we're on GCE."""
 
-import httplib
+from __future__ import absolute_import
+from __future__ import division
+
 import os
 import socket
-from threading import Lock
+import threading
 import time
-import urllib2
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core.credentials import gce_read
 from googlecloudsdk.core.util import files
+
+from six.moves import http_client
+from six.moves import urllib_error
+
 
 _GCE_CACHE_MAX_AGE = 10*60  # 10 minutes
 
@@ -44,7 +49,7 @@ class _OnGCECache(object):
   def __init__(self, connected=None, expiration_time=None):
     self.connected = connected
     self.expiration_time = expiration_time
-    self.file_lock = Lock()
+    self.file_lock = threading.Lock()
 
   def GetOnGCE(self, check_age=True):
     """Check if we are on a GCE machine.
@@ -83,8 +88,11 @@ class _OnGCECache(object):
     return on_gce
 
   def _CheckMemory(self, check_age):
-    if not (check_age and self.expiration_time < time.time()):
+    if not check_age:
       return self.connected
+    if self.expiration_time and self.expiration_time >= time.time():
+      return self.connected
+    return None
 
   def _WriteMemory(self, on_gce, expiration_time):
     self.connected = on_gce
@@ -124,7 +132,7 @@ class _OnGCECache(object):
     try:
       numeric_project_id = gce_read.ReadNoProxy(
           gce_read.GOOGLE_GCE_METADATA_NUMERIC_PROJECT_URI)
-    except (urllib2.URLError, socket.error, httplib.HTTPException):
+    except (urllib_error.URLError, socket.error, http_client.HTTPException):
       # Depending on how a firewall/ NAT behaves, we can have different
       # exceptions at different levels in the networking stack when trying to
       # access an address that we can't reach. Capture all these exceptions.

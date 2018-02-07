@@ -14,7 +14,8 @@
 
 """A module for diagnosing common network and proxy problems."""
 
-import httplib
+from __future__ import absolute_import
+from __future__ import division
 import socket
 import ssl
 import urlparse
@@ -25,7 +26,9 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.diagnostics import check_base
 from googlecloudsdk.core.diagnostics import diagnostic_base
 from googlecloudsdk.core.diagnostics import http_proxy_setup
+
 import httplib2
+from six.moves import http_client
 import socks
 
 
@@ -103,7 +106,7 @@ class ReachabilityChecker(check_base.Checker):
     try:
       http.Http().request(url, method='GET')
     # TODO(b/29218762): Investigate other possible exceptions.
-    except (httplib.HTTPException, socket.error, ssl.SSLError,
+    except (http_client.HTTPException, socket.error, ssl.SSLError,
             httplib2.HttpLib2Error, socks.HTTPError) as err:
       msg = 'Cannot reach {0} ({1})'.format(url, type(err).__name__)
       return check_base.Failure(message=msg, exception=err)
