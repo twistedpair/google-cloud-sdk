@@ -3,6 +3,13 @@
 Copyright 2014-2018 Google Inc. All rights reserved.
 
 
+## 188.0.1 (2018-02-08)
+
+*  Hotfix for https://issuetracker.google.com/73044966 affecting Cloud SDK
+   installations in environments with inconsistent access to the GCE
+   metadata server.
+
+
 ## 188.0.0 (2018-02-07)
 
 ### Breaking Changes

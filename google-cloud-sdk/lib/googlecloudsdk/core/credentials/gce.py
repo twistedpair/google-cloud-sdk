@@ -42,11 +42,11 @@ def _ReadNoProxyWithCleanFailures(uri, http_errors_to_ignore=()):
   """Reads data from a URI with no proxy, yielding cloud-sdk exceptions."""
   try:
     return gce_read.ReadNoProxy(uri)
-  except urllib.request.HTTPError as e:
+  except urllib.error.HTTPError as e:
     if e.code in http_errors_to_ignore:
       return None
     raise MetadataServerException(e)
-  except urllib.request.URLError as e:
+  except urllib.error.URLError as e:
     raise CannotConnectToMetadataServerException(e)
 
 
