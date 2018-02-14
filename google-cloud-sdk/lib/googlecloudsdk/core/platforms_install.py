@@ -22,6 +22,7 @@ import re
 import shutil
 
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
@@ -293,7 +294,7 @@ def _GetShellRcFileName(shell, host_os):
     The shell RC file name, '.bashrc' by default.
   """
   if shell == 'ksh':
-    return os.environ.get('ENV', None) or '.kshrc'
+    return encoding.GetEncodedValue(os.environ, 'ENV', None) or '.kshrc'
   elif shell == 'fish':
     return os.path.join('.config', 'fish', 'config.fish')
   elif shell != 'bash':
@@ -330,9 +331,10 @@ def _GetAndUpdateRcPath(completion_update, path_update, rc_path, host_os):
   if rc_path:
     return rc_path
   # A first guess at user preferred shell.
-  preferred_shell = _GetPreferredShell(os.environ.get('SHELL', '/bin/sh'))
-  default_rc_path = os.path.join(platforms.GetHomePath(),
-                                 _GetShellRcFileName(preferred_shell, host_os))
+  preferred_shell = _GetPreferredShell(
+      encoding.GetEncodedValue(os.environ, 'SHELL', '/bin/sh'))
+  default_rc_path = os.path.join(
+      platforms.GetHomePath(), _GetShellRcFileName(preferred_shell, host_os))
   # If in quiet mode, we'll use default path.
   if not console_io.CanPrompt():
     _TraceAction('You specified that you wanted to update your rc file. The '
@@ -364,11 +366,12 @@ def _GetRcUpdater(completion_update, path_update, rc_path, sdk_root, host_os):
   rc_path = _GetAndUpdateRcPath(completion_update, path_update, rc_path,
                                 host_os)
   # Check the rc_path for a better hint at the user preferred shell.
-  preferred_shell = _GetPreferredShell(rc_path,
-                                       default=_GetPreferredShell(
-                                           os.environ.get('SHELL', '/bin/sh')))
-  return _RcUpdater(completion_update, path_update, preferred_shell, rc_path,
-                    sdk_root)
+  preferred_shell = _GetPreferredShell(
+      rc_path,
+      default=_GetPreferredShell(
+          encoding.GetEncodedValue(os.environ, 'SHELL', '/bin/sh')))
+  return _RcUpdater(
+      completion_update, path_update, preferred_shell, rc_path, sdk_root)
 
 
 _PATH_PROMPT = 'update your $PATH'

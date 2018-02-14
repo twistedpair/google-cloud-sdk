@@ -135,7 +135,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Instantiate(self, request, global_params=None):
-      """Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling google.cloud.dataproc.v1beta2.OperationService.GetOperation. The Operation will complete when entire workflow is finished.The running workflow can be aborted via google.cloud.dataproc.v1beta2.OperationService.CancelOperation.The google.cloud.dataproc.v1beta2.Operation.metadata will always be google.cloud.dataproc.v1beta2.WorkflowMetadata.The google.cloud.dataproc.v1beta2.Operation.result will always be google.protobuf.Empty.
+      """Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest) input message
@@ -157,6 +157,33 @@ class DataprocV1beta2(base_api.BaseApiClient):
         relative_path=u'v1beta2/{+name}:instantiate',
         request_field=u'instantiateWorkflowTemplateRequest',
         request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def InstantiateInline(self, request, global_params=None):
+      """Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+
+      Args:
+        request: (DataprocProjectsLocationsWorkflowTemplatesInstantiateInlineRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('InstantiateInline')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    InstantiateInline.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/workflowTemplates:instantiateInline',
+        http_method=u'POST',
+        method_id=u'dataproc.projects.locations.workflowTemplates.instantiateInline',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'instanceId'],
+        relative_path=u'v1beta2/{+parent}/workflowTemplates:instantiateInline',
+        request_field=u'workflowTemplate',
+        request_type_name=u'DataprocProjectsLocationsWorkflowTemplatesInstantiateInlineRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -848,7 +875,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Instantiate(self, request, global_params=None):
-      """Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling google.cloud.dataproc.v1beta2.OperationService.GetOperation. The Operation will complete when entire workflow is finished.The running workflow can be aborted via google.cloud.dataproc.v1beta2.OperationService.CancelOperation.The google.cloud.dataproc.v1beta2.Operation.metadata will always be google.cloud.dataproc.v1beta2.WorkflowMetadata.The google.cloud.dataproc.v1beta2.Operation.result will always be google.protobuf.Empty.
+      """Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest) input message
@@ -870,6 +897,33 @@ class DataprocV1beta2(base_api.BaseApiClient):
         relative_path=u'v1beta2/{+name}:instantiate',
         request_field=u'instantiateWorkflowTemplateRequest',
         request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def InstantiateInline(self, request, global_params=None):
+      """Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+
+      Args:
+        request: (DataprocProjectsRegionsWorkflowTemplatesInstantiateInlineRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('InstantiateInline')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    InstantiateInline.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/workflowTemplates:instantiateInline',
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.workflowTemplates.instantiateInline',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'instanceId'],
+        relative_path=u'v1beta2/{+parent}/workflowTemplates:instantiateInline',
+        request_field=u'workflowTemplate',
+        request_type_name=u'DataprocProjectsRegionsWorkflowTemplatesInstantiateInlineRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

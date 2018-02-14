@@ -20,7 +20,7 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted.  Example Policy with
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
@@ -131,7 +131,8 @@ class Binding(_messages.Message):
     condition: The condition that is associated with this binding. NOTE: an
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
-      independently. This field is GOOGLE_INTERNAL.
+      independently. This field is only visible as GOOGLE_INTERNAL or
+      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -287,6 +288,12 @@ class Condition(_messages.Message):
         justification conditions can only be used in a "positive" context
         (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple justifications, e.g., a
         Buganizer ID and a manually-entered reason, are normal and supported.
+      CREDENTIALS_TYPE: What type of credentials have been supplied with this
+        request. String values should match enum names from
+        security_loas_l2.CredentialsType - currently, only
+        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
+        based on the *absence* of a credentials type, so the conditions can
+        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
     """
     NO_ATTR = 0
     AUTHORITY = 1
@@ -294,6 +301,7 @@ class Condition(_messages.Message):
     SECURITY_REALM = 3
     APPROVER = 4
     JUSTIFICATION_TYPE = 5
+    CREDENTIALS_TYPE = 6
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -511,6 +519,8 @@ class Delete(_messages.Message):
 
   Fields:
     keySet: Required. The primary keys of the rows within table to delete.
+      Delete is idempotent. The transaction will succeed even if some or all
+      rows do not exist.
     table: Required. The table whose rows will be deleted.
   """
 
@@ -533,7 +543,8 @@ class ExecuteSqlRequest(_messages.Message):
 
   Enums:
     QueryModeValueValuesEnum: Used to control the amount of debugging
-      information returned in ResultSetStats.
+      information returned in ResultSetStats. If partition_token is set,
+      query_mode can only be set to QueryMode.NORMAL.
 
   Messages:
     ParamTypesValue: It is not always possible for Cloud Spanner to infer the
@@ -575,7 +586,8 @@ class ExecuteSqlRequest(_messages.Message):
       exact match for the values of fields common to this message and the
       PartitionQueryRequest message used to create this partition_token.
     queryMode: Used to control the amount of debugging information returned in
-      ResultSetStats.
+      ResultSetStats. If partition_token is set, query_mode can only be set to
+      QueryMode.NORMAL.
     resumeToken: If this request is resuming a previously interrupted SQL
       query execution, `resume_token` should be copied from the last
       PartialResultSet yielded before the interruption. Doing this enables the
@@ -589,7 +601,8 @@ class ExecuteSqlRequest(_messages.Message):
 
   class QueryModeValueValuesEnum(_messages.Enum):
     """Used to control the amount of debugging information returned in
-    ResultSetStats.
+    ResultSetStats. If partition_token is set, query_mode can only be set to
+    QueryMode.NORMAL.
 
     Values:
       NORMAL: The default mode where only the query result, without any
@@ -1267,7 +1280,8 @@ class PartitionOptions(_messages.Message):
       example, this may be set to the number of workers available.  The
       default for this option is currently 10,000. The maximum value is
       currently 200,000.  This is only a hint.  The actual number of
-      partitions returned may be smaller than this maximum count request.
+      partitions returned may be smaller or larger than this maximum count
+      request.
     partitionSizeBytes: The desired data size for each partition generated.
       The default for this option is currently 1 GiB.  This is only a hint.
       The actual size of each partition may be smaller or larger than this
@@ -1574,7 +1588,7 @@ class Policy(_messages.Message):
   app@appspot.gserviceaccount.com",           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
   }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -1597,7 +1611,7 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
       Logging will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1681,12 +1695,15 @@ class ReadRequest(_messages.Message):
     keySet: Required. `key_set` identifies the rows to be yielded. `key_set`
       names the primary keys of the rows in table to be yielded, unless index
       is present. If index is present, then key_set instead names index keys
-      in index.  Rows are yielded in table primary key order (if index is
-      empty) or index key order (if index is non-empty).  It is not an error
-      for the `key_set` to name rows that do not exist in the database. Read
-      yields nothing for nonexistent rows.
+      in index.  If the partition_token field is empty, rows are yielded in
+      table primary key order (if index is empty) or index key order (if index
+      is non-empty).  If the partition_token field is not empty, rows will be
+      yielded in an unspecified order.  It is not an error for the `key_set`
+      to name rows that do not exist in the database. Read yields nothing for
+      nonexistent rows.
     limit: If greater than zero, only the first `limit` rows are yielded. If
-      `limit` is zero, the default is no limit.
+      `limit` is zero, the default is no limit. A limit cannot be specified if
+      `partition_token` is set.
     partitionToken: If present, results will be restricted to the specified
       partition previously created using PartitionRead().    There must be an
       exact match for the values of fields common to this message and the

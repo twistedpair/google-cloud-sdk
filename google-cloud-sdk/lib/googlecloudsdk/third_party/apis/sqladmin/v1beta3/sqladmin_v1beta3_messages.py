@@ -22,6 +22,9 @@ class BackupConfiguration(_messages.Message):
     id: Identifier for this configuration. This gets generated automatically
       when a backup configuration is created.
     kind: This is always sql#backupConfiguration.
+    replicationLogArchivingEnabled: Whether replication log archiving is
+      enabled. Replication log archiving is required for the point-in-time
+      recovery (PITR) feature. PostgreSQL instances only.
     startTime: Start time for the daily backup configuration in UTC timezone
       in the 24 hour format - HH:MM.
   """
@@ -30,7 +33,8 @@ class BackupConfiguration(_messages.Message):
   enabled = _messages.BooleanField(2)
   id = _messages.StringField(3)
   kind = _messages.StringField(4, default=u'sql#backupConfiguration')
-  startTime = _messages.StringField(5)
+  replicationLogArchivingEnabled = _messages.BooleanField(5)
+  startTime = _messages.StringField(6)
 
 
 class BackupRun(_messages.Message):
@@ -106,13 +110,17 @@ class CloneContext(_messages.Message):
     destinationInstanceName: Name of the Cloud SQL instance to be created as a
       clone.
     kind: This is always sql#cloneContext.
+    pitrTimestampMs: The epoch timestamp, in milliseconds, of the time to
+      which a point-in-time recovery (PITR) is performed. PostgreSQL instances
+      only. For MySQL instances, use the binLogCoordinates property.
     sourceInstanceName: Name of the Cloud SQL instance to be cloned.
   """
 
   binLogCoordinates = _messages.MessageField('BinLogCoordinates', 1)
   destinationInstanceName = _messages.StringField(2)
   kind = _messages.StringField(3, default=u'sql#cloneContext')
-  sourceInstanceName = _messages.StringField(4)
+  pitrTimestampMs = _messages.IntegerField(4)
+  sourceInstanceName = _messages.StringField(5)
 
 
 class DatabaseFlags(_messages.Message):

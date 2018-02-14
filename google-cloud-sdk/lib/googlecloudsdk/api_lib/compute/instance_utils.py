@@ -29,7 +29,8 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags
 from googlecloudsdk.command_lib.util.ssh import ssh
-import ipaddr
+import ipaddress
+import six
 
 
 EMAIL_REGEX = re.compile(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)')
@@ -330,10 +331,11 @@ def CreateNetworkInterfaceMessage(resources,
   if private_network_ip is not None:
     # Try interpreting the address as IPv4 or IPv6.
     try:
-      ipaddr.IPAddress(private_network_ip)
+      # ipaddress only allows unicode input
+      ipaddress.ip_address(six.text_type(private_network_ip))
       network_interface.networkIP = private_network_ip
     except ValueError:
-      # ipaddr could not resolve as an IPv4 or IPv6 address.
+      # ipaddress could not resolve as an IPv4 or IPv6 address.
       network_interface.networkIP = flags.GetAddressRef(
           resources, private_network_ip, region).SelfLink()
 

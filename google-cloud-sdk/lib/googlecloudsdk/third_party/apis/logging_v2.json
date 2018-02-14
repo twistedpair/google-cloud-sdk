@@ -160,7 +160,7 @@
           }
         },
         "entries": {
-          "description": "Required. The log entries to send to Stackdriver Logging. The order of log entries in this list does not matter. Values supplied in this method's log_name, resource, and labels fields are copied into those log entries in this list that do not include values for their corresponding fields. For more information, see the LogEntry type.If the timestamp or insert_id fields are missing in log entries, then this method supplies the current time or a unique identifier, respectively. The supplied values are chosen so that, among the log entries that did not supply their own values, the entries earlier in the list will sort before the entries later in the list. See the entries.list method.Log entries with timestamps that are more than the logs retention period in the past or more than 24 hours in the future might be discarded. Discarding does not return an error.To improve throughput and to avoid exceeding the quota limit for calls to entries.write, you should try to include several log entries in this list, rather than calling this method for each individual log entry.",
+          "description": "Required. The log entries to send to Stackdriver Logging. The order of log entries in this list does not matter. Values supplied in this method's log_name, resource, and labels fields are copied into those log entries in this list that do not include values for their corresponding fields. For more information, see the LogEntry type.If the timestamp or insert_id fields are missing in log entries, then this method supplies the current time or a unique identifier, respectively. The supplied values are chosen so that, among the log entries that did not supply their own values, the entries earlier in the list will sort before the entries later in the list. See the entries.list method.Log entries with timestamps that are more than the logs retention period in the past or more than 24 hours in the future will not be available when calling entries.list. However, those log entries can still be exported with LogSinks.To improve throughput and to avoid exceeding the quota limit for calls to entries.write, you should try to include several log entries in this list, rather than calling this method for each individual log entry.",
           "type": "array",
           "items": {
             "$ref": "LogEntry"
@@ -168,6 +168,10 @@
         },
         "partialSuccess": {
           "description": "Optional. Whether valid entries should be written even if some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED errors. If any entry is not written, then the response status is the error associated with one of the failed entries and the response includes error details keyed by the entries' zero-based index in the entries.write method.",
+          "type": "boolean"
+        },
+        "dryRun": {
+          "description": "Optional. If true, the request should expect normal response, but the entries won't be persisted nor exported. Useful for checking whether the logging API endpoints are working properly before sending valuable data.",
           "type": "boolean"
         }
       }
@@ -224,7 +228,7 @@
           }
         },
         "timestamp": {
-          "description": "Optional. The time the event described by the log entry occurred. This time is used to compute the log entry's age and to enforce the logs retention period. If this field is omitted in a new log entry, then Stackdriver Logging assigns it the current time.Incoming log entries should have timestamps that are no more than the logs retention period in the past, and no more than 24 hours in the future. See the entries.write API method for more information.",
+          "description": "Optional. The time the event described by the log entry occurred. This time is used to compute the log entry's age and to enforce the logs retention period. If this field is omitted in a new log entry, then Stackdriver Logging assigns it the current time.Incoming log entries should have timestamps that are no more than the logs retention period in the past, and no more than 24 hours in the future. Log entries outside those time boundaries will not be available when calling entries.list, but those log entries can still be exported with LogSinks.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -802,7 +806,7 @@
           ]
         },
         "unit": {
-          "description": "The unit in which the metric value is reported. It is only applicable if the value_type is INT64, DOUBLE, or DISTRIBUTION. The supported units are a subset of The Unified Code for Units of Measure (http:\/\/unitsofmeasure.org\/ucum.html) standard:Basic units (UNIT)\nbit bit\nBy byte\ns second\nmin minute\nh hour\nd dayPrefixes (PREFIX)\nk kilo (10**3)\nM mega (10**6)\nG giga (10**9)\nT tera (10**12)\nP peta (10**15)\nE exa (10**18)\nZ zetta (10**21)\nY yotta (10**24)\nm milli (10**-3)\nu micro (10**-6)\nn nano (10**-9)\np pico (10**-12)\nf femto (10**-15)\na atto (10**-18)\nz zepto (10**-21)\ny yocto (10**-24)\nKi kibi (2**10)\nMi mebi (2**20)\nGi gibi (2**30)\nTi tebi (2**40)GrammarThe grammar includes the dimensionless unit 1, such as 1\/s.The grammar also includes these connectors:\n\/ division (as an infix operator, e.g. 1\/s).\n. multiplication (as an infix operator, e.g. GBy.d)The grammar for a unit is as follows:\nExpression = Component { \".\" Component } { \"\/\" Component } ;\n\nComponent = [ PREFIX ] UNIT [ Annotation ]\n          | Annotation\n          | \"1\"\n          ;\n\nAnnotation = \"{\" NAME \"}\" ;\nNotes:\nAnnotation is just a comment if it follows a UNIT and is  equivalent to 1 if it is used alone. For examples,  {requests}\/s == 1\/s, By{transmitted}\/s == By\/s.\nNAME is a sequence of non-blank printable ASCII characters not  containing '{' or '}'.",
+          "description": "The unit in which the metric value is reported. It is only applicable if the value_type is INT64, DOUBLE, or DISTRIBUTION. The supported units are a subset of The Unified Code for Units of Measure (http:\/\/unitsofmeasure.org\/ucum.html) standard:Basic units (UNIT)\nbit bit\nBy byte\ns second\nmin minute\nh hour\nd dayPrefixes (PREFIX)\nk kilo (10**3)\nM mega (10**6)\nG giga (10**9)\nT tera (10**12)\nP peta (10**15)\nE exa (10**18)\nZ zetta (10**21)\nY yotta (10**24)\nm milli (10**-3)\nu micro (10**-6)\nn nano (10**-9)\np pico (10**-12)\nf femto (10**-15)\na atto (10**-18)\nz zepto (10**-21)\ny yocto (10**-24)\nKi kibi (2**10)\nMi mebi (2**20)\nGi gibi (2**30)\nTi tebi (2**40)GrammarThe grammar also includes these connectors:\n\/ division (as an infix operator, e.g. 1\/s).\n. multiplication (as an infix operator, e.g. GBy.d)The grammar for a unit is as follows:\nExpression = Component { \".\" Component } { \"\/\" Component } ;\n\nComponent = ( [ PREFIX ] UNIT | \"%\" ) [ Annotation ]\n          | Annotation\n          | \"1\"\n          ;\n\nAnnotation = \"{\" NAME \"}\" ;\nNotes:\nAnnotation is just a comment if it follows a UNIT and is  equivalent to 1 if it is used alone. For examples,  {requests}\/s == 1\/s, By{transmitted}\/s == By\/s.\nNAME is a sequence of non-blank printable ASCII characters not  containing '{' or '}'.\n1 represents dimensionless value 1, such as in 1\/s.\n% represents dimensionless value 1\/100, and annotates values giving  a percentage.",
           "type": "string"
         },
         "description": {
@@ -1133,7 +1137,6 @@
           "path": "v2/{+logName}",
           "flatPath": "v2/{v2Id}/{v2Id1}/logs/{logsId}",
           "httpMethod": "DELETE",
-          "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.",
           "parameters": {
             "logName": {
               "description": "Required. The resource name of the log to delete:\n\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\"\n\"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\"\n[LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". For more information about log names, see LogEntry.",
@@ -1152,14 +1155,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
-          ]
+          ],
+          "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted."
         },
         "list": {
           "id": "logging.logs.list",
           "path": "v2/{+parent}/logs",
           "flatPath": "v2/{v2Id}/{v2Id1}/logs",
           "httpMethod": "GET",
-          "description": "Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.",
           "parameters": {
             "parent": {
               "description": "Required. The resource name that owns the logs:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -1191,7 +1194,8 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
-          ]
+          ],
+          "description": "Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed."
         }
       }
     },
@@ -1204,7 +1208,6 @@
               "path": "v2/{+logName}",
               "flatPath": "v2/projects/{projectsId}/logs/{logsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.",
               "parameters": {
                 "logName": {
                   "description": "Required. The resource name of the log to delete:\n\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\"\n\"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\"\n[LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". For more information about log names, see LogEntry.",
@@ -1223,14 +1226,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted."
             },
             "list": {
               "id": "logging.projects.logs.list",
               "path": "v2/{+parent}/logs",
               "flatPath": "v2/projects/{projectsId}/logs",
               "httpMethod": "GET",
-              "description": "Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.",
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name that owns the logs:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -1262,7 +1265,8 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed."
             }
           }
         },
@@ -1273,7 +1277,6 @@
               "path": "v2/{+parent}/sinks",
               "flatPath": "v2/projects/{projectsId}/sinks",
               "httpMethod": "GET",
-              "description": "Lists sinks.",
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource whose sinks are to be listed:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -1305,14 +1308,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists sinks."
             },
             "get": {
               "id": "logging.projects.sinks.get",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/projects/{projectsId}/sinks/{sinksId}",
               "httpMethod": "GET",
-              "description": "Gets a sink.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The resource name of the sink:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -1333,14 +1336,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Gets a sink."
             },
             "create": {
               "id": "logging.projects.sinks.create",
               "path": "v2/{+parent}/sinks",
               "flatPath": "v2/projects/{projectsId}/sinks",
               "httpMethod": "POST",
-              "description": "Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.",
               "parameters": {
                 "parent": {
                   "description": "Required. The resource in which to create the sink:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
@@ -1367,14 +1370,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink."
             },
             "update": {
               "id": "logging.projects.sinks.update",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/projects/{projectsId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -1407,14 +1410,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "patch": {
               "id": "logging.projects.sinks.patch",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/projects/{projectsId}/sinks/{sinksId}",
               "httpMethod": "PATCH",
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -1447,14 +1450,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "delete": {
               "id": "logging.projects.sinks.delete",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/projects/{projectsId}/sinks/{sinksId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -1473,7 +1476,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted."
             }
           }
         },
@@ -1484,7 +1488,6 @@
               "path": "v2/{+parent}/exclusions",
               "flatPath": "v2/projects/{projectsId}/exclusions",
               "httpMethod": "GET",
-              "description": "Lists all the exclusions in a parent resource.",
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource whose exclusions are to be listed.\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -1516,14 +1519,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists all the exclusions in a parent resource."
             },
             "get": {
               "id": "logging.projects.exclusions.get",
               "path": "v2/{+name}",
               "flatPath": "v2/projects/{projectsId}/exclusions/{exclusionsId}",
               "httpMethod": "GET",
-              "description": "Gets the description of an exclusion.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of an existing exclusion:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -1544,14 +1547,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Gets the description of an exclusion."
             },
             "create": {
               "id": "logging.projects.exclusions.create",
               "path": "v2/{+parent}/exclusions",
               "flatPath": "v2/projects/{projectsId}/exclusions",
               "httpMethod": "POST",
-              "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.",
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource in which to create the exclusion:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
@@ -1573,14 +1576,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
             },
             "patch": {
               "id": "logging.projects.exclusions.patch",
               "path": "v2/{+name}",
               "flatPath": "v2/projects/{projectsId}/exclusions/{exclusionsId}",
               "httpMethod": "PATCH",
-              "description": "Changes one or more properties of an existing exclusion.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the exclusion to update:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -1608,14 +1611,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Changes one or more properties of an existing exclusion."
             },
             "delete": {
               "id": "logging.projects.exclusions.delete",
               "path": "v2/{+name}",
               "flatPath": "v2/projects/{projectsId}/exclusions/{exclusionsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes an exclusion.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of an existing exclusion to delete:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -1634,7 +1637,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Deletes an exclusion."
             }
           }
         },
@@ -1645,7 +1649,6 @@
               "path": "v2/{+parent}/metrics",
               "flatPath": "v2/projects/{projectsId}/metrics",
               "httpMethod": "GET",
-              "description": "Lists logs-based metrics.",
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project containing the metrics:\n\"projects\/[PROJECT_ID]\"\n",
@@ -1677,14 +1680,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists logs-based metrics."
             },
             "get": {
               "id": "logging.projects.metrics.get",
               "path": "v2/{+metricName}",
               "flatPath": "v2/projects/{projectsId}/metrics/{metricsId}",
               "httpMethod": "GET",
-              "description": "Gets a logs-based metric.",
               "parameters": {
                 "metricName": {
                   "description": "The resource name of the desired metric:\n\"projects\/[PROJECT_ID]\/metrics\/[METRIC_ID]\"\n",
@@ -1705,14 +1708,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Gets a logs-based metric."
             },
             "create": {
               "id": "logging.projects.metrics.create",
               "path": "v2/{+parent}/metrics",
               "flatPath": "v2/projects/{projectsId}/metrics",
               "httpMethod": "POST",
-              "description": "Creates a logs-based metric.",
               "parameters": {
                 "parent": {
                   "description": "The resource name of the project in which to create the metric:\n\"projects\/[PROJECT_ID]\"\nThe new metric must be provided in the request.",
@@ -1735,14 +1738,14 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.write"
-              ]
+              ],
+              "description": "Creates a logs-based metric."
             },
             "update": {
               "id": "logging.projects.metrics.update",
               "path": "v2/{+metricName}",
               "flatPath": "v2/projects/{projectsId}/metrics/{metricsId}",
               "httpMethod": "PUT",
-              "description": "Creates or updates a logs-based metric.",
               "parameters": {
                 "metricName": {
                   "description": "The resource name of the metric to update:\n\"projects\/[PROJECT_ID]\/metrics\/[METRIC_ID]\"\nThe updated metric must be provided in the request and it's name field must be the same as [METRIC_ID] If the metric does not exist in [PROJECT_ID], then a new metric is created.",
@@ -1765,14 +1768,14 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.write"
-              ]
+              ],
+              "description": "Creates or updates a logs-based metric."
             },
             "delete": {
               "id": "logging.projects.metrics.delete",
               "path": "v2/{+metricName}",
               "flatPath": "v2/projects/{projectsId}/metrics/{metricsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a logs-based metric.",
               "parameters": {
                 "metricName": {
                   "description": "The resource name of the metric to delete:\n\"projects\/[PROJECT_ID]\/metrics\/[METRIC_ID]\"\n",
@@ -1792,7 +1795,8 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.write"
-              ]
+              ],
+              "description": "Deletes a logs-based metric."
             }
           }
         }
@@ -1807,7 +1811,6 @@
               "path": "v2/{+logName}",
               "flatPath": "v2/organizations/{organizationsId}/logs/{logsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.",
               "parameters": {
                 "logName": {
                   "description": "Required. The resource name of the log to delete:\n\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\"\n\"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\"\n[LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". For more information about log names, see LogEntry.",
@@ -1826,14 +1829,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted."
             },
             "list": {
               "id": "logging.organizations.logs.list",
               "path": "v2/{+parent}/logs",
               "flatPath": "v2/organizations/{organizationsId}/logs",
               "httpMethod": "GET",
-              "description": "Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.",
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name that owns the logs:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -1865,7 +1868,8 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed."
             }
           }
         },
@@ -1876,7 +1880,6 @@
               "path": "v2/{+parent}/sinks",
               "flatPath": "v2/organizations/{organizationsId}/sinks",
               "httpMethod": "GET",
-              "description": "Lists sinks.",
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource whose sinks are to be listed:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -1908,14 +1911,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists sinks."
             },
             "get": {
               "id": "logging.organizations.sinks.get",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/organizations/{organizationsId}/sinks/{sinksId}",
               "httpMethod": "GET",
-              "description": "Gets a sink.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The resource name of the sink:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -1936,14 +1939,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Gets a sink."
             },
             "create": {
               "id": "logging.organizations.sinks.create",
               "path": "v2/{+parent}/sinks",
               "flatPath": "v2/organizations/{organizationsId}/sinks",
               "httpMethod": "POST",
-              "description": "Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.",
               "parameters": {
                 "parent": {
                   "description": "Required. The resource in which to create the sink:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
@@ -1970,14 +1973,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink."
             },
             "update": {
               "id": "logging.organizations.sinks.update",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/organizations/{organizationsId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2010,14 +2013,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "patch": {
               "id": "logging.organizations.sinks.patch",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/organizations/{organizationsId}/sinks/{sinksId}",
               "httpMethod": "PATCH",
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2050,14 +2053,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "delete": {
               "id": "logging.organizations.sinks.delete",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/organizations/{organizationsId}/sinks/{sinksId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2076,7 +2079,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted."
             }
           }
         },
@@ -2087,7 +2091,6 @@
               "path": "v2/{+parent}/exclusions",
               "flatPath": "v2/organizations/{organizationsId}/exclusions",
               "httpMethod": "GET",
-              "description": "Lists all the exclusions in a parent resource.",
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource whose exclusions are to be listed.\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -2119,14 +2122,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists all the exclusions in a parent resource."
             },
             "get": {
               "id": "logging.organizations.exclusions.get",
               "path": "v2/{+name}",
               "flatPath": "v2/organizations/{organizationsId}/exclusions/{exclusionsId}",
               "httpMethod": "GET",
-              "description": "Gets the description of an exclusion.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of an existing exclusion:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -2147,14 +2150,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Gets the description of an exclusion."
             },
             "create": {
               "id": "logging.organizations.exclusions.create",
               "path": "v2/{+parent}/exclusions",
               "flatPath": "v2/organizations/{organizationsId}/exclusions",
               "httpMethod": "POST",
-              "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.",
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource in which to create the exclusion:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
@@ -2176,14 +2179,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
             },
             "patch": {
               "id": "logging.organizations.exclusions.patch",
               "path": "v2/{+name}",
               "flatPath": "v2/organizations/{organizationsId}/exclusions/{exclusionsId}",
               "httpMethod": "PATCH",
-              "description": "Changes one or more properties of an existing exclusion.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the exclusion to update:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -2211,14 +2214,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Changes one or more properties of an existing exclusion."
             },
             "delete": {
               "id": "logging.organizations.exclusions.delete",
               "path": "v2/{+name}",
               "flatPath": "v2/organizations/{organizationsId}/exclusions/{exclusionsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes an exclusion.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of an existing exclusion to delete:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -2237,7 +2240,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Deletes an exclusion."
             }
           }
         }
@@ -2252,7 +2256,6 @@
               "path": "v2/{+logName}",
               "flatPath": "v2/folders/{foldersId}/logs/{logsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.",
               "parameters": {
                 "logName": {
                   "description": "Required. The resource name of the log to delete:\n\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\"\n\"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\"\n[LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". For more information about log names, see LogEntry.",
@@ -2271,14 +2274,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted."
             },
             "list": {
               "id": "logging.folders.logs.list",
               "path": "v2/{+parent}/logs",
               "flatPath": "v2/folders/{foldersId}/logs",
               "httpMethod": "GET",
-              "description": "Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.",
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name that owns the logs:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -2310,7 +2313,8 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed."
             }
           }
         },
@@ -2321,7 +2325,6 @@
               "path": "v2/{+parent}/sinks",
               "flatPath": "v2/folders/{foldersId}/sinks",
               "httpMethod": "GET",
-              "description": "Lists sinks.",
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource whose sinks are to be listed:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -2353,14 +2356,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists sinks."
             },
             "get": {
               "id": "logging.folders.sinks.get",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/folders/{foldersId}/sinks/{sinksId}",
               "httpMethod": "GET",
-              "description": "Gets a sink.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The resource name of the sink:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2381,14 +2384,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Gets a sink."
             },
             "create": {
               "id": "logging.folders.sinks.create",
               "path": "v2/{+parent}/sinks",
               "flatPath": "v2/folders/{foldersId}/sinks",
               "httpMethod": "POST",
-              "description": "Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.",
               "parameters": {
                 "parent": {
                   "description": "Required. The resource in which to create the sink:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
@@ -2415,14 +2418,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink."
             },
             "update": {
               "id": "logging.folders.sinks.update",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/folders/{foldersId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2455,14 +2458,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "patch": {
               "id": "logging.folders.sinks.patch",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/folders/{foldersId}/sinks/{sinksId}",
               "httpMethod": "PATCH",
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2495,14 +2498,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "delete": {
               "id": "logging.folders.sinks.delete",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/folders/{foldersId}/sinks/{sinksId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2521,7 +2524,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted."
             }
           }
         },
@@ -2532,7 +2536,6 @@
               "path": "v2/{+parent}/exclusions",
               "flatPath": "v2/folders/{foldersId}/exclusions",
               "httpMethod": "GET",
-              "description": "Lists all the exclusions in a parent resource.",
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource whose exclusions are to be listed.\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -2564,14 +2567,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists all the exclusions in a parent resource."
             },
             "get": {
               "id": "logging.folders.exclusions.get",
               "path": "v2/{+name}",
               "flatPath": "v2/folders/{foldersId}/exclusions/{exclusionsId}",
               "httpMethod": "GET",
-              "description": "Gets the description of an exclusion.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of an existing exclusion:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -2592,14 +2595,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Gets the description of an exclusion."
             },
             "create": {
               "id": "logging.folders.exclusions.create",
               "path": "v2/{+parent}/exclusions",
               "flatPath": "v2/folders/{foldersId}/exclusions",
               "httpMethod": "POST",
-              "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.",
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource in which to create the exclusion:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
@@ -2621,14 +2624,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
             },
             "patch": {
               "id": "logging.folders.exclusions.patch",
               "path": "v2/{+name}",
               "flatPath": "v2/folders/{foldersId}/exclusions/{exclusionsId}",
               "httpMethod": "PATCH",
-              "description": "Changes one or more properties of an existing exclusion.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the exclusion to update:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -2656,14 +2659,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Changes one or more properties of an existing exclusion."
             },
             "delete": {
               "id": "logging.folders.exclusions.delete",
               "path": "v2/{+name}",
               "flatPath": "v2/folders/{foldersId}/exclusions/{exclusionsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes an exclusion.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of an existing exclusion to delete:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -2682,7 +2685,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Deletes an exclusion."
             }
           }
         }
@@ -2697,7 +2701,6 @@
               "path": "v2/{+logName}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/logs/{logsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.",
               "parameters": {
                 "logName": {
                   "description": "Required. The resource name of the log to delete:\n\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\"\n\"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\"\n[LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". For more information about log names, see LogEntry.",
@@ -2716,14 +2719,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted."
             },
             "list": {
               "id": "logging.billingAccounts.logs.list",
               "path": "v2/{+parent}/logs",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/logs",
               "httpMethod": "GET",
-              "description": "Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.",
               "parameters": {
                 "parent": {
                   "description": "Required. The resource name that owns the logs:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -2755,7 +2758,8 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed."
             }
           }
         },
@@ -2766,7 +2770,6 @@
               "path": "v2/{+parent}/sinks",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks",
               "httpMethod": "GET",
-              "description": "Lists sinks.",
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource whose sinks are to be listed:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -2798,14 +2801,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists sinks."
             },
             "get": {
               "id": "logging.billingAccounts.sinks.get",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}",
               "httpMethod": "GET",
-              "description": "Gets a sink.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The resource name of the sink:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2826,14 +2829,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Gets a sink."
             },
             "create": {
               "id": "logging.billingAccounts.sinks.create",
               "path": "v2/{+parent}/sinks",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks",
               "httpMethod": "POST",
-              "description": "Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.",
               "parameters": {
                 "parent": {
                   "description": "Required. The resource in which to create the sink:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
@@ -2860,14 +2863,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink."
             },
             "update": {
               "id": "logging.billingAccounts.sinks.update",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}",
               "httpMethod": "PUT",
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2900,14 +2903,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "patch": {
               "id": "logging.billingAccounts.sinks.patch",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}",
               "httpMethod": "PATCH",
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2940,14 +2943,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "delete": {
               "id": "logging.billingAccounts.sinks.delete",
               "path": "v2/{+sinkName}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/sinks/{sinksId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.",
               "parameters": {
                 "sinkName": {
                   "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -2966,7 +2969,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted."
             }
           }
         },
@@ -2977,7 +2981,6 @@
               "path": "v2/{+parent}/exclusions",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/exclusions",
               "httpMethod": "GET",
-              "description": "Lists all the exclusions in a parent resource.",
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource whose exclusions are to be listed.\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -3009,14 +3012,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Lists all the exclusions in a parent resource."
             },
             "get": {
               "id": "logging.billingAccounts.exclusions.get",
               "path": "v2/{+name}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/exclusions/{exclusionsId}",
               "httpMethod": "GET",
-              "description": "Gets the description of an exclusion.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of an existing exclusion:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -3037,14 +3040,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
-              ]
+              ],
+              "description": "Gets the description of an exclusion."
             },
             "create": {
               "id": "logging.billingAccounts.exclusions.create",
               "path": "v2/{+parent}/exclusions",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/exclusions",
               "httpMethod": "POST",
-              "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.",
               "parameters": {
                 "parent": {
                   "description": "Required. The parent resource in which to create the exclusion:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
@@ -3066,14 +3069,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
             },
             "patch": {
               "id": "logging.billingAccounts.exclusions.patch",
               "path": "v2/{+name}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/exclusions/{exclusionsId}",
               "httpMethod": "PATCH",
-              "description": "Changes one or more properties of an existing exclusion.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the exclusion to update:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -3101,14 +3104,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Changes one or more properties of an existing exclusion."
             },
             "delete": {
               "id": "logging.billingAccounts.exclusions.delete",
               "path": "v2/{+name}",
               "flatPath": "v2/billingAccounts/{billingAccountsId}/exclusions/{exclusionsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes an exclusion.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of an existing exclusion to delete:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -3127,7 +3130,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
-              ]
+              ],
+              "description": "Deletes an exclusion."
             }
           }
         }
@@ -3140,7 +3144,6 @@
           "path": "v2/entries:write",
           "flatPath": "v2/entries:write",
           "httpMethod": "POST",
-          "description": "Log entry resourcesWrites log entries to Stackdriver Logging. This API method is the only way to send log entries to Stackdriver Logging. This method is used, directly or indirectly, by the Stackdriver Logging agent (fluentd) and all logging libraries configured to use Stackdriver Logging.",
           "parameters": {
           },
           "parameterOrder": [
@@ -3155,14 +3158,14 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.write"
-          ]
+          ],
+          "description": "Log entry resourcesWrites log entries to Stackdriver Logging. This API method is the only way to send log entries to Stackdriver Logging. This method is used, directly or indirectly, by the Stackdriver Logging agent (fluentd) and all logging libraries configured to use Stackdriver Logging."
         },
         "list": {
           "id": "logging.entries.list",
           "path": "v2/entries:list",
           "flatPath": "v2/entries:list",
           "httpMethod": "POST",
-          "description": "Lists log entries. Use this method to retrieve log entries from Stackdriver Logging. For ways to export log entries, see Exporting Logs.",
           "parameters": {
           },
           "parameterOrder": [
@@ -3178,7 +3181,8 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
-          ]
+          ],
+          "description": "Lists log entries. Use this method to retrieve log entries from Stackdriver Logging. For ways to export log entries, see Exporting Logs."
         }
       }
     },
@@ -3189,7 +3193,6 @@
           "path": "v2/monitoredResourceDescriptors",
           "flatPath": "v2/monitoredResourceDescriptors",
           "httpMethod": "GET",
-          "description": "Lists the descriptors for monitored resource types used by Stackdriver Logging.",
           "parameters": {
             "pageSize": {
               "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
@@ -3213,7 +3216,8 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
-          ]
+          ],
+          "description": "Lists the descriptors for monitored resource types used by Stackdriver Logging."
         }
       }
     },
@@ -3224,7 +3228,6 @@
           "path": "v2/{+parent}/sinks",
           "flatPath": "v2/{v2Id}/{v2Id1}/sinks",
           "httpMethod": "GET",
-          "description": "Lists sinks.",
           "parameters": {
             "parent": {
               "description": "Required. The parent resource whose sinks are to be listed:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -3256,14 +3259,14 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
-          ]
+          ],
+          "description": "Lists sinks."
         },
         "get": {
           "id": "logging.sinks.get",
           "path": "v2/{+sinkName}",
           "flatPath": "v2/{v2Id}/{v2Id1}/sinks/{sinksId}",
           "httpMethod": "GET",
-          "description": "Gets a sink.",
           "parameters": {
             "sinkName": {
               "description": "Required. The resource name of the sink:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -3284,14 +3287,14 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
-          ]
+          ],
+          "description": "Gets a sink."
         },
         "create": {
           "id": "logging.sinks.create",
           "path": "v2/{+parent}/sinks",
           "flatPath": "v2/{v2Id}/{v2Id1}/sinks",
           "httpMethod": "POST",
-          "description": "Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.",
           "parameters": {
             "parent": {
               "description": "Required. The resource in which to create the sink:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
@@ -3318,14 +3321,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
-          ]
+          ],
+          "description": "Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink."
         },
         "update": {
           "id": "logging.sinks.update",
           "path": "v2/{+sinkName}",
           "flatPath": "v2/{v2Id}/{v2Id1}/sinks/{sinksId}",
           "httpMethod": "PUT",
-          "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.",
           "parameters": {
             "sinkName": {
               "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -3358,14 +3361,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
-          ]
+          ],
+          "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
         },
         "delete": {
           "id": "logging.sinks.delete",
           "path": "v2/{+sinkName}",
           "flatPath": "v2/{v2Id}/{v2Id1}/sinks/{sinksId}",
           "httpMethod": "DELETE",
-          "description": "Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.",
           "parameters": {
             "sinkName": {
               "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier:\n\"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\"\n\"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\"\nExample: \"projects\/my-project-id\/sinks\/my-sink-id\".",
@@ -3384,7 +3387,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
-          ]
+          ],
+          "description": "Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted."
         }
       }
     },
@@ -3395,7 +3399,6 @@
           "path": "v2/{+parent}/exclusions",
           "flatPath": "v2/{v2Id}/{v2Id1}/exclusions",
           "httpMethod": "GET",
-          "description": "Lists all the exclusions in a parent resource.",
           "parameters": {
             "parent": {
               "description": "Required. The parent resource whose exclusions are to be listed.\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\n",
@@ -3427,14 +3430,14 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
-          ]
+          ],
+          "description": "Lists all the exclusions in a parent resource."
         },
         "get": {
           "id": "logging.exclusions.get",
           "path": "v2/{+name}",
           "flatPath": "v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}",
           "httpMethod": "GET",
-          "description": "Gets the description of an exclusion.",
           "parameters": {
             "name": {
               "description": "Required. The resource name of an existing exclusion:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -3455,14 +3458,14 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
-          ]
+          ],
+          "description": "Gets the description of an exclusion."
         },
         "create": {
           "id": "logging.exclusions.create",
           "path": "v2/{+parent}/exclusions",
           "flatPath": "v2/{v2Id}/{v2Id1}/exclusions",
           "httpMethod": "POST",
-          "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.",
           "parameters": {
             "parent": {
               "description": "Required. The parent resource in which to create the exclusion:\n\"projects\/[PROJECT_ID]\"\n\"organizations\/[ORGANIZATION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\"\n\"folders\/[FOLDER_ID]\"\nExamples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
@@ -3484,14 +3487,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
-          ]
+          ],
+          "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
         },
         "patch": {
           "id": "logging.exclusions.patch",
           "path": "v2/{+name}",
           "flatPath": "v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}",
           "httpMethod": "PATCH",
-          "description": "Changes one or more properties of an existing exclusion.",
           "parameters": {
             "name": {
               "description": "Required. The resource name of the exclusion to update:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -3519,14 +3522,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
-          ]
+          ],
+          "description": "Changes one or more properties of an existing exclusion."
         },
         "delete": {
           "id": "logging.exclusions.delete",
           "path": "v2/{+name}",
           "flatPath": "v2/{v2Id}/{v2Id1}/exclusions/{exclusionsId}",
           "httpMethod": "DELETE",
-          "description": "Deletes an exclusion.",
           "parameters": {
             "name": {
               "description": "Required. The resource name of an existing exclusion to delete:\n\"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\"\n\"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\"\nExample: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
@@ -3545,7 +3548,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
-          ]
+          ],
+          "description": "Deletes an exclusion."
         }
       }
     }

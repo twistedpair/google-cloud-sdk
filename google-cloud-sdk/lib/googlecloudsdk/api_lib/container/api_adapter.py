@@ -647,7 +647,6 @@ class APIAdapter(object):
           if error.status_code == httplib.FORBIDDEN:
             raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
           # Keep trying until we timeout in case error is transient.
-          # TODO(b/36050880): add additional backoff if server is returning 500s
         time.sleep(poll_period_s)
     if not self.IsOperationFinished(operation):
       log.err.Print('Timed out waiting for operation {0}'.format(operation))
@@ -1405,64 +1404,74 @@ class V1Adapter(APIAdapter):
 
   def CreateCluster(self, cluster_ref, options):
     cluster = self.CreateClusterCommon(cluster_ref, options)
-    req = self.messages.CreateClusterRequest(
-        cluster=cluster, projectId=cluster_ref.projectId, zone=cluster_ref.zone)
+    create_cluster_req = self.messages.CreateClusterRequest(cluster=cluster)
+
+    req = self.messages.ContainerProjectsZonesClustersCreateRequest(
+        createClusterRequest=create_cluster_req,
+        projectId=cluster_ref.projectId,
+        zone=cluster_ref.zone)
     operation = self.client.projects_zones_clusters.Create(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
   def UpdateCluster(self, cluster_ref, options):
     update = self.UpdateClusterCommon(options)
     op = self.client.projects_zones_clusters.Update(
-        self.messages.UpdateClusterRequest(
+        self.messages.ContainerProjectsZonesClustersUpdateRequest(
             clusterId=cluster_ref.clusterId,
             zone=cluster_ref.zone,
             projectId=cluster_ref.projectId,
-            update=update))
+            updateClusterRequest=self.messages.UpdateClusterRequest(
+                update=update)))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def SetLoggingService(self, cluster_ref, logging_service):
     op = self.client.projects_zones_clusters.Logging(
-        self.messages.SetLoggingServiceRequest(
+        self.messages.ContainerProjectsZonesClustersLoggingRequest(
             clusterId=cluster_ref.clusterId,
             zone=cluster_ref.zone,
             projectId=cluster_ref.projectId,
-            loggingService=logging_service))
+            setLoggingServiceRequest=self.messages.SetLoggingServiceRequest(
+                loggingService=logging_service)))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def SetNetworkPolicy(self, cluster_ref, options):
     netpol = self.SetNetworkPolicyCommon(options)
-    req = self.messages.SetNetworkPolicyRequest(
+    request = self.messages.SetNetworkPolicyRequest(networkPolicy=netpol)
+    req = self.messages.ContainerProjectsZonesClustersSetNetworkPolicyRequest(
         clusterId=cluster_ref.clusterId,
         zone=cluster_ref.zone,
         projectId=cluster_ref.projectId,
-        networkPolicy=netpol)
+        setNetworkPolicyRequest=request)
     return self.ParseOperation(
         self.client.projects_zones_clusters.SetNetworkPolicy(req).name,
         cluster_ref.zone)
 
   def SetLegacyAuthorization(self, cluster_ref, enable_legacy_authorization):
     op = self.client.projects_zones_clusters.LegacyAbac(
-        self.messages.SetLegacyAbacRequest(
+        self.messages.ContainerProjectsZonesClustersLegacyAbacRequest(
             clusterId=cluster_ref.clusterId,
             zone=cluster_ref.zone,
             projectId=cluster_ref.projectId,
-            enabled=bool(enable_legacy_authorization)))
+            setLegacyAbacRequest=self.messages.SetLegacyAbacRequest(
+                enabled=bool(enable_legacy_authorization))))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def SetMasterAuth(self, cluster_ref, options):
     update, action = self.SetMasterAuthCommon(options)
-    req = self.messages.SetMasterAuthRequest(
+    request = self.messages.SetMasterAuthRequest(
+        action=action,
+        update=update)
+    req = self.messages.ContainerProjectsZonesClustersSetMasterAuthRequest(
         clusterId=cluster_ref.clusterId,
         zone=cluster_ref.zone,
         projectId=cluster_ref.projectId,
-        action=action,
-        update=update)
+        setMasterAuthRequest=request)
     op = self.client.projects_zones_clusters.SetMasterAuth(req)
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def StartIpRotation(self, cluster_ref):
     operation = self.client.projects_zones_clusters.StartIpRotation(
-        self.messages.StartIPRotationRequest(
+        self.messages.ContainerProjectsZonesClustersStartIpRotationRequest(
             clusterId=cluster_ref.clusterId,
             zone=cluster_ref.zone,
             projectId=cluster_ref.projectId))
@@ -1470,7 +1479,7 @@ class V1Adapter(APIAdapter):
 
   def CompleteIpRotation(self, cluster_ref):
     operation = self.client.projects_zones_clusters.CompleteIpRotation(
-        self.messages.CompleteIPRotationRequest(
+        self.messages.ContainerProjectsZonesClustersCompleteIpRotationRequest(
             clusterId=cluster_ref.clusterId,
             zone=cluster_ref.zone,
             projectId=cluster_ref.projectId))
@@ -1519,13 +1528,16 @@ class V1Adapter(APIAdapter):
         window=self.messages.MaintenanceWindow(
             dailyMaintenanceWindow=self.messages.DailyMaintenanceWindow(
                 startTime=maintenance_window)))
-    req = self.messages.SetMaintenancePolicyRequest(
-        projectId=cluster_ref.projectId,
-        zone=cluster_ref.zone,
-        clusterId=cluster_ref.clusterId,
-        maintenancePolicy=policy)
+    req = (self.messages.
+           ContainerProjectsZonesClustersSetMaintenancePolicyRequest(
+               projectId=cluster_ref.projectId,
+               zone=cluster_ref.zone,
+               clusterId=cluster_ref.clusterId,
+               setMaintenancePolicyRequest=(self.messages.
+                                            SetMaintenancePolicyRequest(
+                                                maintenancePolicy=policy))))
     if maintenance_window == 'None':
-      req.maintenancePolicy = None
+      req.setMaintenancePolicyRequest.maintenancePolicy = None
 
     operation = self.client.projects_zones_clusters.SetMaintenancePolicy(req)
 
@@ -1533,11 +1545,13 @@ class V1Adapter(APIAdapter):
 
   def CreateNodePool(self, node_pool_ref, options):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
-    req = self.messages.CreateNodePoolRequest(
+    create_node_pool_req = self.messages.CreateNodePoolRequest(nodePool=pool)
+
+    req = self.messages.ContainerProjectsZonesClustersNodePoolsCreateRequest(
         projectId=node_pool_ref.projectId,
         zone=node_pool_ref.zone,
         clusterId=node_pool_ref.clusterId,
-        nodePool=pool)
+        createNodePoolRequest=create_node_pool_req)
     operation = self.client.projects_zones_clusters_nodePools.Create(req)
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
@@ -1567,12 +1581,15 @@ class V1Adapter(APIAdapter):
 
   def UpdateNodePool(self, node_pool_ref, options):
     node_management = self.UpdateNodePoolNodeManagement(node_pool_ref, options)
-    req = self.messages.SetNodePoolManagementRequest(
-        projectId=node_pool_ref.projectId,
-        zone=node_pool_ref.zone,
-        clusterId=node_pool_ref.clusterId,
-        nodePoolId=node_pool_ref.nodePoolId,
-        management=node_management)
+    req = (self.messages.
+           ContainerProjectsZonesClustersNodePoolsSetManagementRequest(
+               projectId=node_pool_ref.projectId,
+               zone=node_pool_ref.zone,
+               clusterId=node_pool_ref.clusterId,
+               nodePoolId=node_pool_ref.nodePoolId,
+               setNodePoolManagementRequest=
+               self.messages.SetNodePoolManagementRequest(
+                   management=node_management)))
     operation = self.client.projects_zones_clusters_nodePools.SetManagement(req)
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
@@ -1586,18 +1603,20 @@ class V1Adapter(APIAdapter):
     Returns:
       Operation ref for resize operation.
     """
-    req = self.messages.SetNodePoolSizeRequest(
+    size_req = self.messages.SetNodePoolSizeRequest(nodeCount=size)
+    req = self.messages.ContainerProjectsZonesClustersNodePoolsSetSizeRequest(
         clusterId=cluster_ref.clusterId,
         nodePoolId=pool_name,
         projectId=cluster_ref.projectId,
-        nodeCount=size,
-        zone=cluster_ref.zone)
+        setNodePoolSizeRequest=size_req,
+        zone=cluster_ref.zone
+    )
     operation = self.client.projects_zones_clusters_nodePools.SetSize(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
   def RollbackUpgrade(self, node_pool_ref):
     operation = self.client.projects_zones_clusters_nodePools.Rollback(
-        self.messages.RollbackNodePoolUpgradeRequest(
+        self.messages.ContainerProjectsZonesClustersNodePoolsRollbackRequest(
             clusterId=node_pool_ref.clusterId,
             zone=node_pool_ref.zone,
             projectId=node_pool_ref.projectId,
@@ -1605,7 +1624,7 @@ class V1Adapter(APIAdapter):
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
   def CancelOperation(self, op_ref):
-    req = self.messages.CancelOperationRequest(
+    req = self.messages.ContainerProjectsZonesOperationsCancelRequest(
         zone=op_ref.zone,
         projectId=op_ref.projectId,
         operationId=op_ref.operationId)
@@ -1634,24 +1653,27 @@ class V1Adapter(APIAdapter):
     labels, fingerprint = self.UpdateLabelsCommon(
         cluster_ref, update_labels)
     req = self.messages.SetLabelsRequest(
-        clusterId=cluster_ref.clusterId,
-        zone=cluster_ref.zone,
-        projectId=cluster_ref.projectId,
-        resourceLabels=labels,
-        labelFingerprint=fingerprint)
-    operation = self.client.projects_zones_clusters.ResourceLabels(req)
+        resourceLabels=labels, labelFingerprint=fingerprint)
+    operation = self.client.projects_zones_clusters.ResourceLabels(
+        self.messages.ContainerProjectsZonesClustersResourceLabelsRequest(
+            clusterId=cluster_ref.clusterId,
+            zone=cluster_ref.zone,
+            projectId=cluster_ref.projectId,
+            setLabelsRequest=req))
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
   def RemoveLabels(self, cluster_ref, remove_labels):
     labels, fingerprint = self.RemoveLabelsCommon(
         cluster_ref, remove_labels)
     req = self.messages.SetLabelsRequest(
-        clusterId=cluster_ref.clusterId,
-        zone=cluster_ref.zone,
-        projectId=cluster_ref.projectId,
-        resourceLabels=labels,
-        labelFingerprint=fingerprint)
-    operation = self.client.projects_zones_clusters.ResourceLabels(req)
+        resourceLabels=labels, labelFingerprint=fingerprint)
+
+    operation = self.client.projects_zones_clusters.ResourceLabels(
+        self.messages.ContainerProjectsZonesClustersResourceLabelsRequest(
+            clusterId=cluster_ref.clusterId,
+            zone=cluster_ref.zone,
+            projectId=cluster_ref.projectId,
+            setLabelsRequest=req))
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
 

@@ -33,7 +33,6 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
@@ -523,13 +522,14 @@ class _MetricsCollector(object):
         os.path.join(os.path.dirname(this_file), 'metrics_reporter.py'))
     execution_args = execution_utils.ArgsForPythonTool(
         reporting_script_path, temp_metrics_file.name)
-    # popen is silly when it comes to non-ascii args. The executable has to be
-    # _unencoded_, while the rest of the args have to be _encoded_.
-    execution_args = execution_args[0:1] + [
-        console_attr.EncodeForConsole(a) for a in execution_args[1:]]
+    # On Python 2.x on Windows, the first arg can't be unicode. We encode
+    # encode it anyway because there is really nothing else we can do if
+    # that happens.
+    # https://bugs.python.org/issue19264
+    execution_args = [encoding.Encode(a) for a in execution_args]
 
     exec_env = os.environ.copy()
-    exec_env['PYTHONPATH'] = os.pathsep.join(sys.path)
+    encoding.SetEncodedValue(exec_env, 'PYTHONPATH', os.pathsep.join(sys.path))
 
     try:
       p = subprocess.Popen(execution_args, env=exec_env,

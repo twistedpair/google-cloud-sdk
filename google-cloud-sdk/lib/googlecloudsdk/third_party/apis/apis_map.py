@@ -114,14 +114,6 @@ MAP = {
             default_version=False
         ),
     },
-    'bigquery': {
-        'v2': APIDef(
-            class_path='googlecloudsdk.third_party.apis.bigquery.v2',
-            client_classpath='bigquery_v2_client.BigqueryV2',
-            messages_modulepath='bigquery_v2_messages',
-            default_version=True
-        ),
-    },
     'bigtableadmin': {
         'v2': APIDef(
             class_path='googlecloudsdk.third_party.apis.bigtableadmin.v2',

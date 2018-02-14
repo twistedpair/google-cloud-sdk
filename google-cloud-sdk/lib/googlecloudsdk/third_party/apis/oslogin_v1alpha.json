@@ -142,11 +142,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "A unique user ID for identifying the user.",
+          "description": "A unique user ID.",
           "type": "string"
         },
         "posixAccounts": {
-          "description": "The list of POSIX accounts associated with the Directory API user.",
+          "description": "The list of POSIX accounts associated with the user.",
           "type": "array",
           "items": {
             "$ref": "PosixAccount"
@@ -158,10 +158,6 @@
           "additionalProperties": {
             "$ref": "SshPublicKey"
           }
-        },
-        "suspended": {
-          "description": "Indicates if the user is suspended.",
-          "type": "boolean"
         }
       }
     },

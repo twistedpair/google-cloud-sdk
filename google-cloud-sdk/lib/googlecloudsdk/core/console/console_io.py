@@ -29,6 +29,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_pager
 from googlecloudsdk.core.console import prompt_completer
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
@@ -748,7 +749,7 @@ def More(contents, out=None, prompt=None, check_pager=True):
     # Paging shenanigans to stdout.
     out = sys.stdout
   if check_pager:
-    pager = os.environ.get('PAGER', None)
+    pager = encoding.GetEncodedValue(os.environ, 'PAGER', None)
     if pager == '-':
       # Use the fallback Pager.
       pager = None
@@ -759,15 +760,15 @@ def More(contents, out=None, prompt=None, check_pager=True):
           pager = command
           break
     if pager:
-      less = os.environ.get('LESS', None)
+      less = encoding.GetEncodedValue(os.environ, 'LESS', None)
       if less is None:
-        os.environ['LESS'] = '-R'
+        encoding.SetEncodedValue(os.environ, 'LESS', '-R')
       p = subprocess.Popen(pager, stdin=subprocess.PIPE, shell=True)
-      encoding = console_attr.GetConsoleAttr().GetEncoding()
-      p.communicate(input=contents.encode(encoding))
+      enc = console_attr.GetConsoleAttr().GetEncoding()
+      p.communicate(input=contents.encode(enc))
       p.wait()
       if less is None:
-        os.environ.pop('LESS')
+        encoding.SetEncodedValue(os.environ, 'LESS', None)
       return
   # Fall back to the internal pager.
   console_pager.Pager(contents, out, prompt).Run()

@@ -128,7 +128,8 @@ a variable with a name that is a prefix of an existing variable name, or a
 name that has an existing variable name as a prefix.
 
 To learn more about creating a variable, read the
-[Setting and Getting Data](/deployment-manager/runtime-configurator/set-and-get-variables)
+[Setting and Getting
+Data](/deployment-manager/runtime-configurator/set-and-get-variables)
 documentation.
 
       Args:
@@ -215,10 +216,10 @@ variables by prefix.
     )
 
     def List(self, request, global_params=None):
-      """Lists variables within given a configuration, matching any provided filters.
-This only lists variable names, not the values, unless `return_values` is
-true, in which case only variables that user has IAM permission to GetVariable
-will be returned.
+      """Lists variables within given a configuration, matching any provided.
+filters. This only lists variable names, not the values, unless
+`return_values` is true, in which case only variables that user has IAM
+permission to GetVariable will be returned.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesListRequest) input message
@@ -311,12 +312,13 @@ When there is a change, this method returns the new value or times out.
 If a variable is deleted while being watched, the `variableState` state is
 set to `DELETED` and the method returns the last known variable `value`.
 
-If you set the deadline for watching to a larger value than internal timeout
-(60 seconds), the current variable value is returned and the `variableState`
-will be `VARIABLE_STATE_UNSPECIFIED`.
+If you set the deadline for watching to a larger value than internal
+timeout (60 seconds), the current variable value is returned and the
+`variableState` will be `VARIABLE_STATE_UNSPECIFIED`.
 
 To learn more about creating a watcher, read the
-[Watching a Variable for Changes](/deployment-manager/runtime-configurator/watching-a-variable)
+[Watching a Variable for
+Changes](/deployment-manager/runtime-configurator/watching-a-variable)
 documentation.
 
       Args:

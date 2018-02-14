@@ -99,7 +99,7 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted.  Example Policy with
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
@@ -117,15 +117,13 @@ class AuditConfig(_messages.Message):
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
       Next ID: 4
-    exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  service = _messages.StringField(2)
 
 
 class AuditLogConfig(_messages.Message):
@@ -186,7 +184,8 @@ class Binding(_messages.Message):
     condition: The condition that is associated with this binding. NOTE: an
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
-      independently. This field is GOOGLE_INTERNAL.
+      independently. This field is only visible as GOOGLE_INTERNAL or
+      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -663,6 +662,33 @@ class ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest(_messages.Me
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class ContaineranalysisProjectsOperationsCreateRequest(_messages.Message):
+  """A ContaineranalysisProjectsOperationsCreateRequest object.
+
+  Fields:
+    createOperationRequest: A CreateOperationRequest resource to be passed as
+      the request body.
+    parent: The project Id that this operation should be created under.
+  """
+
+  createOperationRequest = _messages.MessageField('CreateOperationRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ContaineranalysisProjectsOperationsPatchRequest(_messages.Message):
+  """A ContaineranalysisProjectsOperationsPatchRequest object.
+
+  Fields:
+    name: The name of the Operation. Should be of the form
+      "projects/{provider_id}/operations/{operation_id}".
+    updateOperationRequest: A UpdateOperationRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateOperationRequest = _messages.MessageField('UpdateOperationRequest', 2)
+
+
 class ContaineranalysisProvidersNotesCreateRequest(_messages.Message):
   """A ContaineranalysisProvidersNotesCreateRequest object.
 
@@ -800,6 +826,18 @@ class ContaineranalysisProvidersNotesTestIamPermissionsRequest(_messages.Message
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class CreateOperationRequest(_messages.Message):
+  """Request for creating an operation
+
+  Fields:
+    operation: The operation to create.
+    operationId: The ID to use for this operation.
+  """
+
+  operation = _messages.MessageField('Operation', 1)
+  operationId = _messages.StringField(2)
+
+
 class Deployable(_messages.Message):
   """An artifact that can be deployed in some runtime.
 
@@ -884,6 +922,8 @@ class Detail(_messages.Message):
       in list requests.
     description: A vendor-specific description of this note.
     fixedLocation: The fix for this specific package version.
+    isObsolete: Whether this Detail is obsolete. Occurrences are expected not
+      to point to obsolete details.
     maxAffectedVersion: The max version of the package in which the
       vulnerability exists. This field can be used as a filter in list
       requests.
@@ -900,11 +940,12 @@ class Detail(_messages.Message):
   cpeUri = _messages.StringField(1)
   description = _messages.StringField(2)
   fixedLocation = _messages.MessageField('VulnerabilityLocation', 3)
-  maxAffectedVersion = _messages.MessageField('Version', 4)
-  minAffectedVersion = _messages.MessageField('Version', 5)
-  package = _messages.StringField(6)
-  packageType = _messages.StringField(7)
-  severityName = _messages.StringField(8)
+  isObsolete = _messages.BooleanField(4)
+  maxAffectedVersion = _messages.MessageField('Version', 5)
+  minAffectedVersion = _messages.MessageField('Version', 6)
+  package = _messages.StringField(7)
+  packageType = _messages.StringField(8)
+  severityName = _messages.StringField(9)
 
 
 class Discovered(_messages.Message):
@@ -1487,6 +1528,7 @@ class Occurrence(_messages.Message):
       filter in list requests.
     remediation: A description of actions that can be taken to remedy the
       `Note`
+    resource: The resource for which the `Occurrence` applies.
     resourceUrl: The unique URL of the image or the container for which the
       `Occurrence` applies. For example,
       https://gcr.io/project/image@sha256:foo This field can be used as a
@@ -1533,9 +1575,10 @@ class Occurrence(_messages.Message):
   name = _messages.StringField(9)
   noteName = _messages.StringField(10)
   remediation = _messages.StringField(11)
-  resourceUrl = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
-  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 14)
+  resource = _messages.MessageField('Resource', 12)
+  resourceUrl = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 15)
 
 
 class Operation(_messages.Message):
@@ -1706,11 +1749,19 @@ class PgpSignedAttestation(_messages.Message):
       signed. The verifier must ensure that the provided type is one that the
       verifier supports, and that the attestation payload is a valid
       instantiation of that type (for example by validating a JSON schema).
-    pgpKeyId: The ID of the key, as output by `gpg --list-keys`.  This should
-      be 8 hexidecimal digits, capitalized.  for example $ gpg --list-keys pub
-      2048R/A663AEEA 2017-08-01 uid Fake Name <example-attesting-
-      user@google.com> In the above example, the `key_id` is "A663AEEA". Note
-      that in practice this ID is the last 64 bits of the key fingerprint.
+    pgpKeyId: The cryptographic fingerprint of the key used to generate the
+      signature, as output by, e.g. `gpg --list-keys`. This should be the
+      version 4, full 160-bit fingerprint, expressed as a 40 character
+      hexidecimal string. See https://tools.ietf.org/html/rfc4880#section-12.2
+      for details. Implementations may choose to acknowledge "LONG", "SHORT",
+      or other abbreviated key IDs, but only the full fingerprint is
+      guaranteed to work. In gpg, the full fingerprint can be retrieved from
+      the `fpr` field returned when calling --list-keys with --with-colons.
+      For example: ``` gpg --with-colons --with-fingerprint --force-v4-certs \
+      --list-keys attester@example.com tru::1:1513631572:0:3:1:5
+      pub:...<SNIP>... fpr:::::::::24FF6481B76AC91E66A00AC657A93A81EF3AE6FB:
+      ``` Above, the fingerprint is
+      `24FF6481B76AC91E66A00AC657A93A81EF3AE6FB`.
     signature: The raw content of the signature, as output by GNU Privacy
       Guard (GPG) or equivalent.  Since this message only supports attached
       signatures, the payload that was signed must be attached. While the
@@ -1756,7 +1807,7 @@ class Policy(_messages.Message):
   app@appspot.gserviceaccount.com",           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
   }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -1771,15 +1822,13 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
-    iamOwned: A boolean attribute.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  iamOwned = _messages.BooleanField(4)
-  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class RelatedUrl(_messages.Message):
@@ -1811,6 +1860,22 @@ class RepoSource(_messages.Message):
   projectId = _messages.StringField(3)
   repoName = _messages.StringField(4)
   tagName = _messages.StringField(5)
+
+
+class Resource(_messages.Message):
+  """Resource is an entity that can have metadata. E.g., a Docker image.
+
+  Fields:
+    contentHash: The hash of the resource content. E.g., the Docker digest.
+    name: The name of the resource. E.g., the name of a Docker image -
+      "Debian".
+    uri: The unique URI of the resource. E.g.,
+      "https://gcr.io/project/image@sha256:foo" for a Docker image.
+  """
+
+  contentHash = _messages.MessageField('Hash', 1)
+  name = _messages.StringField(2)
+  uri = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2116,6 +2181,18 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class UpdateOperationRequest(_messages.Message):
+  """Request for updating an existing operation
+
+  Fields:
+    operation: The operation to create.
+    updateMask: A string attribute.
+  """
+
+  operation = _messages.MessageField('Operation', 1)
+  updateMask = _messages.StringField(2)
 
 
 class Version(_messages.Message):

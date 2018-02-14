@@ -12,33 +12,6 @@ from apitools.base.py import extra_types
 package = 'speech'
 
 
-class CancelOperationRequest(_messages.Message):
-  """The request message for Operations.CancelOperation."""
-
-
-class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
-  """
-
-
-
-class ListOperationsResponse(_messages.Message):
-  """The response message for Operations.ListOperations.
-
-  Fields:
-    nextPageToken: The standard List next-page token.
-    operations: A list of operations that matches the specified filter in the
-      request.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  operations = _messages.MessageField('Operation', 2, repeated=True)
-
-
 class LongRunningRecognizeRequest(_messages.Message):
   """The top-level message sent by the client for the `LongRunningRecognize`
   method.
@@ -191,6 +164,9 @@ class RecognitionConfig(_messages.Message):
       `RecognitionAudio` messages.
 
   Fields:
+    enableWordConfidence: *Optional* If `true`, the top result includes a list
+      of words and the confidence for those words. If `false`, no word-level
+      confidence information is returned. The default is `false`.
     enableWordTimeOffsets: *Optional* If `true`, the top result includes a
       list of words and the start and end time offsets (timestamps) for those
       words. If `false`, no word-level time offset information is returned.
@@ -226,8 +202,7 @@ class RecognitionConfig(_messages.Message):
     messages.
 
     Values:
-      ENCODING_UNSPECIFIED: Not specified. Will return result
-        google.rpc.Code.INVALID_ARGUMENT.
+      ENCODING_UNSPECIFIED: Not specified.
       LINEAR16: Uncompressed 16-bit signed little-endian samples (Linear PCM).
       FLAC: [`FLAC`](https://xiph.org/flac/documentation.html) (Free Lossless
         Audio Codec) is the recommended encoding because it is lossless--
@@ -243,7 +218,7 @@ class RecognitionConfig(_messages.Message):
         16000.
       OGG_OPUS: Opus encoded audio frames in Ogg container
         ([OggOpus](https://wiki.xiph.org/OggOpus)). `sample_rate_hertz` must
-        be 16000.
+        be one of 8000, 12000, 16000, 24000, or 48000.
       SPEEX_WITH_HEADER_BYTE: Although the use of lossy encodings is not
         recommended, if a very low bitrate encoding is required, `OGG_OPUS` is
         highly preferred over Speex encoding. The [Speex](https://speex.org/)
@@ -267,13 +242,14 @@ class RecognitionConfig(_messages.Message):
     OGG_OPUS = 6
     SPEEX_WITH_HEADER_BYTE = 7
 
-  enableWordTimeOffsets = _messages.BooleanField(1)
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 2)
-  languageCode = _messages.StringField(3)
-  maxAlternatives = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  profanityFilter = _messages.BooleanField(5)
-  sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 7, repeated=True)
+  enableWordConfidence = _messages.BooleanField(1)
+  enableWordTimeOffsets = _messages.BooleanField(2)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 3)
+  languageCode = _messages.StringField(4)
+  maxAlternatives = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  profanityFilter = _messages.BooleanField(6)
+  sampleRateHertz = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 8, repeated=True)
 
 
 class RecognizeRequest(_messages.Message):
@@ -319,29 +295,6 @@ class SpeechContext(_messages.Message):
   phrases = _messages.StringField(1, repeated=True)
 
 
-class SpeechOperationsCancelRequest(_messages.Message):
-  """A SpeechOperationsCancelRequest object.
-
-  Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class SpeechOperationsDeleteRequest(_messages.Message):
-  """A SpeechOperationsDeleteRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class SpeechOperationsGetRequest(_messages.Message):
   """A SpeechOperationsGetRequest object.
 
@@ -352,32 +305,16 @@ class SpeechOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class SpeechOperationsListRequest(_messages.Message):
-  """A SpeechOperationsListRequest object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class SpeechRecognitionAlternative(_messages.Message):
   """Alternative hypotheses (a.k.a. n-best list).
 
   Fields:
     confidence: *Output-only* The confidence estimate between 0.0 and 1.0. A
       higher number indicates an estimated greater likelihood that the
-      recognized words are correct. This field is typically provided only for
-      the top hypothesis, and only for `is_final=true` results. Clients should
-      not rely on the `confidence` field as it is not guaranteed to be
-      accurate, or even set, in any of the results. The default of 0.0 is a
+      recognized words are correct. This field is set only for the top
+      alternative of a non-streaming result or, of a streaming result where
+      `is_final=true`. This field is not guaranteed to be accurate and users
+      should not rely on it to be always provided. The default of 0.0 is a
       sentinel value indicating `confidence` was not set.
     transcript: *Output-only* Transcript text representing the words that the
       user spoke.
@@ -398,14 +335,9 @@ class SpeechRecognitionResult(_messages.Message):
       (up to the maximum specified in `max_alternatives`). These alternatives
       are ordered in terms of accuracy, with the top (first) alternative being
       the most probable, as ranked by the recognizer.
-    channelTag: For multi-channel audio, this is the channel number
-      corresponding to the recognized result for the audio from that channel.
-      For audio_channel_count = N, its output values can range from '0' to
-      'N-1'.
   """
 
   alternatives = _messages.MessageField('SpeechRecognitionAlternative', 1, repeated=True)
-  channelTag = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -554,9 +486,7 @@ class Status(_messages.Message):
 
 
 class WordInfo(_messages.Message):
-  """Word-specific information for recognized words. Word information is only
-  included in the response when certain request parameters are set, such as
-  `enable_word_time_offsets`.
+  """Word-specific information for recognized words.
 
   Fields:
     endTime: *Output-only* Time offset relative to the beginning of the audio,

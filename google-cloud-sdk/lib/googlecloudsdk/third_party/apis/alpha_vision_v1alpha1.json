@@ -402,7 +402,7 @@
       "type": "object",
       "properties": {
         "gcsDestination": {
-          "description": "Required. The Google Cloud Storage location to write the output to.",
+          "description": "The Google Cloud Storage location to write the output(s) to.",
           "$ref": "GcsDestination"
         }
       }
@@ -413,7 +413,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI where the results will be stored. Results will be\nin JSON format and preceded by its corresponding input URI. All the results\nwill be in this single file.",
+          "description": "Google Cloud Storage URI where the results will be stored. Results will\nbe in JSON format and preceded by its corresponding input URI. This field\ncan either represent a single file, or a prefix for multiple outputs.\nPrefixes must end in a `\/`.\n\nExamples:\n\n*    File: gs:\/\/bucket-name\/filename.json\n*    Prefix: gs:\/\/bucket-name\/prefix\/here\/\n*    File: gs:\/\/bucket-name\/prefix\/here\n\nIf multiple outputs, each response is still AnnotateFileResponse, each of\nwhich contains some subset of the full list of AnnotateImageResponse.\nMultiple outputs can happen if, for example, the output JSON is too large\nand overflows into multiple sharded files.",
           "type": "string"
         }
       }

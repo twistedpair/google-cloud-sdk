@@ -105,7 +105,7 @@ class ArgumentInterceptor(Argument):
       ancestor_flag_args: [argparse.Action], The flags for all ancestor groups
         in the cli tree.
       cli_generator: cli.CLILoader, The builder used to generate this CLI.
-      command_name: str, The dotted command name path.
+      command_name: [str], The parts of the command name path.
       concept_handler: calliope.concepts.handlers.RuntimeHandler, a handler
         for concept args.
       defaults: {dest: default}, For all registered arguments.
@@ -265,19 +265,19 @@ class ArgumentInterceptor(Argument):
         # group the problem is in.
         raise parser_errors.ArgumentException(
             'Illegal positional argument [{0}] for command [{1}]'.format(
-                name, self.data.command_name))
+                name, '.'.join(self.data.command_name)))
       if '-' in name:
         raise parser_errors.ArgumentException(
             "Positional arguments cannot contain a '-'. Illegal argument [{0}] "
-            'for command [{1}]'.format(name, self.data.command_name))
+            'for command [{1}]'.format(name, '.'.join(self.data.command_name)))
       if category:
         raise parser_errors.ArgumentException(
             'Positional argument [{0}] cannot have a category in '
-            'command [{1}]'.format(name, self.data.command_name))
+            'command [{1}]'.format(name, '.'.join(self.data.command_name)))
       if suggestion_aliases:
         raise parser_errors.ArgumentException(
             'Positional argument [{0}] cannot have suggestion aliases in '
-            'command [{1}]'.format(name, self.data.command_name))
+            'command [{1}]'.format(name, '.'.join(self.data.command_name)))
 
     self.defaults[dest] = default
     if required:
@@ -304,7 +304,7 @@ class ArgumentInterceptor(Argument):
       if category:
         raise parser_errors.ArgumentException(
             'Positional argument [{0}] cannot have a category in '
-            'command [{1}]'.format(name, self.data.command_name))
+            'command [{1}]'.format(name, '.'.join(self.data.command_name)))
       if (nargs is None or
           nargs == '+' or
           isinstance(nargs, int) and nargs > 0):
@@ -314,11 +314,11 @@ class ArgumentInterceptor(Argument):
       if category and required:
         raise parser_errors.ArgumentException(
             'Required flag [{0}] cannot have a category in '
-            'command [{1}]'.format(name, self.data.command_name))
+            'command [{1}]'.format(name, '.'.join(self.data.command_name)))
       if category == 'REQUIRED':
         raise parser_errors.ArgumentException(
             "Flag [{0}] cannot have category='REQUIRED' in "
-            'command [{1}]'.format(name, self.data.command_name))
+            'command [{1}]'.format(name, '.'.join(self.data.command_name)))
       added_argument.category = category
       added_argument.do_not_propagate = do_not_propagate
       added_argument.is_replicated = is_replicated

@@ -159,7 +159,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def Reimage(self, request, global_params=None):
-      """Reimage a node's OS.
+      """Reimages a node's OS.
 
       Args:
         request: (TpuProjectsLocationsNodesReimageRequest) input message
@@ -213,7 +213,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def Start(self, request, global_params=None):
-      """Start a node.
+      """Starts a node.
 
       Args:
         request: (TpuProjectsLocationsNodesStartRequest) input message
@@ -445,7 +445,7 @@ is the parent resource, without the operations collection id.
     )
 
     def List(self, request, global_params=None):
-      """List TensorFlow versions.
+      """Lists TensorFlow versions supported by this API.
 
       Args:
         request: (TpuProjectsLocationsTensorflowVersionsListRequest) input message

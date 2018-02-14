@@ -35,7 +35,7 @@ class Build(_messages.Message):
       are:  * BUILD: time to execute all build steps * PUSH: time to push all
       specified images. * FETCHSOURCE: time to fetch source.  If the build
       does not specify source, or does not specify images, these keys will not
-      be included.
+      be included. @OutputOnly
 
   Fields:
     buildTriggerId: The ID of the BuildTrigger that triggered this build, if
@@ -51,7 +51,7 @@ class Build(_messages.Message):
       account's credentials.  The digests of the pushed images will be stored
       in the Build resource's results field.  If any of the images fail to be
       pushed, the build is marked FAILURE.
-    logUrl: URL to logs for this build in Google Cloud Logging. @OutputOnly
+    logUrl: URL to logs for this build in Google Cloud Console. @OutputOnly
     logsBucket: Google Cloud Storage bucket where logs should be written (see
       [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)). Logs file names will be of the format
@@ -77,7 +77,7 @@ class Build(_messages.Message):
       * BUILD: time to execute all build steps * PUSH: time to push all
       specified images. * FETCHSOURCE: time to fetch source.  If the build
       does not specify source, or does not specify images, these keys will not
-      be included.
+      be included. @OutputOnly
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -133,7 +133,7 @@ class Build(_messages.Message):
     BUILD: time to execute all build steps * PUSH: time to push all specified
     images. * FETCHSOURCE: time to fetch source.  If the build does not
     specify source, or does not specify images, these keys will not be
-    included.
+    included. @OutputOnly
 
     Messages:
       AdditionalProperty: An additional property for a TimingValue object.
@@ -292,8 +292,14 @@ class BuildStep(_messages.Message):
       entrypoint, these args will be used as arguments to that entrypoint. If
       the image does not define an entrypoint, the first element in args will
       be used as the entrypoint, and the remainder will be used as arguments.
-    dir: Working directory (relative to project source root) to use when
-      running this operation's container.
+    dir: Working directory to use when running this step's container.  If this
+      value is a relative path, it is relative to the build's working
+      directory. If this value is absolute, it may be outside the build's
+      working directory, in which case the contents of the path may not be
+      persisted across build step executions, unless a volume for that path is
+      specified.  If the build specifies a RepoSource with dir and a step with
+      a dir which specifies an absolute path, the RepoSource dir is ignored
+      for the step's execution.
     entrypoint: Optional entrypoint to be used instead of the build step
       image's default If unset, the image's default will be used.
     env: A list of environment variable definitions to be used when running a
@@ -318,6 +324,7 @@ class BuildStep(_messages.Message):
       Cloud KMS crypto key. These values must be specified in the build's
       secrets.
     timing: Stores timing information for executing this build step.
+      @OutputOnly
     volumes: List of volumes to mount into the build step.  Each volume will
       be created as an empty volume prior to execution of the build step. Upon
       completion of the build, volumes and their contents will be discarded.
@@ -407,6 +414,7 @@ class BuiltImage(_messages.Message):
     name: Name used to push the container image to Google Container Registry,
       as presented to `docker push`.
     pushTiming: Stores timing information for pushing the specified image.
+      @OutputOnly
   """
 
   digest = _messages.StringField(1)
@@ -801,6 +809,8 @@ class RepoSource(_messages.Message):
     branchName: Name of the branch to build.
     commitSha: Explicit commit SHA to build.
     dir: Directory, relative to the source root, in which to run the build.
+      This must be a relative path. If a step's dir is specified and is an
+      absolute path, this value is ignored for that step's execution.
     projectId: ID of the project that owns the repo. If omitted, the project
       ID requesting the build is assumed.
     repoName: Name of the repo. If omitted, the name "default" is assumed.

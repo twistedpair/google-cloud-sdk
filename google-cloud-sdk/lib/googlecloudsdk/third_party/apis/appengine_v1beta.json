@@ -504,6 +504,10 @@
           "description": "Desired runtime. Example: python27.",
           "type": "string"
         },
+        "runtimeChannel": {
+          "description": "The channel of the runtime to use. Only available for some runtimes. Defaults to the default channel.",
+          "type": "string"
+        },
         "threadsafe": {
           "description": "Whether multiple requests can be dispatched to this version at once.",
           "type": "boolean"
@@ -683,6 +687,13 @@
           "description": "Target scaling by network usage.",
           "$ref": "NetworkUtilization"
         },
+        "customMetrics": {
+          "description": "Target scaling by user-provided metrics.",
+          "type": "array",
+          "items": {
+            "$ref": "CustomMetric"
+          }
+        },
         "standardSchedulerSettings": {
           "description": "Scheduler settings for standard environment.",
           "$ref": "StandardSchedulerSettings"
@@ -777,6 +788,35 @@
         }
       }
     },
+    "CustomMetric": {
+      "id": "CustomMetric",
+      "description": "Allows autoscaling based on Stackdriver metrics.",
+      "type": "object",
+      "properties": {
+        "metricName": {
+          "description": "The name of the metric.",
+          "type": "string"
+        },
+        "targetType": {
+          "description": "The type of the metric. Must be a string representing a Stackdriver metric type e.g. GAGUE, DELTA_PER_SECOND, etc.",
+          "type": "string"
+        },
+        "targetUtilization": {
+          "description": "The target value for the metric.",
+          "type": "number",
+          "format": "double"
+        },
+        "singleInstanceAssignment": {
+          "description": "May be used instead of target_utilization when an instance can handle a specific amount of work\/resources and the metric value is equal to the current amount of work remaining. The autoscaler will try to keep the number of instances equal to the metric value divided by single_instance_assignment.",
+          "type": "number",
+          "format": "double"
+        },
+        "filter": {
+          "description": "Allows filtering on the metric's fields.",
+          "type": "string"
+        }
+      }
+    },
     "StandardSchedulerSettings": {
       "id": "StandardSchedulerSettings",
       "description": "Scheduler settings for standard environment.",
@@ -856,6 +896,10 @@
         "subnetworkName": {
           "description": "Google Cloud Platform sub-network where the virtual machines are created. Specify the short name, not the resource path.If a subnetwork name is specified, a network name will also be required unless it is for the default network.\nIf the network the VM instance is being created in is a Legacy network, then the IP address is allocated from the IPv4Range.\nIf the network the VM instance is being created in is an auto Subnet Mode Network, then only network name should be specified (not the subnetwork_name) and the IP address is created from the IPCidrRange of the subnetwork that exists in that zone for that network.\nIf the network the VM instance is being created in is a custom Subnet Mode Network, then the subnetwork_name must be specified and the IP address is created from the IPCidrRange of the subnetwork.If specified, the subnetwork must exist in the same region as the App Engine flexible environment application.",
           "type": "string"
+        },
+        "sessionAffinity": {
+          "description": "Enable session affinity.",
+          "type": "boolean"
         }
       }
     },

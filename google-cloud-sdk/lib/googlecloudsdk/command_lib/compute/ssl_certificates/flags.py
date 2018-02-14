@@ -41,24 +41,6 @@ def SslCertificateArgument(required=True, plural=False):
       global_collection='compute.sslCertificates')
 
 
-# TODO(b/37253214): remove this argument when it's fully deprecated.
-def SslCertificateArgumentForOtherResource(resource, required=True):
-  return compute_flags.ResourceArgument(
-      name='--ssl-certificate',
-      resource_name='ssl certificate',
-      completer=SslCertificatesCompleter,
-      plural=False,
-      required=required,
-      global_collection='compute.sslCertificates',
-      short_help=('A reference to an SSL certificate resource that is used for '
-                  'server-side authentication.'),
-      detailed_help="""\
-        A reference to an SSL certificate resource that is used for
-        server-side authentication. The SSL certificate must exist and cannot
-        be deleted while referenced by a {0}.
-        """.format(resource))
-
-
 def SslCertificatesArgumentForOtherResource(resource, required=True):
   return compute_flags.ResourceArgument(
       name='--ssl-certificates',

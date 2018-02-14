@@ -51,7 +51,7 @@ class Cluster(_messages.Message):
   Fields:
     clusterName: Required. The cluster name. Cluster names within a project
       must be unique. Names of deleted clusters can be reused.
-    clusterUuid: Output-only. A cluster UUID (Unique Universal Identifier).
+    clusterUuid: Output only. A cluster UUID (Unique Universal Identifier).
       Cloud Dataproc generates this value when it creates the cluster.
     config: Required. The cluster config. Note that Cloud Dataproc may set
       default values, and values may change when clusters are updated.
@@ -66,8 +66,8 @@ class Cluster(_messages.Message):
       changed before final release.
     projectId: Required. The Google Cloud Platform project ID that the cluster
       belongs to.
-    status: Output-only. Cluster status.
-    statusHistory: Output-only. The previous cluster status.
+    status: Output only. Cluster status.
+    statusHistory: Output only. The previous cluster status.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -221,22 +221,22 @@ class ClusterOperationMetadata(_messages.Message):
   """Metadata describing the operation.
 
   Messages:
-    LabelsValue: Output-only. Labels associated with the operation
+    LabelsValue: Output only. Labels associated with the operation
 
   Fields:
-    clusterName: Output-only. Name of the cluster for the operation.
-    clusterUuid: Output-only. Cluster UUID for the operation.
-    description: Output-only. Short description of operation.
-    labels: Output-only. Labels associated with the operation
-    operationType: Output-only. The operation type.
-    status: Output-only. Current operation status.
-    statusHistory: Output-only. The previous operation status.
-    warnings: Output-only. Errors encountered during operation execution.
+    clusterName: Output only. Name of the cluster for the operation.
+    clusterUuid: Output only. Cluster UUID for the operation.
+    description: Output only. Short description of operation.
+    labels: Output only. Labels associated with the operation
+    operationType: Output only. The operation type.
+    status: Output only. Current operation status.
+    statusHistory: Output only. The previous operation status.
+    warnings: Output only. Errors encountered during operation execution.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Output-only. Labels associated with the operation
+    """Output only. Labels associated with the operation
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -272,19 +272,19 @@ class ClusterOperationStatus(_messages.Message):
   """The status of the operation.
 
   Enums:
-    StateValueValuesEnum: Output-only. A message containing the operation
+    StateValueValuesEnum: Output only. A message containing the operation
       state.
 
   Fields:
-    details: Output-only.A message containing any operation metadata details.
-    innerState: Output-only. A message containing the detailed operation
+    details: Output only. A message containing any operation metadata details.
+    innerState: Output only. A message containing the detailed operation
       state.
-    state: Output-only. A message containing the operation state.
-    stateStartTime: Output-only. The time this state was entered.
+    state: Output only. A message containing the operation state.
+    stateStartTime: Output only. The time this state was entered.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output-only. A message containing the operation state.
+    """Output only. A message containing the operation state.
 
     Values:
       UNKNOWN: Unused.
@@ -307,20 +307,20 @@ class ClusterStatus(_messages.Message):
   """The status of a cluster and its instances.
 
   Enums:
-    StateValueValuesEnum: Output-only. The cluster's state.
-    SubstateValueValuesEnum: Output-only. Additional state information that
+    StateValueValuesEnum: Output only. The cluster's state.
+    SubstateValueValuesEnum: Output only. Additional state information that
       includes status reported by the agent.
 
   Fields:
-    detail: Output-only. Optional details of cluster's state.
-    state: Output-only. The cluster's state.
-    stateStartTime: Output-only. Time when this state was entered.
-    substate: Output-only. Additional state information that includes status
+    detail: Output only. Optional details of cluster's state.
+    state: Output only. The cluster's state.
+    stateStartTime: Output only. Time when this state was entered.
+    substate: Output only. Additional state information that includes status
       reported by the agent.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output-only. The cluster's state.
+    """Output only. The cluster's state.
 
     Values:
       UNKNOWN: The cluster state is unknown.
@@ -341,11 +341,11 @@ class ClusterStatus(_messages.Message):
     UPDATING = 5
 
   class SubstateValueValuesEnum(_messages.Enum):
-    """Output-only. Additional state information that includes status reported
+    """Output only. Additional state information that includes status reported
     by the agent.
 
     Values:
-      UNSPECIFIED: <no description>
+      UNSPECIFIED: The cluster substate is unknown.
       UNHEALTHY: The cluster is known to be in an unhealthy state (for
         example, critical daemons are not running or HDFS capacity is
         exhausted).Applies to RUNNING state.
@@ -384,6 +384,9 @@ class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
 
   Fields:
     clusterName: Required. The cluster name.
+    clusterUuid: Optional. Specifying the cluster_uuid means the RPC should
+      fail (with error NOT_FOUND) if cluster with specified UUID does not
+      exist.
     projectId: Required. The ID of the Google Cloud Platform project that the
       cluster belongs to.
     region: Required. The Cloud Dataproc region in which to handle the
@@ -391,8 +394,9 @@ class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
   """
 
   clusterName = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
+  clusterUuid = _messages.StringField(2)
+  projectId = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
 
 
 class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
@@ -707,7 +711,7 @@ class DiagnoseClusterResults(_messages.Message):
   """The location of diagnostic output.
 
   Fields:
-    outputUri: Output-only. The Google Cloud Storage URI of the diagnostic
+    outputUri: Output only. The Google Cloud Storage URI of the diagnostic
       output. The output report is a plain text file with a summary of
       collected diagnostics.
   """
@@ -1023,7 +1027,7 @@ class InstanceGroupConfig(_messages.Message):
       configuration for these instances.Beta Feature: This feature is still
       under development. It may be changed before final release.
     diskConfig: Optional. Disk option config settings.
-    imageUri: Output-only. The Google Compute Engine image resource used for
+    imageUri: Output only. The Google Compute Engine image resource used for
       cluster instances. Inferred from SoftwareConfig.image_version.
     instanceNames: Optional. The list of instance names. Cloud Dataproc
       derives the names from cluster_name, num_instances, and the instance
@@ -1037,7 +1041,7 @@ class InstanceGroupConfig(_messages.Message):
       https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
       east1-a/machineTypes/n1-standard-2 projects/[project_id]/zones/us-
       east1-a/machineTypes/n1-standard-2 n1-standard-2
-    managedGroupConfig: Output-only. The config for Google Compute Engine
+    managedGroupConfig: Output only. The config for Google Compute Engine
       Instance Group Manager that manages this group. This is only used for
       preemptible instance groups.
     numInstances: Optional. The number of VM instances in the instance group.
@@ -1066,11 +1070,11 @@ class Job(_messages.Message):
       be associated with a job.
 
   Fields:
-    driverControlFilesUri: Output-only. If present, the location of
+    driverControlFilesUri: Output only. If present, the location of
       miscellaneous control files which may be used as part of job setup and
       handling. If not present, control files may be placed in the same
       location as driver_output_uri.
-    driverOutputResourceUri: Output-only. A URI pointing to the location of
+    driverOutputResourceUri: Output only. A URI pointing to the location of
       the stdout of the job's driver program.
     hadoopJob: Job is a Hadoop job.
     hiveJob: Job is a Hive job.
@@ -1091,11 +1095,11 @@ class Job(_messages.Message):
     scheduling: Optional. Job scheduling configuration.
     sparkJob: Job is a Spark job.
     sparkSqlJob: Job is a SparkSql job.
-    status: Output-only. The job status. Additional application-specific
+    status: Output only. The job status. Additional application-specific
       status information may be contained in the <code>type_job</code> and
       <code>yarn_applications</code> fields.
-    statusHistory: Output-only. The previous job status.
-    yarnApplications: Output-only. The collection of YARN applications spun up
+    statusHistory: Output only. The previous job status.
+    yarnApplications: Output only. The collection of YARN applications spun up
       by this job.Beta Feature: This report is available for testing purposes
       only. It may be changed before final release.
   """
@@ -1152,7 +1156,7 @@ class JobPlacement(_messages.Message):
   Fields:
     clusterName: Required. The name of the cluster where the job will be
       submitted.
-    clusterUuid: Output-only. A cluster UUID generated by the Cloud Dataproc
+    clusterUuid: Output only. A cluster UUID generated by the Cloud Dataproc
       service when the job is submitted.
   """
 
@@ -1195,22 +1199,22 @@ class JobStatus(_messages.Message):
   """Cloud Dataproc job status.
 
   Enums:
-    StateValueValuesEnum: Output-only. A state message specifying the overall
+    StateValueValuesEnum: Output only. A state message specifying the overall
       job state.
-    SubstateValueValuesEnum: Output-only. Additional state information, which
+    SubstateValueValuesEnum: Output only. Additional state information, which
       includes status reported by the agent.
 
   Fields:
-    details: Output-only. Optional job state details, such as an error
+    details: Output only. Optional job state details, such as an error
       description if the state is <code>ERROR</code>.
-    state: Output-only. A state message specifying the overall job state.
-    stateStartTime: Output-only. The time when this state was entered.
-    substate: Output-only. Additional state information, which includes status
+    state: Output only. A state message specifying the overall job state.
+    stateStartTime: Output only. The time when this state was entered.
+    substate: Output only. Additional state information, which includes status
       reported by the agent.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output-only. A state message specifying the overall job state.
+    """Output only. A state message specifying the overall job state.
 
     Values:
       STATE_UNSPECIFIED: The job state is unknown.
@@ -1240,11 +1244,11 @@ class JobStatus(_messages.Message):
     ATTEMPT_FAILURE = 9
 
   class SubstateValueValuesEnum(_messages.Enum):
-    """Output-only. Additional state information, which includes status
+    """Output only. Additional state information, which includes status
     reported by the agent.
 
     Values:
-      UNSPECIFIED: <no description>
+      UNSPECIFIED: The job substate is unknown.
       SUBMITTED: The Job is submitted to the agent.Applies to RUNNING state.
       QUEUED: The Job has been received and is awaiting execution (it may be
         waiting for a condition to be met). See the "details" field for the
@@ -1269,8 +1273,8 @@ class ListClustersResponse(_messages.Message):
   """The list of all clusters in a project.
 
   Fields:
-    clusters: Output-only. The clusters in the project.
-    nextPageToken: Output-only. This token is included in the response if
+    clusters: Output only. The clusters in the project.
+    nextPageToken: Output only. This token is included in the response if
       there are more results to fetch. To fetch additional results, provide
       this value as the page_token in a subsequent ListClustersRequest.
   """
@@ -1283,7 +1287,7 @@ class ListJobsResponse(_messages.Message):
   """A list of jobs in a project.
 
   Fields:
-    jobs: Output-only. Jobs list.
+    jobs: Output only. Jobs list.
     nextPageToken: Optional. This token is included in the response if there
       are more results to fetch. To fetch additional results, provide this
       value as the page_token in a subsequent <code>ListJobsRequest</code>.
@@ -1381,9 +1385,9 @@ class ManagedGroupConfig(_messages.Message):
   """Specifies the resources used to actively manage an instance group.
 
   Fields:
-    instanceGroupManagerName: Output-only. The name of the Instance Group
+    instanceGroupManagerName: Output only. The name of the Instance Group
       Manager for this group.
-    instanceTemplateName: Output-only. The name of the Instance Template used
+    instanceTemplateName: Output only. The name of the Instance Template used
       for the Managed Instance Group.
   """
 

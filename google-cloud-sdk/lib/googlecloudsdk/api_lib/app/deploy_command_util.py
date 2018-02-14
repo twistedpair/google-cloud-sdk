@@ -291,11 +291,10 @@ def _GetSourceContextsForUpload(source_dir):
        'information.')
   try:
     contexts = context_util.CalculateExtendedSourceContexts(source_dir)
-    source_contexts[context_util.EXT_CONTEXT_FILENAME] = json.dumps(contexts)
   except context_util.GenerateSourceContextError as e:
-    log.info(m.format(name=context_util.EXT_CONTEXT_FILENAME, error=e))
-    # It's OK if source contexts can't be found, we just stop looking.
+    log.info(m.format(name=context_util.CONTEXT_FILENAME, error=e))
     return source_contexts
+
   try:
     context = context_util.BestSourceContext(contexts)
     source_contexts[context_util.CONTEXT_FILENAME] = json.dumps(context)

@@ -32,7 +32,8 @@ class VersionsClient(object):
   """Client for the versions service of Cloud ML Engine."""
 
   _ALLOWED_YAML_FIELDS = set(['autoScaling', 'description', 'deploymentUri',
-                              'runtimeVersion', 'manualScaling', 'labels'])
+                              'runtimeVersion', 'manualScaling', 'labels',
+                              'machineType'])
 
   def __init__(self, client=None, messages=None):
     self.client = client or apis.GetClientInstance('ml', 'v1')
@@ -103,7 +104,8 @@ class VersionsClient(object):
                    path=None,
                    deployment_uri=None,
                    runtime_version=None,
-                   labels=None):
+                   labels=None,
+                   machine_type=None):
     """Create a Version object.
 
     The object is based on an optional YAML configuration file and the
@@ -120,6 +122,7 @@ class VersionsClient(object):
       deployment_uri: str, the deploymentUri to set for the Version
       runtime_version: str, the runtimeVersion to set for the Version
       labels: Version.LabelsValue, the labels to set for the version
+      machine_type: str, the machine type to serve the model version on.
 
     Returns:
       A Version object (for the corresponding API version).
@@ -157,6 +160,7 @@ class VersionsClient(object):
         'deploymentUri': deployment_uri,
         'runtimeVersion': runtime_version,
         'labels': labels,
+        'machineType': machine_type
     }
     for field_name, value in additional_fields.items():
       if value is not None:

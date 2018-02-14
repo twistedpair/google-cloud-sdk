@@ -67,7 +67,7 @@ class RuntimeHandler(object):
       def Parse(self):
         try:
           return self.parse(self.arg_getter())
-        except concepts.InitializeError as e:
+        except concepts.InitializationError as e:
           if required:
             raise ParseError(name, e.message)
           return None
@@ -196,7 +196,7 @@ class ResourceInfo(object):
     if not self.plural:
       try:
         return self.concept_spec.Initialize(deps_lib.Deps(fallthroughs_map))
-      except concepts.InitializeError:
+      except concepts.InitializationError:
         if self.allow_empty:
           return None
         raise

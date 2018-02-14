@@ -37,6 +37,7 @@ class ContaineranalysisV1alpha1(base_api.BaseApiClient):
     self.projects_notes_occurrences = self.ProjectsNotesOccurrencesService(self)
     self.projects_notes = self.ProjectsNotesService(self)
     self.projects_occurrences = self.ProjectsOccurrencesService(self)
+    self.projects_operations = self.ProjectsOperationsService(self)
     self.projects = self.ProjectsService(self)
     self.providers_notes_occurrences = self.ProvidersNotesOccurrencesService(self)
     self.providers_notes = self.ProvidersNotesService(self)
@@ -615,6 +616,72 @@ following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_operations resource."""
+
+    _NAME = u'projects_operations'
+
+    def __init__(self, client):
+      super(ContaineranalysisV1alpha1.ProjectsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates a new `Operation`.
+
+      Args:
+        request: (ContaineranalysisProjectsOperationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/operations',
+        http_method=u'POST',
+        method_id=u'containeranalysis.projects.operations.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}/operations',
+        request_field=u'createOperationRequest',
+        request_type_name=u'ContaineranalysisProjectsOperationsCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates an existing operation returns an error if operation.
+ does not exist. The only valid operations are to update mark the done bit
+change the result.
+
+      Args:
+        request: (ContaineranalysisProjectsOperationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/operations/{operationsId}',
+        http_method=u'PATCH',
+        method_id=u'containeranalysis.projects.operations.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'updateOperationRequest',
+        request_type_name=u'ContaineranalysisProjectsOperationsPatchRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

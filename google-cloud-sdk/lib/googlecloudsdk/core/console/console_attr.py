@@ -639,7 +639,7 @@ def EncodeForConsole(string, encoding=None, escape=True):
     string.encode('ascii')
     return string
   except AttributeError:
-    # The string does not have a decode method.
+    # The string does not have an encode method.
     try:
       string = six.text_type(string)
     except (TypeError, UnicodeError):

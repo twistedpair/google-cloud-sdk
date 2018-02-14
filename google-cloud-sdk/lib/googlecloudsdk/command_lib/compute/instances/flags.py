@@ -29,7 +29,8 @@ from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as core_resources
-import ipaddr
+import ipaddress
+import six
 
 ZONE_PROPERTY_EXPLANATION = """\
 If not specified, you may be prompted to select a zone. `gcloud` will attempt
@@ -647,10 +648,11 @@ def ExpandAddressFlag(resources, compute_client, address, region):
 
   # Try interpreting the address as IPv4 or IPv6.
   try:
-    ipaddr.IPAddress(address)
+    # ipaddress only allows unicode input
+    ipaddress.ip_address(six.text_type(address))
     return address
   except ValueError:
-    # ipaddr could not resolve as an IPv4 or IPv6 address.
+    # ipaddress could not resolve as an IPv4 or IPv6 address.
     pass
 
   # Lookup the address.

@@ -25,51 +25,15 @@ class Collections(enum.Enum):
 
   PROJECTS = (
       'projects',
-      'projects/{projectsId}',
+      'projects/{projectId}',
       {},
-      [u'projectsId']
-  )
-  PROJECTS_LOCATIONS = (
-      'projects.locations',
-      'projects/{projectsId}/locations/{locationsId}',
-      {},
-      [u'projectsId', u'locationsId']
-  )
-  PROJECTS_LOCATIONS_CLUSTERS = (
-      'projects.locations.clusters',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/clusters/'
-              '{clustersId}',
-      },
-      [u'name']
-  )
-  PROJECTS_LOCATIONS_CLUSTERS_NODEPOOLS = (
-      'projects.locations.clusters.nodePools',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/clusters/'
-              '{clustersId}/nodePools/{nodePoolsId}',
-      },
-      [u'name']
-  )
-  PROJECTS_LOCATIONS_OPERATIONS = (
-      'projects.locations.operations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/operations/'
-              '{operationsId}',
-      },
-      [u'name']
+      [u'projectId']
   )
   PROJECTS_ZONES = (
       'projects.zones',
-      'projects/{projectId}/zones/{zoneId}',
+      'projects/{projectId}/zones/{zone}',
       {},
-      ['projectId', 'zoneId']
+      [u'projectId', u'zone']
   )
   PROJECTS_ZONES_CLUSTERS = (
       'projects.zones.clusters',

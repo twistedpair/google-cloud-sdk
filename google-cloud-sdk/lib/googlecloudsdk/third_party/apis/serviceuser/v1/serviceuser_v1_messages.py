@@ -803,11 +803,6 @@ class HttpRule(_messages.Message):
     patch: Used for updating a resource.
     post: Used for creating a resource.
     put: Used for updating a resource.
-    responseBody: The name of the response field whose value is mapped to the
-      HTTP body of response. Other response fields are ignored. This field is
-      optional. When not set, the response message will be used as HTTP body
-      of response. NOTE: the referred field must be not a repeated field and
-      must be present at the top-level of response message type.
     selector: Selects methods to which this rule applies.  Refer to selector
       for syntax details.
   """
@@ -822,8 +817,7 @@ class HttpRule(_messages.Message):
   patch = _messages.StringField(8)
   post = _messages.StringField(9)
   put = _messages.StringField(10)
-  responseBody = _messages.StringField(11)
-  selector = _messages.StringField(12)
+  selector = _messages.StringField(11)
 
 
 class LabelDescriptor(_messages.Message):
@@ -1088,18 +1082,19 @@ class MetricDescriptor(_messages.Message):
       pico    (10**-12) * `f`     femto   (10**-15) * `a`     atto
       (10**-18) * `z`     zepto   (10**-21) * `y`     yocto   (10**-24) * `Ki`
       kibi    (2**10) * `Mi`    mebi    (2**20) * `Gi`    gibi    (2**30) *
-      `Ti`    tebi    (2**40)  **Grammar**  The grammar includes the
-      dimensionless unit `1`, such as `1/s`.  The grammar also includes these
+      `Ti`    tebi    (2**40)  **Grammar**  The grammar also includes these
       connectors:  * `/`    division (as an infix operator, e.g. `1/s`). * `.`
       multiplication (as an infix operator, e.g. `GBy.d`)  The grammar for a
       unit is as follows:      Expression = Component { "." Component } { "/"
-      Component } ;      Component = [ PREFIX ] UNIT [ Annotation ]
+      Component } ;      Component = ( [ PREFIX ] UNIT | "%" ) [ Annotation ]
       | Annotation               | "1"               ;      Annotation = "{"
       NAME "}" ;  Notes:  * `Annotation` is just a comment if it follows a
       `UNIT` and is    equivalent to `1` if it is used alone. For examples,
       `{requests}/s == 1/s`, `By{transmitted}/s == By/s`. * `NAME` is a
       sequence of non-blank printable ASCII characters not    containing '{'
-      or '}'.
+      or '}'. * `1` represents dimensionless value 1, such as in `1/s`. * `%`
+      represents dimensionless value 1/100, and annotates values giving    a
+      percentage.
     valueType: Whether the measurement is an integer, a floating-point number,
       etc. Some combinations of `metric_kind` and `value_type` might not be
       supported.
@@ -2278,14 +2273,14 @@ class UsageRule(_messages.Message):
   allow_unregistered_calls: true
 
   Fields:
-    allowUnregisteredCalls: True, if the method allows unregistered calls;
-      false otherwise.
+    allowUnregisteredCalls: If true, the selected method allows unregistered
+      calls, e.g. calls that don't identify any user or application.
     selector: Selects the methods to which this rule applies. Use '*' to
       indicate all methods in all APIs.  Refer to selector for syntax details.
-    skipServiceControl: True, if the method should skip service control. If
-      so, no control plane feature (like quota and billing) will be enabled.
-      This flag is used by ESP to allow some Endpoints customers to bypass
-      Google internal checks.
+    skipServiceControl: If true, the selected method should skip service
+      control and the control plane features, such as quota and billing, will
+      not be available. This flag is used by Google Cloud Endpoints to bypass
+      checks for internal methods, such as service health check methods.
   """
 
   allowUnregisteredCalls = _messages.BooleanField(1)

@@ -27,7 +27,8 @@ Library for parsing dos.yaml files and working with these in memory.
 
 import os
 import re
-import ipaddr
+import ipaddress
+import six
 
 # pylint: disable=g-import-not-at-top
 if os.environ.get('APPENGINE_RUNTIME') == 'python27':
@@ -62,7 +63,8 @@ class SubnetValidator(validation.Validator):
       raise validation.ValidationError('subnet must be a string, not \'%r\'' %
                                        type(value))
     try:
-      ipaddr.IPNetwork(value)
+      # ipaddress only allows unicode input
+      ipaddress.ip_network(six.text_type(value))
     except ValueError:
       raise validation.ValidationError('%s is not a valid IPv4 or IPv6 subnet' %
                                        value)

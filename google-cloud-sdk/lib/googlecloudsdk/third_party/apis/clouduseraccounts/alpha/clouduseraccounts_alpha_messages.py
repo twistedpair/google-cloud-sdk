@@ -18,7 +18,7 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted.  Example Policy with
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:  { "audit_configs": [ { "service": "allServices"
   "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
   "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
@@ -27,8 +27,7 @@ class AuditConfig(_messages.Message):
   "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] }  For
   fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
   logging. It also exempts foo@gmail.com from DATA_READ logging, and
-  bar@gmail.com from DATA_WRITE logging. This message is only visible as
-  GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
+  bar@gmail.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -641,6 +640,7 @@ class Condition(_messages.Message):
       APPROVER: <no description>
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
+      CREDENTIALS_TYPE: <no description>
       JUSTIFICATION_TYPE: <no description>
       NO_ATTR: <no description>
       SECURITY_REALM: <no description>
@@ -648,9 +648,10 @@ class Condition(_messages.Message):
     APPROVER = 0
     ATTRIBUTION = 1
     AUTHORITY = 2
-    JUSTIFICATION_TYPE = 3
-    NO_ATTR = 4
-    SECURITY_REALM = 5
+    CREDENTIALS_TYPE = 3
+    JUSTIFICATION_TYPE = 4
+    NO_ATTR = 5
+    SECURITY_REALM = 6
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -1330,7 +1331,6 @@ class Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-      This field is only visible as GOOGLE_INTERNAL or IAM_AUDIT_CONFIG.
     bindings: Associates a list of `members` to a `role`. `bindings` with no
       members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help

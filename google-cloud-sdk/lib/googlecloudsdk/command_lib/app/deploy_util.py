@@ -346,7 +346,7 @@ class ServiceDeployer(object):
     * Upload files (non-hermetic deployments and flex deployments with
       flex_image_build_option=FlexImageBuildOptions.ON_SERVER)
     * Create the new version
-    * Promote the version to receieve all traffic (if --promote given (default))
+    * Promote the version to receive all traffic (if --promote given (default))
     * Stop the previous version (if new version promoted and
       --stop-previous-version given (default))
 

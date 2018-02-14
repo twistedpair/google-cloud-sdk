@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import imp
 import os
 import pkgutil
@@ -31,7 +32,7 @@ def _GetPackageName(module_name):
 
 
 def GetResource(module_name, resource_name):
-  """Get a resource as a string for given resource in same package."""
+  """Get a resource as a byte string for given resource in same package."""
   return pkgutil.get_data(_GetPackageName(module_name), resource_name)
 
 

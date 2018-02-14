@@ -18,13 +18,36 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import sys
 
 import six
 
 
+def Encode(string, encoding=None):
+  """Encode the text string to a byte string.
+
+  Args:
+    string: str, The text string to encode.
+    encoding: The suggested encoding if known.
+
+  Returns:
+    str, The binary string.
+  """
+  if not six.PY2:
+    # In Python 3, the environment sets and gets accept and return text strings
+    # only, and it handles the encoding itself so this is not necessary.
+    return string
+  if isinstance(string, six.binary_type):
+    # Already an encoded byte string, we are done
+    return string
+
+  encoding = encoding or _GetEncoding()
+  return string.encode(encoding)
+
+
 def Decode(string, encoding=None):
-  """Returns string with non-ascii characters decoded decoded to UNICODE.
+  """Returns string with non-ascii characters decoded to UNICODE.
 
   UTF-8, the suggested encoding, and the usual suspects will be attempted in
   order. If the string is pure ASCII or UNICODE then it is returned unchanged.
@@ -43,8 +66,7 @@ def Decode(string, encoding=None):
 
   try:
     # Just return the string if its pure ASCII.
-    string.decode('ascii')
-    return string
+    return string.decode('ascii')
   except AttributeError:
     # The string does not have a decode method.
     try:
@@ -117,11 +139,16 @@ def GetEncodedValue(env, name, default=None):
   Returns:
     The decoded value of the env var name.
   """
+  name = Encode(name)
   value = env.get(name)
-  return default if value is None else Decode(value)
+  if value is None:
+    return default
+  # In Python 3, the environment sets and gets accept and return text strings
+  # only, and it handles the encoding itself so this is not necessary.
+  return Decode(value)
 
 
-def SetEncodedValue(env, name, value):
+def SetEncodedValue(env, name, value, encoding=None):
   """Sets the value of name in env to an encoded value.
 
   Args:
@@ -129,6 +156,7 @@ def SetEncodedValue(env, name, value):
     name: str, The env var name.
     value: str or unicode, The value for name. If None then name is removed from
       env.
+    encoding: str, The encoding to use or None to try to infer it.
   """
   # Python 2 *and* 3 unicode support falls apart at filesystem/argv/environment
   # boundaries. The encoding used for filesystem paths and environment variable
@@ -139,11 +167,13 @@ def SetEncodedValue(env, name, value):
   # process will have a chance at decoding. Leaving the values as unicode
   # strings will cause os module Unicode exceptions. What good is a language
   # unicode model when the module support could care less?
+  name = Encode(name, encoding=encoding)
   if value is None:
     env.pop(name, None)
     return
-  if isinstance(value, six.text_type):
-    encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
-    value = value.encode(encoding)
-  env[name] = value
+  env[name] = Encode(value, encoding=encoding)
 
+
+def _GetEncoding():
+  """Gets the default encoding to use."""
+  return sys.getfilesystemencoding() or sys.getdefaultencoding()

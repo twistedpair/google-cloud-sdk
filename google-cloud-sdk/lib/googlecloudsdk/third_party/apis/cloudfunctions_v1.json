@@ -330,6 +330,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "network": {
+          "description": "The Google Compute Engine network that this function can connect to.\nEither the fully-qualified URI of the network resource, or\nthe short name of the network must be specified. If the network belongs to\nanother project, the URI of the resource must be specified\ne.g., `https:\/\/www.googleapis.com\/compute\/v1\/projects\/{project}\/global\/networks\/{network}`\n or `my-network`.\n\nSee [the VPC documentation](https:\/\/cloud.google.com\/compute\/docs\/vpc) for\nmore information on connecting Cloud projects.",
+          "type": "string"
         }
       }
     },

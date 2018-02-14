@@ -403,8 +403,9 @@ class LogEntry(_messages.Message):
       enforce the logs retention period. If this field is omitted in a new log
       entry, then Stackdriver Logging assigns it the current time.Incoming log
       entries should have timestamps that are no more than the logs retention
-      period in the past, and no more than 24 hours in the future. See the
-      entries.write API method for more information.
+      period in the past, and no more than 24 hours in the future. Log entries
+      outside those time boundaries will not be available when calling
+      entries.list, but those log entries can still be exported with LogSinks.
     trace: Optional. Resource name of the trace associated with the log entry,
       if any. If it contains a relative resource name, the name is assumed to
       be relative to //tracing.googleapis.com. Example: projects/my-
@@ -2392,17 +2393,18 @@ class MetricDescriptor(_messages.Message):
       exa (10**18) Z zetta (10**21) Y yotta (10**24) m milli (10**-3) u micro
       (10**-6) n nano (10**-9) p pico (10**-12) f femto (10**-15) a atto
       (10**-18) z zepto (10**-21) y yocto (10**-24) Ki kibi (2**10) Mi mebi
-      (2**20) Gi gibi (2**30) Ti tebi (2**40)GrammarThe grammar includes the
-      dimensionless unit 1, such as 1/s.The grammar also includes these
-      connectors: / division (as an infix operator, e.g. 1/s). .
+      (2**20) Gi gibi (2**30) Ti tebi (2**40)GrammarThe grammar also includes
+      these connectors: / division (as an infix operator, e.g. 1/s). .
       multiplication (as an infix operator, e.g. GBy.d)The grammar for a unit
       is as follows: Expression = Component { "." Component } { "/" Component
-      } ;  Component = [ PREFIX ] UNIT [ Annotation ]           | Annotation
-      | "1"           ;  Annotation = "{" NAME "}" ; Notes: Annotation is just
-      a comment if it follows a UNIT and is  equivalent to 1 if it is used
-      alone. For examples,  {requests}/s == 1/s, By{transmitted}/s == By/s.
-      NAME is a sequence of non-blank printable ASCII characters not
-      containing '{' or '}'.
+      } ;  Component = ( [ PREFIX ] UNIT | "%" ) [ Annotation ]           |
+      Annotation           | "1"           ;  Annotation = "{" NAME "}" ;
+      Notes: Annotation is just a comment if it follows a UNIT and is
+      equivalent to 1 if it is used alone. For examples,  {requests}/s == 1/s,
+      By{transmitted}/s == By/s. NAME is a sequence of non-blank printable
+      ASCII characters not  containing '{' or '}'. 1 represents dimensionless
+      value 1, such as in 1/s. % represents dimensionless value 1/100, and
+      annotates values giving  a percentage.
     valueType: Whether the measurement is an integer, a floating-point number,
       etc. Some combinations of metric_kind and value_type might not be
       supported.
@@ -2759,6 +2761,10 @@ class WriteLogEntriesRequest(_messages.Message):
       not changed. See LogEntry.
 
   Fields:
+    dryRun: Optional. If true, the request should expect normal response, but
+      the entries won't be persisted nor exported. Useful for checking whether
+      the logging API endpoints are working properly before sending valuable
+      data.
     entries: Required. The log entries to send to Stackdriver Logging. The
       order of log entries in this list does not matter. Values supplied in
       this method's log_name, resource, and labels fields are copied into
@@ -2770,11 +2776,12 @@ class WriteLogEntriesRequest(_messages.Message):
       not supply their own values, the entries earlier in the list will sort
       before the entries later in the list. See the entries.list method.Log
       entries with timestamps that are more than the logs retention period in
-      the past or more than 24 hours in the future might be discarded.
-      Discarding does not return an error.To improve throughput and to avoid
-      exceeding the quota limit for calls to entries.write, you should try to
-      include several log entries in this list, rather than calling this
-      method for each individual log entry.
+      the past or more than 24 hours in the future will not be available when
+      calling entries.list. However, those log entries can still be exported
+      with LogSinks.To improve throughput and to avoid exceeding the quota
+      limit for calls to entries.write, you should try to include several log
+      entries in this list, rather than calling this method for each
+      individual log entry.
     labels: Optional. Default labels that are added to the labels field of all
       log entries in entries. If a log entry already has a label with the same
       key as a label in this parameter, then the log entry's label is not
@@ -2827,11 +2834,12 @@ class WriteLogEntriesRequest(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  entries = _messages.MessageField('LogEntry', 1, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 2)
-  logName = _messages.StringField(3)
-  partialSuccess = _messages.BooleanField(4)
-  resource = _messages.MessageField('MonitoredResource', 5)
+  dryRun = _messages.BooleanField(1)
+  entries = _messages.MessageField('LogEntry', 2, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 3)
+  logName = _messages.StringField(4)
+  partialSuccess = _messages.BooleanField(5)
+  resource = _messages.MessageField('MonitoredResource', 6)
 
 
 class WriteLogEntriesResponse(_messages.Message):

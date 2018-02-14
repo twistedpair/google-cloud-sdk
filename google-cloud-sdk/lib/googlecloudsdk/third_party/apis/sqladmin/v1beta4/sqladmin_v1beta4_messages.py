@@ -38,6 +38,9 @@ class BackupConfiguration(_messages.Message):
       is disabled, binary log must be disabled as well.
     enabled: Whether this configuration is enabled.
     kind: This is always sql#backupConfiguration.
+    replicationLogArchivingEnabled: Whether replication log archiving is
+      enabled. Replication log archiving is required for the point-in-time
+      recovery (PITR) feature. PostgreSQL instances only.
     startTime: Start time for the daily backup configuration in UTC timezone
       in the 24 hour format - HH:MM.
   """
@@ -45,7 +48,8 @@ class BackupConfiguration(_messages.Message):
   binaryLogEnabled = _messages.BooleanField(1)
   enabled = _messages.BooleanField(2)
   kind = _messages.StringField(3, default=u'sql#backupConfiguration')
-  startTime = _messages.StringField(4)
+  replicationLogArchivingEnabled = _messages.BooleanField(4)
+  startTime = _messages.StringField(5)
 
 
 class BackupRun(_messages.Message):
@@ -130,11 +134,15 @@ class CloneContext(_messages.Message):
     destinationInstanceName: Name of the Cloud SQL instance to be created as a
       clone.
     kind: This is always sql#cloneContext.
+    pitrTimestampMs: The epoch timestamp, in milliseconds, of the time to
+      which a point-in-time recovery (PITR) is performed. PostgreSQL instances
+      only. For MySQL instances, use the binLogCoordinates property.
   """
 
   binLogCoordinates = _messages.MessageField('BinLogCoordinates', 1)
   destinationInstanceName = _messages.StringField(2)
   kind = _messages.StringField(3, default=u'sql#cloneContext')
+  pitrTimestampMs = _messages.IntegerField(4)
 
 
 class Database(_messages.Message):
@@ -387,8 +395,9 @@ class ExportContext(_messages.Message):
     sqlExportOptions: Options for exporting data as SQL statements.
     uri: The path to the file in Google Cloud Storage where the export will be
       stored. The URI is in the form gs://bucketName/fileName. If the file
-      already exists, the operation fails. If fileType is SQL and the filename
-      ends with .gz, the contents are compressed.
+      already exists, the requests succeeds, but the operation fails. If
+      fileType is SQL and the filename ends with .gz, the contents are
+      compressed.
   """
 
   class CsvExportOptionsValue(_messages.Message):
@@ -668,7 +677,8 @@ class MaintenanceWindow(_messages.Message):
     day: day of week (1-7), starting on Monday.
     hour: hour of day - 0 to 23.
     kind: This is always sql#maintenanceWindow.
-    updateTrack: A string attribute.
+    updateTrack: Maintenance timing setting: canary (Earlier) or stable
+      (Later).  Learn more.
   """
 
   day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -870,14 +880,13 @@ class Settings(_messages.Message):
   Fields:
     activationPolicy: The activation policy specifies when the instance is
       activated; it is applicable only when the instance state is RUNNABLE.
-      The activation policy cannot be updated together with other settings for
-      Second Generation instances. Valid values: ALWAYS: The instance is on;
-      it is not deactivated by inactivity. NEVER: The instance is off; it is
-      not activated, even if a connection request arrives. ON_DEMAND: The
-      instance responds to incoming requests, and turns itself off when not in
-      use. Instances with PER_USE pricing turn off after 15 minutes of
-      inactivity. Instances with PER_PACKAGE pricing turn off after 12 hours
-      of inactivity.
+      Valid values: ALWAYS: The instance is on, and remains so even in the
+      absence of connection requests. NEVER: The instance is off; it is not
+      activated, even if a connection request arrives. ON_DEMAND: First
+      Generation instances only. The instance responds to incoming requests,
+      and turns itself off when not in use. Instances with PER_USE pricing
+      turn off after 15 minutes of inactivity. Instances with PER_PACKAGE
+      pricing turn off after 12 hours of inactivity.
     authorizedGaeApplications: The App Engine app IDs that can access this
       instance. This property is only applicable to First Generation
       instances.
@@ -1588,9 +1597,9 @@ class SslCertsInsertResponse(_messages.Message):
   """SslCert insert response.
 
   Fields:
-    clientCert: The new client certificate and private key. The new
-      certificate will not work until the instance is restarted for First
-      Generation instances.
+    clientCert: The new client certificate and private key. For First
+      Generation instances, the new certificate does not take effect until the
+      instance is restarted.
     kind: This is always sql#sslCertsInsert.
     operation: The operation to track the ssl certs insert request.
     serverCaCert: The server Certificate Authority's certificate. If this is

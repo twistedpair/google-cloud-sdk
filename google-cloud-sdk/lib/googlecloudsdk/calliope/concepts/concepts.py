@@ -42,8 +42,16 @@ ANCHOR_HELP = ('The ID of the {resource} or a fully qualified identifier for '
                'the {resource}.')
 
 
-class InitializeError(exceptions.Error):
+class Error(exceptions.Error):
+  """Base class for errors in this module."""
+
+
+class InitializationError(Error):
   """Raised if a spec fails to initialize."""
+
+
+class ResourceConfigurationError(Error):
+  """Raised if a resource is improperly declared."""
 
 
 class ConceptSpec(object):
@@ -78,7 +86,7 @@ class ConceptSpec(object):
       the initialized concept.
 
     Raises:
-      InitializeError, if the concept cannot be initialized.
+      InitializationError, if the concept cannot be initialized.
     """
     raise NotImplementedError
 
@@ -156,6 +164,10 @@ class ResourceSpec(ConceptSpec):
         registry.
       **kwargs: Parameter names (such as 'projectsId') from the
         collection path, mapped to ResourceParameterAttributeConfigs.
+
+    Raises:
+      ResourceConfigurationError: if the resource is given unknown params or the
+        collection has no params.
     """
     self._name = resource_name
     self.collection = resource_collection
@@ -171,7 +183,7 @@ class ResourceSpec(ConceptSpec):
     for i, param_name in enumerate(collection_params):
       if i == len(collection_params) - 1:
         anchor = True
-      attribute_config = kwargs.get(param_name,
+      attribute_config = kwargs.pop(param_name,
                                     ResourceParameterAttributeConfig())
       attribute_name = self._AttributeName(param_name, attribute_config,
                                            anchor=anchor)
@@ -188,6 +200,15 @@ class ResourceSpec(ConceptSpec):
       # are used for error messaging and arg creation/parsing, resource parsing
       # during command runtime requires parameter names.
       self._param_names_map[new_attribute.name] = param_name
+    if not self._attributes:
+      raise ResourceConfigurationError('Resource [{}] has no parameters; no '
+                                       'arguments will be generated'.format(
+                                           self._name))
+    if kwargs:
+      raise ResourceConfigurationError('Resource [{}] was given an attribute '
+                                       'config for unknown attribute(s): [{}]'
+                                       .format(self._name,
+                                               ', '.join(kwargs.keys())))
 
   @property
   def attributes(self):
@@ -244,8 +265,8 @@ class ResourceSpec(ConceptSpec):
       (googlecloudsdk.core.resources.Resource) the fully initialized resource.
 
     Raises:
-      googlecloudsdk.calliope.concepts.concepts.InitializeError, if the concept
-        can't be initialized.
+      googlecloudsdk.calliope.concepts.concepts.InitializationError, if the
+        concept can't be initialized.
     """
     params = {}
     def LazyGet(name):
@@ -260,7 +281,7 @@ class ResourceSpec(ConceptSpec):
           collection=self.collection,
           params=params)
     except deps_lib.AttributeNotFoundError as e:
-      raise InitializeError(
+      raise InitializationError(
           'The [{}] resource is not properly specified.\n'
           '{}'.format(self.name, e.message))
 

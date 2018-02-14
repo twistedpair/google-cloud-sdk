@@ -158,11 +158,7 @@ class ClusterConfig(object):
     self.zone_id = kwargs['zone_id']
     self.project_id = kwargs['project_id']
     self.server = kwargs['server']
-    # auth options are basic (user,password), bearer token, auth-provider, or
-    # client certificate.
-    self.username = kwargs.get('username')
-    self.password = kwargs.get('password')
-    self.token = kwargs.get('token')
+    # auth options are auth-provider, or client certificate.
     self.auth_provider = kwargs.get('auth_provider')
     self.ca_data = kwargs.get('ca_data')
     self.client_cert_data = kwargs.get('client_cert_data')
@@ -222,9 +218,6 @@ class ClusterConfig(object):
     kubeconfig = kconfig.Kubeconfig.Default()
     cluster_kwargs = {}
     user_kwargs = {
-        'token': self.token,
-        'username': self.username,
-        'password': self.password,
         'auth_provider': self.auth_provider,
     }
     if self.has_ca_cert:
@@ -285,18 +278,6 @@ class ClusterConfig(object):
       if auth.clientCertificate and auth.clientKey:
         kwargs['client_key_data'] = auth.clientKey
         kwargs['client_cert_data'] = auth.clientCertificate
-      # TODO(b/36051984): these are not needed if cluster has certs, though they
-      # are useful for testing, e.g. with curl. Consider removing if/when the
-      # apiserver no longer supports insecure (no certs) requests.
-      # TODO(b/36049791): use api_adapter instead of getattr, or remove
-      # bearerToken support
-      if getattr(auth, 'bearerToken', None):
-        kwargs['token'] = auth.bearerToken
-      else:
-        username = getattr(auth, 'user', None) or getattr(auth, 'username',
-                                                          None)
-        kwargs['username'] = username
-        kwargs['password'] = auth.password
 
     c_config = cls(**kwargs)
     c_config.GenKubeconfig()
@@ -348,15 +329,11 @@ class ClusterConfig(object):
       return None
 
     # Verify user data
-    username = user.get('username')
-    password = user.get('password')
-    token = user.get('token')
     auth_provider = user.get('auth-provider')
     cert_data = user.get('client-certificate-data')
     key_data = user.get('client-key-data')
     cert_auth = cert_data and key_data
-    basic_auth = username and password
-    has_valid_auth = auth_provider or cert_auth or token or basic_auth
+    has_valid_auth = auth_provider or cert_auth
     if not has_valid_auth:
       log.debug('missing auth info for user %s: %s', key, user)
       return None
@@ -366,9 +343,6 @@ class ClusterConfig(object):
         'zone_id': zone_id,
         'project_id': project_id,
         'server': server,
-        'username': username,
-        'password': password,
-        'token': token,
         'auth_provider': auth_provider,
         'ca_data': ca_data,
         'client_key_data': key_data,

@@ -25,6 +25,7 @@ import urlparse
 from distutils import version as distutils_version
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 
 
@@ -55,8 +56,9 @@ def _GetUserHomeDir():
 def _GetNewConfigDirectory():
   # Return the value of $DOCKER_CONFIG, if it exists, otherwise ~/.docker
   # see https://github.com/docker/docker/blob/master/cliconfig/config.go
-  if os.environ.get('DOCKER_CONFIG') is not None:
-    return os.environ.get('DOCKER_CONFIG')
+  docker_config = encoding.GetEncodedValue(os.environ, 'DOCKER_CONFIG')
+  if docker_config is not None:
+    return docker_config
   else:
     return os.path.join(_GetUserHomeDir(), '.docker')
 

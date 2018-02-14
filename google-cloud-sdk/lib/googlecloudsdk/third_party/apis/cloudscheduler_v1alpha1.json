@@ -208,7 +208,7 @@
           "$ref": "AppEngineHttpTarget"
         },
         "schedule": {
-          "description": "Specifies a schedule of start times. This can be used to\nspecify more complicated, and time-zone-aware schedules than is\npossible using only Job.period.\n\nA scheduled start time will be skipped if the previous\nexecution has not ended when its scheduled time occurs.\n\nIf RetryConfig.retry_count > 0 and a job attempt fails,\nthe job will be a total of tried RetryConfig.retry_count\ntimes, with exponential backoff, until the next scheduled start\ntime.",
+          "description": "Specifies a schedule of start times. This can be used to\nspecify complicated and time-zone-aware schedules.\n\nA scheduled start time will be skipped if the previous\nexecution has not ended when its scheduled time occurs.\n\nIf RetryConfig.retry_count > 0 and a job attempt fails,\nthe job will be a total of tried RetryConfig.retry_count\ntimes, with exponential backoff, until the next scheduled start\ntime.",
           "$ref": "Schedule"
         },
         "userUpdateTime": {
@@ -240,6 +240,10 @@
           "description": "Output only. The next time the job is scheduled. Note that this may be a\nretry of a previously failed execution or the next execution time\naccording to the schedule.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "retryConfig": {
+          "description": "Settings that determine the retry behavior.",
+          "$ref": "RetryConfig"
         }
       }
     },
@@ -306,10 +310,6 @@
           "description": "Payload.\n\nThe payload will be sent as the HTTP message body. A message\nbody, and thus a payload, is allowed only if the HTTP method is\nPOST or PUT. It is an error to set a data payload on a job with\nan incompatible HttpMethod.",
           "type": "string",
           "format": "byte"
-        },
-        "retryConfig": {
-          "description": "Settings that determine the retry behavior.",
-          "$ref": "RetryConfig"
         }
       }
     },
@@ -333,38 +333,6 @@
         "host": {
           "description": "Output only.\n\nThe host that the job is sent to. For more information about how App\nEngine requests are routed, see\n[here](\/appengine\/docs\/standard\/python\/how-requests-are-routed).\n\nThe host is constructed as:\n\n\n* `host = [application_domain_name]`<\/br>\n  `| [service] + '.' + [application_domain_name]`<\/br>\n  `| [version] + '.' + [application_domain_name]`<\/br>\n  `| [version_dot_service]+ '.' + [application_domain_name]`<\/br>\n  `| [instance] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_service] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_version] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_version_dot_service] + '.' + [application_domain_name]`\n\n* `application_domain_name` = The domain name of the app, for\n  example <app-id>.appspot.com, which is associated with the\n  job's project ID.\n\n* `service =` AppEngineRouting.service\n\n* `version =` AppEngineRouting.version\n\n* `version_dot_service =`\n  AppEngineRouting.version `+ '.' +` AppEngineRouting.service\n\n* `instance =` AppEngineRouting.instance\n\n* `instance_dot_service =`\n  AppEngineRouting.instance `+ '.' +` AppEngineRouting.service\n\n* `instance_dot_version =`\n  AppEngineRouting.instance `+ '.' +` AppEngineRouting.version\n\n* `instance_dot_version_dot_service =`\n  AppEngineRouting.instance `+ '.' +`\n  AppEngineRouting.version `+ '.' +` AppEngineRouting.service\n\nIf AppEngineRouting.service is empty, then the job will be sent\nto the service which is the default service when the job is attempted.\n\nIf AppEngineRouting.version is empty, then the job will be sent\nto the version which is the default version when the job is attempted.\n\nIf AppEngineRouting.instance is empty, then the job will be sent\nto an instance which is available when the job is attempted.\n\nWhen AppEngineRouting.service is \"default\",\nAppEngineRouting.version is \"default\", and\nAppEngineRouting.instance is empty, AppEngineRouting.host is\nshortened to just the `application_domain_name`.\n\nIf AppEngineRouting.service, AppEngineRouting.version, or\nAppEngineRouting.instance is invalid, then the job will be sent\nto the default version of the default service when the job is attempted.",
           "type": "string"
-        }
-      }
-    },
-    "RetryConfig": {
-      "id": "RetryConfig",
-      "description": "Settings that determine the retry behavior.\n\nBy default, if a job does not complete successfully (meaning that\nan acknowledgement is not received from the handler before the\n[deadline](\/appengine\/docs\/python\/taskqueue\/push\/#the_task_deadline),\nthen it will be retried with exponential backoff according to the settings\nin RetryConfig.",
-      "type": "object",
-      "properties": {
-        "retryCount": {
-          "description": "It determines the total number  attempts that the system will make to\ndeliver a job using the exponential backoff procedure described above.\n\nThe default value of retry_count is zero.\n\nIf retry_count is zero, a job attempt will *not* be retried if\nit fails. Instead the Cloud Scheduler system will wait for the\nnext scheduled execution time.\n\nIf retry_count is set to a non-zero number then Cloud Scheduler\nwill retry failed attempts, using exponential backoff,\nretry_count times, or until the next scheduled execution time,\nwhichever comes first.\n\nValue greater than 5 and negative values are not allowed.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "jobAgeLimit": {
-          "description": "The time limit for retrying a failed job, measured from when the\njob was first run. If specified with RetryConfig.retry_count,\nthe job will be retried until both limits are reached.\n\nThe default value for job_age_limit is zero, which means job age is\nunlimited.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "minBackoffSeconds": {
-          "description": "The minimum amount of time to wait before retrying a task after\nit fails.\n\nThe default value of this field is 0.1 seconds.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "maxBackoffSeconds": {
-          "description": "The maximum amount of time to wait before retrying a task after\nit fails.\n\nThe default value of this field is 1 hour.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "maxDoublings": {
-          "description": "The maximum number of times that the interval between failed job\nretries will be doubled before the increase becomes constant. The\nconstant is: 2**(max_doublings - 1) *\nRetryConfig.min_backoff_seconds.\n\nThe default value of this field is 16.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -407,6 +375,38 @@
               "description": "Properties of the object. Contains field @type with type URL."
             }
           }
+        }
+      }
+    },
+    "RetryConfig": {
+      "id": "RetryConfig",
+      "description": "Settings that determine the retry behavior.\n\nBy default, if a job does not complete successfully (meaning that\nan acknowledgement is not received from the handler before the\n[deadline](\/appengine\/docs\/python\/taskqueue\/push\/#the_task_deadline),\nthen it will be retried with exponential backoff according to the settings\nin RetryConfig.",
+      "type": "object",
+      "properties": {
+        "retryCount": {
+          "description": "It determines the total number  attempts that the system will make to\ndeliver a job using the exponential backoff procedure described above.\n\nThe default value of retry_count is zero.\n\nIf retry_count is zero, a job attempt will *not* be retried if\nit fails. Instead the Cloud Scheduler system will wait for the\nnext scheduled execution time.\n\nIf retry_count is set to a non-zero number then Cloud Scheduler\nwill retry failed attempts, using exponential backoff,\nretry_count times, or until the next scheduled execution time,\nwhichever comes first.\n\nValue greater than 5 and negative values are not allowed.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "jobAgeLimit": {
+          "description": "The time limit for retrying a failed job, measured from when the\njob was first run. If specified with RetryConfig.retry_count,\nthe job will be retried until both limits are reached.\n\nThe default value for job_age_limit is zero, which means job age is\nunlimited.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "minBackoffSeconds": {
+          "description": "The minimum amount of time to wait before retrying a task after\nit fails.\n\nThe default value of this field is 0.1 seconds.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "maxBackoffSeconds": {
+          "description": "The maximum amount of time to wait before retrying a task after\nit fails.\n\nThe default value of this field is 1 hour.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "maxDoublings": {
+          "description": "The maximum number of times that the interval between failed job\nretries will be doubled before the increase becomes constant. The\nconstant is: 2**(max_doublings - 1) *\nRetryConfig.min_backoff_seconds.\n\nThe default value of this field is 16.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

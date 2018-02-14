@@ -312,7 +312,7 @@
       "type": "object",
       "properties": {
         "ipSubnetworks": {
-          "description": "CIDR block IP subnetwork specification. May be IPv4 or IPv6.\nThe originating IP of a request must be in one of the listed subnets in\norder for this Condition to be true. If empty, all IP addresses are\nallowed. Examples: `\"192.168.100.14\/24\"`, `\"2001:db8::\/48\"`",
+          "description": "CIDR block IP subnetwork specification. May be IPv4 or IPv6. Note that for\na CIDR IP address block, the specified IP address portion must be properly\ntruncated (i.e. all the host bits must be zero) or the input is considered\nmalformed. For example, \"1.2.3.0\/24\" is accepted but \"1.2.3.4\/24\" is not.\nSimilarly, for IPv6, \"2001:db8::\/32\" is accepted whereas \"2001:db8::1\/32\"\nis not.\nThe originating IP of a request must be in one of the listed subnets in\norder for this Condition to be true. If empty, all IP addresses are\nallowed.",
           "type": "array",
           "items": {
             "type": "string"
@@ -440,7 +440,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^operations\/[^\/]+$",
+              "pattern": "^operations\/.+$",
               "type": "string"
             }
           },

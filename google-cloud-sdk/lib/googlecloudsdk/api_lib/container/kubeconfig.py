@@ -20,6 +20,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
 
@@ -126,18 +127,19 @@ class Kubeconfig(object):
   def DefaultPath():
     """Return default path for kubeconfig file."""
 
-    if os.environ.get('KUBECONFIG'):
-      return os.path.abspath(os.environ['KUBECONFIG'])
+    kubeconfig = encoding.GetEncodedValue(os.environ, 'KUBECONFIG')
+    if kubeconfig:
+      return os.path.abspath(kubeconfig)
 
     # This follows the same resolution process as kubectl for the config file.
-    home_dir = os.environ.get('HOME')
+    home_dir = encoding.GetEncodedValue(os.environ, 'HOME')
     if not home_dir and platforms.OperatingSystem.IsWindows():
-      home_drive = os.environ.get('HOMEDRIVE')
-      home_path = os.environ.get('HOMEPATH')
+      home_drive = encoding.GetEncodedValue(os.environ, 'HOMEDRIVE')
+      home_path = encoding.GetEncodedValue(os.environ, 'HOMEPATH')
       if home_drive and home_path:
         home_dir = os.path.join(home_drive, home_path)
       if not home_dir:
-        home_dir = os.environ.get('USERPROFILE')
+        home_dir = encoding.GetEncodedValue(os.environ, 'USERPROFILE')
 
     if not home_dir:
       raise MissingEnvVarError(

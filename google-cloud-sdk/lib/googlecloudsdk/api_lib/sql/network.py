@@ -14,7 +14,8 @@
 """Common utility functions for network operations."""
 
 from googlecloudsdk.core.util import times
-import ipaddr
+import ipaddress
+import six
 
 IP_VERSION_4 = 4
 IP_VERSION_6 = 6
@@ -32,7 +33,8 @@ def GetIpVersion(ip_address):
     otherwise.
   """
   try:
-    version = ipaddr.IPAddress(ip_address).version
+    # ipaddress only allows unicode input
+    version = ipaddress.ip_address(six.text_type(ip_address)).version
     if version not in (IP_VERSION_4, IP_VERSION_6):
       raise ValueError('Reported IP version not recognized.')
     return version

@@ -52,16 +52,17 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
     def Acknowledge(self, request, global_params=None):
       """Acknowledges a pull task.
 
-The worker, that is, the entity that received this task in
-a LeaseTasksResponse, must call this method to indicate that
-the work associated with the task has finished.
+The worker, that is, the entity that
+leased this task must call this method
+to indicate that the work associated with the task has finished.
 
 The worker must acknowledge a task within the
-LeaseTasksRequest.lease_duration or the lease will expire and
-the task will become ready to be returned in a different
-LeaseTasksResponse. After the task is acknowledged, it will
-not be returned by a later CloudTasks.LeaseTasks,
-CloudTasks.GetTask, or CloudTasks.ListTasks.
+lease_duration or the lease
+will expire and the task will become available to be leased
+again. After the task is acknowledged, it will not be returned
+by a later LeaseTasks,
+GetTask, or
+ListTasks.
 
 To acknowledge multiple tasks at the same time, use
 [HTTP batching](/storage/docs/json_api/v1/how-tos/batch)
@@ -95,9 +96,10 @@ https://developers.google.com/api-client-library/python/guide/batch.
     def CancelLease(self, request, global_params=None):
       """Cancel a pull task's lease.
 
-The worker can use this method to cancel a task's lease
-by setting Task.schedule_time to now. This will make the task
-available to be leased to the next caller of CloudTasks.LeaseTasks.
+The worker can use this method to cancel a task's lease by
+setting its schedule_time to now. This will
+make the task available to be leased to the next caller of
+LeaseTasks.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksCancelLeaseRequest) input message
@@ -221,22 +223,28 @@ failed.
     )
 
     def Lease(self, request, global_params=None):
-      """Leases tasks from a pull queue for LeaseTasksRequest.lease_duration.
+      """Leases tasks from a pull queue for.
+lease_duration.
 
-This method is invoked by the worker to obtain a
-lease. The worker must acknowledge the task via
-CloudTasks.AcknowledgeTask after they have performed the work
-associated with the task.
+This method is invoked by the worker to obtain a lease. The
+worker must acknowledge the task via
+AcknowledgeTask after they have
+performed the work associated with the task.
 
-The payload is intended to store data that the worker needs
-to perform the work associated with the task. To return the
-payloads in the LeaseTasksResponse, set
-LeaseTasksRequest.response_view to Task.View.FULL.
+The payload is intended to store data that
+the worker needs to perform the work associated with the task. To
+return the payloads in the response, set
+response_view to
+FULL.
 
-A maximum of 10 qps of CloudTasks.LeaseTasks requests are allowed per
-queue. google.rpc.Code.RESOURCE_EXHAUSTED is returned when this limit
-is exceeded. google.rpc.Code.RESOURCE_EXHAUSTED is also returned when
-RateLimits.max_tasks_dispatched_per_second is exceeded.
+A maximum of 10 qps of LeaseTasks
+requests are allowed per
+queue. RESOURCE_EXHAUSTED
+is returned when this limit is
+exceeded. RESOURCE_EXHAUSTED
+is also returned when
+max_tasks_dispatched_per_second
+is exceeded.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksLeaseRequest) input message
@@ -265,9 +273,9 @@ RateLimits.max_tasks_dispatched_per_second is exceeded.
     def List(self, request, global_params=None):
       """Lists the tasks in a queue.
 
-By default response_view is Task.View.BASIC; not all
-information is retrieved by default due to performance
-considerations; ListTasksRequest.response_view controls the
+By default, only the BASIC view is retrieved
+due to performance considerations;
+response_view controls the
 subset of information which is returned.
 
       Args:
@@ -299,7 +307,7 @@ subset of information which is returned.
 
 The worker can use this method to extend the lease by a new
 duration, starting from now. The new task lease will be
-returned in Task.schedule_time.
+returned in the task's schedule_time.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksRenewLeaseRequest) input message
@@ -329,30 +337,32 @@ returned in Task.schedule_time.
       """Forces a task to run now.
 
 This command is meant to be used for manual debugging. For
-example, CloudTasks.RunTask can be used to retry a failed
+example, RunTask can be used to retry a failed
 task after a fix has been made or to manually force a task to be
 dispatched now.
 
 When this method is called, Cloud Tasks will dispatch the task to its
-target, even if the queue is Queue.State.PAUSED.
+target, even if the queue is PAUSED.
 
 The dispatched task is returned. That is, the task that is returned
-contains the Task.status after the task is dispatched but
+contains the status after the task is dispatched but
 before the task is received by its target.
 
 If Cloud Tasks receives a successful response from the task's
 handler, then the task will be deleted; otherwise the task's
-Task.schedule_time will be reset to the time that
-CloudTasks.RunTask was called plus the retry delay specified
+schedule_time will be reset to the time that
+RunTask was called plus the retry delay specified
 in the queue and task's RetryConfig.
 
-CloudTasks.RunTask returns google.rpc.Code.NOT_FOUND when
-it is called on a task that has already succeeded or permanently
-failed. google.rpc.Code.FAILED_PRECONDITION is returned when
-CloudTasks.RunTask is called on task that is dispatched or
-already running.
+RunTask returns
+NOT_FOUND when it is called on a
+task that has already succeeded or permanently
+failed. FAILED_PRECONDITION
+is returned when RunTask is called on task
+that is dispatched or already running.
 
-CloudTasks.RunTask cannot be called on pull tasks.
+RunTask cannot be called on
+pull tasks.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksRunRequest) input message
@@ -399,7 +409,7 @@ WARNING: Using this method may have unintended side effects if you are
 using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
 Read
 [Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
-carefully before using this method.
+before using this method.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesCreateRequest) input message
@@ -437,7 +447,7 @@ WARNING: Using this method may have unintended side effects if you are
 using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
 Read
 [Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
-carefully before using this method.
+before using this method.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesDeleteRequest) input message
@@ -567,7 +577,7 @@ WARNING: Using this method may have unintended side effects if you are
 using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
 Read
 [Overview of Queue Management and queue.yaml](/cloud-tasks/docs/queue-yaml)
-carefully before using this method.
+before using this method.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesPatchRequest) input message
@@ -596,12 +606,11 @@ carefully before using this method.
     def Pause(self, request, global_params=None):
       """Pauses the queue.
 
-If a queue is paused then the system will stop executing the
-tasks in the queue until it is resumed via
-CloudTasks.ResumeQueue. Tasks can still be added when the
-queue is paused. The state of the queue is stored in
-Queue.state; if paused it will be set to
-Queue.State.PAUSED.
+If a queue is paused then the system will stop dispatching tasks
+until the queue is resumed via
+ResumeQueue. Tasks can still be added
+when the queue is paused. A queue is paused if its
+state is PAUSED.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesPauseRequest) input message
@@ -663,9 +672,10 @@ might be dispatched before the purge takes effect. A purge is irreversible.
       """Resume a queue.
 
 This method resumes a queue after it has been
-Queue.State.PAUSED or Queue.State.DISABLED. The state of
-a queue is stored in Queue.state; after calling this method it
-will be set to Queue.State.RUNNING.
+PAUSED or
+DISABLED. The state of a queue is stored
+in the queue's state; after calling this method it
+will be set to RUNNING.
 
 WARNING: Resuming many high-QPS queues at the same time can
 lead to target overloading. If you are resuming high-QPS
@@ -735,7 +745,7 @@ specified resource parent:
     def TestIamPermissions(self, request, global_params=None):
       """Returns permissions that a caller has on a Queue.
 If the resource does not exist, this will return an empty set of
-permissions, not a google.rpc.Code.NOT_FOUND error.
+permissions, not a NOT_FOUND error.
 
 Note: This operation is designed to be used for building permission-aware
 UIs and command-line tools, not for authorization checking. This operation

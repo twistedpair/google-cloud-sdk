@@ -466,10 +466,13 @@ class Condition(_messages.Message):
 
   Fields:
     ipSubnetworks: CIDR block IP subnetwork specification. May be IPv4 or
-      IPv6. The originating IP of a request must be in one of the listed
-      subnets in order for this Condition to be true. If empty, all IP
-      addresses are allowed. Examples: `"192.168.100.14/24"`,
-      `"2001:db8::/48"`
+      IPv6. Note that for a CIDR IP address block, the specified IP address
+      portion must be properly truncated (i.e. all the host bits must be zero)
+      or the input is considered malformed. For example, "1.2.3.0/24" is
+      accepted but "1.2.3.4/24" is not. Similarly, for IPv6, "2001:db8::/32"
+      is accepted whereas "2001:db8::1/32" is not. The originating IP of a
+      request must be in one of the listed subnets in order for this Condition
+      to be true. If empty, all IP addresses are allowed.
     members: The signed-in user originating the request must be a part of one
       of the provided members. Syntax: `user:{emailid}` `group:{emailid}`
       `serviceAccount:{emailid}` If not specified, a request may come from any

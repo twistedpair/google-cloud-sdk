@@ -76,6 +76,7 @@ from googlecloudsdk.core import module_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import file_cache
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
 import six
@@ -86,7 +87,8 @@ try:
 except ImportError:
   sqlite_cache = None
 if (sqlite_cache and
-    'sql' in os.environ.get('CLOUDSDK_CACHE_IMPLEMENTATION', 'sqlite')):
+    'sql' in encoding.GetEncodedValue(
+        os.environ, 'CLOUDSDK_CACHE_IMPLEMENTATION', 'sqlite')):
   PERSISTENT_CACHE_IMPLEMENTATION = sqlite_cache
 else:
   PERSISTENT_CACHE_IMPLEMENTATION = file_cache

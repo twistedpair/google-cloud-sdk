@@ -19,6 +19,7 @@ import os
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import store as c_store
+from googlecloudsdk.core.util import encoding
 from oauth2client import client
 from oauth2client import clientsecrets
 
@@ -133,7 +134,8 @@ def AdcEnvVariable():
   Returns:
     str, The value of the env var or None if unset.
   """
-  return os.environ.get(client.GOOGLE_APPLICATION_CREDENTIALS, None)
+  return encoding.GetEncodedValue(
+      os.environ, client.GOOGLE_APPLICATION_CREDENTIALS, None)
 
 
 def SaveCredentialsAsADC(creds):

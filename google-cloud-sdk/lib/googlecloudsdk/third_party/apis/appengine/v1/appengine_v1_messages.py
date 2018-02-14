@@ -2561,6 +2561,8 @@ class Version(_messages.Message):
     runtimeApiVersion: The version of the API in the given runtime
       environment. Please see the app.yaml reference for valid values at https
       ://cloud.google.com/appengine/docs/standard/<language>/config/appref
+    runtimeChannel: The channel of the runtime to use. Only available for some
+      runtimes. Defaults to the default channel.
     servingStatus: Current serving status of this version. Only the versions
       with a SERVING status create instances and can be
       billed.SERVING_STATUS_UNSPECIFIED is an invalid value. Defaults to
@@ -2695,11 +2697,12 @@ class Version(_messages.Message):
   resources = _messages.MessageField('Resources', 26)
   runtime = _messages.StringField(27)
   runtimeApiVersion = _messages.StringField(28)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 29)
-  threadsafe = _messages.BooleanField(30)
-  versionUrl = _messages.StringField(31)
-  vm = _messages.BooleanField(32)
-  zones = _messages.StringField(33, repeated=True)
+  runtimeChannel = _messages.StringField(29)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 30)
+  threadsafe = _messages.BooleanField(31)
+  versionUrl = _messages.StringField(32)
+  vm = _messages.BooleanField(33)
+  zones = _messages.StringField(34, repeated=True)
 
 
 class Volume(_messages.Message):

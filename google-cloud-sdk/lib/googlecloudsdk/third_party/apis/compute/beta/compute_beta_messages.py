@@ -583,7 +583,7 @@ class Address(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -1466,7 +1466,7 @@ class Autoscaler(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -2201,7 +2201,7 @@ class BackendBucket(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -2419,7 +2419,7 @@ class BackendService(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -3074,7 +3074,7 @@ class Commitment(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -11964,6 +11964,55 @@ class ComputeSubnetworksListRequest(_messages.Message):
   region = _messages.StringField(6, required=True)
 
 
+class ComputeSubnetworksListUsableRequest(_messages.Message):
+  """A ComputeSubnetworksListUsableRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
 class ComputeSubnetworksPatchRequest(_messages.Message):
   """A ComputeSubnetworksPatchRequest object.
 
@@ -14374,7 +14423,7 @@ class Disk(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -15489,7 +15538,7 @@ class Firewall(_messages.Message):
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -15858,7 +15907,7 @@ class ForwardingRule(_messages.Message):
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -15898,10 +15947,11 @@ class ForwardingRule(_messages.Message):
       Rule. If specified, will be the first label of the fully qualified
       service name.  The label must be 1-63 characters long, and comply with
       RFC1035. Specifically, the label must be 1-63 characters long and match
-      the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
-      character must be a lowercase letter, and all following characters must
-      be a dash, lowercase letter, or digit, except the last character, which
-      cannot be a dash.  This field is only used for internal load balancing.
+      the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the
+      first character must be a lowercase letter, and all following characters
+      must be a dash, lowercase letter, or digit, except the last character,
+      which cannot be a dash.  This field is only used for internal load
+      balancing.
     serviceName: [Output Only] The internal fully qualified service name for
       this Forwarding Rule.  This field is only used for internal load
       balancing.
@@ -16428,7 +16478,7 @@ class GlobalSetLabelsRequest(_messages.Message):
     LabelsValue: A list of labels to apply for this resource. Each label key &
       value must comply with RFC1035. Specifically, the name must be 1-63
       characters long and match the regular expression
-      [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
       lowercase letter, and all following characters must be a dash, lowercase
       letter, or digit, except the last character, which cannot be a dash. For
       example, "webserver-frontend": "images". A label value can also be empty
@@ -16444,7 +16494,7 @@ class GlobalSetLabelsRequest(_messages.Message):
     labels: A list of labels to apply for this resource. Each label key &
       value must comply with RFC1035. Specifically, the name must be 1-63
       characters long and match the regular expression
-      [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
       lowercase letter, and all following characters must be a dash, lowercase
       letter, or digit, except the last character, which cannot be a dash. For
       example, "webserver-frontend": "images". A label value can also be empty
@@ -16455,7 +16505,7 @@ class GlobalSetLabelsRequest(_messages.Message):
   class LabelsValue(_messages.Message):
     """A list of labels to apply for this resource. Each label key & value
     must comply with RFC1035. Specifically, the name must be 1-63 characters
-    long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which
+    long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
     means the first character must be a lowercase letter, and all following
     characters must be a dash, lowercase letter, or digit, except the last
     character, which cannot be a dash. For example, "webserver-frontend":
@@ -16634,7 +16684,7 @@ class HealthCheck(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -16901,7 +16951,7 @@ class HttpHealthCheck(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -17078,7 +17128,7 @@ class HttpsHealthCheck(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -17293,7 +17343,7 @@ class Image(_messages.Message):
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -17640,7 +17690,7 @@ class Instance(_messages.Message):
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
-      long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which
+      long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
@@ -19729,7 +19779,7 @@ class InstanceTemplate(_messages.Message):
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -20202,7 +20252,7 @@ class Interconnect(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -20352,7 +20402,7 @@ class InterconnectAttachment(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -22337,7 +22387,7 @@ class Network(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -22558,7 +22608,7 @@ class NetworkPeering(_messages.Message):
     name: Name of this peering. Provided by the client when the peering is
       created. The name must comply with RFC1035. Specifically, the name must
       be 1-63 characters long and match regular expression
-      [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
       lowercase letter, and all the following characters must be a dash,
       lowercase letter, or digit, except the last character, which cannot be a
       dash.
@@ -24579,7 +24629,7 @@ class Route(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -24871,7 +24921,7 @@ class Router(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -25677,7 +25727,7 @@ class SecurityPolicy(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -25873,7 +25923,7 @@ class SecurityPolicyRuleMatcher(_messages.Message):
     config: The configuration options available when specifying
       versioned_expr. This field must be specified if versioned_expr is
       specified and cannot be specified if versioned_expr is not specified.
-    srcIpRanges: CIDR IP address range. Only IPv4 is supported.
+    srcIpRanges: CIDR IP address range.
     versionedExpr: Preconfigured versioned expression. If this field is
       specified, config must also be specified. Available preconfigured
       expressions along with their requirements are: SRC_IPS_V1 - must specify
@@ -25902,7 +25952,7 @@ class SecurityPolicyRuleMatcherConfig(_messages.Message):
   """A SecurityPolicyRuleMatcherConfig object.
 
   Fields:
-    srcIpRanges: CIDR IP address range. Only IPv4 is supported.
+    srcIpRanges: CIDR IP address range.
   """
 
   srcIpRanges = _messages.StringField(1, repeated=True)
@@ -25950,8 +26000,8 @@ class SignedUrlKey(_messages.Message):
   Fields:
     keyName: Name of the key. The name must be 1-63 characters long, and
       comply with RFC1035. Specifically, the name must be 1-63 characters long
-      and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means
-      the first character must be a lowercase letter, and all following
+      and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
+      means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
     keyValue: 128-bit key value used for signing the URL. The key value must
@@ -26006,7 +26056,7 @@ class Snapshot(_messages.Message):
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -26273,7 +26323,7 @@ class SslCertificate(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -26593,8 +26643,8 @@ class SslPolicy(_messages.Message):
       one of TLS_1_0, TLS_1_1, TLS_1_2, TLS_1_3.
     name: Name of the resource. The name must be 1-63 characters long, and
       comply with RFC1035. Specifically, the name must be 1-63 characters long
-      and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means
-      the first character must be a lowercase letter, and all following
+      and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
+      means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
     profile: Profile specifies the set of SSL features that can be used by the
@@ -26840,10 +26890,10 @@ class Subnetwork(_messages.Message):
     name: The name of the resource, provided by the client when initially
       creating the resource. The name must be 1-63 characters long, and comply
       with RFC1035. Specifically, the name must be 1-63 characters long and
-      match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the
-      first character must be a lowercase letter, and all following characters
-      must be a dash, lowercase letter, or digit, except the last character,
-      which cannot be a dash.
+      match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means
+      the first character must be a lowercase letter, and all following
+      characters must be a dash, lowercase letter, or digit, except the last
+      character, which cannot be a dash.
     network: The URL of the network to which this subnetwork belongs, provided
       by the client when initially creating the subnetwork. Only networks that
       are in the distributed mode can have subnetworks. This field can be set
@@ -27386,7 +27436,7 @@ class TargetHttpProxy(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -27594,7 +27644,7 @@ class TargetHttpsProxy(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -27802,7 +27852,7 @@ class TargetInstance(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -28279,7 +28329,7 @@ class TargetPool(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -28863,7 +28913,7 @@ class TargetSslProxy(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -29085,7 +29135,7 @@ class TargetTcpProxy(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -29277,7 +29327,7 @@ class TargetVpnGateway(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -29821,7 +29871,7 @@ class UrlMap(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
@@ -30034,6 +30084,148 @@ class UrlMapsValidateResponse(_messages.Message):
   result = _messages.MessageField('UrlMapValidationResult', 1)
 
 
+class UsableSubnetwork(_messages.Message):
+  """Subnetwork which the current user has compute.subnetworks.use permission
+  on.
+
+  Fields:
+    ipCidrRange: The range of internal addresses that are owned by this
+      subnetwork.
+    network: Network URL.
+    subnetwork: Subnetwork URL.
+  """
+
+  ipCidrRange = _messages.StringField(1)
+  network = _messages.StringField(2)
+  subnetwork = _messages.StringField(3)
+
+
+class UsableSubnetworksAggregatedList(_messages.Message):
+  """A UsableSubnetworksAggregatedList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output] A list of usable subnetwork URLs.
+    kind: [Output Only] Type of resource. Always
+      compute#usableSubnetworksAggregatedList for aggregated lists of usable
+      subnetworks.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('UsableSubnetwork', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#usableSubnetworksAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
 class UsageExportLocation(_messages.Message):
   """The location in Cloud Storage and naming method of the daily usage
   report. Contains bucket_name and report_name prefix.
@@ -30099,7 +30291,7 @@ class VpnTunnel(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.

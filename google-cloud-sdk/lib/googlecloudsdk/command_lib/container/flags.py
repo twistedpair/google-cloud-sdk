@@ -388,7 +388,7 @@ def AddAsyncFlag(parser):
       help='Don\'t wait for the operation to complete.')
 
 
-def AddEnableKubernetesAlphaFlag(parser, suppressed=False):
+def AddEnableKubernetesAlphaFlag(parser):
   """Adds a --enable-kubernetes-alpha flag to parser."""
   help_text = """\
 Enable Kubernetes alpha features on this cluster. Selecting this
@@ -401,8 +401,7 @@ used for production workloads."""
   parser.add_argument(
       '--enable-kubernetes-alpha',
       action='store_true',
-      help=help_text,
-      hidden=suppressed)
+      help=help_text)
 
 
 def AddNodeLabelsFlag(parser, for_node_pool=False):
@@ -500,7 +499,9 @@ Applies the given kubernetes taints on all nodes in default node-pool(s) in new 
   $ {command} example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
 """
   help_text += """
-Please see https://cloud.google.com/kubernetes-engine/docs/node-taints for more details.
+Note, this feature uses `gcloud beta` commands. To use gcloud beta commands,
+you must configure `gcloud` to use the v1beta1 API as described here: https://cloud.google.com/kubernetes-engine/docs/reference/api-organization#beta.
+To read more about node-taints, see https://cloud.google.com/kubernetes-engine/docs/node-taints.
 """
 
   parser.add_argument(
@@ -819,12 +820,11 @@ Example:
       hidden=suppressed)
 
 
-def AddUpdateLabelsFlag(parser, suppressed=False):
+def AddUpdateLabelsFlag(parser):
   """Adds Update Labels related flags to parser.
 
   Args:
     parser: A given parser.
-    suppressed: Whether or not to suppress help text.
   """
 
   help_text = """\
@@ -838,15 +838,14 @@ Example:
       '--update-labels',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
-      help=help_text, hidden=suppressed)
+      help=help_text)
 
 
-def AddRemoveLabelsFlag(parser, suppressed=False):
+def AddRemoveLabelsFlag(parser):
   """Adds Remove Labels related flags to parser.
 
   Args:
     parser: A given parser.
-    suppressed: Whether or not to suppress help text.
   """
 
   help_text = """\
@@ -860,8 +859,7 @@ Example:
       '--remove-labels',
       metavar='KEY',
       type=arg_parsers.ArgList(),
-      help=help_text,
-      hidden=suppressed)
+      help=help_text)
 
 
 def AddDiskTypeFlag(parser, suppressed=False):
@@ -881,19 +879,17 @@ Type of the node VM boot disk.
       choices=['pd-standard', 'pd-ssd'])
 
 
-def AddIPAliasFlags(parser, hidden=False):
+def AddIPAliasFlags(parser):
   """Adds flags related to IP aliases to the parser.
 
   Args:
     parser: A given parser.
-    hidden: Whether or not to hide the help text.
   """
 
   parser.add_argument(
       '--enable-ip-alias',
       action='store_true',
       default=None,
-      hidden=hidden,
       help="""\
 Enable use of alias IPs (https://cloud.google.com/compute/docs/alias-ip/)
 for pod IPs. This will create two new subnetworks, one for the
@@ -903,7 +899,6 @@ range.
   parser.add_argument(
       '--services-ipv4-cidr',
       metavar='CIDR',
-      hidden=hidden,
       help="""\
 Set the IP range for the services IPs.
 
@@ -918,7 +913,6 @@ Can not be specified unless '--enable-ip-alias' is also specified.
   parser.add_argument(
       '--create-subnetwork',
       metavar='KEY=VALUE',
-      hidden=hidden,
       type=arg_parsers.ArgDict(),
       help="""\
 Create a new subnetwork for the cluster. The name and range of the
@@ -957,7 +951,6 @@ not be used in conjunction with the '--subnetwork' option.
   parser.add_argument(
       '--cluster-secondary-range-name',
       metavar='NAME',
-      hidden=hidden,
       help="""\
 Set the secondary range to be used as the source for pod IPs. Alias
 ranges will be allocated from this secondary range.  NAME must be the
@@ -969,7 +962,6 @@ with --create-subnetwork.
   parser.add_argument(
       '--services-secondary-range-name',
       metavar='NAME',
-      hidden=hidden,
       help="""\
 Set the secondary range to be used for services
 (e.g. ClusterIPs). NAME must be the name of an existing secondary
@@ -1034,11 +1026,15 @@ Sets the node metadata option for workload metadata configuration.
       '--workload-metadata-from-node',
       default=None,
       choices={
-          'SECURE': 'Exposes only a secure subset of metadata to workloads. '
-                    'Currently, this blocks kube-env and instance identity, '
-                    'but exposes all other metadata. Calls to the metadata '
-                    'server with recursive=true param are not allowed.',
-          'EXPOSED': 'Exposes all metadata to workloads.',
+          'SECURE': 'Prevents workloads not in hostNetwork from accessing '
+                    'certain VM metadata, specifically kube-env, which '
+                    'contains Kubelet credentials, and the instance identity '
+                    'token. This is a temporary security solution available '
+                    'while the bootstrapping process for cluster nodes is '
+                    'being redesigned with significant security improvements. '
+                    'This feature is scheduled to be deprecated in the future '
+                    'and later removed.',
+          'EXPOSED': 'Exposes all VM metadata to workloads.',
           'UNSPECIFIED': 'Chooses the default.',
       },
       type=lambda x: x.upper(),
@@ -1098,17 +1094,15 @@ Multiple locations can be specified, separated by commas. For example:
 """)
 
 
-def AddLoggingServiceFlag(parser, hidden=False):
+def AddLoggingServiceFlag(parser):
   """Adds a --logging-service flag to the parser.
 
   Args:
     parser: A given parser.
-    hidden: Whether or not to hide the help text.
   """
 
   parser.add_argument(
       '--logging-service',
-      hidden=hidden,
       help='The logging service to use for the cluster. Options are: '
       '"logging.googleapis.com" (the Google Cloud Logging service), '
       '"none" (logs will not be exported from the cluster)')

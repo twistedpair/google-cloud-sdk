@@ -3072,6 +3072,7 @@ class RuntimeEnvironment(_messages.Message):
   """The environment values to set at runtime.
 
   Fields:
+    additionalExperiments: Additional experiment flags for the job.
     bypassTempDirValidation: Whether to bypass the safety checks for the job's
       temporary directory. Use with caution.
     machineType: The machine type to use for the job. Defaults to the value
@@ -3087,12 +3088,13 @@ class RuntimeEnvironment(_messages.Message):
       for launching worker instances to run your pipeline.
   """
 
-  bypassTempDirValidation = _messages.BooleanField(1)
-  machineType = _messages.StringField(2)
-  maxWorkers = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  serviceAccountEmail = _messages.StringField(4)
-  tempLocation = _messages.StringField(5)
-  zone = _messages.StringField(6)
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  bypassTempDirValidation = _messages.BooleanField(2)
+  machineType = _messages.StringField(3)
+  maxWorkers = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  serviceAccountEmail = _messages.StringField(5)
+  tempLocation = _messages.StringField(6)
+  zone = _messages.StringField(7)
 
 
 class SendDebugCaptureRequest(_messages.Message):
@@ -4522,6 +4524,77 @@ class WorkerHealthReportResponse(_messages.Message):
   reportInterval = _messages.StringField(1)
 
 
+class WorkerLifecycleEvent(_messages.Message):
+  """A report of an event in a worker's lifecycle. The proto contains one
+  event, because the worker is expected to asynchronously send each message
+  immediately after the event. Due to this asynchrony, messages may arrive out
+  of order (or missing), and it is up to the consumer to interpret. The
+  timestamp of the event is in the enclosing WorkerMessage proto.
+
+  Enums:
+    EventValueValuesEnum: The event being reported.
+
+  Messages:
+    MetadataValue: Other stats that can accompany an event. E.g. {
+      "downloaded_bytes" : "123456" }
+
+  Fields:
+    event: The event being reported.
+    metadata: Other stats that can accompany an event. E.g. {
+      "downloaded_bytes" : "123456" }
+  """
+
+  class EventValueValuesEnum(_messages.Enum):
+    """The event being reported.
+
+    Values:
+      UNKNOWN_EVENT: Invalid event.
+      CONTAINER_START: Our container code starts running. Multiple containers
+        could be distinguished with WorkerMessage.labels if desired.
+      NETWORK_UP: The worker has a functional external network connection.
+      STAGING_FILES_DOWNLOAD_START: Started downloading staging files.
+      STAGING_FILES_DOWNLOAD_FINISH: Finished downloading all staging files.
+      SDK_INSTALL_START: For applicable SDKs, started installation of SDK and
+        worker packages.
+      SDK_INSTALL_FINISH: Finished installing SDK.
+    """
+    UNKNOWN_EVENT = 0
+    CONTAINER_START = 1
+    NETWORK_UP = 2
+    STAGING_FILES_DOWNLOAD_START = 3
+    STAGING_FILES_DOWNLOAD_FINISH = 4
+    SDK_INSTALL_START = 5
+    SDK_INSTALL_FINISH = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    """Other stats that can accompany an event. E.g. { "downloaded_bytes" :
+    "123456" }
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  event = _messages.EnumField('EventValueValuesEnum', 1)
+  metadata = _messages.MessageField('MetadataValue', 2)
+
+
 class WorkerMessage(_messages.Message):
   """WorkerMessage provides information to the backend about a worker.
 
@@ -4544,6 +4617,7 @@ class WorkerMessage(_messages.Message):
       not be used here.
     time: The timestamp of the worker_message.
     workerHealthReport: The health of a worker.
+    workerLifecycleEvent: Record of worker lifecycle events.
     workerMessageCode: A worker message code.
     workerMetrics: Resource metrics reported by workers.
     workerShutdownNotice: Shutdown notice by workers.
@@ -4581,9 +4655,10 @@ class WorkerMessage(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 1)
   time = _messages.StringField(2)
   workerHealthReport = _messages.MessageField('WorkerHealthReport', 3)
-  workerMessageCode = _messages.MessageField('WorkerMessageCode', 4)
-  workerMetrics = _messages.MessageField('ResourceUtilizationReport', 5)
-  workerShutdownNotice = _messages.MessageField('WorkerShutdownNotice', 6)
+  workerLifecycleEvent = _messages.MessageField('WorkerLifecycleEvent', 4)
+  workerMessageCode = _messages.MessageField('WorkerMessageCode', 5)
+  workerMetrics = _messages.MessageField('ResourceUtilizationReport', 6)
+  workerShutdownNotice = _messages.MessageField('WorkerShutdownNotice', 7)
 
 
 class WorkerMessageCode(_messages.Message):

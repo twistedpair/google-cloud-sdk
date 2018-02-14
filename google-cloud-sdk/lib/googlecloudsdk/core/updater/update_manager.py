@@ -1004,7 +1004,8 @@ To revert your SDK to the previously installed version, you may run:
   $ gcloud components update --version {current}
 """.format(current=current_version), word_wrap=False)
 
-    if self.__warn and not os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS'):
+    if (self.__warn and not
+        encoding.GetEncodedValue(os.environ, 'CLOUDSDK_REINSTALL_COMPONENTS')):
       bad_commands = self.FindAllOldToolsOnPath()
       if bad_commands:
         log.warning(u"""\
@@ -1045,7 +1046,7 @@ To revert your SDK to the previously installed version, you may run:
     if not invalid_seeds:
       return update_seed
 
-    if os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS'):
+    if encoding.GetEncodedValue(os.environ, 'CLOUDSDK_REINSTALL_COMPONENTS'):
       # We are doing a reinstall.  Ignore any components that no longer
       # exist.
       return set(update_seed) - invalid_seeds
@@ -1299,7 +1300,7 @@ To revert your SDK to the previously installed version, you may run:
     """
     self._CheckIfDisabledAndThrowError()
 
-    if os.environ.get('CLOUDSDK_REINSTALL_COMPONENTS'):
+    if encoding.GetEncodedValue(os.environ, 'CLOUDSDK_REINSTALL_COMPONENTS'):
       # We are already reinstalling but got here somehow.  Something is very
       # wrong and we want to avoid the infinite loop.
       self._RaiseReinstallationFailedError()
@@ -1343,8 +1344,8 @@ To revert your SDK to the previously installed version, you may run:
     # shell out to install script
     installed_component_ids = sorted(install_state.InstalledComponents().keys())
     env = dict(os.environ)
-    env['CLOUDSDK_REINSTALL_COMPONENTS'] = ','.join(
-        installed_component_ids)
+    encoding.SetEncodedValue(env, 'CLOUDSDK_REINSTALL_COMPONENTS',
+                             ','.join(installed_component_ids))
     installer_path = os.path.join(staging_state.sdk_root,
                                   'bin', 'bootstrapping', 'install.py')
     p = subprocess.Popen([sys.executable, '-S', installer_path], env=env)
@@ -1551,7 +1552,7 @@ def RestartCommand(command=None, args=None, python=None, block=True):
   command_args = args or sys.argv[1:]
   args = execution_utils.ArgsForPythonTool(command, *command_args,
                                            python=python)
-  args = [console_attr.EncodeForConsole(a) for a in args]
+  args = [encoding.Encode(a) for a in args]
 
   short_command = os.path.basename(command)
   if short_command == 'gcloud.py':

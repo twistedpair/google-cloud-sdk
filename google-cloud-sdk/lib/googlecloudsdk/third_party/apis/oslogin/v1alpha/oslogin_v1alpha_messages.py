@@ -40,12 +40,10 @@ class LoginProfile(_messages.Message):
       associated key object.
 
   Fields:
-    name: A unique user ID for identifying the user.
-    posixAccounts: The list of POSIX accounts associated with the Directory
-      API user.
+    name: A unique user ID.
+    posixAccounts: The list of POSIX accounts associated with the user.
     sshPublicKeys: A map from SSH public key fingerprint to the associated key
       object.
-    suspended: Indicates if the user is suspended.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -76,7 +74,6 @@ class LoginProfile(_messages.Message):
   name = _messages.StringField(1)
   posixAccounts = _messages.MessageField('PosixAccount', 2, repeated=True)
   sshPublicKeys = _messages.MessageField('SshPublicKeysValue', 3)
-  suspended = _messages.BooleanField(4)
 
 
 class OsloginUsersGetLoginProfileRequest(_messages.Message):

@@ -83,7 +83,6 @@ class AppEngineHttpTarget(_messages.Message):
       arguments, and `#` fragments. If the relative URL is empty, then the
       root path "/" will be used. No spaces are allowed, and the maximum
       length allowed is 2083 characters.
-    retryConfig: Settings that determine the retry behavior.
   """
 
   class HttpMethodValueValuesEnum(_messages.Enum):
@@ -153,7 +152,6 @@ class AppEngineHttpTarget(_messages.Message):
   httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 3)
   payload = _messages.BytesField(4)
   relativeUrl = _messages.StringField(5)
-  retryConfig = _messages.MessageField('RetryConfig', 6)
 
 
 class AppEngineRouting(_messages.Message):
@@ -421,13 +419,13 @@ class Job(_messages.Message):
       that this may be a retry of a previously failed execution or the next
       execution time according to the schedule.
     pubsubTarget: Pub/Sub target.
+    retryConfig: Settings that determine the retry behavior.
     schedule: Specifies a schedule of start times. This can be used to specify
-      more complicated, and time-zone-aware schedules than is possible using
-      only Job.period.  A scheduled start time will be skipped if the previous
-      execution has not ended when its scheduled time occurs.  If
-      RetryConfig.retry_count > 0 and a job attempt fails, the job will be a
-      total of tried RetryConfig.retry_count times, with exponential backoff,
-      until the next scheduled start time.
+      complicated and time-zone-aware schedules.  A scheduled start time will
+      be skipped if the previous execution has not ended when its scheduled
+      time occurs.  If RetryConfig.retry_count > 0 and a job attempt fails,
+      the job will be a total of tried RetryConfig.retry_count times, with
+      exponential backoff, until the next scheduled start time.
     status: Output only. The response from the target of the last attempted
       execution.
     userUpdateTime: Output only. The time of the last user update to the job,
@@ -458,9 +456,10 @@ class Job(_messages.Message):
   name = _messages.StringField(4)
   nextScheduleTime = _messages.StringField(5)
   pubsubTarget = _messages.MessageField('PubsubTarget', 6)
-  schedule = _messages.MessageField('Schedule', 7)
-  status = _messages.MessageField('Status', 8)
-  userUpdateTime = _messages.StringField(9)
+  retryConfig = _messages.MessageField('RetryConfig', 7)
+  schedule = _messages.MessageField('Schedule', 8)
+  status = _messages.MessageField('Status', 9)
+  userUpdateTime = _messages.StringField(10)
 
 
 class ListJobsResponse(_messages.Message):

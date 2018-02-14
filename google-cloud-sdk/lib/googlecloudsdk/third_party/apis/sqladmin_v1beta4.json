@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20171201",
+ "revision": "20180202",
  "title": "Cloud SQL Administration API",
  "description": "Creates and configures Cloud SQL instances, which provide fully-managed MySQL databases.",
  "ownerDomain": "google.com",
@@ -121,6 +121,10 @@
      "type": "string",
      "description": "This is always sql#backupConfiguration.",
      "default": "sql#backupConfiguration"
+    },
+    "replicationLogArchivingEnabled": {
+     "type": "boolean",
+     "description": "Whether replication log archiving is enabled. Replication log archiving is required for the point-in-time recovery (PITR) feature. PostgreSQL instances only."
     },
     "startTime": {
      "type": "string",
@@ -250,6 +254,11 @@
      "type": "string",
      "description": "This is always sql#cloneContext.",
      "default": "sql#cloneContext"
+    },
+    "pitrTimestampMs": {
+     "type": "string",
+     "description": "The epoch timestamp, in milliseconds, of the time to which a point-in-time recovery (PITR) is performed. PostgreSQL instances only. For MySQL instances, use the binLogCoordinates property.",
+     "format": "int64"
     }
    }
   },
@@ -600,7 +609,7 @@
     },
     "uri": {
      "type": "string",
-     "description": "The path to the file in Google Cloud Storage where the export will be stored. The URI is in the form gs://bucketName/fileName. If the file already exists, the operation fails. If fileType is SQL and the filename ends with .gz, the contents are compressed."
+     "description": "The path to the file in Google Cloud Storage where the export will be stored. The URI is in the form gs://bucketName/fileName. If the file already exists, the requests succeeds, but the operation fails. If fileType is SQL and the filename ends with .gz, the contents are compressed."
     }
    }
   },
@@ -916,7 +925,8 @@
      "default": "sql#maintenanceWindow"
     },
     "updateTrack": {
-     "type": "string"
+     "type": "string",
+     "description": "Maintenance timing setting: canary (Earlier) or stable (Later).\n Learn more."
     }
    }
   },
@@ -1175,7 +1185,7 @@
    "properties": {
     "activationPolicy": {
      "type": "string",
-     "description": "The activation policy specifies when the instance is activated; it is applicable only when the instance state is RUNNABLE. The activation policy cannot be updated together with other settings for Second Generation instances. Valid values:\nALWAYS: The instance is on; it is not deactivated by inactivity.\nNEVER: The instance is off; it is not activated, even if a connection request arrives.\nON_DEMAND: The instance responds to incoming requests, and turns itself off when not in use. Instances with PER_USE pricing turn off after 15 minutes of inactivity. Instances with PER_PACKAGE pricing turn off after 12 hours of inactivity."
+     "description": "The activation policy specifies when the instance is activated; it is applicable only when the instance state is RUNNABLE. Valid values:\nALWAYS: The instance is on, and remains so even in the absence of connection requests.\nNEVER: The instance is off; it is not activated, even if a connection request arrives.\nON_DEMAND: First Generation instances only. The instance responds to incoming requests, and turns itself off when not in use. Instances with PER_USE pricing turn off after 15 minutes of inactivity. Instances with PER_PACKAGE pricing turn off after 12 hours of inactivity."
     },
     "authorizedGaeApplications": {
      "type": "array",
@@ -1370,7 +1380,7 @@
    "properties": {
     "clientCert": {
      "$ref": "SslCertDetail",
-     "description": "The new client certificate and private key. The new certificate will not work until the instance is restarted for First Generation instances."
+     "description": "The new client certificate and private key. For First Generation instances, the new certificate does not take effect until the instance is restarted."
     },
     "kind": {
      "type": "string",

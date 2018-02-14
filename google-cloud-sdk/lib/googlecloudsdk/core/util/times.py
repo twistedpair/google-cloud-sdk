@@ -44,6 +44,7 @@ The datetime and/or dateutil modules should have covered all of this.
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import datetime
 import re
 

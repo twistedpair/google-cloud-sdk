@@ -190,8 +190,8 @@ class Deps(object):
     """Gets the value of an attribute based on fallthrough information.
 
     If the attribute value is not provided by any of the fallthroughs, an
-    InitializeError is raised with a list of ways to provide information about
-    the attribute.
+    error is raised with a list of ways to provide information about the
+    attribute.
 
     Args:
       attribute: (str), the name of the desired attribute.

@@ -22,7 +22,7 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted.  Example Policy with
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
@@ -123,7 +123,8 @@ class Binding(_messages.Message):
     condition: The condition that is associated with this binding. NOTE: an
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
-      independently. This field is GOOGLE_INTERNAL.
+      independently. This field is only visible as GOOGLE_INTERNAL or
+      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -245,6 +246,12 @@ class Condition(_messages.Message):
         justification conditions can only be used in a "positive" context
         (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple justifications, e.g., a
         Buganizer ID and a manually-entered reason, are normal and supported.
+      CREDENTIALS_TYPE: What type of credentials have been supplied with this
+        request. String values should match enum names from
+        security_loas_l2.CredentialsType - currently, only
+        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
+        based on the *absence* of a credentials type, so the conditions can
+        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
     """
     NO_ATTR = 0
     AUTHORITY = 1
@@ -252,6 +259,7 @@ class Condition(_messages.Message):
     SECURITY_REALM = 3
     APPROVER = 4
     JUSTIFICATION_TYPE = 5
+    CREDENTIALS_TYPE = 6
 
   class OpValueValuesEnum(_messages.Enum):
     """An operator to apply the subject with.
@@ -591,7 +599,7 @@ class Policy(_messages.Message):
   app@appspot.gserviceaccount.com",           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
   }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -614,7 +622,7 @@ class Policy(_messages.Message):
       any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
       Logging will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1229,7 +1237,7 @@ class Variable(_messages.Message):
     text: The string value of the variable. The length of the value must be
       less than 4096 bytes. Empty values are also accepted. For example,
       `text: "my text value"`. The string must be valid UTF-8.
-    updateTime: [Output Only] The time of the last variable update.
+    updateTime: Output only. The time of the last variable update.
     value: The binary value of the variable. The length of the value must be
       less than 4096 bytes. Empty values are also accepted. The value must be
       base64 encoded. Only one of `value` or `text` can be set.
@@ -1271,14 +1279,14 @@ class Waiter(_messages.Message):
   /runtime-configurator/creating-a-waiter) documentation.
 
   Fields:
-    createTime: [Output Only] The instant at which this Waiter resource was
+    createTime: Output only. The instant at which this Waiter resource was
       created. Adding the value of `timeout` to this instant yields the
       timeout deadline for the waiter.
-    done: [Output Only] If the value is `false`, it means the waiter is still
+    done: Output only. If the value is `false`, it means the waiter is still
       waiting for one of its conditions to be met.  If true, the waiter has
       finished. If the waiter finished due to a timeout or failure, `error`
       will be set.
-    error: [Output Only] If the waiter ended due to a failure or timeout, this
+    error: Output only. If the waiter ended due to a failure or timeout, this
       value will be set.
     failure: [Optional] The failure condition of this waiter. If this
       condition is met, `done` will be set to `true` and the `error` code will

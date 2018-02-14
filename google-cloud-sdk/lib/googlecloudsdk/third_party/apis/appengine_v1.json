@@ -501,6 +501,10 @@
           "description": "Desired runtime. Example: python27.",
           "type": "string"
         },
+        "runtimeChannel": {
+          "description": "The channel of the runtime to use. Only available for some runtimes. Defaults to the default channel.",
+          "type": "string"
+        },
         "threadsafe": {
           "description": "Whether multiple requests can be dispatched to this version at once.",
           "type": "boolean"

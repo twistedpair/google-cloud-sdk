@@ -53,9 +53,6 @@ apis:
       default: true
       resources:
         projects: projects/{projectId}
-  bigquery:
-    v2:
-      discovery_doc: bigquery_v2.json
   bigtableadmin:
     v2:
       discovery_doc: bigtableadmin_v2.json
@@ -178,8 +175,6 @@ apis:
     v1:
       discovery_doc: container_v1.json
       default: true
-      resources:
-        projects.zones: projects/{projectId}/zones/{zoneId}
     v1beta1:
       discovery_doc: container_v1beta1.json
       resources:

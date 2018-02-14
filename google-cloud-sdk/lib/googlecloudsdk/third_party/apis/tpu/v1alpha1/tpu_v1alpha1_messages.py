@@ -174,14 +174,14 @@ class Node(_messages.Message):
   Fields:
     acceleratorType: The type of hardware accelerators associated with this
       node. Required.
-    cidrBlock: The CIDR block that the TPU node will use when selecting //an
-      IP address. This CIDR block must be a /29 block; the GCE networks API
-      forbids a smaller block, and using a larger block would be wasteful (a
-      node can only consume one IP address). Errors will occur if the CIDR
-      block has already been used for a currently existing TPU node, the CIDR
-      block conflicts with any subnetworks in the user's provided network, or
-      the provided network is peered with another network that is using that
-      CIDR block. Required.
+    cidrBlock: The CIDR block that the TPU node will use when selecting an IP
+      address. This CIDR block must be a /29 block; the Compute Engine
+      networks API forbids a smaller block, and using a larger block would be
+      wasteful (a node can only consume one IP address). Errors will occur if
+      the CIDR block has already been used for a currently existing TPU node,
+      the CIDR block conflicts with any subnetworks in the user's provided
+      network, or the provided network is peered with another network that is
+      using that CIDR block. Required.
     createTime: Output only. The time when the node was created.
     description: The user-supplied description of the TPU. Maximum of 512
       characters.
@@ -189,17 +189,18 @@ class Node(_messages.Message):
     healthDescription: Output only. If this field is populated, it contains a
       description of why the TPU Node is unhealthy.
     ipAddress: Output only. DEPRECATED! Use network_endpoints instead. The
-      network address for the TPU Node as visible to GCE instances.
+      network address for the TPU Node as visible to Compute Engine instances.
     labels: Resource labels to represent user-provided metadata.
     name: Output only. The immutable name of the TPU
     network: The name of a network they wish to peer the TPU node to. It must
-      be a preexisting GCE network inside of the project on which this API has
-      been activated. If none is provided, "default" will be used.
+      be a preexisting Compute Engine network inside of the project on which
+      this API has been activated. If none is provided, "default" will be
+      used.
     networkEndpoints: Output only. The network endpoints where TPU workers can
       be accessed and sent work. It is recommended that Tensorflow clients of
       the node reach out to the 0th entry in this map first.
     port: Output only. DEPRECATED! Use network_endpoints instead. The network
-      port for the TPU Node as visible to GCE instances.
+      port for the TPU Node as visible to Compute Engine instances.
     serviceAccount: Output only. The service account used to run the tensor
       flow services within the node. To share resources, including Google
       Cloud Storage data, with the Tensorflow job running in the Node, this
@@ -236,6 +237,7 @@ class Node(_messages.Message):
       DELETING: TPU node is being deleted.
       REPAIRING: TPU node is being repaired and may be unusable. Details can
         be found in the `help_description` field.
+      STOPPED: 7 - Reserved. Was SUSPENDED. TPU node is stopped.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -244,6 +246,7 @@ class Node(_messages.Message):
     REIMAGING = 4
     DELETING = 5
     REPAIRING = 6
+    STOPPED = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

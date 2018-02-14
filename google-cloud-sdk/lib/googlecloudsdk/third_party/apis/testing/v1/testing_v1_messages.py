@@ -251,6 +251,10 @@ class AndroidRoboTest(_messages.Message):
     roboDirectives: A set of directives Robo should apply during the crawl.
       This allows users to customize the crawl. For example, the username and
       password for a test account can be provided. Optional
+    startingIntents: The intents used to launch the app for the crawl. If none
+      are provided, then the main launcher activity is launched. If some are
+      provided, then only those provided are launched (the main launcher
+      activity must be provided explicitly).
   """
 
   appApk = _messages.MessageField('FileReference', 1)
@@ -259,6 +263,7 @@ class AndroidRoboTest(_messages.Message):
   maxDepth = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   maxSteps = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   roboDirectives = _messages.MessageField('RoboDirective', 6, repeated=True)
+  startingIntents = _messages.MessageField('RoboStartingIntent', 7, repeated=True)
 
 
 class AndroidRuntimeConfiguration(_messages.Message):
@@ -529,6 +534,10 @@ class GoogleCloudStorage(_messages.Message):
   gcsPath = _messages.StringField(1)
 
 
+class LauncherActivityIntent(_messages.Message):
+  """Specifies an intent that starts the main launcher activity."""
+
+
 class Locale(_messages.Message):
   """A location/region designation for language.
 
@@ -661,6 +670,18 @@ class RoboDirective(_messages.Message):
   resourceName = _messages.StringField(3)
 
 
+class RoboStartingIntent(_messages.Message):
+  """Message for specifying the start activities to crawl
+
+  Fields:
+    launcherActivity: A LauncherActivityIntent attribute.
+    startActivity: A StartActivityIntent attribute.
+  """
+
+  launcherActivity = _messages.MessageField('LauncherActivityIntent', 1)
+  startActivity = _messages.MessageField('StartActivityIntent', 2)
+
+
 class StandardQueryParameters(_messages.Message):
   """Query parameters accepted by all methods.
 
@@ -726,6 +747,20 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(12)
   uploadType = _messages.StringField(13)
   upload_protocol = _messages.StringField(14)
+
+
+class StartActivityIntent(_messages.Message):
+  """A starting intent specified by an action, uri, and categories.
+
+  Fields:
+    action: Action name. Required for START_ACTIVITY.
+    categories: Intent categories to set on the intent. Optional.
+    uri: URI for the action. Optional.
+  """
+
+  action = _messages.StringField(1)
+  categories = _messages.StringField(2, repeated=True)
+  uri = _messages.StringField(3)
 
 
 class TestDetails(_messages.Message):
@@ -902,7 +937,10 @@ class TestMatrix(_messages.Message):
         not declared in the manifest.
       DEVICE_ADMIN_RECEIVER: Device administrator applications are not
         allowed.
-      TEST_ONLY_APK: The APK is marked as "testOnly".
+      TEST_ONLY_APK: The APK is marked as "testOnly". NOT USED
+      NO_CODE_APK: APK contains no code. See also
+        https://developer.android.com/guide/topics/manifest/application-
+        element.html#code
     """
     INVALID_MATRIX_DETAILS_UNSPECIFIED = 0
     DETAILS_UNAVAILABLE = 1
@@ -924,6 +962,7 @@ class TestMatrix(_messages.Message):
     SCENARIO_NOT_DECLARED = 17
     DEVICE_ADMIN_RECEIVER = 18
     TEST_ONLY_APK = 19
+    NO_CODE_APK = 20
 
   class StateValueValuesEnum(_messages.Enum):
     """Indicates the current progress of the test matrix (e.g., FINISHED)

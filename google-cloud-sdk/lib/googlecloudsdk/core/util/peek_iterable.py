@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 
 
 class Peeker(object):
@@ -63,6 +64,10 @@ class Peeker(object):
     return self._iterable
 
   def next(self):
+    """For Python 2 compatibility."""
+    return self.__next__()
+
+  def __next__(self):
     """Returns the next item in the iterable."""
     if not self._peek_seen:
       self._peek_seen = True
@@ -196,6 +201,10 @@ class Tapper(object):
     return self._iterable
 
   def next(self):
+    """For Python 2 compatibility."""
+    return self.__next__()
+
+  def __next__(self):
     """Gets the next item, calls _tap.Tap() on it, and returns it."""
     while True:
       item = self._NextItem()

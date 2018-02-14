@@ -30,7 +30,6 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
-from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 
@@ -56,7 +55,7 @@ class InvalidCommandError(exceptions.Error):
 
 def GetPythonExecutable():
   """Gets the path to the Python interpreter that should be used."""
-  cloudsdk_python = os.environ.get('CLOUDSDK_PYTHON')
+  cloudsdk_python = encoding.GetEncodedValue(os.environ, 'CLOUDSDK_PYTHON')
   if cloudsdk_python:
     return cloudsdk_python
   python_bin = sys.executable
@@ -134,7 +133,7 @@ def _GetToolEnv(env=None):
   """
   if env is None:
     env = dict(os.environ)
-  env['CLOUDSDK_WRAPPER'] = '1'
+  encoding.SetEncodedValue(env, 'CLOUDSDK_WRAPPER', '1')
 
   # Flags can set properties which override the properties file and the existing
   # env vars.  We need to propagate them to children processes through the
@@ -173,7 +172,8 @@ def ArgsForPythonTool(executable_path, *args, **kwargs):
     raise TypeError(("ArgsForPythonTool() got unexpected keyword arguments "
                      "'[{0}]'").format(', '.join(unexpected_arguments)))
   python_executable = kwargs.get('python') or GetPythonExecutable()
-  python_args_str = os.environ.get('CLOUDSDK_PYTHON_ARGS', '')
+  python_args_str = encoding.GetEncodedValue(
+      os.environ, 'CLOUDSDK_PYTHON_ARGS', '')
   python_args = python_args_str.split()
   return _GetToolArgs(
       python_executable, python_args, executable_path, *args)
@@ -247,7 +247,6 @@ def Exec(args,
          out_func=None,
          err_func=None,
          in_str=None,
-         encode_args_for_output=True,
          **extra_popen_kwargs):
   """Emulates the os.exec* set of commands, but uses subprocess.
 
@@ -264,7 +263,6 @@ def Exec(args,
     err_func: str->None, a function to call with the stderr of the executed
       process. This can be e.g. log.file_only_logger.debug or log.err.write.
     in_str: str, input to send to the subprocess' stdin.
-    encode_args_for_output: bool, whether to pass arguments encoded.
     **extra_popen_kwargs: Any additional kwargs will be passed through directly
       to subprocess.Popen
 
@@ -295,11 +293,12 @@ def Exec(args,
       if in_str:
         extra_popen_kwargs['stdin'] = subprocess.PIPE
       try:
-        # popen is silly when it comes to non-ascii args. The executable has to
-        # be _unencoded_, while the rest of the args have to be _encoded_.
-        if encode_args_for_output and args and isinstance(args, list):
-          args = args[0:1] + [
-              console_attr.EncodeForConsole(a) for a in args[1:]]
+        if args and isinstance(args, list):
+          # On Python 2.x on Windows, the first arg can't be unicode. We encode
+          # encode it anyway because there is really nothing else we can do if
+          # that happens.
+          # https://bugs.python.org/issue19264
+          args = [encoding.Encode(a) for a in args]
         p = subprocess.Popen(args, env=env, **extra_popen_kwargs)
       except OSError as err:
         if err.errno == errno.EACCES:

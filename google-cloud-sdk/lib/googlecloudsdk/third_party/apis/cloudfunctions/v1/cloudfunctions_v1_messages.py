@@ -75,6 +75,14 @@ class CloudFunction(_messages.Message):
     labels: Labels associated with this Cloud Function.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
+    network: The Google Compute Engine network that this function can connect
+      to. Either the fully-qualified URI of the network resource, or the short
+      name of the network must be specified. If the network belongs to another
+      project, the URI of the resource must be specified e.g., `https://www.go
+      ogleapis.com/compute/v1/projects/{project}/global/networks/{network}`
+      or `my-network`.  See [the VPC
+      documentation](https://cloud.google.com/compute/docs/vpc) for more
+      information on connecting Cloud projects.
     runtime: The runtime in which the function is going to run.
     serviceAccountEmail: Output only. The email of the function's service
       account.
@@ -172,15 +180,16 @@ class CloudFunction(_messages.Message):
   httpsTrigger = _messages.MessageField('HttpsTrigger', 6)
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
-  runtime = _messages.MessageField('Runtime', 9)
-  serviceAccountEmail = _messages.StringField(10)
-  sourceArchiveUrl = _messages.StringField(11)
-  sourceRepository = _messages.MessageField('SourceRepository', 12)
-  sourceUploadUrl = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  timeout = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
-  versionId = _messages.IntegerField(17)
+  network = _messages.StringField(9)
+  runtime = _messages.MessageField('Runtime', 10)
+  serviceAccountEmail = _messages.StringField(11)
+  sourceArchiveUrl = _messages.StringField(12)
+  sourceRepository = _messages.MessageField('SourceRepository', 13)
+  sourceUploadUrl = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  timeout = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
+  versionId = _messages.IntegerField(18)
 
 
 class CloudfunctionsOperationsCancelRequest(_messages.Message):

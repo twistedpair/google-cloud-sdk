@@ -91,7 +91,7 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted.  Example Policy with
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
@@ -109,15 +109,13 @@ class AuditConfig(_messages.Message):
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
       Next ID: 4
-    exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  service = _messages.StringField(2)
 
 
 class AuditLogConfig(_messages.Message):
@@ -361,7 +359,8 @@ class Binding(_messages.Message):
     condition: The condition that is associated with this binding. NOTE: an
       unsatisfied condition will not allow user access via current binding.
       Different bindings, including their conditions, are examined
-      independently. This field is GOOGLE_INTERNAL.
+      independently. This field is only visible as GOOGLE_INTERNAL or
+      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -1293,72 +1292,6 @@ class File(_messages.Message):
   path = _messages.StringField(2)
 
 
-class FlowOperationMetadata(_messages.Message):
-  """The metadata associated with a long running operation resource.
-
-  Enums:
-    CancelStateValueValuesEnum: The state of the operation with respect to
-      cancellation.
-    SurfaceValueValuesEnum:
-
-  Fields:
-    cancelState: The state of the operation with respect to cancellation.
-    deadline: Deadline for the flow to complete, to prevent orphaned
-      Operations.  If the flow has not completed by this time, it may be
-      terminated by the engine, or force-failed by Operation lookup.  Note
-      that this is not a hard deadline after which the Flow will definitely be
-      failed, rather it is a deadline after which it is reasonable to suspect
-      a problem and other parts of the system may kill operation to ensure we
-      don't have orphans. see also: go/prevent-orphaned-operations
-    flowName: The name of the top-level flow corresponding to this operation.
-      Must be equal to the "name" field for a FlowName enum.
-    operationType: Operation type which is a flow type and subtype info as
-      that is missing in our datastore otherwise. This maps to the ordinal
-      value of the enum: jcg/api/tenant/operations/OperationNamespace.java
-    resourceNames: The full name of the resources that this flow is directly
-      associated with.
-    startTime: The start time of the operation.
-    surface: A SurfaceValueValuesEnum attribute.
-  """
-
-  class CancelStateValueValuesEnum(_messages.Enum):
-    """The state of the operation with respect to cancellation.
-
-    Values:
-      RUNNING: Default state, cancellable but not cancelled.
-      UNCANCELLABLE: The operation has proceeded past the point of no return
-        and cannot be cancelled.
-      CANCELLED: The operation has been cancelled, work should cease and any
-        needed rollback steps executed.
-    """
-    RUNNING = 0
-    UNCANCELLABLE = 1
-    CANCELLED = 2
-
-  class SurfaceValueValuesEnum(_messages.Enum):
-    """SurfaceValueValuesEnum enum type.
-
-    Values:
-      UNSPECIFIED_OP_SERVICE: <no description>
-      SERVICE_MANAGEMENT: <no description>
-      SERVICE_USAGE: <no description>
-      SERVICE_CONSUMER_MANAGEMENT: TenancyUnit, ServiceNetworking fall under
-        this
-    """
-    UNSPECIFIED_OP_SERVICE = 0
-    SERVICE_MANAGEMENT = 1
-    SERVICE_USAGE = 2
-    SERVICE_CONSUMER_MANAGEMENT = 3
-
-  cancelState = _messages.EnumField('CancelStateValueValuesEnum', 1)
-  deadline = _messages.StringField(2)
-  flowName = _messages.StringField(3)
-  operationType = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  resourceNames = _messages.StringField(5, repeated=True)
-  startTime = _messages.StringField(6)
-  surface = _messages.EnumField('SurfaceValueValuesEnum', 7)
-
-
 class GenerateConfigReportRequest(_messages.Message):
   """Request message for GenerateConfigReport method.
 
@@ -1618,11 +1551,6 @@ class HttpRule(_messages.Message):
     patch: Used for updating a resource.
     post: Used for creating a resource.
     put: Used for updating a resource.
-    responseBody: The name of the response field whose value is mapped to the
-      HTTP body of response. Other response fields are ignored. This field is
-      optional. When not set, the response message will be used as HTTP body
-      of response. NOTE: the referred field must be not a repeated field and
-      must be present at the top-level of response message type.
     selector: Selects methods to which this rule applies.  Refer to selector
       for syntax details.
   """
@@ -1637,8 +1565,7 @@ class HttpRule(_messages.Message):
   patch = _messages.StringField(8)
   post = _messages.StringField(9)
   put = _messages.StringField(10)
-  responseBody = _messages.StringField(11)
-  selector = _messages.StringField(12)
+  selector = _messages.StringField(11)
 
 
 class LabelDescriptor(_messages.Message):
@@ -1981,18 +1908,19 @@ class MetricDescriptor(_messages.Message):
       pico    (10**-12) * `f`     femto   (10**-15) * `a`     atto
       (10**-18) * `z`     zepto   (10**-21) * `y`     yocto   (10**-24) * `Ki`
       kibi    (2**10) * `Mi`    mebi    (2**20) * `Gi`    gibi    (2**30) *
-      `Ti`    tebi    (2**40)  **Grammar**  The grammar includes the
-      dimensionless unit `1`, such as `1/s`.  The grammar also includes these
+      `Ti`    tebi    (2**40)  **Grammar**  The grammar also includes these
       connectors:  * `/`    division (as an infix operator, e.g. `1/s`). * `.`
       multiplication (as an infix operator, e.g. `GBy.d`)  The grammar for a
       unit is as follows:      Expression = Component { "." Component } { "/"
-      Component } ;      Component = [ PREFIX ] UNIT [ Annotation ]
+      Component } ;      Component = ( [ PREFIX ] UNIT | "%" ) [ Annotation ]
       | Annotation               | "1"               ;      Annotation = "{"
       NAME "}" ;  Notes:  * `Annotation` is just a comment if it follows a
       `UNIT` and is    equivalent to `1` if it is used alone. For examples,
       `{requests}/s == 1/s`, `By{transmitted}/s == By/s`. * `NAME` is a
       sequence of non-blank printable ASCII characters not    containing '{'
-      or '}'.
+      or '}'. * `1` represents dimensionless value 1, such as in `1/s`. * `%`
+      represents dimensionless value 1/100, and annotates values giving    a
+      percentage.
     valueType: Whether the measurement is an integer, a floating-point number,
       etc. Some combinations of `metric_kind` and `value_type` might not be
       supported.
@@ -2496,7 +2424,7 @@ class Policy(_messages.Message):
   app@appspot.gserviceaccount.com",           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
   }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -2511,15 +2439,13 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
-    iamOwned: A boolean attribute.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  iamOwned = _messages.BooleanField(4)
-  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class ProjectSettings(_messages.Message):
@@ -2660,10 +2586,14 @@ class QuotaBucketId(_messages.Message):
     region: If a quota limit is defined on PER_REGION dimension, then each
       region will have its own quota bucket. This field is non-empty only if
       the quota limit is defined on PER_REGION dimension.
+    zone: If a quota limit is defined on PER_ZONE dimension, then each zone
+      will have its own quota bucket. This field is non-empty only if the
+      quota limit is defined on PER_ZONE dimension.
   """
 
   containerId = _messages.StringField(1)
   region = _messages.StringField(2)
+  zone = _messages.StringField(3)
 
 
 class QuotaGroup(_messages.Message):
@@ -4412,14 +4342,14 @@ class UsageRule(_messages.Message):
   allow_unregistered_calls: true
 
   Fields:
-    allowUnregisteredCalls: True, if the method allows unregistered calls;
-      false otherwise.
+    allowUnregisteredCalls: If true, the selected method allows unregistered
+      calls, e.g. calls that don't identify any user or application.
     selector: Selects the methods to which this rule applies. Use '*' to
       indicate all methods in all APIs.  Refer to selector for syntax details.
-    skipServiceControl: True, if the method should skip service control. If
-      so, no control plane feature (like quota and billing) will be enabled.
-      This flag is used by ESP to allow some Endpoints customers to bypass
-      Google internal checks.
+    skipServiceControl: If true, the selected method should skip service
+      control and the control plane features, such as quota and billing, will
+      not be available. This flag is used by Google Cloud Endpoints to bypass
+      checks for internal methods, such as service health check methods.
   """
 
   allowUnregisteredCalls = _messages.BooleanField(1)

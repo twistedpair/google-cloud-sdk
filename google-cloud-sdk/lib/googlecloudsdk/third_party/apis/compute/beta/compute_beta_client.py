@@ -8610,6 +8610,32 @@ For more information, see Deleting snaphots.
         supports_download=False,
     )
 
+    def ListUsable(self, request, global_params=None):
+      """Retrieves an aggregated list of usable subnetworks.
+
+      Args:
+        request: (ComputeSubnetworksListUsableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UsableSubnetworksAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('ListUsable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListUsable.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.subnetworks.listUsable',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/subnetworks/listUsable',
+        request_field='',
+        request_type_name=u'ComputeSubnetworksListUsableRequest',
+        response_type_name=u'UsableSubnetworksAggregatedList',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       """Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range and allow_subnet_cidr_routes_overlap. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.
 

@@ -136,7 +136,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The primary email address that uniquely identifies the user.",
+          "description": "A unique user ID.",
           "type": "string"
         },
         "posixAccounts": {
@@ -152,10 +152,6 @@
           "additionalProperties": {
             "$ref": "SshPublicKey"
           }
-        },
-        "suspended": {
-          "description": "Indicates if the user is suspended. A suspended user cannot log in but\ntheir profile information is retained.",
-          "type": "boolean"
         }
       }
     },

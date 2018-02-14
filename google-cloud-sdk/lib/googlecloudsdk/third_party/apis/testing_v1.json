@@ -539,7 +539,8 @@
             "There was an error when parsing a label's value.",
             "The request contains a scenario number that was not declared in the\nmanifest.",
             "Device administrator applications are not allowed.",
-            "The APK is marked as \"testOnly\"."
+            "The APK is marked as \"testOnly\".\nNOT USED",
+            "APK contains no code.\nSee also\nhttps:\/\/developer.android.com\/guide\/topics\/manifest\/application-element.html#code"
           ],
           "type": "string",
           "enum": [
@@ -562,7 +563,8 @@
             "SCENARIO_LABEL_MALFORMED",
             "SCENARIO_NOT_DECLARED",
             "DEVICE_ADMIN_RECEIVER",
-            "TEST_ONLY_APK"
+            "TEST_ONLY_APK",
+            "NO_CODE_APK"
           ]
         }
       }
@@ -827,6 +829,13 @@
           "items": {
             "$ref": "RoboDirective"
           }
+        },
+        "startingIntents": {
+          "description": "The intents used to launch the app for the crawl.\nIf none are provided, then the main launcher activity is launched.\nIf some are provided, then only those provided are launched (the main\nlauncher activity must be provided explicitly).",
+          "type": "array",
+          "items": {
+            "$ref": "RoboStartingIntent"
+          }
         }
       }
     },
@@ -856,6 +865,48 @@
             "SINGLE_CLICK",
             "ENTER_TEXT"
           ]
+        }
+      }
+    },
+    "RoboStartingIntent": {
+      "id": "RoboStartingIntent",
+      "description": "Message for specifying the start activities to crawl",
+      "type": "object",
+      "properties": {
+        "launcherActivity": {
+          "$ref": "LauncherActivityIntent"
+        },
+        "startActivity": {
+          "$ref": "StartActivityIntent"
+        }
+      }
+    },
+    "LauncherActivityIntent": {
+      "id": "LauncherActivityIntent",
+      "description": "Specifies an intent that starts the main launcher activity.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "StartActivityIntent": {
+      "id": "StartActivityIntent",
+      "description": "A starting intent specified by an action, uri, and categories.",
+      "type": "object",
+      "properties": {
+        "action": {
+          "description": "Action name.\nRequired for START_ACTIVITY.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "URI for the action.\nOptional.",
+          "type": "string"
+        },
+        "categories": {
+          "description": "Intent categories to set on the intent.\nOptional.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

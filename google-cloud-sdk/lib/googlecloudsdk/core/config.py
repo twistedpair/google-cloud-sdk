@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import json
 import os
 import time
@@ -30,7 +31,6 @@ from googlecloudsdk.core.util import platforms
 
 class Error(exceptions.Error):
   """Exceptions for the cli module."""
-
 
 # Environment variable for the directory containing Cloud SDK configuration.
 CLOUDSDK_CONFIG = 'CLOUDSDK_CONFIG'
@@ -77,7 +77,8 @@ class InstallationConfig(object):
     Returns:
       InstallationSpecificData: The loaded data.
     """
-    data = json.loads(pkg_resources.GetResource(__name__, 'config.json'))
+    data = json.loads(
+        encoding.Decode(pkg_resources.GetResource(__name__, 'config.json')))
     return InstallationConfig(**data)
 
   @staticmethod
@@ -222,7 +223,7 @@ def _GetGlobalConfigDir():
   if appdata:
     return os.path.join(appdata, _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
   # This shouldn't happen unless someone is really messing with things.
-  drive = os.environ.get('SystemDrive', 'C:')
+  drive = encoding.GetEncodedValue(os.environ, 'SystemDrive', 'C:')
   return os.path.join(drive, os.path.sep, _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
 
 

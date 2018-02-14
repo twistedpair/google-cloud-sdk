@@ -3,6 +3,79 @@
 Copyright 2014-2018 Google Inc. All rights reserved.
 
 
+## 189.0.0 (2018-02-14)
+
+### Breaking Changes
+
+* **(REMOVED)** Removed the `--ssl-certificate` flag from `gcloud compute <target-https-proxies|target-ssl-proxies> <create|update>`. Use `--ssl-certificates` instead.
+
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.62.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+  * Fixed the [issue with missing QuickStartGenerator class](https://issuetracker.google.com/issues/72808542)
+* Changed `gcloud app deploy` to use a new runtime build pipeline to deploy apps for
+  Go (in the Flexible Environment). This enables more robust and flexible
+  deployments in some cases. To revert to the legacy builder, run
+  `gcloud config set app/use_runtime_builders false` from the command line.
+
+### BigQuery
+
+* Added experimental support for import of ORC files into BigQuery.
+* Added Cloud KMS key rotating for customer-managed encryption key protected
+  BigQuery tables.
+* Added `--location` flag to specify the geographic location in which BigQuery
+  jobs will run. No changes are required for commands in the existing US and EU
+  regions.
+
+### Cloud Datalab
+
+* Updated the `datalab` component to the 20180206 release.
+  Released changes are documented in its tracking issue at
+  [https://github.com/googledatalab/datalab/issues/1945](https://github.com/googledatalab/datalab/issues/1945).
+
+### Cloud Datastore Emulator
+
+*   Released Cloud Datastore Emulator version 1.4.1.
+    *   Recommended: Use the health check endpoint to confirm
+        emulator startup instead of relying on the "Dev App Server is now
+        running." message.
+    *   Fixed issue where the emulator server would close HTTP connections
+        before shutting down, which was a problem for /shutdown. This issue
+        can be tracked at [https://github.com/GoogleCloudPlatform/google-cloud-datastore/issues/188](https://github.com/GoogleCloudPlatform/google-cloud-datastore/issues/188).
+
+### Compute Engine
+
+* Modified the preview field to be optional when importing using
+  `gcloud compute security-policies import` or
+  `gcloud compute security-policies create`.
+
+### Container Engine
+
+* Promoted `--cluster-secondary-range-name`, `--create-subnetwork`,
+  `--enable-autorepair`, `--enable-ip-alias`, `--enable-kubernetes-alpha`,
+  `--enable-legacy-authorization`, `--enable-network-policy`, `--labels`,
+  `--local-ssd-count`, `--maintenance-window`,
+  `--enable-master-authorized-networks`, `--master-authorized-networks`,
+  `--min-cpu-platform`, `--node-locations`, `--node-taints`, `--node-version`,
+  `--preemptible`, `--service-account`, `--services-ipv4-cidr`,
+  `--services-secondary-range-name` of `gcloud container clusters create` to GA.
+
+* Promoted `--complete-ip-rotation`, `--enable-legacy-authorization`,
+  `--enable-master-authorized-networks`, `--enable-network-policy`,
+  `--logging-service`, `--maintenance-window`, `--remove-labels`,
+  `--start-ip-rotation`, `--update-labels`, `--node-locations`,
+  `--master-authorized-networks` of `gcloud container clusters update` to GA.
+
+* Promoted `--enable-autorepair`, `--local-ssd-count`, `--min-cpu-platform`,
+  `--node-taints`, `--preemptible`, `--node-version` of
+  `gcloud container node-pools create` to GA.
+
+* Promoted `--enable-autorepair` of `gcloud container node-pools update` to GA.
+
+
 ## 188.0.1 (2018-02-08)
 
 *  Hotfix for https://issuetracker.google.com/73044966 affecting Cloud SDK

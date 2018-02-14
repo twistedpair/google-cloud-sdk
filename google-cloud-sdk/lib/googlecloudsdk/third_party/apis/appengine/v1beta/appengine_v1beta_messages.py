@@ -843,6 +843,7 @@ class AutomaticScaling(_messages.Message):
       changes to the number of virtual machines. Only applicable in the App
       Engine flexible environment.
     cpuUtilization: Target scaling by CPU usage.
+    customMetrics: Target scaling by user-provided metrics.
     diskUtilization: Target scaling by disk usage.
     maxConcurrentRequests: Number of concurrent requests an automatic scaling
       instance can accept before the scheduler spawns a new instance.Defaults
@@ -867,17 +868,18 @@ class AutomaticScaling(_messages.Message):
 
   coolDownPeriod = _messages.StringField(1)
   cpuUtilization = _messages.MessageField('CpuUtilization', 2)
-  diskUtilization = _messages.MessageField('DiskUtilization', 3)
-  maxConcurrentRequests = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maxIdleInstances = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  maxPendingLatency = _messages.StringField(6)
-  maxTotalInstances = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  minIdleInstances = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  minPendingLatency = _messages.StringField(9)
-  minTotalInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  networkUtilization = _messages.MessageField('NetworkUtilization', 11)
-  requestUtilization = _messages.MessageField('RequestUtilization', 12)
-  standardSchedulerSettings = _messages.MessageField('StandardSchedulerSettings', 13)
+  customMetrics = _messages.MessageField('CustomMetric', 3, repeated=True)
+  diskUtilization = _messages.MessageField('DiskUtilization', 4)
+  maxConcurrentRequests = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxIdleInstances = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  maxPendingLatency = _messages.StringField(7)
+  maxTotalInstances = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  minIdleInstances = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  minPendingLatency = _messages.StringField(10)
+  minTotalInstances = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  networkUtilization = _messages.MessageField('NetworkUtilization', 12)
+  requestUtilization = _messages.MessageField('RequestUtilization', 13)
+  standardSchedulerSettings = _messages.MessageField('StandardSchedulerSettings', 14)
 
 
 class BasicScaling(_messages.Message):
@@ -1015,6 +1017,29 @@ class CreateVersionMetadataV1Beta(_messages.Message):
   """
 
   cloudBuildId = _messages.StringField(1)
+
+
+class CustomMetric(_messages.Message):
+  """Allows autoscaling based on Stackdriver metrics.
+
+  Fields:
+    filter: Allows filtering on the metric's fields.
+    metricName: The name of the metric.
+    singleInstanceAssignment: May be used instead of target_utilization when
+      an instance can handle a specific amount of work/resources and the
+      metric value is equal to the current amount of work remaining. The
+      autoscaler will try to keep the number of instances equal to the metric
+      value divided by single_instance_assignment.
+    targetType: The type of the metric. Must be a string representing a
+      Stackdriver metric type e.g. GAGUE, DELTA_PER_SECOND, etc.
+    targetUtilization: The target value for the metric.
+  """
+
+  filter = _messages.StringField(1)
+  metricName = _messages.StringField(2)
+  singleInstanceAssignment = _messages.FloatField(3)
+  targetType = _messages.StringField(4)
+  targetUtilization = _messages.FloatField(5)
 
 
 class DebugInstanceRequest(_messages.Message):
@@ -1712,6 +1737,7 @@ class Network(_messages.Message):
     name: Google Compute Engine network where the virtual machines are
       created. Specify the short name, not the resource path.Defaults to
       default.
+    sessionAffinity: Enable session affinity.
     subnetworkName: Google Cloud Platform sub-network where the virtual
       machines are created. Specify the short name, not the resource path.If a
       subnetwork name is specified, a network name will also be required
@@ -1731,7 +1757,8 @@ class Network(_messages.Message):
   forwardedPorts = _messages.StringField(1, repeated=True)
   instanceTag = _messages.StringField(2)
   name = _messages.StringField(3)
-  subnetworkName = _messages.StringField(4)
+  sessionAffinity = _messages.BooleanField(4)
+  subnetworkName = _messages.StringField(5)
 
 
 class NetworkUtilization(_messages.Message):
@@ -2705,6 +2732,8 @@ class Version(_messages.Message):
     runtimeApiVersion: The version of the API in the given runtime
       environment. Please see the app.yaml reference for valid values at https
       ://cloud.google.com/appengine/docs/standard/<language>/config/appref
+    runtimeChannel: The channel of the runtime to use. Only available for some
+      runtimes. Defaults to the default channel.
     servingStatus: Current serving status of this version. Only the versions
       with a SERVING status create instances and can be
       billed.SERVING_STATUS_UNSPECIFIED is an invalid value. Defaults to
@@ -2839,11 +2868,12 @@ class Version(_messages.Message):
   resources = _messages.MessageField('Resources', 26)
   runtime = _messages.StringField(27)
   runtimeApiVersion = _messages.StringField(28)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 29)
-  threadsafe = _messages.BooleanField(30)
-  versionUrl = _messages.StringField(31)
-  vm = _messages.BooleanField(32)
-  zones = _messages.StringField(33, repeated=True)
+  runtimeChannel = _messages.StringField(29)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 30)
+  threadsafe = _messages.BooleanField(31)
+  versionUrl = _messages.StringField(32)
+  vm = _messages.BooleanField(33)
+  zones = _messages.StringField(34, repeated=True)
 
 
 class Volume(_messages.Message):

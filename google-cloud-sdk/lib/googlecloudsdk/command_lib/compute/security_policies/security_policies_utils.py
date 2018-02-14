@@ -21,14 +21,13 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
 
 
-def SecurityPolicyFromFile(input_file, messages, file_format, is_create=False):
+def SecurityPolicyFromFile(input_file, messages, file_format):
   """Returns the security policy read from the given file.
 
   Args:
     input_file: file, A file with a security policy config.
     messages: messages, The set of available messages.
     file_format: string, the format of the file to read from
-    is_create: boolean, whether the config is used to create a security policy
 
   Returns:
     A security policy resource.
@@ -44,11 +43,9 @@ def SecurityPolicyFromFile(input_file, messages, file_format, is_create=False):
           str(e)))
 
   security_policy = messages.SecurityPolicy()
-  if is_create:
-    security_policy.name = parsed_security_policy['name']
   if 'description' in parsed_security_policy:
     security_policy.description = parsed_security_policy['description']
-  if not is_create and 'fingerprint' in parsed_security_policy:
+  if 'fingerprint' in parsed_security_policy:
     security_policy.fingerprint = base64.urlsafe_b64decode(
         parsed_security_policy['fingerprint'].encode('ascii'))
 
@@ -70,7 +67,8 @@ def SecurityPolicyFromFile(input_file, messages, file_format, is_create=False):
             srcIpRanges=rule['match']['config']['srcIpRanges'])
     security_policy_rule.match = match
     security_policy_rule.priority = rule['priority']
-    security_policy_rule.preview = rule['preview']
+    if 'preview' in rule:
+      security_policy_rule.preview = rule['preview']
     rules.append(security_policy_rule)
 
   security_policy.rules = rules
