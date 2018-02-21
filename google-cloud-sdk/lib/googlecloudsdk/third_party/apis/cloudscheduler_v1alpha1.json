@@ -272,7 +272,7 @@
       "type": "object",
       "properties": {
         "httpMethod": {
-          "description": "The HTTP method to use for the request. The default is POST.",
+          "description": "The HTTP method to use for the request. The default is POST. PATCH and\nOPTIONS are not permitted.",
           "enumDescriptions": [
             "HTTP method unspecified",
             "HTTP Post",
@@ -463,7 +463,6 @@
               "path": "v1alpha1/{+name}/locations",
               "flatPath": "v1alpha1/projects/{projectsId}/locations",
               "httpMethod": "GET",
-              "description": "Lists information about the supported locations for this service.",
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
@@ -497,14 +496,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists information about the supported locations for this service."
             },
             "get": {
               "id": "cloudscheduler.projects.locations.get",
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}",
               "httpMethod": "GET",
-              "description": "Get information about a location.",
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
@@ -522,7 +521,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Get information about a location."
             }
           }
           ,
@@ -534,7 +534,6 @@
                   "path": "v1alpha1/{+parent}/jobs",
                   "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs",
                   "httpMethod": "GET",
-                  "description": "Lists jobs.\n\nListJobsRequest.filter can be used to specify a subset of\njobs. ListJobsRequest.response_view controls the subset of\ninformation returned. By default response_view is\nJob.View.BASIC; not all information is returned by default\ndue to performance considerations.",
                   "parameters": {
                     "parent": {
                       "description": "Required.\n\nThe location name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID`.",
@@ -574,14 +573,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Lists jobs.\n\nListJobsRequest.filter can be used to specify a subset of\njobs. ListJobsRequest.response_view controls the subset of\ninformation returned. By default response_view is\nJob.View.BASIC; not all information is returned by default\ndue to performance considerations."
                 },
                 "get": {
                   "id": "cloudscheduler.projects.locations.jobs.get",
                   "path": "v1alpha1/{+name}",
                   "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}",
                   "httpMethod": "GET",
-                  "description": "Gets a job.",
                   "parameters": {
                     "name": {
                       "description": "The job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
@@ -609,14 +608,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Gets a job."
                 },
                 "create": {
                   "id": "cloudscheduler.projects.locations.jobs.create",
                   "path": "v1alpha1/{+parent}/jobs",
                   "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs",
                   "httpMethod": "POST",
-                  "description": "Creates a job.",
                   "parameters": {
                     "parent": {
                       "description": "Required.\n\nThe location name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID`.",
@@ -637,14 +636,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Creates a job."
                 },
                 "delete": {
                   "id": "cloudscheduler.projects.locations.jobs.delete",
                   "path": "v1alpha1/{+name}",
                   "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes a job.",
                   "parameters": {
                     "name": {
                       "description": "Required.\n\nThe job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
@@ -662,14 +661,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Deletes a job."
                 },
                 "run": {
                   "id": "cloudscheduler.projects.locations.jobs.run",
                   "path": "v1alpha1/{+name}:run",
                   "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:run",
                   "httpMethod": "POST",
-                  "description": "Forces a job to run now.\n\nWhen this method is called, Cloud Scheduler will immediately attempt the\njob. The attempt will be counted in the job's Job.total_attempt_count.\n\nThe job's existing schedule is not modified, so the job\nwill also be attempted according to its normal schedule.",
                   "parameters": {
                     "name": {
                       "description": "Required.\n\nThe job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
@@ -690,7 +689,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Forces a job to run now.\n\nWhen this method is called, Cloud Scheduler will immediately attempt the\njob. The attempt will be counted in the job's Job.total_attempt_count.\n\nThe job's existing schedule is not modified, so the job\nwill also be attempted according to its normal schedule."
                 }
               }
             }

@@ -429,18 +429,17 @@ _STAGING_REGISTRY = {
             os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
             os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
-}
-
-# _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
-# same key is used.
-_STAGING_REGISTRY_BETA = {
     RegistryEntry('java-xml', {util.Environment.STANDARD}):
         _BundledCommand(
             _APPENGINE_TOOLS_JAR,
             _APPENGINE_TOOLS_JAR,
             component='app-engine-java',
-            mapper=_JavaStagingMapper)
+            mapper=_JavaStagingMapper),
 }
+
+# _STAGING_REGISTRY_BETA extends _STAGING_REGISTRY, overriding entries if the
+# same key is used.
+_STAGING_REGISTRY_BETA = {}
 
 
 class Stager(object):

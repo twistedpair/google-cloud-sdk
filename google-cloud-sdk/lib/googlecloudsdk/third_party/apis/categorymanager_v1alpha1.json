@@ -144,11 +144,11 @@
           "type": "string"
         },
         "storeId": {
-          "description": "Id of the enclosing taxonomy store.\nOutput only.",
+          "description": "Output only. Id of the enclosing taxonomy store.",
           "type": "string"
         },
         "id": {
-          "description": "Id of this taxonomy.\nOutput only.",
+          "description": "Output only. Id of this taxonomy.",
           "type": "string"
         },
         "displayName": {
@@ -262,19 +262,19 @@
           "type": "string"
         },
         "storeId": {
-          "description": "Id of the enclosing store.\nOutput only.",
+          "description": "Output only. Id of the enclosing store.",
           "type": "string"
         },
         "taxonomyId": {
-          "description": "Id of the enclosing taxonomy.\nOutput only.",
+          "description": "Output only. Id of the enclosing taxonomy.",
           "type": "string"
         },
         "taxonomyDisplayName": {
-          "description": "Human readable name of the enclosing taxonomy.\nOutput only.",
+          "description": "Output only. Human readable name of the enclosing taxonomy.",
           "type": "string"
         },
         "id": {
-          "description": "Id of this annotation.\nOutput only.",
+          "description": "Output only. Id of this annotation.",
           "type": "string"
         },
         "displayName": {
@@ -340,11 +340,11 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of\n`members` to a `role`, where the members can be user accounts, Google groups,\nGoogle domains, and service accounts. A `role` is a named list of permissions\ndefined by IAM.\n\n**Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/owner\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-other-app@appspot.gserviceaccount.com\",\n          ]\n        },\n        {\n          \"role\": \"roles\/viewer\",\n          \"members\": [\"user:sean@example.com\"]\n        }\n      ]\n    }\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam).",
+      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of\n`members` to a `role`, where the members can be user accounts, Google groups,\nGoogle domains, and service accounts. A `role` is a named list of permissions\ndefined by IAM.\n\n**Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/owner\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-other-app@appspot.gserviceaccount.com\",\n          ]\n        },\n        {\n          \"role\": \"roles\/viewer\",\n          \"members\": [\"user:sean@example.com\"]\n        }\n      ]\n    }\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam\/docs).",
       "type": "object",
       "properties": {
         "version": {
-          "description": "Version of the `Policy`. The default version is 0.",
+          "description": "Deprecated.",
           "type": "integer",
           "format": "int32"
         },
@@ -366,10 +366,6 @@
           "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten blindly.",
           "type": "string",
           "format": "byte"
-        },
-        "iamOwned": {
-
-          "type": "boolean"
         }
       }
     },
@@ -388,51 +384,17 @@
           "items": {
             "type": "string"
           }
-        },
-        "condition": {
-          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.\nThis field is GOOGLE_INTERNAL.",
-          "$ref": "Expr"
-        }
-      }
-    },
-    "Expr": {
-      "id": "Expr",
-      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
-      "type": "object",
-      "properties": {
-        "expression": {
-          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
-          "type": "string"
-        },
-        "title": {
-          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
-          "type": "string"
-        },
-        "description": {
-          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
-          "type": "string"
-        },
-        "location": {
-          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
-          "type": "string"
         }
       }
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
       "type": "object",
       "properties": {
         "service": {
           "description": "Specifies a service that will be enabled for audit logging.\nFor example, `storage.googleapis.com`, `cloudsql.googleapis.com`.\n`allServices` is a special value that covers all services.",
           "type": "string"
-        },
-        "exemptedMembers": {
-
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         },
         "auditLogConfigs": {
           "description": "The configuration for logging of each type of permission.\nNext ID: 4",
@@ -538,35 +500,35 @@
       "type": "object",
       "properties": {
         "assetName": {
-          "description": "Resource name of the asset.\nOutput only.",
+          "description": "Output only. Resource name of the asset.",
           "type": "string"
         },
         "annotationName": {
-          "description": "Resource name of the annotation.\nOutput only.",
+          "description": "Output only. Resource name of the annotation.",
           "type": "string"
         },
         "subAssetName": {
-          "description": "A finer grained sub asset that this annotation tag is applied to.\nFor Bigquery, provide the name of the column you want to annotate.\nIf this field is empty, the given annotation tag is associated with the\nentire asset.\nOutput only.",
+          "description": "Output only. A finer grained sub asset that this annotation tag is applied\nto. For Bigquery, provide the name of the column you want to annotate.\nIf this field is empty, the given annotation tag is associated with the\nentire asset.",
           "type": "string"
         },
         "storeId": {
-          "description": "Id of the enclosing taxonomy store.\nOutput only.",
+          "description": "Output only. Id of the enclosing taxonomy store.",
           "type": "string"
         },
         "taxonomyId": {
-          "description": "Id of the taxonomy enclosing the annotation corresponding to this tag.\nOutput only.",
+          "description": "Output only. Id of the taxonomy enclosing the annotation corresponding to\nthis tag.",
           "type": "string"
         },
         "taxonomyDisplayName": {
-          "description": "Human readable name of the taxonomy enclosing the annotation corresponding\nto this tag.\nOutput only.",
+          "description": "Output only. Human readable name of the taxonomy enclosing the annotation\ncorresponding to this tag.",
           "type": "string"
         },
         "annotationId": {
-          "description": "Id of the annotation corresponding to this tag.\nOutput only.",
+          "description": "Output only. Id of the annotation corresponding to this tag.",
           "type": "string"
         },
         "annotationDisplayName": {
-          "description": "Human readable name of the annotation corresponding to this tag. Output\nonly.",
+          "description": "Output only. Human readable name of the annotation corresponding to this\ntag.",
           "type": "string"
         }
       }
@@ -628,13 +590,17 @@
           "enumDescriptions": [
             "Unknown type.",
             "BigQuery table.",
-            "A column in a BigQuery table."
+            "A column in a BigQuery table.",
+            "A GCS file set.",
+            "A Pubsub topic."
           ],
           "type": "string",
           "enum": [
             "TYPE_UNSPECIFIED",
             "BIGQUERY_TABLE",
-            "BIGQUERY_TABLE_COLUMN"
+            "BIGQUERY_TABLE_COLUMN",
+            "GCS_FILESET",
+            "PUBSUB_TOPIC"
           ]
         },
         "subAssetName": {
@@ -653,12 +619,12 @@
           "description": "Description of the asset, if available.",
           "type": "string"
         },
-        "creationTime": {
+        "createTime": {
           "description": "The creation time.",
           "type": "string",
           "format": "google-datetime"
         },
-        "modificationTime": {
+        "updateTime": {
           "description": "The last modified time.",
           "type": "string",
           "format": "google-datetime"
@@ -674,7 +640,6 @@
           "path": "v1alpha1/taxonomyStores:getDefault",
           "flatPath": "v1alpha1/taxonomyStores:getDefault",
           "httpMethod": "GET",
-          "description": "Get the taxonomy store that can be used in the given project to create,\nmodify, and use taxonomies.",
           "parameters": {
             "projectId": {
               "description": "[Required] project id for getting the taxonomy store.",
@@ -690,14 +655,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/xapi.zoo"
-          ]
+          ],
+          "description": "Get the taxonomy store that can be used in the given project to create,\nmodify, and use taxonomies."
         },
         "getCommon": {
           "id": "categorymanager.taxonomyStores.getCommon",
           "path": "v1alpha1/taxonomyStores:getCommon",
           "flatPath": "v1alpha1/taxonomyStores:getCommon",
           "httpMethod": "GET",
-          "description": "Get the read-only taxonomy store with predefined taxonomies. Taxonomies in\nthis store can only be read or copied out.",
           "parameters": {
           },
           "parameterOrder": [
@@ -708,14 +673,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/xapi.zoo"
-          ]
+          ],
+          "description": "Get the read-only taxonomy store with predefined taxonomies. Taxonomies in\nthis store can only be read or copied out."
         },
         "copy": {
           "id": "categorymanager.taxonomyStores.copy",
           "path": "v1alpha1/{+parent}:copy",
           "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}:copy",
           "httpMethod": "POST",
-          "description": "Copy a taxonomy to a given taxonomy store. Copy will fail if there is a\ntaxonomy with the same display name in the taxonomy store.",
           "parameters": {
             "parent": {
               "description": "[Required] Resource name of the taxonomy store that the taxonomy is\ncopied to.",
@@ -737,14 +702,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/xapi.zoo"
-          ]
+          ],
+          "description": "Copy a taxonomy to a given taxonomy store. Copy will fail if there is a\ntaxonomy with the same display name in the taxonomy store."
         },
         "getIamPolicy": {
           "id": "categorymanager.taxonomyStores.getIamPolicy",
           "path": "v1alpha1/{+resource}:getIamPolicy",
           "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}:getIamPolicy",
           "httpMethod": "POST",
-          "description": "",
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -766,14 +731,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/xapi.zoo"
-          ]
+          ],
+          "description": ""
         },
         "setIamPolicy": {
           "id": "categorymanager.taxonomyStores.setIamPolicy",
           "path": "v1alpha1/{+resource}:setIamPolicy",
           "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}:setIamPolicy",
           "httpMethod": "POST",
-          "description": "",
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
@@ -795,14 +760,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/xapi.zoo"
-          ]
+          ],
+          "description": ""
         },
         "testIamPermissions": {
           "id": "categorymanager.taxonomyStores.testIamPermissions",
           "path": "v1alpha1/{+resource}:testIamPermissions",
           "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}:testIamPermissions",
           "httpMethod": "POST",
-          "description": "Return permissions that the caller has on the given taxonomy resource.",
           "parameters": {
             "resource": {
               "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -824,7 +789,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/xapi.zoo"
-          ]
+          ],
+          "description": "Return permissions that the caller has on the given taxonomy resource."
         }
       }
       ,
@@ -836,7 +802,6 @@
               "path": "v1alpha1/{+parent}/taxonomies",
               "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies",
               "httpMethod": "POST",
-              "description": "Creates a new taxonomy in a given taxonomy store.",
               "parameters": {
                 "parent": {
                   "description": "[Required] Resource name of the taxonomy store that the newly created\ntaxonomy belongs to.",
@@ -858,14 +823,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
-              ]
+              ],
+              "description": "Creates a new taxonomy in a given taxonomy store."
             },
             "delete": {
               "id": "categorymanager.taxonomyStores.taxonomies.delete",
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a taxonomy from a taxonomy store. This operation will also delete\nall annotations in this taxonomy.",
               "parameters": {
                 "name": {
                   "description": "[Required] Resource name of the taxonomy to be deleted.",
@@ -884,14 +849,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
-              ]
+              ],
+              "description": "Deletes a taxonomy from a taxonomy store. This operation will also delete\nall annotations in this taxonomy."
             },
             "get": {
               "id": "categorymanager.taxonomyStores.taxonomies.get",
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}",
               "httpMethod": "GET",
-              "description": "Returns the taxonomy referred by name. Size of a taxonomy is at most 100KB.",
               "parameters": {
                 "name": {
                   "description": "[Required] Resource name of the taxonomy to be returned.",
@@ -910,14 +875,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
-              ]
+              ],
+              "description": "Returns the taxonomy referred by name. Size of a taxonomy is at most 100KB."
             },
             "patch": {
               "id": "categorymanager.taxonomyStores.taxonomies.patch",
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}",
               "httpMethod": "PATCH",
-              "description": "Updates a taxonomy. Currently only support updating descriptions.",
               "parameters": {
                 "name": {
                   "description": "[Required] Resource name of the taxonomy to be updated.",
@@ -945,14 +910,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
-              ]
+              ],
+              "description": "Updates a taxonomy. Currently only support updating descriptions."
             },
             "list": {
               "id": "categorymanager.taxonomyStores.taxonomies.list",
               "path": "v1alpha1/{+parent}/taxonomies",
               "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies",
               "httpMethod": "GET",
-              "description": "Lists all taxonomies in a taxonomy store.",
               "parameters": {
                 "parent": {
                   "description": "[Required] Resource name of a taxonomy store.",
@@ -982,14 +947,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
-              ]
+              ],
+              "description": "Lists all taxonomies in a taxonomy store."
             },
             "copy": {
               "id": "categorymanager.taxonomyStores.taxonomies.copy",
               "path": "v1alpha1/{+parent}:copy",
               "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}:copy",
               "httpMethod": "POST",
-              "description": "Copy an annotation to a given taxonomy. Copy will fail if there is an\nannotation with the same in the taxonomy.",
               "parameters": {
                 "parent": {
                   "description": "[Required] Resource name of the taxonomy that the annotation is copied\nto.",
@@ -1011,14 +976,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
-              ]
+              ],
+              "description": "Copy an annotation to a given taxonomy. Copy will fail if there is an\nannotation with the same in the taxonomy."
             },
             "getIamPolicy": {
               "id": "categorymanager.taxonomyStores.taxonomies.getIamPolicy",
               "path": "v1alpha1/{+resource}:getIamPolicy",
               "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}:getIamPolicy",
               "httpMethod": "POST",
-              "description": "",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1040,14 +1005,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
-              ]
+              ],
+              "description": ""
             },
             "setIamPolicy": {
               "id": "categorymanager.taxonomyStores.taxonomies.setIamPolicy",
               "path": "v1alpha1/{+resource}:setIamPolicy",
               "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}:setIamPolicy",
               "httpMethod": "POST",
-              "description": "",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
@@ -1069,14 +1034,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
-              ]
+              ],
+              "description": ""
             },
             "testIamPermissions": {
               "id": "categorymanager.taxonomyStores.taxonomies.testIamPermissions",
               "path": "v1alpha1/{+resource}:testIamPermissions",
               "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}:testIamPermissions",
               "httpMethod": "POST",
-              "description": "Return permissions that the caller has on the given taxonomy resource.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1098,7 +1063,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
-              ]
+              ],
+              "description": "Return permissions that the caller has on the given taxonomy resource."
             }
           }
           ,
@@ -1110,7 +1076,6 @@
                   "path": "v1alpha1/{+parent}/annotations",
                   "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}/annotations",
                   "httpMethod": "POST",
-                  "description": "Creates an annotation in a taxonomy.",
                   "parameters": {
                     "parent": {
                       "description": "[Required] Resource name of the taxonomy that the newly created annotation\nbelongs to.",
@@ -1132,14 +1097,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/xapi.zoo"
-                  ]
+                  ],
+                  "description": "Creates an annotation in a taxonomy."
                 },
                 "patch": {
                   "id": "categorymanager.taxonomyStores.taxonomies.annotations.patch",
                   "path": "v1alpha1/{+name}",
                   "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}/annotations/{annotationsId}",
                   "httpMethod": "PATCH",
-                  "description": "Updates an annotation. Currently only support updating descriptions.",
                   "parameters": {
                     "name": {
                       "description": "[Required] Resource name of the annotation to be updated.",
@@ -1149,7 +1114,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask\nWill only update description if update_mask is not provided.",
+                      "description": "The update mask applies to the resource. Only description and\nparent_annotation_id can be updated and thus can be listed in the mask. If\nupdate_mask is not provided, all allowed fields (i.e., description and\nparent_id) will be updated. For more information including the `FieldMask`\ndefinition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1167,14 +1132,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/xapi.zoo"
-                  ]
+                  ],
+                  "description": "Updates an annotation. Currently only support updating descriptions."
                 },
                 "delete": {
                   "id": "categorymanager.taxonomyStores.taxonomies.annotations.delete",
                   "path": "v1alpha1/{+name}",
                   "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}/annotations/{annotationsId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes an annotation. Also deletes all member annotations if the given\nannotation is a group annotation.",
                   "parameters": {
                     "name": {
                       "description": "[Required] Resource name of the annotation to be deleted.",
@@ -1193,14 +1158,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/xapi.zoo"
-                  ]
+                  ],
+                  "description": "Deletes an annotation. Also deletes all member annotations if the given\nannotation is a group annotation."
                 },
                 "get": {
                   "id": "categorymanager.taxonomyStores.taxonomies.annotations.get",
                   "path": "v1alpha1/{+name}",
                   "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}/annotations/{annotationsId}",
                   "httpMethod": "GET",
-                  "description": "Gets definition of an annotation.",
                   "parameters": {
                     "name": {
                       "description": "[Required] Resource name of the annotation to be returned.",
@@ -1219,14 +1184,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/xapi.zoo"
-                  ]
+                  ],
+                  "description": "Gets definition of an annotation."
                 },
                 "list": {
                   "id": "categorymanager.taxonomyStores.taxonomies.annotations.list",
                   "path": "v1alpha1/{+parent}/annotations",
                   "flatPath": "v1alpha1/taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}/annotations",
                   "httpMethod": "GET",
-                  "description": "Lists all annotations in a taxonomy.",
                   "parameters": {
                     "parent": {
                       "description": "[Required] Resource name of a taxonomy.",
@@ -1256,7 +1221,8 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/xapi.zoo"
-                  ]
+                  ],
+                  "description": "Lists all annotations in a taxonomy."
                 }
               }
             }
@@ -1271,7 +1237,6 @@
           "path": "v1alpha1/{+name}",
           "flatPath": "v1alpha1/operations/{operationsId}",
           "httpMethod": "GET",
-          "description": "Gets the latest state of a long-running operation.",
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
@@ -1290,7 +1255,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/xapi.zoo"
-          ]
+          ],
+          "description": "Gets the latest state of a long-running operation."
         }
       }
     },
@@ -1301,7 +1267,6 @@
           "path": "v1alpha1/{+name}:applyAnnotationTag",
           "flatPath": "v1alpha1/assets/{assetsId}:applyAnnotationTag",
           "httpMethod": "POST",
-          "description": "Applies an annotation tag on an asset.",
           "parameters": {
             "name": {
               "description": "[Required] Resource name of the asset to annotate, must be RFC3986 escaped.",
@@ -1323,14 +1288,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/xapi.zoo"
-          ]
+          ],
+          "description": "Applies an annotation tag on an asset."
         },
         "deleteAnnotationTag": {
           "id": "categorymanager.assets.deleteAnnotationTag",
           "path": "v1alpha1/{+name}",
           "flatPath": "v1alpha1/assets/{assetsId}/annotationTag",
           "httpMethod": "DELETE",
-          "description": "Deletes an annotation tag from an asset.",
           "parameters": {
             "name": {
               "description": "[Required] Resource name of the asset whose annotation tag is to be\nremoved.",
@@ -1359,14 +1324,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/xapi.zoo"
-          ]
+          ],
+          "description": "Deletes an annotation tag from an asset."
         },
         "listResourceNames": {
           "id": "categorymanager.assets.listResourceNames",
           "path": "v1alpha1/assets:listResourceNames",
           "flatPath": "v1alpha1/assets:listResourceNames",
           "httpMethod": "GET",
-          "description": "Lists all assets with given predicates.",
           "parameters": {
             "annotations": {
               "description": "Resource names of annotations to be looked up.",
@@ -1404,7 +1369,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/xapi.zoo"
-          ]
+          ],
+          "description": "Lists all assets with given predicates."
         }
       }
       ,
@@ -1416,7 +1382,6 @@
               "path": "v1alpha1/{+name}/annotationTags",
               "flatPath": "v1alpha1/assets/{assetsId}/annotationTags",
               "httpMethod": "GET",
-              "description": "Lists all annotation tags that are applied on an asset.",
               "parameters": {
                 "name": {
                   "description": "[Required] Resource name of the asset, must be RFC3986 escaped.",
@@ -1451,7 +1416,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
-              ]
+              ],
+              "description": "Lists all annotation tags that are applied on an asset."
             }
           }
         }

@@ -18,10 +18,8 @@ import argparse
 
 from apitools.base.py import encoding
 
-from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.dataproc.jobs import base as job_base
-from googlecloudsdk.core import log
 
 
 class HadoopBase(job_base.JobBase):
@@ -70,19 +68,6 @@ class HadoopBase(job_base.JobBase):
   @staticmethod
   def GetFilesByType(args):
     """Returns a dict of files by their type (jars, archives, etc.)."""
-    # TODO(b/36050338): Move arg manipulation elsewhere.
-    # TODO(b/36051982): Remove with GA flags 2017-04-01 (b/33298024).
-    if not args.main_class and not args.main_jar:
-      raise exceptions.ArgumentError('Must either specify --class or JAR.')
-    if args.main_class and args.main_jar:
-      log.warn(
-          'You must specify exactly one of --jar and --class. '
-          'This will be strictly enforced in April 2017. '
-          "Use 'gcloud beta dataproc jobs submit hadoop' to see new behavior.")
-      log.info('Passing main jar as an additional jar.')
-      args.jars.append(args.main_jar)
-      args.main_jar = None
-
     return {
         'main_jar': args.main_jar,
         'jars': args.jars,

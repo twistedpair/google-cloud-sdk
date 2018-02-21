@@ -14,7 +14,7 @@
 """Code to transform the (cleaned-up) description of a dataflow into Graphviz.
 """
 
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.api_lib.dataflow import exceptions
 
 
 class _Cluster(object):
@@ -182,10 +182,11 @@ def _EscapeGraphvizId(name):
     The `name', with double-quotes escaped, and quotes around it.
 
   Raises:
-    ToolException: If the name is incompatible with Graphviz ID escaping.
+    exceptions.UnsupportedNameException: If the name is incompatible with
+      Graphviz ID escaping.
   """
   if name.endswith('\\'):
-    raise exceptions.ToolException(
+    raise exceptions.UnsupportedNameException(
         'Unsupported name for Graphviz ID escaping: {0!r}'.format(name))
   return '"{0}"'.format(name.replace('"', '\\"'))
 

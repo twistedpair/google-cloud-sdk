@@ -725,11 +725,11 @@ class Application(_messages.Message):
     id: Identifier of the Application resource. This identifier is equivalent
       to the project ID of the Google Cloud Platform project where you want to
       deploy your application. Example: myapp.
-    locationId: Location from which this application will be run. Application
-      instances will run out of data centers in the chosen location, which is
-      also where all of the application's end user content is stored.Defaults
-      to us-central.Options are:us-central - Central USeurope-west - Western
-      Europeus-east1 - Eastern US
+    locationId: Location from which this application runs. Application
+      instances run out of the data centers in the specified location, which
+      is also where all of the application's end user content is
+      stored.Defaults to us-central1.View the list of supported locations
+      (https://cloud.google.com/appengine/docs/locations).
     name: Full path to the Application resource in the API. Example:
       apps/myapp.@OutputOnly
     servingStatus: Serving status of this application.
@@ -853,14 +853,14 @@ class AutomaticScaling(_messages.Message):
     maxPendingLatency: Maximum amount of time that a request should wait in
       the pending queue before starting a new instance to handle it.
     maxTotalInstances: Maximum number of instances that should be started to
-      handle requests.
+      handle requests for this version.
     minIdleInstances: Minimum number of idle instances that should be
       maintained for this version. Only applicable for the default version of
       a service.
     minPendingLatency: Minimum amount of time a request should wait in the
       pending queue before starting a new instance to handle it.
-    minTotalInstances: Minimum number of instances that should be maintained
-      for this version.
+    minTotalInstances: Minimum number of running instances that should be
+      maintained for this version.
     networkUtilization: Target scaling by network usage.
     requestUtilization: Target scaling by request utilization.
     standardSchedulerSettings: Scheduler settings for standard environment.
@@ -1646,9 +1646,9 @@ class LocationMetadata(_messages.Message):
   """Metadata for the given google.cloud.location.Location.
 
   Fields:
-    flexibleEnvironmentAvailable: App Engine Flexible Environment is available
+    flexibleEnvironmentAvailable: App Engine flexible environment is available
       in the given location.@OutputOnly
-    standardEnvironmentAvailable: App Engine Standard Environment is available
+    standardEnvironmentAvailable: App Engine standard environment is available
       in the given location.@OutputOnly
   """
 
@@ -1732,8 +1732,8 @@ class Network(_messages.Message):
     forwardedPorts: List of ports, or port pairs, to forward from the virtual
       machine to the application container. Only applicable in the App Engine
       flexible environment.
-    instanceTag: Tag to apply to the VM instance during creation. for Only
-      applicable in the App Engine flexible environment.
+    instanceTag: Tag to apply to the instance during creation. Only applicable
+      in the App Engine flexible environment.
     name: Google Compute Engine network where the virtual machines are
       created. Specify the short name, not the resource path.Defaults to
       default.
@@ -1741,15 +1741,15 @@ class Network(_messages.Message):
     subnetworkName: Google Cloud Platform sub-network where the virtual
       machines are created. Specify the short name, not the resource path.If a
       subnetwork name is specified, a network name will also be required
-      unless it is for the default network. If the network the VM instance is
-      being created in is a Legacy network, then the IP address is allocated
-      from the IPv4Range. If the network the VM instance is being created in
-      is an auto Subnet Mode Network, then only network name should be
-      specified (not the subnetwork_name) and the IP address is created from
-      the IPCidrRange of the subnetwork that exists in that zone for that
-      network. If the network the VM instance is being created in is a custom
-      Subnet Mode Network, then the subnetwork_name must be specified and the
-      IP address is created from the IPCidrRange of the subnetwork.If
+      unless it is for the default network. If the network that the instance
+      is being created in is a Legacy network, then the IP address is
+      allocated from the IPv4Range. If the network that the instance is being
+      created in is an auto Subnet Mode Network, then only network name should
+      be specified (not the subnetwork_name) and the IP address is created
+      from the IPCidrRange of the subnetwork that exists in that zone for that
+      network. If the network that the instance is being created in is a
+      custom Subnet Mode Network, then the subnetwork_name must be specified
+      and the IP address is created from the IPCidrRange of the subnetwork.If
       specified, the subnetwork must exist in the same region as the App
       Engine flexible environment application.
   """
@@ -2257,10 +2257,10 @@ class StandardSchedulerSettings(_messages.Message):
   """Scheduler settings for standard environment.
 
   Fields:
-    maxInstances: Maximum number of instances for an app version. Set to zero
-      to disable max_instances configuration.
-    minInstances: Minimum number of instances for an app version. Set to zero
-      to disable min_instances configuration.
+    maxInstances: Maximum number of instances to run for this version. Set to
+      zero to disable max_instances configuration.
+    minInstances: Minimum number of instances to run for this version. Set to
+      zero to disable min_instances configuration.
     targetCpuUtilization: Target CPU utilization ratio to maintain when
       scaling.
     targetThroughputUtilization: Target throughput utilization ratio to
@@ -2694,10 +2694,10 @@ class Version(_messages.Message):
       to incoming requests. The first matching URL handles the request and
       other request handlers are not attempted.Only returned in GET requests
       if view=FULL is set.
-    healthCheck: Configures health checking for VM instances. Unhealthy
-      instances are stopped and replaced with new instances. Only applicable
-      in the App Engine flexible environment.Only returned in GET requests if
-      view=FULL is set.
+    healthCheck: Configures health checking for instances. Unhealthy instances
+      are stopped and replaced with new instances. Only applicable in the App
+      Engine flexible environment.Only returned in GET requests if view=FULL
+      is set.
     id: Relative name of the version within the service. Example: v1. Version
       names can contain only lowercase letters, numbers, or hyphens. Reserved
       names: "default", "latest", and any name with the prefix "ah-".
@@ -2710,7 +2710,7 @@ class Version(_messages.Message):
     libraries: Configuration for third-party Python runtime libraries that are
       required by the application.Only returned in GET requests if view=FULL
       is set.
-    livenessCheck: Configures liveness health checking for VM instances.
+    livenessCheck: Configures liveness health checking for instances.
       Unhealthy instances are stopped and replaced with new instancesOnly
       returned in GET requests if view=FULL is set.
     manualScaling: A service with manual scaling runs continuously, allowing
@@ -2723,11 +2723,11 @@ class Version(_messages.Message):
     nobuildFilesRegex: Files that match this pattern will not be built into
       this version. Only applicable for Go runtimes.Only returned in GET
       requests if view=FULL is set.
-    readinessCheck: Configures readiness health checking for VM instances.
+    readinessCheck: Configures readiness health checking for instances.
       Unhealthy instances are not put into the backend traffic rotation.Only
       returned in GET requests if view=FULL is set.
-    resources: Machine resources for this version. Only applicable for VM
-      runtimes.
+    resources: Machine resources for this version. Only applicable in the App
+      Engine flexible environment.
     runtime: Desired runtime. Example: python27.
     runtimeApiVersion: The version of the API in the given runtime
       environment. Please see the app.yaml reference for valid values at https
@@ -2743,8 +2743,8 @@ class Version(_messages.Message):
     versionUrl: Serving URL for this version. Example: "https://myversion-dot-
       myservice-dot-myapp.appspot.com"@OutputOnly
     vm: Whether to deploy this version in a container on a virtual machine.
-    zones: The choice of gce zones to use for this App Engine Flexible
-      version.
+    zones: The Google Compute Engine zones that are supported by this version
+      in the App Engine flexible environment.
   """
 
   class InboundServicesValueListEntryValuesEnum(_messages.Enum):

@@ -18,11 +18,17 @@ from __future__ import print_function
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.sql import api_util
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
 _POSTGRES_DATABASE_VERSION_PREFIX = 'POSTGRES'
+
+
+class SQLInstanceNotFoundException(exceptions.Error):
+  """An exception raised when the SQL instance was not found by the server.
+  """
 
 
 class _BaseInstances(object):

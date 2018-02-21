@@ -561,9 +561,9 @@ class LocationMetadata(_messages.Message):
   """Metadata for the given google.cloud.location.Location.
 
   Fields:
-    flexibleEnvironmentAvailable: App Engine Flexible Environment is available
+    flexibleEnvironmentAvailable: App Engine flexible environment is available
       in the given location.@OutputOnly
-    standardEnvironmentAvailable: App Engine Standard Environment is available
+    standardEnvironmentAvailable: App Engine standard environment is available
       in the given location.@OutputOnly
   """
 

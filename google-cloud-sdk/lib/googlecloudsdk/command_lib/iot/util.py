@@ -101,26 +101,10 @@ def ParseEnableHttpConfig(enable_http_config, client=None):
     return http_config_enum.HTTP_DISABLED
 
 
-def ParseDeviceBlocked(blocked, enable_device):
-  """Returns the correct enabled state enum based on args."""
-  if enable_device is None and blocked is None:
-    return None
-  elif enable_device is None or blocked is None:
-    # In this case there are no default arguments so we should use or.
-    return blocked is True or enable_device is False
-  else:
-    # By default blocked is false, so any blocked=True value should override
-    # the default.
-    return not enable_device or blocked
-
-
 def AddBlockedToRequest(ref, args, req):
   """Python hook for yaml commands to process the blocked flag."""
   del ref
-  args_blocked = False if args.blocked is None else args.blocked
-  args_enabled = True if args.enable_device is None else args.enable_device
-  blocked = ParseDeviceBlocked(args_blocked, args_enabled)
-  req.device.blocked = blocked
+  req.device.blocked = args.blocked
   return req
 
 
@@ -404,4 +388,35 @@ def AddMetadataToRequest(ref, args, req):
   del ref
   metadata = ParseMetadata(args.metadata, args.metadata_from_file)
   req.device.metadata = metadata
+  return req
+
+
+def ParseEventNotificationConfig(event_notification_configs, event_pubsub_topic,
+                                 messages=None):
+  """Creates a list of EventNotificationConfigs from args."""
+  messages = messages or registries.GetMessagesModule()
+
+  # These flags are in a mutex group.
+  if event_pubsub_topic:
+    topic_ref = ParsePubsubTopic(event_pubsub_topic)
+    return [messages.EventNotificationConfig(
+        pubsubTopicName=topic_ref.RelativeName())]
+
+  if event_notification_configs:
+    configs = []
+    for config in event_notification_configs:
+      topic_ref = ParsePubsubTopic(config['topic'])
+      configs.append(messages.EventNotificationConfig(
+          pubsubTopicName=topic_ref.RelativeName(),
+          subfolderMatches=config.get('subfolder', None)))
+    return configs
+  return None
+
+
+def AddEventNotificationConfigsToRequest(ref, args, req):
+  """Python hook for yaml commands to process event config flags."""
+  del ref
+  configs = ParseEventNotificationConfig(args.event_notification_configs,
+                                         args.event_pubsub_topic)
+  req.deviceRegistry.eventNotificationConfigs = configs or []
   return req

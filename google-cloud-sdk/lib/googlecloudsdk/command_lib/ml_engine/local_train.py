@@ -20,6 +20,7 @@ import subprocess
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
 
@@ -73,12 +74,13 @@ def MakeProcess(module_name,
   env = os.environ.copy()
   # the tf_config environment variable is used to pass the tensorflow
   # configuration options to the training module. the module specific
-  # arguments are passed as comand line arguments.
+  # arguments are passed as command line arguments.
   env['TF_CONFIG'] = json.dumps(config)
   if task_type == 'master':
     return execution_utils.Exec(
         cmd, env=env, no_exit=True, cwd=package_root, **extra_popen_args)
   else:
+    env = encoding.EncodeEnv(env)
     task = subprocess.Popen(
         cmd,
         env=env,

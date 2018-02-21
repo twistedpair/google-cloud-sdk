@@ -14,18 +14,17 @@ package = 'dataproc'
 
 class AcceleratorConfig(_messages.Message):
   """Specifies the type and number of accelerator cards attached to the
-  instances of an instance group (see GPUs on Compute Engine).
+  instances of an instance. See GPUs on Compute Engine.
 
   Fields:
     acceleratorCount: The number of the accelerator cards of this type exposed
       to this instance.
     acceleratorTypeUri: Full URL, partial URI, or short name of the
       accelerator type resource to expose to this instance. See Google Compute
-      Engine AcceleratorTypes(
-      /compute/docs/reference/beta/acceleratorTypes)Examples *
+      Engine AcceleratorTypes.Examples:
       https://www.googleapis.com/compute/beta/projects/[project_id]/zones/us-
-      east1-a/acceleratorTypes/nvidia-tesla-k80 * projects/[project_id]/zones
-      /us-east1-a/acceleratorTypes/nvidia-tesla-k80 * nvidia-tesla-k80
+      east1-a/acceleratorTypes/nvidia-tesla-k80 projects/[project_id]/zones
+      /us-east1-a/acceleratorTypes/nvidia-tesla-k80 nvidia-tesla-k80
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)

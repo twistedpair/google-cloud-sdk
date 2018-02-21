@@ -97,15 +97,17 @@ class ApiTargetKeyDetails(_messages.Message):
     ApiTargetsValue: A restriction for a specific service and optionally one
       or multiple specific methods. Requests will be allowed if they match any
       of these restrictions. If no restrictions are specified, all targets are
-      allowed. Key is the service name for this restriction Example:
-      apikeys.googleapis.com
+      allowed. Key is the service name for this restriction. It should be
+      api_v1_name of service config for legacy services. For new service, it
+      should be the fully qualified service name (eg. apikeys.googleapi.com).
 
   Fields:
     apiTargets: A restriction for a specific service and optionally one or
       multiple specific methods. Requests will be allowed if they match any of
       these restrictions. If no restrictions are specified, all targets are
-      allowed. Key is the service name for this restriction Example:
-      apikeys.googleapis.com
+      allowed. Key is the service name for this restriction. It should be
+      api_v1_name of service config for legacy services. For new service, it
+      should be the fully qualified service name (eg. apikeys.googleapi.com).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -113,8 +115,9 @@ class ApiTargetKeyDetails(_messages.Message):
     """A restriction for a specific service and optionally one or multiple
     specific methods. Requests will be allowed if they match any of these
     restrictions. If no restrictions are specified, all targets are allowed.
-    Key is the service name for this restriction Example:
-    apikeys.googleapis.com
+    Key is the service name for this restriction. It should be api_v1_name of
+    service config for legacy services. For new service, it should be the
+    fully qualified service name (eg. apikeys.googleapi.com).
 
     Messages:
       AdditionalProperty: An additional property for a ApiTargetsValue object.

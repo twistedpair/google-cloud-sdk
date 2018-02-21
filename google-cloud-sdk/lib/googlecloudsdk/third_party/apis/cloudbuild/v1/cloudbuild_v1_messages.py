@@ -260,9 +260,11 @@ class BuildOptions(_messages.Message):
     Values:
       NONE: <no description>
       SHA256: <no description>
+      MD5: <no description>
     """
     NONE = 0
     SHA256 = 1
+    MD5 = 2
 
   class SubstitutionOptionValueValuesEnum(_messages.Enum):
     """SubstitutionOption to allow unmatch substitutions.
@@ -651,9 +653,12 @@ class Hash(_messages.Message):
     Values:
       NONE: No hash requested.
       SHA256: Use a sha256 hash.
+      MD5: Use a md5 hash, which is available for compatibility with Google
+        Cloud Storage.
     """
     NONE = 0
     SHA256 = 1
+    MD5 = 2
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
   value = _messages.BytesField(2)

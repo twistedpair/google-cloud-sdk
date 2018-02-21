@@ -34,6 +34,8 @@ def Encode(string, encoding=None):
   Returns:
     str, The binary string.
   """
+  if string is None:
+    return None
   if not six.PY2:
     # In Python 3, the environment sets and gets accept and return text strings
     # only, and it handles the encoding itself so this is not necessary.
@@ -60,6 +62,8 @@ def Decode(string, encoding=None):
   Returns:
     The string with non-ASCII characters decoded to UNICODE.
   """
+  if string is None:
+    return None
   if isinstance(string, six.text_type):
     # Our work is done here.
     return string
@@ -172,6 +176,22 @@ def SetEncodedValue(env, name, value, encoding=None):
     env.pop(name, None)
     return
   env[name] = Encode(value, encoding=encoding)
+
+
+def EncodeEnv(env, encoding=None):
+  """Encodes all the key value pairs in env in preparation for subprocess.
+
+  Args:
+    env: {str: str}, The environment you are going to pass to subprocess.
+    encoding: str, The encoding to use or None to use the default.
+
+  Returns:
+    {bytes: bytes}, The environment to pass to subprocess.
+  """
+  encoding = encoding or _GetEncoding()
+  return {
+      Encode(k, encoding=encoding): Encode(v, encoding=encoding)
+      for k, v in six.iteritems(env)}
 
 
 def _GetEncoding():

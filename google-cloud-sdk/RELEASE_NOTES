@@ -3,6 +3,124 @@
 Copyright 2014-2018 Google Inc. All rights reserved.
 
 
+## 190.0.0 (2018-02-21)
+
+### Breaking Changes
+
+* The `--class` and `--jar` flags for the `hadoop` and `spark` commands in
+  `gcloud dataproc jobs submit` are now mutually exclusive. The previous usage
+  had been deprecated for more than a year.
+*  **(MODIFIED)** Soon changing the default event schema returned by Cloud
+   Functions with a pub/sub trigger(e.g. `--trigger-topic`). The `eventId`,
+   `timestamp`, `eventType`, and `resource` properties will all be moved into
+   the `event.context` property.
+   *   To opt-in to the new behavior early, run
+       `gcloud config set functions/use_new_pubsub_trigger True`.
+   *   To restore old behavior, run
+       `gcloud config set functions/use_new_pubsub_trigger False` or use
+       the `--trigger-event` flag e.g. `gcloud functions deploy --trigger-
+       event providers/cloud.pubsub/eventTypes/topic.publish \
+       --trigger-resource <TOPIC_NAME>`
+   *   Please see
+       https://cloud.google.com/functions/docs/writing/background#event_parameter
+       for more information on the new schema.
+* In alpha and beta:
+  * Removed `iot <configs|credentials>` command groups. Please use
+    `iot devices <configs|credentials>` instead.
+  * Removed the `--enable-device` flag from `iot devices <create|update>`. Please
+    use `--blocked` instead.
+  * Removed the `--pubsub-topic` flag and deprecated the `--event-pubsub-topic`
+    flag from `iot registries <create|update>`. Please use the
+    `--event-notification-config` flag instead.
+*  **(REMOVED)** Removed `NAME` and `--regexp` args from
+   `compute target-ssl-proxies list`. Please use the `--filter` flag instead.
+* Added `container/use_v1_api` property.
+  If true, all gcloud Kubernetes Engine commands (regardless of release track)
+  will use the v1 API; otherwise, gcloud beta track commands will use v1beta1
+  API and gcloud alpha track commands will use v1alpha1 API. By default, it is
+  set to true. The default will be changed to false by the end of March.
+
+
+### App Engine
+
+
+* Updated the Python SDK to version 1.9.67.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+* `gcloud app deploy` can now deploy App Engine Java Standard apps, by providing
+  the path to appengine-web.xml.
+* Staging is now supported in appengine-web.xml. Information on staging tags is
+  available in the [appengine-web.xml reference](https://cloud.google.com/appengine/docs/standard/java/config/appref).
+
+### Cloud Datalab
+
+* Updated the `datalab` component to the 20180213 release.
+  Released changes are documented in its tracking issue at
+    [https://github.com/googledatalab/datalab/issues/1959](https://github.com/googledatalab/datalab/issues/1959).
+
+### Cloud Dataproc
+
+* Added `--image` flag to `gcloud beta dataproc clusters` and `gcloud beta
+  dataproc workflow-templates`.
+
+### Cloud IoT
+
+* Promoted `gcloud iot` commands to GA.
+
+### Cloud Machine Learning Engine
+
+* Added `--description` flag to `gcloud <models|versions> <create|update>`
+  to manage model and version descriptions, respectively.
+
+### Cloud SDK
+
+* Modified `--log-http` to redact oauth tokens by default.
+
+### Cloud SQL
+
+* Added `--database` flag to `gcloud beta sql connect`.
+* Change `gcloud sql instances list` default table format REGION column to
+  LOCATION, containing either the gceZone if defined or the region.
+
+### Compute Engine
+
+* Promoted `public-ptr` and `public-ptr-domain` flags of
+  `gcloud compute instances <create|add-access-config|update-access-config>` to
+  GA. These flags allow setting up the PTR record for the external IPs of GCE
+  instances.
+* Added `--shielded-vm-secure-boot` and `--shielded-vm-vtpm` flags to
+  `gcloud compute instance-templates create` in alpha to support the
+  configuration of shielded VMs.
+* Added `--enable-flow-logs` flag to `gcloud compute networks subnets create`
+  and `gcloud compute networks subnets update` to toggle between enabling and
+  disabling flow logs for the subnet.
+* Changed `gcloud alpha compute images vulnerabilities list` to display the
+  image name instead of image id to match images command group usage.
+* Promoted `--create-disk` flag of `gcloud compute instances create` to beta.
+  These flags allow creating new disks during instance creation.
+* Modified `gcloud compute machine-types list` to filter out OBSOLETE types by
+  default. Specify a `--filter`=... flag, or `--filter=""` to list all types.
+
+### Container Builder
+
+* Modified `gcloud container builds submit` such that if no source is specified
+  and the `--no-source` flag is omitted, the current working directory will be
+  used.
+
+### Container Engine
+
+* `gcloud container clusters list` changed to display `initialNodeCount` in the
+  *NUM_NODES* column if `currentNodeCount` is undefined. This shows a usable
+  value during upgrading.
+* The `--region` flag is now available in all 'gcloud beta|alpha container' commands.
+
+### Kubernetes Engine
+
+* Added `--issue-client-certificate` to `gcloud container clusters create` in
+  GA. This allows users to create clusters without global admin key pair (using
+  `--no-issue-client-certificate`) to improve security.
+
+
 ## 189.0.0 (2018-02-14)
 
 ### Breaking Changes

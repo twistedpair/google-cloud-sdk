@@ -56,7 +56,7 @@ class RegistriesClient(object):
     return self.messages.HttpConfig.HttpEnabledStateValueValuesEnum
 
   def Create(self, parent_ref, registry_id, credentials=None,
-             event_pubsub_topic=None, state_pubsub_topic=None,
+             event_notification_configs=None, state_pubsub_topic=None,
              mqtt_enabled_state=None, http_enabled_state=None):
     """Creates a DeviceRegistry.
 
@@ -66,9 +66,8 @@ class RegistriesClient(object):
       registry_id: str, the name of the resource to create.
       credentials: List of RegistryCredentials or None, credentials for the
         DeviceRegistry.
-      event_pubsub_topic: an optional Resource reference to a
-        pubsub.projects.topics. The pubsub topic for event notifications on this
-        device registry.
+      event_notification_configs: List of EventNotificationConfigs or None,
+        configs for forwarding telemetry events for the Registry.
       state_pubsub_topic: an optional Resource reference to a
         pubsub.projects.topics. The pubsub topic for state notifications on this
         device registry.
@@ -80,13 +79,6 @@ class RegistriesClient(object):
     Returns:
       DeviceRegistry: the created registry.
     """
-    if event_pubsub_topic:
-      # This is a repeated field, only the first entry is used though.
-      event_notification_config = [self.messages.EventNotificationConfig(
-          pubsubTopicName=event_pubsub_topic.RelativeName())]
-    else:
-      event_notification_config = []
-
     if state_pubsub_topic:
       # This is a repeated field, only the first entry is used though.
       state_notification_config = self.messages.StateNotificationConfig(
@@ -111,7 +103,7 @@ class RegistriesClient(object):
         deviceRegistry=self.messages.DeviceRegistry(
             id=registry_id,
             credentials=credentials or [],
-            eventNotificationConfigs=event_notification_config,
+            eventNotificationConfigs=event_notification_configs or [],
             stateNotificationConfig=state_notification_config,
             mqttConfig=mqtt_config,
             httpConfig=http_config))
@@ -147,7 +139,7 @@ class RegistriesClient(object):
         field='deviceRegistries', batch_size_attribute='pageSize')
 
   def Patch(self, registry_ref, credentials=None,
-            event_pubsub_topic=None, state_pubsub_topic=None,
+            event_notification_configs=None, state_pubsub_topic=None,
             mqtt_enabled_state=None, http_enabled_state=None):
     """Updates a DeviceRegistry.
 
@@ -159,9 +151,8 @@ class RegistriesClient(object):
         cloudiot.projects.locations.registries resource.
       credentials: List of RegistryCredentials or None, credentials for the
         DeviceRegistry.
-      event_pubsub_topic: an optional Resource reference to a
-        pubsub.projects.topics. The pubsub topic for event notifications on this
-        device registry.
+      event_notification_configs: List of EventNotificationConfigs or None,
+        configs for forwarding telemetry events for the Registry.
       state_pubsub_topic: an optional Resource reference to a
         pubsub.projects.topics. The pubsub topic for state notifications on this
         device registry.
@@ -177,11 +168,6 @@ class RegistriesClient(object):
       NoFieldsSpecifiedError: if no fields were specified.
     """
     registry = self.messages.DeviceRegistry()
-    if event_pubsub_topic:
-      event_notification_config = [self.messages.EventNotificationConfig(
-          pubsubTopicName=event_pubsub_topic.RelativeName())]
-    else:
-      event_notification_config = None
 
     if state_pubsub_topic:
       # This is a repeated field, only the first entry is used though.
@@ -210,7 +196,7 @@ class RegistriesClient(object):
         _DeviceRegistryUpdateSetting(
             'eventNotificationConfigs',
             'event_notification_configs',
-            event_notification_config),
+            event_notification_configs),
         _DeviceRegistryUpdateSetting(
             'stateNotificationConfig',
             'state_notification_config.pubsub_topic_name',

@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20180202",
+ "revision": "20180215",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3680,7 +3680,7 @@
     },
     "instantiateFrom": {
      "type": "string",
-     "description": "Specifies whether to include the disk and what image to use.",
+     "description": "Specifies whether to include the disk and what image to use. Possible values are:  \n- source-image: to use the same image that was used to create the source instance's corresponding disk. Applicable to the boot disk and additional read-write disks. \n- source-image-family: to use the same image family that was used to create the source instance's corresponding disk. Applicable to the boot disk and additional read-write disks. \n- custom-image: to use a user-provided image url for disk creation. Applicable to the boot disk and additional read-write disks. \n- attach-read-only: to attach a read-only disk. Applicable to read-only disks. \n- do-not-include: to exclude a disk from the template. Applicable to additional read-write disks, local SSDs, and read-only disks.",
      "enum": [
       "ATTACH_READ_ONLY",
       "BLANK",
@@ -4726,9 +4726,11 @@
      "enum": [
       "EXTERNAL",
       "INTERNAL",
+      "INTERNAL_SELF_MANAGED",
       "INVALID"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       ""
@@ -12102,6 +12104,7 @@
   "ManagedInstance": {
    "id": "ManagedInstance",
    "type": "object",
+   "description": "Next available tag: 12",
    "properties": {
     "currentAction": {
      "type": "string",
@@ -12173,16 +12176,6 @@
     "override": {
      "$ref": "ManagedInstanceOverride",
      "description": "[Output Only] Override defined for this instance."
-    },
-    "standbyMode": {
-     "type": "string",
-     "description": "[Output Only] Standby mode of the instance. This field is non-empty iff the instance is a standby.",
-     "enum": [
-      "DRAINED"
-     ],
-     "enumDescriptions": [
-      ""
-     ]
     },
     "tag": {
      "type": "string",
@@ -16627,6 +16620,13 @@
      "type": "boolean",
      "description": "Specifies whether the instance should be automatically restarted if it is terminated by Compute Engine (not terminated by a user). You can only set the automatic restart option for standard instances. Preemptible instances cannot be automatically restarted.\n\nBy default, this is set to true so an instance is automatically restarted if it is terminated by Compute Engine."
     },
+    "nodeAffinities": {
+     "type": "array",
+     "description": "A set of node affinity and anti-affinity.",
+     "items": {
+      "$ref": "SchedulingNodeAffinity"
+     }
+    },
     "onHostMaintenance": {
      "type": "string",
      "description": "Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Setting Instance Scheduling Options.",
@@ -16642,6 +16642,38 @@
     "preemptible": {
      "type": "boolean",
      "description": "Defines whether the instance is preemptible. This can only be set during instance creation, it cannot be set or changed after the instance has been created."
+    }
+   }
+  },
+  "SchedulingNodeAffinity": {
+   "id": "SchedulingNodeAffinity",
+   "type": "object",
+   "description": "Node Affinity: the configuration of desired nodes onto which this Instance could be scheduled.",
+   "properties": {
+    "key": {
+     "type": "string",
+     "description": "Corresponds to the label key of Node resource."
+    },
+    "operator": {
+     "type": "string",
+     "description": "Defines the operation of node selection.",
+     "enum": [
+      "IN",
+      "NOT_IN",
+      "OPERATOR_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
+    "values": {
+     "type": "array",
+     "description": "Corresponds to the label values of Node resource.",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -16940,6 +16972,10 @@
    "type": "object",
    "description": "A set of Shielded VM options.",
    "properties": {
+    "enableIntegrityMonitoring": {
+     "type": "boolean",
+     "description": "Defines whether the instance should have integrity monitoring enabled."
+    },
     "enableSecureBoot": {
      "type": "boolean",
      "description": "Defines whether the instance should have secure boot enabled."
@@ -16983,6 +17019,13 @@
      "type": "string",
      "description": "[Output Only] Size of the snapshot, specified in GB.",
      "format": "int64"
+    },
+    "guestOsFeatures": {
+     "type": "array",
+     "description": "[Output Only] A list of features to enable on the guest operating system. Applicable only for bootable images. Read  Enabling guest operating system features to see a list of available options.",
+     "items": {
+      "$ref": "GuestOsFeature"
+     }
     },
     "id": {
      "type": "string",
@@ -17852,6 +17895,10 @@
     "ipCidrRange": {
      "type": "string",
      "description": "The range of internal addresses that are owned by this subnetwork. Provide this property when you create the subnetwork. For example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-overlapping within a network. Only IPv4 is supported. This field can be set only at resource creation time."
+    },
+    "ipv6CidrRange": {
+     "type": "string",
+     "description": "[Output Only] The range of internal IPv6 addresses that are owned by this subnetwork."
     },
     "kind": {
      "type": "string",

@@ -822,7 +822,6 @@
               "path": "v1beta1/{+parent}/configs",
               "flatPath": "v1beta1/projects/{projectsId}/configs",
               "httpMethod": "GET",
-              "description": "Lists all the RuntimeConfig resources within project.",
               "parameters": {
                 "parent": {
                   "description": "The [project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840?hl=en&ref_topic=6158848)\nfor this request, in the format `projects\/[PROJECT_ID]`.",
@@ -852,14 +851,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloudruntimeconfig"
-              ]
+              ],
+              "description": "Lists all the RuntimeConfig resources within project."
             },
             "get": {
               "id": "runtimeconfig.projects.configs.get",
               "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}",
               "httpMethod": "GET",
-              "description": "Gets information about a RuntimeConfig resource.",
               "parameters": {
                 "name": {
                   "description": "The name of the RuntimeConfig resource to retrieve, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
@@ -878,14 +877,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloudruntimeconfig"
-              ]
+              ],
+              "description": "Gets information about a RuntimeConfig resource."
             },
             "create": {
               "id": "runtimeconfig.projects.configs.create",
               "path": "v1beta1/{+parent}/configs",
               "flatPath": "v1beta1/projects/{projectsId}/configs",
               "httpMethod": "POST",
-              "description": "Creates a new RuntimeConfig resource. The configuration name must be\nunique within project.",
               "parameters": {
                 "parent": {
                   "description": "The [project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840?hl=en&ref_topic=6158848)\nfor this request, in the format `projects\/[PROJECT_ID]`.",
@@ -912,14 +911,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloudruntimeconfig"
-              ]
+              ],
+              "description": "Creates a new RuntimeConfig resource. The configuration name must be\nunique within project."
             },
             "update": {
               "id": "runtimeconfig.projects.configs.update",
               "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}",
               "httpMethod": "PUT",
-              "description": "Updates a RuntimeConfig resource. The configuration must exist beforehand.",
               "parameters": {
                 "name": {
                   "description": "The name of the RuntimeConfig resource to update, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
@@ -941,14 +940,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloudruntimeconfig"
-              ]
+              ],
+              "description": "Updates a RuntimeConfig resource. The configuration must exist beforehand."
             },
             "delete": {
               "id": "runtimeconfig.projects.configs.delete",
               "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a RuntimeConfig resource.",
               "parameters": {
                 "name": {
                   "description": "The RuntimeConfig resource to delete, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
@@ -967,14 +966,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloudruntimeconfig"
-              ]
+              ],
+              "description": "Deletes a RuntimeConfig resource."
             },
             "setIamPolicy": {
               "id": "runtimeconfig.projects.configs.setIamPolicy",
               "path": "v1beta1/{+resource}:setIamPolicy",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}:setIamPolicy",
               "httpMethod": "POST",
-              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
@@ -996,14 +995,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloudruntimeconfig"
-              ]
+              ],
+              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
             },
             "getIamPolicy": {
               "id": "runtimeconfig.projects.configs.getIamPolicy",
               "path": "v1beta1/{+resource}:getIamPolicy",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}:getIamPolicy",
               "httpMethod": "GET",
-              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1022,14 +1021,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloudruntimeconfig"
-              ]
+              ],
+              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
             },
             "testIamPermissions": {
               "id": "runtimeconfig.projects.configs.testIamPermissions",
               "path": "v1beta1/{+resource}:testIamPermissions",
               "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}:testIamPermissions",
               "httpMethod": "POST",
-              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1051,7 +1050,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloudruntimeconfig"
-              ]
+              ],
+              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
             }
           }
           ,
@@ -1063,7 +1063,6 @@
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}",
                   "httpMethod": "GET",
-                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
@@ -1082,14 +1081,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
                 },
                 "testIamPermissions": {
                   "id": "runtimeconfig.projects.configs.operations.testIamPermissions",
                   "path": "v1beta1/{+resource}:testIamPermissions",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/operations/{operationsId}:testIamPermissions",
                   "httpMethod": "POST",
-                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1111,7 +1110,8 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
                 }
               }
             },
@@ -1122,7 +1122,6 @@
                   "path": "v1beta1/{+parent}/variables",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables",
                   "httpMethod": "GET",
-                  "description": "Lists variables within given a configuration, matching any provided\nfilters. This only lists variable names, not the values, unless\n`return_values` is true, in which case only variables that user has IAM\npermission to GetVariable will be returned.",
                   "parameters": {
                     "parent": {
                       "description": "The path to the RuntimeConfig resource for which you want to list\nvariables. The configuration must exist beforehand; the path must be in the\nformat:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
@@ -1162,14 +1161,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Lists variables within given a configuration, matching any provided\nfilters. This only lists variable names, not the values, unless\n`return_values` is true, in which case only variables that user has IAM\npermission to GetVariable will be returned."
                 },
                 "get": {
                   "id": "runtimeconfig.projects.configs.variables.get",
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}",
                   "httpMethod": "GET",
-                  "description": "Gets information about a single variable.",
                   "parameters": {
                     "name": {
                       "description": "The name of the variable to return, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/variables\/[VARIBLE_NAME]`",
@@ -1188,14 +1187,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Gets information about a single variable."
                 },
                 "watch": {
                   "id": "runtimeconfig.projects.configs.variables.watch",
                   "path": "v1beta1/{+name}:watch",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:watch",
                   "httpMethod": "POST",
-                  "description": "Watches a specific variable and waits for a change in the variable's value.\nWhen there is a change, this method returns the new value or times out.\n\nIf a variable is deleted while being watched, the `variableState` state is\nset to `DELETED` and the method returns the last known variable `value`.\n\nIf you set the deadline for watching to a larger value than internal\ntimeout (60 seconds), the current variable value is returned and the\n`variableState` will be `VARIABLE_STATE_UNSPECIFIED`.\n\nTo learn more about creating a watcher, read the\n[Watching a Variable for\nChanges](\/deployment-manager\/runtime-configurator\/watching-a-variable)\ndocumentation.",
                   "parameters": {
                     "name": {
                       "description": "The name of the variable to watch, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
@@ -1217,14 +1216,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Watches a specific variable and waits for a change in the variable's value.\nWhen there is a change, this method returns the new value or times out.\n\nIf a variable is deleted while being watched, the `variableState` state is\nset to `DELETED` and the method returns the last known variable `value`.\n\nIf you set the deadline for watching to a larger value than internal\ntimeout (60 seconds), the current variable value is returned and the\n`variableState` will be `VARIABLE_STATE_UNSPECIFIED`.\n\nTo learn more about creating a watcher, read the\n[Watching a Variable for\nChanges](\/deployment-manager\/runtime-configurator\/watching-a-variable)\ndocumentation."
                 },
                 "create": {
                   "id": "runtimeconfig.projects.configs.variables.create",
                   "path": "v1beta1/{+parent}/variables",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables",
                   "httpMethod": "POST",
-                  "description": "Creates a variable within the given configuration. You cannot create\na variable with a name that is a prefix of an existing variable name, or a\nname that has an existing variable name as a prefix.\n\nTo learn more about creating a variable, read the\n[Setting and Getting\nData](\/deployment-manager\/runtime-configurator\/set-and-get-variables)\ndocumentation.",
                   "parameters": {
                     "parent": {
                       "description": "The path to the RutimeConfig resource that this variable should belong to.\nThe configuration must exist beforehand; the path must be in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
@@ -1251,14 +1250,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Creates a variable within the given configuration. You cannot create\na variable with a name that is a prefix of an existing variable name, or a\nname that has an existing variable name as a prefix.\n\nTo learn more about creating a variable, read the\n[Setting and Getting\nData](\/deployment-manager\/runtime-configurator\/set-and-get-variables)\ndocumentation."
                 },
                 "update": {
                   "id": "runtimeconfig.projects.configs.variables.update",
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}",
                   "httpMethod": "PUT",
-                  "description": "Updates an existing variable with a new value.",
                   "parameters": {
                     "name": {
                       "description": "The name of the variable to update, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/variables\/[VARIABLE_NAME]`",
@@ -1280,14 +1279,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Updates an existing variable with a new value."
                 },
                 "delete": {
                   "id": "runtimeconfig.projects.configs.variables.delete",
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes a variable or multiple variables.\n\nIf you specify a variable name, then that variable is deleted. If you\nspecify a prefix and `recursive` is true, then all variables with that\nprefix are deleted. You must set a `recursive` to true if you delete\nvariables by prefix.",
                   "parameters": {
                     "name": {
                       "description": "The name of the variable to delete, in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/variables\/[VARIABLE_NAME]`",
@@ -1311,14 +1310,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Deletes a variable or multiple variables.\n\nIf you specify a variable name, then that variable is deleted. If you\nspecify a prefix and `recursive` is true, then all variables with that\nprefix are deleted. You must set a `recursive` to true if you delete\nvariables by prefix."
                 },
                 "testIamPermissions": {
                   "id": "runtimeconfig.projects.configs.variables.testIamPermissions",
                   "path": "v1beta1/{+resource}:testIamPermissions",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/variables/{variablesId}:testIamPermissions",
                   "httpMethod": "POST",
-                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1340,7 +1339,8 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
                 }
               }
             },
@@ -1351,7 +1351,6 @@
                   "path": "v1beta1/{+parent}/waiters",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters",
                   "httpMethod": "GET",
-                  "description": "List waiters within the given configuration.",
                   "parameters": {
                     "parent": {
                       "description": "The path to the configuration for which you want to get a list of waiters.\nThe configuration must exist beforehand; the path must be in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
@@ -1381,14 +1380,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "List waiters within the given configuration."
                 },
                 "get": {
                   "id": "runtimeconfig.projects.configs.waiters.get",
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}",
                   "httpMethod": "GET",
-                  "description": "Gets information about a single waiter.",
                   "parameters": {
                     "name": {
                       "description": "The fully-qualified name of the Waiter resource object to retrieve, in the\nformat:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/waiters\/[WAITER_NAME]`",
@@ -1407,14 +1406,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Gets information about a single waiter."
                 },
                 "create": {
                   "id": "runtimeconfig.projects.configs.waiters.create",
                   "path": "v1beta1/{+parent}/waiters",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters",
                   "httpMethod": "POST",
-                  "description": "Creates a Waiter resource. This operation returns a long-running Operation\nresource which can be polled for completion. However, a waiter with the\ngiven name will exist (and can be retrieved) prior to the operation\ncompleting. If the operation fails, the failed Waiter resource will\nstill exist and must be deleted prior to subsequent creation attempts.",
                   "parameters": {
                     "parent": {
                       "description": "The path to the configuration that will own the waiter.\nThe configuration must exist beforehand; the path must be in the format:\n\n`projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`.",
@@ -1441,14 +1440,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Creates a Waiter resource. This operation returns a long-running Operation\nresource which can be polled for completion. However, a waiter with the\ngiven name will exist (and can be retrieved) prior to the operation\ncompleting. If the operation fails, the failed Waiter resource will\nstill exist and must be deleted prior to subsequent creation attempts."
                 },
                 "delete": {
                   "id": "runtimeconfig.projects.configs.waiters.delete",
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes the waiter with the specified name.",
                   "parameters": {
                     "name": {
                       "description": "The Waiter resource to delete, in the format:\n\n `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/waiters\/[WAITER_NAME]`",
@@ -1467,14 +1466,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Deletes the waiter with the specified name."
                 },
                 "testIamPermissions": {
                   "id": "runtimeconfig.projects.configs.waiters.testIamPermissions",
                   "path": "v1beta1/{+resource}:testIamPermissions",
                   "flatPath": "v1beta1/projects/{projectsId}/configs/{configsId}/waiters/{waitersId}:testIamPermissions",
                   "httpMethod": "POST",
-                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1496,7 +1495,8 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudruntimeconfig"
-                  ]
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
                 }
               }
             }

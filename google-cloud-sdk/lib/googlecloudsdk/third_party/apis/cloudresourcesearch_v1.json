@@ -189,7 +189,6 @@
           "path": "v1/resources:search",
           "flatPath": "v1/resources:search",
           "httpMethod": "GET",
-          "description": "Lists accessible Google Cloud Platform resources that match a query. A\nresource is accessible to the caller if the caller has permission\nto perform a GET operation on the resource.",
           "parameters": {
             "query": {
               "description": "Optional. The query string. If the query is missing or empty,\nall accessible resources are returned.\n\nAny field in a supported resource type's schema may be specified in\nthe query. Additionally, every resource has a `@type` field whose value is\nthe resource's type URL. See `SearchResult.resource_type` for more\ninformation.\n\nExample: The following query searches for accessible Compute Engine VM\ninstances (`@type:Instance`) that have an `env` label value of `prod` and\nthat have a machine type that starts with `\"n1-stand\"`:\n\n    @type:Instance labels.env:prod machineType:n1-stand*\n\nFor more information, see [Search Queries](\/resource-search\/docs\/search-queries)\nand [Resource Types](\/resource-search\/docs\/reference\/Resource.Types).",
@@ -221,7 +220,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-platform.read-only"
-          ]
+          ],
+          "description": "Lists accessible Google Cloud Platform resources that match a query. A\nresource is accessible to the caller if the caller has permission\nto perform a GET operation on the resource."
         }
       }
     }

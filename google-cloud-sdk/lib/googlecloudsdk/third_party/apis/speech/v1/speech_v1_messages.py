@@ -164,9 +164,6 @@ class RecognitionConfig(_messages.Message):
       `RecognitionAudio` messages.
 
   Fields:
-    enableWordConfidence: *Optional* If `true`, the top result includes a list
-      of words and the confidence for those words. If `false`, no word-level
-      confidence information is returned. The default is `false`.
     enableWordTimeOffsets: *Optional* If `true`, the top result includes a
       list of words and the start and end time offsets (timestamps) for those
       words. If `false`, no word-level time offset information is returned.
@@ -242,14 +239,13 @@ class RecognitionConfig(_messages.Message):
     OGG_OPUS = 6
     SPEEX_WITH_HEADER_BYTE = 7
 
-  enableWordConfidence = _messages.BooleanField(1)
-  enableWordTimeOffsets = _messages.BooleanField(2)
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 3)
-  languageCode = _messages.StringField(4)
-  maxAlternatives = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  profanityFilter = _messages.BooleanField(6)
-  sampleRateHertz = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 8, repeated=True)
+  enableWordTimeOffsets = _messages.BooleanField(1)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 2)
+  languageCode = _messages.StringField(3)
+  maxAlternatives = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  profanityFilter = _messages.BooleanField(5)
+  sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 7, repeated=True)
 
 
 class RecognizeRequest(_messages.Message):

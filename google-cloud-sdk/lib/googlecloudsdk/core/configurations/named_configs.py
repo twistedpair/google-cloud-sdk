@@ -316,8 +316,8 @@ class ConfigurationStore(object):
     except (OSError, IOError) as e:
       raise NamedConfigFileAccessError(
           'Failed to activate configuration [{0}].  Ensure you have the '
-          'correct permissions on [{1}]'.format(config_name,
-                                                paths.named_config_directory),
+          'correct permissions on [{1}]'.format(
+              config_name, paths.named_config_activator_path),
           e)
 
     ActivePropertiesFile.Invalidate(mark_changed=True)

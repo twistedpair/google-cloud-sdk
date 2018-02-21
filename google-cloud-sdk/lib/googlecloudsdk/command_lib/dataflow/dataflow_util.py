@@ -20,7 +20,7 @@ import re
 from apitools.base.py import exceptions
 from apitools.base.py import list_pager
 
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.api_lib.dataflow import exceptions as dataflow_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -35,13 +35,6 @@ WINDMILL_WATERMARK_RE = re.compile('^(.*)-windmill-(.*)-watermark')
 
 
 JOBS_COLLECTION = 'dataflow.projects.locations.jobs'
-
-
-class ServiceException(calliope_exceptions.ToolException):
-  """Generic exception related to calling the Dataflow service APIs."""
-
-  def __init__(self, message):
-    super(calliope_exceptions.ToolException, self).__init__(message)
 
 
 def GetErrorMessage(error):
@@ -71,7 +64,7 @@ def MakeErrorMessage(error, job_id='', project_id='', region_id=''):
     region_id: The region ID that was used in the command.
 
   Returns:
-    ServiceException
+    str, a standard error message.
   """
   if job_id:
     job_id = ' with job ID [{0}]'.format(job_id)
@@ -79,8 +72,8 @@ def MakeErrorMessage(error, job_id='', project_id='', region_id=''):
     project_id = ' in project [{0}]'.format(project_id)
   if region_id:
     region_id = ' in regional endpoint [{0}]'.format(region_id)
-  return ServiceException('Failed operation{0}{1}{2}: {3}'.format(
-      job_id, project_id, region_id, GetErrorMessage(error)))
+  return 'Failed operation{0}{1}{2}: {3}'.format(
+      job_id, project_id, region_id, GetErrorMessage(error))
 
 
 def YieldExceptionWrapper(generator, job_id='', project_id='', region_id=''):
@@ -96,13 +89,15 @@ def YieldExceptionWrapper(generator, job_id='', project_id='', region_id=''):
     The generated object.
 
   Raises:
-    ServiceException
+    dataflow_exceptions.ServiceException: An exception for errors raised by
+      the service.
   """
   try:
     while True:
       yield next(generator)
   except exceptions.HttpError as e:
-    raise MakeErrorMessage(e, job_id, project_id, region_id)
+    raise dataflow_exceptions.ServiceException(
+        MakeErrorMessage(e, job_id, project_id, region_id))
 
 
 def YieldFromList(service,
@@ -139,7 +134,7 @@ def YieldFromList(service,
     The wrapped generator.
 
   Raises:
-    ServiceException
+    dataflow_exceptions.ServiceException: if list request failed.
   """
   method = 'List'
   if not region_id:

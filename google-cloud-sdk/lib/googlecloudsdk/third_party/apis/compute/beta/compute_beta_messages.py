@@ -7570,6 +7570,8 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
 
   Fields:
     attachedDisk: A AttachedDisk resource to be passed as the request body.
+    forceAttach: Whether to force attach the disk even if it's currently
+      attached to another instance. This is only available for regional disks.
     instance: The instance name for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -7586,10 +7588,11 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
   """
 
   attachedDisk = _messages.MessageField('AttachedDisk', 1)
-  instance = _messages.StringField(2, required=True)
-  project = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  zone = _messages.StringField(5, required=True)
+  forceAttach = _messages.BooleanField(2)
+  instance = _messages.StringField(3, required=True)
+  project = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
@@ -8469,6 +8472,34 @@ class ComputeInterconnectAttachmentsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeInterconnectAttachmentsPatchRequest(_messages.Message):
+  """A ComputeInterconnectAttachmentsPatchRequest object.
+
+  Fields:
+    interconnectAttachment: Name of the interconnect attachment to patch.
+    interconnectAttachmentResource: A InterconnectAttachment resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  interconnectAttachment = _messages.StringField(1, required=True)
+  interconnectAttachmentResource = _messages.MessageField('InterconnectAttachment', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class ComputeInterconnectAttachmentsSetLabelsRequest(_messages.Message):
@@ -9996,6 +10027,288 @@ class ComputeRegionCommitmentsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionDiskTypesGetRequest(_messages.Message):
+  """A ComputeRegionDiskTypesGetRequest object.
+
+  Fields:
+    diskType: Name of the disk type to return.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+  """
+
+  diskType = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionDiskTypesListRequest(_messages.Message):
+  """A ComputeRegionDiskTypesListRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionDisksCreateSnapshotRequest(_messages.Message):
+  """A ComputeRegionDisksCreateSnapshotRequest object.
+
+  Fields:
+    disk: Name of the regional persistent disk to snapshot.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    snapshot: A Snapshot resource to be passed as the request body.
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  snapshot = _messages.MessageField('Snapshot', 5)
+
+
+class ComputeRegionDisksDeleteRequest(_messages.Message):
+  """A ComputeRegionDisksDeleteRequest object.
+
+  Fields:
+    disk: Name of the regional persistent disk to delete.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionDisksGetRequest(_messages.Message):
+  """A ComputeRegionDisksGetRequest object.
+
+  Fields:
+    disk: Name of the regional persistent disk to return.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionDisksInsertRequest(_messages.Message):
+  """A ComputeRegionDisksInsertRequest object.
+
+  Fields:
+    disk: A Disk resource to be passed as the request body.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sourceImage: Optional. Source image to restore onto a disk.
+  """
+
+  disk = _messages.MessageField('Disk', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  sourceImage = _messages.StringField(5)
+
+
+class ComputeRegionDisksListRequest(_messages.Message):
+  """A ComputeRegionDisksListRequest object.
+
+  Fields:
+    filter: Sets a filter {expression} for filtering listed resources. Your
+      {expression} must be in the format: field_name comparison_string
+      literal_string.  The field_name is the name of the field you want to
+      compare. Only atomic field types are supported (string, number,
+      boolean). The comparison_string must be either eq (equals) or ne (not
+      equals). The literal_string is the string value to filter to. The
+      literal value must be valid for the type of field you are filtering by
+      (string, number, boolean). For string fields, the literal value is
+      interpreted as a regular expression using RE2 syntax. The literal value
+      must match the entire field.  For example, to filter for instances that
+      do not have a name of example-instance, you would use name ne example-
+      instance.  You can filter on nested fields. For example, you could
+      filter on instances that have set the scheduling.automaticRestart field
+      to true. Use filtering on nested fields to take advantage of labels to
+      organize and search for results based on label values.  To filter on
+      multiple expressions, provide each separate expression within
+      parentheses. For example, (scheduling.automaticRestart eq true) (zone eq
+      us-central1-f). Multiple expressions are treated as AND expressions,
+      meaning that resources must match all expressions to pass the filters.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionDisksResizeRequest(_messages.Message):
+  """A ComputeRegionDisksResizeRequest object.
+
+  Fields:
+    disk: Name of the regional persistent disk.
+    project: The project ID for this request.
+    region: Name of the region for this request.
+    regionDisksResizeRequest: A RegionDisksResizeRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionDisksResizeRequest = _messages.MessageField('RegionDisksResizeRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionDisksSetLabelsRequest(_messages.Message):
+  """A ComputeRegionDisksSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
+
+
+class ComputeRegionDisksTestIamPermissionsRequest(_messages.Message):
+  """A ComputeRegionDisksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -14428,6 +14741,12 @@ class Disk(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     options: Internal use only.
+    region: [Output Only] URL of the region where the disk resides. Only
+      applicable for regional resources. You must specify this field as part
+      of the HTTP request URL. It is not settable as a field in the request
+      body.
+    replicaZones: URLs of the zones where the disk should be replicated to.
+      Only applicable for regional resources.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     sizeGb: Size of the persistent disk, specified in GB. You can specify this
@@ -14547,19 +14866,21 @@ class Disk(_messages.Message):
   licenses = _messages.StringField(12, repeated=True)
   name = _messages.StringField(13)
   options = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  sizeGb = _messages.IntegerField(16)
-  sourceImage = _messages.StringField(17)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
-  sourceImageId = _messages.StringField(19)
-  sourceSnapshot = _messages.StringField(20)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
-  sourceSnapshotId = _messages.StringField(22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 24)
-  type = _messages.StringField(25)
-  users = _messages.StringField(26, repeated=True)
-  zone = _messages.StringField(27)
+  region = _messages.StringField(15)
+  replicaZones = _messages.StringField(16, repeated=True)
+  selfLink = _messages.StringField(17)
+  sizeGb = _messages.IntegerField(18)
+  sourceImage = _messages.StringField(19)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
+  sourceImageId = _messages.StringField(21)
+  sourceSnapshot = _messages.StringField(22)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
+  sourceSnapshotId = _messages.StringField(24)
+  status = _messages.EnumField('StatusValueValuesEnum', 25)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 26)
+  type = _messages.StringField(27)
+  users = _messages.StringField(28, repeated=True)
+  zone = _messages.StringField(29)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -14719,7 +15040,17 @@ class DiskInstantiationConfig(_messages.Message):
 
   Enums:
     InstantiateFromValueValuesEnum: Specifies whether to include the disk and
-      what image to use.
+      what image to use. Possible values are:   - source-image: to use the
+      same image that was used to create the source instance's corresponding
+      disk. Applicable to the boot disk and additional read-write disks.  -
+      source-image-family: to use the same image family that was used to
+      create the source instance's corresponding disk. Applicable to the boot
+      disk and additional read-write disks.  - custom-image: to use a user-
+      provided image url for disk creation. Applicable to the boot disk and
+      additional read-write disks.  - attach-read-only: to attach a read-only
+      disk. Applicable to read-only disks.  - do-not-include: to exclude a
+      disk from the template. Applicable to additional read-write disks, local
+      SSDs, and read-only disks.
 
   Fields:
     autoDelete: Specifies whether the disk will be auto-deleted when the
@@ -14730,11 +15061,31 @@ class DiskInstantiationConfig(_messages.Message):
     deviceName: Specifies the device name of the disk to which the
       configurations apply to.
     instantiateFrom: Specifies whether to include the disk and what image to
-      use.
+      use. Possible values are:   - source-image: to use the same image that
+      was used to create the source instance's corresponding disk. Applicable
+      to the boot disk and additional read-write disks.  - source-image-
+      family: to use the same image family that was used to create the source
+      instance's corresponding disk. Applicable to the boot disk and
+      additional read-write disks.  - custom-image: to use a user-provided
+      image url for disk creation. Applicable to the boot disk and additional
+      read-write disks.  - attach-read-only: to attach a read-only disk.
+      Applicable to read-only disks.  - do-not-include: to exclude a disk from
+      the template. Applicable to additional read-write disks, local SSDs, and
+      read-only disks.
   """
 
   class InstantiateFromValueValuesEnum(_messages.Enum):
-    """Specifies whether to include the disk and what image to use.
+    """Specifies whether to include the disk and what image to use. Possible
+    values are:   - source-image: to use the same image that was used to
+    create the source instance's corresponding disk. Applicable to the boot
+    disk and additional read-write disks.  - source-image-family: to use the
+    same image family that was used to create the source instance's
+    corresponding disk. Applicable to the boot disk and additional read-write
+    disks.  - custom-image: to use a user-provided image url for disk
+    creation. Applicable to the boot disk and additional read-write disks.  -
+    attach-read-only: to attach a read-only disk. Applicable to read-only
+    disks.  - do-not-include: to exclude a disk from the template. Applicable
+    to additional read-write disks, local SSDs, and read-only disks.
 
     Values:
       ATTACH_READ_ONLY: <no description>
@@ -20365,6 +20716,7 @@ class InterconnectAttachment(_messages.Message):
   Enums:
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this interconnect attachment is functional.
+    TypeValueValuesEnum:
 
   Messages:
     LabelsValue: Labels to apply to this InterconnectAttachment resource.
@@ -20372,6 +20724,16 @@ class InterconnectAttachment(_messages.Message):
       key/value must comply with RFC1035. Label values may be empty.
 
   Fields:
+    adminEnabled: Determines whether this Attachment will carry packets. Not
+      present for PARTNER_PROVIDER.
+    candidateSubnets: Up to 16 candidate prefixes that can be used to restrict
+      the allocation of cloudRouterIpAddress and customerRouterIpAddress for
+      this attachment. All prefixes must be within link-local address space
+      (169.254.0.0/16) and must be /29 or shorter (/28, /27, etc). Google will
+      attempt to select an unused /29 from the supplied candidate prefix(es).
+      The request will fail if all possible /29s are in use on Google?s edge.
+      If not supplied, Google will randomly select an unused /29 from all of
+      link-local space.
     cloudRouterIpAddress: [Output Only] IPv4 address + prefix length to be
       configured on Cloud Router Interface for this interconnect attachment.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -20419,6 +20781,11 @@ class InterconnectAttachment(_messages.Message):
       InterconnectAttachment will automatically connect the Interconnect to
       the network & region within which the Cloud Router is configured.
     selfLink: [Output Only] Server-defined URL for the resource.
+    type: A TypeValueValuesEnum attribute.
+    vlanTag8021q: Available only for DEDICATED and PARTNER_PROVIDER. Desired
+      VLAN tag for this attachment, in the range 2-4094. This field refers to
+      802.1q VLAN tag, also known as IEEE 802.1Q Only specified at creation
+      time.
   """
 
   class OperationalStatusValueValuesEnum(_messages.Enum):
@@ -20431,6 +20798,14 @@ class InterconnectAttachment(_messages.Message):
     """
     OS_ACTIVE = 0
     OS_UNPROVISIONED = 1
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """TypeValueValuesEnum enum type.
+
+    Values:
+      DEDICATED: <no description>
+    """
+    DEDICATED = 0
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -20458,22 +20833,26 @@ class InterconnectAttachment(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  cloudRouterIpAddress = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  customerRouterIpAddress = _messages.StringField(3)
-  description = _messages.StringField(4)
-  googleReferenceId = _messages.StringField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  interconnect = _messages.StringField(7)
-  kind = _messages.StringField(8, default=u'compute#interconnectAttachment')
-  labelFingerprint = _messages.BytesField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 12)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 13)
-  region = _messages.StringField(14)
-  router = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
+  adminEnabled = _messages.BooleanField(1)
+  candidateSubnets = _messages.StringField(2, repeated=True)
+  cloudRouterIpAddress = _messages.StringField(3)
+  creationTimestamp = _messages.StringField(4)
+  customerRouterIpAddress = _messages.StringField(5)
+  description = _messages.StringField(6)
+  googleReferenceId = _messages.StringField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(9)
+  kind = _messages.StringField(10, default=u'compute#interconnectAttachment')
+  labelFingerprint = _messages.BytesField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  name = _messages.StringField(13)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 14)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 15)
+  region = _messages.StringField(16)
+  router = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  vlanTag8021q = _messages.IntegerField(20, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -22116,7 +22495,7 @@ class MachineTypesScopedList(_messages.Message):
 
 
 class ManagedInstance(_messages.Message):
-  """A ManagedInstance object.
+  """Next available tag: 12
 
   Enums:
     CurrentActionValueValuesEnum: [Output Only] The current action that the
@@ -23871,6 +24250,142 @@ class RegionAutoscalerList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class RegionDiskTypeList(_messages.Message):
+  """A RegionDiskTypeList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of DiskType resources.
+    kind: [Output Only] Type of resource. Always compute#regionDiskTypeList
+      for region disk types.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('DiskType', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#regionDiskTypeList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class RegionDisksResizeRequest(_messages.Message):
+  """A RegionDisksResizeRequest object.
+
+  Fields:
+    sizeGb: The new size of the regional persistent disk, which is specified
+      in GB.
+  """
+
+  sizeGb = _messages.IntegerField(1)
 
 
 class RegionInstanceGroupList(_messages.Message):

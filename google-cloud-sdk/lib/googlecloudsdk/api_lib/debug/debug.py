@@ -517,7 +517,7 @@ class Debuggee(DebugObject):
 
   def ListBreakpoints(self, location_regexp=None, resource_ids=None,
                       include_all_users=False, include_inactive=False,
-                      restrict_to_type=None):
+                      restrict_to_type=None, full_details=False):
     """Returns all breakpoints matching the given IDs or patterns.
 
     Lists all breakpoints for this debuggee, and returns every breakpoint
@@ -538,6 +538,8 @@ class Debuggee(DebugObject):
         whether or not this flag is set.
       restrict_to_type: An optional breakpoint type (LOGPOINT_TYPE or
         SNAPSHOT_TYPE)
+      full_details: If true, issue a GetBreakpoint request for every result to
+        get full details including the call stack and variable table.
     Returns:
       A list of all matching breakpoints.
     Raises:
@@ -601,7 +603,17 @@ class Debuggee(DebugObject):
               if _BreakpointMatchesIdOrRegexp(bp, [], [p])]:
         raise errors.NoMatchError(self._BreakpointDescription(restrict_to_type),
                                   p.pattern)
-    return self._FilteredDictListWithInfo(result, restrict_to_type)
+    result = self._FilteredDictListWithInfo(result, restrict_to_type)
+    if full_details:
+      def IsCompletedSnapshot(bp):
+        return ((not bp.action or
+                 bp.action == self.BreakpointAction(self.SNAPSHOT_TYPE)) and
+                bp.isFinalState and not (bp.status and bp.status.isError))
+      result = [
+          self.GetBreakpoint(bp.id) if IsCompletedSnapshot(bp) else bp
+          for bp in result
+      ]
+    return result
 
   def CreateSnapshot(self, location, condition=None, expressions=None,
                      user_email=None, labels=None):

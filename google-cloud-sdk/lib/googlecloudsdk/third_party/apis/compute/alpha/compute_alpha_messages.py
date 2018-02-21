@@ -17156,7 +17156,17 @@ class DiskInstantiationConfig(_messages.Message):
 
   Enums:
     InstantiateFromValueValuesEnum: Specifies whether to include the disk and
-      what image to use.
+      what image to use. Possible values are:   - source-image: to use the
+      same image that was used to create the source instance's corresponding
+      disk. Applicable to the boot disk and additional read-write disks.  -
+      source-image-family: to use the same image family that was used to
+      create the source instance's corresponding disk. Applicable to the boot
+      disk and additional read-write disks.  - custom-image: to use a user-
+      provided image url for disk creation. Applicable to the boot disk and
+      additional read-write disks.  - attach-read-only: to attach a read-only
+      disk. Applicable to read-only disks.  - do-not-include: to exclude a
+      disk from the template. Applicable to additional read-write disks, local
+      SSDs, and read-only disks.
 
   Fields:
     autoDelete: Specifies whether the disk will be auto-deleted when the
@@ -17167,11 +17177,31 @@ class DiskInstantiationConfig(_messages.Message):
     deviceName: Specifies the device name of the disk to which the
       configurations apply to.
     instantiateFrom: Specifies whether to include the disk and what image to
-      use.
+      use. Possible values are:   - source-image: to use the same image that
+      was used to create the source instance's corresponding disk. Applicable
+      to the boot disk and additional read-write disks.  - source-image-
+      family: to use the same image family that was used to create the source
+      instance's corresponding disk. Applicable to the boot disk and
+      additional read-write disks.  - custom-image: to use a user-provided
+      image url for disk creation. Applicable to the boot disk and additional
+      read-write disks.  - attach-read-only: to attach a read-only disk.
+      Applicable to read-only disks.  - do-not-include: to exclude a disk from
+      the template. Applicable to additional read-write disks, local SSDs, and
+      read-only disks.
   """
 
   class InstantiateFromValueValuesEnum(_messages.Enum):
-    """Specifies whether to include the disk and what image to use.
+    """Specifies whether to include the disk and what image to use. Possible
+    values are:   - source-image: to use the same image that was used to
+    create the source instance's corresponding disk. Applicable to the boot
+    disk and additional read-write disks.  - source-image-family: to use the
+    same image family that was used to create the source instance's
+    corresponding disk. Applicable to the boot disk and additional read-write
+    disks.  - custom-image: to use a user-provided image url for disk
+    creation. Applicable to the boot disk and additional read-write disks.  -
+    attach-read-only: to attach a read-only disk. Applicable to read-only
+    disks.  - do-not-include: to exclude a disk from the template. Applicable
+    to additional read-write disks, local SSDs, and read-only disks.
 
     Values:
       ATTACH_READ_ONLY: <no description>
@@ -18464,11 +18494,13 @@ class ForwardingRule(_messages.Message):
     Values:
       EXTERNAL: <no description>
       INTERNAL: <no description>
+      INTERNAL_SELF_MANAGED: <no description>
       INVALID: <no description>
     """
     EXTERNAL = 0
     INTERNAL = 1
-    INVALID = 2
+    INTERNAL_SELF_MANAGED = 2
+    INVALID = 3
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     """This signifies the networking tier used for configuring this load
@@ -26912,7 +26944,7 @@ class MaintenanceWindow(_messages.Message):
 
 
 class ManagedInstance(_messages.Message):
-  """A ManagedInstance object.
+  """Next available tag: 12
 
   Enums:
     CurrentActionValueValuesEnum: [Output Only] The current action that the
@@ -26937,8 +26969,6 @@ class ManagedInstance(_messages.Message):
       created the instance and it is in the process of being verified.
     InstanceStatusValueValuesEnum: [Output Only] The status of the instance.
       This field is empty when the instance does not exist.
-    StandbyModeValueValuesEnum: [Output Only] Standby mode of the instance.
-      This field is non-empty iff the instance is a standby.
 
   Fields:
     currentAction: [Output Only] The current action that the managed instance
@@ -26973,8 +27003,6 @@ class ManagedInstance(_messages.Message):
     lastAttempt: [Output Only] Information about the last attempt to create or
       delete the instance.
     override: [Output Only] Override defined for this instance.
-    standbyMode: [Output Only] Standby mode of the instance. This field is
-      non-empty iff the instance is a standby.
     tag: [Output Only] Tag describing the version.
     version: [Output Only] Intended version of this instance.
   """
@@ -27044,15 +27072,6 @@ class ManagedInstance(_messages.Message):
     SUSPENDING = 6
     TERMINATED = 7
 
-  class StandbyModeValueValuesEnum(_messages.Enum):
-    """[Output Only] Standby mode of the instance. This field is non-empty iff
-    the instance is a standby.
-
-    Values:
-      DRAINED: <no description>
-    """
-    DRAINED = 0
-
   currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 1)
   id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   instance = _messages.StringField(3)
@@ -27060,9 +27079,8 @@ class ManagedInstance(_messages.Message):
   instanceTemplate = _messages.StringField(5)
   lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 6)
   override = _messages.MessageField('ManagedInstanceOverride', 7)
-  standbyMode = _messages.EnumField('StandbyModeValueValuesEnum', 8)
-  tag = _messages.StringField(9)
-  version = _messages.MessageField('ManagedInstanceVersion', 10)
+  tag = _messages.StringField(8)
+  version = _messages.MessageField('ManagedInstanceVersion', 9)
 
 
 class ManagedInstanceLastAttempt(_messages.Message):
@@ -31871,6 +31889,7 @@ class Scheduling(_messages.Message):
       instances. Preemptible instances cannot be automatically restarted.  By
       default, this is set to true so an instance is automatically restarted
       if it is terminated by Compute Engine.
+    nodeAffinities: A set of node affinity and anti-affinity.
     onHostMaintenance: Defines the maintenance behavior for this instance. For
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more
@@ -31894,8 +31913,39 @@ class Scheduling(_messages.Message):
     TERMINATE = 1
 
   automaticRestart = _messages.BooleanField(1)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 2)
-  preemptible = _messages.BooleanField(3)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 2, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 3)
+  preemptible = _messages.BooleanField(4)
+
+
+class SchedulingNodeAffinity(_messages.Message):
+  """Node Affinity: the configuration of desired nodes onto which this
+  Instance could be scheduled.
+
+  Enums:
+    OperatorValueValuesEnum: Defines the operation of node selection.
+
+  Fields:
+    key: Corresponds to the label key of Node resource.
+    operator: Defines the operation of node selection.
+    values: Corresponds to the label values of Node resource.
+  """
+
+  class OperatorValueValuesEnum(_messages.Enum):
+    """Defines the operation of node selection.
+
+    Values:
+      IN: <no description>
+      NOT_IN: <no description>
+      OPERATOR_UNSPECIFIED: <no description>
+    """
+    IN = 0
+    NOT_IN = 1
+    OPERATOR_UNSPECIFIED = 2
+
+  key = _messages.StringField(1)
+  operator = _messages.EnumField('OperatorValueValuesEnum', 2)
+  values = _messages.StringField(3, repeated=True)
 
 
 class SecurityPolicy(_messages.Message):
@@ -32196,13 +32246,16 @@ class ShieldedVmConfig(_messages.Message):
   """A set of Shielded VM options.
 
   Fields:
+    enableIntegrityMonitoring: Defines whether the instance should have
+      integrity monitoring enabled.
     enableSecureBoot: Defines whether the instance should have secure boot
       enabled.
     enableVtpm: Defines whether the instance should have the TPM enabled.
   """
 
-  enableSecureBoot = _messages.BooleanField(1)
-  enableVtpm = _messages.BooleanField(2)
+  enableIntegrityMonitoring = _messages.BooleanField(1)
+  enableSecureBoot = _messages.BooleanField(2)
+  enableVtpm = _messages.BooleanField(3)
 
 
 class SignedUrlKey(_messages.Message):
@@ -32246,6 +32299,9 @@ class Snapshot(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     diskSizeGb: [Output Only] Size of the snapshot, specified in GB.
+    guestOsFeatures: [Output Only] A list of features to enable on the guest
+      operating system. Applicable only for bootable images. Read  Enabling
+      guest operating system features to see a list of available options.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#snapshot for
@@ -32360,22 +32416,23 @@ class Snapshot(_messages.Message):
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   diskSizeGb = _messages.IntegerField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#snapshot')
-  labelFingerprint = _messages.BytesField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  licenseCodes = _messages.IntegerField(8, repeated=True)
-  licenses = _messages.StringField(9, repeated=True)
-  name = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
-  sourceDisk = _messages.StringField(13)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
-  sourceDiskId = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  storageBytes = _messages.IntegerField(17)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 18)
-  storageLocations = _messages.StringField(19, repeated=True)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 4, repeated=True)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#snapshot')
+  labelFingerprint = _messages.BytesField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  licenseCodes = _messages.IntegerField(9, repeated=True)
+  licenses = _messages.StringField(10, repeated=True)
+  name = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
+  sourceDisk = _messages.StringField(14)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
+  sourceDiskId = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  storageBytes = _messages.IntegerField(18)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 19)
+  storageLocations = _messages.StringField(20, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -33270,6 +33327,8 @@ class Subnetwork(_messages.Message):
       example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-
       overlapping within a network. Only IPv4 is supported. This field can be
       set only at resource creation time.
+    ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
+      owned by this subnetwork.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
     name: The name of the resource, provided by the client when initially
@@ -33305,13 +33364,14 @@ class Subnetwork(_messages.Message):
   gatewayAddress = _messages.StringField(7)
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   ipCidrRange = _messages.StringField(9)
-  kind = _messages.StringField(10, default=u'compute#subnetwork')
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  privateIpGoogleAccess = _messages.BooleanField(13)
-  region = _messages.StringField(14)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 15, repeated=True)
-  selfLink = _messages.StringField(16)
+  ipv6CidrRange = _messages.StringField(10)
+  kind = _messages.StringField(11, default=u'compute#subnetwork')
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  privateIpGoogleAccess = _messages.BooleanField(14)
+  region = _messages.StringField(15)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 16, repeated=True)
+  selfLink = _messages.StringField(17)
 
 
 class SubnetworkAggregatedList(_messages.Message):

@@ -76,6 +76,12 @@ apis:
       resources:
          assets: "assets/{assetId}"
          assets.tag: "assets/{assetId}/annotationTag"
+    v1alpha2:
+      default: true
+      discovery_doc: categorymanager_v1alpha2.json
+      resources:
+         assets: "assets/{assetId}"
+         assets.tag: "assets/{assetId}/annotationTag"
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json
@@ -330,6 +336,9 @@ apis:
   tpu:
     v1alpha1:
       discovery_doc: tpu_v1alpha1.json
+      default: true
+    v1beta1:
+      discovery_doc: tpu_v1beta1.json
   videointelligence:
     v1:
       discovery_doc: videointelligence_v1.json

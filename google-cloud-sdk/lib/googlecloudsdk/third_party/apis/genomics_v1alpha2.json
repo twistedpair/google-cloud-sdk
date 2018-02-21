@@ -19,6 +19,7 @@
   "servicePath": "",
   "baseUrl": "https://genomics.googleapis.com/",
   "batchPath": "batch",
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -825,7 +826,6 @@
           "path": "v1alpha2/{+name}",
           "flatPath": "v1alpha2/operations",
           "httpMethod": "GET",
-          "description": "Lists operations that match the specified filter in the request.",
           "parameters": {
             "name": {
               "description": "The name of the operation's parent resource.",
@@ -860,14 +860,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Lists operations that match the specified filter in the request."
         },
         "get": {
           "id": "genomics.operations.get",
           "path": "v1alpha2/{+name}",
           "flatPath": "v1alpha2/operations/{operationsId}",
           "httpMethod": "GET",
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
@@ -886,14 +886,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
         },
         "cancel": {
           "id": "genomics.operations.cancel",
           "path": "v1alpha2/{+name}:cancel",
           "flatPath": "v1alpha2/operations/{operationsId}:cancel",
           "httpMethod": "POST",
-          "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients may use Operations.GetOperation or Operations.ListOperations to check whether the cancellation succeeded or the operation completed despite cancellation.",
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be cancelled.",
@@ -915,7 +915,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients may use Operations.GetOperation or Operations.ListOperations to check whether the cancellation succeeded or the operation completed despite cancellation."
         }
       }
     },
@@ -926,7 +927,6 @@
           "path": "v1alpha2/pipelines",
           "flatPath": "v1alpha2/pipelines",
           "httpMethod": "POST",
-          "description": "Creates a pipeline that can be run later. Create takes a Pipeline that\nhas all fields other than `pipelineId` populated, and then returns\nthe same pipeline with `pipelineId` populated. This id can be used\nto run the pipeline.\n\nCaller must have WRITE permission to the project.",
           "parameters": {
           },
           "parameterOrder": [
@@ -940,14 +940,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Creates a pipeline that can be run later. Create takes a Pipeline that\nhas all fields other than `pipelineId` populated, and then returns\nthe same pipeline with `pipelineId` populated. This id can be used\nto run the pipeline.\n\nCaller must have WRITE permission to the project."
         },
         "run": {
           "id": "genomics.pipelines.run",
           "path": "v1alpha2/pipelines:run",
           "flatPath": "v1alpha2/pipelines:run",
           "httpMethod": "POST",
-          "description": "Runs a pipeline. If `pipelineId` is specified in the request, then\nrun a saved pipeline. If `ephemeralPipeline` is specified, then run\nthat pipeline once without saving a copy.\n\nThe caller must have READ permission to the project where the pipeline\nis stored and WRITE permission to the project where the pipeline will be\nrun, as VMs will be created and storage will be used.\n\nIf a pipeline operation is still running after 6 days, it will be canceled.",
           "parameters": {
           },
           "parameterOrder": [
@@ -962,14 +962,14 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Runs a pipeline. If `pipelineId` is specified in the request, then\nrun a saved pipeline. If `ephemeralPipeline` is specified, then run\nthat pipeline once without saving a copy.\n\nThe caller must have READ permission to the project where the pipeline\nis stored and WRITE permission to the project where the pipeline will be\nrun, as VMs will be created and storage will be used.\n\nIf a pipeline operation is still running after 6 days, it will be canceled."
         },
         "get": {
           "id": "genomics.pipelines.get",
           "path": "v1alpha2/pipelines/{pipelineId}",
           "flatPath": "v1alpha2/pipelines/{pipelineId}",
           "httpMethod": "GET",
-          "description": "Retrieves a pipeline based on ID.\n\nCaller must have READ permission to the project.",
           "parameters": {
             "pipelineId": {
               "description": "Caller must have READ access to the project in which this pipeline\nis defined.",
@@ -987,14 +987,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Retrieves a pipeline based on ID.\n\nCaller must have READ permission to the project."
         },
         "list": {
           "id": "genomics.pipelines.list",
           "path": "v1alpha2/pipelines",
           "flatPath": "v1alpha2/pipelines",
           "httpMethod": "GET",
-          "description": "Lists pipelines.\n\nCaller must have READ permission to the project.",
           "parameters": {
             "projectId": {
               "description": "Required. The name of the project to search for pipelines. Caller\nmust have READ access to this project.",
@@ -1026,14 +1026,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Lists pipelines.\n\nCaller must have READ permission to the project."
         },
         "delete": {
           "id": "genomics.pipelines.delete",
           "path": "v1alpha2/pipelines/{pipelineId}",
           "flatPath": "v1alpha2/pipelines/{pipelineId}",
           "httpMethod": "DELETE",
-          "description": "Deletes a pipeline based on ID.\n\nCaller must have WRITE permission to the project.",
           "parameters": {
             "pipelineId": {
               "description": "Caller must have WRITE access to the project in which this pipeline\nis defined.",
@@ -1051,14 +1051,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Deletes a pipeline based on ID.\n\nCaller must have WRITE permission to the project."
         },
         "getControllerConfig": {
           "id": "genomics.pipelines.getControllerConfig",
           "path": "v1alpha2/pipelines:getControllerConfig",
           "flatPath": "v1alpha2/pipelines:getControllerConfig",
           "httpMethod": "GET",
-          "description": "Gets controller configuration information. Should only be called\nby VMs created by the Pipelines Service and not by end users.",
           "parameters": {
             "operationId": {
               "description": "The operation to retrieve controller configuration for.",
@@ -1079,14 +1079,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Gets controller configuration information. Should only be called\nby VMs created by the Pipelines Service and not by end users."
         },
         "setOperationStatus": {
           "id": "genomics.pipelines.setOperationStatus",
           "path": "v1alpha2/pipelines:setOperationStatus",
           "flatPath": "v1alpha2/pipelines:setOperationStatus",
           "httpMethod": "PUT",
-          "description": "Sets status of a given operation. Any new timestamps (as determined by\ndescription) are appended to TimestampEvents. Should only be called by VMs\ncreated by the Pipelines Service and not by end users.",
           "parameters": {
           },
           "parameterOrder": [
@@ -1100,7 +1100,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
-          ]
+          ],
+          "description": "Sets status of a given operation. Any new timestamps (as determined by\ndescription) are appended to TimestampEvents. Should only be called by VMs\ncreated by the Pipelines Service and not by end users."
         }
       }
     }

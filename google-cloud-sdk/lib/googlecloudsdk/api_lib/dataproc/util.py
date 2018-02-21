@@ -15,7 +15,6 @@
 """Common utilities for the gcloud dataproc tool."""
 
 import time
-import urlparse
 import uuid
 
 from apitools.base.py import encoding
@@ -451,13 +450,6 @@ def ParseJob(job_id, dataproc):
 def ParseOperation(operation, dataproc):
   """Parse Operation name, ID, or URL into Cloud SDK reference."""
   collection = 'dataproc.projects.regions.operations'
-  # Dataproc usually refers to Operations by relative name, which must be
-  # parsed explicitly until dataproc.resources.Parse supports it.
-  # TODO(b/36055864): Remove once Parse delegates to ParseRelativeName.
-  url = urlparse.urlparse(operation)
-  if not url.scheme and '/' in url.path and not url.path.startswith('/'):
-    return dataproc.resources.ParseRelativeName(
-        operation, collection=collection)
   return dataproc.resources.Parse(
       operation,
       params={

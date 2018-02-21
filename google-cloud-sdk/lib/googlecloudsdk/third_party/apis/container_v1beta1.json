@@ -365,7 +365,7 @@
           "type": "string"
         },
         "metadata": {
-          "description": "The metadata key\/value pairs assigned to instances in the cluster.\n\nKeys must conform to the regexp [a-zA-Z0-9-_]+ and be less than 128 bytes\nin length. These are reflected as part of a URL in the metadata server.\nAdditionally, to avoid ambiguity, keys must not conflict with any other\nmetadata keys for the project or be one of the reserved keys:\n \"cluster-name\"\n \"cluster-uid\"\n \"configure-sh\"\n \"gci-update-strategy\"\n \"gci-ensure-gke-docker\"\n \"instance-template\"\n \"kube-env\"\n \"startup-script\"\n \"user-data\"\n\nValues are free-form strings, and only have meaning as interpreted by\nthe image running in the instance. The only restriction placed on them is\nthat each value's size must be less than or equal to 32 KB.\n\nThe total size of all keys and values must be less than 512 KB.",
+          "description": "The metadata key\/value pairs assigned to instances in the cluster.\n\nKeys must conform to the regexp [a-zA-Z0-9-_]+ and be less than 128 bytes\nin length. These are reflected as part of a URL in the metadata server.\nAdditionally, to avoid ambiguity, keys must not conflict with any other\nmetadata keys for the project or be one of the reserved keys:\n \"cluster-location\"\n \"cluster-name\"\n \"cluster-uid\"\n \"configure-sh\"\n \"gci-update-strategy\"\n \"gci-ensure-gke-docker\"\n \"instance-template\"\n \"kube-env\"\n \"startup-script\"\n \"user-data\"\n\nValues are free-form strings, and only have meaning as interpreted by\nthe image running in the instance. The only restriction placed on them is\nthat each value's size must be less than or equal to 32 KB.\n\nThe total size of all keys and values must be less than 512 KB.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -374,6 +374,10 @@
         "imageType": {
           "description": "The image type to use for this node. Note that for a given image type,\nthe latest version of it will be used.",
           "type": "string"
+        },
+        "nodeImageConfig": {
+          "description": "The node image configuration to use for this node pool.  Note that this is\nonly applicable for node pools using image_type=CUSTOM.",
+          "$ref": "CustomImageConfig"
         },
         "labels": {
           "description": "The map of Kubernetes labels (key\/value pairs) to be applied to each node.\nThese will added in addition to any default label(s) that\nKubernetes may apply to the node.\nIn case of conflict in label keys, the applied set may differ depending on\nthe Kubernetes version -- it's best to assume the behavior is undefined\nand conflicts should be avoided.\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/overview\/working-with-objects\/labels\/",
@@ -430,6 +434,25 @@
         }
       }
     },
+    "CustomImageConfig": {
+      "id": "CustomImageConfig",
+      "description": "CustomImageConfig contains the information r",
+      "type": "object",
+      "properties": {
+        "image": {
+          "description": "The name of the image to use for this node.",
+          "type": "string"
+        },
+        "imageFamily": {
+          "description": "The name of the image family to use for this node.",
+          "type": "string"
+        },
+        "imageProject": {
+          "description": "The project containing the image to use for this node.",
+          "type": "string"
+        }
+      }
+    },
     "AcceleratorConfig": {
       "id": "AcceleratorConfig",
       "description": "AcceleratorConfig represents a Hardware Accelerator request.",
@@ -452,11 +475,11 @@
       "type": "object",
       "properties": {
         "nodeMetadata": {
-          "description": "NodeMetadata is the configuration for if and how to expose the node\nmetadata to the workload running on the node.",
+          "description": "NodeMetadata is the configuration for how to expose the node metadata to\nthe workload running on the node.",
           "enumDescriptions": [
             "Not set.",
-            "Expose only a secure subset of metadata to pods.  Currently, this blocks\nkube-env, but exposes all other metadata.",
-            "Expose all GCE metadata to pods."
+            "Prevent workloads not in hostNetwork from accessing certain VM metadata,\nspecifically kube-env, which contains Kubelet credentials, and the\ninstance identity token.\n\nMetadata concealment is a temporary security solution available while the\nbootstrapping process for cluster nodes is being redesigned with\nsignificant security improvements.  This feature is scheduled to be\ndeprecated in the future and later removed.",
+            "Expose all VM metadata to pods."
           ],
           "type": "string",
           "enum": [
@@ -960,11 +983,11 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use parent instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the parent field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use parent instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the parent field.",
           "type": "string"
         },
         "cluster": {
@@ -1090,15 +1113,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "update": {
@@ -1171,6 +1194,11 @@
           "description": "The desired configuration options for the PodSecurityPolicy feature.",
           "$ref": "PodSecurityPolicyConfig"
         },
+        "concurrentNodes": {
+          "description": "Controls how many nodes to upgrade in parallel. A maximum of 20 concurrent\nnodes is allowed.",
+          "type": "integer",
+          "format": "int32"
+        },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. The only valid value is the\nlatest supported version. Use \"-\" to have the server automatically select\nthe latest version.",
           "type": "string"
@@ -1186,6 +1214,14 @@
         "desiredClusterStatus": {
           "description": "The desired status fields for the cluster.",
           "$ref": "ClusterStatus"
+        },
+        "desiredImage": {
+          "description": "The desired name of the image to use for this node.\nThis is used to create clusters using a custom image.",
+          "type": "string"
+        },
+        "desiredImageProject": {
+          "description": "The project containing the desired image to use for this node.\nThis is used to create clusters using a custom image.",
+          "type": "string"
         }
       }
     },
@@ -1235,19 +1271,19 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "nodePoolId": {
-          "description": "The name of the node pool to upgrade.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the node pool to upgrade.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "nodeVersion": {
@@ -1256,6 +1292,14 @@
         },
         "imageType": {
           "description": "The desired image type for the node pool.",
+          "type": "string"
+        },
+        "image": {
+          "description": "The desired name of the image name to use for this node.\nThis is used to create clusters using a custom image.",
+          "type": "string"
+        },
+        "imageProject": {
+          "description": "The project containing the desired image to use for this node pool.\nThis is used to create clusters using a custom image.",
           "type": "string"
         },
         "name": {
@@ -1274,19 +1318,19 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "nodePoolId": {
-          "description": "The name of the node pool to upgrade.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the node pool to upgrade.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "autoscaling": {
@@ -1309,15 +1353,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "loggingService": {
@@ -1340,15 +1384,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "monitoringService": {
@@ -1371,15 +1415,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "addonsConfig": {
@@ -1402,15 +1446,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "locations": {
@@ -1436,15 +1480,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "masterVersion": {
@@ -1471,15 +1515,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "action": {
@@ -1543,15 +1587,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the operation resides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the operation resides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "operationId": {
-          "description": "The server-assigned `name` of the operation.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The server-assigned `name` of the operation.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "name": {
@@ -1631,15 +1675,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use parent instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the parent field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use parent instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the parent field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster.\nThis field is deprecated, use parent instead.",
+          "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the parent field.",
           "type": "string"
         },
         "nodePool": {
@@ -1662,19 +1706,19 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to rollback.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to rollback.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "nodePoolId": {
-          "description": "The name of the node pool to rollback.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the node pool to rollback.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "name": {
@@ -1693,19 +1737,19 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to update.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to update.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "nodePoolId": {
-          "description": "The name of the node pool to update.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the node pool to update.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "management": {
@@ -1728,15 +1772,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "resourceLabels": {
@@ -1766,15 +1810,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to update.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to update.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "enabled": {
@@ -1797,15 +1841,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "name": {
@@ -1824,15 +1868,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "name": {
@@ -1851,19 +1895,19 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster to update.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster to update.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "nodePoolId": {
-          "description": "The name of the node pool to update.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the node pool to update.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "nodeCount": {
@@ -1887,15 +1931,15 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "zone": {
-          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "clusterId": {
-          "description": "The name of the cluster.\nThis field is deprecated, use name instead.",
+          "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the name field.",
           "type": "string"
         },
         "networkPolicy": {
@@ -1954,7 +1998,6 @@
               "path": "v1beta1/{+name}/serverConfig",
               "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/serverConfig",
               "httpMethod": "GET",
-              "description": "Returns configuration info about the Kubernetes Engine service.",
               "parameters": {
                 "name": {
                   "description": "The name (project and location) of the server config to get\nSpecified in the format 'projects\/*\/locations\/*'.",
@@ -1964,12 +2007,12 @@
                   "type": "string"
                 },
                 "projectId": {
-                  "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                  "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                   "location": "query",
                   "type": "string"
                 },
                 "zone": {
-                  "description": "The name of the Google Compute Engine [zone](\/compute\/docs\/zones#available)\nto return operations for.\nThis field is deprecated, use name instead.",
+                  "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) to return operations for.\nThis field has been deprecated and replaced by the name field.",
                   "location": "query",
                   "type": "string"
                 },
@@ -1987,7 +2030,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Returns configuration info about the Kubernetes Engine service."
             }
           }
           ,
@@ -1999,7 +2043,6 @@
                   "path": "v1beta1/{+parent}/clusters",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters",
                   "httpMethod": "GET",
-                  "description": "Lists all clusters owned by a project in either the specified zone or all\nzones.",
                   "parameters": {
                     "parent": {
                       "description": "The parent (project and location) where the clusters will be listed.\nSpecified in the format 'projects\/*\/locations\/*'.\nLocation \"-\" matches all zones and all regions.",
@@ -2009,12 +2052,12 @@
                       "type": "string"
                     },
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use parent instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the parent field.",
                       "location": "query",
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides, or \"-\" for all zones.\nThis field is deprecated, use parent instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides, or \"-\" for all zones.\nThis field has been deprecated and replaced by the parent field.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2032,14 +2075,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Lists all clusters owned by a project in either the specified zone or all\nzones."
                 },
                 "get": {
                   "id": "container.projects.locations.clusters.get",
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
                   "httpMethod": "GET",
-                  "description": "Gets the details of a specific cluster.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster) of the cluster to retrieve.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2049,17 +2092,17 @@
                       "type": "string"
                     },
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster to retrieve.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster to retrieve.\nThis field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2077,14 +2120,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Gets the details of a specific cluster."
                 },
                 "create": {
                   "id": "container.projects.locations.clusters.create",
                   "path": "v1beta1/{+parent}/clusters",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters",
                   "httpMethod": "POST",
-                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe cluster creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range is being used by the cluster.",
                   "parameters": {
                     "parent": {
                       "description": "The parent (project and location) where the cluster will be created.\nSpecified in the format 'projects\/*\/locations\/*'.",
@@ -2105,14 +2148,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe cluster creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range is being used by the cluster."
                 },
                 "update": {
                   "id": "container.projects.locations.clusters.update",
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
                   "httpMethod": "PUT",
-                  "description": "Updates the settings of a specific cluster.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster) of the cluster to update.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2133,14 +2176,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Updates the settings of a specific cluster."
                 },
                 "setLogging": {
                   "id": "container.projects.locations.clusters.setLogging",
                   "path": "v1beta1/{+name}:setLogging",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLogging",
                   "httpMethod": "POST",
-                  "description": "Sets the logging service of a specific cluster.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster) of the cluster to set logging.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2161,14 +2204,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the logging service of a specific cluster."
                 },
                 "setMonitoring": {
                   "id": "container.projects.locations.clusters.setMonitoring",
                   "path": "v1beta1/{+name}:setMonitoring",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMonitoring",
                   "httpMethod": "POST",
-                  "description": "Sets the monitoring service of a specific cluster.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster) of the cluster to set monitoring.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2189,14 +2232,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the monitoring service of a specific cluster."
                 },
                 "setAddons": {
                   "id": "container.projects.locations.clusters.setAddons",
                   "path": "v1beta1/{+name}:setAddons",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setAddons",
                   "httpMethod": "POST",
-                  "description": "Sets the addons of a specific cluster.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster) of the cluster to set addons.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2217,14 +2260,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the addons of a specific cluster."
                 },
                 "setLocations": {
                   "id": "container.projects.locations.clusters.setLocations",
                   "path": "v1beta1/{+name}:setLocations",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLocations",
                   "httpMethod": "POST",
-                  "description": "Sets the locations of a specific cluster.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster) of the cluster to set locations.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2245,14 +2288,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the locations of a specific cluster."
                 },
                 "updateMaster": {
                   "id": "container.projects.locations.clusters.updateMaster",
                   "path": "v1beta1/{+name}:updateMaster",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:updateMaster",
                   "httpMethod": "POST",
-                  "description": "Updates the master of a specific cluster.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster) of the cluster to update.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2273,14 +2316,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Updates the master of a specific cluster."
                 },
                 "setMasterAuth": {
                   "id": "container.projects.locations.clusters.setMasterAuth",
                   "path": "v1beta1/{+name}:setMasterAuth",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMasterAuth",
                   "httpMethod": "POST",
-                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set.\nModify basic_auth.csv and reset the K8S API server.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster) of the cluster to set auth.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2301,14 +2344,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set.\nModify basic_auth.csv and reset the K8S API server."
                 },
                 "delete": {
                   "id": "container.projects.locations.clusters.delete",
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster) of the cluster to delete.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2318,17 +2361,17 @@
                       "type": "string"
                     },
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster to delete.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster to delete.\nThis field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2346,14 +2389,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time."
                 },
                 "setResourceLabels": {
                   "id": "container.projects.locations.clusters.setResourceLabels",
                   "path": "v1beta1/{+name}:setResourceLabels",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setResourceLabels",
                   "httpMethod": "POST",
-                  "description": "Sets labels on a cluster.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster id) of the cluster to set labels.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2374,14 +2417,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets labels on a cluster."
                 },
                 "setLegacyAbac": {
                   "id": "container.projects.locations.clusters.setLegacyAbac",
                   "path": "v1beta1/{+name}:setLegacyAbac",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setLegacyAbac",
                   "httpMethod": "POST",
-                  "description": "Enables or disables the ABAC authorization mechanism on a cluster.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster id) of the cluster to set legacy abac.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2402,14 +2445,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Enables or disables the ABAC authorization mechanism on a cluster."
                 },
                 "startIpRotation": {
                   "id": "container.projects.locations.clusters.startIpRotation",
                   "path": "v1beta1/{+name}:startIpRotation",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:startIpRotation",
                   "httpMethod": "POST",
-                  "description": "Start master IP rotation.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster id) of the cluster to start IP rotation.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2430,14 +2473,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Start master IP rotation."
                 },
                 "completeIpRotation": {
                   "id": "container.projects.locations.clusters.completeIpRotation",
                   "path": "v1beta1/{+name}:completeIpRotation",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:completeIpRotation",
                   "httpMethod": "POST",
-                  "description": "Completes master IP rotation.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster id) of the cluster to complete IP rotation.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2458,14 +2501,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Completes master IP rotation."
                 },
                 "setNetworkPolicy": {
                   "id": "container.projects.locations.clusters.setNetworkPolicy",
                   "path": "v1beta1/{+name}:setNetworkPolicy",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setNetworkPolicy",
                   "httpMethod": "POST",
-                  "description": "Enables\/Disables Network Policy for a cluster.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster id) of the cluster to set networking policy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2486,14 +2529,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Enables\/Disables Network Policy for a cluster."
                 },
                 "setMaintenancePolicy": {
                   "id": "container.projects.locations.clusters.setMaintenancePolicy",
                   "path": "v1beta1/{+name}:setMaintenancePolicy",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:setMaintenancePolicy",
                   "httpMethod": "POST",
-                  "description": "Sets the maintenance policy for a cluster.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, cluster id) of the cluster to set maintenance\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2514,7 +2557,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the maintenance policy for a cluster."
                 }
               }
               ,
@@ -2526,7 +2570,6 @@
                       "path": "v1beta1/{+name}",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
                       "httpMethod": "PUT",
-                      "description": "Updates the version and\/or image type of a specific node pool.",
                       "parameters": {
                         "name": {
                           "description": "The name (project, location, cluster, node pool) of the node pool to update.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
@@ -2547,14 +2590,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Updates the version and\/or image type of a specific node pool."
                     },
                     "setAutoscaling": {
                       "id": "container.projects.locations.clusters.nodePools.setAutoscaling",
                       "path": "v1beta1/{+name}:setAutoscaling",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setAutoscaling",
                       "httpMethod": "POST",
-                      "description": "Sets the autoscaling settings of a specific node pool.",
                       "parameters": {
                         "name": {
                           "description": "The name (project, location, cluster, node pool) of the node pool to set\nautoscaler settings. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
@@ -2575,14 +2618,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Sets the autoscaling settings of a specific node pool."
                     },
                     "list": {
                       "id": "container.projects.locations.clusters.nodePools.list",
                       "path": "v1beta1/{+parent}/nodePools",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools",
                       "httpMethod": "GET",
-                      "description": "Lists the node pools for a cluster.",
                       "parameters": {
                         "parent": {
                           "description": "The parent (project, location, cluster id) where the node pools will be listed.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
@@ -2592,17 +2635,17 @@
                           "type": "string"
                         },
                         "projectId": {
-                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use parent instead.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the parent field.",
                           "location": "query",
                           "type": "string"
                         },
                         "zone": {
-                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use parent instead.",
+                          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the parent field.",
                           "location": "query",
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "The name of the cluster.\nThis field is deprecated, use parent instead.",
+                          "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the parent field.",
                           "location": "query",
                           "type": "string"
                         },
@@ -2620,14 +2663,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Lists the node pools for a cluster."
                     },
                     "get": {
                       "id": "container.projects.locations.clusters.nodePools.get",
                       "path": "v1beta1/{+name}",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
                       "httpMethod": "GET",
-                      "description": "Retrieves the node pool requested.",
                       "parameters": {
                         "name": {
                           "description": "The name (project, location, cluster, node pool id) of the node pool to get.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
@@ -2637,22 +2680,22 @@
                           "type": "string"
                         },
                         "projectId": {
-                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the name field.",
                           "location": "query",
                           "type": "string"
                         },
                         "zone": {
-                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                           "location": "query",
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "The name of the cluster.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the name field.",
                           "location": "query",
                           "type": "string"
                         },
                         "nodePoolId": {
-                          "description": "The name of the node pool.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the node pool.\nThis field has been deprecated and replaced by the name field.",
                           "location": "query",
                           "type": "string"
                         },
@@ -2670,14 +2713,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Retrieves the node pool requested."
                     },
                     "create": {
                       "id": "container.projects.locations.clusters.nodePools.create",
                       "path": "v1beta1/{+parent}/nodePools",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools",
                       "httpMethod": "POST",
-                      "description": "Creates a node pool for a cluster.",
                       "parameters": {
                         "parent": {
                           "description": "The parent (project, location, cluster id) where the node pool will be created.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
@@ -2698,14 +2741,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Creates a node pool for a cluster."
                     },
                     "delete": {
                       "id": "container.projects.locations.clusters.nodePools.delete",
                       "path": "v1beta1/{+name}",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
                       "httpMethod": "DELETE",
-                      "description": "Deletes a node pool from a cluster.",
                       "parameters": {
                         "name": {
                           "description": "The name (project, location, cluster, node pool id) of the node pool to delete.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
@@ -2715,22 +2758,22 @@
                           "type": "string"
                         },
                         "projectId": {
-                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the name field.",
                           "location": "query",
                           "type": "string"
                         },
                         "zone": {
-                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                           "location": "query",
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "The name of the cluster.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the name field.",
                           "location": "query",
                           "type": "string"
                         },
                         "nodePoolId": {
-                          "description": "The name of the node pool to delete.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the node pool to delete.\nThis field has been deprecated and replaced by the name field.",
                           "location": "query",
                           "type": "string"
                         },
@@ -2748,14 +2791,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Deletes a node pool from a cluster."
                     },
                     "rollback": {
                       "id": "container.projects.locations.clusters.nodePools.rollback",
                       "path": "v1beta1/{+name}:rollback",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:rollback",
                       "httpMethod": "POST",
-                      "description": "Roll back the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed.",
                       "parameters": {
                         "name": {
                           "description": "The name (project, location, cluster, node pool id) of the node poll to\nrollback upgrade.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
@@ -2776,14 +2819,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Roll back the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed."
                     },
                     "setManagement": {
                       "id": "container.projects.locations.clusters.nodePools.setManagement",
                       "path": "v1beta1/{+name}:setManagement",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setManagement",
                       "httpMethod": "POST",
-                      "description": "Sets the NodeManagement options for a node pool.",
                       "parameters": {
                         "name": {
                           "description": "The name (project, location, cluster, node pool id) of the node pool to set\nmanagement properties. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
@@ -2804,14 +2847,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Sets the NodeManagement options for a node pool."
                     },
                     "setSize": {
                       "id": "container.projects.locations.clusters.nodePools.setSize",
                       "path": "v1beta1/{+name}:setSize",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:setSize",
                       "httpMethod": "POST",
-                      "description": "Sets the size of a specific node pool.",
                       "parameters": {
                         "name": {
                           "description": "The name (project, location, cluster, node pool id) of the node pool to set\nsize.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
@@ -2832,7 +2875,8 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Sets the size of a specific node pool."
                     }
                   }
                 }
@@ -2845,7 +2889,6 @@
                   "path": "v1beta1/{+parent}/operations",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/operations",
                   "httpMethod": "GET",
-                  "description": "Lists all operations in a project in a specific zone or all zones.",
                   "parameters": {
                     "parent": {
                       "description": "The parent (project and location) where the operations will be listed.\nSpecified in the format 'projects\/*\/locations\/*'.\nLocation \"-\" matches all zones and all regions.",
@@ -2855,12 +2898,12 @@
                       "type": "string"
                     },
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use parent instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the parent field.",
                       "location": "query",
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine [zone](\/compute\/docs\/zones#available)\nto return operations for, or `-` for all zones.\nThis field is deprecated, use parent instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine [zone](\/compute\/docs\/zones#available)\nto return operations for, or `-` for all zones.\nThis field has been deprecated and replaced by the parent field.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2878,14 +2921,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Lists all operations in a project in a specific zone or all zones."
                 },
                 "get": {
                   "id": "container.projects.locations.operations.get",
                   "path": "v1beta1/{+name}",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
                   "httpMethod": "GET",
-                  "description": "Gets the specified operation.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, operation id) of the operation to get.\nSpecified in the format 'projects\/*\/locations\/*\/operations\/*'.",
@@ -2895,17 +2938,17 @@
                       "type": "string"
                     },
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
                     },
                     "operationId": {
-                      "description": "The server-assigned `name` of the operation.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The server-assigned `name` of the operation.\nThis field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2923,14 +2966,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Gets the specified operation."
                 },
                 "cancel": {
                   "id": "container.projects.locations.operations.cancel",
                   "path": "v1beta1/{+name}:cancel",
                   "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
                   "httpMethod": "POST",
-                  "description": "Cancels the specified operation.",
                   "parameters": {
                     "name": {
                       "description": "The name (project, location, operation id) of the operation to cancel.\nSpecified in the format 'projects\/*\/locations\/*\/operations\/*'.",
@@ -2951,7 +2994,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Cancels the specified operation."
                 }
               }
             }
@@ -2964,16 +3008,15 @@
               "path": "v1beta1/projects/{projectId}/zones/{zone}/serverconfig",
               "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/serverconfig",
               "httpMethod": "GET",
-              "description": "Returns configuration info about the Kubernetes Engine service.",
               "parameters": {
                 "projectId": {
-                  "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                  "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "zone": {
-                  "description": "The name of the Google Compute Engine [zone](\/compute\/docs\/zones#available)\nto return operations for.\nThis field is deprecated, use name instead.",
+                  "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) to return operations for.\nThis field has been deprecated and replaced by the name field.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -2998,7 +3041,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Returns configuration info about the Kubernetes Engine service."
             }
           }
           ,
@@ -3010,16 +3054,15 @@
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters",
                   "httpMethod": "GET",
-                  "description": "Lists all clusters owned by a project in either the specified zone or all\nzones.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use parent instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the parent field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides, or \"-\" for all zones.\nThis field is deprecated, use parent instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides, or \"-\" for all zones.\nThis field has been deprecated and replaced by the parent field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3044,29 +3087,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Lists all clusters owned by a project in either the specified zone or all\nzones."
                 },
                 "get": {
                   "id": "container.projects.zones.clusters.get",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "httpMethod": "GET",
-                  "description": "Gets the details of a specific cluster.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster to retrieve.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster to retrieve.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3092,23 +3135,23 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Gets the details of a specific cluster."
                 },
                 "create": {
                   "id": "container.projects.zones.clusters.create",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters",
                   "httpMethod": "POST",
-                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe cluster creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range is being used by the cluster.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use parent instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the parent field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use parent instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the parent field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3126,29 +3169,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe cluster creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range is being used by the cluster."
                 },
                 "update": {
                   "id": "container.projects.zones.clusters.update",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "httpMethod": "PUT",
-                  "description": "Updates the settings of a specific cluster.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3167,29 +3210,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Updates the settings of a specific cluster."
                 },
                 "logging": {
                   "id": "container.projects.zones.clusters.logging",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/logging",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/logging",
                   "httpMethod": "POST",
-                  "description": "Sets the logging service of a specific cluster.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3208,29 +3251,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the logging service of a specific cluster."
                 },
                 "monitoring": {
                   "id": "container.projects.zones.clusters.monitoring",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/monitoring",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/monitoring",
                   "httpMethod": "POST",
-                  "description": "Sets the monitoring service of a specific cluster.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3249,29 +3292,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the monitoring service of a specific cluster."
                 },
                 "addons": {
                   "id": "container.projects.zones.clusters.addons",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons",
                   "httpMethod": "POST",
-                  "description": "Sets the addons of a specific cluster.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3290,29 +3333,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the addons of a specific cluster."
                 },
                 "locations": {
                   "id": "container.projects.zones.clusters.locations",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/locations",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/locations",
                   "httpMethod": "POST",
-                  "description": "Sets the locations of a specific cluster.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3331,29 +3374,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the locations of a specific cluster."
                 },
                 "master": {
                   "id": "container.projects.zones.clusters.master",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/master",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/master",
                   "httpMethod": "POST",
-                  "description": "Updates the master of a specific cluster.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3372,29 +3415,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Updates the master of a specific cluster."
                 },
                 "setMasterAuth": {
                   "id": "container.projects.zones.clusters.setMasterAuth",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth",
                   "httpMethod": "POST",
-                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set.\nModify basic_auth.csv and reset the K8S API server.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3413,29 +3456,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set.\nModify basic_auth.csv and reset the K8S API server."
                 },
                 "delete": {
                   "id": "container.projects.zones.clusters.delete",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster to delete.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster to delete.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3461,29 +3504,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time."
                 },
                 "resourceLabels": {
                   "id": "container.projects.zones.clusters.resourceLabels",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels",
                   "httpMethod": "POST",
-                  "description": "Sets labels on a cluster.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3502,29 +3545,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets labels on a cluster."
                 },
                 "legacyAbac": {
                   "id": "container.projects.zones.clusters.legacyAbac",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac",
                   "httpMethod": "POST",
-                  "description": "Enables or disables the ABAC authorization mechanism on a cluster.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster to update.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster to update.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3543,29 +3586,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Enables or disables the ABAC authorization mechanism on a cluster."
                 },
                 "startIpRotation": {
                   "id": "container.projects.zones.clusters.startIpRotation",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation",
                   "httpMethod": "POST",
-                  "description": "Start master IP rotation.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3584,29 +3627,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Start master IP rotation."
                 },
                 "completeIpRotation": {
                   "id": "container.projects.zones.clusters.completeIpRotation",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation",
                   "httpMethod": "POST",
-                  "description": "Completes master IP rotation.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3625,29 +3668,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Completes master IP rotation."
                 },
                 "setNetworkPolicy": {
                   "id": "container.projects.zones.clusters.setNetworkPolicy",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setNetworkPolicy",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setNetworkPolicy",
                   "httpMethod": "POST",
-                  "description": "Enables\/Disables Network Policy for a cluster.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
-                      "description": "The name of the cluster.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -3666,14 +3709,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Enables\/Disables Network Policy for a cluster."
                 },
                 "setMaintenancePolicy": {
                   "id": "container.projects.zones.clusters.setMaintenancePolicy",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy",
                   "httpMethod": "POST",
-                  "description": "Sets the maintenance policy for a cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3707,7 +3750,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the maintenance policy for a cluster."
                 }
               }
               ,
@@ -3719,28 +3763,27 @@
                       "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/update",
                       "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/update",
                       "httpMethod": "POST",
-                      "description": "Updates the version and\/or image type of a specific node pool.",
                       "parameters": {
                         "projectId": {
-                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "zone": {
-                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "nodePoolId": {
-                          "description": "The name of the node pool to upgrade.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the node pool to upgrade.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -3760,35 +3803,35 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Updates the version and\/or image type of a specific node pool."
                     },
                     "autoscaling": {
                       "id": "container.projects.zones.clusters.nodePools.autoscaling",
                       "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling",
                       "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling",
                       "httpMethod": "POST",
-                      "description": "Sets the autoscaling settings of a specific node pool.",
                       "parameters": {
                         "projectId": {
-                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "zone": {
-                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "The name of the cluster to upgrade.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the cluster to upgrade.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "nodePoolId": {
-                          "description": "The name of the node pool to upgrade.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the node pool to upgrade.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -3808,29 +3851,29 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Sets the autoscaling settings of a specific node pool."
                     },
                     "list": {
                       "id": "container.projects.zones.clusters.nodePools.list",
                       "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
                       "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
                       "httpMethod": "GET",
-                      "description": "Lists the node pools for a cluster.",
                       "parameters": {
                         "projectId": {
-                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use parent instead.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the parent field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "zone": {
-                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use parent instead.",
+                          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the parent field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "The name of the cluster.\nThis field is deprecated, use parent instead.",
+                          "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the parent field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -3856,35 +3899,35 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Lists the node pools for a cluster."
                     },
                     "get": {
                       "id": "container.projects.zones.clusters.nodePools.get",
                       "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
                       "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
                       "httpMethod": "GET",
-                      "description": "Retrieves the node pool requested.",
                       "parameters": {
                         "projectId": {
-                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "zone": {
-                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "The name of the cluster.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "nodePoolId": {
-                          "description": "The name of the node pool.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the node pool.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -3911,29 +3954,29 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Retrieves the node pool requested."
                     },
                     "create": {
                       "id": "container.projects.zones.clusters.nodePools.create",
                       "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
                       "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
                       "httpMethod": "POST",
-                      "description": "Creates a node pool for a cluster.",
                       "parameters": {
                         "projectId": {
-                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use parent instead.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the parent field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "zone": {
-                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use parent instead.",
+                          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the parent field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "The name of the cluster.\nThis field is deprecated, use parent instead.",
+                          "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the parent field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -3952,35 +3995,35 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Creates a node pool for a cluster."
                     },
                     "delete": {
                       "id": "container.projects.zones.clusters.nodePools.delete",
                       "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
                       "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
                       "httpMethod": "DELETE",
-                      "description": "Deletes a node pool from a cluster.",
                       "parameters": {
                         "projectId": {
-                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "zone": {
-                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "The name of the cluster.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "nodePoolId": {
-                          "description": "The name of the node pool to delete.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the node pool to delete.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -4007,35 +4050,35 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Deletes a node pool from a cluster."
                     },
                     "rollback": {
                       "id": "container.projects.zones.clusters.nodePools.rollback",
                       "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback",
                       "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback",
                       "httpMethod": "POST",
-                      "description": "Roll back the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed.",
                       "parameters": {
                         "projectId": {
-                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "zone": {
-                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "The name of the cluster to rollback.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the cluster to rollback.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "nodePoolId": {
-                          "description": "The name of the node pool to rollback.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the node pool to rollback.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -4055,35 +4098,35 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Roll back the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed."
                     },
                     "setManagement": {
                       "id": "container.projects.zones.clusters.nodePools.setManagement",
                       "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement",
                       "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement",
                       "httpMethod": "POST",
-                      "description": "Sets the NodeManagement options for a node pool.",
                       "parameters": {
                         "projectId": {
-                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "zone": {
-                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "The name of the cluster to update.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the cluster to update.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "nodePoolId": {
-                          "description": "The name of the node pool to update.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the node pool to update.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -4103,35 +4146,35 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Sets the NodeManagement options for a node pool."
                     },
                     "setSize": {
                       "id": "container.projects.zones.clusters.nodePools.setSize",
                       "path": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize",
                       "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize",
                       "httpMethod": "POST",
-                      "description": "Sets the size of a specific node pool.",
                       "parameters": {
                         "projectId": {
-                          "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "zone": {
-                          "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "The name of the cluster to update.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the cluster to update.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "nodePoolId": {
-                          "description": "The name of the node pool to update.\nThis field is deprecated, use name instead.",
+                          "description": "Deprecated. The name of the node pool to update.\nThis field has been deprecated and replaced by the name field.",
                           "location": "path",
                           "required": true,
                           "type": "string"
@@ -4151,7 +4194,8 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Sets the size of a specific node pool."
                     }
                   }
                 }
@@ -4164,16 +4208,15 @@
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/operations",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/operations",
                   "httpMethod": "GET",
-                  "description": "Lists all operations in a project in a specific zone or all zones.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use parent instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the parent field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine [zone](\/compute\/docs\/zones#available)\nto return operations for, or `-` for all zones.\nThis field is deprecated, use parent instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine [zone](\/compute\/docs\/zones#available)\nto return operations for, or `-` for all zones.\nThis field has been deprecated and replaced by the parent field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -4198,29 +4241,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Lists all operations in a project in a specific zone or all zones."
                 },
                 "get": {
                   "id": "container.projects.zones.operations.get",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}",
                   "httpMethod": "GET",
-                  "description": "Gets the specified operation.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "operationId": {
-                      "description": "The server-assigned `name` of the operation.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The server-assigned `name` of the operation.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -4246,29 +4289,29 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Gets the specified operation."
                 },
                 "cancel": {
                   "id": "container.projects.zones.operations.cancel",
                   "path": "v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel",
                   "flatPath": "v1beta1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel",
                   "httpMethod": "POST",
-                  "description": "Cancels the specified operation.",
                   "parameters": {
                     "projectId": {
-                      "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "zone": {
-                      "description": "The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the operation resides.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the operation resides.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "operationId": {
-                      "description": "The server-assigned `name` of the operation.\nThis field is deprecated, use name instead.",
+                      "description": "Deprecated. The server-assigned `name` of the operation.\nThis field has been deprecated and replaced by the name field.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -4287,7 +4330,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Cancels the specified operation."
                 }
               }
             }

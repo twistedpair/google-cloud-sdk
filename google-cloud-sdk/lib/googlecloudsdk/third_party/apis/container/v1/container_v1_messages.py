@@ -27,6 +27,23 @@ class AcceleratorConfig(_messages.Message):
   acceleratorType = _messages.StringField(2)
 
 
+class AckRepairWorkRequest(_messages.Message):
+  """HostedMaster sends Acknowledgment of repair work once it is received.
+
+  Fields:
+    repairId: Repair ID that we are acknowledging to uniquely identify
+      repairs.
+  """
+
+  repairId = _messages.StringField(1)
+
+
+class AckRepairWorkResponse(_messages.Message):
+  """Used in AckRepairWorkRequest, as we don't need to ack the ack so empty.
+  """
+
+
+
 class AddonsConfig(_messages.Message):
   """Configuration for the addons that can be automatically spun up in the
   cluster, enabling additional functionality.
@@ -795,6 +812,12 @@ class ClusterUpdate(_messages.Message):
       run in the cluster.
     desiredAuditConfig: The desired configuration for audit logging.
     desiredClusterStatus: The desired status fields for the cluster.
+    desiredImage: The desired name of the image to use for this node. This is
+      used to create clusters using a custom image. NOTE: Set the
+      "desired_node_pool" field as well.
+    desiredImageProject: The project containing the desired image to use for
+      this node. This is used to create clusters using a custom image. NOTE:
+      Set the "desired_node_pool" field as well.
     desiredImageType: The desired image type for the node pool. NOTE: Set the
       "desired_node_pool" field as well.
     desiredLocations: The desired list of Google Compute Engine
@@ -838,17 +861,19 @@ class ClusterUpdate(_messages.Message):
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
   desiredAuditConfig = _messages.MessageField('AuditConfig', 2)
   desiredClusterStatus = _messages.MessageField('ClusterStatus', 3)
-  desiredImageType = _messages.StringField(4)
-  desiredLocations = _messages.StringField(5, repeated=True)
-  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 6)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 7)
-  desiredMasterId = _messages.StringField(8)
-  desiredMasterMachineType = _messages.StringField(9)
-  desiredMasterVersion = _messages.StringField(10)
-  desiredMonitoringService = _messages.StringField(11)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 12)
-  desiredNodePoolId = _messages.StringField(13)
-  desiredNodeVersion = _messages.StringField(14)
+  desiredImage = _messages.StringField(4)
+  desiredImageProject = _messages.StringField(5)
+  desiredImageType = _messages.StringField(6)
+  desiredLocations = _messages.StringField(7, repeated=True)
+  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 8)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 9)
+  desiredMasterId = _messages.StringField(10)
+  desiredMasterMachineType = _messages.StringField(11)
+  desiredMasterVersion = _messages.StringField(12)
+  desiredMonitoringService = _messages.StringField(13)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 14)
+  desiredNodePoolId = _messages.StringField(15)
+  desiredNodeVersion = _messages.StringField(16)
 
 
 class ClusterUpdateOptions(_messages.Message):
@@ -964,6 +989,29 @@ class ContainerMasterProjectsLocationsImagereviewRequest(_messages.Message):
   location = _messages.StringField(3, required=True)
   masterProjectId = _messages.StringField(4, required=True)
   projectNumber = _messages.IntegerField(5, required=True)
+
+
+class ContainerMasterProjectsLocationsProjectsClustersMasterAckRepairworkRequest(_messages.Message):
+  """A
+  ContainerMasterProjectsLocationsProjectsClustersMasterAckRepairworkRequest
+  object.
+
+  Fields:
+    ackRepairWorkRequest: A AckRepairWorkRequest resource to be passed as the
+      request body.
+    clusterId: Cluster name of the cluster this master manages.
+    location: Location of the hosted master.
+    masterId: Master ID of the cluster master, unique identifier.
+    masterProjectName: Project Name of the Hosted Master Project.
+    projectNumber: Project number of the cluster this master manages.
+  """
+
+  ackRepairWorkRequest = _messages.MessageField('AckRepairWorkRequest', 1)
+  clusterId = _messages.StringField(2, required=True)
+  location = _messages.StringField(3, required=True)
+  masterId = _messages.StringField(4, required=True)
+  masterProjectName = _messages.StringField(5, required=True)
+  projectNumber = _messages.IntegerField(6, required=True)
 
 
 class ContainerMasterProjectsLocationsProjectsClustersMasterGetRepairworkRequest(_messages.Message):
@@ -1769,6 +1817,20 @@ class CreateTokenRequest(_messages.Message):
   zone = _messages.StringField(4)
 
 
+class CustomImageConfig(_messages.Message):
+  """CustomImageConfig contains the information r
+
+  Fields:
+    image: The name of the image to use for this node.
+    imageFamily: The name of the image family to use for this node.
+    imageProject: The project containing the image to use for this node.
+  """
+
+  image = _messages.StringField(1)
+  imageFamily = _messages.StringField(2)
+  imageProject = _messages.StringField(3)
+
+
 class DailyMaintenanceWindow(_messages.Message):
   """Time window specified for daily maintenance operations.
 
@@ -1807,6 +1869,7 @@ class GetRepairWorkResponse(_messages.Message):
     RepairTypeValueValuesEnum: The type of repair for this master.
 
   Fields:
+    repairId: Repair ID of the returned repair.
     repairType: The type of repair for this master.
   """
 
@@ -1824,7 +1887,8 @@ class GetRepairWorkResponse(_messages.Message):
     IN_PLACE = 2
     NONE = 3
 
-  repairType = _messages.EnumField('RepairTypeValueValuesEnum', 1)
+  repairId = _messages.StringField(1)
+  repairType = _messages.EnumField('RepairTypeValueValuesEnum', 2)
 
 
 class HorizontalPodAutoscaling(_messages.Message):
@@ -2267,11 +2331,13 @@ class NodeConfig(_messages.Message):
       than 128 bytes in length. These are reflected as part of a URL in the
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
-      four reserved keys: "instance-template", "kube-env", "startup-script",
-      and "user-data"  Values are free-form strings, and only have meaning as
-      interpreted by the image running in the instance. The only restriction
-      placed on them is that each value's size must be less than or equal to
-      32 KB.  The total size of all keys and values must be less than 512 KB.
+      reserved keys:  "cluster-location"  "cluster-name"  "cluster-uid"
+      "configure-sh"  "gci-update-strategy"  "gci-ensure-gke-docker"
+      "instance-template"  "kube-env"  "startup-script"  "user-data"  Values
+      are free-form strings, and only have meaning as interpreted by the image
+      running in the instance. The only restriction placed on them is that
+      each value's size must be less than or equal to 32 KB.  The total size
+      of all keys and values must be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -2306,11 +2372,13 @@ class NodeConfig(_messages.Message):
       than 128 bytes in length. These are reflected as part of a URL in the
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
-      four reserved keys: "instance-template", "kube-env", "startup-script",
-      and "user-data"  Values are free-form strings, and only have meaning as
-      interpreted by the image running in the instance. The only restriction
-      placed on them is that each value's size must be less than or equal to
-      32 KB.  The total size of all keys and values must be less than 512 KB.
+      reserved keys:  "cluster-location"  "cluster-name"  "cluster-uid"
+      "configure-sh"  "gci-update-strategy"  "gci-ensure-gke-docker"
+      "instance-template"  "kube-env"  "startup-script"  "user-data"  Values
+      are free-form strings, and only have meaning as interpreted by the image
+      running in the instance. The only restriction placed on them is that
+      each value's size must be less than or equal to 32 KB.  The total size
+      of all keys and values must be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -2319,6 +2387,9 @@ class NodeConfig(_messages.Message):
       information, read [how to specify min CPU
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
       cpu-platform)
+    nodeImageConfig: The node image configuration to use for this node pool.
+      Note that this is only applicable for node pools using
+      image_type=CUSTOM.
     oauthScopes: The set of Google API scopes to be made available on all of
       the node VMs under the "default" service account.  The following scopes
       are recommended, but not required, and by default are not included:  *
@@ -2380,12 +2451,14 @@ class NodeConfig(_messages.Message):
     Keys must conform to the regexp [a-zA-Z0-9-_]+ and be less than 128 bytes
     in length. These are reflected as part of a URL in the metadata server.
     Additionally, to avoid ambiguity, keys must not conflict with any other
-    metadata keys for the project or be one of the four reserved keys:
-    "instance-template", "kube-env", "startup-script", and "user-data"  Values
-    are free-form strings, and only have meaning as interpreted by the image
-    running in the instance. The only restriction placed on them is that each
-    value's size must be less than or equal to 32 KB.  The total size of all
-    keys and values must be less than 512 KB.
+    metadata keys for the project or be one of the reserved keys:  "cluster-
+    location"  "cluster-name"  "cluster-uid"  "configure-sh"  "gci-update-
+    strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-env"
+    "startup-script"  "user-data"  Values are free-form strings, and only have
+    meaning as interpreted by the image running in the instance. The only
+    restriction placed on them is that each value's size must be less than or
+    equal to 32 KB.  The total size of all keys and values must be less than
+    512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -2416,11 +2489,12 @@ class NodeConfig(_messages.Message):
   machineType = _messages.StringField(7)
   metadata = _messages.MessageField('MetadataValue', 8)
   minCpuPlatform = _messages.StringField(9)
-  oauthScopes = _messages.StringField(10, repeated=True)
-  preemptible = _messages.BooleanField(11)
-  serviceAccount = _messages.StringField(12)
-  tags = _messages.StringField(13, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 14, repeated=True)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 10)
+  oauthScopes = _messages.StringField(11, repeated=True)
+  preemptible = _messages.BooleanField(12)
+  serviceAccount = _messages.StringField(13)
+  tags = _messages.StringField(14, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 15, repeated=True)
 
 
 class NodeManagement(_messages.Message):
@@ -3186,6 +3260,10 @@ class UpdateNodePoolRequest(_messages.Message):
   """UpdateNodePoolRequests update a node pool's image and/or version.
 
   Fields:
+    image: The desired name of the image name to use for this node. This is
+      used to create clusters using a custom image.
+    imageProject: The project containing the desired image to use for this
+      node pool. This is used to create clusters using a custom image.
     imageType: The desired image type for the node pool.
     nodeVersion: The Kubernetes version to change the nodes to (typically an
       upgrade). Use `-` to upgrade to the latest version supported by the
@@ -3193,9 +3271,11 @@ class UpdateNodePoolRequest(_messages.Message):
     version: API request version that initiates this operation.
   """
 
-  imageType = _messages.StringField(1)
-  nodeVersion = _messages.StringField(2)
-  version = _messages.StringField(3)
+  image = _messages.StringField(1)
+  imageProject = _messages.StringField(2)
+  imageType = _messages.StringField(3)
+  nodeVersion = _messages.StringField(4)
+  version = _messages.StringField(5)
 
 
 class UserInfo(_messages.Message):

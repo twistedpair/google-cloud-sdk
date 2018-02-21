@@ -143,6 +143,12 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.categorymanager.v1alpha1',
             client_classpath='categorymanager_v1alpha1_client.CategorymanagerV1alpha1',
             messages_modulepath='categorymanager_v1alpha1_messages',
+            default_version=False
+        ),
+        'v1alpha2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.categorymanager.v1alpha2',
+            client_classpath='categorymanager_v1alpha2_client.CategorymanagerV1alpha2',
+            messages_modulepath='categorymanager_v1alpha2_messages',
             default_version=True
         ),
     },
@@ -612,6 +618,12 @@ MAP = {
             client_classpath='tpu_v1alpha1_client.TpuV1alpha1',
             messages_modulepath='tpu_v1alpha1_messages',
             default_version=True
+        ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.tpu.v1beta1',
+            client_classpath='tpu_v1beta1_client.TpuV1beta1',
+            messages_modulepath='tpu_v1beta1_messages',
+            default_version=False
         ),
     },
     'videointelligence': {

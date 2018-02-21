@@ -1054,7 +1054,6 @@
           "path": "v1beta1/videos:annotate",
           "flatPath": "v1beta1/videos:annotate",
           "httpMethod": "POST",
-          "description": "Performs asynchronous video annotation. Progress and results can be\nretrieved through the `google.longrunning.Operations` interface.\n`Operation.metadata` contains `AnnotateVideoProgress` (progress).\n`Operation.response` contains `AnnotateVideoResponse` (results).",
           "parameters": {
           },
           "parameterOrder": [
@@ -1067,7 +1066,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Performs asynchronous video annotation. Progress and results can be\nretrieved through the `google.longrunning.Operations` interface.\n`Operation.metadata` contains `AnnotateVideoProgress` (progress).\n`Operation.response` contains `AnnotateVideoResponse` (results)."
         }
       }
     }

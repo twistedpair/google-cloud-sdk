@@ -1285,7 +1285,7 @@
     },
     "Context": {
       "id": "Context",
-      "description": "`Context` defines which contexts an API requests.\n\nExample:\n\n    context:\n      rules:\n      - selector: \"*\"\n        requested:\n        - google.rpc.context.ProjectContext\n        - google.rpc.context.OriginContext\n\nThe above specifies that all methods in the API request\n`google.rpc.context.ProjectContext` and\n`google.rpc.context.OriginContext`.\n\nAvailable context types are defined in package\n`google.rpc.context`.",
+      "description": "`Context` defines which contexts an API requests.\n\nExample:\n\n    context:\n      rules:\n      - selector: \"*\"\n        requested:\n        - google.rpc.context.ProjectContext\n        - google.rpc.context.OriginContext\n\nThe above specifies that all methods in the API request\n`google.rpc.context.ProjectContext` and\n`google.rpc.context.OriginContext`.\n\nAvailable context types are defined in package\n`google.rpc.context`.\n\nThis also provides mechanism to whitelist any protobuf message extension that\ncan be sent in grpc metadata using \u201Cx-goog-ext-<extension_id>-bin\u201D and\n\u201Cx-goog-ext-<extension_id>-jspb\u201D format. For example, list any service\nspecific protobuf types that can appear in grpc metadata as follows in your\nyaml file:\n\nExample:\n\n    context:\n      rules:\n       - selector: \"google.example.library.v1.LibraryService.CreateBook\"\n         allowed_request_extensions:\n         - google.foo.v1.NewExtension\n         allowed_response_extensions:\n         - google.foo.v1.NewExtension\n\nYou can also specify extension ID instead of fully qualified extension name\nhere.",
       "type": "object",
       "properties": {
         "rules": {
@@ -1315,6 +1315,20 @@
         },
         "provided": {
           "description": "A list of full type names of provided contexts.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedRequestExtensions": {
+          "description": "A list of full type names or extension IDs of extensions allowed in grpc\nside channel from client to backend.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedResponseExtensions": {
+          "description": "A list of full type names or extension IDs of extensions allowed in grpc\nside channel from backend to client.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2794,33 +2808,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "condition": {
-          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.\nThis field is only visible as GOOGLE_INTERNAL or CONDITION_TRUSTED_TESTER.",
-          "$ref": "Expr"
-        }
-      }
-    },
-    "Expr": {
-      "id": "Expr",
-      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
-      "type": "object",
-      "properties": {
-        "expression": {
-          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
-          "type": "string"
-        },
-        "title": {
-          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
-          "type": "string"
-        },
-        "description": {
-          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
-          "type": "string"
-        },
-        "location": {
-          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
-          "type": "string"
         }
       }
     },
@@ -3052,7 +3039,6 @@
           "path": "v1/operations",
           "flatPath": "v1/operations",
           "httpMethod": "GET",
-          "description": "Lists service operations that match the specified filter in the request.",
           "parameters": {
             "name": {
               "description": "Not used.",
@@ -3084,14 +3070,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "Lists service operations that match the specified filter in the request."
         },
         "get": {
           "id": "servicemanagement.operations.get",
           "path": "v1/operations/{operationsId}",
           "flatPath": "v1/operations/{operationsId}",
           "httpMethod": "GET",
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
           "parameters": {
             "operationsId": {
               "description": "Part of `name`. The name of the operation resource.",
@@ -3109,7 +3095,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
         }
       }
     },
@@ -3120,7 +3107,6 @@
           "path": "v1/services",
           "flatPath": "v1/services",
           "httpMethod": "GET",
-          "description": "Lists managed services.\n\nReturns all public services. For authenticated users, also returns all\nservices the calling user has \"servicemanagement.services.get\" permission\nfor.\n\n**BETA:** If the caller specifies the `consumer_id`, it returns only the\nservices enabled on the consumer. The `consumer_id` must have the format\nof \"project:{PROJECT-ID}\".",
           "parameters": {
             "producerProjectId": {
               "description": "Include services produced by the specified project.",
@@ -3170,14 +3156,14 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/service.management",
             "https://www.googleapis.com/auth/service.management.readonly"
-          ]
+          ],
+          "description": "Lists managed services.\n\nReturns all public services. For authenticated users, also returns all\nservices the calling user has \"servicemanagement.services.get\" permission\nfor.\n\n**BETA:** If the caller specifies the `consumer_id`, it returns only the\nservices enabled on the consumer. The `consumer_id` must have the format\nof \"project:{PROJECT-ID}\"."
         },
         "get": {
           "id": "servicemanagement.services.get",
           "path": "v1/services/{serviceName}",
           "flatPath": "v1/services/{serviceName}",
           "httpMethod": "GET",
-          "description": "Gets a managed service. Authentication is required unless the service is\npublic.",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the `ServiceManager` overview for naming\nrequirements.  For example: `example.googleapis.com`.",
@@ -3219,14 +3205,14 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/service.management",
             "https://www.googleapis.com/auth/service.management.readonly"
-          ]
+          ],
+          "description": "Gets a managed service. Authentication is required unless the service is\npublic."
         },
         "create": {
           "id": "servicemanagement.services.create",
           "path": "v1/services",
           "flatPath": "v1/services",
           "httpMethod": "POST",
-          "description": "Creates a new managed service.\nPlease note one producer project can own no more than 20 services.\n\nOperation<response: ManagedService>",
           "parameters": {
           },
           "parameterOrder": [
@@ -3240,14 +3226,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "Creates a new managed service.\nPlease note one producer project can own no more than 20 services.\n\nOperation<response: ManagedService>"
         },
         "delete": {
           "id": "servicemanagement.services.delete",
           "path": "v1/services/{serviceName}",
           "flatPath": "v1/services/{serviceName}",
           "httpMethod": "DELETE",
-          "description": "Deletes a managed service. This method will change the service to the\n`Soft-Delete` state for 30 days. Within this period, service producers may\ncall UndeleteService to restore the service.\nAfter 30 days, the service will be permanently deleted.\n\nOperation<response: google.protobuf.Empty>",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -3265,14 +3251,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "Deletes a managed service. This method will change the service to the\n`Soft-Delete` state for 30 days. Within this period, service producers may\ncall UndeleteService to restore the service.\nAfter 30 days, the service will be permanently deleted.\n\nOperation<response: google.protobuf.Empty>"
         },
         "undelete": {
           "id": "servicemanagement.services.undelete",
           "path": "v1/services/{serviceName}:undelete",
           "flatPath": "v1/services/{serviceName}:undelete",
           "httpMethod": "POST",
-          "description": "Revives a previously deleted managed service. The method restores the\nservice using the configuration at the time the service was deleted.\nThe target service must exist and must have been deleted within the\nlast 30 days.\n\nOperation<response: UndeleteServiceResponse>",
           "parameters": {
             "serviceName": {
               "description": "The name of the service. See the [overview](\/service-management\/overview)\nfor naming requirements. For example: `example.googleapis.com`.",
@@ -3290,14 +3276,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "Revives a previously deleted managed service. The method restores the\nservice using the configuration at the time the service was deleted.\nThe target service must exist and must have been deleted within the\nlast 30 days.\n\nOperation<response: UndeleteServiceResponse>"
         },
         "getConfig": {
           "id": "servicemanagement.services.getConfig",
           "path": "v1/services/{serviceName}/config",
           "flatPath": "v1/services/{serviceName}/config",
           "httpMethod": "GET",
-          "description": "Gets a service configuration (version) for a managed service.",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -3331,14 +3317,14 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/service.management",
             "https://www.googleapis.com/auth/service.management.readonly"
-          ]
+          ],
+          "description": "Gets a service configuration (version) for a managed service."
         },
         "generateConfigReport": {
           "id": "servicemanagement.services.generateConfigReport",
           "path": "v1/services:generateConfigReport",
           "flatPath": "v1/services:generateConfigReport",
           "httpMethod": "POST",
-          "description": "Generates and returns a report (errors, warnings and changes from\nexisting configurations) associated with\nGenerateConfigReportRequest.new_value\n\nIf GenerateConfigReportRequest.old_value is specified,\nGenerateConfigReportRequest will contain a single ChangeReport based on the\ncomparison between GenerateConfigReportRequest.new_value and\nGenerateConfigReportRequest.old_value.\nIf GenerateConfigReportRequest.old_value is not specified, this method\nwill compare GenerateConfigReportRequest.new_value with the last pushed\nservice configuration.",
           "parameters": {
           },
           "parameterOrder": [
@@ -3352,14 +3338,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "Generates and returns a report (errors, warnings and changes from\nexisting configurations) associated with\nGenerateConfigReportRequest.new_value\n\nIf GenerateConfigReportRequest.old_value is specified,\nGenerateConfigReportRequest will contain a single ChangeReport based on the\ncomparison between GenerateConfigReportRequest.new_value and\nGenerateConfigReportRequest.old_value.\nIf GenerateConfigReportRequest.old_value is not specified, this method\nwill compare GenerateConfigReportRequest.new_value with the last pushed\nservice configuration."
         },
         "convertConfig": {
           "id": "servicemanagement.services.convertConfig",
           "path": "v1/services:convertConfig",
           "flatPath": "v1/services:convertConfig",
           "httpMethod": "POST",
-          "description": "DEPRECATED. `SubmitConfigSource` with `validate_only=true` will provide\nconfig conversion moving forward.\n\nConverts an API specification (e.g. Swagger spec) to an\nequivalent `google.api.Service`.",
           "parameters": {
           },
           "parameterOrder": [
@@ -3373,14 +3359,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "DEPRECATED. `SubmitConfigSource` with `validate_only=true` will provide\nconfig conversion moving forward.\n\nConverts an API specification (e.g. Swagger spec) to an\nequivalent `google.api.Service`."
         },
         "enable": {
           "id": "servicemanagement.services.enable",
           "path": "v1/services/{serviceName}:enable",
           "flatPath": "v1/services/{serviceName}:enable",
           "httpMethod": "POST",
-          "description": "Enables a service for a project, so it can be used\nfor the project. See\n[Cloud Auth Guide](https:\/\/cloud.google.com\/docs\/authentication) for\nmore information.\n\nOperation<response: EnableServiceResponse>",
           "parameters": {
             "serviceName": {
               "description": "Name of the service to enable. Specifying an unknown service name will\ncause the request to fail.",
@@ -3401,14 +3387,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "Enables a service for a project, so it can be used\nfor the project. See\n[Cloud Auth Guide](https:\/\/cloud.google.com\/docs\/authentication) for\nmore information.\n\nOperation<response: EnableServiceResponse>"
         },
         "disable": {
           "id": "servicemanagement.services.disable",
           "path": "v1/services/{serviceName}:disable",
           "flatPath": "v1/services/{serviceName}:disable",
           "httpMethod": "POST",
-          "description": "Disables a service for a project, so it can no longer be\nbe used for the project. It prevents accidental usage that may cause\nunexpected billing charges or security leaks.\n\nOperation<response: DisableServiceResponse>",
           "parameters": {
             "serviceName": {
               "description": "Name of the service to disable. Specifying an unknown service name\nwill cause the request to fail.",
@@ -3429,14 +3415,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "Disables a service for a project, so it can no longer be\nbe used for the project. It prevents accidental usage that may cause\nunexpected billing charges or security leaks.\n\nOperation<response: DisableServiceResponse>"
         },
         "update": {
           "id": "servicemanagement.services.update",
           "path": "v1/services/{serviceName}",
           "flatPath": "v1/services/{serviceName}",
           "httpMethod": "PUT",
-          "description": "Updates the configuration of a service.  If the specified service does not\nalready exist, then it is created.\n\nOperation<response: ManagedService>",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -3463,14 +3449,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "Updates the configuration of a service.  If the specified service does not\nalready exist, then it is created.\n\nOperation<response: ManagedService>"
         },
         "patch": {
           "id": "servicemanagement.services.patch",
           "path": "v1/services/{serviceName}",
           "flatPath": "v1/services/{serviceName}",
           "httpMethod": "PATCH",
-          "description": "Updates the specified one of the configurations. If the specified service\ndoes not exist the patch operation fails.\n\nOperation<response: ManagedService>",
           "parameters": {
             "serviceName": {
               "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -3497,14 +3483,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "Updates the specified one of the configurations. If the specified service\ndoes not exist the patch operation fails.\n\nOperation<response: ManagedService>"
         },
         "setIamPolicy": {
           "id": "servicemanagement.services.setIamPolicy",
           "path": "v1/services/{servicesId}:setIamPolicy",
           "flatPath": "v1/services/{servicesId}:setIamPolicy",
           "httpMethod": "POST",
-          "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
           "parameters": {
             "servicesId": {
               "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
@@ -3525,14 +3511,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
         },
         "getIamPolicy": {
           "id": "servicemanagement.services.getIamPolicy",
           "path": "v1/services/{servicesId}:getIamPolicy",
           "flatPath": "v1/services/{servicesId}:getIamPolicy",
           "httpMethod": "POST",
-          "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
           "parameters": {
             "servicesId": {
               "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -3555,14 +3541,14 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/service.management",
             "https://www.googleapis.com/auth/service.management.readonly"
-          ]
+          ],
+          "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
         },
         "testIamPermissions": {
           "id": "servicemanagement.services.testIamPermissions",
           "path": "v1/services/{servicesId}:testIamPermissions",
           "flatPath": "v1/services/{servicesId}:testIamPermissions",
           "httpMethod": "POST",
-          "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
           "parameters": {
             "servicesId": {
               "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -3585,7 +3571,8 @@
             "https://www.googleapis.com/auth/cloud-platform.read-only",
             "https://www.googleapis.com/auth/service.management",
             "https://www.googleapis.com/auth/service.management.readonly"
-          ]
+          ],
+          "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
         }
       }
       ,
@@ -3597,7 +3584,6 @@
               "path": "v1/services/{serviceName}/configs",
               "flatPath": "v1/services/{serviceName}/configs",
               "httpMethod": "GET",
-              "description": "Lists the history of the service configuration for a managed service,\nfrom the newest to the oldest.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -3628,14 +3614,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/service.management",
                 "https://www.googleapis.com/auth/service.management.readonly"
-              ]
+              ],
+              "description": "Lists the history of the service configuration for a managed service,\nfrom the newest to the oldest."
             },
             "get": {
               "id": "servicemanagement.services.configs.get",
               "path": "v1/services/{serviceName}/configs/{configId}",
               "flatPath": "v1/services/{serviceName}/configs/{configId}",
               "httpMethod": "GET",
-              "description": "Gets a service configuration (version) for a managed service.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -3671,14 +3657,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/service.management",
                 "https://www.googleapis.com/auth/service.management.readonly"
-              ]
+              ],
+              "description": "Gets a service configuration (version) for a managed service."
             },
             "create": {
               "id": "servicemanagement.services.configs.create",
               "path": "v1/services/{serviceName}/configs",
               "flatPath": "v1/services/{serviceName}/configs",
               "httpMethod": "POST",
-              "description": "Creates a new service configuration (version) for a managed service.\nThis method only stores the service configuration. To roll out the service\nconfiguration to backend systems please call\nCreateServiceRollout.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -3699,14 +3685,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Creates a new service configuration (version) for a managed service.\nThis method only stores the service configuration. To roll out the service\nconfiguration to backend systems please call\nCreateServiceRollout."
             },
             "submit": {
               "id": "servicemanagement.services.configs.submit",
               "path": "v1/services/{serviceName}/configs:submit",
               "flatPath": "v1/services/{serviceName}/configs:submit",
               "httpMethod": "POST",
-              "description": "Creates a new service configuration (version) for a managed service based\non\nuser-supplied configuration source files (for example: OpenAPI\nSpecification). This method stores the source configurations as well as the\ngenerated service configuration. To rollout the service configuration to\nother services,\nplease call CreateServiceRollout.\n\nOperation<response: SubmitConfigSourceResponse>",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -3727,7 +3713,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Creates a new service configuration (version) for a managed service based\non\nuser-supplied configuration source files (for example: OpenAPI\nSpecification). This method stores the source configurations as well as the\ngenerated service configuration. To rollout the service configuration to\nother services,\nplease call CreateServiceRollout.\n\nOperation<response: SubmitConfigSourceResponse>"
             }
           }
         },
@@ -3738,7 +3725,6 @@
               "path": "v1/services/{serviceName}/rollouts",
               "flatPath": "v1/services/{serviceName}/rollouts",
               "httpMethod": "GET",
-              "description": "Lists the history of the service configuration rollouts for a managed\nservice, from the newest to the oldest.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -3774,14 +3760,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/service.management",
                 "https://www.googleapis.com/auth/service.management.readonly"
-              ]
+              ],
+              "description": "Lists the history of the service configuration rollouts for a managed\nservice, from the newest to the oldest."
             },
             "get": {
               "id": "servicemanagement.services.rollouts.get",
               "path": "v1/services/{serviceName}/rollouts/{rolloutId}",
               "flatPath": "v1/services/{serviceName}/rollouts/{rolloutId}",
               "httpMethod": "GET",
-              "description": "Gets a service configuration rollout.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -3808,14 +3794,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/service.management",
                 "https://www.googleapis.com/auth/service.management.readonly"
-              ]
+              ],
+              "description": "Gets a service configuration rollout."
             },
             "create": {
               "id": "servicemanagement.services.rollouts.create",
               "path": "v1/services/{serviceName}/rollouts",
               "flatPath": "v1/services/{serviceName}/rollouts",
               "httpMethod": "POST",
-              "description": "Creates a new service configuration rollout. Based on rollout, the\nGoogle Service Management will roll out the service configurations to\ndifferent backend services. For example, the logging configuration will be\npushed to Google Cloud Logging.\n\nPlease note that any previous pending and running Rollouts and associated\nOperations will be automatically cancelled so that the latest Rollout will\nnot be blocked by previous Rollouts.\n\nOperation<response: Rollout>",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -3841,7 +3827,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Creates a new service configuration rollout. Based on rollout, the\nGoogle Service Management will roll out the service configurations to\ndifferent backend services. For example, the logging configuration will be\npushed to Google Cloud Logging.\n\nPlease note that any previous pending and running Rollouts and associated\nOperations will be automatically cancelled so that the latest Rollout will\nnot be blocked by previous Rollouts.\n\nOperation<response: Rollout>"
             }
           }
         },
@@ -3852,7 +3839,6 @@
               "path": "v1/services/{serviceName}/consumers",
               "flatPath": "v1/services/{serviceName}/consumers",
               "httpMethod": "GET",
-              "description": "Lists consumer settings for managed services.\nTo search across all services, specify {service_name} as '-'.",
               "parameters": {
                 "serviceName": {
                   "description": "If service_name is specified, return only consumer settings for the\nspecified service.\n\nIf not specified, for organizations or folders this will return consumer\nsettings for all services that have defined org-level quotas in the service\nconfiguration. For projects, this will return consumer project settings\nfor all services activated by the consumer project.\n\nIn this version of the API, the only supported consumer type is\n\"organization\".",
@@ -3891,14 +3877,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Lists consumer settings for managed services.\nTo search across all services, specify {service_name} as '-'."
             },
             "setIamPolicy": {
               "id": "servicemanagement.services.consumers.setIamPolicy",
               "path": "v1/services/{servicesId}/consumers/{consumersId}:setIamPolicy",
               "flatPath": "v1/services/{servicesId}/consumers/{consumersId}:setIamPolicy",
               "httpMethod": "POST",
-              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
               "parameters": {
                 "servicesId": {
                   "description": "Part of `resource`. REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
@@ -3926,14 +3912,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
             },
             "getIamPolicy": {
               "id": "servicemanagement.services.consumers.getIamPolicy",
               "path": "v1/services/{servicesId}/consumers/{consumersId}:getIamPolicy",
               "flatPath": "v1/services/{servicesId}/consumers/{consumersId}:getIamPolicy",
               "httpMethod": "POST",
-              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
               "parameters": {
                 "servicesId": {
                   "description": "Part of `resource`. REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -3963,14 +3949,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/service.management",
                 "https://www.googleapis.com/auth/service.management.readonly"
-              ]
+              ],
+              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
             },
             "testIamPermissions": {
               "id": "servicemanagement.services.consumers.testIamPermissions",
               "path": "v1/services/{servicesId}/consumers/{consumersId}:testIamPermissions",
               "flatPath": "v1/services/{servicesId}/consumers/{consumersId}:testIamPermissions",
               "httpMethod": "POST",
-              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
               "parameters": {
                 "servicesId": {
                   "description": "Part of `resource`. REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -4000,7 +3986,8 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/service.management",
                 "https://www.googleapis.com/auth/service.management.readonly"
-              ]
+              ],
+              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
             }
           }
         },
@@ -4011,7 +3998,6 @@
               "path": "v1/services/{serviceName}/accessPolicy:query",
               "flatPath": "v1/services/{serviceName}/accessPolicy:query",
               "httpMethod": "POST",
-              "description": "Method to query the accessibility of a service and any associated\nvisibility labels for a specified user.\n\nMembers of the producer project may call this method and specify any user.\n\nAny user may call this method, but must specify their own email address.\nIn this case the method will return NOT_FOUND if the user has no access to\nthe service.",
               "parameters": {
                 "serviceName": {
                   "description": "The service to query access for.",
@@ -4036,7 +4022,8 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/service.management",
                 "https://www.googleapis.com/auth/service.management.readonly"
-              ]
+              ],
+              "description": "Method to query the accessibility of a service and any associated\nvisibility labels for a specified user.\n\nMembers of the producer project may call this method and specify any user.\n\nAny user may call this method, but must specify their own email address.\nIn this case the method will return NOT_FOUND if the user has no access to\nthe service."
             }
           }
         },
@@ -4047,7 +4034,6 @@
               "path": "v1/services/{serviceName}/customerSettings/{customerId}",
               "flatPath": "v1/services/{serviceName}/customerSettings/{customerId}",
               "httpMethod": "GET",
-              "description": "Retrieves the settings that control the specified customer's usage of the\nservice.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.\nThis field is required.",
@@ -4091,14 +4077,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/service.management",
                 "https://www.googleapis.com/auth/service.management.readonly"
-              ]
+              ],
+              "description": "Retrieves the settings that control the specified customer's usage of the\nservice."
             },
             "patch": {
               "id": "servicemanagement.services.customerSettings.patch",
               "path": "v1/services/{serviceName}/customerSettings/{customerId}",
               "flatPath": "v1/services/{serviceName}/customerSettings/{customerId}",
               "httpMethod": "PATCH",
-              "description": "Patches specified subset of the settings that control the specified\ncustomer's usage of the service.  Attempts to update a field not\ncontrolled by the caller will result in an access denied error.\n\nOperation<response: CustomerSettings>",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.\nThis field is required.",
@@ -4132,7 +4118,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Patches specified subset of the settings that control the specified\ncustomer's usage of the service.  Attempts to update a field not\ncontrolled by the caller will result in an access denied error.\n\nOperation<response: CustomerSettings>"
             }
           }
         },
@@ -4143,7 +4130,6 @@
               "path": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
               "flatPath": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
               "httpMethod": "GET",
-              "description": "Retrieves the settings that control the specified consumer project's usage\nof the service.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -4187,14 +4173,14 @@
                 "https://www.googleapis.com/auth/cloud-platform.read-only",
                 "https://www.googleapis.com/auth/service.management",
                 "https://www.googleapis.com/auth/service.management.readonly"
-              ]
+              ],
+              "description": "Retrieves the settings that control the specified consumer project's usage\nof the service."
             },
             "update": {
               "id": "servicemanagement.services.projectSettings.update",
               "path": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
               "flatPath": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
               "httpMethod": "PUT",
-              "description": "NOTE: Currently unsupported.  Use PatchProjectSettings instead.\n\nUpdates the settings that control the specified consumer project's usage\nof the service.  Attempts to update a field not controlled by the caller\nwill result in an access denied error.\n\nOperation<response: ProjectSettings>",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -4222,14 +4208,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "NOTE: Currently unsupported.  Use PatchProjectSettings instead.\n\nUpdates the settings that control the specified consumer project's usage\nof the service.  Attempts to update a field not controlled by the caller\nwill result in an access denied error.\n\nOperation<response: ProjectSettings>"
             },
             "patch": {
               "id": "servicemanagement.services.projectSettings.patch",
               "path": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
               "flatPath": "v1/services/{serviceName}/projectSettings/{consumerProjectId}",
               "httpMethod": "PATCH",
-              "description": "Updates specified subset of the settings that control the specified\nconsumer project's usage of the service.  Attempts to update a field not\ncontrolled by the caller will result in an access denied error.\n\nOperation<response: ProjectSettings>\nThe metadata field of the Operation will be a CompositeOperationMetadata\nobject.",
               "parameters": {
                 "serviceName": {
                   "description": "The name of the service.  See the [overview](\/service-management\/overview)\nfor naming requirements.  For example: `example.googleapis.com`.",
@@ -4263,7 +4249,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Updates specified subset of the settings that control the specified\nconsumer project's usage of the service.  Attempts to update a field not\ncontrolled by the caller will result in an access denied error.\n\nOperation<response: ProjectSettings>\nThe metadata field of the Operation will be a CompositeOperationMetadata\nobject."
             }
           }
         }
@@ -4276,7 +4263,6 @@
           "path": "v1:convertConfig",
           "flatPath": "v1:convertConfig",
           "httpMethod": "POST",
-          "description": "DEPRECATED. `SubmitConfigSource` with `validate_only=true` will provide\nconfig conversion moving forward.\n\nConverts an API specification (e.g. Swagger spec) to an\nequivalent `google.api.Service`.",
           "parameters": {
           },
           "parameterOrder": [
@@ -4290,7 +4276,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "DEPRECATED. `SubmitConfigSource` with `validate_only=true` will provide\nconfig conversion moving forward.\n\nConverts an API specification (e.g. Swagger spec) to an\nequivalent `google.api.Service`."
         }
       }
     }

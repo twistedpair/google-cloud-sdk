@@ -39,7 +39,7 @@ class Translator(command_loading.YamlCommandTranslator):
 
   def Translate(self, path, command_data):
     spec = yaml_command_schema.CommandData(path[-1], command_data)
-    c = CommandBuilder(spec)
+    c = CommandBuilder(spec, path)
     return c.Generate()
 
 
@@ -48,8 +48,9 @@ class CommandBuilder(object):
 
   IGNORED_FLAGS = {'project'}
 
-  def __init__(self, spec):
+  def __init__(self, spec, path):
     self.spec = spec
+    self.path = path
     self.method = registry.GetMethod(
         self.spec.request.collection, self.spec.request.method,
         self.spec.request.api_version)
@@ -80,10 +81,14 @@ class CommandBuilder(object):
       command = self._GenerateCreateCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.WAIT:
       command = self._GenerateWaitCommand()
+    elif (self.spec.command_type ==
+          yaml_command_schema.CommandType.GET_IAM_POLICY):
+      command = self._GenerateGetIamPolicyCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
       command = self._GenerateGenericCommand()
     else:
-      raise ValueError('Unknown command type')
+      raise ValueError('Command [{}] unknown command type [{}].'.format(
+          ' '.join(self.path), self.spec.command_type))
     self._ConfigureGlobalAttributes(command)
     return command
 
@@ -268,6 +273,34 @@ class CommandBuilder(object):
             ref, resource_ref=None, extract_resource_result=False)
         response = self._HandleResponse(response)
         return response
+
+    return Command
+
+  def _GenerateGetIamPolicyCommand(self):
+    """Generates a get-iam-policy command.
+
+    A get-iam-policy command has a single resource argument and an API method
+    to call to get the resource. The result is returned using the default
+    output format.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.ListCommand):
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        base.URI_FLAG.RemoveFromParser(parser)
+
+      def Run(self_, args):
+        unused_ref, response = self._CommonRun(args)
+        return self._HandleResponse(response)
 
     return Command
 
@@ -517,7 +550,8 @@ class CommandBuilder(object):
       command = base.Hidden(command)
     if self.spec.release_tracks:
       command = base.ReleaseTracks(*self.spec.release_tracks)(command)
-    command.detailed_help = self.spec.help_text
+    if not hasattr(command, 'detailed_help'):
+      command.detailed_help = self.spec.help_text
     command.detailed_help['API REFERENCE'] = (
         'This command uses the *{}/{}* API. The full documentation for this '
         'API can be found at: {}'.format(

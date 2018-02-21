@@ -721,7 +721,8 @@ class ManagedZone(_messages.Message):
     dnssecConfig: DNSSEC configuration.
     forwardingConfig: The presence for this field indicates that outbound
       forwarding is enabled for this zone. The value of this field contains
-      the set of destinations to forward to.
+      the set of destinations to forward to. This field should not be set for
+      Service Discovery-backed zones.
     id: Unique identifier for the resource; defined by the server (output
       only)
     kind: Identifies what kind of resource this is. Value: the fixed string

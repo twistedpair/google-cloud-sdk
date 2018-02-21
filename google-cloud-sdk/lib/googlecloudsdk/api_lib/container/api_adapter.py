@@ -303,6 +303,7 @@ class CreateClusterOptions(object):
                min_nodes=None,
                max_nodes=None,
                image_type=None,
+               issue_client_certificate=None,
                max_nodes_per_pool=None,
                enable_kubernetes_alpha=None,
                preemptible=None,
@@ -390,6 +391,7 @@ class CreateClusterOptions(object):
     self.master_ipv4_cidr = master_ipv4_cidr
     self.tpu_ipv4_cidr = tpu_ipv4_cidr
     self.enable_tpu = enable_tpu
+    self.issue_client_certificate = issue_client_certificate
 
 
 class UpdateClusterOptions(object):
@@ -820,6 +822,11 @@ class APIAdapter(object):
     if options.enable_pod_security_policy is not None:
       cluster.podSecurityPolicyConfig = self.messages.PodSecurityPolicyConfig(
           enabled=options.enable_pod_security_policy)
+
+    if options.issue_client_certificate is not None:
+      cluster.masterAuth.clientCertificateConfig = (
+          self.messages.ClientCertificateConfig(
+              issueClientCertificate=options.issue_client_certificate))
 
     self.ParseNetworkConfigOptions(options, cluster)
     self.ParseIPAliasOptions(options, cluster)

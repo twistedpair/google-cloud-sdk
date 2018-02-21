@@ -253,10 +253,6 @@
         "enableWordTimeOffsets": {
           "description": "*Optional* If `true`, the top result includes a list of words and\nthe start and end time offsets (timestamps) for those words. If\n`false`, no word-level time offset information is returned. The default is\n`false`.",
           "type": "boolean"
-        },
-        "enableWordConfidence": {
-          "description": "*Optional* If `true`, the top result includes a list of words and the\nconfidence for those words. If `false`, no word-level confidence\ninformation is returned. The default is `false`.",
-          "type": "boolean"
         }
       }
     },
@@ -386,7 +382,6 @@
           "path": "v1/operations/{+name}",
           "flatPath": "v1/operations/{operationsId}",
           "httpMethod": "GET",
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
@@ -404,7 +399,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
         }
       }
     },
@@ -415,7 +411,6 @@
           "path": "v1/speech:recognize",
           "flatPath": "v1/speech:recognize",
           "httpMethod": "POST",
-          "description": "Performs synchronous speech recognition: receive results after all audio\nhas been sent and processed.",
           "parameters": {
           },
           "parameterOrder": [
@@ -428,14 +423,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Performs synchronous speech recognition: receive results after all audio\nhas been sent and processed."
         },
         "longrunningrecognize": {
           "id": "speech.speech.longrunningrecognize",
           "path": "v1/speech:longrunningrecognize",
           "flatPath": "v1/speech:longrunningrecognize",
           "httpMethod": "POST",
-          "description": "Performs asynchronous speech recognition: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` or an `Operation.response` which contains\na `LongRunningRecognizeResponse` message.",
           "parameters": {
           },
           "parameterOrder": [
@@ -448,7 +443,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Performs asynchronous speech recognition: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` or an `Operation.response` which contains\na `LongRunningRecognizeResponse` message."
         }
       }
     }

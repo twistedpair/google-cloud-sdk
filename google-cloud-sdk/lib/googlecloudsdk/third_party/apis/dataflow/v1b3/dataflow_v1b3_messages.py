@@ -3079,8 +3079,12 @@ class RuntimeEnvironment(_messages.Message):
       from the template if not specified.
     maxWorkers: The maximum number of Google Compute Engine instances to be
       made available to your pipeline during execution, from 1 to 1000.
+    network: Network to which VMs will be assigned.  If empty or unspecified,
+      the service will use the network "default".
     serviceAccountEmail: The email address of the service account to run the
       job as.
+    subnetwork: Subnetwork to which VMs will be assigned, if desired.
+      Expected to be of the form "regions/REGION/subnetworks/SUBNETWORK".
     tempLocation: The Cloud Storage path to use for temporary files. Must be a
       valid Cloud Storage URL, beginning with `gs://`.
     zone: The Compute Engine [availability
@@ -3092,9 +3096,11 @@ class RuntimeEnvironment(_messages.Message):
   bypassTempDirValidation = _messages.BooleanField(2)
   machineType = _messages.StringField(3)
   maxWorkers = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  serviceAccountEmail = _messages.StringField(5)
-  tempLocation = _messages.StringField(6)
-  zone = _messages.StringField(7)
+  network = _messages.StringField(5)
+  serviceAccountEmail = _messages.StringField(6)
+  subnetwork = _messages.StringField(7)
+  tempLocation = _messages.StringField(8)
+  zone = _messages.StringField(9)
 
 
 class SendDebugCaptureRequest(_messages.Message):
@@ -4539,6 +4545,9 @@ class WorkerLifecycleEvent(_messages.Message):
       "downloaded_bytes" : "123456" }
 
   Fields:
+    containerStartTime: The start time of this container. All events will
+      report this so that events can be grouped together across container/VM
+      restarts.
     event: The event being reported.
     metadata: Other stats that can accompany an event. E.g. {
       "downloaded_bytes" : "123456" }
@@ -4549,6 +4558,7 @@ class WorkerLifecycleEvent(_messages.Message):
 
     Values:
       UNKNOWN_EVENT: Invalid event.
+      OS_START: The time the VM started.
       CONTAINER_START: Our container code starts running. Multiple containers
         could be distinguished with WorkerMessage.labels if desired.
       NETWORK_UP: The worker has a functional external network connection.
@@ -4559,12 +4569,13 @@ class WorkerLifecycleEvent(_messages.Message):
       SDK_INSTALL_FINISH: Finished installing SDK.
     """
     UNKNOWN_EVENT = 0
-    CONTAINER_START = 1
-    NETWORK_UP = 2
-    STAGING_FILES_DOWNLOAD_START = 3
-    STAGING_FILES_DOWNLOAD_FINISH = 4
-    SDK_INSTALL_START = 5
-    SDK_INSTALL_FINISH = 6
+    OS_START = 1
+    CONTAINER_START = 2
+    NETWORK_UP = 3
+    STAGING_FILES_DOWNLOAD_START = 4
+    STAGING_FILES_DOWNLOAD_FINISH = 5
+    SDK_INSTALL_START = 6
+    SDK_INSTALL_FINISH = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
@@ -4591,8 +4602,9 @@ class WorkerLifecycleEvent(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  event = _messages.EnumField('EventValueValuesEnum', 1)
-  metadata = _messages.MessageField('MetadataValue', 2)
+  containerStartTime = _messages.StringField(1)
+  event = _messages.EnumField('EventValueValuesEnum', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
 
 
 class WorkerMessage(_messages.Message):

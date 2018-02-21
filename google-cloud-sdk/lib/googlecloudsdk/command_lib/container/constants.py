@@ -34,11 +34,19 @@ KUBERNETES_REGIONAL_CHARGES_PROMPT = (
     "in the future you may be charged for it.\n"
 )
 
-KUBERNETES_API_MISMATCH_PROMPT_TEMPLATE = (
-    "Warning: you invoked `gcloud {track}`, but with current configuration "
+KUBERNETES_API_MISMATCH_WARNING_TEMPLATE = (
+    "You invoked `gcloud {track}`, but with current configuration "
     "Kubernetes Engine v1 API will be used instead of {api} API.\n"
-    "If you intended to use {api} API instead, please set "
-    "container/use_v1_api_client property to false.")
+    "`gcloud {track}` will switch to use Kubernetes Engine {api} API by "
+    "default by the end of March 2018.\n"
+    "If you want to keep using `gcloud {track}` to talk to v1 API temporarily, "
+    "please set `container/use_v1_api` property to true.\n"
+    "But we will drop the support for this property at the beginning of "
+    "May 2018, please migrate if necessary.")
+
+KUBERNETES_V1ALPHA1_API_WARNING = (
+    "Kubernetes Engine v1alpha1 API is for whitelist-only at the moment.\n"
+    "If you want to use it, please make sure your project is whitelisted.")
 
 KUBERNETES_GPU_LIMITATION_MSG = (
     "Machines with GPUs have certain limitations "

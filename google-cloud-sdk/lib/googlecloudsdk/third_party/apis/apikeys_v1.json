@@ -255,7 +255,7 @@
       "type": "object",
       "properties": {
         "apiTargets": {
-          "description": "A restriction for a specific service and optionally one or\nmultiple specific methods. Requests will be allowed if they\nmatch any of these restrictions. If no restrictions are\nspecified, all targets are allowed.\nKey is the service name for this restriction\nExample: apikeys.googleapis.com",
+          "description": "A restriction for a specific service and optionally one or\nmultiple specific methods. Requests will be allowed if they\nmatch any of these restrictions. If no restrictions are\nspecified, all targets are allowed.\nKey is the service name for this restriction. It should be api_v1_name of\nservice config for legacy services. For new service, it should be the fully\nqualified service name (eg. apikeys.googleapi.com).",
           "type": "object",
           "additionalProperties": {
             "$ref": "ApiTarget"
@@ -369,7 +369,6 @@
           "path": "v1/projects:getProjectForApiKey",
           "flatPath": "v1/projects:getProjectForApiKey",
           "httpMethod": "GET",
-          "description": "Get the project info about an API key.",
           "parameters": {
             "apiKey": {
               "description": "Finds the project that owns the key with this `current_key` value.",
@@ -385,7 +384,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/service.management"
-          ]
+          ],
+          "description": "Get the project info about an API key."
         }
       }
       ,
@@ -397,7 +397,6 @@
               "path": "v1/projects/{projectId}/apiKeys",
               "flatPath": "v1/projects/{projectId}/apiKeys",
               "httpMethod": "POST",
-              "description": "Creates a new API key.",
               "parameters": {
                 "projectId": {
                   "description": "The project for which this API key will be created.",
@@ -418,14 +417,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Creates a new API key."
             },
             "list": {
               "id": "apikeys.projects.apiKeys.list",
               "path": "v1/projects/{projectId}/apiKeys",
               "flatPath": "v1/projects/{projectId}/apiKeys",
               "httpMethod": "GET",
-              "description": "Lists the API keys owned by a project.",
               "parameters": {
                 "projectId": {
                   "description": "Lists all API keys associated with this project.",
@@ -454,14 +453,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Lists the API keys owned by a project."
             },
             "get": {
               "id": "apikeys.projects.apiKeys.get",
               "path": "v1/projects/{projectId}/apiKeys/{keyId}",
               "flatPath": "v1/projects/{projectId}/apiKeys/{keyId}",
               "httpMethod": "GET",
-              "description": "Gets the metadata for an API key.",
               "parameters": {
                 "projectId": {
                   "description": "The project that owns the API key.",
@@ -486,14 +485,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Gets the metadata for an API key."
             },
             "patch": {
               "id": "apikeys.projects.apiKeys.patch",
               "path": "v1/projects/{projectId}/apiKeys/{keyId}",
               "flatPath": "v1/projects/{projectId}/apiKeys/{keyId}",
               "httpMethod": "PATCH",
-              "description": "Patches the modifiable fields of an API key.",
               "parameters": {
                 "projectId": {
                   "description": "The project that owns the API key.",
@@ -527,14 +526,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Patches the modifiable fields of an API key."
             },
             "delete": {
               "id": "apikeys.projects.apiKeys.delete",
               "path": "v1/projects/{projectId}/apiKeys/{keyId}",
               "flatPath": "v1/projects/{projectId}/apiKeys/{keyId}",
               "httpMethod": "DELETE",
-              "description": "Deletes an API key.",
               "parameters": {
                 "projectId": {
                   "description": "The project that owns the API key.",
@@ -559,14 +558,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Deletes an API key."
             },
             "batchDelete": {
               "id": "apikeys.projects.apiKeys.batchDelete",
               "path": "v1/projects/{projectId}/apiKeys:batchDelete",
               "flatPath": "v1/projects/{projectId}/apiKeys:batchDelete",
               "httpMethod": "POST",
-              "description": "Bulk delete a list of API keys.",
               "parameters": {
                 "projectId": {
                   "description": "The project that owns the API keys.",
@@ -590,14 +589,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Bulk delete a list of API keys."
             },
             "regenerate": {
               "id": "apikeys.projects.apiKeys.regenerate",
               "path": "v1/projects/{projectId}/apiKeys/{keyId}:regenerate",
               "flatPath": "v1/projects/{projectId}/apiKeys/{keyId}:regenerate",
               "httpMethod": "POST",
-              "description": "Regenerates the key string for the specified API key.\nThis writes a new key string to `current_key` and writes the previous key\nstring to `previous_key`.\nReturns the updated key entry.",
               "parameters": {
                 "projectId": {
                   "description": "The project that owns the API key.",
@@ -622,14 +621,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Regenerates the key string for the specified API key.\nThis writes a new key string to `current_key` and writes the previous key\nstring to `previous_key`.\nReturns the updated key entry."
             },
             "revert": {
               "id": "apikeys.projects.apiKeys.revert",
               "path": "v1/projects/{projectId}/apiKeys/{keyId}:revert",
               "flatPath": "v1/projects/{projectId}/apiKeys/{keyId}:revert",
               "httpMethod": "POST",
-              "description": "Reverts a previous key regeneration.\nThis swaps the contents of `current_key` and `previous_key`.\nReturns the updated key entry.",
               "parameters": {
                 "projectId": {
                   "description": "The project that owns the API key.",
@@ -654,7 +653,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Reverts a previous key regeneration.\nThis swaps the contents of `current_key` and `previous_key`.\nReturns the updated key entry."
             }
           }
         },
@@ -665,7 +665,6 @@
               "path": "v1/projects/{projectId}/deletedApiKeys",
               "flatPath": "v1/projects/{projectId}/deletedApiKeys",
               "httpMethod": "GET",
-              "description": "Lists the deleted API keys owned by a project.",
               "parameters": {
                 "projectId": {
                   "description": "Lists all deleted API keys associated with this project.",
@@ -694,7 +693,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Lists the deleted API keys owned by a project."
             }
           }
         }

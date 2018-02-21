@@ -401,7 +401,7 @@ def AddUser(parser, help_text):
 INSTANCES_FORMAT = """
   table(
     instance:label=NAME,
-    region,
+    firstof(gceZone,region):label=LOCATION,
     settings.tier,
     ipAddresses[0].ipAddress.yesno(no="-"):label=ADDRESS,
     state:label=STATUS
@@ -417,7 +417,7 @@ INSTANCES_FORMAT_BETA = """
   table(
     name,
     databaseVersion,
-    region,
+    firstof(gceZone,region):label=LOCATION,
     settings.tier,
     ipAddresses[0].ipAddress.yesno(no="-"):label=ADDRESS,
     state:label=STATUS

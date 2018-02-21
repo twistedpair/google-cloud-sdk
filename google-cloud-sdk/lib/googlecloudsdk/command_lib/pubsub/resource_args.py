@@ -73,7 +73,8 @@ def CreateSubscriptionResourceArg(verb, plural=False):
       GetSubscriptionResourceSpec(),
       '{} {}'.format(help_stem, verb),
       required=True,
-      plural=plural)
+      plural=plural,
+      prefixes=True)
 
 
 def AddSubscriptionResourceArg(parser, verb, plural=False):
@@ -117,7 +118,8 @@ def CreateTopicResourceArg(verb, positional=True, plural=False):
       '{} {}'.format(help_stem, verb),
       required=True,
       flag_name_overrides=flag_name_overrides,
-      plural=plural)
+      plural=plural,
+      prefixes=True)
 
 
 def AddTopicResourceArg(parser, verb, positional=True, plural=False):

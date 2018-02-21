@@ -117,8 +117,9 @@ class ResourcePresentationSpec(PresentationSpec):
       otherwise.
   """
 
-  def __init__(self, name, concept_spec, group_help, prefixes=True,
-               required=False, flag_name_overrides=None, plural=False):
+  def __init__(self, name, concept_spec, group_help, prefixes=False,
+               required=False, flag_name_overrides=None, plural=False,
+               group=None):
     """Initializes a ResourcePresentationSpec.
 
     Args:
@@ -127,12 +128,15 @@ class ResourcePresentationSpec(PresentationSpec):
         specifies the concept.
       group_help: str, the help text for the entire arg group.
       prefixes: bool, whether to use prefixes before the attribute flags, such
-        as `--myresource-project`. Defaults to True.
+        as `--myresource-project`.
       required: bool, whether the anchor argument should be required.
       flag_name_overrides: {str: str}, dict of attribute names to the desired
         flag name. To remove a flag altogether, use '' as its rename value.
       plural: bool, True if the resource will be parsed as a list, False
         otherwise.
+      group: the parser or subparser for a Calliope command that the resource
+        arguments should be added to. If not provided, will be added to the main
+        parser.
     """
     self.name = name
     self._concept_spec = concept_spec
@@ -140,6 +144,7 @@ class ResourcePresentationSpec(PresentationSpec):
     self.prefixes = prefixes
     self.required = required
     self.plural = plural
+    self.group = group
 
     # Create a rename map for the attributes to their flags.
     self.attribute_to_args_map = {}
@@ -322,12 +327,27 @@ class ResourcePresentationSpec(PresentationSpec):
     if not args:
       # Don't create the group if there are not going to be any args generated.
       return
+    # If this spec is supposed to be added to a subgroup, that overrides the
+    # provided parser.
+    parser = self.group or parser
 
-    group = parser.add_group(
+    resource_group = parser.add_group(
         help=self.GetGroupHelp(),
         required=self.args_required)
     for arg in args:
-      arg.AddToParser(group)
+      arg.AddToParser(resource_group)
+
+  def GetExampleArgList(self):
+    """Returns a list of command line example arg strings for the concept."""
+    args = self.GetAttributeArgs()
+    examples = []
+    for arg in args:
+      if arg.name.startswith('--'):
+        example = '{}=my-{}'.format(arg.name, arg.name[2:])
+      else:
+        example = 'my-{}'.format(arg.name.lower())
+      examples.append(example)
+    return examples
 
   @property
   def concept_spec(self):
@@ -361,7 +381,8 @@ class ConceptParser(object):
 
   @classmethod
   def ForResource(cls, name, resource_spec, group_help, required=False,
-                  flag_name_overrides=None, plural=False):
+                  flag_name_overrides=None, plural=False, prefixes=False,
+                  group=None):
     """Constructs a ConceptParser for a single resource argument.
 
     Automatically sets prefixes to False.
@@ -377,6 +398,11 @@ class ConceptParser(object):
         flag name. To remove a flag altogether, use '' as its rename value.
       plural: bool, True if the resource will be parsed as a list, False
         otherwise.
+      prefixes: bool, True if flag names will be prefixed with the resource
+        name, False otherwise. Should be False for all typical use cases.
+      group: the parser or subparser for a Calliope command that the resource
+        arguments should be added to. If not provided, will be added to the main
+        parser.
 
     Returns:
       (googlecloudsdk.calliope.concepts.concept_parsers.ConceptParser) The fully
@@ -386,10 +412,11 @@ class ConceptParser(object):
         name,
         resource_spec,
         group_help,
-        prefixes=False,
         required=required,
         flag_name_overrides=flag_name_overrides or {},
-        plural=plural)
+        plural=plural,
+        prefixes=prefixes,
+        group=group)
     return cls([presentation_spec])
 
   def _ArgNameMatches(self, name, other_name):
@@ -454,3 +481,17 @@ class ConceptParser(object):
           util.NormalizeFormat(spec_name), spec.GetInfo(),
           required=spec.required)
       spec.AddConceptToParser(parser)
+
+  def GetExampleArgString(self):
+    """Returns a command line example arg string for the concept."""
+    examples = []
+    for _, spec in self._specs.iteritems():
+      args = spec.GetExampleArgList()
+      if args:
+        examples.extend(args)
+
+    def _PositionalsFirst(arg):
+      prefix = 'Z' if arg.startswith('--') else 'A'
+      return prefix + arg
+
+    return ' '.join(sorted(examples, key=_PositionalsFirst))

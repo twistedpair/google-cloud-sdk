@@ -62,7 +62,7 @@ def _Flatten(obj):
     elif isinstance(obj, dict):
       if obj:
         for k, v in sorted(six.iteritems(obj)):
-          Flatten(v, '{name}{dot}{key}'.format(
+          Flatten(v, u'{name}{dot}{key}'.format(
               name=name, dot='.' if name else '', key=k), res)
       else:
         res.append((name, {}))

@@ -820,27 +820,7 @@ def GetInstanceRefs(args, client, holder):
   return instance_refs
 
 
-def GetNetworkInterfacesGa(
-    args, client, holder, instance_refs, skip_defaults):
-  if (skip_defaults and not args.IsSpecified('network') and not
-      IsAnySpecified(
-          args, 'address', 'no_address', 'private_network_ip', 'subnet',)):
-    return []
-  return [
-      CreateNetworkInterfaceMessage(
-          resources=holder.resources,
-          compute_client=client,
-          network=args.network,
-          subnet=args.subnet,
-          private_network_ip=args.private_network_ip,
-          no_address=args.no_address,
-          address=args.address,
-          instance_refs=instance_refs,
-      )
-  ]
-
-
-def GetNetworkInterfacesBeta(
+def GetNetworkInterfaces(
     args, client, holder, instance_refs, skip_defaults):
   if (skip_defaults and not args.IsSpecified('network') and not
       IsAnySpecified(

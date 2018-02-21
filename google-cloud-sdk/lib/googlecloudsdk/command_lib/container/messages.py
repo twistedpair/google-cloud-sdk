@@ -38,13 +38,15 @@ def AutoUpdateUpgradeRepairMessage(value, flag_name):
           'information on node {3}.\n').format(action, flag_name, link, plural)
 
 
-def NonGAFeatureUsingV1APIWarning(track):
-  if not properties.VALUES.container.use_v1_api_client.GetBool():
+def GetAPIMismatchingWarning(track):
+  """Warning for using an API version that mismatches the release track."""
+  if not properties.VALUES.container.use_v1_api.GetBool():
     # No message if v1 API is not forced.
     return None
-  tmpl = constants.KUBERNETES_API_MISMATCH_PROMPT_TEMPLATE
+  tmpl = constants.KUBERNETES_API_MISMATCH_WARNING_TEMPLATE
   if track == base.ReleaseTrack.ALPHA:
-    return tmpl.format(track='alpha', api='v1alpha1')
+    return (tmpl.format(track='alpha', api='v1alpha1') + '\n' +
+            constants.KUBERNETES_V1ALPHA1_API_WARNING)
   if track == base.ReleaseTrack.BETA:
     return tmpl.format(track='beta', api='v1beta1')
   return None

@@ -4,7 +4,7 @@
  "id": "dns:v1alpha2",
  "name": "dns",
  "version": "v1alpha2",
- "revision": "20180202",
+ "revision": "20180215",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -355,7 +355,7 @@
     },
     "forwardingConfig": {
      "$ref": "ManagedZoneForwardingConfig",
-     "description": "The presence for this field indicates that outbound forwarding is enabled for this zone. The value of this field contains the set of destinations to forward to."
+     "description": "The presence for this field indicates that outbound forwarding is enabled for this zone. The value of this field contains the set of destinations to forward to. This field should not be set for Service Discovery-backed zones."
     },
     "id": {
      "type": "string",

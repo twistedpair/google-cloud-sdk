@@ -99,16 +99,8 @@ class AlphaVisionProductSearchCatalogsReferenceImagesListRequest(_messages.Messa
   productId = _messages.StringField(4)
 
 
-class AsyncBatchAnnotateImagesResponse(_messages.Message):
-  """Response to an async batch image annotation request.
-
-  Fields:
-    outputConfig: The output config where result(s) are located. This is the
-      same location as was specified in the output_config, and is provided for
-      convenience.
-  """
-
-  outputConfig = _messages.MessageField('OutputConfig', 1)
+class AsyncBatchAnnotateFilesResponse(_messages.Message):
+  """Response to an async batch file annotation request."""
 
 
 class BatchOperationMetadata(_messages.Message):
@@ -180,25 +172,6 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
-
-
-class GcsDestination(_messages.Message):
-  """The Google Cloud Storage location where the output will be written to.
-
-  Fields:
-    uri: Google Cloud Storage URI where the results will be stored. Results
-      will be in JSON format and preceded by its corresponding input URI. This
-      field can either represent a single file, or a prefix for multiple
-      outputs. Prefixes must end in a `/`.  Examples:  *    File: gs://bucket-
-      name/filename.json *    Prefix: gs://bucket-name/prefix/here/ *    File:
-      gs://bucket-name/prefix/here  If multiple outputs, each response is
-      still AnnotateFileResponse, each of which contains some subset of the
-      full list of AnnotateImageResponse. Multiple outputs can happen if, for
-      example, the output JSON is too large and overflows into multiple
-      sharded files.
-  """
-
-  uri = _messages.StringField(1)
 
 
 class ImportCatalogsGcsSource(_messages.Message):
@@ -420,17 +393,6 @@ class OperationMetadata(_messages.Message):
   createTime = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   updateTime = _messages.StringField(3)
-
-
-class OutputConfig(_messages.Message):
-  """The desired output location and metadata.
-
-  Fields:
-    gcsDestination: The Google Cloud Storage location to write the output(s)
-      to.
-  """
-
-  gcsDestination = _messages.MessageField('GcsDestination', 1)
 
 
 class ReferenceImage(_messages.Message):

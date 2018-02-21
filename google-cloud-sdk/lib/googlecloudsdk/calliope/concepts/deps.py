@@ -99,7 +99,12 @@ class Fallthrough(_FallthroughBase):
         the argument or None if it cannot be resolved.
       hint: str, The user-facing message for the fallthrough when it cannot be
         resolved.
+
+    Raises:
+      ValueError: if no hint is provided
     """
+    if not hint:
+      raise ValueError('Hint must be provided.')
     super(Fallthrough, self).__init__(hint)
     self._function = function
 
@@ -210,7 +215,7 @@ class Deps(object):
       except FallthroughNotFoundError:
         continue
     fallthroughs_summary = '\n'.join(
-        ['- {}'.format(fallthrough.hint) for fallthrough in fallthroughs])
+        ['- {}'.format(f.hint) for f in fallthroughs])
     raise AttributeNotFoundError(
         'Failed to find attribute [{}]. The attribute can be set in the '
         'following ways: \n'

@@ -38,12 +38,13 @@ def ParseCreateLabels(models_client, args):
 
 
 def Create(models_client, model, regions=None, enable_logging=None,
-           labels=None):
+           labels=None, description=None):
   if regions is None:
     log.warn('`--regions` flag will soon be required. Please explicitly '
              'specify a region. Using [us-central1] by default.')
     regions = ['us-central1']
-  return models_client.Create(model, regions, enable_logging, labels=labels)
+  return models_client.Create(model, regions, enable_logging, labels=labels,
+                              description=description)
 
 
 def Delete(models_client, operations_client, model):
@@ -72,12 +73,15 @@ def ParseUpdateLabels(models_client, args):
 def Update(models_client, operations_client, args):
   model_ref = ParseModel(args.model)
   labels_update = ParseUpdateLabels(models_client, args)
+
   try:
-    op = models_client.Patch(model_ref, labels_update)
+    op = models_client.Patch(model_ref, labels_update,
+                             description=args.description)
   except models.NoFieldsSpecifiedError:
     if not any(args.IsSpecified(arg) for arg in ('update_labels',
                                                  'clear_labels',
-                                                 'remove_labels')):
+                                                 'remove_labels',
+                                                 'description')):
       raise
     log.status.Print('No update to perform.')
     return None

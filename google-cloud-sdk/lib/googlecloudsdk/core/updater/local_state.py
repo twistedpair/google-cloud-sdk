@@ -297,8 +297,7 @@ class InstallationState(object):
     """
     self._CreateStateDir()
     (rm_staging_cb, rm_backup_cb, rm_trash_cb, copy_cb) = (
-        console_io.ProgressBar.SplitProgressBar(progress_callback,
-                                                [1, 1, 1, 7]))
+        console_io.SplitProgressBar(progress_callback, [1, 1, 1, 7]))
 
     self._ClearStaging(progress_callback=rm_staging_cb)
     self.ClearBackup(progress_callback=rm_backup_cb)

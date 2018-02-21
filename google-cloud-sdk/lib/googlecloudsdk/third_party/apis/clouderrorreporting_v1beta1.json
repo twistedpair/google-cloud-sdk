@@ -457,7 +457,6 @@
           "path": "v1beta1/{+projectName}/events",
           "flatPath": "v1beta1/projects/{projectsId}/events",
           "httpMethod": "DELETE",
-          "description": "Deletes all error events of a given project.",
           "parameters": {
             "projectName": {
               "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
@@ -475,7 +474,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Deletes all error events of a given project."
         }
       }
       ,
@@ -487,7 +487,6 @@
               "path": "v1beta1/{+groupName}",
               "flatPath": "v1beta1/projects/{projectsId}/groups/{groupsId}",
               "httpMethod": "GET",
-              "description": "Get the specified group.",
               "parameters": {
                 "groupName": {
                   "description": "[Required] The group resource name. Written as\n<code>projects\/<var>projectID<\/var>\/groups\/<var>group_name<\/var><\/code>.\nCall\n<a href=\"\/error-reporting\/reference\/rest\/v1beta1\/projects.groupStats\/list\">\n<code>groupStats.list<\/code><\/a> to return a list of groups belonging to\nthis project.\n\nExample: <code>projects\/my-project-123\/groups\/my-group<\/code>",
@@ -505,14 +504,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Get the specified group."
             },
             "update": {
               "id": "clouderrorreporting.projects.groups.update",
               "path": "v1beta1/{+name}",
               "flatPath": "v1beta1/projects/{projectsId}/groups/{groupsId}",
               "httpMethod": "PUT",
-              "description": "Replace the data for the specified group.\nFails if the group does not exist.",
               "parameters": {
                 "name": {
                   "description": "The group resource name.\nExample: <code>projects\/my-project-123\/groups\/my-groupid<\/code>",
@@ -533,7 +532,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Replace the data for the specified group.\nFails if the group does not exist."
             }
           }
         },
@@ -544,7 +544,6 @@
               "path": "v1beta1/{+projectName}/groupStats",
               "flatPath": "v1beta1/projects/{projectsId}/groupStats",
               "httpMethod": "GET",
-              "description": "Lists the specified groups.",
               "parameters": {
                 "projectName": {
                   "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas <code>projects\/<\/code> plus the\n<a href=\"https:\/\/support.google.com\/cloud\/answer\/6158840\">Google Cloud\nPlatform project ID<\/a>.\n\nExample: <code>projects\/my-project-123<\/code>.",
@@ -641,7 +640,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists the specified groups."
             }
           }
         },
@@ -652,7 +652,6 @@
               "path": "v1beta1/{+projectName}/events",
               "flatPath": "v1beta1/projects/{projectsId}/events",
               "httpMethod": "GET",
-              "description": "Lists the specified events.",
               "parameters": {
                 "projectName": {
                   "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project\nID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
@@ -714,14 +713,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists the specified events."
             },
             "report": {
               "id": "clouderrorreporting.projects.events.report",
               "path": "v1beta1/{+projectName}/events:report",
               "flatPath": "v1beta1/projects/{projectsId}/events:report",
               "httpMethod": "POST",
-              "description": "Report an individual error event.\n\nThis endpoint accepts <strong>either<\/strong> an OAuth token,\n<strong>or<\/strong> an\n<a href=\"https:\/\/support.google.com\/cloud\/answer\/6158862\">API key<\/a>\nfor authentication. To use an API key, append it to the URL as the value of\na `key` parameter. For example:\n<pre>POST https:\/\/clouderrorreporting.googleapis.com\/v1beta1\/projects\/example-project\/events:report?key=123ABC456<\/pre>",
               "parameters": {
                 "projectName": {
                   "description": "[Required] The resource name of the Google Cloud Platform project. Written\nas `projects\/` plus the\n[Google Cloud Platform project ID](https:\/\/support.google.com\/cloud\/answer\/6158840).\nExample: `projects\/my-project-123`.",
@@ -742,7 +741,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Report an individual error event.\n\nThis endpoint accepts <strong>either<\/strong> an OAuth token,\n<strong>or<\/strong> an\n<a href=\"https:\/\/support.google.com\/cloud\/answer\/6158862\">API key<\/a>\nfor authentication. To use an API key, append it to the URL as the value of\na `key` parameter. For example:\n<pre>POST https:\/\/clouderrorreporting.googleapis.com\/v1beta1\/projects\/example-project\/events:report?key=123ABC456<\/pre>"
             }
           }
         }

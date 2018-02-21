@@ -356,11 +356,6 @@ class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently. This field is only visible as GOOGLE_INTERNAL or
-      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -378,9 +373,8 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`. Required
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  members = _messages.StringField(1, repeated=True)
+  role = _messages.StringField(2)
 
 
 class ChangeReport(_messages.Message):
@@ -619,7 +613,16 @@ class Context(_messages.Message):
   google.rpc.context.ProjectContext         - google.rpc.context.OriginContext
   The above specifies that all methods in the API request
   `google.rpc.context.ProjectContext` and `google.rpc.context.OriginContext`.
-  Available context types are defined in package `google.rpc.context`.
+  Available context types are defined in package `google.rpc.context`.  This
+  also provides mechanism to whitelist any protobuf message extension that can
+  be sent in grpc metadata using \u201cx-goog-ext-<extension_id>-bin\u201d and \u201cx-goog-
+  ext-<extension_id>-jspb\u201d format. For example, list any service specific
+  protobuf types that can appear in grpc metadata as follows in your yaml
+  file:  Example:      context:       rules:        - selector:
+  "google.example.library.v1.LibraryService.CreateBook"
+  allowed_request_extensions:          - google.foo.v1.NewExtension
+  allowed_response_extensions:          - google.foo.v1.NewExtension  You can
+  also specify extension ID instead of fully qualified extension name here.
 
   Fields:
     rules: A list of RPC context rules that apply to individual API methods.
@@ -634,15 +637,21 @@ class ContextRule(_messages.Message):
   API element.
 
   Fields:
+    allowedRequestExtensions: A list of full type names or extension IDs of
+      extensions allowed in grpc side channel from client to backend.
+    allowedResponseExtensions: A list of full type names or extension IDs of
+      extensions allowed in grpc side channel from backend to client.
     provided: A list of full type names of provided contexts.
     requested: A list of full type names of requested contexts.
     selector: Selects the methods to which this rule applies.  Refer to
       selector for syntax details.
   """
 
-  provided = _messages.StringField(1, repeated=True)
-  requested = _messages.StringField(2, repeated=True)
-  selector = _messages.StringField(3)
+  allowedRequestExtensions = _messages.StringField(1, repeated=True)
+  allowedResponseExtensions = _messages.StringField(2, repeated=True)
+  provided = _messages.StringField(3, repeated=True)
+  requested = _messages.StringField(4, repeated=True)
+  selector = _messages.StringField(5)
 
 
 class Control(_messages.Message):
@@ -1159,30 +1168,6 @@ class Experimental(_messages.Message):
   """
 
   authorization = _messages.MessageField('AuthorizationConfig', 1)
-
-
-class Expr(_messages.Message):
-  """Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
-
-  Fields:
-    description: An optional description of the expression. This is a longer
-      text which describes the expression, e.g. when hovered over it in a UI.
-    expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
-      error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
-  """
-
-  description = _messages.StringField(1)
-  expression = _messages.StringField(2)
-  location = _messages.StringField(3)
-  title = _messages.StringField(4)
 
 
 class Field(_messages.Message):

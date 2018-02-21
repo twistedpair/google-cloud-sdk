@@ -108,6 +108,13 @@ class MlEngineIamRolesCompleter(iam_completers.IamRolesCompleter):
         **kwargs)
 
 
+def GetDescriptionFlag(noun):
+  return base.Argument(
+      '--description',
+      required=False,
+      default=None,
+      help='The description of the {noun}.'.format(noun=noun))
+
 # Run flags
 DISTRIBUTED = base.Argument(
     '--distributed',

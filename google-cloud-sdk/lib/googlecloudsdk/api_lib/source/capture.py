@@ -312,8 +312,7 @@ class _Uploader(object):
     self._progress_bar = console_io.ProgressBar(
         'Uploading {0} file(s)'.format(total_files))
     (self.read_progress, self.write_progress) = (
-        console_io.ProgressBar.SplitProgressBar(self._progress_bar.SetProgress,
-                                                [1, 6]))
+        console_io.SplitProgressBar(self._progress_bar.SetProgress, [1, 6]))
     self._workspace.SetPostCallback(self._UpdateWriteProgress)
     self.total_files = total_files
     self._progress_bar.Start()

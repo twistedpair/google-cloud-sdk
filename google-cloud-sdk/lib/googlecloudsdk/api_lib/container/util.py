@@ -37,7 +37,7 @@ CLUSTERS_FORMAT = """
         endpoint:label=MASTER_IP,
         nodePools[0].config.machineType,
         currentNodeVersion:label=NODE_VERSION,
-        currentNodeCount:label=NUM_NODES,
+        firstof(currentNodeCount,initialNodeCount):label=NUM_NODES,
         status
     )
 """

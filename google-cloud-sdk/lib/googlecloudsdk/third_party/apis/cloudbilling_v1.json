@@ -469,7 +469,6 @@
           "path": "v1/{+name}",
           "flatPath": "v1/billingAccounts/{billingAccountsId}",
           "httpMethod": "GET",
-          "description": "Gets information about a billing account. The current authenticated user\nmust be an [owner of the billing\naccount](https:\/\/support.google.com\/cloud\/answer\/4430947).",
           "parameters": {
             "name": {
               "description": "The resource name of the billing account to retrieve. For example,\n`billingAccounts\/012345-567890-ABCDEF`.",
@@ -487,14 +486,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Gets information about a billing account. The current authenticated user\nmust be an [owner of the billing\naccount](https:\/\/support.google.com\/cloud\/answer\/4430947)."
         },
         "list": {
           "id": "cloudbilling.billingAccounts.list",
           "path": "v1/billingAccounts",
           "flatPath": "v1/billingAccounts",
           "httpMethod": "GET",
-          "description": "Lists the billing accounts that the current authenticated user\n[owns](https:\/\/support.google.com\/cloud\/answer\/4430947).",
           "parameters": {
             "pageSize": {
               "description": "Requested page size. The maximum page size is 100; this is also the\ndefault.",
@@ -515,7 +514,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Lists the billing accounts that the current authenticated user\n[owns](https:\/\/support.google.com\/cloud\/answer\/4430947)."
         }
       }
       ,
@@ -527,7 +527,6 @@
               "path": "v1/{+name}/projects",
               "flatPath": "v1/billingAccounts/{billingAccountsId}/projects",
               "httpMethod": "GET",
-              "description": "Lists the projects associated with a billing account. The current\nauthenticated user must have the \"billing.resourceAssociations.list\" IAM\npermission, which is often given to billing account\n[viewers](https:\/\/support.google.com\/cloud\/answer\/4430947).",
               "parameters": {
                 "name": {
                   "description": "The resource name of the billing account associated with the projects that\nyou want to list. For example, `billingAccounts\/012345-567890-ABCDEF`.",
@@ -556,7 +555,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists the projects associated with a billing account. The current\nauthenticated user must have the \"billing.resourceAssociations.list\" IAM\npermission, which is often given to billing account\n[viewers](https:\/\/support.google.com\/cloud\/answer\/4430947)."
             }
           }
         }
@@ -569,7 +569,6 @@
           "path": "v1/{+name}/billingInfo",
           "flatPath": "v1/projects/{projectsId}/billingInfo",
           "httpMethod": "GET",
-          "description": "Gets the billing information for a project. The current authenticated user\nmust have [permission to view the\nproject](https:\/\/cloud.google.com\/docs\/permissions-overview#h.bgs0oxofvnoo\n).",
           "parameters": {
             "name": {
               "description": "The resource name of the project for which billing information is\nretrieved. For example, `projects\/tokyo-rain-123`.",
@@ -587,14 +586,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Gets the billing information for a project. The current authenticated user\nmust have [permission to view the\nproject](https:\/\/cloud.google.com\/docs\/permissions-overview#h.bgs0oxofvnoo\n)."
         },
         "updateBillingInfo": {
           "id": "cloudbilling.projects.updateBillingInfo",
           "path": "v1/{+name}/billingInfo",
           "flatPath": "v1/projects/{projectsId}/billingInfo",
           "httpMethod": "PUT",
-          "description": "Sets or updates the billing account associated with a project. You specify\nthe new billing account by setting the `billing_account_name` in the\n`ProjectBillingInfo` resource to the resource name of a billing account.\nAssociating a project with an open billing account enables billing on the\nproject and allows charges for resource usage. If the project already had a\nbilling account, this method changes the billing account used for resource\nusage charges.\n\n*Note:* Incurred charges that have not yet been reported in the transaction\nhistory of the Google Cloud Console may be billed to the new billing\naccount, even if the charge occurred before the new billing account was\nassigned to the project.\n\nThe current authenticated user must have ownership privileges for both the\n[project](https:\/\/cloud.google.com\/docs\/permissions-overview#h.bgs0oxofvnoo\n) and the [billing\naccount](https:\/\/support.google.com\/cloud\/answer\/4430947).\n\nYou can disable billing on the project by setting the\n`billing_account_name` field to empty. This action disassociates the\ncurrent billing account from the project. Any billable activity of your\nin-use services will stop, and your application could stop functioning as\nexpected. Any unbilled charges to date will be billed to the previously\nassociated account. The current authenticated user must be either an owner\nof the project or an owner of the billing account for the project.\n\nNote that associating a project with a *closed* billing account will have\nmuch the same effect as disabling billing on the project: any paid\nresources used by the project will be shut down. Thus, unless you wish to\ndisable billing, you should always call this method with the name of an\n*open* billing account.",
           "parameters": {
             "name": {
               "description": "The resource name of the project associated with the billing information\nthat you want to update. For example, `projects\/tokyo-rain-123`.",
@@ -615,7 +614,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Sets or updates the billing account associated with a project. You specify\nthe new billing account by setting the `billing_account_name` in the\n`ProjectBillingInfo` resource to the resource name of a billing account.\nAssociating a project with an open billing account enables billing on the\nproject and allows charges for resource usage. If the project already had a\nbilling account, this method changes the billing account used for resource\nusage charges.\n\n*Note:* Incurred charges that have not yet been reported in the transaction\nhistory of the Google Cloud Console may be billed to the new billing\naccount, even if the charge occurred before the new billing account was\nassigned to the project.\n\nThe current authenticated user must have ownership privileges for both the\n[project](https:\/\/cloud.google.com\/docs\/permissions-overview#h.bgs0oxofvnoo\n) and the [billing\naccount](https:\/\/support.google.com\/cloud\/answer\/4430947).\n\nYou can disable billing on the project by setting the\n`billing_account_name` field to empty. This action disassociates the\ncurrent billing account from the project. Any billable activity of your\nin-use services will stop, and your application could stop functioning as\nexpected. Any unbilled charges to date will be billed to the previously\nassociated account. The current authenticated user must be either an owner\nof the project or an owner of the billing account for the project.\n\nNote that associating a project with a *closed* billing account will have\nmuch the same effect as disabling billing on the project: any paid\nresources used by the project will be shut down. Thus, unless you wish to\ndisable billing, you should always call this method with the name of an\n*open* billing account."
         }
       }
     },
@@ -626,7 +626,6 @@
           "path": "v1/services",
           "flatPath": "v1/services",
           "httpMethod": "GET",
-          "description": "Lists all public cloud services.",
           "parameters": {
             "pageSize": {
               "description": "Requested page size. Defaults to 5000.",
@@ -644,7 +643,8 @@
           ],
           "response": {
             "$ref": "ListServicesResponse"
-          }
+          },
+          "description": "Lists all public cloud services."
         }
       }
       ,
@@ -656,7 +656,6 @@
               "path": "v1/{+parent}/skus",
               "flatPath": "v1/services/{servicesId}/skus",
               "httpMethod": "GET",
-              "description": "Lists all publicly available SKUs for a given cloud service.",
               "parameters": {
                 "parent": {
                   "description": "The name of the service.\nExample: \"services\/DA34-426B-A397\"",
@@ -699,7 +698,8 @@
               ],
               "response": {
                 "$ref": "ListSkusResponse"
-              }
+              },
+              "description": "Lists all publicly available SKUs for a given cloud service."
             }
           }
         }

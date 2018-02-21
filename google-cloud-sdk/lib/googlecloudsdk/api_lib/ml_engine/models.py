@@ -38,7 +38,8 @@ class ModelsClient(object):
     self.client = client or apis.GetClientInstance('ml', 'v1')
     self.messages = messages or self.client.MESSAGES_MODULE
 
-  def Create(self, model_name, regions, enable_logging=False, labels=None):
+  def Create(self, model_name, regions, enable_logging=False, labels=None,
+             description=None):
     """Create a new model."""
     model_ref = _ParseModel(model_name)
     regions_list = regions or []
@@ -50,6 +51,7 @@ class ModelsClient(object):
             name=model_ref.Name(),
             regions=regions_list,
             onlinePredictionLogging=enable_logging,
+            description=description,
             labels=labels))
     return self.client.projects_models.Create(req)
 
@@ -91,15 +93,21 @@ class ModelsClient(object):
         field='models',
         batch_size_attribute='pageSize')
 
-  def Patch(self, model_ref, labels_update):
+  def Patch(self, model_ref, labels_update, description=None):
     """Update a model."""
     model = self.messages.GoogleCloudMlV1Model()
     update_mask = []
     if labels_update.needs_update:
       model.labels = labels_update.labels
       update_mask.append('labels')
+
+    if description:
+      model.description = description
+      update_mask.append('description')
+
     if not update_mask:
       raise NoFieldsSpecifiedError('No updates requested.')
+
     req = self.messages.MlProjectsModelsPatchRequest(
         name=model_ref.RelativeName(),
         googleCloudMlV1Model=model,

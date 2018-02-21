@@ -1182,7 +1182,7 @@
     },
     "Context": {
       "id": "Context",
-      "description": "`Context` defines which contexts an API requests.\n\nExample:\n\n    context:\n      rules:\n      - selector: \"*\"\n        requested:\n        - google.rpc.context.ProjectContext\n        - google.rpc.context.OriginContext\n\nThe above specifies that all methods in the API request\n`google.rpc.context.ProjectContext` and\n`google.rpc.context.OriginContext`.\n\nAvailable context types are defined in package\n`google.rpc.context`.",
+      "description": "`Context` defines which contexts an API requests.\n\nExample:\n\n    context:\n      rules:\n      - selector: \"*\"\n        requested:\n        - google.rpc.context.ProjectContext\n        - google.rpc.context.OriginContext\n\nThe above specifies that all methods in the API request\n`google.rpc.context.ProjectContext` and\n`google.rpc.context.OriginContext`.\n\nAvailable context types are defined in package\n`google.rpc.context`.\n\nThis also provides mechanism to whitelist any protobuf message extension that\ncan be sent in grpc metadata using \u201Cx-goog-ext-<extension_id>-bin\u201D and\n\u201Cx-goog-ext-<extension_id>-jspb\u201D format. For example, list any service\nspecific protobuf types that can appear in grpc metadata as follows in your\nyaml file:\n\nExample:\n\n    context:\n      rules:\n       - selector: \"google.example.library.v1.LibraryService.CreateBook\"\n         allowed_request_extensions:\n         - google.foo.v1.NewExtension\n         allowed_response_extensions:\n         - google.foo.v1.NewExtension\n\nYou can also specify extension ID instead of fully qualified extension name\nhere.",
       "type": "object",
       "properties": {
         "rules": {
@@ -1212,6 +1212,20 @@
         },
         "provided": {
           "description": "A list of full type names of provided contexts.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedRequestExtensions": {
+          "description": "A list of full type names or extension IDs of extensions allowed in grpc\nside channel from client to backend.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedResponseExtensions": {
+          "description": "A list of full type names or extension IDs of extensions allowed in grpc\nside channel from backend to client.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1868,7 +1882,6 @@
               "path": "v1/projects/{projectsId}/services",
               "flatPath": "v1/projects/{projectsId}/services",
               "httpMethod": "GET",
-              "description": "List enabled services for the specified consumer.",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `parent`. List enabled services for the specified parent.\n\nAn example valid parent would be:\n- projects\/my-project",
@@ -1897,14 +1910,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloud-platform.read-only"
-              ]
+              ],
+              "description": "List enabled services for the specified consumer."
             },
             "enable": {
               "id": "serviceuser.projects.services.enable",
               "path": "v1/projects/{projectsId}/services/{servicesId}:enable",
               "flatPath": "v1/projects/{projectsId}/services/{servicesId}:enable",
               "httpMethod": "POST",
-              "description": "Enable a service so it can be used with a project.\nSee [Cloud Auth Guide](https:\/\/cloud.google.com\/docs\/authentication) for\nmore information.\n\nOperation<response: google.protobuf.Empty>",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `name`. Name of the consumer and the service to enable for that consumer.\n\nA valid path would be:\n- \/v1\/projects\/my-project\/services\/servicemanagement.googleapis.com:enable",
@@ -1932,14 +1945,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Enable a service so it can be used with a project.\nSee [Cloud Auth Guide](https:\/\/cloud.google.com\/docs\/authentication) for\nmore information.\n\nOperation<response: google.protobuf.Empty>"
             },
             "disable": {
               "id": "serviceuser.projects.services.disable",
               "path": "v1/projects/{projectsId}/services/{servicesId}:disable",
               "flatPath": "v1/projects/{projectsId}/services/{servicesId}:disable",
               "httpMethod": "POST",
-              "description": "Disable a service so it can no longer be used with a\nproject. This prevents unintended usage that may cause unexpected billing\ncharges or security leaks.\n\nOperation<response: google.protobuf.Empty>",
               "parameters": {
                 "projectsId": {
                   "description": "Part of `name`. Name of the consumer and the service to disable for that consumer.\n\nThe Service User implementation accepts the following forms for consumer:\n- \"project:<project_id>\"\n\nA valid path would be:\n- \/v1\/projects\/my-project\/services\/servicemanagement.googleapis.com:disable",
@@ -1967,7 +1980,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/service.management"
-              ]
+              ],
+              "description": "Disable a service so it can no longer be used with a\nproject. This prevents unintended usage that may cause unexpected billing\ncharges or security leaks.\n\nOperation<response: google.protobuf.Empty>"
             }
           }
         }
@@ -1980,7 +1994,6 @@
           "path": "v1/services:search",
           "flatPath": "v1/services:search",
           "httpMethod": "GET",
-          "description": "Search available services.\n\nWhen no filter is specified, returns all accessible services. For\nauthenticated users, also returns all services the calling user has\n\"servicemanagement.services.bind\" permission for.",
           "parameters": {
             "pageSize": {
               "description": "Requested size of the next page of data.",
@@ -2002,7 +2015,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-platform.read-only"
-          ]
+          ],
+          "description": "Search available services.\n\nWhen no filter is specified, returns all accessible services. For\nauthenticated users, also returns all services the calling user has\n\"servicemanagement.services.bind\" permission for."
         }
       }
     }

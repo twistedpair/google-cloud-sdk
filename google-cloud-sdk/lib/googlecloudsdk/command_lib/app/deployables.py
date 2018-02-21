@@ -151,14 +151,7 @@ def AppengineWebMatcher(path, stager):
   staging_dir = stager.Stage(descriptor, app_dir, 'java-xml',
                              util.Environment.STANDARD)
   if not staging_dir:
-    # If there is no staging defined, we should stop here. This is in order to
-    # support rolling out java staging in beta first, since the staging registry
-    # is already per release track.
-    # TODO(b/62723322): Remove this conditional when launched in GA.
-    log.warning('[%s] looks like an App Engine Standard app, which is '
-                'currently only deployable in beta, using '
-                '`gcloud beta app deploy`. If this is a Flexible app, you may '
-                'continue with automatic app detection.', app_dir)
+    # After GA launch of appengine-web.xml support, this should never occur.
     return None
   yaml_path = os.path.join(staging_dir, 'app.yaml')
   service_info = yaml_parsing.ServiceYamlInfo.FromFile(yaml_path)

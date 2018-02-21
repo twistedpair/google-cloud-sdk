@@ -34,9 +34,46 @@ class TestingV1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.applicationDetailService = self.ApplicationDetailServiceService(self)
     self.projects_testMatrices = self.ProjectsTestMatricesService(self)
     self.projects = self.ProjectsService(self)
     self.testEnvironmentCatalog = self.TestEnvironmentCatalogService(self)
+
+  class ApplicationDetailServiceService(base_api.BaseApiService):
+    """Service class for the applicationDetailService resource."""
+
+    _NAME = u'applicationDetailService'
+
+    def __init__(self, client):
+      super(TestingV1.ApplicationDetailServiceService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetApkDetails(self, request, global_params=None):
+      """Request the details of an Android application APK.
+
+      Args:
+        request: (FileReference) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetApkDetailsResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetApkDetails')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetApkDetails.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'testing.applicationDetailService.getApkDetails',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/applicationDetailService/getApkDetails',
+        request_field='<request>',
+        request_type_name=u'FileReference',
+        response_type_name=u'GetApkDetailsResponse',
+        supports_download=False,
+    )
 
   class ProjectsTestMatricesService(base_api.BaseApiService):
     """Service class for the projects_testMatrices resource."""

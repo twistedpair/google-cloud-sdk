@@ -3971,6 +3971,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def UpdateNetworkInterface(self, request, global_params=None):
+      """Updates an instance's network interface. This method follows PATCH semantics.
+
+      Args:
+        request: (ComputeInstancesUpdateNetworkInterfaceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateNetworkInterface')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateNetworkInterface.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.instances.updateNetworkInterface',
+        ordered_params=[u'project', u'zone', u'instance', u'networkInterface'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'networkInterface', u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/updateNetworkInterface',
+        request_field=u'networkInterfaceResource',
+        request_type_name=u'ComputeInstancesUpdateNetworkInterfaceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class InterconnectAttachmentsService(base_api.BaseApiService):
     """Service class for the interconnectAttachments resource."""
 
@@ -6776,6 +6802,32 @@ For more information, see Deleting snaphots.
         request_field='',
         request_type_name=u'ComputeSubnetworksListRequest',
         response_type_name=u'SubnetworkList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range and allow_subnet_cidr_routes_overlap. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.
+
+      Args:
+        request: (ComputeSubnetworksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.subnetworks.patch',
+        ordered_params=[u'project', u'region', u'subnetwork'],
+        path_params=[u'project', u'region', u'subnetwork'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
+        request_field=u'subnetworkResource',
+        request_type_name=u'ComputeSubnetworksPatchRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

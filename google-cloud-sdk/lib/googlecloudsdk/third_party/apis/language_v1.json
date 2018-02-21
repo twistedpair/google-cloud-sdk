@@ -1135,7 +1135,6 @@
           "path": "v1/documents:analyzeSentiment",
           "flatPath": "v1/documents:analyzeSentiment",
           "httpMethod": "POST",
-          "description": "Analyzes the sentiment of the provided text.",
           "parameters": {
           },
           "parameterOrder": [
@@ -1149,14 +1148,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-language",
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Analyzes the sentiment of the provided text."
         },
         "analyzeEntities": {
           "id": "language.documents.analyzeEntities",
           "path": "v1/documents:analyzeEntities",
           "flatPath": "v1/documents:analyzeEntities",
           "httpMethod": "POST",
-          "description": "Finds named entities (currently proper names and common nouns) in the text\nalong with entity types, salience, mentions for each entity, and\nother properties.",
           "parameters": {
           },
           "parameterOrder": [
@@ -1170,14 +1169,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-language",
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Finds named entities (currently proper names and common nouns) in the text\nalong with entity types, salience, mentions for each entity, and\nother properties."
         },
         "analyzeEntitySentiment": {
           "id": "language.documents.analyzeEntitySentiment",
           "path": "v1/documents:analyzeEntitySentiment",
           "flatPath": "v1/documents:analyzeEntitySentiment",
           "httpMethod": "POST",
-          "description": "Finds entities, similar to AnalyzeEntities in the text and analyzes\nsentiment associated with each entity and its mentions.",
           "parameters": {
           },
           "parameterOrder": [
@@ -1191,14 +1190,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-language",
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Finds entities, similar to AnalyzeEntities in the text and analyzes\nsentiment associated with each entity and its mentions."
         },
         "analyzeSyntax": {
           "id": "language.documents.analyzeSyntax",
           "path": "v1/documents:analyzeSyntax",
           "flatPath": "v1/documents:analyzeSyntax",
           "httpMethod": "POST",
-          "description": "Analyzes the syntax of the text and provides sentence boundaries and\ntokenization along with part of speech tags, dependency trees, and other\nproperties.",
           "parameters": {
           },
           "parameterOrder": [
@@ -1212,14 +1211,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-language",
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Analyzes the syntax of the text and provides sentence boundaries and\ntokenization along with part of speech tags, dependency trees, and other\nproperties."
         },
         "classifyText": {
           "id": "language.documents.classifyText",
           "path": "v1/documents:classifyText",
           "flatPath": "v1/documents:classifyText",
           "httpMethod": "POST",
-          "description": "Classifies a document into categories.",
           "parameters": {
           },
           "parameterOrder": [
@@ -1233,14 +1232,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-language",
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Classifies a document into categories."
         },
         "annotateText": {
           "id": "language.documents.annotateText",
           "path": "v1/documents:annotateText",
           "flatPath": "v1/documents:annotateText",
           "httpMethod": "POST",
-          "description": "A convenience method that provides all the features that analyzeSentiment,\nanalyzeEntities, and analyzeSyntax provide in one call.",
           "parameters": {
           },
           "parameterOrder": [
@@ -1254,7 +1253,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-language",
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "A convenience method that provides all the features that analyzeSentiment,\nanalyzeEntities, and analyzeSyntax provide in one call."
         }
       }
     }

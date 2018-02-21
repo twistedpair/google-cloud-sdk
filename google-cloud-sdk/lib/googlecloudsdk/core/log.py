@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 from collections import OrderedDict
 import datetime
 import errno
@@ -160,8 +161,8 @@ class _ConsoleWriter(object):
 
     from googlecloudsdk.core.console import console_attr  # pylint: disable=g-import-not-at-top, avoid import loop
     msg = (console_attr.EncodeForConsole(x, escape=False) for x in msg)
-    message = u' '.join(msg)
-    self.write(message + u'\n')
+    message = ' '.join(msg)
+    self.write(message + '\n')
 
   def GetConsoleWriterStream(self):
     """Returns the console writer output stream."""
@@ -227,8 +228,14 @@ class _ConsoleFormatter(logging.Formatter):
                      if use_color else _ConsoleFormatter.FORMATS)
 
   def format(self, record):
-    self._fmt = self._formats.get(record.levelno,
-                                  _ConsoleFormatter.DEFAULT_FORMAT)
+    fmt = self._formats.get(record.levelno, _ConsoleFormatter.DEFAULT_FORMAT)
+    # We are doing some hackery here to change the log format on the fly. In
+    # Python 3, they changed the internal workings of the formatter class so we
+    # need to do something a little different to maintain the behavior.
+    self._fmt = fmt
+    if six.PY3:
+      # pylint: disable=protected-access
+      self._style._fmt = fmt
     return logging.Formatter.format(self, record)
 
 
@@ -510,7 +517,7 @@ class _LogManager(object):
       log_file = self._SetupLogsDir(logs_dir)
       file_handler = logging.FileHandler(log_file)
     except (OSError, IOError, files.Error) as exp:
-      warn(u'Could not setup log file in {0}, ({1}: {2})'
+      warn('Could not setup log file in {0}, ({1}: {2})'
            .format(logs_dir, type(exp).__name__, exp))
       return
 
@@ -899,15 +906,15 @@ def _PrintResourceChange(operation,
   if kind:
     msg.append(kind)
   if resource:
-    msg.append(u'[{0}]'.format(unicode(resource)))
+    msg.append('[{0}]'.format(str(resource)))
   if details:
     msg.append(details)
   if failed:
-    msg[-1] = u'{0}:'.format(msg[-1])
+    msg[-1] = '{0}:'.format(msg[-1])
     msg.append(failed)
   period = '' if msg[-1].endswith('.') else '.'
   writer = error if failed else status.Print
-  writer(u'{0}{1}'.format(' '.join(msg), period))
+  writer('{0}{1}'.format(' '.join(msg), period))
 
 
 def CreatedResource(resource, kind=None, async=False, details=None,

@@ -186,7 +186,7 @@ def AddReplaceCustomAdvertisementArgs(parser, resource_str):
       help="""The new advertisement mode for this {0}.""".format(resource_str))
 
   parser.add_argument(
-      '--advertisement-groups',
+      '--set-advertisement-groups',
       type=arg_parsers.ArgList(
           choices=_GROUP_CHOICES, element_type=lambda group: group.upper()),
       metavar='GROUP',
@@ -195,16 +195,16 @@ def AddReplaceCustomAdvertisementArgs(parser, resource_str):
               custom advertisement mode.""".format(resource_str))
 
   parser.add_argument(
-      '--advertisement-ranges',
+      '--set-advertisement-ranges',
       type=arg_parsers.ArgDict(allow_key_only=True),
       metavar='CIDR_RANGE=DESC',
       help="""The list of individual IP ranges, in CIDR format, to dynamically
               advertise on this {0}. Each IP range can (optionally) be given a
               text description DESC. For example, to advertise a specific range,
-              use `--advertisement-ranges=192.168.10.0/24`.  To store a
+              use `--set-advertisement-ranges=192.168.10.0/24`.  To store a
               description with the range, use
-              `--advertisement-ranges=192.168.10.0/24=my-networks`. This list
-              can only be specified in custom advertisement mode."""
+              `--set-advertisement-ranges=192.168.10.0/24=my-networks`. This
+              list can only be specified in custom advertisement mode."""
       .format(resource_str))
 
 

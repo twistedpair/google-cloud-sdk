@@ -325,7 +325,7 @@ class CsekKeyStore(object):
       InvalidKeyFileException: if the input doesn't parse or is not well-formed.
     """
 
-    assert isinstance(s, str)
+    assert isinstance(s, basestring)
     state = {}
 
     try:

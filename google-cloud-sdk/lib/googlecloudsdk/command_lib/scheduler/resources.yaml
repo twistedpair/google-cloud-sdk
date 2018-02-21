@@ -11,7 +11,8 @@ location:
 
         By default, uses the location of the current project's App Engine App.
       fallthroughs:
-        - "googlecloudsdk.command_lib.scheduler.util:AppLocationResolver:"
+        - hook: "googlecloudsdk.command_lib.scheduler.util:AppLocationResolver:"
+          hint: As the location of the current project's App Engine App.
 
 job:
   name: job

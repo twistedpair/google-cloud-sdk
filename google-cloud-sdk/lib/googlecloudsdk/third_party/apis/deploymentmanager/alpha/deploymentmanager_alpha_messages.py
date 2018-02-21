@@ -575,7 +575,11 @@ class DeploymentmanagerDeploymentsGetRequest(_messages.Message):
 class DeploymentmanagerDeploymentsInsertRequest(_messages.Message):
   """A DeploymentmanagerDeploymentsInsertRequest object.
 
+  Enums:
+    CreatePolicyValueValuesEnum:
+
   Fields:
+    createPolicy:
     deployment: A Deployment resource to be passed as the request body.
     preview: If set to true, creates a deployment and creates "shell"
       resources but does not actually instantiate these resources. This allows
@@ -588,9 +592,22 @@ class DeploymentmanagerDeploymentsInsertRequest(_messages.Message):
     project: The project ID for this request.
   """
 
-  deployment = _messages.MessageField('Deployment', 1)
-  preview = _messages.BooleanField(2)
-  project = _messages.StringField(3, required=True)
+  class CreatePolicyValueValuesEnum(_messages.Enum):
+    """CreatePolicyValueValuesEnum enum type.
+
+    Values:
+      ACQUIRE: <no description>
+      CREATE: <no description>
+      CREATE_OR_ACQUIRE: <no description>
+    """
+    ACQUIRE = 0
+    CREATE = 1
+    CREATE_OR_ACQUIRE = 2
+
+  createPolicy = _messages.EnumField('CreatePolicyValueValuesEnum', 1, default=u'CREATE_OR_ACQUIRE')
+  deployment = _messages.MessageField('Deployment', 2)
+  preview = _messages.BooleanField(3)
+  project = _messages.StringField(4, required=True)
 
 
 class DeploymentmanagerDeploymentsListRequest(_messages.Message):
@@ -675,10 +692,12 @@ class DeploymentmanagerDeploymentsPatchRequest(_messages.Message):
 
     Values:
       ACQUIRE: <no description>
+      CREATE: <no description>
       CREATE_OR_ACQUIRE: <no description>
     """
     ACQUIRE = 0
-    CREATE_OR_ACQUIRE = 1
+    CREATE = 1
+    CREATE_OR_ACQUIRE = 2
 
   class DeletePolicyValueValuesEnum(_messages.Enum):
     """Sets the policy to use for deleting resources.
@@ -775,10 +794,12 @@ class DeploymentmanagerDeploymentsUpdateRequest(_messages.Message):
 
     Values:
       ACQUIRE: <no description>
+      CREATE: <no description>
       CREATE_OR_ACQUIRE: <no description>
     """
     ACQUIRE = 0
-    CREATE_OR_ACQUIRE = 1
+    CREATE = 1
+    CREATE_OR_ACQUIRE = 2
 
   class DeletePolicyValueValuesEnum(_messages.Enum):
     """Sets the policy to use for deleting resources.
@@ -2244,7 +2265,13 @@ class TypeProvider(_messages.Message):
       [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
       characters long and must conform to the regular expression
       ([a-z]([-a-z0-9]*[a-z0-9])?)?
-    name: Name of the type provider.
+    name: Name of the resource; provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
     operation: Output only. The Operation that most recently ran, or is
       currently running, on this type provider.
     options: Options to apply when handling any resources in this service.

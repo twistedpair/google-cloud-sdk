@@ -1079,12 +1079,12 @@
           "$ref": "TextProperty"
         },
         "width": {
-          "description": "Page width in pixels.",
+          "description": "Page width. For PDFs the unit is points. For images (including\nTIFFs) the unit is pixels.",
           "type": "integer",
           "format": "int32"
         },
         "height": {
-          "description": "Page height in pixels.",
+          "description": "Page height. For PDFs the unit is points. For images (including\nTIFFs) the unit is pixels.",
           "type": "integer",
           "format": "int32"
         },
@@ -1714,46 +1714,6 @@
         }
       }
     },
-    "AsyncBatchAnnotateImagesRequest": {
-      "id": "AsyncBatchAnnotateImagesRequest",
-      "description": "Multiple image annotation requests are batched into a single service call.",
-      "type": "object",
-      "properties": {
-        "requests": {
-          "description": "Individual image annotation requests for this batch.",
-          "type": "array",
-          "items": {
-            "$ref": "AnnotateImageRequest"
-          }
-        },
-        "outputConfig": {
-          "description": "Required. The desired output location and metadata (e.g. format).",
-          "$ref": "OutputConfig"
-        }
-      }
-    },
-    "OutputConfig": {
-      "id": "OutputConfig",
-      "description": "The desired output location and metadata.",
-      "type": "object",
-      "properties": {
-        "gcsDestination": {
-          "description": "The Google Cloud Storage location to write the output(s) to.",
-          "$ref": "GcsDestination"
-        }
-      }
-    },
-    "GcsDestination": {
-      "id": "GcsDestination",
-      "description": "The Google Cloud Storage location where the output will be written to.",
-      "type": "object",
-      "properties": {
-        "uri": {
-          "description": "Google Cloud Storage URI where the results will be stored. Results will\nbe in JSON format and preceded by its corresponding input URI. This field\ncan either represent a single file, or a prefix for multiple outputs.\nPrefixes must end in a `\/`.\n\nExamples:\n\n*    File: gs:\/\/bucket-name\/filename.json\n*    Prefix: gs:\/\/bucket-name\/prefix\/here\/\n*    File: gs:\/\/bucket-name\/prefix\/here\n\nIf multiple outputs, each response is still AnnotateFileResponse, each of\nwhich contains some subset of the full list of AnnotateImageResponse.\nMultiple outputs can happen if, for example, the output JSON is too large\nand overflows into multiple sharded files.",
-          "type": "string"
-        }
-      }
-    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "Contains metadata for the BatchAnnotateImages operation.",
@@ -1789,15 +1749,11 @@
         }
       }
     },
-    "AsyncBatchAnnotateImagesResponse": {
-      "id": "AsyncBatchAnnotateImagesResponse",
-      "description": "Response to an async batch image annotation request.",
+    "AsyncBatchAnnotateFilesResponse": {
+      "id": "AsyncBatchAnnotateFilesResponse",
+      "description": "Response to an async batch file annotation request.",
       "type": "object",
       "properties": {
-        "outputConfig": {
-          "description": "The output config where result(s) are located.\nThis is the same location as was specified in the output_config, and is\nprovided for convenience.",
-          "$ref": "OutputConfig"
-        }
       }
     },
     "BatchOperationMetadata": {
@@ -1916,7 +1872,6 @@
           "path": "v1/{+name}",
           "flatPath": "v1/operations",
           "httpMethod": "GET",
-          "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id.",
           "parameters": {
             "name": {
               "description": "The name of the operation's parent resource.",
@@ -1951,14 +1906,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-vision"
-          ]
+          ],
+          "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
         },
         "get": {
           "id": "alpha_vision.operations.get",
           "path": "v1/{+name}",
           "flatPath": "v1/operations/{operationsId}",
           "httpMethod": "GET",
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
@@ -1977,14 +1932,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-vision"
-          ]
+          ],
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
         },
         "delete": {
           "id": "alpha_vision.operations.delete",
           "path": "v1/{+name}",
           "flatPath": "v1/operations/{operationsId}",
           "httpMethod": "DELETE",
-          "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be deleted.",
@@ -2003,14 +1958,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-vision"
-          ]
+          ],
+          "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`."
         },
         "cancel": {
           "id": "alpha_vision.operations.cancel",
           "path": "v1/{+name}:cancel",
           "flatPath": "v1/operations/{operationsId}:cancel",
           "httpMethod": "POST",
-          "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be cancelled.",
@@ -2032,7 +1987,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-vision"
-          ]
+          ],
+          "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
         }
       }
     },
@@ -2043,7 +1999,6 @@
           "path": "v1/images:annotate",
           "flatPath": "v1/images:annotate",
           "httpMethod": "POST",
-          "description": "Run image detection and annotation for a batch of images.",
           "parameters": {
           },
           "parameterOrder": [
@@ -2057,28 +2012,8 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/cloud-vision"
-          ]
-        },
-        "asyncBatchAnnotate": {
-          "id": "alpha_vision.images.asyncBatchAnnotate",
-          "path": "v1/images:asyncBatchAnnotate",
-          "flatPath": "v1/images:asyncBatchAnnotate",
-          "httpMethod": "POST",
-          "description": "Run async image detection and annotation for a batch of images.\nProgress and results can be retrieved through the\n`google.longrunning.Operations` interface.\n`Operation.metadata` contains `OperationMetadata` (metadata).\n`Operation.response` contains `AsyncBatchAnnotateImagesResponse` (results).",
-          "parameters": {
-          },
-          "parameterOrder": [
           ],
-          "request": {
-            "$ref": "AsyncBatchAnnotateImagesRequest"
-          },
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/cloud-vision"
-          ]
+          "description": "Run image detection and annotation for a batch of images."
         }
       }
     }

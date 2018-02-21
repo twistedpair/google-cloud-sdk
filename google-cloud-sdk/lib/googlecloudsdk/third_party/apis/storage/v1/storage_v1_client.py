@@ -159,7 +159,7 @@ class StorageV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an ACL entry on the specified bucket. This method supports patch semantics.
+      """Patches an ACL entry on the specified bucket.
 
       Args:
         request: (StorageBucketAccessControlsPatchRequest) input message
@@ -631,7 +631,7 @@ class StorageV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a default object ACL entry on the specified bucket. This method supports patch semantics.
+      """Patches a default object ACL entry on the specified bucket.
 
       Args:
         request: (StorageDefaultObjectAccessControlsPatchRequest) input message
@@ -911,7 +911,7 @@ class StorageV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an ACL entry on the specified object. This method supports patch semantics.
+      """Patches an ACL entry on the specified object.
 
       Args:
         request: (StorageObjectAccessControlsPatchRequest) input message

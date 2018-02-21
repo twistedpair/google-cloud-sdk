@@ -11,6 +11,20 @@ from apitools.base.protorpclite import messages as _messages
 package = 'deploymentmanager'
 
 
+class AsyncOptions(_messages.Message):
+  """Async options that determine when a resource should finish.
+
+  Fields:
+    methodMatch: Method regex where this policy will apply.
+    pollingOptions: Deployment manager will poll instances for this API
+      resource setting a RUNNING state, and blocking until polling conditions
+      tell whether the resource is completed or failed.
+  """
+
+  methodMatch = _messages.StringField(1)
+  pollingOptions = _messages.MessageField('PollingOptions', 2)
+
+
 class AuditConfig(_messages.Message):
   """Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -538,7 +552,11 @@ class DeploymentmanagerDeploymentsGetRequest(_messages.Message):
 class DeploymentmanagerDeploymentsInsertRequest(_messages.Message):
   """A DeploymentmanagerDeploymentsInsertRequest object.
 
+  Enums:
+    CreatePolicyValueValuesEnum:
+
   Fields:
+    createPolicy:
     deployment: A Deployment resource to be passed as the request body.
     preview: If set to true, creates a deployment and creates "shell"
       resources but does not actually instantiate these resources. This allows
@@ -551,9 +569,22 @@ class DeploymentmanagerDeploymentsInsertRequest(_messages.Message):
     project: The project ID for this request.
   """
 
-  deployment = _messages.MessageField('Deployment', 1)
-  preview = _messages.BooleanField(2)
-  project = _messages.StringField(3, required=True)
+  class CreatePolicyValueValuesEnum(_messages.Enum):
+    """CreatePolicyValueValuesEnum enum type.
+
+    Values:
+      ACQUIRE: <no description>
+      CREATE: <no description>
+      CREATE_OR_ACQUIRE: <no description>
+    """
+    ACQUIRE = 0
+    CREATE = 1
+    CREATE_OR_ACQUIRE = 2
+
+  createPolicy = _messages.EnumField('CreatePolicyValueValuesEnum', 1, default=u'CREATE_OR_ACQUIRE')
+  deployment = _messages.MessageField('Deployment', 2)
+  preview = _messages.BooleanField(3)
+  project = _messages.StringField(4, required=True)
 
 
 class DeploymentmanagerDeploymentsListRequest(_messages.Message):
@@ -638,10 +669,12 @@ class DeploymentmanagerDeploymentsPatchRequest(_messages.Message):
 
     Values:
       ACQUIRE: <no description>
+      CREATE: <no description>
       CREATE_OR_ACQUIRE: <no description>
     """
     ACQUIRE = 0
-    CREATE_OR_ACQUIRE = 1
+    CREATE = 1
+    CREATE_OR_ACQUIRE = 2
 
   class DeletePolicyValueValuesEnum(_messages.Enum):
     """Sets the policy to use for deleting resources.
@@ -738,10 +771,12 @@ class DeploymentmanagerDeploymentsUpdateRequest(_messages.Message):
 
     Values:
       ACQUIRE: <no description>
+      CREATE: <no description>
       CREATE_OR_ACQUIRE: <no description>
     """
     ACQUIRE = 0
-    CREATE_OR_ACQUIRE = 1
+    CREATE = 1
+    CREATE_OR_ACQUIRE = 2
 
   class DeletePolicyValueValuesEnum(_messages.Enum):
     """Sets the policy to use for deleting resources.
@@ -1231,6 +1266,19 @@ class DeploymentsStopRequest(_messages.Message):
   fingerprint = _messages.BytesField(1)
 
 
+class Diagnostic(_messages.Message):
+  """Diagnostic message type.
+
+  Fields:
+    field: JsonPath expression on the resource that if non empty, indicates
+      that this field needs to be extracted as a diagnostic.
+    level: Level to record this diagnostic.
+  """
+
+  field = _messages.StringField(1)
+  level = _messages.StringField(2)
+
+
 class Expr(_messages.Message):
   """Represents an expression text. Example:  title: "User account presence"
   description: "Determines whether the request has a user account" expression:
@@ -1561,6 +1609,7 @@ class Options(_messages.Message):
   """Options allows customized resource handling by Deployment Manager.
 
   Fields:
+    asyncOptions: Options regarding how to thread async requests.
     inputMappings: The mappings that apply for requests.
     validationOptions: Options for how to validate and process properties on a
       resource.
@@ -1573,9 +1622,10 @@ class Options(_messages.Message):
       InputMappings. ex: field1: type: string field2: type: number
   """
 
-  inputMappings = _messages.MessageField('InputMapping', 1, repeated=True)
-  validationOptions = _messages.MessageField('ValidationOptions', 2)
-  virtualProperties = _messages.StringField(3)
+  asyncOptions = _messages.MessageField('AsyncOptions', 1, repeated=True)
+  inputMappings = _messages.MessageField('InputMapping', 2, repeated=True)
+  validationOptions = _messages.MessageField('ValidationOptions', 3)
+  virtualProperties = _messages.StringField(4)
 
 
 class Policy(_messages.Message):
@@ -1621,6 +1671,28 @@ class Policy(_messages.Message):
   iamOwned = _messages.BooleanField(4)
   rules = _messages.MessageField('Rule', 5, repeated=True)
   version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class PollingOptions(_messages.Message):
+  """PollingOptions message type.
+
+  Fields:
+    diagnostics: An array of diagnostics to be collected by Deployment
+      Manager, these diagnostics will be displayed to the user.
+    failCondition: JsonPath expression that determines if the request failed.
+    finishCondition: JsonPath expression that determines if the request is
+      completed.
+    pollingLink: JsonPath expression that evaluates to string, it indicates
+      where to poll.
+    targetLink: JsonPath expression, after polling is completed, indicates
+      where to fetch the resource.
+  """
+
+  diagnostics = _messages.MessageField('Diagnostic', 1, repeated=True)
+  failCondition = _messages.StringField(2)
+  finishCondition = _messages.StringField(3)
+  pollingLink = _messages.StringField(4)
+  targetLink = _messages.StringField(5)
 
 
 class Resource(_messages.Message):
@@ -2072,7 +2144,13 @@ class TypeProvider(_messages.Message):
       [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
       characters long and must conform to the regular expression
       ([a-z]([-a-z0-9]*[a-z0-9])?)?
-    name: Name of the type provider.
+    name: Name of the resource; provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
     operation: Output only. The Operation that most recently ran, or is
       currently running, on this type provider.
     options: Options to apply when handling any resources in this service.

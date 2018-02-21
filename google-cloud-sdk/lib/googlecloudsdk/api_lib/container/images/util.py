@@ -158,9 +158,11 @@ def _MakeSummaryRequest(project_id, url_filter):
   project_ref = resources.REGISTRY.Parse(
       project_id, collection='cloudresourcemanager.projects')
 
-  req = messages.ContaineranalysisProjectsGetVulnzsummaryRequest(
-      parent=project_ref.RelativeName(), filter=url_filter)
-  return client.projects.GetVulnzsummary(req)
+  req = (
+      messages
+      .ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest(
+          parent=project_ref.RelativeName(), filter=url_filter))
+  return client.projects_occurrences.GetVulnerabilitySummary(req)
 
 
 def FetchOccurrencesForResource(digest, occurrence_filter=None):

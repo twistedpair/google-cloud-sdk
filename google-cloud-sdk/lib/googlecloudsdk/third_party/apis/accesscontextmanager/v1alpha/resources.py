@@ -17,7 +17,7 @@ import enum
 
 
 BASE_URL = 'https://accesscontextmanager.googleapis.com/v1alpha/'
-DOCS_URL = 'https://cloud.google.com/service-control'
+DOCS_URL = 'https://cloud.google.com/access-context-manager/docs/reference/rest/'
 
 
 class Collections(enum.Enum):

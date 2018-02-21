@@ -38,6 +38,7 @@ class ContaineranalysisV1alpha1(base_api.BaseApiClient):
     self.projects_notes = self.ProjectsNotesService(self)
     self.projects_occurrences = self.ProjectsOccurrencesService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
+    self.projects_scan_configs = self.ProjectsScanConfigsService(self)
     self.projects = self.ProjectsService(self)
     self.providers_notes_occurrences = self.ProvidersNotesOccurrencesService(self)
     self.providers_notes = self.ProvidersNotesService(self)
@@ -493,6 +494,33 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
         supports_download=False,
     )
 
+    def GetVulnerabilitySummary(self, request, global_params=None):
+      """Gets a summary of the number and severity of occurrences.
+
+      Args:
+        request: (ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetVulnzOccurrencesSummaryResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetVulnerabilitySummary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVulnerabilitySummary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}/vulnerabilitySummary',
+        http_method=u'GET',
+        method_id=u'containeranalysis.projects.occurrences.getVulnerabilitySummary',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter'],
+        relative_path=u'v1alpha1/{+parent}/vulnerabilitySummary',
+        request_field='',
+        request_type_name=u'ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest',
+        response_type_name=u'GetVulnzOccurrencesSummaryResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists active `Occurrences` for a given project matching the filters.
 
@@ -685,6 +713,97 @@ change the result.
         supports_download=False,
     )
 
+  class ProjectsScanConfigsService(base_api.BaseApiService):
+    """Service class for the projects_scan_configs resource."""
+
+    _NAME = u'projects_scan_configs'
+
+    def __init__(self, client):
+      super(ContaineranalysisV1alpha1.ProjectsScanConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Gets a specific scan configuration for a project.
+
+      Args:
+        request: (ContaineranalysisProjectsScanConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ScanConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/scan_configs/{scan_configsId}',
+        http_method=u'GET',
+        method_id=u'containeranalysis.projects.scan_configs.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'ContaineranalysisProjectsScanConfigsGetRequest',
+        response_type_name=u'ScanConfig',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists scan configurations for a project.
+
+      Args:
+        request: (ContaineranalysisProjectsScanConfigsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListScanConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/scan_configs',
+        http_method=u'GET',
+        method_id=u'containeranalysis.projects.scan_configs.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/{+parent}/scan_configs',
+        request_field='',
+        request_type_name=u'ContaineranalysisProjectsScanConfigsListRequest',
+        response_type_name=u'ListScanConfigsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates the scan configuration to a new value.
+
+      Args:
+        request: (ContaineranalysisProjectsScanConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ScanConfig) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/scan_configs/{scan_configsId}',
+        http_method=u'PATCH',
+        method_id=u'containeranalysis.projects.scan_configs.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'scanConfig',
+        request_type_name=u'ContaineranalysisProjectsScanConfigsPatchRequest',
+        response_type_name=u'ScanConfig',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -694,33 +813,6 @@ change the result.
       super(ContaineranalysisV1alpha1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def GetVulnzsummary(self, request, global_params=None):
-      """Gets a summary of the number and severity of occurrences.
-
-      Args:
-        request: (ContaineranalysisProjectsGetVulnzsummaryRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GetVulnzOccurrencesSummaryResponse) The response message.
-      """
-      config = self.GetMethodConfig('GetVulnzsummary')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetVulnzsummary.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/vulnzsummary',
-        http_method=u'GET',
-        method_id=u'containeranalysis.projects.getVulnzsummary',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter'],
-        relative_path=u'v1alpha1/{+parent}/vulnzsummary',
-        request_field='',
-        request_type_name=u'ContaineranalysisProjectsGetVulnzsummaryRequest',
-        response_type_name=u'GetVulnzOccurrencesSummaryResponse',
-        supports_download=False,
-    )
 
   class ProvidersNotesOccurrencesService(base_api.BaseApiService):
     """Service class for the providers_notes_occurrences resource."""

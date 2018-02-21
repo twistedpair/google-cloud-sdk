@@ -258,33 +258,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "condition": {
-          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.\nThis field is only visible as GOOGLE_INTERNAL or CONDITION_TRUSTED_TESTER.",
-          "$ref": "Expr"
-        }
-      }
-    },
-    "Expr": {
-      "id": "Expr",
-      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
-      "type": "object",
-      "properties": {
-        "expression": {
-          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
-          "type": "string"
-        },
-        "title": {
-          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
-          "type": "string"
-        },
-        "description": {
-          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
-          "type": "string"
-        },
-        "location": {
-          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
-          "type": "string"
         }
       }
     },
@@ -375,7 +348,6 @@
               "path": "v1/{+name}/repos",
               "flatPath": "v1/projects/{projectsId}/repos",
               "httpMethod": "GET",
-              "description": "Returns all repos belonging to a project. The sizes of the repos are\nnot set by ListRepos.  To get the size of a repo, use GetRepo.",
               "parameters": {
                 "name": {
                   "description": "The project ID whose repos should be listed. Values are of the form\n`projects\/<project>`.",
@@ -407,14 +379,14 @@
                 "https://www.googleapis.com/auth/source.full_control",
                 "https://www.googleapis.com/auth/source.read_only",
                 "https://www.googleapis.com/auth/source.read_write"
-              ]
+              ],
+              "description": "Returns all repos belonging to a project. The sizes of the repos are\nnot set by ListRepos.  To get the size of a repo, use GetRepo."
             },
             "get": {
               "id": "sourcerepo.projects.repos.get",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/repos/{reposId}",
               "httpMethod": "GET",
-              "description": "Returns information about a repo.",
               "parameters": {
                 "name": {
                   "description": "The name of the requested repository. Values are of the form\n`projects\/<project>\/repos\/<repo>`.",
@@ -435,14 +407,14 @@
                 "https://www.googleapis.com/auth/source.full_control",
                 "https://www.googleapis.com/auth/source.read_only",
                 "https://www.googleapis.com/auth/source.read_write"
-              ]
+              ],
+              "description": "Returns information about a repo."
             },
             "create": {
               "id": "sourcerepo.projects.repos.create",
               "path": "v1/{+parent}/repos",
               "flatPath": "v1/projects/{projectsId}/repos",
               "httpMethod": "POST",
-              "description": "Creates a repo in the given project with the given name.\n\nIf the named repository already exists, `CreateRepo` returns\n`ALREADY_EXISTS`.",
               "parameters": {
                 "parent": {
                   "description": "The project in which to create the repo. Values are of the form\n`projects\/<project>`.",
@@ -466,14 +438,14 @@
                 "https://www.googleapis.com/auth/source.full_control",
                 "https://www.googleapis.com/auth/source.read_only",
                 "https://www.googleapis.com/auth/source.read_write"
-              ]
+              ],
+              "description": "Creates a repo in the given project with the given name.\n\nIf the named repository already exists, `CreateRepo` returns\n`ALREADY_EXISTS`."
             },
             "delete": {
               "id": "sourcerepo.projects.repos.delete",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/repos/{reposId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a repo.",
               "parameters": {
                 "name": {
                   "description": "The name of the repo to delete. Values are of the form\n`projects\/<project>\/repos\/<repo>`.",
@@ -494,14 +466,14 @@
                 "https://www.googleapis.com/auth/source.full_control",
                 "https://www.googleapis.com/auth/source.read_only",
                 "https://www.googleapis.com/auth/source.read_write"
-              ]
+              ],
+              "description": "Deletes a repo."
             },
             "setIamPolicy": {
               "id": "sourcerepo.projects.repos.setIamPolicy",
               "path": "v1/{+resource}:setIamPolicy",
               "flatPath": "v1/projects/{projectsId}/repos/{reposId}:setIamPolicy",
               "httpMethod": "POST",
-              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
@@ -525,14 +497,14 @@
                 "https://www.googleapis.com/auth/source.full_control",
                 "https://www.googleapis.com/auth/source.read_only",
                 "https://www.googleapis.com/auth/source.read_write"
-              ]
+              ],
+              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
             },
             "getIamPolicy": {
               "id": "sourcerepo.projects.repos.getIamPolicy",
               "path": "v1/{+resource}:getIamPolicy",
               "flatPath": "v1/projects/{projectsId}/repos/{reposId}:getIamPolicy",
               "httpMethod": "GET",
-              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -553,14 +525,14 @@
                 "https://www.googleapis.com/auth/source.full_control",
                 "https://www.googleapis.com/auth/source.read_only",
                 "https://www.googleapis.com/auth/source.read_write"
-              ]
+              ],
+              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
             },
             "testIamPermissions": {
               "id": "sourcerepo.projects.repos.testIamPermissions",
               "path": "v1/{+resource}:testIamPermissions",
               "flatPath": "v1/projects/{projectsId}/repos/{reposId}:testIamPermissions",
               "httpMethod": "POST",
-              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -584,7 +556,8 @@
                 "https://www.googleapis.com/auth/source.full_control",
                 "https://www.googleapis.com/auth/source.read_only",
                 "https://www.googleapis.com/auth/source.read_write"
-              ]
+              ],
+              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error."
             }
           }
         }

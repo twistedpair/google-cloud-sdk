@@ -204,10 +204,10 @@ def _CreateAttribute(data):
   attribute_name = data['attribute_name']
   help_text = data['help']
 
-  fallthrough_paths = data.get('fallthroughs', [])
+  fallthrough_data = data.get('fallthroughs', [])
   fallthroughs = [
-      deps.Fallthrough(util.Hook.FromPath(p), hint='')
-      for p in fallthrough_paths]
+      deps.Fallthrough(util.Hook.FromPath(f['hook']), hint=f['hint'])
+      for f in fallthrough_data]
 
   prop_string = data.get('property')
   prop = properties.FromString(prop_string) if prop_string else None

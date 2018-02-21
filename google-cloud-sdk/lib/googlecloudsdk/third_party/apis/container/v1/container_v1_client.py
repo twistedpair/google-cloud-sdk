@@ -60,6 +60,33 @@ class ContainerV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AckRepairwork(self, request, global_params=None):
+      """AcknowledgeRepairWork accepts acknowledgements of repair work from the.
+Hosted Master.
+
+      Args:
+        request: (ContainerMasterProjectsLocationsProjectsClustersMasterAckRepairworkRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AckRepairWorkResponse) The response message.
+      """
+      config = self.GetMethodConfig('AckRepairwork')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AckRepairwork.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.locations.projects.clusters.master.ackRepairwork',
+        ordered_params=[u'masterProjectName', u'location', u'projectNumber', u'clusterId', u'masterId'],
+        path_params=[u'clusterId', u'location', u'masterId', u'masterProjectName', u'projectNumber'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectName}/locations/{location}/projects/{projectNumber}/clusters/{clusterId}/master/{masterId}/ackRepairwork',
+        request_field=u'ackRepairWorkRequest',
+        request_type_name=u'ContainerMasterProjectsLocationsProjectsClustersMasterAckRepairworkRequest',
+        response_type_name=u'AckRepairWorkResponse',
+        supports_download=False,
+    )
+
     def GetRepairwork(self, request, global_params=None):
       """This method requests work from the API server to see if there are.
 any repairs to be done on the Hosted Master.

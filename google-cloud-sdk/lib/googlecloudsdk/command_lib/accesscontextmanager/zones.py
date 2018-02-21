@@ -38,6 +38,30 @@ def AddAccessLevels(ref, args, req):
   return req
 
 
+def AddImplicitServiceWildcard(ref, args, req):
+  """Add an implicit wildcard for services if they are modified.
+
+  If either restricted services or unrestricted services is given, the other
+  must also be provided as a wildcard (`*`).
+
+  If neither is given, this is a no-op.
+
+  Args:
+    ref: resources.Resource, the (unused) resource
+    args: argparse namespace, the parse arguments
+    req: AccesscontextmanagerAccessPoliciesAccessZonesCreateRequest
+
+  Returns:
+    The modified request.
+  """
+  del ref  # Unused in AddImplicitServiceWildcard
+  if args.IsSpecified('restricted_services'):
+    req.accessZone.unrestrictedServices = ['*']
+  elif args.IsSpecified('unrestricted_services'):
+    req.accessZone.restrictedServices = ['*']
+  return req
+
+
 def _GetAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='zone',
@@ -128,7 +152,9 @@ def _AddUnrestrictedServices(parser):
       additional_help=(
           'The zone boundary DOES NOT apply to these services (for example, '
           '`storage.googleapis.com`). A wildcard (```*```) may be given to '
-          'denote all services.'))
+          'denote all services.\n\n'
+          'If restricted services are set, unrestricted services must be a '
+          'wildcard.'))
 
 
 def ParseUnrestrictedServices(args, zone_result):
@@ -144,7 +170,9 @@ def _AddRestrictedServices(parser):
       additional_help=(
           'The zone boundary DOES apply to these services (for example, '
           '`storage.googleapis.com`). A wildcard (```*```) may be given to '
-          'denote all services.'))
+          'denote all services.\n\n'
+          'If unrestricted services are set, restricted services must be a '
+          'wildcard.'))
 
 
 def ParseRestrictedServices(args, zone_result):

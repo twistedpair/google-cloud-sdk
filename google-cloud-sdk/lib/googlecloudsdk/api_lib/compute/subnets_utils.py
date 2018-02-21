@@ -20,8 +20,24 @@ def MakeSubnetworkUpdateRequest(client,
                                 subnet_ref,
                                 enable_private_ip_google_access=None,
                                 add_secondary_ranges=None,
-                                remove_secondary_ranges=None):
-  """Make the appropriate update request for the args."""
+                                remove_secondary_ranges=None,
+                                enable_flow_logs=None):
+  """Make the appropriate update request for the args.
+
+  Args:
+    client: GCE API client
+    subnet_ref: Reference to a subnetwork
+    enable_private_ip_google_access: Enable/disable access to Google Cloud APIs
+      from this subnet for instances without a public ip address.
+    add_secondary_ranges: List of secondary IP ranges to add to the subnetwork
+      for use in IP aliasing.
+    remove_secondary_ranges: List of secondary ranges to remove from the
+      subnetwork.
+    enable_flow_logs: Enable/disable flow logging for this subnet.
+
+  Returns:
+    response, result of sending the update request for the subnetwork
+  """
   if enable_private_ip_google_access is not None:
     google_access = (
         client.messages.SubnetworksSetPrivateIpGoogleAccessRequest())
@@ -73,6 +89,11 @@ def MakeSubnetworkUpdateRequest(client,
     with client.apitools_client.IncludeFields(cleared_fields):
       return client.MakeRequests(
           [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
+  elif enable_flow_logs is not None:
+    subnetwork = client.messages.Subnetwork()
+    subnetwork.enableFlowLogs = enable_flow_logs
+    return client.MakeRequests(
+        [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
 
   return client.MakeRequests([])
 

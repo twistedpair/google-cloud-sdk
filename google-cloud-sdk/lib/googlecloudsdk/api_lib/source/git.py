@@ -444,7 +444,7 @@ class GitIgnoreHandler(object):
     # Skip blank lines
     if not line:
       return (None, True)
-    # Special handling for leading '!' or **
+    # Special handling for leading '!'
     pos = 0
     should_ignore = True
     if line[0] == '!':
@@ -454,7 +454,8 @@ class GitIgnoreHandler(object):
     # Patterns containing "/" apply only under the base directory, while
     # other patterns apply in any directory.
     if '/' in line:
-      pattern = re.escape(basedir) + '/'
+      # If there is leading '/', don't append a '/', it will be in the pattern
+      pattern = re.escape(basedir) + ('' if line[pos] == '/' else '/')
     else:
       pattern = '.*/'
 

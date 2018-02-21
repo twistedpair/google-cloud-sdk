@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/service-control",
+  "documentationLink": "https://cloud.google.com/access-context-manager/docs/reference/rest/",
   "protocol": "rest",
   "rootUrl": "https://accesscontextmanager.googleapis.com/",
   "servicePath": "",
@@ -434,7 +434,6 @@
           "path": "v1alpha/{+name}",
           "flatPath": "v1alpha/operations/{operationsId}",
           "httpMethod": "GET",
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
@@ -452,7 +451,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
         }
       }
     },
@@ -463,7 +463,6 @@
           "path": "v1alpha/accessPolicies",
           "flatPath": "v1alpha/accessPolicies",
           "httpMethod": "GET",
-          "description": "List all AccessPolicies under a\ncontainer.",
           "parameters": {
             "parent": {
               "description": "Required. Resource name for the container to list AccessPolicy instances\nfrom.\n\nFormat:\n`organizations\/{org_id}`",
@@ -489,14 +488,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "List all AccessPolicies under a\ncontainer."
         },
         "get": {
           "id": "accesscontextmanager.accessPolicies.get",
           "path": "v1alpha/{+name}",
           "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}",
           "httpMethod": "GET",
-          "description": "Get an AccessPolicy by name.",
           "parameters": {
             "name": {
               "description": "Required. Resource name for the access policy to get.\n\nFormat `accessPolicies\/{policy_id}`",
@@ -514,14 +513,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Get an AccessPolicy by name."
         },
         "create": {
           "id": "accesscontextmanager.accessPolicies.create",
           "path": "v1alpha/accessPolicies",
           "flatPath": "v1alpha/accessPolicies",
           "httpMethod": "POST",
-          "description": "Create an `AccessPolicy`. Fails if this organization already has a\n`AccessPolicy`. The longrunning Operation will have a successful status\nonce the `AccessPolicy` has propagated to long-lasting storage.\nSyntactic and basic semantic errors will be returned in `metadata` as a\nBadRequest proto.",
           "parameters": {
           },
           "parameterOrder": [
@@ -534,14 +533,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Create an `AccessPolicy`. Fails if this organization already has a\n`AccessPolicy`. The longrunning Operation will have a successful status\nonce the `AccessPolicy` has propagated to long-lasting storage.\nSyntactic and basic semantic errors will be returned in `metadata` as a\nBadRequest proto."
         },
         "patch": {
           "id": "accesscontextmanager.accessPolicies.patch",
           "path": "v1alpha/{+name}",
           "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}",
           "httpMethod": "PATCH",
-          "description": "Update an AccessPolicy. The\nlongrunning Operation from this RPC will have a successful status once the\nchanges to the AccessPolicy have propagated\nto long-lasting storage. Syntactic and basic semantic errors will be\nreturned in `metadata` as a BadRequest proto.",
           "parameters": {
             "name": {
               "description": "Output only. Resource name of the `AccessPolicy`. Format:\n`accessPolicies\/{policy_id}`",
@@ -568,14 +567,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Update an AccessPolicy. The\nlongrunning Operation from this RPC will have a successful status once the\nchanges to the AccessPolicy have propagated\nto long-lasting storage. Syntactic and basic semantic errors will be\nreturned in `metadata` as a BadRequest proto."
         },
         "delete": {
           "id": "accesscontextmanager.accessPolicies.delete",
           "path": "v1alpha/{+name}",
           "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}",
           "httpMethod": "DELETE",
-          "description": "Delete an AccessPolicy by resource\nname. The longrunning Operation will have a successful status once the\nAccessPolicy\nhas been removed from long-lasting storage.",
           "parameters": {
             "name": {
               "description": "Required. Resource name for the access policy to delete.\n\nFormat `accessPolicies\/{policy_id}`",
@@ -593,7 +592,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Delete an AccessPolicy by resource\nname. The longrunning Operation will have a successful status once the\nAccessPolicy\nhas been removed from long-lasting storage."
         }
       }
       ,
@@ -605,7 +605,6 @@
               "path": "v1alpha/{+parent}/accessLevels",
               "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessLevels",
               "httpMethod": "GET",
-              "description": "List all Access Levels for an access\npolicy.",
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name for the access policy to list Access Levels from.\n\nFormat:\n`accessPolicies\/{policy_id}`",
@@ -644,14 +643,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "List all Access Levels for an access\npolicy."
             },
             "get": {
               "id": "accesscontextmanager.accessPolicies.accessLevels.get",
               "path": "v1alpha/{+name}",
               "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}",
               "httpMethod": "GET",
-              "description": "Get an Access Level by resource\nname.",
               "parameters": {
                 "name": {
                   "description": "Required. Resource name for the Access Level.\n\nFormat:\n`accessPolicies\/{policy_id}\/accessLevels\/{access_level_id}`",
@@ -679,14 +678,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Get an Access Level by resource\nname."
             },
             "create": {
               "id": "accesscontextmanager.accessPolicies.accessLevels.create",
               "path": "v1alpha/{+parent}/accessLevels",
               "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessLevels",
               "httpMethod": "POST",
-              "description": "Create an Access Level. The longrunning\noperation from this RPC will have a successful status once the Access\nLevel has\npropagated to long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered.",
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name for the access policy which owns this Access\nLevel.\n\nFormat: `accessPolicies\/{policy_id}`",
@@ -707,14 +706,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Create an Access Level. The longrunning\noperation from this RPC will have a successful status once the Access\nLevel has\npropagated to long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered."
             },
             "patch": {
               "id": "accesscontextmanager.accessPolicies.accessLevels.patch",
               "path": "v1alpha/{+name}",
               "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}",
               "httpMethod": "PATCH",
-              "description": "Update an Access Level. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Level have propagated\nto long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered.",
               "parameters": {
                 "name": {
                   "description": "Required. Resource name for the Access Level. The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessLevels\/{short_name}`",
@@ -741,14 +740,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Update an Access Level. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Level have propagated\nto long-lasting storage. Access Levels containing\nerrors will result in an error response for the first error encountered."
             },
             "delete": {
               "id": "accesscontextmanager.accessPolicies.accessLevels.delete",
               "path": "v1alpha/{+name}",
               "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}",
               "httpMethod": "DELETE",
-              "description": "Delete an Access Level by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Access Level has been removed\nfrom long-lasting storage.",
               "parameters": {
                 "name": {
                   "description": "Required. Resource name for the Access Level.\n\nFormat:\n`accessPolicies\/{policy_id}\/accessLevels\/{access_level_id}`",
@@ -766,7 +765,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Delete an Access Level by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the Access Level has been removed\nfrom long-lasting storage."
             }
           }
         },
@@ -777,7 +777,6 @@
               "path": "v1alpha/{+parent}/accessZones",
               "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessZones",
               "httpMethod": "GET",
-              "description": "List all Access Zones for an access\npolicy.",
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name for the access policy to list Access Zones from.\n\nFormat:\n`accessPolicies\/{policy_id}`",
@@ -806,14 +805,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "List all Access Zones for an access\npolicy."
             },
             "get": {
               "id": "accesscontextmanager.accessPolicies.accessZones.get",
               "path": "v1alpha/{+name}",
               "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessZones/{accessZonesId}",
               "httpMethod": "GET",
-              "description": "Get an Access Zone by resource name.",
               "parameters": {
                 "name": {
                   "description": "Required. Resource name for the Access Zone.\n\nFormat:\n`accessPolicies\/{policy_id}\/accessZones\/{access_zones_id}`",
@@ -831,14 +830,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Get an Access Zone by resource name."
             },
             "create": {
               "id": "accesscontextmanager.accessPolicies.accessZones.create",
               "path": "v1alpha/{+parent}/accessZones",
               "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessZones",
               "httpMethod": "POST",
-              "description": "Create an Access Zone. The longrunning\noperation from this RPC will have a successful status once the Access\nZone has\npropagated to long-lasting storage. Access Zones containing errors\nwill result in an error response for the first error encountered.",
               "parameters": {
                 "parent": {
                   "description": "Required. Resource name for the access policy which owns this Access Zone.\n\nFormat: `accessPolicies\/{policy_id}`",
@@ -859,14 +858,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Create an Access Zone. The longrunning\noperation from this RPC will have a successful status once the Access\nZone has\npropagated to long-lasting storage. Access Zones containing errors\nwill result in an error response for the first error encountered."
             },
             "patch": {
               "id": "accesscontextmanager.accessPolicies.accessZones.patch",
               "path": "v1alpha/{+name}",
               "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessZones/{accessZonesId}",
               "httpMethod": "PATCH",
-              "description": "Update an Access Zone. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Zone\nhave propagated to long-lasting storage. Access Zone containing errors\nwill result in an error response for the first error encountered.",
               "parameters": {
                 "name": {
                   "description": "Required. Resource name for the Access Zone.  The `short_name` component\nmust begin with a letter and only include alphanumeric and '_'. Format:\n`accessPolicies\/{policy_id}\/accessZones\/{short_name}`",
@@ -893,14 +892,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Update an Access Zone. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe Access Zone\nhave propagated to long-lasting storage. Access Zone containing errors\nwill result in an error response for the first error encountered."
             },
             "delete": {
               "id": "accesscontextmanager.accessPolicies.accessZones.delete",
               "path": "v1alpha/{+name}",
               "flatPath": "v1alpha/accessPolicies/{accessPoliciesId}/accessZones/{accessZonesId}",
               "httpMethod": "DELETE",
-              "description": "Delete an Access Zone by resource name.\nThe longrunning operation from this RPC will have a successful status once\nthe Access Zone\nhas been removed from long-lasting storage.",
               "parameters": {
                 "name": {
                   "description": "Required. Resource name for the Access Zone.\n\nFormat:\n`accessPolicies\/{policy_id}\/accessZones\/{access_zone_id}`",
@@ -918,7 +917,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Delete an Access Zone by resource name.\nThe longrunning operation from this RPC will have a successful status once\nthe Access Zone\nhas been removed from long-lasting storage."
             }
           }
         }

@@ -326,24 +326,24 @@ def GetGlobalListerHelp(resource):
   detailed_help = {
       'brief': 'List Google Compute Engine ' + resource,
       'DESCRIPTION': """\
-          *{{command}}* displays all Google Compute Engine {0} in a project.
+*{{command}}* displays all Google Compute Engine {0} in a project.
 """.format(resource),
       'EXAMPLES': """\
-          To list all {0} in a project in table form, run:
+To list all {0} in a project in table form, run:
 
-            $ {{command}}
+  $ {{command}}
 
-          To list the URIs of all {0} in a project, run:
+To list the URIs of all {0} in a project, run:
 
-            $ {{command}} --uri
+  $ {{command}} --uri
 """.format(resource)
   }
   if resource == 'images':
     detailed_help['EXAMPLES'] += """
-          To list the names of {0} older than one year from oldest to newest
-          (`-P1Y` is an [ISO8601 duration](https://en.wikipedia.org/wiki/ISO_8601)):
+To list the names of {0} older than one year from oldest to newest
+(`-P1Y` is an [ISO8601 duration](https://en.wikipedia.org/wiki/ISO_8601)):
 
-            $ {{command}} --format="value(NAME)" --filter="creationTimestamp < -P1Y"
+  $ {{command}} --format="value(NAME)" --filter="creationTimestamp < -P1Y"
 """.format(resource)
   return detailed_help
 
@@ -381,25 +381,25 @@ def GetRegionalListerHelp(resource):
   return {
       'brief': 'List Google Compute Engine ' + resource,
       'DESCRIPTION': """\
-          *{{command}}* displays all Google Compute Engine {0} in a project.
+*{{command}}* displays all Google Compute Engine {0} in a project.
 
-          By default, {0} from all regions are listed. The results can be
-          narrowed down using a filter: `--filter="region:( REGION ... )"`.
-          """.format(resource),
+By default, {0} from all regions are listed. The results can be
+narrowed down using a filter: `--filter="region:( REGION ... )"`.
+""".format(resource),
       'EXAMPLES': """\
-          To list all {0} in a project in table form, run:
+To list all {0} in a project in table form, run:
 
-            $ {{command}}
+  $ {{command}}
 
-          To list the URIs of all {0} in a project, run:
+To list the URIs of all {0} in a project, run:
 
-            $ {{command}} --uri
+  $ {{command}} --uri
 
-          To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
-          run:
+To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
+run:
 
-            $ {{command}} --filter="region( us-central1 europe-west1 )"
-            """.format(resource)
+  $ {{command}} --filter="region( us-central1 europe-west1 )"
+""".format(resource)
   }
 
 
@@ -436,25 +436,25 @@ def GetZonalListerHelp(resource):
   return {
       'brief': 'List Google Compute Engine ' + resource,
       'DESCRIPTION': """\
-          *{{command}}* displays all Google Compute Engine {0} in a project.
+*{{command}}* displays all Google Compute Engine {0} in a project.
 
-          By default, {0} from all zones are listed. The results can be narrowed
-          down using a filter: `--filter="zone:( ZONE ... )"`.
-          """.format(resource),
+By default, {0} from all zones are listed. The results can be narrowed
+down using a filter: `--filter="zone:( ZONE ... )"`.
+""".format(resource),
       'EXAMPLES': """\
-          To list all {0} in a project in table form, run:
+To list all {0} in a project in table form, run:
 
-            $ {{command}}
+  $ {{command}}
 
-          To list the URIs of all {0} in a project, run:
+To list the URIs of all {0} in a project, run:
 
-            $ {{command}} --uri
+  $ {{command}} --uri
 
-          To list all {0} in the ``us-central1-b'' and ``europe-west1-d'' zones,
-          run:
+To list all {0} in the ``us-central1-b'' and ``europe-west1-d'' zones,
+run:
 
-            $ {{command}} --filter="zone:( us-central1-b europe-west1-d )"
-            """.format(resource)
+  $ {{command}} --filter="zone:( us-central1-b europe-west1-d )"
+""".format(resource)
   }
 
 
@@ -600,24 +600,24 @@ def GetMultiScopeListerHelp(resource, scopes):
 
   zone_example_text = """\
 
-          To list all {0} in zones ``us-central1-b''
-          and ``europe-west1-d'', given they are zonal resources, run:
+To list all {0} in zones ``us-central1-b''
+and ``europe-west1-d'', given they are zonal resources, run:
 
-            $ {{command}} --filter="zone:( europe-west1-d us-central1-b )"
-  """
+  $ {{command}} --filter="zone:( europe-west1-d us-central1-b )"
+"""
   region_example_text = """\
 
-          To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
-          given they are regional resources, run:
+To list all {0} in the ``us-central1'' and ``europe-west1'' regions,
+given they are regional resources, run:
 
-            $ {{command}} --filter="region:( europe-west1 us-central1 )"
-  """
+  $ {{command}} --filter="region:( europe-west1 us-central1 )"
+"""
   global_example_text = """\
 
-          To list all global {0} in a project, run:
+To list all global {0} in a project, run:
 
-            $ {{command}} --global
-  """
+  $ {{command}} --global
+"""
 
   allowed_flags = []
   default_result = []
@@ -639,21 +639,22 @@ def GetMultiScopeListerHelp(resource, scopes):
   return {
       'brief': 'List Google Compute Engine ' + resource,
       'DESCRIPTION': """\
-          *{{command}}* displays all Google Compute Engine {0} in a project.
+*{{command}}* displays all Google Compute Engine {0} in a project.
 
-          By default, {1} are listed. The results can be narrowed down by
-          providing the {2} flag.
-          """.format(resource, default_result_text, allowed_flags_text),
+By default, {1} are listed. The results can be narrowed down by
+providing the {2} flag.
+""".format(resource, default_result_text, allowed_flags_text),
       'EXAMPLES': ("""\
-          To list all {0} in a project in table form, run:
+To list all {0} in a project in table form, run:
 
-            $ {{command}}
+  $ {{command}}
 
-          To list the URIs of all {0} in a project, run:
+To list the URIs of all {0} in a project, run:
 
-            $ {{command}} --uri
-          """ + (global_example_text
-                 if ScopeType.global_scope in scopes else '')
+  $ {{command}} --uri
+"""
+                   + (global_example_text
+                      if ScopeType.global_scope in scopes else '')
                    + (region_example_text
                       if ScopeType.regional_scope in scopes else '')
                    + (zone_example_text
@@ -764,32 +765,33 @@ def GetMultiScopeDescriberHelp(resource, scopes):
   article = text.GetArticle(resource)
   zone_example_text = """\
 
-          To get details about a zonal {0} in the ``us-central1-b'' zone, run:
+To get details about a zonal {0} in the ``us-central1-b'' zone, run:
 
-            $ {{command}} --zone us-central1-b
-  """
+  $ {{command}} --zone us-central1-b
+"""
   region_example_text = """\
 
-          To get details about a regional {0} in the ``us-central1'' regions,
-          run:
+To get details about a regional {0} in the ``us-central1'' regions,
+run:
 
-            $ {{command}} --region us-central1
-  """
+  $ {{command}} --region us-central1
+"""
   global_example_text = """\
 
-          To get details about a global {0}, run:
+To get details about a global {0}, run:
 
-            $ {{command}} --global
-  """
+  $ {{command}} --global
+"""
   return {
       'brief': ('Display detailed information about {0} {1}'
                 .format(article, resource)),
       'DESCRIPTION': """\
-          *{{command}}* displays all data associated with {0} {1} in a project.
-          """.format(article, resource),
+*{{command}}* displays all data associated with {0} {1} in a project.
+""".format(article, resource),
       'EXAMPLES': ("""\
-          """ + (global_example_text
-                 if ScopeType.global_scope in scopes else '')
+"""
+                   + (global_example_text
+                      if ScopeType.global_scope in scopes else '')
                    + (region_example_text
                       if ScopeType.regional_scope in scopes else '')
                    + (zone_example_text

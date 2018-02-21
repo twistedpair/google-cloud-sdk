@@ -471,9 +471,11 @@ class Organization(_messages.Message):
   Fields:
     creationTime: Timestamp when the Organization was created. Assigned by the
       server. @OutputOnly
-    displayName: A friendly string to be used to refer to the Organization in
-      the UI. Assigned by the server, set to the primary domain of the G Suite
-      customer that owns the organization. @OutputOnly
+    displayName: A human-readable string that refers to the Organization in
+      the GCP Console UI. This string is set by the server and cannot be
+      changed. The string will be set to the primary domain (for example,
+      "google.com") of the G Suite customer that owns the organization.
+      @OutputOnly
     lifecycleState: The organization's current lifecycle state. Assigned by
       the server. @OutputOnly
     name: Output Only. The resource name of the organization. This is the
@@ -481,8 +483,7 @@ class Organization(_messages.Message):
       "organizations/[organization_id]". For example, "organizations/1234".
     organizationId: An immutable id for the Organization that is assigned on
       creation. This should be omitted when creating a new Organization. This
-      field is read-only. This field is deprecated and will be removed in v1.
-      Use name instead.
+      field is read-only.
     owner: The owner of this Organization. The owner should be specified on
       creation. Once set, it cannot be changed. This field is required.
   """

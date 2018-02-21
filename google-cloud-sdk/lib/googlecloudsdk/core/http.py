@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 import copy
 import platform
+import re
 import time
 import uuid
 
@@ -72,6 +73,7 @@ def Http(timeout='unset'):
       properties.VALUES.core.trace_log.GetBool(),
       gcloud_ua,
       properties.VALUES.core.log_http.GetBool(),
+      properties.VALUES.core.log_http_redact_token.GetBool(),
   )
 
   return http_client
@@ -112,7 +114,8 @@ def GetDefaultTimeout():
 
 
 def _Wrap(
-    http_client, trace_token, trace_email, trace_log, gcloud_ua, log_http):
+    http_client, trace_token, trace_email, trace_log, gcloud_ua, log_http,
+    log_http_redact_token):
   """Wrap request with user-agent, and trace reporting.
 
   Args:
@@ -122,6 +125,8 @@ def _Wrap(
     trace_log: bool, Enable/disable server side logging of service requests.
     gcloud_ua: str, User agent string to be included in the request.
     log_http: bool, True to enable request/response logging.
+    log_http_redact_token: bool, True to avoid logging access tokens if log_http
+                           is set.
 
   Returns:
     http, The same http object but with the request method wrapped.
@@ -150,7 +155,7 @@ def _Wrap(
   # Do this one last so that it sees the affects of the other modifiers.
   if log_http:
     handlers.append(Modifiers.Handler(
-        Modifiers.LogRequest(),
+        Modifiers.LogRequest(log_http_redact_token),
         Modifiers.LogResponse()))
 
   if session_capturer.SessionCapturer.capturer is not None:
@@ -340,8 +345,11 @@ class Modifiers(object):
     return _AddQueryParam
 
   @classmethod
-  def LogRequest(cls):
+  def LogRequest(cls, redact_token=True):
     """Logs the contents of the http request.
+
+    Args:
+      redact_token: bool, True to redact Authorization header.
 
     Returns:
       A function that can be used in a Handler.request.
@@ -351,20 +359,43 @@ class Modifiers(object):
 
       uri, method, body, headers = Modifiers._GetRequest(args, kwargs)
 
+      # If set, these prevent the printing of the http body and replace it with
+      # the reason the body is not being printed.
+      redact_req_body_reason = None
+      redact_resp_body_reason = None
+
+      if redact_token and IsTokenUri(uri):
+        redact_req_body_reason = (
+            'Contains oauth token. Set log_http_redact_token property to false '
+            'to print the body of this request.'
+        )
+        redact_resp_body_reason = (
+            'Contains oauth token. Set log_http_redact_token property to false '
+            'to print the body of this response.'
+        )
+
       log.status.Print('=======================')
       log.status.Print('==== request start ====')
       log.status.Print('uri: {uri}'.format(uri=uri))
       log.status.Print('method: {method}'.format(method=method))
       log.status.Print('== headers start ==')
       for h, v in sorted(six.iteritems(headers)):
+        if redact_token and h == 'Authorization':
+          v = '--- Token Redacted ---'
         log.status.Print('{0}: {1}'.format(h, v))
       log.status.Print('== headers end ==')
       log.status.Print('== body start ==')
-      log.status.Print(body)
+      if redact_req_body_reason is None:
+        log.status.Print(body)
+      else:
+        log.status.Print('Body redacted: {}'.format(redact_req_body_reason))
       log.status.Print('== body end ==')
       log.status.Print('==== request end ====')
 
-      return Modifiers.Result(data=time.time())
+      return Modifiers.Result(data={
+          'start_time': time.time(),
+          'redact_resp_body_reason': redact_resp_body_reason,
+      })
     return _LogRequest
 
   @classmethod
@@ -394,9 +425,11 @@ class Modifiers(object):
     Returns:
       A function that can be used in a Handler.response.
     """
-    def _LogResponse(response, start_time):
+    def _LogResponse(response, data):
       """Response handler."""
-      time_taken = time.time() - start_time
+      redact_resp_body_reason = data['redact_resp_body_reason']
+
+      time_taken = time.time() - data['start_time']
       headers, content = response
       log.status.Print('---- response start ----')
       log.status.Print('-- headers start --')
@@ -404,7 +437,10 @@ class Modifiers(object):
         log.status.Print('{0}: {1}'.format(h, v))
       log.status.Print('-- headers end --')
       log.status.Print('-- body start --')
-      log.status.Print(content)
+      if redact_resp_body_reason is None:
+        log.status.Print(content)
+      else:
+        log.status.Print('Body redacted: {}'.format(redact_resp_body_reason))
       log.status.Print('-- body end --')
       log.status.Print('total round trip time (request+response): {0:.3f} secs'
                        .format(time_taken))
@@ -515,3 +551,14 @@ class Modifiers(object):
       headers = kwargs['headers']
 
     return uri, method, body, headers
+
+
+def IsTokenUri(uri):
+  """Determine if the given URI is for requesting an access token."""
+  if uri == 'https://accounts.google.com/o/oauth2/token':
+    return True
+
+  metadata_regexp = ('metadata.google.internal/computeMetadata/.*?/instance/'
+                     'service-accounts/.*?/token')
+
+  return re.search(metadata_regexp, uri) is not None

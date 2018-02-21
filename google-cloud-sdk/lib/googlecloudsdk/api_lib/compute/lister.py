@@ -535,6 +535,7 @@ def _GetBaseListerFrontendPrototype(args, message=None):
   """
   frontend = _GetListCommandFrontendPrototype(args, message=message)
   filter_args = []
+  default = args.filter  # must preserve '' and None for default processing
   if args.filter:
     filter_args.append('('+args.filter+')')
   if args.regexp:
@@ -559,13 +560,14 @@ def _GetBaseListerFrontendPrototype(args, message=None):
           name_regexp, selflink_regexp))
   # Refine args.filter specification to reuse gcloud filtering logic
   # for filtering based on instance names
-  args.filter = ' AND '.join(filter_args)
+  args.filter = ' AND '.join(filter_args) or default
 
   return _Frontend(None, frontend.max_results, frontend.scope_set)
 
 
 def _TranslateZonesFlag(args, resources, message=None):
   """Translates --zones flag into filter expression and scope set."""
+  default = args.filter  # must preserve '' and None for default processing
   scope_set = ZoneSet([
       resources.Parse(
           z,
@@ -579,7 +581,7 @@ def _TranslateZonesFlag(args, resources, message=None):
   # simple pattern?
   zone_regexp = ' '.join([zone for zone in args.zones])
   zone_arg = '(zone :({}))'.format(zone_regexp)
-  args.filter = filter_arg + zone_arg
+  args.filter = (filter_arg + zone_arg) or default
   args.filter, filter_expr = flags.RewriteFilter(args, message=message)
   return filter_expr, scope_set
 
@@ -617,6 +619,7 @@ def ParseZonalFlags(args, resources, message=None):
 
 def _TranslateRegionsFlag(args, resources, message=None):
   """Translates --regions flag into filter expression and scope set."""
+  default = args.filter  # must preserve '' and None for default processing
   scope_set = RegionSet([
       resources.Parse(
           region,
@@ -630,7 +633,7 @@ def _TranslateRegionsFlag(args, resources, message=None):
   # simple pattern?
   region_regexp = ' '.join([region for region in args.regions])
   region_arg = '(region :({}))'.format(region_regexp)
-  args.filter = filter_arg + region_arg
+  args.filter = (filter_arg + region_arg) or default
   args.filter, filter_expr = flags.RewriteFilter(args, message=message)
   return filter_expr, scope_set
 

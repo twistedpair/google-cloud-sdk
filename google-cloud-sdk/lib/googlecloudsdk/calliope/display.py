@@ -343,6 +343,8 @@ class Displayer(object):
   def _GetFilter(self):
     flag_filter = self._GetFlag('filter')
     if flag_filter is None:
+      if self._filter:
+        log.info('Display filter %s.', repr(self._filter))
       return self._filter
     else:
       return flag_filter

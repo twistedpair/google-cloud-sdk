@@ -61,14 +61,21 @@ class VersionsClient(object):
             parent=model_ref.RelativeName(),
             version=version))
 
-  def Patch(self, version_ref, labels_update):
+  def Patch(self, version_ref, labels_update, description=None):
+    """Update a version."""
     version = self.messages.GoogleCloudMlV1Version()
     update_mask = []
     if labels_update.needs_update:
       version.labels = labels_update.labels
       update_mask.append('labels')
+
+    if description:
+      version.description = description
+      update_mask.append('description')
+
     if not update_mask:
       raise NoFieldsSpecifiedError('No updates requested.')
+
     return self.client.projects_models_versions.Patch(
         self.messages.MlProjectsModelsVersionsPatchRequest(
             name=version_ref.RelativeName(),
@@ -105,7 +112,8 @@ class VersionsClient(object):
                    deployment_uri=None,
                    runtime_version=None,
                    labels=None,
-                   machine_type=None):
+                   machine_type=None,
+                   description=None):
     """Create a Version object.
 
     The object is based on an optional YAML configuration file and the
@@ -123,6 +131,7 @@ class VersionsClient(object):
       runtime_version: str, the runtimeVersion to set for the Version
       labels: Version.LabelsValue, the labels to set for the version
       machine_type: str, the machine type to serve the model version on.
+      description: str, the version description.
 
     Returns:
       A Version object (for the corresponding API version).
@@ -160,7 +169,8 @@ class VersionsClient(object):
         'deploymentUri': deployment_uri,
         'runtimeVersion': runtime_version,
         'labels': labels,
-        'machineType': machine_type
+        'machineType': machine_type,
+        'description': description
     }
     for field_name, value in additional_fields.items():
       if value is not None:

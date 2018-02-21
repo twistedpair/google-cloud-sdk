@@ -102,7 +102,7 @@ from googlecloudsdk.core import yaml
 
 # "test-{ga,beta}" runtimes are canaries for unit testing
 _WHITELISTED_RUNTIMES_GA = (
-    {'aspnetcore', 'php', 'nodejs', 'ruby', 'java', 'python'} |
+    {'aspnetcore', 'php', 'nodejs', 'ruby', 'java', 'python', 'python-compat'} |
     {re.compile(r'(go|go1\..+)$'), re.compile('^gs://')} |
     {'test-ga', re.compile('test-re-[ab]')})
 _WHITELISTED_RUNTIMES_BETA = (

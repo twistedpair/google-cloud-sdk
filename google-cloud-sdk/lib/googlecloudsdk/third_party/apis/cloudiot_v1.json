@@ -353,7 +353,7 @@
           }
         },
         "lastHeartbeatTime": {
-          "description": "[Output only] The last time a heartbeat was received. Timestamps are\nperiodically collected and written to storage; they may be stale by a few\nminutes. This field is only for devices connecting through MQTT.",
+          "description": "[Output only] The last time an MQTT `PINGREQ` was received. This field\napplies only to devices connecting through MQTT. MQTT clients usually only\nsend `PINGREQ` messages if the connection is idle, and no other messages\nhave been sent. Timestamps are periodically collected and written to\nstorage; they may be stale by a few minutes.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -399,7 +399,7 @@
           "$ref": "DeviceState"
         },
         "metadata": {
-          "description": "The metadata key-value pairs assigned to the device. This metadata is not\ninterpreted or indexed by Cloud IoT Core. It can be used to add contextual\ninformation for the device.\n\nKeys must conform to the regular expression [a-zA-Z0-9-_]+ and be less than\n128 bytes in length.\n\nValues are free-form strings. Each value must be less than or equal to 32\nKB in size.\n\nThe total size of all keys and values must be less than 256 KB, and the\nmaximum number of key-value pairs is 500.",
+          "description": "The metadata key-value pairs assigned to the device. This metadata is not\ninterpreted or indexed by Cloud IoT Core. It can be used to add contextual\ninformation for the device.\n\nKeys must conform to the regular expression a-zA-Z+ and\nbe less than 128 bytes in length.\n\nValues are free-form strings. Each value must be less than or equal to 32\nKB in size.\n\nThe total size of all keys and values must be less than 256 KB, and the\nmaximum number of key-value pairs is 500.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -648,33 +648,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "condition": {
-          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.\nThis field is only visible as GOOGLE_INTERNAL or CONDITION_TRUSTED_TESTER.",
-          "$ref": "Expr"
-        }
-      }
-    },
-    "Expr": {
-      "id": "Expr",
-      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
-      "type": "object",
-      "properties": {
-        "expression": {
-          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
-          "type": "string"
-        },
-        "title": {
-          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
-          "type": "string"
-        },
-        "description": {
-          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
-          "type": "string"
-        },
-        "location": {
-          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
-          "type": "string"
         }
       }
     },
@@ -774,7 +747,6 @@
                   "path": "v1/{+parent}/registries",
                   "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries",
                   "httpMethod": "POST",
-                  "description": "Creates a device registry that contains devices.",
                   "parameters": {
                     "parent": {
                       "description": "The project and cloud region where this device registry must be created.\nFor example, `projects\/example-project\/locations\/us-central1`.",
@@ -796,14 +768,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudiot"
-                  ]
+                  ],
+                  "description": "Creates a device registry that contains devices."
                 },
                 "get": {
                   "id": "cloudiot.projects.locations.registries.get",
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}",
                   "httpMethod": "GET",
-                  "description": "Gets a device registry configuration.",
                   "parameters": {
                     "name": {
                       "description": "The name of the device registry. For example,\n`projects\/example-project\/locations\/us-central1\/registries\/my-registry`.",
@@ -822,14 +794,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudiot"
-                  ]
+                  ],
+                  "description": "Gets a device registry configuration."
                 },
                 "patch": {
                   "id": "cloudiot.projects.locations.registries.patch",
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}",
                   "httpMethod": "PATCH",
-                  "description": "Updates a device registry configuration.",
                   "parameters": {
                     "name": {
                       "description": "The resource path name. For example,\n`projects\/example-project\/locations\/us-central1\/registries\/my-registry`.",
@@ -857,14 +829,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudiot"
-                  ]
+                  ],
+                  "description": "Updates a device registry configuration."
                 },
                 "delete": {
                   "id": "cloudiot.projects.locations.registries.delete",
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes a device registry configuration.",
                   "parameters": {
                     "name": {
                       "description": "The name of the device registry. For example,\n`projects\/example-project\/locations\/us-central1\/registries\/my-registry`.",
@@ -883,14 +855,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudiot"
-                  ]
+                  ],
+                  "description": "Deletes a device registry configuration."
                 },
                 "list": {
                   "id": "cloudiot.projects.locations.registries.list",
                   "path": "v1/{+parent}/registries",
                   "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries",
                   "httpMethod": "GET",
-                  "description": "Lists device registries.",
                   "parameters": {
                     "parent": {
                       "description": "The project and cloud region path. For example,\n`projects\/example-project\/locations\/us-central1`.",
@@ -920,14 +892,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudiot"
-                  ]
+                  ],
+                  "description": "Lists device registries."
                 },
                 "setIamPolicy": {
                   "id": "cloudiot.projects.locations.registries.setIamPolicy",
                   "path": "v1/{+resource}:setIamPolicy",
                   "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:setIamPolicy",
                   "httpMethod": "POST",
-                  "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
@@ -949,14 +921,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudiot"
-                  ]
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
                 },
                 "getIamPolicy": {
                   "id": "cloudiot.projects.locations.registries.getIamPolicy",
                   "path": "v1/{+resource}:getIamPolicy",
                   "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:getIamPolicy",
                   "httpMethod": "POST",
-                  "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -978,14 +950,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudiot"
-                  ]
+                  ],
+                  "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
                 },
                 "testIamPermissions": {
                   "id": "cloudiot.projects.locations.registries.testIamPermissions",
                   "path": "v1/{+resource}:testIamPermissions",
                   "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}:testIamPermissions",
                   "httpMethod": "POST",
-                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1007,7 +979,8 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloudiot"
-                  ]
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error."
                 }
               }
               ,
@@ -1019,7 +992,6 @@
                       "path": "v1/{+parent}/devices",
                       "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices",
                       "httpMethod": "POST",
-                      "description": "Creates a device in a device registry.",
                       "parameters": {
                         "parent": {
                           "description": "The name of the device registry where this device should be created.\nFor example,\n`projects\/example-project\/locations\/us-central1\/registries\/my-registry`.",
@@ -1041,14 +1013,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/cloudiot"
-                      ]
+                      ],
+                      "description": "Creates a device in a device registry."
                     },
                     "get": {
                       "id": "cloudiot.projects.locations.registries.devices.get",
                       "path": "v1/{+name}",
                       "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}",
                       "httpMethod": "GET",
-                      "description": "Gets details about a device.",
                       "parameters": {
                         "name": {
                           "description": "The name of the device. For example,\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/device0` or\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.",
@@ -1073,14 +1045,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/cloudiot"
-                      ]
+                      ],
+                      "description": "Gets details about a device."
                     },
                     "patch": {
                       "id": "cloudiot.projects.locations.registries.devices.patch",
                       "path": "v1/{+name}",
                       "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}",
                       "httpMethod": "PATCH",
-                      "description": "Updates a device.",
                       "parameters": {
                         "name": {
                           "description": "The resource path name. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0` or\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.\nWhen `name` is populated as a response from the service, it always ends\nin the device numeric ID.",
@@ -1108,14 +1080,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/cloudiot"
-                      ]
+                      ],
+                      "description": "Updates a device."
                     },
                     "delete": {
                       "id": "cloudiot.projects.locations.registries.devices.delete",
                       "path": "v1/{+name}",
                       "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}",
                       "httpMethod": "DELETE",
-                      "description": "Deletes a device.",
                       "parameters": {
                         "name": {
                           "description": "The name of the device. For example,\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/device0` or\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.",
@@ -1134,14 +1106,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/cloudiot"
-                      ]
+                      ],
+                      "description": "Deletes a device."
                     },
                     "list": {
                       "id": "cloudiot.projects.locations.registries.devices.list",
                       "path": "v1/{+parent}/devices",
                       "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices",
                       "httpMethod": "GET",
-                      "description": "List devices in a device registry.",
                       "parameters": {
                         "parent": {
                           "description": "The device registry path. Required. For example,\n`projects\/my-project\/locations\/us-central1\/registries\/my-registry`.",
@@ -1190,14 +1162,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/cloudiot"
-                      ]
+                      ],
+                      "description": "List devices in a device registry."
                     },
                     "modifyCloudToDeviceConfig": {
                       "id": "cloudiot.projects.locations.registries.devices.modifyCloudToDeviceConfig",
                       "path": "v1/{+name}:modifyCloudToDeviceConfig",
                       "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}:modifyCloudToDeviceConfig",
                       "httpMethod": "POST",
-                      "description": "Modifies the configuration for the device, which is eventually sent from\nthe Cloud IoT Core servers. Returns the modified configuration version and\nits metadata.",
                       "parameters": {
                         "name": {
                           "description": "The name of the device. For example,\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/device0` or\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.",
@@ -1219,7 +1191,8 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/cloudiot"
-                      ]
+                      ],
+                      "description": "Modifies the configuration for the device, which is eventually sent from\nthe Cloud IoT Core servers. Returns the modified configuration version and\nits metadata."
                     }
                   }
                   ,
@@ -1231,7 +1204,6 @@
                           "path": "v1/{+name}/configVersions",
                           "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/configVersions",
                           "httpMethod": "GET",
-                          "description": "Lists the last few versions of the device configuration in descending\norder (i.e.: newest first).",
                           "parameters": {
                             "name": {
                               "description": "The name of the device. For example,\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/device0` or\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.",
@@ -1256,7 +1228,8 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform",
                             "https://www.googleapis.com/auth/cloudiot"
-                          ]
+                          ],
+                          "description": "Lists the last few versions of the device configuration in descending\norder (i.e.: newest first)."
                         }
                       }
                     },
@@ -1267,7 +1240,6 @@
                           "path": "v1/{+name}/states",
                           "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/states",
                           "httpMethod": "GET",
-                          "description": "Lists the last few versions of the device state in descending order (i.e.:\nnewest first).",
                           "parameters": {
                             "name": {
                               "description": "The name of the device. For example,\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/device0` or\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.",
@@ -1292,7 +1264,8 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform",
                             "https://www.googleapis.com/auth/cloudiot"
-                          ]
+                          ],
+                          "description": "Lists the last few versions of the device state in descending order (i.e.:\nnewest first)."
                         }
                       }
                     }

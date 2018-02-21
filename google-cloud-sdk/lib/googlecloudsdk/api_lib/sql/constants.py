@@ -31,7 +31,8 @@ EXE_FLAGS = {
     'psql': {
         'user': '-U',
         'password': '-W',
-        'hostname': '-h'
+        'hostname': '-h',
+        'database': '-d'
     }
 }
 

@@ -86,11 +86,6 @@ class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently. This field is only visible as GOOGLE_INTERNAL or
-      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -108,9 +103,8 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`. Required
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  members = _messages.StringField(1, repeated=True)
+  role = _messages.StringField(2)
 
 
 class CloudiotProjectsLocationsRegistriesCreateRequest(_messages.Message):
@@ -385,10 +379,10 @@ class Device(_messages.Message):
     MetadataValue: The metadata key-value pairs assigned to the device. This
       metadata is not interpreted or indexed by Cloud IoT Core. It can be used
       to add contextual information for the device.  Keys must conform to the
-      regular expression [a-zA-Z0-9-_]+ and be less than 128 bytes in length.
-      Values are free-form strings. Each value must be less than or equal to
-      32 KB in size.  The total size of all keys and values must be less than
-      256 KB, and the maximum number of key-value pairs is 500.
+      regular expression a-zA-Z+ and be less than 128 bytes in length.  Values
+      are free-form strings. Each value must be less than or equal to 32 KB in
+      size.  The total size of all keys and values must be less than 256 KB,
+      and the maximum number of key-value pairs is 500.
 
   Fields:
     blocked: If a device is blocked, connections or requests from this device
@@ -424,20 +418,21 @@ class Device(_messages.Message):
     lastEventTime: [Output only] The last time a telemetry event was received.
       Timestamps are periodically collected and written to storage; they may
       be stale by a few minutes.
-    lastHeartbeatTime: [Output only] The last time a heartbeat was received.
-      Timestamps are periodically collected and written to storage; they may
-      be stale by a few minutes. This field is only for devices connecting
-      through MQTT.
+    lastHeartbeatTime: [Output only] The last time an MQTT `PINGREQ` was
+      received. This field applies only to devices connecting through MQTT.
+      MQTT clients usually only send `PINGREQ` messages if the connection is
+      idle, and no other messages have been sent. Timestamps are periodically
+      collected and written to storage; they may be stale by a few minutes.
     lastStateTime: [Output only] The last time a state event was received.
       Timestamps are periodically collected and written to storage; they may
       be stale by a few minutes.
     metadata: The metadata key-value pairs assigned to the device. This
       metadata is not interpreted or indexed by Cloud IoT Core. It can be used
       to add contextual information for the device.  Keys must conform to the
-      regular expression [a-zA-Z0-9-_]+ and be less than 128 bytes in length.
-      Values are free-form strings. Each value must be less than or equal to
-      32 KB in size.  The total size of all keys and values must be less than
-      256 KB, and the maximum number of key-value pairs is 500.
+      regular expression a-zA-Z+ and be less than 128 bytes in length.  Values
+      are free-form strings. Each value must be less than or equal to 32 KB in
+      size.  The total size of all keys and values must be less than 256 KB,
+      and the maximum number of key-value pairs is 500.
     name: The resource path name. For example, `projects/p1/locations/us-
       central1/registries/registry0/devices/dev0` or `projects/p1/locations
       /us-central1/registries/registry0/devices/{num_id}`. When `name` is
@@ -455,10 +450,10 @@ class Device(_messages.Message):
     """The metadata key-value pairs assigned to the device. This metadata is
     not interpreted or indexed by Cloud IoT Core. It can be used to add
     contextual information for the device.  Keys must conform to the regular
-    expression [a-zA-Z0-9-_]+ and be less than 128 bytes in length.  Values
-    are free-form strings. Each value must be less than or equal to 32 KB in
-    size.  The total size of all keys and values must be less than 256 KB, and
-    the maximum number of key-value pairs is 500.
+    expression a-zA-Z+ and be less than 128 bytes in length.  Values are free-
+    form strings. Each value must be less than or equal to 32 KB in size.  The
+    total size of all keys and values must be less than 256 KB, and the
+    maximum number of key-value pairs is 500.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -631,30 +626,6 @@ class EventNotificationConfig(_messages.Message):
 
   pubsubTopicName = _messages.StringField(1)
   subfolderMatches = _messages.StringField(2)
-
-
-class Expr(_messages.Message):
-  """Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
-
-  Fields:
-    description: An optional description of the expression. This is a longer
-      text which describes the expression, e.g. when hovered over it in a UI.
-    expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
-      error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
-  """
-
-  description = _messages.StringField(1)
-  expression = _messages.StringField(2)
-  location = _messages.StringField(3)
-  title = _messages.StringField(4)
 
 
 class GetIamPolicyRequest(_messages.Message):

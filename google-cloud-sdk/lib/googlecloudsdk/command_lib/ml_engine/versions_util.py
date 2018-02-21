@@ -71,7 +71,8 @@ def WaitForOpMaybe(operations_client, op, async_=False, message=None):
 
 def Create(versions_client, operations_client, version_id,
            model=None, origin=None, staging_bucket=None, runtime_version=None,
-           config_file=None, async_=None, labels=None, machine_type=None):
+           config_file=None, async_=None, labels=None, machine_type=None,
+           description=None):
   """Create a version, optionally waiting for creation to finish."""
   if origin:
     try:
@@ -87,6 +88,7 @@ def Create(versions_client, operations_client, version_id,
                                          deployment_uri=origin,
                                          runtime_version=runtime_version,
                                          labels=labels,
+                                         description=description,
                                          machine_type=machine_type)
   if not version.deploymentUri:
     raise InvalidArgumentCombinationError(
@@ -122,11 +124,12 @@ def List(versions_client, model=None):
 def Update(versions_client, operations_client, version_ref, args):
   labels_update = ParseUpdateLabels(versions_client, version_ref, args)
   try:
-    op = versions_client.Patch(version_ref, labels_update)
+    op = versions_client.Patch(version_ref, labels_update, args.description)
   except versions_api.NoFieldsSpecifiedError:
     if not any(args.IsSpecified(arg) for arg in ('update_labels',
                                                  'clear_labels',
-                                                 'remove_labels')):
+                                                 'remove_labels',
+                                                 'description')):
       raise
     log.status.Print('No update to perform.')
     return None

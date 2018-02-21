@@ -21,6 +21,7 @@ import functools
 import os
 import re
 import sys
+import enum
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -97,6 +98,10 @@ _VALID_ENDPOINT_OVERRIDE_REGEX = re.compile(
     # require trailing slash, fragment optional
     r'(?:/|[/?]\S+/)'
     r'$', re.IGNORECASE)
+
+_PUBSUB_NOTICE_URL = (
+    'https://cloud.google.com/functions/docs/writing/background#event_parameter'
+)
 
 
 def Stringize(value):
@@ -617,11 +622,19 @@ class _SectionFunctions(_Section):
         'use_new_object_trigger',
         help_text='If True, will set the trigger_event to use when '
         'deploying a Cloud Function using a Google Cloud Storage bucket '
-        'trigger (e.g. `--trigger_bucket`) to `object.finalize`. If False, '
-        'trigger_event will be set to `object.change`. Default is False. '
+        'trigger (e.g. `--trigger-bucket`) to `object.finalize`. If False, '
+        'trigger_event will be set to `object.change`. '
         'Please see '
         'https://cloud.google.com/storage/docs/pubsub-notifications for '
         'more details on trigger_event types.')
+
+    self.use_new_pubsub_trigger = self._AddBool(
+        'use_new_pubsub_trigger',
+        help_text='If True, Cloud Functions deployed using a Google Cloud '
+        'PubSub topic trigger (e.g. `--trigger-topic`) will use new event '
+        'schema. If False, Cloud Function will use legacy event schema. '
+        'Please see {0} for more information on the new '
+        'schema.'.format(_PUBSUB_NOTICE_URL))
 
 
 class _SectionGcloudignore(_Section):
@@ -751,14 +764,14 @@ class _SectionContainer(_Section):
         default=False,
         help_text='Use application default credentials to authenticate to '
         'the cluster API server.')
-    self.use_v1_api_client = self._AddBool(
-        'use_v1_api_client',
+    self.use_v1_api = self._AddBool(
+        'use_v1_api',
         default=True,
-        hidden=True,
-        help_text='If True, always use a v1 api client to talk to the '
-        'Kubernetes Engine v1 API; if False, gcloud alpha track commands will '
-        'use a v1alpha1 API client. The Kubernetes Engine v1alpha1 API is '
-        'whitelist-only at this time.')
+        help_text='If true, all gcloud Kubernetes Engine commands (regardless '
+        'of release track) will use the v1 API; otherwise, gcloud beta track '
+        'commands will use v1beta1 API and gcloud alpha track commands will '
+        'use v1alpha1 API. By default, it is set to true. The Kubernetes '
+        'Engine v1alpha1 API is whitelist-only at this time.')
     self.new_scopes_behavior = self._AddBool(
         'new_scopes_behavior',
         default=False,
@@ -797,6 +810,11 @@ class _SectionContainer(_Section):
 
 class _SectionCore(_Section):
   """Contains the properties for the 'core' section."""
+
+  class InteractiveUXStyles(enum.Enum):
+    NORMAL = 0
+    OFF = 1
+    TESTING = 2
 
   def __init__(self):
     super(_SectionCore, self).__init__('core')
@@ -882,12 +900,25 @@ class _SectionCore(_Section):
         help_text='If False, messages to the user and command output on both '
         'standard output and standard error will be suppressed.',
         default=True)
+    self.interactive_ux_style = self._Add(
+        'interactive_ux_style',
+        help_text='How to display interactive UX elements like progress bars '
+                  'and trackers.',
+        hidden=True,
+        default=_SectionCore.InteractiveUXStyles.NORMAL,
+        choices=[x.name for x in list(_SectionCore.InteractiveUXStyles)])
     self.log_http = self._AddBool(
         'log_http',
         help_text='If True, log HTTP requests and responses to the logs.  '
         'You may need to adjust your `verbosity` setting if you want to see '
         'in the terminal, otherwise it is available in the log files.',
         default=False)
+    self.log_http_redact_token = self._AddBool(
+        'log_http_redact_token',
+        help_text='If true, this prevents log_http from printing access tokens.'
+        ' This property does not have effect unless log_http is true.',
+        default=True,
+        hidden=True)
     self.http_timeout = self._Add(
         'http_timeout',
         hidden=True)
@@ -1319,6 +1350,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.bigtableadmin = self._Add('bigtableadmin')
     self.bigtableclusteradmin = self._Add('bigtableclusteradmin')
     self.bio = self._Add('bio')
+    self.categorymanager = self._Add('categorymanager')
     self.cloudbilling = self._Add('cloudbilling')
     self.cloudbuild = self._Add('cloudbuild')
     self.clouddebugger = self._Add('clouddebugger')

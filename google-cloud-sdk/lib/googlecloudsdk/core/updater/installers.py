@@ -209,7 +209,7 @@ class ComponentInstaller(object):
       os.remove(download_file_path)
 
     (download_callback, install_callback) = (
-        console_io.ProgressBar.SplitProgressBar(progress_callback, [1, 1]))
+        console_io.SplitProgressBar(progress_callback, [1, 1]))
 
     try:
       req = ComponentInstaller.MakeRequest(url, command_path)

@@ -24,7 +24,6 @@ from googlecloudsdk.core import properties
 EPHEMERAL_ADDRESS = object()
 
 
-# TODO(b/36056459): Add unit tests for utilities
 def CreateNetworkInterfaceMessage(
     resources, scope_lister, messages, network, region, subnet, address,
     alias_ip_ranges_string=None, network_tier=None):
@@ -142,8 +141,9 @@ def CreatePersistentAttachedDiskMessages(messages, disks):
     disks: disk objects - contains following properties
              * name - the name of disk,
              * mode - 'rw' (R/W), 'ro' (R/O) access mode,
-             * boot - whether it is a boot disk,
-             * autodelete - whether disks is deleted when VM is deleted,
+             * boot - whether it is a boot disk ('yes' if True),
+             * autodelete - whether disks is deleted when VM is deleted ('yes'
+               if True),
              * device-name - device name on VM.
 
   Returns:
@@ -191,12 +191,13 @@ def CreatePersistentCreateDiskMessages(client, resources, user_project,
     create_disks: disk objects - contains following properties
              * name - the name of disk,
              * mode - 'rw' (R/W), 'ro' (R/O) access mode,
-             * disk-size - the size of the disk,
-             * disk-type - the type of the disk (HDD or SSD),
+             * size - the size of the disk,
+             * type - the type of the disk (HDD or SSD),
              * image - the name of the image to initialize from,
              * image-family - the image family name,
              * image-project - the project name that has the image,
-             * auto-delete - whether disks is deleted when VM is deleted,
+             * auto-delete - whether disks is deleted when VM is deleted ('yes'
+               if True),
              * device-name - device name on VM.
 
   Returns:

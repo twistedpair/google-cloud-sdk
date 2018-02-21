@@ -1075,7 +1075,7 @@
             "Encoded as JSON `true` or `false`.",
             "Encoded as `string`, in decimal format.",
             "Encoded as `number`, or the strings `\"NaN\"`, `\"Infinity\"`, or\n`\"-Infinity\"`.",
-            "Encoded as `string` in RFC 3339 timestamp format. The time zone\nmust be present, and must be `\"Z\"`.",
+            "Encoded as `string` in RFC 3339 timestamp format. The time zone\nmust be present, and must be `\"Z\"`.\n\nIf the schema has the column option\n`allow_commit_timestamp=true`, the placeholder string\n`\"spanner.commit_timestamp()\"` can be used to instruct the system\nto insert the commit timestamp associated with the transaction\ncommit.",
             "Encoded as `string` in RFC 3339 date format.",
             "Encoded as `string`.",
             "Encoded as a base64-encoded `string`, as described in RFC 4648,\nsection 4.",
@@ -1803,7 +1803,6 @@
               "path": "v1/{+parent}/instanceConfigs",
               "flatPath": "v1/projects/{projectsId}/instanceConfigs",
               "httpMethod": "GET",
-              "description": "Lists the supported instance configurations for a given project.",
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project for which a list of supported instance\nconfigurations is requested. Values are of the form\n`projects\/<project>`.",
@@ -1833,14 +1832,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/spanner.admin"
-              ]
+              ],
+              "description": "Lists the supported instance configurations for a given project."
             },
             "get": {
               "id": "spanner.projects.instanceConfigs.get",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/instanceConfigs/{instanceConfigsId}",
               "httpMethod": "GET",
-              "description": "Gets information about a particular instance configuration.",
               "parameters": {
                 "name": {
                   "description": "Required. The name of the requested instance configuration. Values are of\nthe form `projects\/<project>\/instanceConfigs\/<config>`.",
@@ -1859,7 +1858,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/spanner.admin"
-              ]
+              ],
+              "description": "Gets information about a particular instance configuration."
             }
           }
         },
@@ -1870,7 +1870,6 @@
               "path": "v1/{+parent}/instances",
               "flatPath": "v1/projects/{projectsId}/instances",
               "httpMethod": "GET",
-              "description": "Lists all instances in the given project.",
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project for which a list of instances is\nrequested. Values are of the form `projects\/<project>`.",
@@ -1905,14 +1904,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/spanner.admin"
-              ]
+              ],
+              "description": "Lists all instances in the given project."
             },
             "get": {
               "id": "spanner.projects.instances.get",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/instances/{instancesId}",
               "httpMethod": "GET",
-              "description": "Gets information about a particular instance.",
               "parameters": {
                 "name": {
                   "description": "Required. The name of the requested instance. Values are of the form\n`projects\/<project>\/instances\/<instance>`.",
@@ -1931,14 +1930,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/spanner.admin"
-              ]
+              ],
+              "description": "Gets information about a particular instance."
             },
             "create": {
               "id": "spanner.projects.instances.create",
               "path": "v1/{+parent}/instances",
               "flatPath": "v1/projects/{projectsId}/instances",
               "httpMethod": "POST",
-              "description": "Creates an instance and begins preparing it to begin serving. The\nreturned long-running operation\ncan be used to track the progress of preparing the new\ninstance. The instance name is assigned by the caller. If the\nnamed instance already exists, `CreateInstance` returns\n`ALREADY_EXISTS`.\n\nImmediately upon completion of this request:\n\n  * The instance is readable via the API, with all requested attributes\n    but no allocated resources. Its state is `CREATING`.\n\nUntil completion of the returned operation:\n\n  * Cancelling the operation renders the instance immediately unreadable\n    via the API.\n  * The instance can be deleted.\n  * All other attempts to modify the instance are rejected.\n\nUpon completion of the returned operation:\n\n  * Billing for all successfully-allocated resources begins (some types\n    may have lower than the requested levels).\n  * Databases can be created in the instance.\n  * The instance's allocated resource levels are readable via the API.\n  * The instance's state becomes `READY`.\n\nThe returned long-running operation will\nhave a name of the format `<instance_name>\/operations\/<operation_id>` and\ncan be used to track creation of the instance.  The\nmetadata field type is\nCreateInstanceMetadata.\nThe response field type is\nInstance, if successful.",
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project in which to create the instance. Values\nare of the form `projects\/<project>`.",
@@ -1960,14 +1959,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/spanner.admin"
-              ]
+              ],
+              "description": "Creates an instance and begins preparing it to begin serving. The\nreturned long-running operation\ncan be used to track the progress of preparing the new\ninstance. The instance name is assigned by the caller. If the\nnamed instance already exists, `CreateInstance` returns\n`ALREADY_EXISTS`.\n\nImmediately upon completion of this request:\n\n  * The instance is readable via the API, with all requested attributes\n    but no allocated resources. Its state is `CREATING`.\n\nUntil completion of the returned operation:\n\n  * Cancelling the operation renders the instance immediately unreadable\n    via the API.\n  * The instance can be deleted.\n  * All other attempts to modify the instance are rejected.\n\nUpon completion of the returned operation:\n\n  * Billing for all successfully-allocated resources begins (some types\n    may have lower than the requested levels).\n  * Databases can be created in the instance.\n  * The instance's allocated resource levels are readable via the API.\n  * The instance's state becomes `READY`.\n\nThe returned long-running operation will\nhave a name of the format `<instance_name>\/operations\/<operation_id>` and\ncan be used to track creation of the instance.  The\nmetadata field type is\nCreateInstanceMetadata.\nThe response field type is\nInstance, if successful."
             },
             "patch": {
               "id": "spanner.projects.instances.patch",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/instances/{instancesId}",
               "httpMethod": "PATCH",
-              "description": "Updates an instance, and begins allocating or releasing resources\nas requested. The returned long-running\noperation can be used to track the\nprogress of updating the instance. If the named instance does not\nexist, returns `NOT_FOUND`.\n\nImmediately upon completion of this request:\n\n  * For resource types for which a decrease in the instance's allocation\n    has been requested, billing is based on the newly-requested level.\n\nUntil completion of the returned operation:\n\n  * Cancelling the operation sets its metadata's\n    cancel_time, and begins\n    restoring resources to their pre-request values. The operation\n    is guaranteed to succeed at undoing all resource changes,\n    after which point it terminates with a `CANCELLED` status.\n  * All other attempts to modify the instance are rejected.\n  * Reading the instance via the API continues to give the pre-request\n    resource levels.\n\nUpon completion of the returned operation:\n\n  * Billing begins for all successfully-allocated resources (some types\n    may have lower than the requested levels).\n  * All newly-reserved resources are available for serving the instance's\n    tables.\n  * The instance's new resource levels are readable via the API.\n\nThe returned long-running operation will\nhave a name of the format `<instance_name>\/operations\/<operation_id>` and\ncan be used to track the instance modification.  The\nmetadata field type is\nUpdateInstanceMetadata.\nThe response field type is\nInstance, if successful.\n\nAuthorization requires `spanner.instances.update` permission on\nresource name.",
               "parameters": {
                 "name": {
                   "description": "Required. A unique identifier for the instance, which cannot be changed\nafter the instance is created. Values are of the form\n`projects\/<project>\/instances\/a-z*[a-z0-9]`. The final\nsegment of the name must be between 6 and 30 characters in length.",
@@ -1989,14 +1988,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/spanner.admin"
-              ]
+              ],
+              "description": "Updates an instance, and begins allocating or releasing resources\nas requested. The returned long-running\noperation can be used to track the\nprogress of updating the instance. If the named instance does not\nexist, returns `NOT_FOUND`.\n\nImmediately upon completion of this request:\n\n  * For resource types for which a decrease in the instance's allocation\n    has been requested, billing is based on the newly-requested level.\n\nUntil completion of the returned operation:\n\n  * Cancelling the operation sets its metadata's\n    cancel_time, and begins\n    restoring resources to their pre-request values. The operation\n    is guaranteed to succeed at undoing all resource changes,\n    after which point it terminates with a `CANCELLED` status.\n  * All other attempts to modify the instance are rejected.\n  * Reading the instance via the API continues to give the pre-request\n    resource levels.\n\nUpon completion of the returned operation:\n\n  * Billing begins for all successfully-allocated resources (some types\n    may have lower than the requested levels).\n  * All newly-reserved resources are available for serving the instance's\n    tables.\n  * The instance's new resource levels are readable via the API.\n\nThe returned long-running operation will\nhave a name of the format `<instance_name>\/operations\/<operation_id>` and\ncan be used to track the instance modification.  The\nmetadata field type is\nUpdateInstanceMetadata.\nThe response field type is\nInstance, if successful.\n\nAuthorization requires `spanner.instances.update` permission on\nresource name."
             },
             "delete": {
               "id": "spanner.projects.instances.delete",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/instances/{instancesId}",
               "httpMethod": "DELETE",
-              "description": "Deletes an instance.\n\nImmediately upon completion of the request:\n\n  * Billing ceases for all of the instance's reserved resources.\n\nSoon afterward:\n\n  * The instance and *all of its databases* immediately and\n    irrevocably disappear from the API. All data in the databases\n    is permanently deleted.",
               "parameters": {
                 "name": {
                   "description": "Required. The name of the instance to be deleted. Values are of the form\n`projects\/<project>\/instances\/<instance>`",
@@ -2015,14 +2014,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/spanner.admin"
-              ]
+              ],
+              "description": "Deletes an instance.\n\nImmediately upon completion of the request:\n\n  * Billing ceases for all of the instance's reserved resources.\n\nSoon afterward:\n\n  * The instance and *all of its databases* immediately and\n    irrevocably disappear from the API. All data in the databases\n    is permanently deleted."
             },
             "setIamPolicy": {
               "id": "spanner.projects.instances.setIamPolicy",
               "path": "v1/{+resource}:setIamPolicy",
               "flatPath": "v1/projects/{projectsId}/instances/{instancesId}:setIamPolicy",
               "httpMethod": "POST",
-              "description": "Sets the access control policy on an instance resource. Replaces any\nexisting policy.\n\nAuthorization requires `spanner.instances.setIamPolicy` on\nresource.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The Cloud Spanner resource for which the policy is being set. The format is `projects\/<project ID>\/instances\/<instance ID>` for instance resources and `projects\/<project ID>\/instances\/<instance ID>\/databases\/<database ID>` for databases resources.",
@@ -2044,14 +2043,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/spanner.admin"
-              ]
+              ],
+              "description": "Sets the access control policy on an instance resource. Replaces any\nexisting policy.\n\nAuthorization requires `spanner.instances.setIamPolicy` on\nresource."
             },
             "getIamPolicy": {
               "id": "spanner.projects.instances.getIamPolicy",
               "path": "v1/{+resource}:getIamPolicy",
               "flatPath": "v1/projects/{projectsId}/instances/{instancesId}:getIamPolicy",
               "httpMethod": "POST",
-              "description": "Gets the access control policy for an instance resource. Returns an empty\npolicy if an instance exists but does not have a policy set.\n\nAuthorization requires `spanner.instances.getIamPolicy` on\nresource.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The Cloud Spanner resource for which the policy is being retrieved. The format is `projects\/<project ID>\/instances\/<instance ID>` for instance resources and `projects\/<project ID>\/instances\/<instance ID>\/databases\/<database ID>` for database resources.",
@@ -2073,14 +2072,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/spanner.admin"
-              ]
+              ],
+              "description": "Gets the access control policy for an instance resource. Returns an empty\npolicy if an instance exists but does not have a policy set.\n\nAuthorization requires `spanner.instances.getIamPolicy` on\nresource."
             },
             "testIamPermissions": {
               "id": "spanner.projects.instances.testIamPermissions",
               "path": "v1/{+resource}:testIamPermissions",
               "flatPath": "v1/projects/{projectsId}/instances/{instancesId}:testIamPermissions",
               "httpMethod": "POST",
-              "description": "Returns permissions that the caller has on the specified instance resource.\n\nAttempting this RPC on a non-existent Cloud Spanner instance resource will\nresult in a NOT_FOUND error if the user has `spanner.instances.list`\npermission on the containing Google Cloud Project. Otherwise returns an\nempty set of permissions.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The Cloud Spanner resource for which permissions are being tested. The format is `projects\/<project ID>\/instances\/<instance ID>` for instance resources and `projects\/<project ID>\/instances\/<instance ID>\/databases\/<database ID>` for database resources.",
@@ -2102,7 +2101,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/spanner.admin"
-              ]
+              ],
+              "description": "Returns permissions that the caller has on the specified instance resource.\n\nAttempting this RPC on a non-existent Cloud Spanner instance resource will\nresult in a NOT_FOUND error if the user has `spanner.instances.list`\npermission on the containing Google Cloud Project. Otherwise returns an\nempty set of permissions."
             }
           }
           ,
@@ -2114,7 +2114,6 @@
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/operations",
                   "httpMethod": "GET",
-                  "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id.",
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
@@ -2149,14 +2148,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
                 },
                 "get": {
                   "id": "spanner.projects.instances.operations.get",
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}",
                   "httpMethod": "GET",
-                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
@@ -2175,14 +2174,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
                 },
                 "delete": {
                   "id": "spanner.projects.instances.operations.delete",
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be deleted.",
@@ -2201,14 +2200,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`."
                 },
                 "cancel": {
                   "id": "spanner.projects.instances.operations.cancel",
                   "path": "v1/{+name}:cancel",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}:cancel",
                   "httpMethod": "POST",
-                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource to be cancelled.",
@@ -2227,7 +2226,8 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
                 }
               }
             },
@@ -2238,7 +2238,6 @@
                   "path": "v1/{+parent}/databases",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases",
                   "httpMethod": "GET",
-                  "description": "Lists Cloud Spanner databases.",
                   "parameters": {
                     "parent": {
                       "description": "Required. The instance whose databases should be listed.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
@@ -2268,14 +2267,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Lists Cloud Spanner databases."
                 },
                 "create": {
                   "id": "spanner.projects.instances.databases.create",
                   "path": "v1/{+parent}/databases",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases",
                   "httpMethod": "POST",
-                  "description": "Creates a new Cloud Spanner database and starts to prepare it for serving.\nThe returned long-running operation will\nhave a name of the format `<database_name>\/operations\/<operation_id>` and\ncan be used to track preparation of the database. The\nmetadata field type is\nCreateDatabaseMetadata. The\nresponse field type is\nDatabase, if successful.",
                   "parameters": {
                     "parent": {
                       "description": "Required. The name of the instance that will serve the new database.\nValues are of the form `projects\/<project>\/instances\/<instance>`.",
@@ -2297,14 +2296,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Creates a new Cloud Spanner database and starts to prepare it for serving.\nThe returned long-running operation will\nhave a name of the format `<database_name>\/operations\/<operation_id>` and\ncan be used to track preparation of the database. The\nmetadata field type is\nCreateDatabaseMetadata. The\nresponse field type is\nDatabase, if successful."
                 },
                 "get": {
                   "id": "spanner.projects.instances.databases.get",
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}",
                   "httpMethod": "GET",
-                  "description": "Gets the state of a Cloud Spanner database.",
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the requested database. Values are of the form\n`projects\/<project>\/instances\/<instance>\/databases\/<database>`.",
@@ -2323,14 +2322,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Gets the state of a Cloud Spanner database."
                 },
                 "updateDdl": {
                   "id": "spanner.projects.instances.databases.updateDdl",
                   "path": "v1/{+database}/ddl",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/ddl",
                   "httpMethod": "PATCH",
-                  "description": "Updates the schema of a Cloud Spanner database by\ncreating\/altering\/dropping tables, columns, indexes, etc. The returned\nlong-running operation will have a name of\nthe format `<database_name>\/operations\/<operation_id>` and can be used to\ntrack execution of the schema change(s). The\nmetadata field type is\nUpdateDatabaseDdlMetadata.  The operation has no response.",
                   "parameters": {
                     "database": {
                       "description": "Required. The database to update.",
@@ -2352,14 +2351,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Updates the schema of a Cloud Spanner database by\ncreating\/altering\/dropping tables, columns, indexes, etc. The returned\nlong-running operation will have a name of\nthe format `<database_name>\/operations\/<operation_id>` and can be used to\ntrack execution of the schema change(s). The\nmetadata field type is\nUpdateDatabaseDdlMetadata.  The operation has no response."
                 },
                 "dropDatabase": {
                   "id": "spanner.projects.instances.databases.dropDatabase",
                   "path": "v1/{+database}",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}",
                   "httpMethod": "DELETE",
-                  "description": "Drops (aka deletes) a Cloud Spanner database.",
                   "parameters": {
                     "database": {
                       "description": "Required. The database to be dropped.",
@@ -2378,14 +2377,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Drops (aka deletes) a Cloud Spanner database."
                 },
                 "getDdl": {
                   "id": "spanner.projects.instances.databases.getDdl",
                   "path": "v1/{+database}/ddl",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/ddl",
                   "httpMethod": "GET",
-                  "description": "Returns the schema of a Cloud Spanner database as a list of formatted\nDDL statements. This method does not show pending schema updates, those may\nbe queried using the Operations API.",
                   "parameters": {
                     "database": {
                       "description": "Required. The database whose schema we wish to get.",
@@ -2404,14 +2403,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Returns the schema of a Cloud Spanner database as a list of formatted\nDDL statements. This method does not show pending schema updates, those may\nbe queried using the Operations API."
                 },
                 "setIamPolicy": {
                   "id": "spanner.projects.instances.databases.setIamPolicy",
                   "path": "v1/{+resource}:setIamPolicy",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}:setIamPolicy",
                   "httpMethod": "POST",
-                  "description": "Sets the access control policy on a database resource. Replaces any\nexisting policy.\n\nAuthorization requires `spanner.databases.setIamPolicy` permission on\nresource.",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The Cloud Spanner resource for which the policy is being set. The format is `projects\/<project ID>\/instances\/<instance ID>` for instance resources and `projects\/<project ID>\/instances\/<instance ID>\/databases\/<database ID>` for databases resources.",
@@ -2433,14 +2432,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Sets the access control policy on a database resource. Replaces any\nexisting policy.\n\nAuthorization requires `spanner.databases.setIamPolicy` permission on\nresource."
                 },
                 "getIamPolicy": {
                   "id": "spanner.projects.instances.databases.getIamPolicy",
                   "path": "v1/{+resource}:getIamPolicy",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}:getIamPolicy",
                   "httpMethod": "POST",
-                  "description": "Gets the access control policy for a database resource. Returns an empty\npolicy if a database exists but does not have a policy set.\n\nAuthorization requires `spanner.databases.getIamPolicy` permission on\nresource.",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The Cloud Spanner resource for which the policy is being retrieved. The format is `projects\/<project ID>\/instances\/<instance ID>` for instance resources and `projects\/<project ID>\/instances\/<instance ID>\/databases\/<database ID>` for database resources.",
@@ -2462,14 +2461,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Gets the access control policy for a database resource. Returns an empty\npolicy if a database exists but does not have a policy set.\n\nAuthorization requires `spanner.databases.getIamPolicy` permission on\nresource."
                 },
                 "testIamPermissions": {
                   "id": "spanner.projects.instances.databases.testIamPermissions",
                   "path": "v1/{+resource}:testIamPermissions",
                   "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}:testIamPermissions",
                   "httpMethod": "POST",
-                  "description": "Returns permissions that the caller has on the specified database resource.\n\nAttempting this RPC on a non-existent Cloud Spanner database will result in\na NOT_FOUND error if the user has `spanner.databases.list` permission on\nthe containing Cloud Spanner instance. Otherwise returns an empty set of\npermissions.",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The Cloud Spanner resource for which permissions are being tested. The format is `projects\/<project ID>\/instances\/<instance ID>` for instance resources and `projects\/<project ID>\/instances\/<instance ID>\/databases\/<database ID>` for database resources.",
@@ -2491,7 +2490,8 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
-                  ]
+                  ],
+                  "description": "Returns permissions that the caller has on the specified database resource.\n\nAttempting this RPC on a non-existent Cloud Spanner database will result in\na NOT_FOUND error if the user has `spanner.databases.list` permission on\nthe containing Cloud Spanner instance. Otherwise returns an empty set of\npermissions."
                 }
               }
               ,
@@ -2503,7 +2503,6 @@
                       "path": "v1/{+name}",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/operations",
                       "httpMethod": "GET",
-                      "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id.",
                       "parameters": {
                         "name": {
                           "description": "The name of the operation's parent resource.",
@@ -2538,14 +2537,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.admin"
-                      ]
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
                     },
                     "get": {
                       "id": "spanner.projects.instances.databases.operations.get",
                       "path": "v1/{+name}",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/operations/{operationsId}",
                       "httpMethod": "GET",
-                      "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource.",
@@ -2564,14 +2563,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.admin"
-                      ]
+                      ],
+                      "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
                     },
                     "delete": {
                       "id": "spanner.projects.instances.databases.operations.delete",
                       "path": "v1/{+name}",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/operations/{operationsId}",
                       "httpMethod": "DELETE",
-                      "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource to be deleted.",
@@ -2590,14 +2589,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.admin"
-                      ]
+                      ],
+                      "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`."
                     },
                     "cancel": {
                       "id": "spanner.projects.instances.databases.operations.cancel",
                       "path": "v1/{+name}:cancel",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/operations/{operationsId}:cancel",
                       "httpMethod": "POST",
-                      "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
                       "parameters": {
                         "name": {
                           "description": "The name of the operation resource to be cancelled.",
@@ -2616,7 +2615,8 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.admin"
-                      ]
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
                     }
                   }
                 },
@@ -2627,7 +2627,6 @@
                       "path": "v1/{+database}/sessions",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions",
                       "httpMethod": "POST",
-                      "description": "Creates a new session. A session can be used to perform\ntransactions that read and\/or modify data in a Cloud Spanner database.\nSessions are meant to be reused for many consecutive\ntransactions.\n\nSessions can only execute one transaction at a time. To execute\nmultiple concurrent read-write\/write-only transactions, create\nmultiple sessions. Note that standalone reads and queries use a\ntransaction internally, and count toward the one transaction\nlimit.\n\nCloud Spanner limits the number of sessions that can exist at any given\ntime; thus, it is a good idea to delete idle and\/or unneeded sessions.\nAside from explicit deletes, Cloud Spanner can delete sessions for which no\noperations are sent for more than an hour. If a session is deleted,\nrequests to it return `NOT_FOUND`.\n\nIdle sessions can be kept alive by sending a trivial SQL query\nperiodically, e.g., `\"SELECT 1\"`.",
                       "parameters": {
                         "database": {
                           "description": "Required. The database in which the new session is created.",
@@ -2649,14 +2648,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Creates a new session. A session can be used to perform\ntransactions that read and\/or modify data in a Cloud Spanner database.\nSessions are meant to be reused for many consecutive\ntransactions.\n\nSessions can only execute one transaction at a time. To execute\nmultiple concurrent read-write\/write-only transactions, create\nmultiple sessions. Note that standalone reads and queries use a\ntransaction internally, and count toward the one transaction\nlimit.\n\nCloud Spanner limits the number of sessions that can exist at any given\ntime; thus, it is a good idea to delete idle and\/or unneeded sessions.\nAside from explicit deletes, Cloud Spanner can delete sessions for which no\noperations are sent for more than an hour. If a session is deleted,\nrequests to it return `NOT_FOUND`.\n\nIdle sessions can be kept alive by sending a trivial SQL query\nperiodically, e.g., `\"SELECT 1\"`."
                     },
                     "get": {
                       "id": "spanner.projects.instances.databases.sessions.get",
                       "path": "v1/{+name}",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}",
                       "httpMethod": "GET",
-                      "description": "Gets a session. Returns `NOT_FOUND` if the session does not exist.\nThis is mainly useful for determining whether a session is still\nalive.",
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the session to retrieve.",
@@ -2675,14 +2674,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Gets a session. Returns `NOT_FOUND` if the session does not exist.\nThis is mainly useful for determining whether a session is still\nalive."
                     },
                     "list": {
                       "id": "spanner.projects.instances.databases.sessions.list",
                       "path": "v1/{+database}/sessions",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions",
                       "httpMethod": "GET",
-                      "description": "Lists all sessions in a given database.",
                       "parameters": {
                         "database": {
                           "description": "Required. The database in which to list sessions.",
@@ -2717,14 +2716,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Lists all sessions in a given database."
                     },
                     "delete": {
                       "id": "spanner.projects.instances.databases.sessions.delete",
                       "path": "v1/{+name}",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}",
                       "httpMethod": "DELETE",
-                      "description": "Ends a session, releasing server resources associated with it.",
                       "parameters": {
                         "name": {
                           "description": "Required. The name of the session to delete.",
@@ -2743,14 +2742,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Ends a session, releasing server resources associated with it."
                     },
                     "executeSql": {
                       "id": "spanner.projects.instances.databases.sessions.executeSql",
                       "path": "v1/{+session}:executeSql",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:executeSql",
                       "httpMethod": "POST",
-                      "description": "Executes an SQL query, returning all rows in a single reply. This\nmethod cannot be used to return a result set larger than 10 MiB;\nif the query yields more data than that, the query fails with\na `FAILED_PRECONDITION` error.\n\nQueries inside read-write transactions might return `ABORTED`. If\nthis occurs, the application should restart the transaction from\nthe beginning. See Transaction for more details.\n\nLarger result sets can be fetched in streaming fashion by calling\nExecuteStreamingSql instead.",
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the SQL query should be performed.",
@@ -2772,14 +2771,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Executes an SQL query, returning all rows in a single reply. This\nmethod cannot be used to return a result set larger than 10 MiB;\nif the query yields more data than that, the query fails with\na `FAILED_PRECONDITION` error.\n\nQueries inside read-write transactions might return `ABORTED`. If\nthis occurs, the application should restart the transaction from\nthe beginning. See Transaction for more details.\n\nLarger result sets can be fetched in streaming fashion by calling\nExecuteStreamingSql instead."
                     },
                     "executeStreamingSql": {
                       "id": "spanner.projects.instances.databases.sessions.executeStreamingSql",
                       "path": "v1/{+session}:executeStreamingSql",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:executeStreamingSql",
                       "httpMethod": "POST",
-                      "description": "Like ExecuteSql, except returns the result\nset as a stream. Unlike ExecuteSql, there\nis no limit on the size of the returned result set. However, no\nindividual row in the result set can exceed 100 MiB, and no\ncolumn value can exceed 10 MiB.",
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the SQL query should be performed.",
@@ -2801,14 +2800,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Like ExecuteSql, except returns the result\nset as a stream. Unlike ExecuteSql, there\nis no limit on the size of the returned result set. However, no\nindividual row in the result set can exceed 100 MiB, and no\ncolumn value can exceed 10 MiB."
                     },
                     "read": {
                       "id": "spanner.projects.instances.databases.sessions.read",
                       "path": "v1/{+session}:read",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:read",
                       "httpMethod": "POST",
-                      "description": "Reads rows from the database using key lookups and scans, as a\nsimple key\/value style alternative to\nExecuteSql.  This method cannot be used to\nreturn a result set larger than 10 MiB; if the read matches more\ndata than that, the read fails with a `FAILED_PRECONDITION`\nerror.\n\nReads inside read-write transactions might return `ABORTED`. If\nthis occurs, the application should restart the transaction from\nthe beginning. See Transaction for more details.\n\nLarger result sets can be yielded in streaming fashion by calling\nStreamingRead instead.",
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the read should be performed.",
@@ -2830,14 +2829,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Reads rows from the database using key lookups and scans, as a\nsimple key\/value style alternative to\nExecuteSql.  This method cannot be used to\nreturn a result set larger than 10 MiB; if the read matches more\ndata than that, the read fails with a `FAILED_PRECONDITION`\nerror.\n\nReads inside read-write transactions might return `ABORTED`. If\nthis occurs, the application should restart the transaction from\nthe beginning. See Transaction for more details.\n\nLarger result sets can be yielded in streaming fashion by calling\nStreamingRead instead."
                     },
                     "streamingRead": {
                       "id": "spanner.projects.instances.databases.sessions.streamingRead",
                       "path": "v1/{+session}:streamingRead",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:streamingRead",
                       "httpMethod": "POST",
-                      "description": "Like Read, except returns the result set as a\nstream. Unlike Read, there is no limit on the\nsize of the returned result set. However, no individual row in\nthe result set can exceed 100 MiB, and no column value can exceed\n10 MiB.",
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the read should be performed.",
@@ -2859,14 +2858,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Like Read, except returns the result set as a\nstream. Unlike Read, there is no limit on the\nsize of the returned result set. However, no individual row in\nthe result set can exceed 100 MiB, and no column value can exceed\n10 MiB."
                     },
                     "beginTransaction": {
                       "id": "spanner.projects.instances.databases.sessions.beginTransaction",
                       "path": "v1/{+session}:beginTransaction",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:beginTransaction",
                       "httpMethod": "POST",
-                      "description": "Begins a new transaction. This step can often be skipped:\nRead, ExecuteSql and\nCommit can begin a new transaction as a\nside-effect.",
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the transaction runs.",
@@ -2888,14 +2887,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Begins a new transaction. This step can often be skipped:\nRead, ExecuteSql and\nCommit can begin a new transaction as a\nside-effect."
                     },
                     "commit": {
                       "id": "spanner.projects.instances.databases.sessions.commit",
                       "path": "v1/{+session}:commit",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:commit",
                       "httpMethod": "POST",
-                      "description": "Commits a transaction. The request includes the mutations to be\napplied to rows in the database.\n\n`Commit` might return an `ABORTED` error. This can occur at any time;\ncommonly, the cause is conflicts with concurrent\ntransactions. However, it can also happen for a variety of other\nreasons. If `Commit` returns `ABORTED`, the caller should re-attempt\nthe transaction from the beginning, re-using the same session.",
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the transaction to be committed is running.",
@@ -2917,14 +2916,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Commits a transaction. The request includes the mutations to be\napplied to rows in the database.\n\n`Commit` might return an `ABORTED` error. This can occur at any time;\ncommonly, the cause is conflicts with concurrent\ntransactions. However, it can also happen for a variety of other\nreasons. If `Commit` returns `ABORTED`, the caller should re-attempt\nthe transaction from the beginning, re-using the same session."
                     },
                     "rollback": {
                       "id": "spanner.projects.instances.databases.sessions.rollback",
                       "path": "v1/{+session}:rollback",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:rollback",
                       "httpMethod": "POST",
-                      "description": "Rolls back a transaction, releasing any locks it holds. It is a good\nidea to call this for any transaction that includes one or more\nRead or ExecuteSql requests and\nultimately decides not to commit.\n\n`Rollback` returns `OK` if it successfully aborts the transaction, the\ntransaction was already aborted, or the transaction is not\nfound. `Rollback` never returns `ABORTED`.",
                       "parameters": {
                         "session": {
                           "description": "Required. The session in which the transaction to roll back is running.",
@@ -2946,14 +2945,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Rolls back a transaction, releasing any locks it holds. It is a good\nidea to call this for any transaction that includes one or more\nRead or ExecuteSql requests and\nultimately decides not to commit.\n\n`Rollback` returns `OK` if it successfully aborts the transaction, the\ntransaction was already aborted, or the transaction is not\nfound. `Rollback` never returns `ABORTED`."
                     },
                     "partitionQuery": {
                       "id": "spanner.projects.instances.databases.sessions.partitionQuery",
                       "path": "v1/{+session}:partitionQuery",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:partitionQuery",
                       "httpMethod": "POST",
-                      "description": "Creates a set of partition tokens that can be used to execute a query\noperation in parallel.  Each of the returned partition tokens can be used\nby ExecuteStreamingSql to specify a subset\nof the query result to read.  The same session and read-only transaction\nmust be used by the PartitionQueryRequest used to create the\npartition tokens and the ExecuteSqlRequests that use the partition tokens.\nPartition tokens become invalid when the session used to create them\nis deleted or begins a new transaction.",
                       "parameters": {
                         "session": {
                           "description": "Required. The session used to create the partitions.",
@@ -2975,14 +2974,14 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Creates a set of partition tokens that can be used to execute a query\noperation in parallel.  Each of the returned partition tokens can be used\nby ExecuteStreamingSql to specify a subset\nof the query result to read.  The same session and read-only transaction\nmust be used by the PartitionQueryRequest used to create the\npartition tokens and the ExecuteSqlRequests that use the partition tokens.\nPartition tokens become invalid when the session used to create them\nis deleted or begins a new transaction."
                     },
                     "partitionRead": {
                       "id": "spanner.projects.instances.databases.sessions.partitionRead",
                       "path": "v1/{+session}:partitionRead",
                       "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:partitionRead",
                       "httpMethod": "POST",
-                      "description": "Creates a set of partition tokens that can be used to execute a read\noperation in parallel.  Each of the returned partition tokens can be used\nby StreamingRead to specify a subset of the read\nresult to read.  The same session and read-only transaction must be used by\nthe PartitionReadRequest used to create the partition tokens and the\nReadRequests that use the partition tokens.\nPartition tokens become invalid when the session used to create them\nis deleted or begins a new transaction.",
                       "parameters": {
                         "session": {
                           "description": "Required. The session used to create the partitions.",
@@ -3004,7 +3003,8 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
-                      ]
+                      ],
+                      "description": "Creates a set of partition tokens that can be used to execute a read\noperation in parallel.  Each of the returned partition tokens can be used\nby StreamingRead to specify a subset of the read\nresult to read.  The same session and read-only transaction must be used by\nthe PartitionReadRequest used to create the partition tokens and the\nReadRequests that use the partition tokens.\nPartition tokens become invalid when the session used to create them\nis deleted or begins a new transaction."
                     }
                   }
                 }

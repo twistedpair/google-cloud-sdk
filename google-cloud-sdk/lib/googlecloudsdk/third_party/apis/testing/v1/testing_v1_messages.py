@@ -333,6 +333,38 @@ class AndroidVersion(_messages.Message):
   versionString = _messages.StringField(7)
 
 
+class ApkDetail(_messages.Message):
+  """Android application details based on application manifest and apk archive
+  contents
+
+  Fields:
+    apkManifest: A ApkManifest attribute.
+  """
+
+  apkManifest = _messages.MessageField('ApkManifest', 1)
+
+
+class ApkManifest(_messages.Message):
+  """An Android app manifest. See
+  http://developer.android.com/guide/topics/manifest/manifest-intro.html
+
+  Fields:
+    applicationLabel: User-readable name for the application.
+    intentFilters: A IntentFilter attribute.
+    maxSdkVersion: Maximum API level on which the application is designed to
+      run.
+    minSdkVersion: Minimum API level required for the application to run.
+    packageName: Full Java-style package name for this application, e.g.
+      "com.example.foo".
+  """
+
+  applicationLabel = _messages.StringField(1)
+  intentFilters = _messages.MessageField('IntentFilter', 2, repeated=True)
+  maxSdkVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minSdkVersion = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  packageName = _messages.StringField(5)
+
+
 class CancelTestMatrixResponse(_messages.Message):
   """Response containing the current state of the specified test matrix.
 
@@ -511,6 +543,16 @@ class FileReference(_messages.Message):
   gcsPath = _messages.StringField(1)
 
 
+class GetApkDetailsResponse(_messages.Message):
+  """Response containing the details of the specified Android application APK.
+
+  Fields:
+    apkDetail: Details of the Android APK.
+  """
+
+  apkDetail = _messages.MessageField('ApkDetail', 1)
+
+
 class GoogleAuto(_messages.Message):
   """Enables automatic Google account login. If set, the service will
   automatically generate a Google test account and add it to the device,
@@ -532,6 +574,22 @@ class GoogleCloudStorage(_messages.Message):
   """
 
   gcsPath = _messages.StringField(1)
+
+
+class IntentFilter(_messages.Message):
+  """The <intent-filter> section of an <activity> tag.
+  https://developer.android.com/guide/topics/manifest/intent-filter-
+  element.html
+
+  Fields:
+    actionNames: The android:name value of the <action> tag
+    categoryNames: The android:name value of the <category> tag
+    mimeType: The android:mimeType value of the <data> tag
+  """
+
+  actionNames = _messages.StringField(1, repeated=True)
+  categoryNames = _messages.StringField(2, repeated=True)
+  mimeType = _messages.StringField(3)
 
 
 class LauncherActivityIntent(_messages.Message):
@@ -1022,7 +1080,8 @@ class TestMatrix(_messages.Message):
 
 
 class TestSetup(_messages.Message):
-  """A description of how to set up the device prior to running the test
+  """A description of how to set up the Android device prior to running the
+  test.
 
   Fields:
     account: The device will be logged in on this account for the duration of
@@ -1066,8 +1125,8 @@ class TestSpecification(_messages.Message):
     disablePerformanceMetrics: Disables performance metrics recording; may
       reduce test latency.
     disableVideoRecording: Disables video recording; may reduce test latency.
-    testSetup: Test setup requirements e.g. files to install, bootstrap
-      scripts Optional
+    testSetup: Test setup requirements for Android e.g. files to install,
+      bootstrap scripts. Optional
     testTimeout: Max time a test execution is allowed to run before it is
       automatically cancelled. Optional, default is 5 min.
   """

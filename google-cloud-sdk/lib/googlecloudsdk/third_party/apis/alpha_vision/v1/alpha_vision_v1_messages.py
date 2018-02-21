@@ -137,30 +137,8 @@ class AnnotateImageResponse(_messages.Message):
   webDetection = _messages.MessageField('WebDetection', 14)
 
 
-class AsyncBatchAnnotateImagesRequest(_messages.Message):
-  """Multiple image annotation requests are batched into a single service
-  call.
-
-  Fields:
-    outputConfig: Required. The desired output location and metadata (e.g.
-      format).
-    requests: Individual image annotation requests for this batch.
-  """
-
-  outputConfig = _messages.MessageField('OutputConfig', 1)
-  requests = _messages.MessageField('AnnotateImageRequest', 2, repeated=True)
-
-
-class AsyncBatchAnnotateImagesResponse(_messages.Message):
-  """Response to an async batch image annotation request.
-
-  Fields:
-    outputConfig: The output config where result(s) are located. This is the
-      same location as was specified in the output_config, and is provided for
-      convenience.
-  """
-
-  outputConfig = _messages.MessageField('OutputConfig', 1)
+class AsyncBatchAnnotateFilesResponse(_messages.Message):
+  """Response to an async batch file annotation request."""
 
 
 class BatchAnnotateImagesRequest(_messages.Message):
@@ -839,25 +817,6 @@ class FileSource(_messages.Message):
   uri = _messages.StringField(2)
 
 
-class GcsDestination(_messages.Message):
-  """The Google Cloud Storage location where the output will be written to.
-
-  Fields:
-    uri: Google Cloud Storage URI where the results will be stored. Results
-      will be in JSON format and preceded by its corresponding input URI. This
-      field can either represent a single file, or a prefix for multiple
-      outputs. Prefixes must end in a `/`.  Examples:  *    File: gs://bucket-
-      name/filename.json *    Prefix: gs://bucket-name/prefix/here/ *    File:
-      gs://bucket-name/prefix/here  If multiple outputs, each response is
-      still AnnotateFileResponse, each of which contains some subset of the
-      full list of AnnotateImageResponse. Multiple outputs can happen if, for
-      example, the output JSON is too large and overflows into multiple
-      sharded files.
-  """
-
-  uri = _messages.StringField(1)
-
-
 class Image(_messages.Message):
   """Client image to perform Google Cloud Vision API tasks over.
 
@@ -1272,26 +1231,17 @@ class OperationMetadata(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
-class OutputConfig(_messages.Message):
-  """The desired output location and metadata.
-
-  Fields:
-    gcsDestination: The Google Cloud Storage location to write the output(s)
-      to.
-  """
-
-  gcsDestination = _messages.MessageField('GcsDestination', 1)
-
-
 class Page(_messages.Message):
   """Detected page from OCR.
 
   Fields:
     blocks: List of blocks of text, images etc on this page.
     confidence: Confidence of the OCR results on the page. Range [0, 1].
-    height: Page height in pixels.
+    height: Page height. For PDFs the unit is points. For images (including
+      TIFFs) the unit is pixels.
     property: Additional information detected on the page.
-    width: Page width in pixels.
+    width: Page width. For PDFs the unit is points. For images (including
+      TIFFs) the unit is pixels.
   """
 
   blocks = _messages.MessageField('Block', 1, repeated=True)

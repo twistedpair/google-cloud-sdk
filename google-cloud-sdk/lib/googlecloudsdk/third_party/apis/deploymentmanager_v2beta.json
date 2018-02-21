@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20180202",
+ "revision": "20180215",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -85,6 +85,21 @@
   }
  },
  "schemas": {
+  "AsyncOptions": {
+   "id": "AsyncOptions",
+   "type": "object",
+   "description": "Async options that determine when a resource should finish.",
+   "properties": {
+    "methodMatch": {
+     "type": "string",
+     "description": "Method regex where this policy will apply."
+    },
+    "pollingOptions": {
+     "$ref": "PollingOptions",
+     "description": "Deployment manager will poll instances for this API resource setting a RUNNING state, and blocking until polling conditions tell whether the resource is completed or failed."
+    }
+   }
+  },
   "AuditConfig": {
    "id": "AuditConfig",
    "type": "object",
@@ -499,6 +514,21 @@
     }
    }
   },
+  "Diagnostic": {
+   "id": "Diagnostic",
+   "type": "object",
+   "description": "",
+   "properties": {
+    "field": {
+     "type": "string",
+     "description": "JsonPath expression on the resource that if non empty, indicates that this field needs to be extracted as a diagnostic."
+    },
+    "level": {
+     "type": "string",
+     "description": "Level to record this diagnostic."
+    }
+   }
+  },
   "Expr": {
    "id": "Expr",
    "type": "object",
@@ -861,6 +891,13 @@
    "type": "object",
    "description": "Options allows customized resource handling by Deployment Manager.",
    "properties": {
+    "asyncOptions": {
+     "type": "array",
+     "description": "Options regarding how to thread async requests.",
+     "items": {
+      "$ref": "AsyncOptions"
+     }
+    },
     "inputMappings": {
      "type": "array",
      "description": "The mappings that apply for requests.",
@@ -917,6 +954,36 @@
      "type": "integer",
      "description": "Deprecated.",
      "format": "int32"
+    }
+   }
+  },
+  "PollingOptions": {
+   "id": "PollingOptions",
+   "type": "object",
+   "description": "",
+   "properties": {
+    "diagnostics": {
+     "type": "array",
+     "description": "An array of diagnostics to be collected by Deployment Manager, these diagnostics will be displayed to the user.",
+     "items": {
+      "$ref": "Diagnostic"
+     }
+    },
+    "failCondition": {
+     "type": "string",
+     "description": "JsonPath expression that determines if the request failed."
+    },
+    "finishCondition": {
+     "type": "string",
+     "description": "JsonPath expression that determines if the request is completed."
+    },
+    "pollingLink": {
+     "type": "string",
+     "description": "JsonPath expression that evaluates to string, it indicates where to poll."
+    },
+    "targetLink": {
+     "type": "string",
+     "description": "JsonPath expression, after polling is completed, indicates where to fetch the resource."
     }
    }
   },
@@ -1410,7 +1477,7 @@
     },
     "name": {
      "type": "string",
-     "description": "Name of the type provider."
+     "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash."
     },
     "operation": {
      "$ref": "Operation",
@@ -1890,6 +1957,22 @@
      "httpMethod": "POST",
      "description": "Creates a deployment and all of the resources described by the deployment manifest.",
      "parameters": {
+      "createPolicy": {
+       "type": "string",
+       "description": "",
+       "default": "CREATE_OR_ACQUIRE",
+       "enum": [
+        "ACQUIRE",
+        "CREATE",
+        "CREATE_OR_ACQUIRE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        ""
+       ],
+       "location": "query"
+      },
       "preview": {
        "type": "boolean",
        "description": "If set to true, creates a deployment and creates \"shell\" resources but does not actually instantiate these resources. This allows you to preview what your deployment looks like. After previewing a deployment, you can deploy your resources by making a request with the update() method or you can use the cancelPreview() method to cancel the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.",
@@ -1979,9 +2062,11 @@
        "default": "CREATE_OR_ACQUIRE",
        "enum": [
         "ACQUIRE",
+        "CREATE",
         "CREATE_OR_ACQUIRE"
        ],
        "enumDescriptions": [
+        "",
         "",
         ""
        ],
@@ -2157,9 +2242,11 @@
        "default": "CREATE_OR_ACQUIRE",
        "enum": [
         "ACQUIRE",
+        "CREATE",
         "CREATE_OR_ACQUIRE"
        ],
        "enumDescriptions": [
+        "",
         "",
         ""
        ],

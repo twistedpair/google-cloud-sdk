@@ -141,8 +141,8 @@ def _ErrorFromInvalidMatrix(matrix):
           'A scenario-label in the manifest includes invalid numbers or ranges',
       enum_values.SCENARIO_NOT_DECLARED:
           'A scenario-number was not declared in the manifest file',
-      enum_values.TEST_ONLY_APK:
-          '"testOnly" found in the Manifest. testOnly APKs are not allowed',
+      enum_values.NO_CODE_APK:
+          '"hasCode" is false in the Manifest. Tested APKs must contain code',
       enum_values.NO_SIGNATURE:
           'There is a problem with signature of at least one of the supplied '
           'APK(s)'

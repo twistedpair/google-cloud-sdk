@@ -65,6 +65,17 @@ definitions:
         # The help text to show next to the choice on the MAN page.
         help_text: { type: string }
 
+  fallthrough:
+    required: [ hook, hint ]
+    additionalProperties: false
+    properties:
+      # A zero-argument Python function that can provide a fallback value for
+      # the attribute.
+      hook: { $ref: "#/definitions/python_hook" }
+      # Text to display to users if no fallthroughs are set (should be
+      # imperative, to follow "The attribute can be set in the following ways").
+      hint: { type: string }
+
   resource_attribute:
     # An individual resource arg attribute.
     required: [ parameter_name, attribute_name, help ]
@@ -83,7 +94,7 @@ definitions:
       # not provided on the command line.
       fallthroughs:
         type: array
-        items: { $ref: "#/definitions/python_hook" }
+        items: { $ref: "#/definitions/fallthrough" }
 
   argument:
     oneOf:

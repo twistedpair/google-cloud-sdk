@@ -277,7 +277,16 @@ class Context(_messages.Message):
   google.rpc.context.ProjectContext         - google.rpc.context.OriginContext
   The above specifies that all methods in the API request
   `google.rpc.context.ProjectContext` and `google.rpc.context.OriginContext`.
-  Available context types are defined in package `google.rpc.context`.
+  Available context types are defined in package `google.rpc.context`.  This
+  also provides mechanism to whitelist any protobuf message extension that can
+  be sent in grpc metadata using \u201cx-goog-ext-<extension_id>-bin\u201d and \u201cx-goog-
+  ext-<extension_id>-jspb\u201d format. For example, list any service specific
+  protobuf types that can appear in grpc metadata as follows in your yaml
+  file:  Example:      context:       rules:        - selector:
+  "google.example.library.v1.LibraryService.CreateBook"
+  allowed_request_extensions:          - google.foo.v1.NewExtension
+  allowed_response_extensions:          - google.foo.v1.NewExtension  You can
+  also specify extension ID instead of fully qualified extension name here.
 
   Fields:
     rules: A list of RPC context rules that apply to individual API methods.
@@ -292,15 +301,21 @@ class ContextRule(_messages.Message):
   API element.
 
   Fields:
+    allowedRequestExtensions: A list of full type names or extension IDs of
+      extensions allowed in grpc side channel from client to backend.
+    allowedResponseExtensions: A list of full type names or extension IDs of
+      extensions allowed in grpc side channel from backend to client.
     provided: A list of full type names of provided contexts.
     requested: A list of full type names of requested contexts.
     selector: Selects the methods to which this rule applies.  Refer to
       selector for syntax details.
   """
 
-  provided = _messages.StringField(1, repeated=True)
-  requested = _messages.StringField(2, repeated=True)
-  selector = _messages.StringField(3)
+  allowedRequestExtensions = _messages.StringField(1, repeated=True)
+  allowedResponseExtensions = _messages.StringField(2, repeated=True)
+  provided = _messages.StringField(3, repeated=True)
+  requested = _messages.StringField(4, repeated=True)
+  selector = _messages.StringField(5)
 
 
 class Control(_messages.Message):

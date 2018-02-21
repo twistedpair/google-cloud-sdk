@@ -6,7 +6,7 @@
   "canonicalName": "Container",
   "version": "v1",
   "revision": "0",
-  "title": "Google Container Engine API",
+  "title": "Google Kubernetes Engine API",
   "description": "The Google Kubernetes Engine API is used for building and managing container based applications, powered by the open source Kubernetes technology.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -355,7 +355,7 @@
           "type": "string"
         },
         "metadata": {
-          "description": "The metadata key\/value pairs assigned to instances in the cluster.\n\nKeys must conform to the regexp [a-zA-Z0-9-_]+ and be less than 128 bytes\nin length. These are reflected as part of a URL in the metadata server.\nAdditionally, to avoid ambiguity, keys must not conflict with any other\nmetadata keys for the project or be one of the four reserved keys:\n\"instance-template\", \"kube-env\", \"startup-script\", and \"user-data\"\n\nValues are free-form strings, and only have meaning as interpreted by\nthe image running in the instance. The only restriction placed on them is\nthat each value's size must be less than or equal to 32 KB.\n\nThe total size of all keys and values must be less than 512 KB.",
+          "description": "The metadata key\/value pairs assigned to instances in the cluster.\n\nKeys must conform to the regexp [a-zA-Z0-9-_]+ and be less than 128 bytes\nin length. These are reflected as part of a URL in the metadata server.\nAdditionally, to avoid ambiguity, keys must not conflict with any other\nmetadata keys for the project or be one of the reserved keys:\n \"cluster-location\"\n \"cluster-name\"\n \"cluster-uid\"\n \"configure-sh\"\n \"gci-update-strategy\"\n \"gci-ensure-gke-docker\"\n \"instance-template\"\n \"kube-env\"\n \"startup-script\"\n \"user-data\"\n\nValues are free-form strings, and only have meaning as interpreted by\nthe image running in the instance. The only restriction placed on them is\nthat each value's size must be less than or equal to 32 KB.\n\nThe total size of all keys and values must be less than 512 KB.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -364,6 +364,10 @@
         "imageType": {
           "description": "The image type to use for this node. Note that for a given image type,\nthe latest version of it will be used.",
           "type": "string"
+        },
+        "nodeImageConfig": {
+          "description": "The node image configuration to use for this node pool.  Note that this is\nonly applicable for node pools using image_type=CUSTOM.",
+          "$ref": "CustomImageConfig"
         },
         "labels": {
           "description": "The map of Kubernetes labels (key\/value pairs) to be applied to each node.\nThese will added in addition to any default label(s) that\nKubernetes may apply to the node.\nIn case of conflict in label keys, the applied set may differ depending on\nthe Kubernetes version -- it's best to assume the behavior is undefined\nand conflicts should be avoided.\nFor more information, including usage and the valid values, see:\nhttps:\/\/kubernetes.io\/docs\/concepts\/overview\/working-with-objects\/labels\/",
@@ -409,6 +413,25 @@
           "items": {
             "$ref": "NodeTaint"
           }
+        }
+      }
+    },
+    "CustomImageConfig": {
+      "id": "CustomImageConfig",
+      "description": "CustomImageConfig contains the information r",
+      "type": "object",
+      "properties": {
+        "image": {
+          "description": "The name of the image to use for this node.",
+          "type": "string"
+        },
+        "imageFamily": {
+          "description": "The name of the image family to use for this node.",
+          "type": "string"
+        },
+        "imageProject": {
+          "description": "The project containing the image to use for this node.",
+          "type": "string"
         }
       }
     },
@@ -1050,6 +1073,14 @@
           "description": "The desired image type for the node pool.\nNOTE: Set the \"desired_node_pool\" field as well.",
           "type": "string"
         },
+        "desiredImage": {
+          "description": "The desired name of the image to use for this node.\nThis is used to create clusters using a custom image.\nNOTE: Set the \"desired_node_pool\" field as well.",
+          "type": "string"
+        },
+        "desiredImageProject": {
+          "description": "The project containing the desired image to use for this node.\nThis is used to create clusters using a custom image.\nNOTE: Set the \"desired_node_pool\" field as well.",
+          "type": "string"
+        },
         "desiredNodePoolAutoscaling": {
           "description": "Autoscaler configuration for the node pool specified in\ndesired_node_pool_id. If there is only one pool in the\ncluster and desired_node_pool_id is not provided then\nthe change applies to that single node pool.",
           "$ref": "NodePoolAutoscaling"
@@ -1142,6 +1173,14 @@
         },
         "imageType": {
           "description": "The desired image type for the node pool.",
+          "type": "string"
+        },
+        "image": {
+          "description": "The desired name of the image name to use for this node.\nThis is used to create clusters using a custom image.",
+          "type": "string"
+        },
+        "imageProject": {
+          "description": "The project containing the desired image to use for this node pool.\nThis is used to create clusters using a custom image.",
           "type": "string"
         },
         "version": {
@@ -2257,7 +2296,29 @@
             "IN_PLACE",
             "NONE"
           ]
+        },
+        "repairId": {
+          "description": "Repair ID of the returned repair.",
+          "type": "string"
         }
+      }
+    },
+    "AckRepairWorkRequest": {
+      "id": "AckRepairWorkRequest",
+      "description": "HostedMaster sends Acknowledgment of repair work once it is received.",
+      "type": "object",
+      "properties": {
+        "repairId": {
+          "description": "Repair ID that we are acknowledging to uniquely identify repairs.",
+          "type": "string"
+        }
+      }
+    },
+    "AckRepairWorkResponse": {
+      "id": "AckRepairWorkResponse",
+      "description": "Used in AckRepairWorkRequest, as we don't need to ack the ack so empty.",
+      "type": "object",
+      "properties": {
       }
     }
   },
@@ -2271,7 +2332,6 @@
               "path": "v1/projects/{projectId}/zones/{zone}/serverconfig",
               "flatPath": "v1/projects/{projectId}/zones/{zone}/serverconfig",
               "httpMethod": "GET",
-              "description": "Returns configuration info about the Kubernetes Engine service.",
               "parameters": {
                 "projectId": {
                   "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2295,7 +2355,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Returns configuration info about the Kubernetes Engine service."
             }
           }
           ,
@@ -2307,7 +2368,6 @@
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters",
                   "httpMethod": "GET",
-                  "description": "Lists all clusters owned by a project in either the specified zone or all\nzones.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2331,14 +2391,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Lists all clusters owned by a project in either the specified zone or all\nzones."
                 },
                 "get": {
                   "id": "container.projects.zones.clusters.get",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "httpMethod": "GET",
-                  "description": "Gets the details of a specific cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2369,14 +2429,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Gets the details of a specific cluster."
                 },
                 "create": {
                   "id": "container.projects.zones.clusters.create",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters",
                   "httpMethod": "POST",
-                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe cluster creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range is being used by the cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2403,14 +2463,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default network](\/compute\/docs\/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe cluster creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range is being used by the cluster."
                 },
                 "update": {
                   "id": "container.projects.zones.clusters.update",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "httpMethod": "PUT",
-                  "description": "Updates the settings of a specific cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2444,14 +2504,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Updates the settings of a specific cluster."
                 },
                 "logging": {
                   "id": "container.projects.zones.clusters.logging",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/logging",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/logging",
                   "httpMethod": "POST",
-                  "description": "Sets the logging service of a specific cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2485,14 +2545,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the logging service of a specific cluster."
                 },
                 "monitoring": {
                   "id": "container.projects.zones.clusters.monitoring",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/monitoring",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/monitoring",
                   "httpMethod": "POST",
-                  "description": "Sets the monitoring service of a specific cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2526,14 +2586,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the monitoring service of a specific cluster."
                 },
                 "addons": {
                   "id": "container.projects.zones.clusters.addons",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/addons",
                   "httpMethod": "POST",
-                  "description": "Sets the addons of a specific cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2567,14 +2627,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the addons of a specific cluster."
                 },
                 "locations": {
                   "id": "container.projects.zones.clusters.locations",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/locations",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/locations",
                   "httpMethod": "POST",
-                  "description": "Sets the locations of a specific cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2608,14 +2668,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the locations of a specific cluster."
                 },
                 "master": {
                   "id": "container.projects.zones.clusters.master",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/master",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/master",
                   "httpMethod": "POST",
-                  "description": "Updates the master of a specific cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2649,14 +2709,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Updates the master of a specific cluster."
                 },
                 "setMasterAuth": {
                   "id": "container.projects.zones.clusters.setMasterAuth",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMasterAuth",
                   "httpMethod": "POST",
-                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set the password.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2690,14 +2750,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set the password."
                 },
                 "delete": {
                   "id": "container.projects.zones.clusters.delete",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2728,14 +2788,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time."
                 },
                 "resourceLabels": {
                   "id": "container.projects.zones.clusters.resourceLabels",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/resourceLabels",
                   "httpMethod": "POST",
-                  "description": "Sets labels on a cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).",
@@ -2769,14 +2829,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets labels on a cluster."
                 },
                 "legacyAbac": {
                   "id": "container.projects.zones.clusters.legacyAbac",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/legacyAbac",
                   "httpMethod": "POST",
-                  "description": "Enables or disables the ABAC authorization mechanism on a cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2810,14 +2870,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Enables or disables the ABAC authorization mechanism on a cluster."
                 },
                 "startIpRotation": {
                   "id": "container.projects.zones.clusters.startIpRotation",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:startIpRotation",
                   "httpMethod": "POST",
-                  "description": "Start master IP rotation.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).",
@@ -2851,14 +2911,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Start master IP rotation."
                 },
                 "completeIpRotation": {
                   "id": "container.projects.zones.clusters.completeIpRotation",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:completeIpRotation",
                   "httpMethod": "POST",
-                  "description": "Completes master IP rotation.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).",
@@ -2892,14 +2952,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Completes master IP rotation."
                 },
                 "setNetworkPolicy": {
                   "id": "container.projects.zones.clusters.setNetworkPolicy",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setNetworkPolicy",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setNetworkPolicy",
                   "httpMethod": "POST",
-                  "description": "Enables\/Disables Network Policy for a cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).",
@@ -2933,14 +2993,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Enables\/Disables Network Policy for a cluster."
                 },
                 "setMaintenancePolicy": {
                   "id": "container.projects.zones.clusters.setMaintenancePolicy",
                   "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}:setMaintenancePolicy",
                   "httpMethod": "POST",
-                  "description": "Sets the maintenance policy for a cluster.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -2974,7 +3034,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Sets the maintenance policy for a cluster."
                 }
               }
               ,
@@ -2986,7 +3047,6 @@
                       "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/update",
                       "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/update",
                       "httpMethod": "POST",
-                      "description": "Updates the version and\/or image type of a specific node pool.",
                       "parameters": {
                         "projectId": {
                           "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3027,14 +3087,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Updates the version and\/or image type of a specific node pool."
                     },
                     "autoscaling": {
                       "id": "container.projects.zones.clusters.nodePools.autoscaling",
                       "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling",
                       "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/autoscaling",
                       "httpMethod": "POST",
-                      "description": "Sets the autoscaling settings of a specific node pool.",
                       "parameters": {
                         "projectId": {
                           "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3075,14 +3135,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Sets the autoscaling settings of a specific node pool."
                     },
                     "list": {
                       "id": "container.projects.zones.clusters.nodePools.list",
                       "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
                       "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
                       "httpMethod": "GET",
-                      "description": "Lists the node pools for a cluster.",
                       "parameters": {
                         "projectId": {
                           "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).",
@@ -3113,14 +3173,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Lists the node pools for a cluster."
                     },
                     "get": {
                       "id": "container.projects.zones.clusters.nodePools.get",
                       "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
                       "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
                       "httpMethod": "GET",
-                      "description": "Retrieves the node pool requested.",
                       "parameters": {
                         "projectId": {
                           "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).",
@@ -3158,14 +3218,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Retrieves the node pool requested."
                     },
                     "create": {
                       "id": "container.projects.zones.clusters.nodePools.create",
                       "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
                       "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools",
                       "httpMethod": "POST",
-                      "description": "Creates a node pool for a cluster.",
                       "parameters": {
                         "projectId": {
                           "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).",
@@ -3199,14 +3259,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Creates a node pool for a cluster."
                     },
                     "delete": {
                       "id": "container.projects.zones.clusters.nodePools.delete",
                       "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
                       "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}",
                       "httpMethod": "DELETE",
-                      "description": "Deletes a node pool from a cluster.",
                       "parameters": {
                         "projectId": {
                           "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/developers.google.com\/console\/help\/new\/#projectnumber).",
@@ -3244,14 +3304,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Deletes a node pool from a cluster."
                     },
                     "rollback": {
                       "id": "container.projects.zones.clusters.nodePools.rollback",
                       "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback",
                       "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}:rollback",
                       "httpMethod": "POST",
-                      "description": "Roll back the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed.",
                       "parameters": {
                         "projectId": {
                           "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3292,14 +3352,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Roll back the previously Aborted or Failed NodePool upgrade.\nThis will be an no-op if the last upgrade successfully completed."
                     },
                     "setManagement": {
                       "id": "container.projects.zones.clusters.nodePools.setManagement",
                       "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement",
                       "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setManagement",
                       "httpMethod": "POST",
-                      "description": "Sets the NodeManagement options for a node pool.",
                       "parameters": {
                         "projectId": {
                           "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3340,14 +3400,14 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Sets the NodeManagement options for a node pool."
                     },
                     "setSize": {
                       "id": "container.projects.zones.clusters.nodePools.setSize",
                       "path": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize",
                       "flatPath": "v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}/setSize",
                       "httpMethod": "POST",
-                      "description": "Sets the size of a specific node pool.",
                       "parameters": {
                         "projectId": {
                           "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3388,7 +3448,8 @@
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
-                      ]
+                      ],
+                      "description": "Sets the size of a specific node pool."
                     }
                   }
                 }
@@ -3401,7 +3462,6 @@
                   "path": "v1/projects/{projectId}/zones/{zone}/operations",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/operations",
                   "httpMethod": "GET",
-                  "description": "Lists all operations in a project in a specific zone or all zones.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3425,14 +3485,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Lists all operations in a project in a specific zone or all zones."
                 },
                 "get": {
                   "id": "container.projects.zones.operations.get",
                   "path": "v1/projects/{projectId}/zones/{zone}/operations/{operationId}",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/operations/{operationId}",
                   "httpMethod": "GET",
-                  "description": "Gets the specified operation.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3463,14 +3523,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Gets the specified operation."
                 },
                 "cancel": {
                   "id": "container.projects.zones.operations.cancel",
                   "path": "v1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel",
                   "flatPath": "v1/projects/{projectId}/zones/{zone}/operations/{operationId}:cancel",
                   "httpMethod": "POST",
-                  "description": "Cancels the specified operation.",
                   "parameters": {
                     "projectId": {
                       "description": "The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3504,7 +3564,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Cancels the specified operation."
                 }
               }
             }
@@ -3521,7 +3582,6 @@
               "path": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/audit",
               "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/audit",
               "httpMethod": "POST",
-              "description": "Audits the provided events to Cloud Audit Logging and\/or Gin, depending on\npolicies defined by GKE.",
               "parameters": {
                 "masterProjectId": {
                   "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3563,14 +3623,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/userinfo.email"
-              ]
+              ],
+              "description": "Audits the provided events to Cloud Audit Logging and\/or Gin, depending on\npolicies defined by GKE."
             },
             "authenticate": {
               "id": "container.masterProjects.locations.authenticate",
               "path": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/authenticate",
               "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/authenticate",
               "httpMethod": "POST",
-              "description": "Processes a request to authenticate a token. If it is able to authenticate\nthe token, the email for the authorized user is also returned.\nAuthenticateResponse also contains fields from the AuthenticateRequest. The\nserver is expected to only fill in the AuthenticateResponse.Status. This is\ndue to how the Authentication types are defined for the Kubernetes webhook\nauthenticator:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authentication.k8s.io\/v1beta1\/types.go.",
               "parameters": {
                 "masterProjectId": {
                   "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3612,14 +3672,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/userinfo.email"
-              ]
+              ],
+              "description": "Processes a request to authenticate a token. If it is able to authenticate\nthe token, the email for the authorized user is also returned.\nAuthenticateResponse also contains fields from the AuthenticateRequest. The\nserver is expected to only fill in the AuthenticateResponse.Status. This is\ndue to how the Authentication types are defined for the Kubernetes webhook\nauthenticator:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authentication.k8s.io\/v1beta1\/types.go."
             },
             "authorize": {
               "id": "container.masterProjects.locations.authorize",
               "path": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/authorize",
               "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/authorize",
               "httpMethod": "POST",
-              "description": "Processes the attributes of a user request and determines whether or not\nto authorize the request. If unauthorized, a reason is also provided. The\nAuthorizeResponse also contains fields from the AuthorizeRequest. The\nserver is expected to only fill in the AuthorizeResponse.Status. This is\ndue to how the Authorization types are defined for the Kubernetes webhook\nauthorizer:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authorization\/v1beta1\/types.go.",
               "parameters": {
                 "masterProjectId": {
                   "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3661,14 +3721,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/userinfo.email"
-              ]
+              ],
+              "description": "Processes the attributes of a user request and determines whether or not\nto authorize the request. If unauthorized, a reason is also provided. The\nAuthorizeResponse also contains fields from the AuthorizeRequest. The\nserver is expected to only fill in the AuthorizeResponse.Status. This is\ndue to how the Authorization types are defined for the Kubernetes webhook\nauthorizer:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authorization\/v1beta1\/types.go."
             },
             "imagereview": {
               "id": "container.masterProjects.locations.imagereview",
               "path": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/imagereview",
               "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/imagereview",
               "httpMethod": "POST",
-              "description": "Processes a request to verify the container image. If unverified, a reason\nis also provided. The ImageReviewResponse also contains fields from the\nImageReviewRequest. The server is expected to only fill in the\nImageReviewResponse.Status. This is due to how the ImageReview types are\ndefined for the Kubernetes webhook image review:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/imagepolicy\/v1beta1\/types.go.",
               "parameters": {
                 "masterProjectId": {
                   "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3710,14 +3770,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/userinfo.email"
-              ]
+              ],
+              "description": "Processes a request to verify the container image. If unverified, a reason\nis also provided. The ImageReviewResponse also contains fields from the\nImageReviewRequest. The server is expected to only fill in the\nImageReviewResponse.Status. This is due to how the ImageReview types are\ndefined for the Kubernetes webhook image review:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/imagepolicy\/v1beta1\/types.go."
             },
             "signcertificate": {
               "id": "container.masterProjects.locations.signcertificate",
               "path": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/signcertificate",
               "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/signcertificate",
               "httpMethod": "POST",
-              "description": "Signs a CertificateSigningRequest (CSR) with the cluster's certificate\nauthority (CA).",
               "parameters": {
                 "masterProjectId": {
                   "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3759,7 +3819,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/userinfo.email"
-              ]
+              ],
+              "description": "Signs a CertificateSigningRequest (CSR) with the cluster's certificate\nauthority (CA)."
             }
           }
           ,
@@ -3771,7 +3832,6 @@
                   "path": "v1/masterProjects/{masterProjectId}/locations/{location}/tokens",
                   "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/tokens",
                   "httpMethod": "POST",
-                  "description": "Creates a compute-read-write (https:\/\/www.googleapis.com\/auth\/compute)\nscoped OAuth2 access token for <project_number>, to allow a hosted master\nto make modifications to its user's project.",
                   "parameters": {
                     "masterProjectId": {
                       "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3798,7 +3858,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/userinfo.email"
-                  ]
+                  ],
+                  "description": "Creates a compute-read-write (https:\/\/www.googleapis.com\/auth\/compute)\nscoped OAuth2 access token for <project_number>, to allow a hosted master\nto make modifications to its user's project."
                 }
               }
             },
@@ -3809,7 +3870,6 @@
                   "path": "v1/masterProjects/{masterProjectId}/locations/{location}/signedUrls",
                   "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/signedUrls",
                   "httpMethod": "POST",
-                  "description": "Creates signed URLs that allow for writing a file to a private GCS bucket\nfor storing backups of hosted master data. Signed URLs are explained here:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control#Signed-URLs",
                   "parameters": {
                     "masterProjectId": {
                       "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3836,7 +3896,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/userinfo.email"
-                  ]
+                  ],
+                  "description": "Creates signed URLs that allow for writing a file to a private GCS bucket\nfor storing backups of hosted master data. Signed URLs are explained here:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control#Signed-URLs"
                 }
               }
             },
@@ -3851,7 +3912,6 @@
                           "path": "v1/masterProjects/{masterProjectName}/locations/{location}/projects/{projectNumber}/clusters/{clusterId}/master/{masterId}/repairwork",
                           "flatPath": "v1/masterProjects/{masterProjectName}/locations/{location}/projects/{projectNumber}/clusters/{clusterId}/master/{masterId}/repairwork",
                           "httpMethod": "GET",
-                          "description": "This method requests work from the API server to see if there are\nany repairs to be done on the Hosted Master.",
                           "parameters": {
                             "masterProjectName": {
                               "description": "Project Name of the Hosted Master Project.",
@@ -3897,7 +3957,64 @@
                           },
                           "scopes": [
                             "https://www.googleapis.com/auth/userinfo.email"
-                          ]
+                          ],
+                          "description": "This method requests work from the API server to see if there are\nany repairs to be done on the Hosted Master."
+                        },
+                        "ackRepairwork": {
+                          "id": "container.masterProjects.locations.projects.clusters.master.ackRepairwork",
+                          "path": "v1/masterProjects/{masterProjectName}/locations/{location}/projects/{projectNumber}/clusters/{clusterId}/master/{masterId}/ackRepairwork",
+                          "flatPath": "v1/masterProjects/{masterProjectName}/locations/{location}/projects/{projectNumber}/clusters/{clusterId}/master/{masterId}/ackRepairwork",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "masterProjectName": {
+                              "description": "Project Name of the Hosted Master Project.",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "location": {
+                              "description": "Location of the hosted master.",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "projectNumber": {
+                              "description": "Project number of the cluster this master manages.",
+                              "location": "path",
+                              "required": true,
+                              "type": "string",
+                              "format": "int64"
+                            },
+                            "clusterId": {
+                              "description": "Cluster name of the cluster this master manages.",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "masterId": {
+                              "description": "Master ID of the cluster master, unique identifier.",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "masterProjectName",
+                            "location",
+                            "projectNumber",
+                            "clusterId",
+                            "masterId"
+                          ],
+                          "request": {
+                            "$ref": "AckRepairWorkRequest"
+                          },
+                          "response": {
+                            "$ref": "AckRepairWorkResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/userinfo.email"
+                          ],
+                          "description": "AcknowledgeRepairWork accepts acknowledgements of repair work from the\nHosted Master."
                         }
                       }
                     }
@@ -3914,7 +4031,6 @@
               "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/audit",
               "flatPath": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/audit",
               "httpMethod": "POST",
-              "description": "Audits the provided events to Cloud Audit Logging and\/or Gin, depending on\npolicies defined by GKE.",
               "parameters": {
                 "masterProjectId": {
                   "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -3956,14 +4072,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/userinfo.email"
-              ]
+              ],
+              "description": "Audits the provided events to Cloud Audit Logging and\/or Gin, depending on\npolicies defined by GKE."
             },
             "authenticate": {
               "id": "container.masterProjects.zones.authenticate",
               "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authenticate",
               "flatPath": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authenticate",
               "httpMethod": "POST",
-              "description": "Processes a request to authenticate a token. If it is able to authenticate\nthe token, the email for the authorized user is also returned.\nAuthenticateResponse also contains fields from the AuthenticateRequest. The\nserver is expected to only fill in the AuthenticateResponse.Status. This is\ndue to how the Authentication types are defined for the Kubernetes webhook\nauthenticator:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authentication.k8s.io\/v1beta1\/types.go.",
               "parameters": {
                 "masterProjectId": {
                   "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -4005,14 +4121,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/userinfo.email"
-              ]
+              ],
+              "description": "Processes a request to authenticate a token. If it is able to authenticate\nthe token, the email for the authorized user is also returned.\nAuthenticateResponse also contains fields from the AuthenticateRequest. The\nserver is expected to only fill in the AuthenticateResponse.Status. This is\ndue to how the Authentication types are defined for the Kubernetes webhook\nauthenticator:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authentication.k8s.io\/v1beta1\/types.go."
             },
             "authorize": {
               "id": "container.masterProjects.zones.authorize",
               "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authorize",
               "flatPath": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authorize",
               "httpMethod": "POST",
-              "description": "Processes the attributes of a user request and determines whether or not\nto authorize the request. If unauthorized, a reason is also provided. The\nAuthorizeResponse also contains fields from the AuthorizeRequest. The\nserver is expected to only fill in the AuthorizeResponse.Status. This is\ndue to how the Authorization types are defined for the Kubernetes webhook\nauthorizer:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authorization\/v1beta1\/types.go.",
               "parameters": {
                 "masterProjectId": {
                   "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -4054,14 +4170,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/userinfo.email"
-              ]
+              ],
+              "description": "Processes the attributes of a user request and determines whether or not\nto authorize the request. If unauthorized, a reason is also provided. The\nAuthorizeResponse also contains fields from the AuthorizeRequest. The\nserver is expected to only fill in the AuthorizeResponse.Status. This is\ndue to how the Authorization types are defined for the Kubernetes webhook\nauthorizer:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/authorization\/v1beta1\/types.go."
             },
             "imagereview": {
               "id": "container.masterProjects.zones.imagereview",
               "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/imagereview",
               "flatPath": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/imagereview",
               "httpMethod": "POST",
-              "description": "Processes a request to verify the container image. If unverified, a reason\nis also provided. The ImageReviewResponse also contains fields from the\nImageReviewRequest. The server is expected to only fill in the\nImageReviewResponse.Status. This is due to how the ImageReview types are\ndefined for the Kubernetes webhook image review:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/imagepolicy\/v1beta1\/types.go.",
               "parameters": {
                 "masterProjectId": {
                   "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -4103,14 +4219,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/userinfo.email"
-              ]
+              ],
+              "description": "Processes a request to verify the container image. If unverified, a reason\nis also provided. The ImageReviewResponse also contains fields from the\nImageReviewRequest. The server is expected to only fill in the\nImageReviewResponse.Status. This is due to how the ImageReview types are\ndefined for the Kubernetes webhook image review:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/pkg\/apis\/imagepolicy\/v1beta1\/types.go."
             },
             "signcertificate": {
               "id": "container.masterProjects.zones.signcertificate",
               "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/signcertificate",
               "flatPath": "v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/signcertificate",
               "httpMethod": "POST",
-              "description": "Signs a CertificateSigningRequest (CSR) with the cluster's certificate\nauthority (CA).",
               "parameters": {
                 "masterProjectId": {
                   "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -4152,7 +4268,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/userinfo.email"
-              ]
+              ],
+              "description": "Signs a CertificateSigningRequest (CSR) with the cluster's certificate\nauthority (CA)."
             }
           }
           ,
@@ -4164,7 +4281,6 @@
                   "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/tokens",
                   "flatPath": "v1/masterProjects/{masterProjectId}/zones/{zone}/tokens",
                   "httpMethod": "POST",
-                  "description": "Creates a compute-read-write (https:\/\/www.googleapis.com\/auth\/compute)\nscoped OAuth2 access token for <project_number>, to allow a hosted master\nto make modifications to its user's project.",
                   "parameters": {
                     "masterProjectId": {
                       "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -4191,7 +4307,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/userinfo.email"
-                  ]
+                  ],
+                  "description": "Creates a compute-read-write (https:\/\/www.googleapis.com\/auth\/compute)\nscoped OAuth2 access token for <project_number>, to allow a hosted master\nto make modifications to its user's project."
                 }
               }
             },
@@ -4202,7 +4319,6 @@
                   "path": "v1/masterProjects/{masterProjectId}/zones/{zone}/signedUrls",
                   "flatPath": "v1/masterProjects/{masterProjectId}/zones/{zone}/signedUrls",
                   "httpMethod": "POST",
-                  "description": "Creates signed URLs that allow for writing a file to a private GCS bucket\nfor storing backups of hosted master data. Signed URLs are explained here:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control#Signed-URLs",
                   "parameters": {
                     "masterProjectId": {
                       "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
@@ -4229,7 +4345,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/userinfo.email"
-                  ]
+                  ],
+                  "description": "Creates signed URLs that allow for writing a file to a private GCS bucket\nfor storing backups of hosted master data. Signed URLs are explained here:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control#Signed-URLs"
                 }
               }
             }

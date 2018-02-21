@@ -385,37 +385,11 @@
         }
       }
     },
-    "AsyncBatchAnnotateImagesResponse": {
-      "id": "AsyncBatchAnnotateImagesResponse",
-      "description": "Response to an async batch image annotation request.",
+    "AsyncBatchAnnotateFilesResponse": {
+      "id": "AsyncBatchAnnotateFilesResponse",
+      "description": "Response to an async batch file annotation request.",
       "type": "object",
       "properties": {
-        "outputConfig": {
-          "description": "The output config where result(s) are located.\nThis is the same location as was specified in the output_config, and is\nprovided for convenience.",
-          "$ref": "OutputConfig"
-        }
-      }
-    },
-    "OutputConfig": {
-      "id": "OutputConfig",
-      "description": "The desired output location and metadata.",
-      "type": "object",
-      "properties": {
-        "gcsDestination": {
-          "description": "The Google Cloud Storage location to write the output(s) to.",
-          "$ref": "GcsDestination"
-        }
-      }
-    },
-    "GcsDestination": {
-      "id": "GcsDestination",
-      "description": "The Google Cloud Storage location where the output will be written to.",
-      "type": "object",
-      "properties": {
-        "uri": {
-          "description": "Google Cloud Storage URI where the results will be stored. Results will\nbe in JSON format and preceded by its corresponding input URI. This field\ncan either represent a single file, or a prefix for multiple outputs.\nPrefixes must end in a `\/`.\n\nExamples:\n\n*    File: gs:\/\/bucket-name\/filename.json\n*    Prefix: gs:\/\/bucket-name\/prefix\/here\/\n*    File: gs:\/\/bucket-name\/prefix\/here\n\nIf multiple outputs, each response is still AnnotateFileResponse, each of\nwhich contains some subset of the full list of AnnotateImageResponse.\nMultiple outputs can happen if, for example, the output JSON is too large\nand overflows into multiple sharded files.",
-          "type": "string"
-        }
       }
     },
     "BatchOperationMetadata": {
@@ -485,7 +459,6 @@
               "path": "v1alpha1/productSearch/catalogs",
               "flatPath": "v1alpha1/productSearch/catalogs",
               "httpMethod": "POST",
-              "description": "Creates and returns a new catalog resource.\n\nNote: For v1alpha1, a catalog will not be returned by `ListCatalogs` until\nreference images have been added to it. Therefore it's important that you\nnote the catalog name\nreturned by the `CreateCatalog` request as it is required for adding\nreference images.",
               "parameters": {
               },
               "parameterOrder": [
@@ -499,14 +472,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloud-vision"
-              ]
+              ],
+              "description": "Creates and returns a new catalog resource.\n\nNote: For v1alpha1, a catalog will not be returned by `ListCatalogs` until\nreference images have been added to it. Therefore it's important that you\nnote the catalog name\nreturned by the `CreateCatalog` request as it is required for adding\nreference images."
             },
             "delete": {
               "id": "alpha_vision.productSearch.catalogs.delete",
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/productSearch/catalogs/{catalogsId}",
               "httpMethod": "DELETE",
-              "description": "Permanently deletes a catalog and its reference images from the service.\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nReturns NOT_FOUND if the catalog does not exist.",
               "parameters": {
                 "name": {
                   "description": "Resource name of catalog to delete.\n\nFormat is: `productSearch\/catalogs\/CATALOG_NUMBER`",
@@ -525,14 +498,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloud-vision"
-              ]
+              ],
+              "description": "Permanently deletes a catalog and its reference images from the service.\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nReturns NOT_FOUND if the catalog does not exist."
             },
             "list": {
               "id": "alpha_vision.productSearch.catalogs.list",
               "path": "v1alpha1/productSearch/catalogs",
               "flatPath": "v1alpha1/productSearch/catalogs",
               "httpMethod": "GET",
-              "description": "Lists catalogs (in an unspecified order).\n\nNote: Does not return empty catalogs (catalogs without reference images).",
               "parameters": {
               },
               "parameterOrder": [
@@ -543,14 +516,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloud-vision"
-              ]
+              ],
+              "description": "Lists catalogs (in an unspecified order).\n\nNote: Does not return empty catalogs (catalogs without reference images)."
             },
             "deleteReferenceImages": {
               "id": "alpha_vision.productSearch.catalogs.deleteReferenceImages",
               "path": "v1alpha1/{+parent}/referenceImages",
               "flatPath": "v1alpha1/productSearch/catalogs/{catalogsId}/referenceImages",
               "httpMethod": "DELETE",
-              "description": "Marks all reference images associated with a product for deletion.\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nPossible errors:\n\n* Returns `INVALID_ARGUMENT` if `productId` is not specified.\n* Returns `NOT_FOUND` if the catalog does not exist.\n* Returns `NOT_FOUND` if the specified product ID is not associated with\n  any reference images.",
               "parameters": {
                 "parent": {
                   "description": "Resource name of the catalog containing the reference images to be deleted.\n\nFormat is `productSearch\/catalogs\/CATALOG_NUMBER`.",
@@ -574,14 +547,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloud-vision"
-              ]
+              ],
+              "description": "Marks all reference images associated with a product for deletion.\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nPossible errors:\n\n* Returns `INVALID_ARGUMENT` if `productId` is not specified.\n* Returns `NOT_FOUND` if the catalog does not exist.\n* Returns `NOT_FOUND` if the specified product ID is not associated with\n  any reference images."
             },
             "import": {
               "id": "alpha_vision.productSearch.catalogs.import",
               "path": "v1alpha1/productSearch/catalogs:import",
               "flatPath": "v1alpha1/productSearch/catalogs:import",
               "httpMethod": "POST",
-              "description": "Asynchronous API that imports a list of reference images to specified\ncatalogs based on a list of image names.\n\nThis API implements the google.longrunning.Operation API allowing users\nto keep track of the batch request. Progress and results can be retrieved\nthrough the `google.longrunning.Operations` interface.\n`Operation.metadata` contains `BatchOperationMetadata` describing the\nprogress of the operation.\n`Operation.response` contains `ImportCatalogsResponse` which contains\nthe results.\n\nThe input source of this method is either a list of\n`ImportProductSetRequest` or a CSV file on Google Cloud Storage.\n\nThe CSV file must specify one image per line. The following 5 columns\nmust be specified:\n\n1. `catalog_name`\n2. `image_uri`\n3. `product_id`\n4. `product_category`\n5. `bounding_poly`\n\nIf the `catalog_id` does not exist, a new catalog will be created.\n\nThe `bounding_poly` is optional and specifies the area of interest in the\nreference image. If not specified, the inferred bounding polygon is the\nentire image.",
               "parameters": {
               },
               "parameterOrder": [
@@ -595,7 +568,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloud-vision"
-              ]
+              ],
+              "description": "Asynchronous API that imports a list of reference images to specified\ncatalogs based on a list of image names.\n\nThis API implements the google.longrunning.Operation API allowing users\nto keep track of the batch request. Progress and results can be retrieved\nthrough the `google.longrunning.Operations` interface.\n`Operation.metadata` contains `BatchOperationMetadata` describing the\nprogress of the operation.\n`Operation.response` contains `ImportCatalogsResponse` which contains\nthe results.\n\nThe input source of this method is either a list of\n`ImportProductSetRequest` or a CSV file on Google Cloud Storage.\n\nThe CSV file must specify one image per line. The following 5 columns\nmust be specified:\n\n1. `catalog_name`\n2. `image_uri`\n3. `product_id`\n4. `product_category`\n5. `bounding_poly`\n\nIf the `catalog_id` does not exist, a new catalog will be created.\n\nThe `bounding_poly` is optional and specifies the area of interest in the\nreference image. If not specified, the inferred bounding polygon is the\nentire image."
             }
           }
           ,
@@ -607,7 +581,6 @@
                   "path": "v1alpha1/{+parent}/referenceImages",
                   "flatPath": "v1alpha1/productSearch/catalogs/{catalogsId}/referenceImages",
                   "httpMethod": "POST",
-                  "description": "Creates and returns a new `ReferenceImage` resource.\n\nThe `product_category` and `boundingPoly` fields are optional and, if used,\nshould both be specified.\n\nIf they are omitted, the product category and bounding polygon are inferred\nby the system.\n\nIf `boundingPoly` is specified without `product_category`, `boundingPoly`\nis ignored. If `product_category` is specified without `boundingPoly`, the\nimage border is used as the value of `boundingPoly`.\n\nPolygons are converted into non-rotated rectangles by the system.\n\nPossible errors:\n\n* Returns `INVALID_ARGUMENT` if the required fields are missing or if\n  fields violate their restrictions.\n* Returns `FAILED_PRECONDITION` if the catalog does not exist.\n* Returns `FAILED_PRECONDITION` if a product is not detected, or if\n  multiple products are detected, when `product_category` and\n  `boundingPoly` are not specified.",
                   "parameters": {
                     "parent": {
                       "description": "Resource name of the catalog in which to create the reference image.\n\nFormat is `productSearch\/catalogs\/CATALOG_NUMBER`.",
@@ -629,14 +602,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-vision"
-                  ]
+                  ],
+                  "description": "Creates and returns a new `ReferenceImage` resource.\n\nThe `product_category` and `boundingPoly` fields are optional and, if used,\nshould both be specified.\n\nIf they are omitted, the product category and bounding polygon are inferred\nby the system.\n\nIf `boundingPoly` is specified without `product_category`, `boundingPoly`\nis ignored. If `product_category` is specified without `boundingPoly`, the\nimage border is used as the value of `boundingPoly`.\n\nPolygons are converted into non-rotated rectangles by the system.\n\nPossible errors:\n\n* Returns `INVALID_ARGUMENT` if the required fields are missing or if\n  fields violate their restrictions.\n* Returns `FAILED_PRECONDITION` if the catalog does not exist.\n* Returns `FAILED_PRECONDITION` if a product is not detected, or if\n  multiple products are detected, when `product_category` and\n  `boundingPoly` are not specified."
                 },
                 "delete": {
                   "id": "alpha_vision.productSearch.catalogs.referenceImages.delete",
                   "path": "v1alpha1/{+name}",
                   "flatPath": "v1alpha1/productSearch/catalogs/{catalogsId}/referenceImages/{referenceImagesId}",
                   "httpMethod": "DELETE",
-                  "description": "Marks a reference image for deletion. The image will remain in the catalog\nuntil the next time the catalog is indexed (currently daily).\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nReturns `NOT_FOUND` if the reference image does not exist.",
                   "parameters": {
                     "name": {
                       "description": "The resource name of the reference image to delete.\n\nFormat is:\n`productSearch\/catalogs\/CATALOG_NUMBER\/referenceImages\/IMAGE_NUMBER`",
@@ -655,14 +628,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-vision"
-                  ]
+                  ],
+                  "description": "Marks a reference image for deletion. The image will remain in the catalog\nuntil the next time the catalog is indexed (currently daily).\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nReturns `NOT_FOUND` if the reference image does not exist."
                 },
                 "list": {
                   "id": "alpha_vision.productSearch.catalogs.referenceImages.list",
                   "path": "v1alpha1/{+parent}/referenceImages",
                   "flatPath": "v1alpha1/productSearch/catalogs/{catalogsId}/referenceImages",
                   "httpMethod": "GET",
-                  "description": "Lists reference images.\n\nPossible errors:\n\n* Returns `NOT_FOUND` if the catalog does not exist.\n* Returns `NOT_FOUND` if there are no images associated with the specified\n  product ID.\n\nPagination is supported. The default page size is 10 and the maximum\nis 1000. Page sizes higher than 1000 will be treated as 1000.",
                   "parameters": {
                     "parent": {
                       "description": "Resource name of the catalog containing the reference images.\n\nFormat is `productSearch\/catalogs\/CATALOG_NUMBER`.",
@@ -697,14 +670,14 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-vision"
-                  ]
+                  ],
+                  "description": "Lists reference images.\n\nPossible errors:\n\n* Returns `NOT_FOUND` if the catalog does not exist.\n* Returns `NOT_FOUND` if there are no images associated with the specified\n  product ID.\n\nPagination is supported. The default page size is 10 and the maximum\nis 1000. Page sizes higher than 1000 will be treated as 1000."
                 },
                 "get": {
                   "id": "alpha_vision.productSearch.catalogs.referenceImages.get",
                   "path": "v1alpha1/{+name}",
                   "flatPath": "v1alpha1/productSearch/catalogs/{catalogsId}/referenceImages/{referenceImagesId}",
                   "httpMethod": "GET",
-                  "description": "Gets a reference image.\nReturns `NOT_FOUND` if the specified image does not exist.",
                   "parameters": {
                     "name": {
                       "description": "The resource name of the reference image to get.\n\nFormat is:\n`productSearch\/catalogs\/CATALOG_NUMBER\/referenceImages\/IMAGE_NUMBER`",
@@ -723,7 +696,8 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-vision"
-                  ]
+                  ],
+                  "description": "Gets a reference image.\nReturns `NOT_FOUND` if the specified image does not exist."
                 }
               }
             }

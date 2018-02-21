@@ -241,9 +241,6 @@ def MakeRequests(requests, http, batch_url, errors, progress_tracker=None):
       yield item
     return
 
-  # TODO(b/36057059): Delete the batch_helper module and move its logic
-  # here. To do this, we also have to edit the lister module to depend
-  # on this module instead of batch_helper.
   responses, new_errors = batch_helper.MakeRequests(
       requests=requests, http=http, batch_url=batch_url)
   errors.extend(new_errors)

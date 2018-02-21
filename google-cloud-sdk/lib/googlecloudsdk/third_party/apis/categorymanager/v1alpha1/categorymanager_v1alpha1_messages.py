@@ -25,15 +25,15 @@ class Annotation(_messages.Message):
     description: Description of the annotation. Length of the description is
       limited to 1000 characters.
     displayName: Human readable name of this annotation. Max 100 characters.
-    id: Id of this annotation. Output only.
+    id: Output only. Id of this annotation.
     name: Resource name of the annotation, which has the format of
       "taxonomyStores/{store_id}/taxonomies/{taxonomy_id}/annotations/{id}".
     parentAnnotationId: Id of the parent annotation to this annotation. If
       empty, it means this annotation is a top level annotation.
-    storeId: Id of the enclosing store. Output only.
-    taxonomyDisplayName: Human readable name of the enclosing taxonomy. Output
-      only.
-    taxonomyId: Id of the enclosing taxonomy. Output only.
+    storeId: Output only. Id of the enclosing store.
+    taxonomyDisplayName: Output only. Human readable name of the enclosing
+      taxonomy.
+    taxonomyId: Output only. Id of the enclosing taxonomy.
   """
 
   childAnnotationIds = _messages.StringField(1, repeated=True)
@@ -53,20 +53,20 @@ class AnnotationTag(_messages.Message):
   taxonomy.
 
   Fields:
-    annotationDisplayName: Human readable name of the annotation corresponding
-      to this tag. Output only.
-    annotationId: Id of the annotation corresponding to this tag. Output only.
-    annotationName: Resource name of the annotation. Output only.
-    assetName: Resource name of the asset. Output only.
-    storeId: Id of the enclosing taxonomy store. Output only.
-    subAssetName: A finer grained sub asset that this annotation tag is
-      applied to. For Bigquery, provide the name of the column you want to
-      annotate. If this field is empty, the given annotation tag is associated
-      with the entire asset. Output only.
-    taxonomyDisplayName: Human readable name of the taxonomy enclosing the
-      annotation corresponding to this tag. Output only.
-    taxonomyId: Id of the taxonomy enclosing the annotation corresponding to
-      this tag. Output only.
+    annotationDisplayName: Output only. Human readable name of the annotation
+      corresponding to this tag.
+    annotationId: Output only. Id of the annotation corresponding to this tag.
+    annotationName: Output only. Resource name of the annotation.
+    assetName: Output only. Resource name of the asset.
+    storeId: Output only. Id of the enclosing taxonomy store.
+    subAssetName: Output only. A finer grained sub asset that this annotation
+      tag is applied to. For Bigquery, provide the name of the column you want
+      to annotate. If this field is empty, the given annotation tag is
+      associated with the entire asset.
+    taxonomyDisplayName: Output only. Human readable name of the taxonomy
+      enclosing the annotation corresponding to this tag.
+    taxonomyId: Output only. Id of the taxonomy enclosing the annotation
+      corresponding to this tag.
   """
 
   annotationDisplayName = _messages.StringField(1)
@@ -102,16 +102,16 @@ class Asset(_messages.Message):
     TypeValueValuesEnum: Type of the asset, if available.
 
   Fields:
-    creationTime: The creation time.
+    createTime: The creation time.
     description: Description of the asset, if available.
     displayName: Display name of the asset, if available.
-    modificationTime: The last modified time.
     name: Resource name of the asset.
     projectId: Id of the project that owns the asset, if available.
     subAssetName: A finer grained sub asset. If one asset is a bigquery table
       this sub asset contains the column name. If this field is empty, the
       message denotes the entire asset.
     type: Type of the asset, if available.
+    updateTime: The last modified time.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -121,19 +121,23 @@ class Asset(_messages.Message):
       TYPE_UNSPECIFIED: Unknown type.
       BIGQUERY_TABLE: BigQuery table.
       BIGQUERY_TABLE_COLUMN: A column in a BigQuery table.
+      GCS_FILESET: A GCS file set.
+      PUBSUB_TOPIC: A Pubsub topic.
     """
     TYPE_UNSPECIFIED = 0
     BIGQUERY_TABLE = 1
     BIGQUERY_TABLE_COLUMN = 2
+    GCS_FILESET = 3
+    PUBSUB_TOPIC = 4
 
-  creationTime = _messages.StringField(1)
+  createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  modificationTime = _messages.StringField(4)
-  name = _messages.StringField(5)
-  projectId = _messages.StringField(6)
-  subAssetName = _messages.StringField(7)
-  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  name = _messages.StringField(4)
+  projectId = _messages.StringField(5)
+  subAssetName = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class AuditConfig(_messages.Message):
@@ -143,7 +147,7 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted.  Example Policy with
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
@@ -161,15 +165,13 @@ class AuditConfig(_messages.Message):
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
       Next ID: 4
-    exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
   """
 
   auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
+  service = _messages.StringField(2)
 
 
 class AuditLogConfig(_messages.Message):
@@ -211,10 +213,6 @@ class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently. This field is GOOGLE_INTERNAL.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -232,9 +230,8 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`. Required
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  members = _messages.StringField(1, repeated=True)
+  role = _messages.StringField(2)
 
 
 class CategorymanagerAssetsAnnotationTagsListRequest(_messages.Message):
@@ -434,10 +431,12 @@ class CategorymanagerTaxonomyStoresTaxonomiesAnnotationsPatchRequest(_messages.M
   Fields:
     annotation: A Annotation resource to be passed as the request body.
     name: [Required] Resource name of the annotation to be updated.
-    updateMask: The update mask applies to the resource. For the `FieldMask`
-      definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask Will only update
-      description if update_mask is not provided.
+    updateMask: The update mask applies to the resource. Only description and
+      parent_annotation_id can be updated and thus can be listed in the mask.
+      If update_mask is not provided, all allowed fields (i.e., description
+      and parent_id) will be updated. For more information including the
+      `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
   """
 
   annotation = _messages.MessageField('Annotation', 1)
@@ -620,30 +619,6 @@ class Empty(_messages.Message):
 
 
 
-class Expr(_messages.Message):
-  """Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
-
-  Fields:
-    description: An optional description of the expression. This is a longer
-      text which describes the expression, e.g. when hovered over it in a UI.
-    expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
-      error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
-  """
-
-  description = _messages.StringField(1)
-  expression = _messages.StringField(2)
-  location = _messages.StringField(3)
-  title = _messages.StringField(4)
-
-
 class GetIamPolicyRequest(_messages.Message):
   """Request message for `GetIamPolicy` method."""
 
@@ -820,7 +795,7 @@ class Policy(_messages.Message):
   app@appspot.gserviceaccount.com",           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
   }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -835,15 +810,13 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
-    iamOwned: A boolean attribute.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  iamOwned = _messages.BooleanField(4)
-  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1018,10 +991,10 @@ class Taxonomy(_messages.Message):
     description: Description of the taxonomy. Length of the description is
       limited to 1000 characters.
     displayName: Name of the taxonomy. Should be no more than 100 characters.
-    id: Id of this taxonomy. Output only.
+    id: Output only. Id of this taxonomy.
     name: Resource name of the taxonomy, which has the format of
       "taxonomyStores/{store_id}/taxonomies/{id}".
-    storeId: Id of the enclosing taxonomy store. Output only.
+    storeId: Output only. Id of the enclosing taxonomy store.
   """
 
   description = _messages.StringField(1)

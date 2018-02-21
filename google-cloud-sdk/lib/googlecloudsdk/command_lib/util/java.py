@@ -55,15 +55,23 @@ def RequireJavaInstalled(for_text, min_version=7):
       ' The {for_text} requires a Java {v}+ JRE installed and on '
       'your system PATH'.format(v=min_version, for_text=for_text))
 
-  match = re.search(r'version "(\d+)\.(\d+)\.', output)
-  if not match:
-    raise java_exec_version_error
+  # Find java major version.
+  match = re.search(r'version "1\.', output)
+  if match:
+    # We are in a pre http://openjdk.java.net/jeps/223 world,
+    # this is the 1.6.xx, 1.7.xx, 1.8.xxx world.
+    match = re.search(r'version "(\d+)\.(\d+)\.', output)
+    if not match:
+      raise java_exec_version_error
+    major_version = int(match.group(2))
+  else:
+    # We are in a post http://openjdk.java.net/jeps/223 world
+    match = re.search(r'version "([1-9][0-9]*)', output)
+    if not match:
+      raise java_exec_version_error
+    major_version = int(match.group(1))
 
-  major_version = int(match.group(1))
-  minor_version = int(match.group(2))
-  # Java <= 8 used 1.X version format. Java > 8 uses X.* version format.
-  if ((major_version == 1 and minor_version < min_version) or
-      (major_version > 1 and major_version < min_version)):
+  if major_version < min_version:
     raise java_exec_version_error
 
   return java_path

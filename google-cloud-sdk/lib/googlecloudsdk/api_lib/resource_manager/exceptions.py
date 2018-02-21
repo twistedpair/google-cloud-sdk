@@ -22,3 +22,7 @@ class ResourceManagerError(exceptions.Error):
 
 class ResourceManagerInputFileError(ResourceManagerError):
   """More specific errors for failure to read input files."""
+
+
+class ArgumentError(ResourceManagerError):
+  """Command argument error."""

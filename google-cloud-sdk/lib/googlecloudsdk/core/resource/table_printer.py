@@ -119,7 +119,6 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     format=_FORMAT-STRING_: Prints the key data indented by 4 spaces using
       _FORMAT-STRING_ which can reference any of the supported formats.
     no-heading: Disables the column headings.
-    optional: Does not display the column if it is empty.
     pad=N: Sets the column horizontal pad to _N_ spaces. The default is 1 for
       box, 2 otherwise.
     title=_TITLE_: Prints a centered _TITLE_ at the top of the table, within
@@ -369,7 +368,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         self._visible = visible
         rows = [self._Visible(row) for row in rows]
         align = self._Visible(align)
-        heading = [self._Visible(heading[0])]
+        heading = [self._Visible(heading[0])] if heading else []
         col_widths = self._Visible(col_widths)
     if heading:
       # Check the heading widths too.

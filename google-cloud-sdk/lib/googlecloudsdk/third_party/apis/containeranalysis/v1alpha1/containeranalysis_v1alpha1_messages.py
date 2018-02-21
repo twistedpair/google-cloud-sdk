@@ -181,11 +181,6 @@ class Binding(_messages.Message):
   """Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently. This field is only visible as GOOGLE_INTERNAL or
-      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -203,9 +198,8 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`. Required
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  members = _messages.StringField(1, repeated=True)
+  role = _messages.StringField(2)
 
 
 class BuildDetails(_messages.Message):
@@ -383,18 +377,6 @@ class Command(_messages.Message):
   id = _messages.StringField(4)
   name = _messages.StringField(5)
   waitFor = _messages.StringField(6, repeated=True)
-
-
-class ContaineranalysisProjectsGetVulnzsummaryRequest(_messages.Message):
-  """A ContaineranalysisProjectsGetVulnzsummaryRequest object.
-
-  Fields:
-    filter: The filter expression.
-    parent: This contains the project Id for example: projects/{project_id}
-  """
-
-  filter = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
 
 
 class ContaineranalysisProjectsNotesCreateRequest(_messages.Message):
@@ -598,6 +580,19 @@ class ContaineranalysisProjectsOccurrencesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest(_messages.Message):
+  """A ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest
+  object.
+
+  Fields:
+    filter: The filter expression.
+    parent: This contains the project Id for example: projects/{project_id}
+  """
+
+  filter = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+
+
 class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
   """A ContaineranalysisProjectsOccurrencesListRequest object.
 
@@ -687,6 +682,49 @@ class ContaineranalysisProjectsOperationsPatchRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   updateOperationRequest = _messages.MessageField('UpdateOperationRequest', 2)
+
+
+class ContaineranalysisProjectsScanConfigsGetRequest(_messages.Message):
+  """A ContaineranalysisProjectsScanConfigsGetRequest object.
+
+  Fields:
+    name: The name of the ScanConfig in the form
+      projects/{project_id}/scan_configs/{ScanConfig_id} instead.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ContaineranalysisProjectsScanConfigsListRequest(_messages.Message):
+  """A ContaineranalysisProjectsScanConfigsListRequest object.
+
+  Fields:
+    filter: The filter expression.
+    pageSize: The number of items to return.
+    pageToken: The page token to use for the next request.
+    parent: This containers the project Id i.e.: projects/{project_id}
+      instead.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class ContaineranalysisProjectsScanConfigsPatchRequest(_messages.Message):
+  """A ContaineranalysisProjectsScanConfigsPatchRequest object.
+
+  Fields:
+    name: The scan config to update of the form
+      projects/{project_id}/scan_configs/{ScanConfig_id} instead.
+    scanConfig: A ScanConfig resource to be passed as the request body.
+    updateMask: A string attribute.
+  """
+
+  name = _messages.StringField(1, required=True)
+  scanConfig = _messages.MessageField('ScanConfig', 2)
+  updateMask = _messages.StringField(3)
 
 
 class ContaineranalysisProvidersNotesCreateRequest(_messages.Message):
@@ -1055,30 +1093,6 @@ class Empty(_messages.Message):
 
 
 
-class Expr(_messages.Message):
-  """Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
-
-  Fields:
-    description: An optional description of the expression. This is a longer
-      text which describes the expression, e.g. when hovered over it in a UI.
-    expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
-      error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
-  """
-
-  description = _messages.StringField(1)
-  expression = _messages.StringField(2)
-  location = _messages.StringField(3)
-  title = _messages.StringField(4)
-
-
 class FileHashes(_messages.Message):
   """Container message for hashes of byte content of files, used in Source
   messages to verify integrity of source input to the build.
@@ -1406,6 +1420,18 @@ class ListOccurrencesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   occurrences = _messages.MessageField('Occurrence', 2, repeated=True)
+
+
+class ListScanConfigsResponse(_messages.Message):
+  """A list of ScanConfigs for the project.
+
+  Fields:
+    nextPageToken: A page token to pass in order to get more scans.
+    scanConfigs: The set of scan configs
+  """
+
+  nextPageToken = _messages.StringField(1)
+  scanConfigs = _messages.MessageField('ScanConfig', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1876,6 +1902,22 @@ class Resource(_messages.Message):
   contentHash = _messages.MessageField('Hash', 1)
   name = _messages.StringField(2)
   uri = _messages.StringField(3)
+
+
+class ScanConfig(_messages.Message):
+  """Indicates various scans and whether they are turned on or off.
+
+  Fields:
+    description: Output only. A human-readable description of what the
+      `ScanConfig` does.
+    enabled: Indicates whether the Scan is enabled.
+    name: Output only. The name of the ScanConfig in the form
+      \u201cprojects/{project_id}/ScanConfigs/{ScanConfig_id}".
+  """
+
+  description = _messages.StringField(1)
+  enabled = _messages.BooleanField(2)
+  name = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):

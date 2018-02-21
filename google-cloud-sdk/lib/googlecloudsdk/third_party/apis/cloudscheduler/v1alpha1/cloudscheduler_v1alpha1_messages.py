@@ -24,7 +24,7 @@ class AppEngineHttpTarget(_messages.Message):
 
   Enums:
     HttpMethodValueValuesEnum: The HTTP method to use for the request. The
-      default is POST.
+      default is POST. PATCH and OPTIONS are not permitted.
 
   Messages:
     HeadersValue: HTTP request headers.  This map contains the header field
@@ -74,6 +74,7 @@ class AppEngineHttpTarget(_messages.Message):
       job handler; see [request headers](/appengine/docs/python/taskqueue/push
       /creating-handlers#reading_request_headers).
     httpMethod: The HTTP method to use for the request. The default is POST.
+      PATCH and OPTIONS are not permitted.
     payload: Payload.  The payload will be sent as the HTTP message body. A
       message body, and thus a payload, is allowed only if the HTTP method is
       POST or PUT. It is an error to set a data payload on a job with an
@@ -86,7 +87,8 @@ class AppEngineHttpTarget(_messages.Message):
   """
 
   class HttpMethodValueValuesEnum(_messages.Enum):
-    """The HTTP method to use for the request. The default is POST.
+    """The HTTP method to use for the request. The default is POST. PATCH and
+    OPTIONS are not permitted.
 
     Values:
       HTTP_METHOD_UNSPECIFIED: HTTP method unspecified

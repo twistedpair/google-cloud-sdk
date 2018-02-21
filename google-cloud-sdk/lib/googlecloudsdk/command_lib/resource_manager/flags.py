@@ -13,8 +13,9 @@
 # limitations under the License.
 """Flags for commands that deal with the CRM API."""
 
+from googlecloudsdk.api_lib.resource_manager import exceptions
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 
 
 def FolderIdArg(use_description):
@@ -89,10 +90,11 @@ def CheckParentFlags(args, parent_required=True):
     parent_required: True to assert that a parent flag was set
   """
   if getattr(args, 'folder', None) and args.organization:
-    raise exceptions.ConflictingArgumentsException('--folder', '--organization')
+    raise calliope_exceptions.ConflictingArgumentsException(
+        '--folder', '--organization')
   if parent_required:
     if 'folder' in args and not args.folder and not args.organization:
-      raise exceptions.ToolException(
+      raise exceptions.ArgumentError(
           'Neither --folder nor --organization provided, exactly one required')
     elif 'folder' not in args and not args.organization:
-      raise exceptions.ToolException('--organization is required')
+      raise exceptions.ArgumentError('--organization is required')

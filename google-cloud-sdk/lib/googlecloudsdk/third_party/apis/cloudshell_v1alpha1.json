@@ -343,7 +343,6 @@
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/users/{usersId}/environments/{environmentsId}",
               "httpMethod": "GET",
-              "description": "Gets an environment. Returns NOT_FOUND if the environment does not exist.",
               "parameters": {
                 "name": {
                   "description": "Name of the requested resource, for example `users\/me\/environments\/default`\nor `users\/someone@example.com\/environments\/default`.",
@@ -361,14 +360,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Gets an environment. Returns NOT_FOUND if the environment does not exist."
             },
             "patch": {
               "id": "cloudshell.users.environments.patch",
               "path": "v1alpha1/{+name}",
               "flatPath": "v1alpha1/users/{usersId}/environments/{environmentsId}",
               "httpMethod": "PATCH",
-              "description": "Updates an existing environment.",
               "parameters": {
                 "name": {
                   "description": "Name of the resource to be updated, for example\n`users\/me\/environments\/default` or\n`users\/someone@example.com\/environments\/default`.",
@@ -395,14 +394,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Updates an existing environment."
             },
             "start": {
               "id": "cloudshell.users.environments.start",
               "path": "v1alpha1/{+name}:start",
               "flatPath": "v1alpha1/users/{usersId}/environments/{environmentsId}:start",
               "httpMethod": "POST",
-              "description": "Starts an existing environment, allowing clients to connect to it. The\nreturned operation will contain an instance of StartEnvironmentMetadata in\nits metadata field. Users can wait for the environment to start by polling\nthis operation via GetOperation. Once the environment has finished starting\nand is ready to accept connections, the operation will contain a\nStartEnvironmentResponse in its response field.",
               "parameters": {
                 "name": {
                   "description": "Name of the resource that should be started, for example\n`users\/me\/environments\/default` or\n`users\/someone@example.com\/environments\/default`.",
@@ -423,7 +422,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Starts an existing environment, allowing clients to connect to it. The\nreturned operation will contain an instance of StartEnvironmentMetadata in\nits metadata field. Users can wait for the environment to start by polling\nthis operation via GetOperation. Once the environment has finished starting\nand is ready to accept connections, the operation will contain a\nStartEnvironmentResponse in its response field."
             }
           }
           ,
@@ -435,7 +435,6 @@
                   "path": "v1alpha1/{+parent}/publicKeys",
                   "flatPath": "v1alpha1/users/{usersId}/environments/{environmentsId}/publicKeys",
                   "httpMethod": "POST",
-                  "description": "Adds a public SSH key to an environment, allowing clients with the\ncorresponding private key to connect to that environment via SSH. If a key\nwith the same format and content already exists, this will return the\nexisting key.",
                   "parameters": {
                     "parent": {
                       "description": "Parent resource name, e.g. `users\/me\/environments\/default`.",
@@ -456,14 +455,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Adds a public SSH key to an environment, allowing clients with the\ncorresponding private key to connect to that environment via SSH. If a key\nwith the same format and content already exists, this will return the\nexisting key."
                 },
                 "delete": {
                   "id": "cloudshell.users.environments.publicKeys.delete",
                   "path": "v1alpha1/{+name}",
                   "flatPath": "v1alpha1/users/{usersId}/environments/{environmentsId}/publicKeys/{publicKeysId}",
                   "httpMethod": "DELETE",
-                  "description": "Removes a public SSH key from an environment. Clients will no longer be\nable to connect to the environment using the corresponding private key.",
                   "parameters": {
                     "name": {
                       "description": "Name of the resource to be deleted, e.g.\n`users\/me\/environments\/default\/publicKeys\/my-key`.",
@@ -481,7 +480,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Removes a public SSH key from an environment. Clients will no longer be\nable to connect to the environment using the corresponding private key."
                 }
               }
             }

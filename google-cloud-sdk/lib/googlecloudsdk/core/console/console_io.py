@@ -580,7 +580,84 @@ def FormatRequiredUserAction(s):
     return '\n==> ' + '\n==> '.join(wrapper.wrap(s)) + '\n'
 
 
-class ProgressBar(object):
+def ProgressBar(label, stream=log.status, total_ticks=60, first=True,
+                last=True):
+  """A simple progress bar for tracking completion of an action.
+
+  This progress bar works without having to use any control characters.  It
+  prints the action that is being done, and then fills a progress bar below it.
+  You should not print anything else on the output stream during this time as it
+  will cause the progress bar to break on lines.
+
+  Progress bars can be stacked into a group. first=True marks the first bar in
+  the group and last=True marks the last bar in the group. The default assumes
+  a singleton bar with first=True and last=True.
+
+  This class can also be used in a context manager.
+
+  Args:
+    label: str, The action that is being performed.
+    stream: The output stream to write to, stderr by default.
+    total_ticks: int, The number of ticks wide to make the progress bar.
+    first: bool, True if this is the first bar in a stacked group.
+    last: bool, True if this is the last bar in a stacked group.
+
+  Returns:
+    The progress bar.
+  """
+  style = properties.VALUES.core.interactive_ux_style.Get()
+  if style == properties.VALUES.core.InteractiveUXStyles.OFF.name:
+    return _NoOpProgressBar()
+  elif style == properties.VALUES.core.InteractiveUXStyles.TESTING.name:
+    return _StubProgressBar(label, stream)
+  else:
+    return _NormalProgressBar(label, stream, total_ticks, first, last)
+
+
+def SplitProgressBar(original_callback, weights):
+  """Splits a progress bar into logical sections.
+
+  Wraps the original callback so that each of the subsections can use the full
+  range of 0 to 1 to indicate its progress.  The overall progress bar will
+  display total progress based on the weights of the tasks.
+
+  Args:
+    original_callback: f(float), The original callback for the progress bar.
+    weights: [float], The weights of the tasks to create.  These can be any
+      numbers you want and the split will be based on their proportions to
+      each other.
+
+  Raises:
+    ValueError: If the weights don't add up to 1.
+
+  Returns:
+    (f(float), ), A tuple of callback functions, in order, for the subtasks.
+  """
+  if (original_callback is None or
+      original_callback == DefaultProgressBarCallback):
+    return tuple([DefaultProgressBarCallback for _ in range(len(weights))])
+
+  def MakeCallback(already_done, weight):
+    def Callback(done_fraction):
+      original_callback(already_done + (done_fraction * weight))
+    return Callback
+
+  total = sum(weights)
+  callbacks = []
+  already_done = 0
+  for weight in weights:
+    normalized_weight = weight / total
+    callbacks.append(MakeCallback(already_done, normalized_weight))
+    already_done += normalized_weight
+
+  return tuple(callbacks)
+
+
+def DefaultProgressBarCallback(progress_factor):
+  del progress_factor
+
+
+class _NormalProgressBar(object):
   """A simple progress bar for tracking completion of an action.
 
   This progress bar works without having to use any control characters.  It
@@ -595,53 +672,7 @@ class ProgressBar(object):
   This class can also be used in a context manager.
   """
 
-  @staticmethod
-  def _DefaultCallback(progress_factor):
-    pass
-
-  DEFAULT_CALLBACK = _DefaultCallback
-
-  @staticmethod
-  def SplitProgressBar(original_callback, weights):
-    """Splits a progress bar into logical sections.
-
-    Wraps the original callback so that each of the subsections can use the full
-    range of 0 to 1 to indicate its progress.  The overall progress bar will
-    display total progress based on the weights of the tasks.
-
-    Args:
-      original_callback: f(float), The original callback for the progress bar.
-      weights: [float], The weights of the tasks to create.  These can be any
-        numbers you want and the split will be based on their proportions to
-        each other.
-
-    Raises:
-      ValueError: If the weights don't add up to 1.
-
-    Returns:
-      (f(float), ), A tuple of callback functions, in order, for the subtasks.
-    """
-    if (original_callback is None or
-        original_callback == ProgressBar.DEFAULT_CALLBACK):
-      return tuple([ProgressBar.DEFAULT_CALLBACK for _ in range(len(weights))])
-
-    def MakeCallback(already_done, weight):
-      def Callback(done_fraction):
-        original_callback(already_done + (done_fraction * weight))
-      return Callback
-
-    total = sum(weights)
-    callbacks = []
-    already_done = 0
-    for weight in weights:
-      normalized_weight = weight / total
-      callbacks.append(MakeCallback(already_done, normalized_weight))
-      already_done += normalized_weight
-
-    return tuple(callbacks)
-
-  def __init__(self, label, stream=log.status, total_ticks=60, first=True,
-               last=True):
+  def __init__(self, label, stream, total_ticks, first, last):
     """Creates a progress bar for the given action.
 
     Args:
@@ -651,6 +682,7 @@ class ProgressBar(object):
       first: bool, True if this is the first bar in a stacked group.
       last: bool, True if this is the last bar in a stacked group.
     """
+    self._raw_label = label
     self._stream = stream
     self._ticks_written = 0
     self._total_ticks = total_ticks
@@ -720,6 +752,60 @@ class ProgressBar(object):
 
   def _Write(self, msg):
     self._stream.write(msg)
+
+  def __enter__(self):
+    self.Start()
+    return self
+
+  def __exit__(self, *args):
+    self.Finish()
+
+
+class _NoOpProgressBar(object):
+  """A progress bar that outputs nothing at all."""
+
+  def __init__(self):
+    pass
+
+  def Start(self):
+    pass
+
+  def SetProgress(self, progress_factor):
+    pass
+
+  def Finish(self):
+    """Mark the progress as done."""
+    self.SetProgress(1)
+
+  def __enter__(self):
+    self.Start()
+    return self
+
+  def __exit__(self, *args):
+    self.Finish()
+
+
+class _StubProgressBar(object):
+  """A progress bar that only prints deterministic start and end points.
+
+  No UX about progress should be exposed here. This is strictly for being able
+  to tell that the progress bar was invoked, not what it actually looks like.
+  """
+
+  def __init__(self, label, stream):
+    self._raw_label = label
+    self._stream = stream
+
+  def Start(self):
+    self._stream.write('<START PROGRESS BAR>' + self._raw_label + '\n')
+
+  def SetProgress(self, progress_factor):
+    pass
+
+  def Finish(self):
+    """Mark the progress as done."""
+    self.SetProgress(1)
+    self._stream.write('<END PROGRESS BAR>\n')
 
   def __enter__(self):
     self.Start()

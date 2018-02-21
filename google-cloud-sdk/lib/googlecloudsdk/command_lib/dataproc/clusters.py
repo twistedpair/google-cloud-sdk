@@ -83,16 +83,31 @@ def ArgsForClusterRef(parser, beta=False):
       '--worker-machine-type',
       help='The type of machine to use for workers. Defaults to '
       'server-specified.')
-  parser.add_argument(
-      '--image',
-      hidden=True,
-      help='The full image URI to use with the cluster. Overrides '
-      '--image-version.')
-  parser.add_argument(
-      '--image-version',
-      metavar='VERSION',
-      help='The image version to use for the cluster. Defaults to the '
-      'latest version.')
+  if beta:
+    image_parser = parser.add_mutually_exclusive_group()
+    # TODO(b/73291743): Add external doc link to --image
+    image_parser.add_argument(
+        '--image',
+        metavar='IMAGE',
+        help='The full custom image URI or the custom image name that '
+        'will be used to create a cluster.')
+    image_parser.add_argument(
+        '--image-version',
+        metavar='VERSION',
+        help='The image version to use for the cluster. Defaults to the '
+        'latest version.')
+  else:
+    parser.add_argument(
+        '--image',
+        hidden=True,
+        help='The full image URI to use with the cluster. Overrides '
+        '--image-version.')
+    parser.add_argument(
+        '--image-version',
+        metavar='VERSION',
+        help='The image version to use for the cluster. Defaults to the '
+        'latest version.')
+
   parser.add_argument(
       '--bucket',
       help='The Google Cloud Storage bucket to use with the Google Cloud '

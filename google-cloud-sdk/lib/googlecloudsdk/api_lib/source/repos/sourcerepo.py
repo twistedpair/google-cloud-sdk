@@ -19,16 +19,24 @@ more formats like "https://...". Get methods are strict about the arguments.
 from apitools.base.py import exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
+class RepoResourceError(core_exceptions.Error):
+  """Raised when a repo could not be parsed."""
+
+
 def ParseRepo(repo):
   """Parse a string as a sourcerepo.projects.repos resource."""
-  return resources.REGISTRY.Parse(
-      repo,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection='sourcerepo.projects.repos')
+  try:
+    return resources.REGISTRY.Parse(
+        repo,
+        params={'projectsId': properties.VALUES.core.project.GetOrFail},
+        collection='sourcerepo.projects.repos')
+  except core_exceptions.Error as e:
+    raise RepoResourceError(str(e))
 
 
 def GetDefaultProject():

@@ -65,7 +65,7 @@ class Walker(object):
 
     self._num_visited = 0
     self._progress_callback = (progress_callback or
-                               console_io.ProgressBar.DEFAULT_CALLBACK)
+                               console_io.DefaultProgressBarCallback)
 
   def _GetSubElement(self, top_element, path):
     parts = path.split('.')[1:]

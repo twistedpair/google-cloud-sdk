@@ -16,8 +16,8 @@
 import abc
 import os
 
+from googlecloudsdk.api_lib.iam import exceptions
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope import exceptions
 
 
 class BaseIamCommand(base.Command):
@@ -66,15 +66,16 @@ class BaseIamCommand(base.Command):
       The contents of the file as a string.
 
     Raises:
-      ToolException: An error occurred when trying to read the file.
+      googlecloudsdk.api_lib.iam.exceptions.FileReadException: An error occurred
+        when trying to read the file.
     """
     if not os.path.exists(file_name):
-      raise exceptions.ToolException(
+      raise exceptions.FileReadException(
           'The given file could not be found: {0}'.format(file_name))
 
     try:
       with open(file_name, 'rb') as handle:
         return handle.read()
     except EnvironmentError:
-      raise exceptions.ToolException(
+      raise exceptions.FileReadException(
           'The given file could not be read: {0}'.format(file_name))

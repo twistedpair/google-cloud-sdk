@@ -33,13 +33,15 @@ def GetIndexFlag(noun, action):
       help='The index (zero-based) of the {} {}.'.format(noun, action))
 
 
-def AddDeviceRegistrySettingsFlagsToParser(parser, defaults=True):
+def AddDeviceRegistrySettingsFlagsToParser(parser, defaults=True,
+                                           include_deprecated=True):
   """Get flags for device registry commands.
 
   Args:
     parser: argparse parser to which to add these flags.
     defaults: bool, whether to populate default values (for instance, should be
         false for Patch commands).
+    include_deprecated: bool, whether to include deprecated flags.
 
   Returns:
     list of base.Argument, the flags common to and specific to device commands.
@@ -62,23 +64,60 @@ def AddDeviceRegistrySettingsFlagsToParser(parser, defaults=True):
       required=False,
       help=('A Google Cloud Pub/Sub topic name for state notifications.')
   ).AddToParser(parser)
-  pubsub_args = parser.add_mutually_exclusive_group()
-  # TODO(b/64597199): Remove this flag when usage is low.
-  base.Argument(
-      '--pubsub-topic',
+
+  for f in _GetEventNotificationConfigFlags(
+      include_deprecated=include_deprecated):
+    f.AddToParser(parser)
+
+
+def _GetEventNotificationConfigFlags(include_deprecated=True):
+  """Returns a list of flags for specfiying Event Notification Configs."""
+  event_config_group = base.ArgumentGroup(mutex=True)
+  if include_deprecated:
+    # TODO(b/64597199): Remove this flag when usage is low.
+    event_config_group.AddArgument(base.Argument(
+        '--pubsub-topic',
+        required=False,
+        action=actions.DeprecationAction(
+            '--pubsub-topic',
+            removed=True,
+            error='Flag {flag_name} is removed. Use '
+                  '--event-notification-config instead.'),
+        hidden=True,
+        help='A Google Cloud Pub/Sub topic name for event notifications'))
+    event_config_group.AddArgument(base.Argument(
+        '--event-pubsub-topic',
+        required=False,
+        action=actions.DeprecationAction(
+            '--event-pubsub-topic',
+            warn='Flag {flag_name} is deprecated. Use '
+                 '--event-notification-config instead.'),
+        help='A Google Cloud Pub/Sub topic name for event notifications'))
+
+  event_notification_spec = {
+      'topic': str,
+      'subfolder': str
+  }
+  event_config_group.AddArgument(base.Argument(
+      '--event-notification-config',
+      dest='event_notification_configs',
+      action='append',
       required=False,
-      action=actions.DeprecationAction('--pubsub-topic',
-                                       warn=('Flag {flag_name} is deprecated. '
-                                             'Use --event-pubsub-topic '
-                                             'instead.')),
-      hidden=True,
-      help=('A Google Cloud Pub/Sub topic name for event notifications')
-  ).AddToParser(pubsub_args)
-  base.Argument(
-      '--event-pubsub-topic',
-      required=False,
-      help=('A Google Cloud Pub/Sub topic name for event notifications')
-  ).AddToParser(pubsub_args)
+      type=arg_parsers.ArgDict(spec=event_notification_spec,
+                               required_keys=['topic']),
+      help="""\
+The configuration for notification of telemetry events received
+from the device. This flag can be specified multiple times to add multiple
+configs to the device registry. Configs are added to the registry in the order
+the flags are specified. Only one config with an empty subfolder field is
+allowed and must be specified last.
+
+*topic*::::A Google Cloud Pub/Sub topic name for event notifications
+
+*subfolder*::::If the subfolder name matches this string exactly, this
+configuration will be used to publish telemetry events. If empty all strings
+are matched."""))
+  return [event_config_group]
 
 
 def AddDeviceRegistryCredentialFlagsToParser(parser, credentials_surface=True):
@@ -123,42 +162,26 @@ def _GetDeviceFlags(default_for_blocked_flags=True):
   """Generates the flags for device commands."""
   flags = []
   blocked_state_help_text = (
-      'If {0}, connections from this device will fail.\n\n'
+      'If blocked, connections from this device will fail.\n\n'
       'Can be used to temporarily prevent the device from '
       'connecting if, for example, the sensor is generating bad '
       'data and needs maintenance.\n\n')
-  enable_device_format_args = ('disabled',)
-  blocked_format_args = ('blocked',)
+
   if not default_for_blocked_flags:
     blocked_state_help_text += (
         '+\n\n'  # '+' here preserves markdown indentation.
-        'Use `--{1}` to enable connections and `--{2}` to disable.')
-    enable_device_format_args += ('enable-device', 'no-enable-device')
-    blocked_format_args += ('no-blocked', 'blocked')
+        'Use `--no-blocked` to enable connections and `--blocked` to disable.')
   else:
     blocked_state_help_text += (
         '+\n\n'
         'Connections to device is not blocked by default.')
 
-  blocked_state_args = base.ArgumentGroup(mutex=True)
-  # Defaults are set to None because with nested groups, help text isn't being
-  # generated correctly.
-  blocked_state_args.AddArgument(base.Argument(
-      '--enable-device',
-      default=None,
-      action=actions.DeprecationAction('--[no-]enable-device',
-                                       warn=('Flag {flag_name} is deprecated. '
-                                             'Use --[no-]blocked instead.'),
-                                       action='store_true'),
-      help=blocked_state_help_text.format(*enable_device_format_args)
-  ))
-  blocked_state_args.AddArgument(base.Argument(
+  blocked_default = False if default_for_blocked_flags else None
+  flags.append(base.Argument(
       '--blocked',
-      default=None,
+      default=blocked_default,
       action='store_true',
-      help=blocked_state_help_text.format(*blocked_format_args)
-  ))
-  flags.append(blocked_state_args)
+      help=blocked_state_help_text))
 
   metadata_key_validator = arg_parsers.RegexpValidator(
       r'[a-zA-Z0-9-_]{1,127}',

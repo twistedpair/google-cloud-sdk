@@ -43,6 +43,7 @@ class RuntimeHandler(object):
   def __init__(self):
     # This is set by the ArgumentInterceptor later.
     self.parsed_args = None
+    self._arg_name_lookup = {}
 
   def ParsedArgs(self):
     """Basically a lazy property to use during lazy concept parsing."""
@@ -73,6 +74,11 @@ class RuntimeHandler(object):
           return None
 
     setattr(self, name, LazyParse(concept_info.Parse, self.ParsedArgs))
+    for _, arg_name in concept_info.attribute_to_args_map.iteritems():
+      self._arg_name_lookup[util.NormalizeFormat(arg_name)] = concept_info
+
+  def ArgNameToConceptInfo(self, arg_name):
+    return self._arg_name_lookup.get(util.NormalizeFormat(arg_name))
 
 
 class ConceptInfo(object):
@@ -137,6 +143,13 @@ class ResourceInfo(object):
     self.plural = plural
     self.allow_empty = allow_empty
 
+    self._result = None
+    self._result_computed = False
+
+  @property
+  def resource_spec(self):
+    return self.concept_spec
+
   def _BuildFullFallthroughsMap(self, parsed_args=None):
     """Helper method to build all fallthroughs including arg names."""
     fallthroughs_map = {}
@@ -182,6 +195,22 @@ class ResourceInfo(object):
     return [f.hint for f in fallthroughs]
 
   def Parse(self, parsed_args=None):
+    """Lazy, cached parsing function for resource.
+
+    Args:
+      parsed_args: the parsed Namespace.
+
+    Returns:
+      the initialized resource or a list of initialized resources if the
+        resource argument was pluralized.
+    """
+    if not self._result_computed:
+      result = self._ParseUncached(parsed_args)
+      self._result_computed = True
+      self._result = result
+    return self._result
+
+  def _ParseUncached(self, parsed_args=None):
     """Lazy parsing function for resource.
 
     Args:

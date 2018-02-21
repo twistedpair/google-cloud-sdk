@@ -365,7 +365,7 @@ def AddZoneFlag(parser):
       action=actions.StoreProperty(properties.VALUES.compute.zone))
 
 
-def AddZoneAndRegionFlags(parser, region_hidden=False):
+def AddZoneAndRegionFlags(parser):
   """Adds the --zone and --region flags to the parser."""
   group = parser.add_mutually_exclusive_group()
   group.add_argument(
@@ -375,8 +375,7 @@ def AddZoneAndRegionFlags(parser, region_hidden=False):
       action=actions.StoreProperty(properties.VALUES.compute.zone))
   group.add_argument(
       '--region',
-      help='The compute region (e.g. us-central1) for the cluster.',
-      hidden=region_hidden)
+      help='The compute region (e.g. us-central1) for the cluster.')
 
 
 def AddAsyncFlag(parser):
@@ -1359,3 +1358,18 @@ If unspecified, the TPU CIDR range will use automatic default '/20'.
 Can not be specified unless '--enable-tpu' and '--enable-ip-alias' are also
 specified.
 """)
+
+
+def AddIssueClientCertificateFlag(parser):
+  """Adds --issue-client-certificate flag to the parser."""
+  help_text = """\
+Issue a TLS client certificate with admin permissions.
+
+When enabled, the certificate and private key pair will be present in
+MasterAuth field of the Cluster object.
+"""
+  parser.add_argument(
+      '--issue-client-certificate',
+      action='store_true',
+      default=True,
+      help=help_text)

@@ -684,23 +684,30 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
       cluster belongs to.
     region: Required. The Cloud Dataproc region in which to handle the
       request.
-    updateMask: Required. Specifies the path, relative to
-      <code>Cluster</code>, of the field to update. For example, to change the
-      number of workers in a cluster to 5, the <code>update_mask</code>
-      parameter would be specified as
-      <code>config.worker_config.num_instances</code>, and the PATCH request
-      body would specify the new value, as follows: {   "config":{
-      "workerConfig":{       "numInstances":"5"     }   } } Similarly, to
-      change the number of preemptible workers in a cluster to 5, the
-      <code>update_mask</code> parameter would be
-      <code>config.secondary_worker_config.num_instances</code>, and the PATCH
-      request body would be set as follows: {   "config":{
+    updateMask: Required. Specifies the path, relative to Cluster, of the
+      field to update. For example, to change the number of workers in a
+      cluster to 5, the update_mask parameter would be specified as
+      config.worker_config.num_instances, and the PATCH request body would
+      specify the new value, as follows: {   "config":{     "workerConfig":{
+      "numInstances":"5"     }   } } Similarly, to change the number of
+      preemptible workers in a cluster to 5, the update_mask parameter would
+      be config.secondary_worker_config.num_instances, and the PATCH request
+      body would be set as follows: {   "config":{
       "secondaryWorkerConfig":{       "numInstances":"5"     }   } }
-      <strong>Note:</strong> currently only some fields can be updated:
-      |Mask|Purpose| |labels|Updates labels|
-      |config.worker_config.num_instances|Resize primary worker group|
-      |config.secondary_worker_config.num_instances|Resize secondary worker
-      group|
+      <strong>Note:</strong> currently only the following fields can be
+      updated: <table> <tr>
+      <td><strong>Mask</strong></td><td><strong>Purpose</strong></td> </tr>
+      <tr> <td>labels</td><td>Updates labels</td> </tr> <tr>
+      <td>config.worker_config.num_instances</td><td>Resize primary worker
+      group</td> </tr> <tr>
+      <td>config.secondary_worker_config.num_instances</td><td>Resize
+      secondary worker group</td> </tr> <tr>
+      <td>config.lifecycle_config.auto_delete_ttl</td><td>Reset MAX TTL
+      duration</td> </tr> <tr>
+      <td>config.lifecycle_config.auto_delete_time</td><td>Update MAX TTL
+      deletion timestamp</td> </tr> <tr>
+      <td>config.lifecycle_config.idle_delete_ttl</td><td>Update Idle TTL
+      duration</td> </tr> </table>
   """
 
   cluster = _messages.MessageField('Cluster', 1)

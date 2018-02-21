@@ -27,7 +27,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import yaml_printer
 from googlecloudsdk.core.util import files
 
@@ -193,31 +192,6 @@ class FileIoCapturer(FileIoCapturerBase):
     return self._GetResult(self._inputs)
 
 
-class SessionDeterminer(object):
-  """A class to mock several things that may make session undetermined as is."""
-
-  _mocks = []
-
-  @classmethod
-  def Mock(cls):
-    if cls._mocks:
-      raise Exception('Mocks already created')
-    cls._mocks = [
-        _Mock(progress_tracker.ProgressTracker, '_autotick',
-              new=property(lambda self: False)),
-        _Mock(progress_tracker.ProgressTracker, 'Tick',
-              new=lambda self: self._done),  # pylint: disable=protected-access
-    ]
-    for m in cls._mocks:
-      m.Start()
-
-  @classmethod
-  def Unmock(cls):
-    for m in cls._mocks:
-      m.Stop()
-    cls._mocks = []
-
-
 @six.add_metaclass(abc.ABCMeta)
 class _StateMock(object):  # pytype: disable=ignored-abstractmethod
   """A class to represent a simple mock."""
@@ -306,7 +280,12 @@ class SessionCapturer(object):
 
   def __init__(self, capture_streams=True):
     self._records = []
-    SessionDeterminer.Mock()
+    self._interactive_ux_style = (
+        properties.VALUES.core.interactive_ux_style.Get())
+    properties.VALUES.core.interactive_ux_style.Set(
+        properties.VALUES.core.InteractiveUXStyles.TESTING.name)
+    self._disable_color = properties.VALUES.core.disable_color.Get()
+    properties.VALUES.core.disable_color.Set(True)
     if capture_streams:
       self._streams = (OutputStreamCapturer(sys.stdout),
                        OutputStreamCapturer(sys.stderr),)
@@ -426,7 +405,8 @@ class SessionCapturer(object):
       self._records.insert(3, {
           'input': inputs
       })
-    SessionDeterminer.Unmock()
+    properties.VALUES.core.interactive_ux_style.Set(self._interactive_ux_style)
+    properties.VALUES.core.disable_color.Set(self._disable_color)
 
   @staticmethod
   def _FinalizePrimitive(primitive):

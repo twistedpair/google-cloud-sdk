@@ -47,6 +47,15 @@ class Collections(enum.Enum):
       },
       [u'name']
   )
+  PROJECTS_SCAN_CONFIGS = (
+      'projects.scan_configs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/scan_configs/{scan_configsId}',
+      },
+      [u'name']
+  )
   PROVIDERS = (
       'providers',
       'providers/{providersId}',

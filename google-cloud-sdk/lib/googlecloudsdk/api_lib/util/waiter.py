@@ -15,12 +15,10 @@
 """Utilities to support long running operations."""
 
 import abc
-import sys
 import time
 
 from apitools.base.py import encoding
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
 
@@ -234,53 +232,45 @@ def WaitFor(poller, operation_ref, message,
     AbortWaitError: if ctrl-c was pressed.
     TimeoutError: if retryer has finished wihout being done.
   """
-  def _CtrlCHandler(unused_signal, unused_frame):
-    raise AbortWaitError('Ctrl-C aborted wait.')
-
+  aborted_message = 'Aborting wait for operation {0}.\n'.format(operation_ref)
   try:
-    with execution_utils.CtrlCSection(_CtrlCHandler):
-      try:
-        with progress_tracker.ProgressTracker(message) as tracker:
+    with progress_tracker.ProgressTracker(
+        message, aborted_message=aborted_message) as tracker:
 
-          if pre_start_sleep_ms:
-            _SleepMs(pre_start_sleep_ms)
+      if pre_start_sleep_ms:
+        _SleepMs(pre_start_sleep_ms)
 
-          def _StatusUpdate(unused_result, unused_status):
-            tracker.Tick()
+      def _StatusUpdate(unused_result, unused_status):
+        tracker.Tick()
 
-          retryer = retry.Retryer(
-              max_retrials=max_retrials,
-              max_wait_ms=max_wait_ms,
-              exponential_sleep_multiplier=exponential_sleep_multiplier,
-              jitter_ms=jitter_ms,
-              wait_ceiling_ms=wait_ceiling_ms,
-              status_update_func=_StatusUpdate)
+      retryer = retry.Retryer(
+          max_retrials=max_retrials,
+          max_wait_ms=max_wait_ms,
+          exponential_sleep_multiplier=exponential_sleep_multiplier,
+          jitter_ms=jitter_ms,
+          wait_ceiling_ms=wait_ceiling_ms,
+          status_update_func=_StatusUpdate)
 
-          def _IsNotDone(operation, unused_state):
-            return not poller.IsDone(operation)
+      def _IsNotDone(operation, unused_state):
+        return not poller.IsDone(operation)
 
-          operation = retryer.RetryOnResult(
-              func=poller.Poll,
-              args=(operation_ref,),
-              should_retry_if=_IsNotDone,
-              sleep_ms=sleep_ms)
-      except retry.WaitException:
-        raise TimeoutError(
-            'Operation {0} has not finished in {1} seconds. {2}'
-            .format(operation_ref, int(max_wait_ms / 1000), _TIMEOUT_MESSAGE))
-      except retry.MaxRetrialsException as e:
-        raise TimeoutError(
-            'Operation {0} has not finished in {1} seconds '
-            'after max {2} retrials. {3}'
-            .format(operation_ref,
-                    int(e.state.time_passed_ms / 1000),
-                    e.state.retrial,
-                    _TIMEOUT_MESSAGE))
-
-  except AbortWaitError:
-    # Write this out now that progress tracker is done.
-    sys.stderr.write('Aborting wait for operation {0}.\n'.format(operation_ref))
-    raise
+      operation = retryer.RetryOnResult(
+          func=poller.Poll,
+          args=(operation_ref,),
+          should_retry_if=_IsNotDone,
+          sleep_ms=sleep_ms)
+  except retry.WaitException:
+    raise TimeoutError(
+        'Operation {0} has not finished in {1} seconds. {2}'
+        .format(operation_ref, int(max_wait_ms / 1000), _TIMEOUT_MESSAGE))
+  except retry.MaxRetrialsException as e:
+    raise TimeoutError(
+        'Operation {0} has not finished in {1} seconds '
+        'after max {2} retrials. {3}'
+        .format(operation_ref,
+                int(e.state.time_passed_ms / 1000),
+                e.state.retrial,
+                _TIMEOUT_MESSAGE))
 
   return poller.GetResult(operation)
 

@@ -60,6 +60,8 @@ class CommandType(Enum):
   DELETE = 'delete'
   CREATE = 'create'
   WAIT = 'get'
+  # IAM support currently implemented as subcommands
+  GET_IAM_POLICY = 'getIamPolicy'
   # Generic commands are those that don't extend a specific calliope command
   # base class.
   GENERIC = None

@@ -1041,6 +1041,19 @@
           "description": "The project number for `service_account`.",
           "type": "string",
           "format": "int64"
+        },
+        "config": {
+          "$ref": "GoogleCloudMlV1__Config"
+        }
+      }
+    },
+    "GoogleCloudMlV1__Config": {
+      "id": "GoogleCloudMlV1__Config",
+      "type": "object",
+      "properties": {
+        "tpuServiceAccount": {
+          "description": "The service account Cloud ML uses to run on TPU node.",
+          "type": "string"
         }
       }
     },
@@ -1077,6 +1090,13 @@
             "$ref": "GoogleIamV1__Binding"
           }
         },
+        "auditConfigs": {
+          "description": "Specifies cloud audit logging configuration for this policy.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamV1__AuditConfig"
+          }
+        },
         "etag": {
           "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten blindly.",
           "type": "string",
@@ -1099,33 +1119,54 @@
           "items": {
             "type": "string"
           }
-        },
-        "condition": {
-          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.\nThis field is only visible as GOOGLE_INTERNAL or CONDITION_TRUSTED_TESTER.",
-          "$ref": "GoogleType__Expr"
         }
       }
     },
-    "GoogleType__Expr": {
-      "id": "GoogleType__Expr",
-      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
+    "GoogleIamV1__AuditConfig": {
+      "id": "GoogleIamV1__AuditConfig",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
       "type": "object",
       "properties": {
-        "expression": {
-          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
+        "service": {
+          "description": "Specifies a service that will be enabled for audit logging.\nFor example, `storage.googleapis.com`, `cloudsql.googleapis.com`.\n`allServices` is a special value that covers all services.",
           "type": "string"
         },
-        "title": {
-          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
-          "type": "string"
+        "auditLogConfigs": {
+          "description": "The configuration for logging of each type of permission.\nNext ID: 4",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleIamV1__AuditLogConfig"
+          }
+        }
+      }
+    },
+    "GoogleIamV1__AuditLogConfig": {
+      "id": "GoogleIamV1__AuditLogConfig",
+      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\nfoo@gmail.com from DATA_READ logging.",
+      "type": "object",
+      "properties": {
+        "logType": {
+          "description": "The log type that this config enables.",
+          "enumDescriptions": [
+            "Default case. Should never be this.",
+            "Admin reads. Example: CloudIAM getIamPolicy",
+            "Data writes. Example: CloudSQL Users create",
+            "Data reads. Example: CloudSQL Users list"
+          ],
+          "type": "string",
+          "enum": [
+            "LOG_TYPE_UNSPECIFIED",
+            "ADMIN_READ",
+            "DATA_WRITE",
+            "DATA_READ"
+          ]
         },
-        "description": {
-          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
-          "type": "string"
-        },
-        "location": {
-          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
-          "type": "string"
+        "exemptedMembers": {
+          "description": "Specifies the identities that do not cause logging for this type of\npermission.\nFollows the same format of Binding.members.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1234,7 +1275,6 @@
           "path": "v1/{+name}:predict",
           "flatPath": "v1/projects/{projectsId}:predict",
           "httpMethod": "POST",
-          "description": "Performs prediction on the data in the request.\nCloud ML Engine implements a custom `predict` verb on top of an HTTP POST\nmethod. <p>For details of the request and response format, see the **guide\nto the [predict request format](\/ml-engine\/docs\/v1\/predict-request)**.",
           "parameters": {
             "name": {
               "description": "Required. The resource name of a model or a version.\n\nAuthorization: requires the `predict` permission on the specified resource.",
@@ -1255,14 +1295,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Performs prediction on the data in the request.\nCloud ML Engine implements a custom `predict` verb on top of an HTTP POST\nmethod. <p>For details of the request and response format, see the **guide\nto the [predict request format](\/ml-engine\/docs\/v1\/predict-request)**."
         },
         "getConfig": {
           "id": "ml.projects.getConfig",
           "path": "v1/{+name}:getConfig",
           "flatPath": "v1/projects/{projectsId}:getConfig",
           "httpMethod": "GET",
-          "description": "Get the service account information associated with your project. You need\nthis information in order to grant the service account persmissions for\nthe Google Cloud Storage location where you put your model training code\nfor training the model with Google Cloud Machine Learning.",
           "parameters": {
             "name": {
               "description": "Required. The project name.",
@@ -1280,7 +1320,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Get the service account information associated with your project. You need\nthis information in order to grant the service account persmissions for\nthe Google Cloud Storage location where you put your model training code\nfor training the model with Google Cloud Machine Learning."
         }
       }
       ,
@@ -1292,7 +1333,6 @@
               "path": "v1/{+parent}/jobs",
               "flatPath": "v1/projects/{projectsId}/jobs",
               "httpMethod": "POST",
-              "description": "Creates a training or a batch prediction job.",
               "parameters": {
                 "parent": {
                   "description": "Required. The project name.",
@@ -1313,14 +1353,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Creates a training or a batch prediction job."
             },
             "list": {
               "id": "ml.projects.jobs.list",
               "path": "v1/{+parent}/jobs",
               "flatPath": "v1/projects/{projectsId}/jobs",
               "httpMethod": "GET",
-              "description": "Lists the jobs in the project.\n\nIf there are no jobs that match the request parameters, the list\nrequest returns an empty response body: {}.",
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project for which to list jobs.",
@@ -1354,14 +1394,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists the jobs in the project.\n\nIf there are no jobs that match the request parameters, the list\nrequest returns an empty response body: {}."
             },
             "get": {
               "id": "ml.projects.jobs.get",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/jobs/{jobsId}",
               "httpMethod": "GET",
-              "description": "Describes a job.",
               "parameters": {
                 "name": {
                   "description": "Required. The name of the job to get the description of.",
@@ -1379,14 +1419,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Describes a job."
             },
             "cancel": {
               "id": "ml.projects.jobs.cancel",
               "path": "v1/{+name}:cancel",
               "flatPath": "v1/projects/{projectsId}/jobs/{jobsId}:cancel",
               "httpMethod": "POST",
-              "description": "Cancels a running job.",
               "parameters": {
                 "name": {
                   "description": "Required. The name of the job to cancel.",
@@ -1407,14 +1447,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Cancels a running job."
             },
             "patch": {
               "id": "ml.projects.jobs.patch",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/jobs/{jobsId}",
               "httpMethod": "PATCH",
-              "description": "Updates a specific job resource.\n\nCurrently the only supported fields to update are `labels`.",
               "parameters": {
                 "name": {
                   "description": "Required. The job name.",
@@ -1441,14 +1481,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Updates a specific job resource.\n\nCurrently the only supported fields to update are `labels`."
             },
             "setIamPolicy": {
               "id": "ml.projects.jobs.setIamPolicy",
               "path": "v1/{+resource}:setIamPolicy",
               "flatPath": "v1/projects/{projectsId}/jobs/{jobsId}:setIamPolicy",
               "httpMethod": "POST",
-              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
@@ -1469,14 +1509,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
             },
             "getIamPolicy": {
               "id": "ml.projects.jobs.getIamPolicy",
               "path": "v1/{+resource}:getIamPolicy",
               "flatPath": "v1/projects/{projectsId}/jobs/{jobsId}:getIamPolicy",
               "httpMethod": "GET",
-              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1494,14 +1534,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
             },
             "testIamPermissions": {
               "id": "ml.projects.jobs.testIamPermissions",
               "path": "v1/{+resource}:testIamPermissions",
               "flatPath": "v1/projects/{projectsId}/jobs/{jobsId}:testIamPermissions",
               "httpMethod": "POST",
-              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1522,7 +1562,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
             }
           }
         },
@@ -1533,7 +1574,6 @@
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/locations/{locationsId}",
               "httpMethod": "GET",
-              "description": "Get the complete list of CMLE capabilities in a location, along with their\nlocation-specific properties.",
               "parameters": {
                 "name": {
                   "description": "Required. The name of the location.",
@@ -1551,14 +1591,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Get the complete list of CMLE capabilities in a location, along with their\nlocation-specific properties."
             },
             "list": {
               "id": "ml.projects.locations.list",
               "path": "v1/{+parent}/locations",
               "flatPath": "v1/projects/{projectsId}/locations",
               "httpMethod": "GET",
-              "description": "List all locations that provides at least one type of CMLE capability.",
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project for which available locations are to be\nlisted (since some locations might be whitelisted for specific projects).",
@@ -1587,7 +1627,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "List all locations that provides at least one type of CMLE capability."
             }
           }
         },
@@ -1598,7 +1639,6 @@
               "path": "v1/{+name}/operations",
               "flatPath": "v1/projects/{projectsId}/operations",
               "httpMethod": "GET",
-              "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id.",
               "parameters": {
                 "name": {
                   "description": "The name of the operation's parent resource.",
@@ -1632,14 +1672,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
             },
             "get": {
               "id": "ml.projects.operations.get",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/operations/{operationsId}",
               "httpMethod": "GET",
-              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource.",
@@ -1657,14 +1697,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
             },
             "delete": {
               "id": "ml.projects.operations.delete",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/operations/{operationsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource to be deleted.",
@@ -1682,14 +1722,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`."
             },
             "cancel": {
               "id": "ml.projects.operations.cancel",
               "path": "v1/{+name}:cancel",
               "flatPath": "v1/projects/{projectsId}/operations/{operationsId}:cancel",
               "httpMethod": "POST",
-              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource to be cancelled.",
@@ -1707,7 +1747,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
             }
           }
         },
@@ -1718,7 +1759,6 @@
               "path": "v1/{+parent}/models",
               "flatPath": "v1/projects/{projectsId}/models",
               "httpMethod": "POST",
-              "description": "Creates a model which will later contain one or more versions.\n\nYou must add at least one version before you can request predictions from\nthe model. Add versions by calling\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/create).",
               "parameters": {
                 "parent": {
                   "description": "Required. The project name.",
@@ -1739,14 +1779,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Creates a model which will later contain one or more versions.\n\nYou must add at least one version before you can request predictions from\nthe model. Add versions by calling\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/create)."
             },
             "list": {
               "id": "ml.projects.models.list",
               "path": "v1/{+parent}/models",
               "flatPath": "v1/projects/{projectsId}/models",
               "httpMethod": "GET",
-              "description": "Lists the models in a project.\n\nEach project can contain multiple models, and each model can have multiple\nversions.\n\nIf there are no models that match the request parameters, the list request\nreturns an empty response body: {}.",
               "parameters": {
                 "parent": {
                   "description": "Required. The name of the project whose models are to be listed.",
@@ -1780,14 +1820,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists the models in a project.\n\nEach project can contain multiple models, and each model can have multiple\nversions.\n\nIf there are no models that match the request parameters, the list request\nreturns an empty response body: {}."
             },
             "get": {
               "id": "ml.projects.models.get",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/models/{modelsId}",
               "httpMethod": "GET",
-              "description": "Gets information about a model, including its name, the description (if\nset), and the default version (if at least one version of the model has\nbeen deployed).",
               "parameters": {
                 "name": {
                   "description": "Required. The name of the model.",
@@ -1805,14 +1845,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Gets information about a model, including its name, the description (if\nset), and the default version (if at least one version of the model has\nbeen deployed)."
             },
             "delete": {
               "id": "ml.projects.models.delete",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/models/{modelsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a model.\n\nYou can only delete a model if there are no versions in it. You can delete\nversions by calling\n[projects.models.versions.delete](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/delete).",
               "parameters": {
                 "name": {
                   "description": "Required. The name of the model.",
@@ -1830,14 +1870,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Deletes a model.\n\nYou can only delete a model if there are no versions in it. You can delete\nversions by calling\n[projects.models.versions.delete](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/delete)."
             },
             "patch": {
               "id": "ml.projects.models.patch",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/models/{modelsId}",
               "httpMethod": "PATCH",
-              "description": "Updates a specific model resource.\n\nCurrently the only supported fields to update are `description` and\n`default_version.name`.",
               "parameters": {
                 "name": {
                   "description": "Required. The project name.",
@@ -1847,7 +1887,7 @@
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "Required. Specifies the path, relative to `Model`, of the field to update.\n\nFor example, to change the description of a model to \"foo\" and set its\ndefault version to \"version_1\", the `update_mask` parameter would be\nspecified as `description`, `default_version.name`, and the `PATCH`\nrequest body would specify the new value, as follows:\n    {\n      \"description\": \"foo\",\n      \"defaultVersion\": {\n        \"name\":\"version_1\"\n      }\n    }\nIn this example, the model is blindly overwritten since no etag is given.\n\nTo adopt etag mechanism, include `etag` field in the mask, and include the\n`etag` value in your model resource.\n\nCurrently the supported update masks are `description`,\n`default_version.name`, `labels`, and `etag`.",
+                  "description": "Required. Specifies the path, relative to `Model`, of the field to update.\n\nFor example, to change the description of a model to \"foo\" and set its\ndefault version to \"version_1\", the `update_mask` parameter would be\nspecified as `description`, `default_version.name`, and the `PATCH`\nrequest body would specify the new value, as follows:\n    {\n      \"description\": \"foo\",\n      \"defaultVersion\": {\n        \"name\":\"version_1\"\n      }\n    }\n\nCurrently the supported update masks are `description` and\n`default_version.name`.",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -1864,14 +1904,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Updates a specific model resource.\n\nCurrently the only supported fields to update are `description` and\n`default_version.name`."
             },
             "setIamPolicy": {
               "id": "ml.projects.models.setIamPolicy",
               "path": "v1/{+resource}:setIamPolicy",
               "flatPath": "v1/projects/{projectsId}/models/{modelsId}:setIamPolicy",
               "httpMethod": "POST",
-              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
@@ -1892,14 +1932,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
             },
             "getIamPolicy": {
               "id": "ml.projects.models.getIamPolicy",
               "path": "v1/{+resource}:getIamPolicy",
               "flatPath": "v1/projects/{projectsId}/models/{modelsId}:getIamPolicy",
               "httpMethod": "GET",
-              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1917,14 +1957,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
             },
             "testIamPermissions": {
               "id": "ml.projects.models.testIamPermissions",
               "path": "v1/{+resource}:testIamPermissions",
               "flatPath": "v1/projects/{projectsId}/models/{modelsId}:testIamPermissions",
               "httpMethod": "POST",
-              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1945,7 +1985,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
             }
           }
           ,
@@ -1957,7 +1998,6 @@
                   "path": "v1/{+parent}/versions",
                   "flatPath": "v1/projects/{projectsId}/models/{modelsId}/versions",
                   "httpMethod": "POST",
-                  "description": "Creates a new version of a model from a trained TensorFlow model.\n\nIf the version created in the cloud by this call is the first deployed\nversion of the specified model, it will be made the default version of the\nmodel. When you add a version to a model that already has one or more\nversions, the default version does not automatically change. If you want a\nnew version to be the default, you must call\n[projects.models.versions.setDefault](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/setDefault).",
                   "parameters": {
                     "parent": {
                       "description": "Required. The name of the model.",
@@ -1978,14 +2018,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Creates a new version of a model from a trained TensorFlow model.\n\nIf the version created in the cloud by this call is the first deployed\nversion of the specified model, it will be made the default version of the\nmodel. When you add a version to a model that already has one or more\nversions, the default version does not automatically change. If you want a\nnew version to be the default, you must call\n[projects.models.versions.setDefault](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/setDefault)."
                 },
                 "patch": {
                   "id": "ml.projects.models.versions.patch",
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
                   "httpMethod": "PATCH",
-                  "description": "Updates the specified Version resource.\n\nCurrently the only supported field to update is `description`.",
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the model.",
@@ -1995,7 +2035,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Specifies the path, relative to `Version`, of the field to\nupdate. Must be present and non-empty.\n\nFor example, to change the description of a version to \"foo\", the\n`update_mask` parameter would be specified as `description`, and the\n`PATCH` request body would specify the new value, as follows:\n    {\n      \"description\": \"foo\"\n    }\nIn this example, the version is blindly overwritten since no etag is given.\n\nTo adopt etag mechanism, include `etag` field in the mask, and include the\n`etag` value in your version resource.\n\nCurrently the only supported update masks are `description`, `labels`, and\n`etag`, and `expire_time`.",
+                      "description": "Required. Specifies the path, relative to `Version`, of the field to\nupdate. Must be present and non-empty.\n\nFor example, to change the description of a version to \"foo\", the\n`update_mask` parameter would be specified as `description`, and the\n`PATCH` request body would specify the new value, as follows:\n    {\n      \"description\": \"foo\"\n    }\n\nCurrently the only supported update mask is`description`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2012,14 +2052,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Updates the specified Version resource.\n\nCurrently the only supported field to update is `description`."
                 },
                 "list": {
                   "id": "ml.projects.models.versions.list",
                   "path": "v1/{+parent}/versions",
                   "flatPath": "v1/projects/{projectsId}/models/{modelsId}/versions",
                   "httpMethod": "GET",
-                  "description": "Gets basic information about all the versions of a model.\n\nIf you expect that a model has many versions, or if you need to handle\nonly a limited number of results at a time, you can request that the list\nbe retrieved in batches (called pages).\n\nIf there are no versions that match the request parameters, the list\nrequest returns an empty response body: {}.",
                   "parameters": {
                     "parent": {
                       "description": "Required. The name of the model for which to list the version.",
@@ -2053,14 +2093,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Gets basic information about all the versions of a model.\n\nIf you expect that a model has many versions, or if you need to handle\nonly a limited number of results at a time, you can request that the list\nbe retrieved in batches (called pages).\n\nIf there are no versions that match the request parameters, the list\nrequest returns an empty response body: {}."
                 },
                 "get": {
                   "id": "ml.projects.models.versions.get",
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
                   "httpMethod": "GET",
-                  "description": "Gets information about a model version.\n\nModels can have multiple versions. You can call\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list)\nto get the same information that this method returns for all of the\nversions of a model.",
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the version.",
@@ -2078,14 +2118,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Gets information about a model version.\n\nModels can have multiple versions. You can call\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list)\nto get the same information that this method returns for all of the\nversions of a model."
                 },
                 "delete": {
                   "id": "ml.projects.models.versions.delete",
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes a model version.\n\nEach model can have multiple versions deployed and in use at any given\ntime. Use this method to remove a single version.\n\nNote: You cannot delete the version that is set as the default version\nof the model unless it is the only remaining version.",
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the version. You can get the names of all the\nversions of a model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list).",
@@ -2103,14 +2143,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Deletes a model version.\n\nEach model can have multiple versions deployed and in use at any given\ntime. Use this method to remove a single version.\n\nNote: You cannot delete the version that is set as the default version\nof the model unless it is the only remaining version."
                 },
                 "setDefault": {
                   "id": "ml.projects.models.versions.setDefault",
                   "path": "v1/{+name}:setDefault",
                   "flatPath": "v1/projects/{projectsId}/models/{modelsId}/versions/{versionsId}:setDefault",
                   "httpMethod": "POST",
-                  "description": "Designates a version to be the default for the model.\n\nThe default version is used for prediction requests made against the model\nthat don't specify a version.\n\nThe first version to be created for a model is automatically set as the\ndefault. You must make any subsequent changes to the default version\nsetting manually using this method.",
                   "parameters": {
                     "name": {
                       "description": "Required. The name of the version to make the default for the model. You\ncan get the names of all the versions of a model by calling\n[projects.models.versions.list](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/list).",
@@ -2131,7 +2171,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Designates a version to be the default for the model.\n\nThe default version is used for prediction requests made against the model\nthat don't specify a version.\n\nThe first version to be created for a model is automatically set as the\ndefault. You must make any subsequent changes to the default version\nsetting manually using this method."
                 }
               }
             }

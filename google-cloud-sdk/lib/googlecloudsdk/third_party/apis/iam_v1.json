@@ -844,7 +844,6 @@
               "path": "v1/{+name}/serviceAccounts",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts",
               "httpMethod": "GET",
-              "description": "Lists ServiceAccounts for a project.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the project associated with the service\naccounts, such as `projects\/my-project-123`.",
@@ -873,14 +872,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists ServiceAccounts for a project."
             },
             "get": {
               "id": "iam.projects.serviceAccounts.get",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}",
               "httpMethod": "GET",
-              "description": "Gets a ServiceAccount.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
@@ -898,14 +897,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Gets a ServiceAccount."
             },
             "create": {
               "id": "iam.projects.serviceAccounts.create",
               "path": "v1/{+name}/serviceAccounts",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts",
               "httpMethod": "POST",
-              "description": "Creates a ServiceAccount\nand returns it.",
               "parameters": {
                 "name": {
                   "description": "Required. The resource name of the project associated with the service\naccounts, such as `projects\/my-project-123`.",
@@ -926,14 +925,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Creates a ServiceAccount\nand returns it."
             },
             "update": {
               "id": "iam.projects.serviceAccounts.update",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}",
               "httpMethod": "PUT",
-              "description": "Updates a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` .\nThe `etag` is mandatory.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\n\nRequests using `-` as a wildcard for the `PROJECT_ID` will infer the\nproject from the `account` and the `ACCOUNT` value can be the `email`\naddress or the `unique_id` of the service account.\n\nIn responses the resource name will always be in the format\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.",
@@ -954,14 +953,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Updates a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` .\nThe `etag` is mandatory."
             },
             "delete": {
               "id": "iam.projects.serviceAccounts.delete",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a ServiceAccount.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
@@ -979,14 +978,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Deletes a ServiceAccount."
             },
             "signBlob": {
               "id": "iam.projects.serviceAccounts.signBlob",
               "path": "v1/{+name}:signBlob",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:signBlob",
               "httpMethod": "POST",
-              "description": "Signs a blob using a service account's system-managed private key.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
@@ -1007,14 +1006,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Signs a blob using a service account's system-managed private key."
             },
             "signJwt": {
               "id": "iam.projects.serviceAccounts.signJwt",
               "path": "v1/{+name}:signJwt",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:signJwt",
               "httpMethod": "POST",
-              "description": "Signs a JWT using a service account's system-managed private key.\n\nIf no expiry time (`exp`) is provided in the `SignJwtRequest`, IAM sets an\nan expiry time of one hour by default. If you request an expiry time of\nmore than one hour, the request will fail.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
@@ -1035,14 +1034,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Signs a JWT using a service account's system-managed private key.\n\nIf no expiry time (`exp`) is provided in the `SignJwtRequest`, IAM sets an\nan expiry time of one hour by default. If you request an expiry time of\nmore than one hour, the request will fail."
             },
             "getIamPolicy": {
               "id": "iam.projects.serviceAccounts.getIamPolicy",
               "path": "v1/{+resource}:getIamPolicy",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:getIamPolicy",
               "httpMethod": "POST",
-              "description": "Returns the IAM access control policy for a\nServiceAccount.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1060,14 +1059,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Returns the IAM access control policy for a\nServiceAccount."
             },
             "setIamPolicy": {
               "id": "iam.projects.serviceAccounts.setIamPolicy",
               "path": "v1/{+resource}:setIamPolicy",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:setIamPolicy",
               "httpMethod": "POST",
-              "description": "Sets the IAM access control policy for a\nServiceAccount.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
@@ -1088,14 +1087,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Sets the IAM access control policy for a\nServiceAccount."
             },
             "testIamPermissions": {
               "id": "iam.projects.serviceAccounts.testIamPermissions",
               "path": "v1/{+resource}:testIamPermissions",
               "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:testIamPermissions",
               "httpMethod": "POST",
-              "description": "Tests the specified permissions against the IAM access control policy\nfor a ServiceAccount.",
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
@@ -1116,7 +1115,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Tests the specified permissions against the IAM access control policy\nfor a ServiceAccount."
             }
           }
           ,
@@ -1128,7 +1128,6 @@
                   "path": "v1/{+name}/keys",
                   "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys",
                   "httpMethod": "GET",
-                  "description": "Lists ServiceAccountKeys.",
                   "parameters": {
                     "name": {
                       "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\n\nUsing `-` as a wildcard for the `PROJECT_ID`, will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
@@ -1157,14 +1156,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Lists ServiceAccountKeys."
                 },
                 "get": {
                   "id": "iam.projects.serviceAccounts.keys.get",
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys/{keysId}",
                   "httpMethod": "GET",
-                  "description": "Gets the ServiceAccountKey\nby key id.",
                   "parameters": {
                     "name": {
                       "description": "The resource name of the service account key in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/keys\/{key}`.\n\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
@@ -1192,14 +1191,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Gets the ServiceAccountKey\nby key id."
                 },
                 "create": {
                   "id": "iam.projects.serviceAccounts.keys.create",
                   "path": "v1/{+name}/keys",
                   "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys",
                   "httpMethod": "POST",
-                  "description": "Creates a ServiceAccountKey\nand returns it.",
                   "parameters": {
                     "name": {
                       "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
@@ -1220,14 +1219,14 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Creates a ServiceAccountKey\nand returns it."
                 },
                 "delete": {
                   "id": "iam.projects.serviceAccounts.keys.delete",
                   "path": "v1/{+name}",
                   "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys/{keysId}",
                   "httpMethod": "DELETE",
-                  "description": "Deletes a ServiceAccountKey.",
                   "parameters": {
                     "name": {
                       "description": "The resource name of the service account key in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/keys\/{key}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
@@ -1245,7 +1244,8 @@
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
-                  ]
+                  ],
+                  "description": "Deletes a ServiceAccountKey."
                 }
               }
             }
@@ -1258,7 +1258,6 @@
               "path": "v1/{+parent}/roles",
               "flatPath": "v1/projects/{projectsId}/roles",
               "httpMethod": "GET",
-              "description": "Lists the Roles defined on a resource.",
               "parameters": {
                 "parent": {
                   "description": "The resource name of the parent resource in one of the following formats:\n`` (empty string) -- this refers to curated roles.\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
@@ -1301,14 +1300,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists the Roles defined on a resource."
             },
             "get": {
               "id": "iam.projects.roles.get",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/roles/{rolesId}",
               "httpMethod": "GET",
-              "description": "Gets a Role definition.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
@@ -1326,14 +1325,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Gets a Role definition."
             },
             "create": {
               "id": "iam.projects.roles.create",
               "path": "v1/{+parent}/roles",
               "flatPath": "v1/projects/{projectsId}/roles",
               "httpMethod": "POST",
-              "description": "Creates a new Role.",
               "parameters": {
                 "parent": {
                   "description": "The resource name of the parent resource in one of the following formats:\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
@@ -1354,14 +1353,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Creates a new Role."
             },
             "patch": {
               "id": "iam.projects.roles.patch",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/roles/{rolesId}",
               "httpMethod": "PATCH",
-              "description": "Updates a Role definition.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
@@ -1388,14 +1387,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Updates a Role definition."
             },
             "delete": {
               "id": "iam.projects.roles.delete",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/roles/{rolesId}",
               "httpMethod": "DELETE",
-              "description": "Soft deletes a role. The role is suspended and cannot be used to create new\nIAM Policy Bindings.\nThe Role will not be included in `ListRoles()` unless `show_deleted` is set\nin the `ListRolesRequest`. The Role contains the deleted boolean set.\nExisting Bindings remains, but are inactive. The Role can be undeleted\nwithin 7 days. After 7 days the Role is deleted and all Bindings associated\nwith the role are removed.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the role in one of the following formats:\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
@@ -1419,14 +1418,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Soft deletes a role. The role is suspended and cannot be used to create new\nIAM Policy Bindings.\nThe Role will not be included in `ListRoles()` unless `show_deleted` is set\nin the `ListRolesRequest`. The Role contains the deleted boolean set.\nExisting Bindings remains, but are inactive. The Role can be undeleted\nwithin 7 days. After 7 days the Role is deleted and all Bindings associated\nwith the role are removed."
             },
             "undelete": {
               "id": "iam.projects.roles.undelete",
               "path": "v1/{+name}:undelete",
               "flatPath": "v1/projects/{projectsId}/roles/{rolesId}:undelete",
               "httpMethod": "POST",
-              "description": "Undelete a Role, bringing it back in its previous state.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the role in one of the following formats:\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
@@ -1447,7 +1446,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Undelete a Role, bringing it back in its previous state."
             }
           }
         }
@@ -1460,7 +1460,6 @@
           "path": "v1/roles:queryGrantableRoles",
           "flatPath": "v1/roles:queryGrantableRoles",
           "httpMethod": "POST",
-          "description": "Queries roles that can be granted on a particular resource.\nA role is grantable if it can be used as the role in a binding for a policy\nfor that resource.",
           "parameters": {
           },
           "parameterOrder": [
@@ -1473,14 +1472,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Queries roles that can be granted on a particular resource.\nA role is grantable if it can be used as the role in a binding for a policy\nfor that resource."
         },
         "list": {
           "id": "iam.roles.list",
           "path": "v1/roles",
           "flatPath": "v1/roles",
           "httpMethod": "GET",
-          "description": "Lists the Roles defined on a resource.",
           "parameters": {
             "parent": {
               "description": "The resource name of the parent resource in one of the following formats:\n`` (empty string) -- this refers to curated roles.\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
@@ -1520,14 +1519,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Lists the Roles defined on a resource."
         },
         "get": {
           "id": "iam.roles.get",
           "path": "v1/{+name}",
           "flatPath": "v1/roles/{rolesId}",
           "httpMethod": "GET",
-          "description": "Gets a Role definition.",
           "parameters": {
             "name": {
               "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
@@ -1545,7 +1544,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Gets a Role definition."
         }
       }
     },
@@ -1558,7 +1558,6 @@
               "path": "v1/{+parent}/roles",
               "flatPath": "v1/organizations/{organizationsId}/roles",
               "httpMethod": "GET",
-              "description": "Lists the Roles defined on a resource.",
               "parameters": {
                 "parent": {
                   "description": "The resource name of the parent resource in one of the following formats:\n`` (empty string) -- this refers to curated roles.\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
@@ -1601,14 +1600,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists the Roles defined on a resource."
             },
             "get": {
               "id": "iam.organizations.roles.get",
               "path": "v1/{+name}",
               "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}",
               "httpMethod": "GET",
-              "description": "Gets a Role definition.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
@@ -1626,14 +1625,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Gets a Role definition."
             },
             "create": {
               "id": "iam.organizations.roles.create",
               "path": "v1/{+parent}/roles",
               "flatPath": "v1/organizations/{organizationsId}/roles",
               "httpMethod": "POST",
-              "description": "Creates a new Role.",
               "parameters": {
                 "parent": {
                   "description": "The resource name of the parent resource in one of the following formats:\n`organizations\/{ORGANIZATION_ID}`\n`projects\/{PROJECT_ID}`",
@@ -1654,14 +1653,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Creates a new Role."
             },
             "patch": {
               "id": "iam.organizations.roles.patch",
               "path": "v1/{+name}",
               "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}",
               "httpMethod": "PATCH",
-              "description": "Updates a Role definition.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the role in one of the following formats:\n`roles\/{ROLE_NAME}`\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
@@ -1688,14 +1687,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Updates a Role definition."
             },
             "delete": {
               "id": "iam.organizations.roles.delete",
               "path": "v1/{+name}",
               "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}",
               "httpMethod": "DELETE",
-              "description": "Soft deletes a role. The role is suspended and cannot be used to create new\nIAM Policy Bindings.\nThe Role will not be included in `ListRoles()` unless `show_deleted` is set\nin the `ListRolesRequest`. The Role contains the deleted boolean set.\nExisting Bindings remains, but are inactive. The Role can be undeleted\nwithin 7 days. After 7 days the Role is deleted and all Bindings associated\nwith the role are removed.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the role in one of the following formats:\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
@@ -1719,14 +1718,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Soft deletes a role. The role is suspended and cannot be used to create new\nIAM Policy Bindings.\nThe Role will not be included in `ListRoles()` unless `show_deleted` is set\nin the `ListRolesRequest`. The Role contains the deleted boolean set.\nExisting Bindings remains, but are inactive. The Role can be undeleted\nwithin 7 days. After 7 days the Role is deleted and all Bindings associated\nwith the role are removed."
             },
             "undelete": {
               "id": "iam.organizations.roles.undelete",
               "path": "v1/{+name}:undelete",
               "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}:undelete",
               "httpMethod": "POST",
-              "description": "Undelete a Role, bringing it back in its previous state.",
               "parameters": {
                 "name": {
                   "description": "The resource name of the role in one of the following formats:\n`organizations\/{ORGANIZATION_ID}\/roles\/{ROLE_NAME}`\n`projects\/{PROJECT_ID}\/roles\/{ROLE_NAME}`",
@@ -1747,7 +1746,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Undelete a Role, bringing it back in its previous state."
             }
           }
         }
@@ -1760,7 +1760,6 @@
           "path": "v1/permissions:queryTestablePermissions",
           "flatPath": "v1/permissions:queryTestablePermissions",
           "httpMethod": "POST",
-          "description": "Lists the permissions testable on a resource.\nA permission is testable if it can be tested for an identity on a resource.",
           "parameters": {
           },
           "parameterOrder": [
@@ -1773,7 +1772,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Lists the permissions testable on a resource.\nA permission is testable if it can be tested for an identity on a resource."
         }
       }
     },
@@ -1784,7 +1784,6 @@
           "path": "v1/iamPolicies:queryAuditableServices",
           "flatPath": "v1/iamPolicies:queryAuditableServices",
           "httpMethod": "POST",
-          "description": "Returns a list of services that support service level audit logging\nconfiguration for the given resource.",
           "parameters": {
           },
           "parameterOrder": [
@@ -1797,7 +1796,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Returns a list of services that support service level audit logging\nconfiguration for the given resource."
         }
       }
     }

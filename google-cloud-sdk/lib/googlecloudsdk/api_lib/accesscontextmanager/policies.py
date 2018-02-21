@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """API library for access context manager policies."""
+from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.accesscontextmanager import util
 from googlecloudsdk.api_lib.util import waiter
 
@@ -19,10 +21,21 @@ from googlecloudsdk.core import resources
 
 
 class Client(object):
+  """Client for Access Context Manager Access Policies service."""
 
   def __init__(self, client=None, messages=None):
     self.client = client or util.GetClient()
     self.messages = messages or self.client.MESSAGES_MODULE
+
+  def List(self, organization_ref, limit=None):
+    req = self.messages.AccesscontextmanagerAccessPoliciesListRequest(
+        parent=organization_ref.RelativeName())
+    return list_pager.YieldFromList(
+        self.client.accessPolicies, req,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=None,
+        field='accessPolicies')
 
   def Patch(self, policy_ref, title=None):
     """Patch an access policy.

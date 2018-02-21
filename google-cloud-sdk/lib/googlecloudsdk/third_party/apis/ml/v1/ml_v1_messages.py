@@ -173,17 +173,29 @@ class GoogleCloudMlV1Capability(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
+class GoogleCloudMlV1Config(_messages.Message):
+  """A GoogleCloudMlV1Config object.
+
+  Fields:
+    tpuServiceAccount: The service account Cloud ML uses to run on TPU node.
+  """
+
+  tpuServiceAccount = _messages.StringField(1)
+
+
 class GoogleCloudMlV1GetConfigResponse(_messages.Message):
   """Returns service account information associated with a project.
 
   Fields:
+    config: A GoogleCloudMlV1Config attribute.
     serviceAccount: The service account Cloud ML uses to access resources in
       the project.
     serviceAccountProject: The project number for `service_account`.
   """
 
-  serviceAccount = _messages.StringField(1)
-  serviceAccountProject = _messages.IntegerField(2)
+  config = _messages.MessageField('GoogleCloudMlV1Config', 1)
+  serviceAccount = _messages.StringField(2)
+  serviceAccountProject = _messages.IntegerField(3)
 
 
 class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
@@ -1141,15 +1153,79 @@ class GoogleCloudMlV1Version(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 14)
 
 
+class GoogleIamV1AuditConfig(_messages.Message):
+  """Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConfig must have one or more
+  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
+  multiple AuditConfigs:      {       "audit_configs": [         {
+  "service": "allServices"           "audit_log_configs": [             {
+  "log_type": "DATA_READ",               "exempted_members": [
+  "user:foo@gmail.com"               ]             },             {
+  "log_type": "DATA_WRITE",             },             {
+  "log_type": "ADMIN_READ",             }           ]         },         {
+  "service": "fooservice.googleapis.com"           "audit_log_configs": [
+  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE",               "exempted_members": [
+  "user:bar@gmail.com"               ]             }           ]         }
+  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
+  and bar@gmail.com from DATA_WRITE logging.
+
+  Fields:
+    auditLogConfigs: The configuration for logging of each type of permission.
+      Next ID: 4
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
+  """
+
+  auditLogConfigs = _messages.MessageField('GoogleIamV1AuditLogConfig', 1, repeated=True)
+  service = _messages.StringField(2)
+
+
+class GoogleIamV1AuditLogConfig(_messages.Message):
+  """Provides the configuration for logging a type of permissions. Example:
+  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
+  "exempted_members": [             "user:foo@gmail.com"           ]
+  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
+  foo@gmail.com from DATA_READ logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    """The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
 class GoogleIamV1Binding(_messages.Message):
   """Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently. This field is only visible as GOOGLE_INTERNAL or
-      CONDITION_TRUSTED_TESTER.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -1167,9 +1243,8 @@ class GoogleIamV1Binding(_messages.Message):
       `roles/editor`, or `roles/owner`. Required
   """
 
-  condition = _messages.MessageField('GoogleTypeExpr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  members = _messages.StringField(1, repeated=True)
+  role = _messages.StringField(2)
 
 
 class GoogleIamV1Policy(_messages.Message):
@@ -1188,6 +1263,7 @@ class GoogleIamV1Policy(_messages.Message):
   developer's guide](https://cloud.google.com/iam/docs).
 
   Fields:
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
     bindings: Associates a list of `members` to a `role`. `bindings` with no
       members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
@@ -1202,9 +1278,10 @@ class GoogleIamV1Policy(_messages.Message):
     version: Deprecated.
   """
 
-  bindings = _messages.MessageField('GoogleIamV1Binding', 1, repeated=True)
-  etag = _messages.BytesField(2)
-  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  auditConfigs = _messages.MessageField('GoogleIamV1AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('GoogleIamV1Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleIamV1SetIamPolicyRequest(_messages.Message):
@@ -1455,30 +1532,6 @@ class GoogleRpcStatus(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
-
-
-class GoogleTypeExpr(_messages.Message):
-  """Represents an expression text. Example:      title: "User account
-  presence"     description: "Determines whether the request has a user
-  account"     expression: "size(request.user) > 0"
-
-  Fields:
-    description: An optional description of the expression. This is a longer
-      text which describes the expression, e.g. when hovered over it in a UI.
-    expression: Textual representation of an expression in Common Expression
-      Language syntax.  The application context of the containing message
-      determines which well-known feature set of CEL is supported.
-    location: An optional string indicating the location of the expression for
-      error reporting, e.g. a file name and a position in the file.
-    title: An optional title for the expression, i.e. a short string
-      describing its purpose. This can be used e.g. in UIs which allow to
-      enter the expression.
-  """
-
-  description = _messages.StringField(1)
-  expression = _messages.StringField(2)
-  location = _messages.StringField(3)
-  title = _messages.StringField(4)
 
 
 class MlProjectsGetConfigRequest(_messages.Message):
@@ -1733,11 +1786,8 @@ class MlProjectsModelsPatchRequest(_messages.Message):
       parameter would be specified as `description`, `default_version.name`,
       and the `PATCH` request body would specify the new value, as follows:
       {       "description": "foo",       "defaultVersion": {
-      "name":"version_1"       }     } In this example, the model is blindly
-      overwritten since no etag is given.  To adopt etag mechanism, include
-      `etag` field in the mask, and include the `etag` value in your model
-      resource.  Currently the supported update masks are `description`,
-      `default_version.name`, `labels`, and `etag`.
+      "name":"version_1"       }     }  Currently the supported update masks
+      are `description` and `default_version.name`.
   """
 
   googleCloudMlV1Model = _messages.MessageField('GoogleCloudMlV1Model', 1)
@@ -1844,11 +1894,7 @@ class MlProjectsModelsVersionsPatchRequest(_messages.Message):
       the description of a version to "foo", the `update_mask` parameter would
       be specified as `description`, and the `PATCH` request body would
       specify the new value, as follows:     {       "description": "foo"
-      } In this example, the version is blindly overwritten since no etag is
-      given.  To adopt etag mechanism, include `etag` field in the mask, and
-      include the `etag` value in your version resource.  Currently the only
-      supported update masks are `description`, `labels`, and `etag`, and
-      `expire_time`.
+      }  Currently the only supported update mask is`description`.
   """
 
   googleCloudMlV1Version = _messages.MessageField('GoogleCloudMlV1Version', 1)

@@ -591,12 +591,14 @@
           "description": "The type of hash that was performed.",
           "enumDescriptions": [
             "No hash requested.",
-            "Use a sha256 hash."
+            "Use a sha256 hash.",
+            "Use a md5 hash, which is available for compatibility with Google Cloud Storage."
           ],
           "type": "string",
           "enum": [
             "NONE",
-            "SHA256"
+            "SHA256",
+            "MD5"
           ]
         },
         "value": {
@@ -615,14 +617,16 @@
           "description": "Requested hash for SourceProvenance.",
           "enumDescriptions": [
             "No hash requested.",
-            "Use a sha256 hash."
+            "Use a sha256 hash.",
+            "Use a md5 hash, which is available for compatibility with Google Cloud Storage."
           ],
           "type": "array",
           "items": {
             "type": "string",
             "enum": [
               "NONE",
-              "SHA256"
+              "SHA256",
+              "MD5"
             ]
           }
         },
@@ -813,7 +817,6 @@
           "path": "v1/{+name}",
           "flatPath": "v1/operations",
           "httpMethod": "GET",
-          "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id.",
           "parameters": {
             "name": {
               "description": "The name of the operation's parent resource.",
@@ -847,14 +850,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
         },
         "get": {
           "id": "cloudbuild.operations.get",
           "path": "v1/{+name}",
           "flatPath": "v1/operations/{operationsId}",
           "httpMethod": "GET",
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
           "parameters": {
             "name": {
               "description": "The name of the operation resource.",
@@ -872,14 +875,14 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
         },
         "cancel": {
           "id": "cloudbuild.operations.cancel",
           "path": "v1/{+name}:cancel",
           "flatPath": "v1/operations/{operationsId}:cancel",
           "httpMethod": "POST",
-          "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
           "parameters": {
             "name": {
               "description": "The name of the operation resource to be cancelled.",
@@ -900,7 +903,8 @@
           },
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
-          ]
+          ],
+          "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
         }
       }
     },
@@ -913,7 +917,6 @@
               "path": "v1/projects/{projectId}/builds",
               "flatPath": "v1/projects/{projectId}/builds",
               "httpMethod": "POST",
-              "description": "Starts a build with the specified configuration.\n\nThe long-running Operation returned by this method will include the ID of\nthe build, which can be passed to GetBuild to determine its status (e.g.,\nsuccess or failure).",
               "parameters": {
                 "projectId": {
                   "description": "ID of the project.",
@@ -933,14 +936,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Starts a build with the specified configuration.\n\nThe long-running Operation returned by this method will include the ID of\nthe build, which can be passed to GetBuild to determine its status (e.g.,\nsuccess or failure)."
             },
             "get": {
               "id": "cloudbuild.projects.builds.get",
               "path": "v1/projects/{projectId}/builds/{id}",
               "flatPath": "v1/projects/{projectId}/builds/{id}",
               "httpMethod": "GET",
-              "description": "Returns information about a previously requested build.\n\nThe Build that is returned includes its status (e.g., success or failure,\nor in-progress), and timing information.",
               "parameters": {
                 "projectId": {
                   "description": "ID of the project.",
@@ -964,14 +967,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Returns information about a previously requested build.\n\nThe Build that is returned includes its status (e.g., success or failure,\nor in-progress), and timing information."
             },
             "list": {
               "id": "cloudbuild.projects.builds.list",
               "path": "v1/projects/{projectId}/builds",
               "flatPath": "v1/projects/{projectId}/builds",
               "httpMethod": "GET",
-              "description": "Lists previously requested builds.\n\nPreviously requested builds may still be in-progress, or may have finished\nsuccessfully or unsuccessfully.",
               "parameters": {
                 "projectId": {
                   "description": "ID of the project.",
@@ -1004,14 +1007,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists previously requested builds.\n\nPreviously requested builds may still be in-progress, or may have finished\nsuccessfully or unsuccessfully."
             },
             "cancel": {
               "id": "cloudbuild.projects.builds.cancel",
               "path": "v1/projects/{projectId}/builds/{id}:cancel",
               "flatPath": "v1/projects/{projectId}/builds/{id}:cancel",
               "httpMethod": "POST",
-              "description": "Cancels a requested build in progress.",
               "parameters": {
                 "projectId": {
                   "description": "ID of the project.",
@@ -1038,14 +1041,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Cancels a requested build in progress."
             },
             "retry": {
               "id": "cloudbuild.projects.builds.retry",
               "path": "v1/projects/{projectId}/builds/{id}:retry",
               "flatPath": "v1/projects/{projectId}/builds/{id}:retry",
               "httpMethod": "POST",
-              "description": "Creates a new build based on the given build.\n\nThis API creates a new build using the original build request,  which may\nor may not result in an identical build.\n\nFor triggered builds:\n\n* Triggered builds resolve to a precise revision, so a retry of a triggered\nbuild will result in a build that uses the same revision.\n\nFor non-triggered builds that specify RepoSource:\n\n* If the original build built from the tip of a branch, the retried build\nwill build from the tip of that branch, which may not be the same revision\nas the original build.\n* If the original build specified a commit sha or revision ID, the retried\nbuild will use the identical source.\n\nFor builds that specify StorageSource:\n\n* If the original build pulled source from Cloud Storage without specifying\nthe generation of the object, the new build will use the current object,\nwhich may be different from the original build source.\n* If the original build pulled source from Cloud Storage and specified the\ngeneration of the object, the new build will attempt to use the same\nobject, which may or may not be available depending on the bucket's\nlifecycle management settings.",
               "parameters": {
                 "projectId": {
                   "description": "ID of the project.",
@@ -1072,7 +1075,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Creates a new build based on the given build.\n\nThis API creates a new build using the original build request,  which may\nor may not result in an identical build.\n\nFor triggered builds:\n\n* Triggered builds resolve to a precise revision, so a retry of a triggered\nbuild will result in a build that uses the same revision.\n\nFor non-triggered builds that specify RepoSource:\n\n* If the original build built from the tip of a branch, the retried build\nwill build from the tip of that branch, which may not be the same revision\nas the original build.\n* If the original build specified a commit sha or revision ID, the retried\nbuild will use the identical source.\n\nFor builds that specify StorageSource:\n\n* If the original build pulled source from Cloud Storage without specifying\nthe generation of the object, the new build will use the current object,\nwhich may be different from the original build source.\n* If the original build pulled source from Cloud Storage and specified the\ngeneration of the object, the new build will attempt to use the same\nobject, which may or may not be available depending on the bucket's\nlifecycle management settings."
             }
           }
         },
@@ -1083,7 +1087,6 @@
               "path": "v1/projects/{projectId}/triggers",
               "flatPath": "v1/projects/{projectId}/triggers",
               "httpMethod": "POST",
-              "description": "Creates a new BuildTrigger.\n\nThis API is experimental.",
               "parameters": {
                 "projectId": {
                   "description": "ID of the project for which to configure automatic builds.",
@@ -1103,14 +1106,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Creates a new BuildTrigger.\n\nThis API is experimental."
             },
             "get": {
               "id": "cloudbuild.projects.triggers.get",
               "path": "v1/projects/{projectId}/triggers/{triggerId}",
               "flatPath": "v1/projects/{projectId}/triggers/{triggerId}",
               "httpMethod": "GET",
-              "description": "Gets information about a BuildTrigger.\n\nThis API is experimental.",
               "parameters": {
                 "projectId": {
                   "description": "ID of the project that owns the trigger.",
@@ -1134,14 +1137,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Gets information about a BuildTrigger.\n\nThis API is experimental."
             },
             "list": {
               "id": "cloudbuild.projects.triggers.list",
               "path": "v1/projects/{projectId}/triggers",
               "flatPath": "v1/projects/{projectId}/triggers",
               "httpMethod": "GET",
-              "description": "Lists existing BuildTrigger.\n\nThis API is experimental.",
               "parameters": {
                 "projectId": {
                   "description": "ID of the project for which to list BuildTriggers.",
@@ -1158,14 +1161,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Lists existing BuildTrigger.\n\nThis API is experimental."
             },
             "delete": {
               "id": "cloudbuild.projects.triggers.delete",
               "path": "v1/projects/{projectId}/triggers/{triggerId}",
               "flatPath": "v1/projects/{projectId}/triggers/{triggerId}",
               "httpMethod": "DELETE",
-              "description": "Deletes an BuildTrigger by its project ID and trigger ID.\n\nThis API is experimental.",
               "parameters": {
                 "projectId": {
                   "description": "ID of the project that owns the trigger.",
@@ -1189,14 +1192,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Deletes an BuildTrigger by its project ID and trigger ID.\n\nThis API is experimental."
             },
             "patch": {
               "id": "cloudbuild.projects.triggers.patch",
               "path": "v1/projects/{projectId}/triggers/{triggerId}",
               "flatPath": "v1/projects/{projectId}/triggers/{triggerId}",
               "httpMethod": "PATCH",
-              "description": "Updates an BuildTrigger by its project ID and trigger ID.\n\nThis API is experimental.",
               "parameters": {
                 "projectId": {
                   "description": "ID of the project that owns the trigger.",
@@ -1223,14 +1226,14 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Updates an BuildTrigger by its project ID and trigger ID.\n\nThis API is experimental."
             },
             "run": {
               "id": "cloudbuild.projects.triggers.run",
               "path": "v1/projects/{projectId}/triggers/{triggerId}:run",
               "flatPath": "v1/projects/{projectId}/triggers/{triggerId}:run",
               "httpMethod": "POST",
-              "description": "Runs a BuildTrigger at a particular source revision.",
               "parameters": {
                 "projectId": {
                   "description": "ID of the project.",
@@ -1257,7 +1260,8 @@
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
-              ]
+              ],
+              "description": "Runs a BuildTrigger at a particular source revision."
             }
           }
         }

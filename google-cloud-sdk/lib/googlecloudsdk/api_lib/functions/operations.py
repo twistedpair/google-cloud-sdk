@@ -11,17 +11,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """A library used to interact with Operations objects."""
+# TODO(b/73491568) Refactor to use api_lib.util.waiter
 
 from googlecloudsdk.api_lib.functions import exceptions
-from googlecloudsdk.api_lib.functions import util
 from googlecloudsdk.core.console import progress_tracker as console_progress_tracker
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import retry
 
 MAX_WAIT_MS = 620000
 WAIT_CEILING_MS = 2000
 SLEEP_MS = 1000
+
+
+def OperationErrorToString(error):
+  """Returns a human readable string representation from the operation.
+
+  Args:
+    error: A string representing the raw json of the operation error.
+
+  Returns:
+    A human readable string representation of the error.
+  """
+  return u'OperationError: code={0}, message={1}'.format(
+      error.code, encoding.Decode(error.message))
 
 
 def _GetOperationStatus(client, get_request, progress_tracker=None):
@@ -43,8 +56,8 @@ def _GetOperationStatus(client, get_request, progress_tracker=None):
   if progress_tracker:
     progress_tracker.Tick()
   op = client.operations.Get(get_request)
-  if op.done and op.error:
-    raise exceptions.FunctionsError(util.GetOperationError(op.error))
+  if op.error:
+    raise exceptions.FunctionsError(OperationErrorToString(op.error))
   return op.done
 
 
@@ -99,7 +112,7 @@ def Wait(operation, messages, client, notice=None):
     notice: str, displayed when waiting for the operation to finish.
 
   Raises:
-    FunctionsError: If the operation takes more than 360s.
+    FunctionsError: If the operation takes more than 620s.
   """
   if notice is None:
     notice = 'Waiting for operation to finish'

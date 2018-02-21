@@ -281,7 +281,7 @@ def Exec(args,
   # started and the original is killed.  When running in a shell, the prompt
   # returns as soon as the parent is killed even though the child is still
   # running.  subprocess waits for the new process to finish before returning.
-  env = _GetToolEnv(env=env)
+  env = encoding.EncodeEnv(_GetToolEnv(env=env))
 
   process_holder = _ProcessHolder()
   with _ReplaceSignal(signal.SIGTERM, process_holder.Handler):
