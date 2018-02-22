@@ -16,7 +16,6 @@
 
 from __future__ import absolute_import
 from __future__ import division
-from __future__ import unicode_literals
 from collections import OrderedDict
 import datetime
 import errno
@@ -161,8 +160,8 @@ class _ConsoleWriter(object):
 
     from googlecloudsdk.core.console import console_attr  # pylint: disable=g-import-not-at-top, avoid import loop
     msg = (console_attr.EncodeForConsole(x, escape=False) for x in msg)
-    message = ' '.join(msg)
-    self.write(message + '\n')
+    message = u' '.join(msg)
+    self.write(message + u'\n')
 
   def GetConsoleWriterStream(self):
     """Returns the console writer output stream."""
@@ -517,7 +516,7 @@ class _LogManager(object):
       log_file = self._SetupLogsDir(logs_dir)
       file_handler = logging.FileHandler(log_file)
     except (OSError, IOError, files.Error) as exp:
-      warn('Could not setup log file in {0}, ({1}: {2})'
+      warn(u'Could not setup log file in {0}, ({1}: {2})'
            .format(logs_dir, type(exp).__name__, exp))
       return
 
@@ -906,15 +905,15 @@ def _PrintResourceChange(operation,
   if kind:
     msg.append(kind)
   if resource:
-    msg.append('[{0}]'.format(str(resource)))
+    msg.append(u'[{0}]'.format(unicode(resource)))
   if details:
     msg.append(details)
   if failed:
-    msg[-1] = '{0}:'.format(msg[-1])
+    msg[-1] = u'{0}:'.format(msg[-1])
     msg.append(failed)
   period = '' if msg[-1].endswith('.') else '.'
   writer = error if failed else status.Print
-  writer('{0}{1}'.format(' '.join(msg), period))
+  writer(u'{0}{1}'.format(' '.join(msg), period))
 
 
 def CreatedResource(resource, kind=None, async=False, details=None,

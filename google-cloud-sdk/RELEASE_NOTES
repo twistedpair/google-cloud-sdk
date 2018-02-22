@@ -3,6 +3,11 @@
 Copyright 2014-2018 Google Inc. All rights reserved.
 
 
+## 190.0.1 (2018-02-22)
+
+*  Hotfix for UnicodeDecodeError issue affecting logging.
+
+
 ## 190.0.0 (2018-02-21)
 
 ### Breaking Changes
@@ -34,11 +39,12 @@ Copyright 2014-2018 Google Inc. All rights reserved.
     `--event-notification-config` flag instead.
 *  **(REMOVED)** Removed `NAME` and `--regexp` args from
    `compute target-ssl-proxies list`. Please use the `--filter` flag instead.
-* Added `container/use_v1_api` property.
-  If true, all gcloud Kubernetes Engine commands (regardless of release track)
-  will use the v1 API; otherwise, gcloud beta track commands will use v1beta1
-  API and gcloud alpha track commands will use v1alpha1 API. By default, it is
-  set to true. The default will be changed to false by the end of March.
+* Added the `container/use_v1_api` property, which replaces the
+  `container/use_v1_api_client` property. If true, all gcloud Kubernetes Engine
+  commands (regardless of release track) will use the v1 API; otherwise,
+  gcloud beta track commands will use v1beta1 API and gcloud alpha track
+  commands will use v1alpha1 API. By default, it is set to true. The default
+  will be changed to false by the end of March.
 
 
 ### App Engine
@@ -86,8 +92,8 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 
 * Promoted `public-ptr` and `public-ptr-domain` flags of
   `gcloud compute instances <create|add-access-config|update-access-config>` to
-  GA. These flags allow setting up the PTR record for the external IPs of GCE
-  instances.
+  GA. These flags allow setting up the PTR record for the external IPs of
+  Compute Engine instances.
 * Added `--shielded-vm-secure-boot` and `--shielded-vm-vtpm` flags to
   `gcloud compute instance-templates create` in alpha to support the
   configuration of shielded VMs.
@@ -197,7 +203,7 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 ## 188.0.1 (2018-02-08)
 
 *  Hotfix for https://issuetracker.google.com/73044966 affecting Cloud SDK
-   installations in environments with inconsistent access to the GCE
+   installations in environments with inconsistent access to the Compute Engine
    metadata server.
 
 
@@ -1375,7 +1381,7 @@ Added support for `.gcloudignore` files to `container builds submit` command.
     deprecated. Please use `--ssl-certificates` as an alternative.
 
 *   The hidden `compute diagnose routes` command is now available. It enables
-    (trace)routing to/from VMs in GCE.
+    (trace)routing to/from VMs in Compute Engine.
 
 *   The `gcloud compute shared-vpc` command is now available as an alias of
     `gcloud compute xpn`.
@@ -3712,7 +3718,7 @@ if a file upload is necessary.
   installation and local network issues.
 * `gcloud init` now has a `--skip-diagnostics` flag.
 
-### Google AppEngine
+### Google App Engine
 
 * App Engine Java SDK updated to 1.9.46.
   Please visit the following release notes for details:
@@ -3868,7 +3874,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   and `alpha compute instance-images create` commands. By default
   interfaces will have ephemeral IP (was: no external ip).
 
-### Google AppEngine
+### Google App Engine
 
 * App Engine: The `gcloud app deploy` command no longer blocks when stopping the
   previous version; this should speed up deployment times. Instructions for
@@ -3958,7 +3964,7 @@ The alpha commands will remain, as is, until at least March of 2017.
   `gcloud auth login` no longer writes Application Default Credentials, use
   `gcloud auth application-default login` instead.
 
-### Google AppEngine
+### Google App Engine
 
 * Java apps that have no app.yaml file are now auto-detected based on a
   WEB-INF/appengine-web.xml file when launching the dev_appserver.
@@ -4555,8 +4561,8 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 ### Google BigQuery
 
-*   New query option in BQ client to specify a limit on bytes billed for the
-    query.
+*   New query option in BigQuery client to specify a limit on bytes billed for
+    the query.
 
 ### Google Cloud Bigtable
 
@@ -4962,7 +4968,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 ### Google BigQuery
 
-* BQ support for partitioned tables.
+* BigQuery support for partitioned tables.
 
 
 ## 106.0.0 (2016-04-20)
