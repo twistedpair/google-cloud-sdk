@@ -95,7 +95,7 @@ def GetRuntimes(args):
             runtimes.add('python27-libs')
           runtimes.add(runtime)
           if runtime in _WARNING_RUNTIMES:
-            log.warn(_WARNING_RUNTIMES[runtime])
+            log.warning(_WARNING_RUNTIMES[runtime])
     elif os.path.isfile(os.path.join(arg, 'WEB-INF', 'appengine-web.xml')):
       # For unstanged Java App Engine apps, which may not have any yaml files.
       runtimes.add('java')

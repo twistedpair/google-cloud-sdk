@@ -474,14 +474,7 @@ def AddTimeout(parser, default='30s'):
 
 
 def AddPortName(parser):
-  """Add port and port-name flags."""
-  # TODO(b/36051036): Remove port once port_name is in use. b/16486110
-  parser.add_argument(
-      '--port',
-      type=int,
-      help=('The TCP port to use when connecting to the backend. '
-            '--port is being deprecated in favor of --port-name.'))
-
+  """Add port-name flag."""
   parser.add_argument(
       '--port-name',
       help="""\

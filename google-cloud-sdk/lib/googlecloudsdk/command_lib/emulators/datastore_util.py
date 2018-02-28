@@ -97,7 +97,7 @@ def PrepareGCDDataDir(args):
   """
   data_dir = args.data_dir
   if os.path.isdir(data_dir) and os.listdir(data_dir):
-    log.warn('Reusing existing data in [{0}].'.format(data_dir))
+    log.warning('Reusing existing data in [{0}].'.format(data_dir))
     return
 
   gcd_create_args = ['create']

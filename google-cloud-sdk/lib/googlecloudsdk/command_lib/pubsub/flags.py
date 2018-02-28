@@ -71,7 +71,7 @@ def ParseAckIdsArgs(args):
     raise exceptions.MinimumArgumentException(['ACK_ID', '--ack-ids'])
   else:
     if args.ack_id:
-      log.warn(DEPRECATION_FORMAT_STR.format('ACK_ID', '--ack-ids'))
+      log.warning(DEPRECATION_FORMAT_STR.format('ACK_ID', '--ack-ids'))
     ack_ids = args.ack_id or args.ack_ids
     if not isinstance(ack_ids, list):
       ack_ids = [ack_ids]
@@ -248,5 +248,5 @@ def ParseMessageBody(args):
     raise exceptions.ConflictingArgumentsException('MESSAGE_BODY', '--message')
 
   if args.message_body is not None:
-    log.warn(DEPRECATION_FORMAT_STR.format('MESSAGE_BODY', '--message'))
+    log.warning(DEPRECATION_FORMAT_STR.format('MESSAGE_BODY', '--message'))
   return args.message_body or args.message

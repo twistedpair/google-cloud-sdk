@@ -451,7 +451,7 @@ def RenderDocumentAction(command, default_style=None):
       md = StringIO.StringIO(markdown.Markdown(command))
       out = (StringIO.StringIO() if console_io.IsInteractive(output=True)
              else None)
-      render_document.RenderDocument(style, md, out=out, notes=notes,
+      render_document.RenderDocument(style, md, out=out or log.out, notes=notes,
                                      title=title)
       metrics.Ran()
       if out:
@@ -590,6 +590,6 @@ def DeprecationAction(flag_name,
       if removed:
         raise parser_errors.ArgumentError(add_help.message)
       else:
-        log.warn(add_help.message)
+        log.warning(add_help.message)
 
   return _PreActionHook(action, DeprecationFunc, add_help)

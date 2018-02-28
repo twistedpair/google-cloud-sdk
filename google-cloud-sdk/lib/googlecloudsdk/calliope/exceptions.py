@@ -178,7 +178,7 @@ def _TruncateToLineWidth(string, align, width, fill=''):
     # terminal that's way too narrow. In either case, we aren't going to be able
     # to make this look nice, but we don't want to throw an error because that
     # will mask the original error.
-    log.warn('Screen not wide enough to display correct error message.')
+    log.warning('Screen not wide enough to display correct error message.')
     return string
 
   if len(string) <= width:

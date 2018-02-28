@@ -88,7 +88,7 @@ def RunPredict(model_dir, json_instances=None, text_instances=None):
   if proc.returncode != 0:
     raise LocalPredictRuntimeError(err)
   if err:
-    log.warn(err)
+    log.warning(err)
 
   try:
     return json.loads(output)

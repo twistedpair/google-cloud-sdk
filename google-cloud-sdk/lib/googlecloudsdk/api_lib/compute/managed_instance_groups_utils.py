@@ -726,7 +726,7 @@ def _UpdateCustomMetricUtilizationsFromStackoverflowFlags(
       target_type = None
 
     if args.stackdriver_metric_filter and "'" in args.stackdriver_metric_filter:
-      log.warn(
+      log.warning(
           "The provided filter contains a single quote character ('). While "
           "valid as a metric/resource label value, it's not a control "
           "character that is part of the filtering language; if you meant "

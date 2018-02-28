@@ -101,7 +101,7 @@ class Pager(object):
     # prev_pos, prev_next values to force reprint
     self.prev_pos, self.prev_nxt = self.PREV_POS_NXT_REPRINT
     # Initialize the console attributes.
-    self._attr = console_attr.GetConsoleAttr(out=out)
+    self._attr = console_attr.GetConsoleAttr()
     self._width, self._height = self._attr.GetTermSize()
 
     # Initialize the prompt and the prompt clear string.

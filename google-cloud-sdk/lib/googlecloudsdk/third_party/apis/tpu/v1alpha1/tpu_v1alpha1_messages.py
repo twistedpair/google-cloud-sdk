@@ -12,6 +12,18 @@ from apitools.base.py import extra_types
 package = 'tpu'
 
 
+class AcceleratorType(_messages.Message):
+  """A accelerator type that a Node can be configured with.
+
+  Fields:
+    name: The resource name.
+    type: the accelerator type.
+  """
+
+  name = _messages.StringField(1)
+  type = _messages.StringField(2)
+
+
 class Empty(_messages.Message):
   """A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -20,6 +32,18 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class ListAcceleratorTypesResponse(_messages.Message):
+  """Response for ListAcceleratorTypes.
+
+  Fields:
+    acceleratorTypes: The listed nodes.
+    nextPageToken: The next page token or empty if none.
+  """
+
+  acceleratorTypes = _messages.MessageField('AcceleratorType', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -600,6 +624,35 @@ class TensorFlowVersion(_messages.Message):
 
   name = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class TpuProjectsLocationsAcceleratorTypesGetRequest(_messages.Message):
+  """A TpuProjectsLocationsAcceleratorTypesGetRequest object.
+
+  Fields:
+    name: The resource name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TpuProjectsLocationsAcceleratorTypesListRequest(_messages.Message):
+  """A TpuProjectsLocationsAcceleratorTypesListRequest object.
+
+  Fields:
+    filter: List filter.
+    orderBy: Sort results.
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: The parent resource name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class TpuProjectsLocationsGetRequest(_messages.Message):

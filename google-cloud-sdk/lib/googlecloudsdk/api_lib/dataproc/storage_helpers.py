@@ -195,7 +195,7 @@ class StorageObjectSeriesStream(object):
         try:
           object_info = self._GetObject(self._current_object_index)
         except apitools_exceptions.HttpError as error:
-          log.warn('Failed to fetch GCS output:\n%s', error)
+          log.warning('Failed to fetch GCS output:\n%s', error)
           break
         if not object_info:
           # Nothing to read yet.

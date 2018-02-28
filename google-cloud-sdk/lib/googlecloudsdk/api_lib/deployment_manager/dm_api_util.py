@@ -312,7 +312,7 @@ class StringPropertyParser(object):
     # print a warning and then return the value as-is
     if not self.warned:
       self.warned = True
-      log.warn(
+      log.warning(
           "Delimiter '=' is deprecated for properties flag. Use ':' instead.")
     return value
 

@@ -913,7 +913,7 @@ version [{1}].  To clear your fixed version setting, run:
     self._RestartIfUsingBundledPython(args=restart_args)
 
     if self.IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
-      log.warn(BUNDLED_PYTHON_REMOVAL_WARNING)
+      log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
 
     # If explicitly listing components, you are probably installing and not
     # doing a full update, change the message to be more clear.
@@ -1197,7 +1197,7 @@ To revert your SDK to the previously installed version, you may run:
     self._RestartIfUsingBundledPython()
 
     if self.IsPythonBundled() and BUNDLED_PYTHON_COMPONENT in to_remove:
-      log.warn(BUNDLED_PYTHON_REMOVAL_WARNING)
+      log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
 
     message = self._GetDontCancelMessage(disable_backup)
     if not console_io.PromptContinue(message):
@@ -1247,7 +1247,7 @@ To revert your SDK to the previously installed version, you may run:
         BUNDLED_PYTHON_COMPONENT in
         install_state.BackupInstallationState().InstalledComponents())
     if self.IsPythonBundled() and not backup_has_bundled_python:
-      log.warn(BUNDLED_PYTHON_REMOVAL_WARNING)
+      log.warning(BUNDLED_PYTHON_REMOVAL_WARNING)
 
     if not console_io.PromptContinue(
         message='Your Cloud SDK installation will be restored to its previous '

@@ -15,9 +15,9 @@
 
 import time
 
-from apitools.base.py import exceptions
+from apitools.base.py import exceptions as base_exceptions
 
-from googlecloudsdk.api_lib.sql import errors
+from googlecloudsdk.api_lib.sql import exceptions
 from googlecloudsdk.core.console import progress_tracker as console_progress_tracker
 from googlecloudsdk.core.util import retry
 
@@ -56,7 +56,7 @@ class _BaseOperations(object):
 
     def ShouldRetryFunc(result, state):
       # In case of HttpError, retry for up to _HTTP_MAX_RETRY_MS at most.
-      if isinstance(result, exceptions.HttpError):
+      if isinstance(result, base_exceptions.HttpError):
         if state.time_passed_ms > _BaseOperations._HTTP_MAX_RETRY_MS:
           raise result
         return True
@@ -80,7 +80,7 @@ class _BaseOperations(object):
             should_retry_if=ShouldRetryFunc,
             sleep_ms=_BaseOperations._INITIAL_SLEEP_MS)
       except retry.WaitException:
-        raise errors.OperationError(
+        raise exceptions.OperationError(
             ('Operation {0} is taking longer than expected. You can continue '
              'waiting for the operation by running `{1}`').format(
                  operation_ref, cls.GetOperationWaitCommand(operation_ref)))
@@ -120,9 +120,9 @@ class OperationsV1Beta3(_BaseOperations):
       # have to catch all exceptions here and return them.
       return e
     if op.error:
-      return errors.OperationError(op.error[0].code)
+      return exceptions.OperationError(op.error[0].code)
     if op.state == 'UNKNOWN':
-      return errors.OperationError(op.state)
+      return exceptions.OperationError(op.state)
     if op.state == 'DONE':
       return True
     return False
@@ -165,9 +165,9 @@ class OperationsV1Beta4(_BaseOperations):
       # have to catch all exceptions here and return them.
       return e
     if op.error and op.error.errors:
-      return errors.OperationError(op.error.errors[0].code)
+      return exceptions.OperationError(op.error.errors[0].code)
     if op.status == 'UNKNOWN':
-      return errors.OperationError(op.status)
+      return exceptions.OperationError(op.status)
     if op.status == 'DONE':
       return True
     return False

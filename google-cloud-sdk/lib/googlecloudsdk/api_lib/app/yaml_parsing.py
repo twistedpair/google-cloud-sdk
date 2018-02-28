@@ -56,9 +56,10 @@ APP_ENGINE_APIS_DEPRECATION_WARNING = (
 
 PYTHON_SSL_WARNING = (
     'You are using an outdated version [2.7] of the Python SSL library. '
-    'Please update your app.yaml file to specify SSL library [2.7.11] to '
-    'avoid security risks. On March 1, 2018, version 2.7 will be '
-    'deprecated and your app will be automatically migrated to version 2.7.11.'
+    'Please update your app.yaml file to specify SSL library [latest] to '
+    'avoid security risks. On April 2, 2018, version 2.7 will be '
+    'decommissioned and your app will be blocked from deploying until you '
+    'you specify SSL library [latest] or [2.7.11].'
     'For more information, visit {}.'
 ).format('https://cloud.google.com/appengine/docs/deprecations/python-ssl-27')
 
@@ -285,11 +286,11 @@ class ServiceYamlInfo(_YamlInfo):
             'runtime "custom" requires that env be explicitly specified.')
 
     if parsed.vm:
-      log.warn(MANAGED_VMS_DEPRECATION_WARNING)
+      log.warning(MANAGED_VMS_DEPRECATION_WARNING)
 
     if (util.IsFlex(parsed.env) and parsed.beta_settings and
         parsed.beta_settings.get('enable_app_engine_apis')):
-      log.warn(APP_ENGINE_APIS_DEPRECATION_WARNING)
+      log.warning(APP_ENGINE_APIS_DEPRECATION_WARNING)
 
     if util.IsFlex(parsed.env) and vm_runtime == 'python27':
       raise YamlValidationError(
@@ -297,16 +298,16 @@ class ServiceYamlInfo(_YamlInfo):
           'Please use [python] instead.')
 
     if util.IsFlex(parsed.env) and vm_runtime == 'python-compat':
-      log.warn('[runtime: {}] is deprecated.  Please use [runtime: python] '
-               'instead.  See {} for more info.'
-               .format(vm_runtime, UPGRADE_FLEX_PYTHON_URL))
+      log.warning('[runtime: {}] is deprecated.  Please use [runtime: python] '
+                  'instead.  See {} for more info.'
+                  .format(vm_runtime, UPGRADE_FLEX_PYTHON_URL))
 
     for warn_text in parsed.GetWarnings():
-      log.warn('In file [{0}]: {1}'.format(file_path, warn_text))
+      log.warning('In file [{0}]: {1}'.format(file_path, warn_text))
 
     if (util.IsStandard(parsed.env) and parsed.runtime == 'python27' and
         HasLib(parsed, 'ssl', '2.7')):
-      log.warn(PYTHON_SSL_WARNING)
+      log.warning(PYTHON_SSL_WARNING)
 
     _CheckIllegalAttribute(
         name='application',

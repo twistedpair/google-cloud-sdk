@@ -317,7 +317,7 @@ def WarnAlias(alias):
   else:
     msg += 'Please use --image-family and --image-project instead.'
 
-  log.warn(msg)
+  log.warning(msg)
 
 
 def AddGuestOsFeaturesArg(parser, release_track):

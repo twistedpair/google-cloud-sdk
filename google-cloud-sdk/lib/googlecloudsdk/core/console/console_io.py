@@ -33,6 +33,7 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
+import six
 from six.moves import input  # pylint: disable=redefined-builtin
 from six.moves import map  # pylint: disable=redefined-builtin
 from six.moves import range  # pylint: disable=redefined-builtin
@@ -109,6 +110,45 @@ def _RawInput(prompt=None):
     return input()
   except EOFError:
     return None
+
+
+def ReadFromFileOrStdin(path, binary):
+  """Returns the contents of the specified file or stdin if path is '-'.
+
+  Args:
+    path: str, The path of the file to read.
+    binary: bool, True to open the file in binary mode.
+
+  Raises:
+    Error: If the file cannot be read or is larger than max_bytes.
+
+  Returns:
+    The contents of the file.
+  """
+  if path == '-':
+    return ReadStdin(binary=binary)
+  return files.GetFileContents(path, binary=binary)
+
+
+def ReadStdin(binary=False):
+  """Reads data from stdin, correctly accounting for encoding.
+
+  Anything that needs to read sys.stdin must go through this method.
+
+  Args:
+    binary: bool, True to read raw bytes, False to read text.
+
+  Returns:
+    A text string if binary is False, otherwise a byte string.
+  """
+  if binary:
+    return files.ReadStdinBytes()
+  else:
+    data = sys.stdin.read()
+    if six.PY2:
+      # On Python 2, stdin comes in a a byte string. Convert it to text.
+      data = console_attr.DecodeFromConsole(data)
+    return data
 
 
 def IsInteractive(output=False, error=False, heuristic=False):
@@ -688,7 +728,7 @@ class _NormalProgressBar(object):
     self._total_ticks = total_ticks
     self._first = first
     self._last = last
-    attr = console_attr.ConsoleAttr(out=stream)
+    attr = console_attr.ConsoleAttr()
     self._box = attr.GetBoxLineCharacters()
     self._redraw = (self._box.d_dr != self._box.d_vr or
                     self._box.d_dl != self._box.d_vl)

@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Functions for creating a client to talk to the App Engine Admin API."""
 
 import itertools
@@ -236,9 +237,12 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         migrateTraffic=migrate,
         updateMask='split')
 
+    message = 'Setting traffic split for service [{service}]'.format(
+        service=service_name)
     operation = self.client.apps_services.Patch(update_service_request)
     return operations_util.WaitForOperation(self.client.apps_operations,
-                                            operation)
+                                            operation,
+                                            message=message)
 
   def DeleteVersion(self, service_name, version_id):
     """Deletes the specified version of the given service.

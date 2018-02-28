@@ -955,27 +955,35 @@ def GetFileContents(path, binary=False):
     raise Error('Unable to read file [{0}]: {1}'.format(path, e))
 
 
-def GetFileOrStdinContents(path, binary=False):
-  """Returns the contents of the specified file or stdin if path is '-'.
+def WriteStreamBytes(stream, contents):
+  """Write the given bytes to the stream.
 
   Args:
-    path: str, The path of the file to read.
-    binary: bool, True to open the file in binary mode.
+    stream: The raw stream to write to, usually sys.stdout or sys.stderr.
+    contents: A byte string to write to the stream.
+  """
+  if six.PY2:
+    with _FileInBinaryMode(stream):
+      stream.write(contents)
+      # Flush to force content to be written out with the correct mode.
+      stream.flush()
+  else:
+    # This is raw byte stream, but it doesn't exist on PY2.
+    stream.buffer.write(contents)
 
-  Raises:
-    Error: If the file cannot be read or is larger than max_bytes.
+
+def ReadStdinBytes():
+  """Reads raw bytes from sys.stdin without any encoding interpretation.
 
   Returns:
-    The contents of the file.
+    bytes, The byte string that was read.
   """
-  if path == '-':
-    if binary:
-      with _FileInBinaryMode(sys.stdin):
-        return sys.stdin.read()
-    else:
+  if six.PY2:
+    with _FileInBinaryMode(sys.stdin):
       return sys.stdin.read()
-
-  return GetFileContents(path, binary=binary)
+  else:
+    # This is raw byte stream, but it doesn't exist on PY2.
+    return sys.stdin.buffer.read()
 
 
 def WriteFileAtomically(file_name, contents):
@@ -1043,34 +1051,6 @@ def WriteFileContents(path, content, overwrite=True, binary=False,
     # EnvironmentError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.
     raise Error('Unable to write file [{0}]: {1}'.format(path, e))
-
-
-def WriteFileOrStdoutContents(path, content, overwrite=True, binary=False,
-                              private=False):
-  """Writes content to the specified file.
-
-  Args:
-    path: str, The path of the file to write.
-    content: str, The content to write to the file.
-    overwrite: bool, Whether or not to overwrite the file if it exists.
-    binary: bool, True to open the file in binary mode.
-    private: bool, Whether to write the file in private mode.
-
-  Raises:
-    Error: If the file cannot be written.
-  """
-  if path == '-':
-    if binary:
-      with _FileInBinaryMode(sys.stdout):
-        sys.stdout.write(content)
-        # Flush to force content to be written out with the correct mode.a
-        sys.stdout.flush()
-    else:
-      sys.stdout.write(content)
-    return
-
-  WriteFileContents(path, content, overwrite=overwrite, binary=binary,
-                    private=private)
 
 
 def GetTreeSizeBytes(path, predicate=None):

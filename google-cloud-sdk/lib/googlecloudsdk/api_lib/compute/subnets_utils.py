@@ -90,7 +90,11 @@ def MakeSubnetworkUpdateRequest(client,
       return client.MakeRequests(
           [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif enable_flow_logs is not None:
-    subnetwork = client.messages.Subnetwork()
+    subnetwork = client.MakeRequests(
+        [(client.apitools_client.subnetworks,
+          'Get', client.messages.ComputeSubnetworksGetRequest(
+              **subnet_ref.AsDict()))])[0]
+
     subnetwork.enableFlowLogs = enable_flow_logs
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])

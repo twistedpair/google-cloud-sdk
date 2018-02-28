@@ -297,5 +297,5 @@ def MakeRequests(requests, http, batch_url, errors, progress_tracker=None):
       yield response
 
     if warnings:
-      log.warn(utils.ConstructList('Some requests generated warnings:',
-                                   warnings))
+      log.warning(utils.ConstructList('Some requests generated warnings:',
+                                      warnings))

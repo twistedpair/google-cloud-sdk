@@ -460,6 +460,39 @@
         }
       }
     },
+    "ListAcceleratorTypesResponse": {
+      "id": "ListAcceleratorTypesResponse",
+      "description": "Response for ListAcceleratorTypes.",
+      "type": "object",
+      "properties": {
+        "acceleratorTypes": {
+          "description": "The listed nodes.",
+          "type": "array",
+          "items": {
+            "$ref": "AcceleratorType"
+          }
+        },
+        "nextPageToken": {
+          "description": "The next page token or empty if none.",
+          "type": "string"
+        }
+      }
+    },
+    "AcceleratorType": {
+      "id": "AcceleratorType",
+      "description": "A accelerator type that a Node can be configured with.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name.",
+          "type": "string"
+        },
+        "type": {
+          "description": "the accelerator type.",
+          "type": "string"
+        }
+      }
+    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
@@ -999,6 +1032,81 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Gets TensorFlow Version."
+                }
+              }
+            },
+            "acceleratorTypes": {
+              "methods": {
+                "list": {
+                  "id": "tpu.projects.locations.acceleratorTypes.list",
+                  "path": "v1alpha1/{+parent}/acceleratorTypes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/acceleratorTypes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The parent resource name.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Sort results.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListAcceleratorTypesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists accelerator types supported by this API."
+                },
+                "get": {
+                  "id": "tpu.projects.locations.acceleratorTypes.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/acceleratorTypes/{acceleratorTypesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/acceleratorTypes\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "AcceleratorType"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets AcceleratorType."
                 }
               }
             }

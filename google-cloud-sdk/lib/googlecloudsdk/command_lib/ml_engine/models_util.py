@@ -40,8 +40,8 @@ def ParseCreateLabels(models_client, args):
 def Create(models_client, model, regions=None, enable_logging=None,
            labels=None, description=None):
   if regions is None:
-    log.warn('`--regions` flag will soon be required. Please explicitly '
-             'specify a region. Using [us-central1] by default.')
+    log.warning('`--regions` flag will soon be required. Please explicitly '
+                'specify a region. Using [us-central1] by default.')
     regions = ['us-central1']
   return models_client.Create(model, regions, enable_logging, labels=labels,
                               description=description)

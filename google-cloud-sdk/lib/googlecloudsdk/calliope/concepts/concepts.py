@@ -177,9 +177,9 @@ class ResourceSpec(ConceptSpec):
     collection_params = self._collection_info.GetParams('')
     self._attributes = []
     self._param_names_map = {}
-    anchor = False
 
     # Add attributes.
+    anchor = False
     for i, param_name in enumerate(collection_params):
       if i == len(collection_params) - 1:
         anchor = True
@@ -221,7 +221,13 @@ class ResourceSpec(ConceptSpec):
   @property
   def anchor(self):
     """The "anchor" attribute of the resource."""
+    # self.attributes cannot be empty; will cause an error on init.
     return self.attributes[-1]
+
+  @property
+  def attribute_to_params_map(self):
+    """A map from all attribute names to param names."""
+    return self._param_names_map
 
   def _AttributeName(self, param_name, attribute_config, anchor=False):
     """Chooses attribute name for a param name.
@@ -245,9 +251,15 @@ class ResourceSpec(ConceptSpec):
       return 'name'
     return param_name
 
-  def _ParamName(self, attribute_name):
+  def ParamName(self, attribute_name):
     """Given an attribute name, gets the param name for resource parsing."""
-    return self._param_names_map.get(attribute_name, '')
+    return self.attribute_to_params_map.get(attribute_name, '')
+
+  def AttributeName(self, param_name):
+    """Given a param name, gets the attribute name."""
+    for attribute_name, p in self.attribute_to_params_map.iteritems():
+      if p == param_name:
+        return attribute_name
 
   def Initialize(self, deps):
     """Initializes a resource given its fallthroughs.
@@ -272,7 +284,7 @@ class ResourceSpec(ConceptSpec):
     def LazyGet(name):
       return lambda: deps.Get(name)
     for attribute in self.attributes:
-      params[self._ParamName(attribute.name)] = LazyGet(attribute.name)
+      params[self.ParamName(attribute.name)] = LazyGet(attribute.name)
     self._resources.RegisterApiByName(self._collection_info.api_name,
                                       self._collection_info.api_version)
     try:
@@ -284,6 +296,10 @@ class ResourceSpec(ConceptSpec):
       raise InitializationError(
           'The [{}] resource is not properly specified.\n'
           '{}'.format(self.name, e.message))
+
+  def __eq__(self, other):
+    return (super(ResourceSpec, self).__eq__(other)
+            and self.attribute_to_params_map == other.attribute_to_params_map)
 
 
 class ResourceParameterAttributeConfig(object):

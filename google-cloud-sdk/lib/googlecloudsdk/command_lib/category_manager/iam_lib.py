@@ -13,7 +13,9 @@
 # limitations under the License.
 """Commands for IAM related operations in Cloud Category Manager."""
 
+from googlecloudsdk.api_lib.category_manager import store
 from googlecloudsdk.api_lib.category_manager import utils
+from googlecloudsdk.command_lib.category_manager import util
 from googlecloudsdk.command_lib.iam import iam_util
 
 
@@ -30,3 +32,8 @@ def RemoveIamPolicyBinding(resource_ref, role, member, module):
   policy = module.GetIamPolicy(resource_ref)
   iam_util.RemoveBindingFromIamPolicy(policy, member, role)
   return module.SetIamPolicy(resource_ref, policy)
+
+
+def GetOrgIamPolicy(org_ref):
+  """Get Iam policy with an organization reference."""
+  return store.GetIamPolicy(util.GetTaxonomyStoreRefFromOrgRef(org_ref))

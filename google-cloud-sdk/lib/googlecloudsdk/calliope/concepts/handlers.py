@@ -150,8 +150,23 @@ class ResourceInfo(object):
   def resource_spec(self):
     return self.concept_spec
 
-  def _BuildFullFallthroughsMap(self, parsed_args=None):
-    """Helper method to build all fallthroughs including arg names."""
+  def BuildFullFallthroughsMap(self, parsed_args=None):
+    """Builds map of all fallthroughs including arg names.
+
+    Fallthroughs are a list of objects that, when called, try different ways of
+    getting values for attributes (see googlecloudsdk.calliope.concepts.deps.
+    _Fallthrough). This method builds a map from the name of each attribute to
+    its fallthroughs, including the "primary" fallthrough representing its
+    corresponding argument value in parsed_args if any, and any fallthroughs
+    that were configured for the attribute beyond that.
+
+    Args:
+      parsed_args: the parsed namespace.
+
+    Returns:
+      {str: [deps_lib._Fallthrough]}, a map from attribute name to its
+      fallthroughs.
+    """
     fallthroughs_map = {}
     for attribute in self.concept_spec.attributes:
       attribute_name = attribute.name
@@ -191,7 +206,7 @@ class ResourceInfo(object):
     Returns:
       A list of hints for its fallthroughs, including its primary arg if any.
     """
-    fallthroughs = self._BuildFullFallthroughsMap().get(attribute_name, [])
+    fallthroughs = self.BuildFullFallthroughsMap().get(attribute_name, [])
     return [f.hint for f in fallthroughs]
 
   def Parse(self, parsed_args=None):
@@ -220,7 +235,7 @@ class ResourceInfo(object):
       the initialized resource or a list of initialized resources if the
         resource argument was pluralized.
     """
-    fallthroughs_map = self._BuildFullFallthroughsMap(parsed_args)
+    fallthroughs_map = self.BuildFullFallthroughsMap(parsed_args)
 
     if not self.plural:
       try:

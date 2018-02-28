@@ -15,7 +15,7 @@
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.container import constants
-from googlecloudsdk.core import properties
+from googlecloudsdk.command_lib.container import container_command_util
 
 
 def AutoUpdateUpgradeRepairMessage(value, flag_name):
@@ -40,7 +40,7 @@ def AutoUpdateUpgradeRepairMessage(value, flag_name):
 
 def GetAPIMismatchingWarning(track):
   """Warning for using an API version that mismatches the release track."""
-  if not properties.VALUES.container.use_v1_api.GetBool():
+  if not container_command_util.GetUseV1APIProperty():
     # No message if v1 API is not forced.
     return None
   tmpl = constants.KUBERNETES_API_MISMATCH_WARNING_TEMPLATE

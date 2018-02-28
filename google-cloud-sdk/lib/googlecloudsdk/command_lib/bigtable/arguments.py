@@ -13,6 +13,7 @@
 # limitations under the License.
 """Module for wrangling bigtable command arguments."""
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
@@ -118,15 +119,24 @@ class ArgAdder(object):
     self.parser.add_argument(name, **args)
     return self
 
-  def AddInstanceDescription(self, required=False):
-    self.parser.add_argument(
+  def AddInstanceDisplayName(self, required=False):
+    """Add argument group for description and display-name to parser."""
+    group = self.parser.add_mutually_exclusive_group(required=required)
+
+    # TODO(b/73365914) Remove after deprecation period
+    group.add_argument(
         '--description',
-        help='Friendly name of the instance.',
-        required=required)
+        action=actions.DeprecationAction(
+            '--description',
+            warn='Flag --description is deprecated. '
+            'Use --display-name=DISPLAY_NAME instead.'),
+        help='Friendly name of the instance.')
+
+    group.add_argument('--display-name', help='Friendly name of the instance.')
     return self
 
-  def AddInstanceType(self, additional_choices=None, default=None,
-                      help_text=None):
+  # TODO(b/38428550) Remove create flag after deprecation period
+  def AddInstanceType(self, create=True, default=None, help_text=None):
     """Add default instance type choices to parser."""
     choices = {
         'PRODUCTION':
@@ -134,12 +144,24 @@ class ArgAdder(object):
             'three nodes, provide high availability, and are suitable for '
             'applications in production.'
     }
+    action = None
 
-    if additional_choices:
-      choices.update(additional_choices)
+    if create:
+      choices.update({
+          'DEVELOPMENT': 'Development instances are low-cost instances meant '
+                         'for development and testing only. They do not '
+                         'provide high availability and no service level '
+                         'agreement applies.'
+      })
+    else:
+      action = actions.DeprecationAction(
+          '--instance-type',
+          warn='Upgrading development instances with --instance-type is '
+          'deprecated. Use the bigtable instances upgrade command instead.')
 
     self.parser.add_argument(
         '--instance-type',
+        action=action,
         default=default,
         type=str.upper,
         choices=choices,

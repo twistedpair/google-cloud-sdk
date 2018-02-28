@@ -432,10 +432,12 @@ class ClusterAutoscaling(_messages.Message):
 
 
 class ClusterStatus(_messages.Message):
-  """ClusterStatus is used for internal only purposes to transition a cluster
-  between DEGRADED AND RUNNING using UpdateClusterInternal. The message is
-  used in ClusterUpdate's DesiredClusterStatus field and should not be
-  confused with Cluster's Status Enum.
+  """ClusterStatus is used for internal only purposes by the monitoring server
+  to transition a cluster between DEGRADED AND RUNNING using
+  UpdateClusterInternal. The message is used in ClusterUpdate's
+  DesiredClusterStatus field and should not be confused with Cluster's Status
+  Enum. TODO(b/69364507) Implement a PatchClusterInternal method that takes an
+  internal proto instead so we don't have to define this message here
 
   Enums:
     StatusValueValuesEnum: The current status of the cluster.
@@ -784,6 +786,31 @@ class ContainerProjectsLocationsGetServerConfigRequest(_messages.Message):
   projectId = _messages.StringField(2)
   version = _messages.StringField(3)
   zone = _messages.StringField(4)
+
+
+class ContainerProjectsLocationsListRequest(_messages.Message):
+  """A ContainerProjectsLocationsListRequest object.
+
+  Fields:
+    pageSize: Only return up to this many ListLocationsResponse in the
+      response. If not specified the service will pick the maximum number of
+      results. Note: Specifying page_size = 0 is equivalent to not specifying
+      a page_size, i.e., will result in the service picking a page_size value.
+      This is currently not used and will be honored once we use pagination.
+    pageToken: Only return Locations that occur after the page_token. This
+      value should be populated from the ListLocationsResponse.next_page_token
+      if that response token was set (which happens when listing more
+      Locations than fit in a single ListLocationsResponse). This is currently
+      not used and will be honored once we use pagination.
+    parent: Contains the name of the resource requested. Specific in the
+      format 'projects/*/locations/*'.
+    version: API request version that initiates this operation.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  version = _messages.StringField(4)
 
 
 class ContainerProjectsLocationsOperationsGetRequest(_messages.Message):
@@ -1140,7 +1167,7 @@ class CreateNodePoolRequest(_messages.Message):
 
 
 class CustomImageConfig(_messages.Message):
-  """CustomImageConfig contains the information r
+  """CustomImageConfig contains the information
 
   Fields:
     image: The name of the image to use for this node.
@@ -1846,6 +1873,24 @@ class ListClustersResponse(_messages.Message):
   version = _messages.StringField(3)
 
 
+class ListLocationsResponse(_messages.Message):
+  """ListLocationsResponse returns the list of all GKE locations and their
+  recommendation state.
+
+  Fields:
+    locations: A full list of GKE locations.
+    nextPageToken: Only return ListLocationsResponse that occur after the
+      page_token. This value should be populated from the
+      ListLocationsResponse.next_page_token if that response token was set
+      (which happens when listing more Locations than fit in a single
+      ListLocationsResponse). This is currently not used and will be honored
+      once we use pagination.
+  """
+
+  locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListNodePoolsResponse(_messages.Message):
   """ListNodePoolsResponse is the result of ListNodePoolsRequest.
 
@@ -1901,6 +1946,43 @@ class LocalSsdVolumeConfig(_messages.Message):
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   format = _messages.EnumField('FormatValueValuesEnum', 2)
   type = _messages.StringField(3)
+
+
+class Location(_messages.Message):
+  """Location returns the location name, and if the location is recommended
+  for GKE cluster scheduling.
+
+  Enums:
+    TypeValueValuesEnum: Contains the type of location this Location is for.
+      Regional or Zonal.
+
+  Fields:
+    name: Contains the name of the resource requested. Specific in the format
+      'projects/*/locations/*'.
+    recommended: Recommended is a bool combining the drain state of the
+      location (ie- has the region been drained manually?), and the stockout
+      status of any zone according to Zone Advisor. This will be internal only
+      for use by pantheon.
+    type: Contains the type of location this Location is for. Regional or
+      Zonal.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Contains the type of location this Location is for. Regional or Zonal.
+
+    Values:
+      LOCATION_TYPE_UNSPECIFIED: LOCATION_TYPE_UNSPECIFIED means the location
+        type was not determined.
+      ZONE: A GKE Location where Zonal clusters can be created.
+      REGION: A GKE Location where Regional clusters can be created.
+    """
+    LOCATION_TYPE_UNSPECIFIED = 0
+    ZONE = 1
+    REGION = 2
+
+  name = _messages.StringField(1)
+  recommended = _messages.BooleanField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class MaintenancePolicy(_messages.Message):
@@ -2940,8 +3022,7 @@ class SetNodePoolSizeRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to update. This field
       has been deprecated and replaced by the name field.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://support.google.com/cloud/answer/6158840). This
-      field has been deprecated and replaced by the name field.
+      project number](https://support.google.com/cloud/answer/6158840).
     version: API request version that initiates this operation.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
@@ -3093,8 +3174,7 @@ class UpdateMasterRequest(_messages.Message):
     name: The name (project, location, cluster) of the cluster to update.
       Specified in the format 'projects/*/locations/*/clusters/*'.
     projectId: Deprecated. The Google Developers Console [project ID or
-      project number](https://support.google.com/cloud/answer/6158840). This
-      field has been deprecated and replaced by the name field.
+      project number](https://support.google.com/cloud/answer/6158840).
     version: API request version that initiates this operation.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This

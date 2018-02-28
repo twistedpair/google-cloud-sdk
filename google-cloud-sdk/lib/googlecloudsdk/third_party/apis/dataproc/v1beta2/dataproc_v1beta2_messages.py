@@ -562,11 +562,20 @@ class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):
       cluster belongs to.
     region: Required. The Cloud Dataproc region in which to handle the
       request.
+    requestId: Optional. A unique id used to identify the request. If the
+      server receives two CreateClusterRequest requests with the same id, then
+      the second request will be ignored and the first
+      google.longrunning.Operation created and stored in the backend is
+      returned.It is recommended to always set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
   projectId = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
@@ -581,12 +590,21 @@ class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
       cluster belongs to.
     region: Required. The Cloud Dataproc region in which to handle the
       request.
+    requestId: Optional. A unique id used to identify the request. If the
+      server receives two DeleteClusterRequest requests with the same id, then
+      the second request will be ignored and the first
+      google.longrunning.Operation created and stored in the backend is
+      returned.It is recommended to always set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
   """
 
   clusterName = _messages.StringField(1, required=True)
   clusterUuid = _messages.StringField(2)
   projectId = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
@@ -684,6 +702,14 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
       cluster belongs to.
     region: Required. The Cloud Dataproc region in which to handle the
       request.
+    requestId: Optional. A unique id used to identify the request. If the
+      server receives two UpdateClusterRequest requests with the same id, then
+      the second request will be ignored and the first
+      google.longrunning.Operation created and stored in the backend is
+      returned.It is recommended to always set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
     updateMask: Required. Specifies the path, relative to Cluster, of the
       field to update. For example, to change the number of workers in a
       cluster to 5, the update_mask parameter would be specified as
@@ -715,7 +741,8 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
   gracefulDecommissionTimeout = _messages.StringField(3)
   projectId = _messages.StringField(4, required=True)
   region = _messages.StringField(5, required=True)
-  updateMask = _messages.StringField(6)
+  requestId = _messages.StringField(6)
+  updateMask = _messages.StringField(7)
 
 
 class DataprocProjectsRegionsClustersSetIamPolicyRequest(_messages.Message):
@@ -2639,9 +2666,17 @@ class SubmitJobRequest(_messages.Message):
 
   Fields:
     job: Required. The job resource.
+    requestId: Optional. A unique id used to identify the request. If the
+      server receives two SubmitJobRequest requests with the same id, then the
+      second request will be ignored and the first Job created and stored in
+      the backend is returned.It is recommended to always set this value to a
+      UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
+      id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
   """
 
   job = _messages.MessageField('Job', 1)
+  requestId = _messages.StringField(2)
 
 
 class TestIamPermissionsRequest(_messages.Message):

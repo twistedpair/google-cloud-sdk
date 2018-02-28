@@ -17,7 +17,6 @@ import json
 import time
 
 from apitools.base.py import encoding
-import enum
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
 from googlecloudsdk.api_lib.util import requests
@@ -31,7 +30,7 @@ _ERROR_FORMAT_STRING = ('Error Response:{status_code? [{?}]}'
                         '{details?\n\nDetails:\n{?}}')
 
 
-def _GetBuildProp(build_op, prop_key, required=False):
+def GetBuildProp(build_op, prop_key, required=False):
   """Extract the value of a build's prop_key from a build operation.
 
   Args:
@@ -76,60 +75,6 @@ def _GetStatusFromOp(op):
       if prop.key == 'status':
         return prop.value.string_value
   return 'UNKNOWN'
-
-
-class BuildArtifact(object):
-  """Represents a build of a flex container, either in-progress or completed.
-
-  A build artifact is either a build_id for an in-progress build, or the image
-  name for a completed container build. If a build_id is used in a depoloyment,
-  Flex serving infrastructure is brought up in parallel with the container
-  build. When an image name is used instead, flex serving infrastructure is
-  brought up in serial after the build has completed.
-  """
-
-  class BuildType(enum.Enum):
-    IMAGE = 1
-    BUILD_ID = 2
-
-  def __init__(self, build_type, identifier, build_op=None):
-    self.build_type = build_type
-    self.identifier = identifier
-    self.build_op = build_op
-
-  def IsImage(self):
-    return self.build_type == self.BuildType.IMAGE
-
-  def IsBuildId(self):
-    return self.build_type == self.BuildType.BUILD_ID
-
-  @classmethod
-  def MakeBuildIdArtifact(cls, build_id):
-    return cls(cls.BuildType.BUILD_ID, build_id)
-
-  @classmethod
-  def MakeImageArtifact(cls, image_name):
-    return cls(cls.BuildType.IMAGE, image_name)
-
-  @classmethod
-  def MakeBuildIdArtifactFromOp(cls, build_op):
-    build_id = _GetBuildProp(build_op, 'id', required=True)
-    return cls(cls.BuildType.BUILD_ID, build_id, build_op)
-
-  @classmethod
-  def MakeImageArtifactFromOp(cls, build_op):
-    """Create Image BuildArtifact from build operation."""
-    source = _GetBuildProp(build_op, 'source')
-    for prop in source.object_value.properties:
-      if prop.key == 'storageSource':
-        for storage_prop in prop.value.object_value.properties:
-          if storage_prop.key == 'object':
-            image_name = storage_prop.value.string_value
-
-    if image_name is None:
-      raise BuildFailedError('Could not determine image name')
-
-    return cls(cls.BuildType.IMAGE, image_name, build_op)
 
 
 class BuildFailedError(exceptions.Error):
@@ -200,9 +145,9 @@ class CloudBuildClient(object):
 
   def WaitAndStreamLogs(self, build_op):
     """Wait for a Cloud Build to finish, streaming logs if possible."""
-    build_id = _GetBuildProp(build_op, 'id', required=True)
-    logs_uri = _GetBuildProp(build_op, 'logUrl')
-    logs_bucket = _GetBuildProp(build_op, 'logsBucket')
+    build_id = GetBuildProp(build_op, 'id', required=True)
+    logs_uri = GetBuildProp(build_op, 'logUrl')
+    logs_bucket = GetBuildProp(build_op, 'logsBucket')
     log.status.Print(
         'Started cloud build [{build_id}].'.format(build_id=build_id))
     log_loc = 'in the Cloud Console.'

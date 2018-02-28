@@ -70,14 +70,14 @@ class TriggerEvent(object):
 # By convention, first event type is default.
 _BETA_PROVIDERS = [
     TriggerProvider('cloud.pubsub', [
+        TriggerEvent('google.pubsub.topic.publish', Resources.TOPIC),
         TriggerEvent('providers/cloud.pubsub/eventTypes/topic.publish',
                      Resources.TOPIC),
-        TriggerEvent('google.pubsub.topic.publish', Resources.TOPIC),
     ]),
     TriggerProvider('cloud.storage', [
+        TriggerEvent('google.storage.object.finalize', Resources.BUCKET),
         TriggerEvent('providers/cloud.storage/eventTypes/object.change',
                      Resources.BUCKET),
-        TriggerEvent('google.storage.object.finalize', Resources.BUCKET),
         TriggerEvent('google.storage.object.archive', Resources.BUCKET),
         TriggerEvent('google.storage.object.delete', Resources.BUCKET),
         TriggerEvent('google.storage.object.metadataUpdate', Resources.BUCKET),

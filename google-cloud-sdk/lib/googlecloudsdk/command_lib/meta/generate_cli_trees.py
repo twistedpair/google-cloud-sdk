@@ -242,7 +242,7 @@ class CliTreeGenerator(object):
           except (EnvironmentError, files.Error):
             if not warn_on_exceptions:
               raise
-            log.warn(str(e))
+            log.warning(str(e))
             return None
         with f:
           resource_printer.Print(tree, print_format='json', out=f)
@@ -1162,7 +1162,7 @@ def _GetDirectories(directory=None, warn_on_exceptions=False):
     except cli_tree.SdkRootNotFoundError as e:
       if not warn_on_exceptions:
         raise
-      log.warn(str(e))
+      log.warning(str(e))
     directories.append(cli_tree.CliTreeConfigDir())
   return directories
 
@@ -1213,7 +1213,7 @@ def UpdateCliTrees(cli=None, commands=None, directory=None,
         ', '.join(sorted(failed)))
     if not warn_on_exceptions:
       raise NoCliTreeGeneratorForCommand(message)
-    log.warn(message)
+    log.warning(message)
 
 
 def LoadAll(directory=None, ignore_out_of_date=False, root=None,

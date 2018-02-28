@@ -176,7 +176,7 @@ class Broker(object):
       self._process = subprocess.Popen(args, **popen_args)
 
     if not _Await(self.IsRunning, wait_secs):
-      log.warn('Broker did not start within {0}s'.format(wait_secs))
+      log.warning('Broker did not start within {0}s'.format(wait_secs))
       try:
         # Clean up.
         self.Shutdown()
@@ -213,7 +213,7 @@ class Broker(object):
           self._comm_thread.join()
           self._comm_thread = None
       except RuntimeError as e:
-        log.warn('Failed to shutdown broker: %s' % e)
+        log.warning('Failed to shutdown broker: %s' % e)
         raise BrokerError('Broker failed to shutdown: %s' % e)
     else:
       # Invoke the /shutdown handler.
@@ -226,7 +226,7 @@ class Broker(object):
         # request, because the shutdown may preempt the response.
 
     if not _Await(lambda: not self.IsRunning(), wait_secs):
-      log.warn('Failed to shutdown broker: still running after {0}s'.format(
+      log.warning('Failed to shutdown broker: still running after {0}s'.format(
           wait_secs))
       raise BrokerError('Broker failed to shutdown: timed-out')
 
@@ -275,8 +275,8 @@ class Broker(object):
     body = json.dumps(emulator)
     response, data = self._SendJsonRequest('POST', url, body=body)
     if response.status != httplib.OK:
-      log.warn('Failed to create emulator: {0} ({1})'.format(response.reason,
-                                                             response.status))
+      log.warning('Failed to create emulator: {0} ({1})'.format(
+          response.reason, response.status))
       raise BrokerError('Failed to create emulator: %s' % data)
 
   def GetEmulator(self, emulator_id):
@@ -317,8 +317,8 @@ class Broker(object):
     try:
       response, data = self._SendJsonRequest('GET', _EmulatorPath())
       if response.status != httplib.OK:
-        log.warn('Failed to list emulators: {0} ({1})'.format(response.reason,
-                                                              response.status))
+        log.warning('Failed to list emulators: {0} ({1})'
+                    .format(response.reason, response.status))
         return
     except RequestError:
       return
@@ -350,7 +350,7 @@ class Broker(object):
     url = _EmulatorPath(emulator_id, verb='start')
     response, data = self._SendJsonRequest('POST', url)
     if response.status != httplib.OK:
-      log.warn('Failed to start emulator {0}: {1} ({2})'.format(
+      log.warning('Failed to start emulator {0}: {1} ({2})'.format(
           emulator_id, response.reason, response.status))
       raise BrokerError('Failed to start emulator: %s' % data)
 
@@ -374,7 +374,7 @@ class Broker(object):
     url = _EmulatorPath(emulator_id, verb='stop')
     response, data = self._SendJsonRequest('POST', url)
     if response.status != httplib.OK:
-      log.warn('Failed to stop emulator {0}: {1} ({2})'.format(
+      log.warning('Failed to stop emulator {0}: {1} ({2})'.format(
           emulator_id, response.reason, response.status))
       raise BrokerError('Failed to stop emulator: %s' % data)
 

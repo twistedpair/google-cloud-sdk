@@ -48,6 +48,10 @@ KUBERNETES_V1ALPHA1_API_WARNING = (
     "Kubernetes Engine v1alpha1 API is for whitelist-only at the moment.\n"
     "If you want to use it, please make sure your project is whitelisted.")
 
+CANNOT_SET_BOTH_USE_V1_API_PROPERTIES_WITH_DIFF_VALUES = (
+    "You cannot specify container/use_v1_api and container/use_v1_api_client "
+    "proterties at the same time with different values.")
+
 KUBERNETES_GPU_LIMITATION_MSG = (
     "Machines with GPUs have certain limitations "
     "which may affect your workflow.\nLearn more at "

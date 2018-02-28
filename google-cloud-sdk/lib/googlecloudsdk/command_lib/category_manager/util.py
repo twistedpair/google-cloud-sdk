@@ -1,4 +1,4 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,25 +13,12 @@
 # limitations under the License.
 """Common utilities for the Category Manager API."""
 
-from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.core import properties
+from googlecloudsdk.api_lib.category_manager import store
 from googlecloudsdk.core import resources
 
 
-API_NAME = 'categorymanager'
-API_VERSION = 'v1alpha2'
-
-
-def GetMessagesModule():
-  return apis.GetMessagesModule(API_NAME, API_VERSION)
-
-
-def GetClientInstance():
-  return apis.GetClientInstance(API_NAME, API_VERSION)
-
-
-def GetProjectResource():
-  """Gets the full resource path of the current project."""
-  return resources.REGISTRY.Create(
-      'cloudresourcemanager.projects',
-      projectId=properties.VALUES.core.project.GetOrFail())
+def GetTaxonomyStoreRefFromOrgRef(org_ref):
+  """Gets a taxonomy store reference from an organization reference."""
+  return resources.REGISTRY.Parse(
+      store.GetTaxonomyStoreFromOrgRef(org_ref).name,
+      collection='categorymanager.taxonomyStores')

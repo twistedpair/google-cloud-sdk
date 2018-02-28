@@ -45,7 +45,7 @@ def _GetProjectIds(limit=None):
     projects = projects_api.List(limit=limit)
     return sorted([project.projectId for project in projects])
   except Exception as err:  # pylint: disable=broad-except
-    log.warn('Listing available projects failed: %s', str(err))
+    log.warning('Listing available projects failed: %s', str(err))
     return None
 
 
@@ -127,12 +127,12 @@ def _CreateProject(project_id, project_ids):
   try:
     projects_api.Create(project_ref)
   except Exception as err:  # pylint: disable=broad-except
-    log.warn('Project creation failed: {err}\n'
-             'Please make sure to create the project [{project}] using\n'
-             '    $ gcloud projects create {project}\n'
-             'or change to another project using\n'
-             '    $ gcloud config set project <PROJECT ID>'.format(
-                 err=str(err), project=project_id))
+    log.warning('Project creation failed: {err}\n'
+                'Please make sure to create the project [{project}] using\n'
+                '    $ gcloud projects create {project}\n'
+                'or change to another project using\n'
+                '    $ gcloud config set project <PROJECT ID>'.format(
+                    err=str(err), project=project_id))
     return None
   return project_id
 

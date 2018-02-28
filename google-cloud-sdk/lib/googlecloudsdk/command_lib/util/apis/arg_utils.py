@@ -505,7 +505,8 @@ class ChoiceEnumMapper(object):
                action=None,
                metavar=None,
                dest=None,
-               default=None):
+               default=None,
+               include_filter=None):
     """Initialize ChoiceEnumMapper.
 
     Args:
@@ -524,6 +525,11 @@ class ChoiceEnumMapper(object):
           see base.ChoiceArgument().
       default: string, string, pass through for base.Argument,
           see base.ChoiceArgument().
+      include_filter: callable, function or type string->bool used to filter
+          enum values from message_enum that should be included in choices.
+          If include_filter returns True for a particular enum value, it will be
+          included otherwise it will be excluded. This is ignored if
+          custom_mappings is specified.
 
     Raises:
       ValueError: If no enum is given, mappings are incomplete
@@ -536,6 +542,12 @@ class ChoiceEnumMapper(object):
     self._arg_name = arg_name
     self._enum = message_enum
     self._custom_mappings = custom_mappings
+    if include_filter is not None and not callable(include_filter):
+      raise TypeError('include_filter must be callable received [{}]'.format(
+          include_filter))
+
+    self._filter = include_filter
+    self._filtered_enum = self._enum
     self._ValidateAndParseMappings()
     self._choice_arg = base.ChoiceArgument(
         arg_name,
@@ -575,9 +587,14 @@ class ChoiceEnumMapper(object):
         self._ParseCustomMappingsFromStrings()
 
     else:  # No Custom Mappings so do automagic mapping
+      if callable(self._filter):
+        self._filtered_enum = [
+            e for e in self._enum if self._filter(e.name)
+        ]
+
       self._choice_to_enum = {
           EnumNameToChoice(x.name): x
-          for x in self._enum
+          for x in self._filtered_enum
       }
       self._enum_to_choice = {
           y.name: x
@@ -640,6 +657,10 @@ class ChoiceEnumMapper(object):
     return self._enum
 
   @property
+  def filtered_enum(self):
+    return self._filtered_enum
+
+  @property
   def choice_arg(self):
     return self._choice_arg
 
@@ -650,3 +671,7 @@ class ChoiceEnumMapper(object):
   @property
   def custom_mappings(self):
     return self._custom_mappings
+
+  @property
+  def include_filter(self):
+    return self._filter

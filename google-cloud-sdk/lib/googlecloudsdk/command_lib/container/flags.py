@@ -1287,14 +1287,14 @@ be enabled. The others will be disabled.
           ', '.join(api_adapter.ADDONS_OPTIONS)))
 
 
-def AddPodSecurityPolicyFlag(parser, hidden=True):
+def AddPodSecurityPolicyFlag(parser, hidden=False):
   """Adds a --enable-pod-security-policy flag to parser."""
   help_text = """\
 Enables the pod security policy admission controller for the cluster.  The pod
 security policy admission controller adds fine-grained pod create and update
 authorization controls through the PodSecurityPolicy API objects. For more
-information on the pod security policies, see
-https://kubernetes.io/docs/concepts/policy/pod-security-policy/.
+information, see
+https://cloud.google.com/kubernetes-engine/docs/how-to/pod-security-policies.
 """
   parser.add_argument(
       '--enable-pod-security-policy',

@@ -801,7 +801,7 @@ def Deprecate(is_removed=True,
       def WrappedRun(*args, **kw):
         if is_removed:
           raise DeprecationException(error)
-        log.warn(warning)
+        log.warning(warning)
         return run_func(*args, **kw)
       return WrappedRun
 

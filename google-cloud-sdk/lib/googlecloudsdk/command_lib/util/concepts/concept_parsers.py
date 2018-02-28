@@ -147,15 +147,15 @@ class ResourcePresentationSpec(PresentationSpec):
     self.group = group
 
     # Create a rename map for the attributes to their flags.
-    self.attribute_to_args_map = {}
+    self._attribute_to_args_map = {}
     self._skip_flags = []
-    for i, attribute in enumerate(self.concept_spec.attributes):
-      is_anchor = i == len(self.concept_spec.attributes) - 1
+    for i, attribute in enumerate(self._concept_spec.attributes):
+      is_anchor = i == len(self._concept_spec.attributes) - 1
       name = self.GetFlagName(
           attribute.name, self.name, flag_name_overrides, prefixes,
           is_anchor=is_anchor)
       if name:
-        self.attribute_to_args_map[attribute.name] = name
+        self._attribute_to_args_map[attribute.name] = name
       else:
         self._skip_flags.append(attribute.name)
 
@@ -166,6 +166,18 @@ class ResourcePresentationSpec(PresentationSpec):
     if not util.IsPositional(name):
       name = name[len(util.PREFIX):].replace('-', ' ')
     return '{}'.format(name)
+
+  @property
+  def concept_spec(self):
+    return self._concept_spec
+
+  @property
+  def resource_spec(self):
+    return self.concept_spec
+
+  @property
+  def attribute_to_args_map(self):
+    return self._attribute_to_args_map
 
   @property
   def args_required(self):
@@ -195,7 +207,7 @@ class ResourcePresentationSpec(PresentationSpec):
                         for attribute in self.concept_spec.attributes}
     allow_empty = not self.required
     return handlers.ResourceInfo(
-        self.concept_spec,
+        self.resource_spec,
         self.attribute_to_args_map,
         fallthroughs_map,
         plural=self.plural,
@@ -249,12 +261,16 @@ class ResourcePresentationSpec(PresentationSpec):
       help_text = self.group_help
     else:
       # Expand the help text.
-      help_text = attribute.help_text.format(resource=self.concept_spec.name)
-    plural = attribute == self.concept_spec.anchor and self.plural
+      help_text = attribute.help_text.format(resource=self.resource_spec.name)
+    plural = attribute == self.resource_spec.anchor and self.plural
+    if attribute.completer:
+      completer = attribute.completer
+    else:
+      completer = None
     kwargs_dict = {
         'help': help_text,
         'type': attribute.value_type,
-        'completer': attribute.completer}
+        'completer': completer}
     if util.IsPositional(name):
       if plural and required:
         kwargs_dict.update({'nargs': '+'})
@@ -285,7 +301,7 @@ class ResourcePresentationSpec(PresentationSpec):
   def GetAttributeArgs(self):
     """Generate args to add to the argument group."""
     args = []
-    for attribute in self.concept_spec.attributes[:-1]:
+    for attribute in self.resource_spec.attributes[:-1]:
       arg = self._GetAttributeArg(attribute)
       if arg:
         args.append(arg)
@@ -348,10 +364,6 @@ class ResourcePresentationSpec(PresentationSpec):
         example = 'my-{}'.format(arg.name.lower())
       examples.append(example)
     return examples
-
-  @property
-  def concept_spec(self):
-    return self._concept_spec
 
   def __eq__(self, other):
     if not super(ResourcePresentationSpec, self).__eq__(other):

@@ -75,7 +75,7 @@ def CreateApp(api_client, project, region, suppress_warning=False):
   if not suppress_warning:
     log.status.Print('You are creating an app for project [{project}].'.format(
         project=project))
-    log.warn(APP_CREATE_WARNING)
+    log.warning(APP_CREATE_WARNING)
   try:
     api_client.CreateApp(region)
   except apitools_exceptions.HttpConflictError:
@@ -113,11 +113,11 @@ def CreateAppInteractively(api_client, project, regions=None, extra_warning=''):
     AppAlreadyExistsError if app already exists
   """
   log.status.Print('You are creating an app for project [{}].'.format(project))
-  log.warn(APP_CREATE_WARNING)
+  log.warning(APP_CREATE_WARNING)
 
   regions = regions or sorted(set(api_client.ListRegions()))
   if extra_warning:
-    log.warn(extra_warning)
+    log.warning(extra_warning)
   idx = console_io.PromptChoice(
       regions,
       message=('Please choose the region where you want your App Engine '

@@ -920,6 +920,22 @@
           "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a model from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform model updates in order to avoid race\nconditions: An `etag` is returned in the response to `GetVersion`, and\nsystems are expected to put that etag in the request to `UpdateVersion` to\nensure that their change will be applied to the model as intended.",
           "type": "string",
           "format": "byte"
+        },
+        "framework": {
+          "description": "The ML framework used to train this version of the model. If not specified,\ndefaults to `TENSORFLOW`",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            ""
+          ],
+          "type": "string",
+          "enum": [
+            "FRAMEWORK_UNSPECIFIED",
+            "TENSORFLOW",
+            "SCIKIT_LEARN",
+            "XGBOOST"
+          ]
         }
       }
     },

@@ -22,6 +22,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from gae_ext_runtime import ext_runtime
 
 from googlecloudsdk.api_lib.app import appengine_api_client
+from googlecloudsdk.api_lib.app import build as app_build
 from googlecloudsdk.api_lib.app import cloud_build
 from googlecloudsdk.api_lib.app import docker_image
 from googlecloudsdk.api_lib.app import metric_names
@@ -467,13 +468,13 @@ def _SubmitBuild(build, image, project, parallel_build):
     metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE_ASYNC_START)
     build_op = cloudbuild_build.CloudBuildClient().ExecuteCloudBuildAsync(
         build, project=project)
-    return cloudbuild_build.BuildArtifact.MakeBuildIdArtifactFromOp(build_op)
+    return app_build.BuildArtifact.MakeBuildIdArtifactFromOp(build_op)
   else:
     metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE_START)
     cloudbuild_build.CloudBuildClient().ExecuteCloudBuild(
         build, project=project)
     metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE)
-    return cloudbuild_build.BuildArtifact.MakeImageArtifact(image.tagged_repo)
+    return app_build.BuildArtifact.MakeImageArtifact(image.tagged_repo)
 
 
 def DoPrepareManagedVms(gae_client):
@@ -489,7 +490,7 @@ def DoPrepareManagedVms(gae_client):
   except util.RPCError as err:
     # Any failures later due to an unprepared project will be noisy, so it's
     # okay not to fail here.
-    log.warn(
+    log.warning(
         ("We couldn't validate that your project is ready to deploy to App "
          'Engine Flexible Environment. If deployment fails, please check the '
          'following message and try again:\n') + str(err))
@@ -533,7 +534,7 @@ def PossiblyEnableFlex(project):
       if account_type in (creds.CredentialType.SERVICE_ACCOUNT,
                           creds.CredentialType.P12_SERVICE_ACCOUNT):
         warning += '\n\n{}'.format(FLEXIBLE_SERVICE_VERIFY_WITH_SERVICE_ACCOUNT)
-    log.warn(warning)
+    log.warning(warning)
   except s_exceptions.EnableServicePermissionDeniedException:
     # If enabling the Flexible API fails due to a permissions error, the
     # deployment fails.
@@ -642,7 +643,7 @@ def GetAppHostname(app=None, app_id=None, service=None, version=None,
                'application when you connect.').format(service,
                                                        subdomain_format,
                                                        MAX_DNS_LABEL_LENGTH)
-        log.warn(msg)
+        log.warning(msg)
       subdomain = '.'.join(subdomain_parts)
       if use_ssl == appinfo.SECURE_HTTP_OR_HTTPS:
         scheme = 'http'
@@ -650,7 +651,7 @@ def GetAppHostname(app=None, app_id=None, service=None, version=None,
         if not deploy:
           msg = ('Most browsers will reject the SSL certificate for '
                  'service [{0}].').format(service)
-          log.warn(msg)
+          log.warning(msg)
         scheme = 'https'
 
   return '{0}://{1}.{2}'.format(scheme, subdomain, domain)

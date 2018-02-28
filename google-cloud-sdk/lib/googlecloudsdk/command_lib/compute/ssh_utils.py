@@ -29,11 +29,8 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.api_lib.compute.users import client as user_client
 from googlecloudsdk.api_lib.oslogin import client as oslogin_client
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.command_lib.util import gaia
-from googlecloudsdk.command_lib.util import time_util
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -469,123 +466,79 @@ class BaseSSHHelper(object):
     else:
       return False
 
-  def _EnsureSSHKeyExistsForUser(self, fetcher, user):
-    """Ensure the user's public SSH key is known by the Account Service."""
-    public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
-    should_upload = True
-    try:
-      user_info = fetcher.LookupUser(user)
-    except user_client.UserException:
-      owner_email = properties.VALUES.core.account.Get()
-      fetcher.CreateUser(user, owner_email)
-      user_info = fetcher.LookupUser(user)
-    for remote_public_key in user_info.publicKeys:
-      if remote_public_key.key.rstrip() == public_key:
-        expiration_time = remote_public_key.expirationTimestamp
-
-        if expiration_time and time_util.IsExpired(expiration_time):
-          # If a key is expired we remove and reupload
-          fetcher.RemovePublicKey(
-              user_info.name, remote_public_key.fingerprint)
-        else:
-          should_upload = False
-        break
-
-    if should_upload:
-      fetcher.UploadPublicKey(user, public_key)
-    return True
-
-  def EnsureSSHKeyExists(self, compute_client, cua_client, user, instance,
-                         project, use_account_service=False):
+  def EnsureSSHKeyExists(self, compute_client, user, instance, project):
     """Controller for EnsureSSHKey* variants.
 
-    Sends the key to the project metadata, instance metadata or account service,
+    Sends the key to the project metadata or instance metadata,
     and signals whether the key was newly added.
 
     Args:
       compute_client: The compute client.
-      cua_client: The clouduseraccounts client.
       user: str, The user name.
       instance: Instance, the instance to connect to.
       project: Project, the project instance is in
-      use_account_service: bool, when false upload ssh keys to project metadata.
 
     Returns:
       bool, True if the key was newly added.
     """
-    if use_account_service:
-      fetcher = user_client.UserResourceFetcher(
-          cua_client,
-          properties.VALUES.core.project.GetOrFail(),
-          compute_client.apitools_client.http, compute_client.batch_url)
+    # There are two kinds of metadata: project-wide metadata and per-instance
+    # metadata. There are five SSH-key related metadata keys:
+    #
+    # * project['ssh-keys']: shared project-wide list of keys.
+    # * project['sshKeys']: legacy, shared project-wide list of keys.
+    # * instance['block-project-ssh-keys']: bool, when true indicates that
+    #     instance keys should replace project keys rather than being added
+    #     to them.
+    # * instance['ssh-keys']: instance specific list of keys.
+    # * instance['sshKeys']: legacy, instance specific list of keys. When
+    #     present, instance keys override project keys as if
+    #     instance['block-project-ssh-keys'] was true.
+    #
+    # SSH-like commands work by copying a relevant SSH key to
+    # the appropriate metadata value. The VM grabs keys from the metadata as
+    # follows (pseudo-Python):
+    #
+    #   def GetAllSshKeys(project, instance):
+    #       if 'sshKeys' in instance.metadata:
+    #           return (instance.metadata['sshKeys'] +
+    #                   instance.metadata['ssh-keys'])
+    #       elif instance.metadata['block-project-ssh-keys'] == 'true':
+    #           return instance.metadata['ssh-keys']
+    #       else:
+    #           return (instance.metadata['ssh-keys'] +
+    #                   project.metadata['ssh-keys'] +
+    #                   project.metadata['sshKeys']) # Legacy Project Keys
+    #
+    _, ssh_legacy_keys = _GetSSHKeysFromMetadata(instance.metadata)
+    if ssh_legacy_keys:
+      # If we add a key to project-wide metadata but the per-instance
+      # 'sshKeys' metadata exists, we won't be able to ssh in because the VM
+      # won't check the project-wide metadata. To avoid this, if the instance
+      # has per-instance SSH key metadata, we add the key there instead.
+      keys_newly_added = self.EnsureSSHKeyIsInInstance(
+          compute_client, user, instance, legacy=True)
+    elif _MetadataHasBlockProjectSshKeys(instance.metadata):
+      # If the instance 'ssh-keys' metadata overrides the project-wide
+      # 'ssh-keys' metadata, we should put our key there.
+      keys_newly_added = self.EnsureSSHKeyIsInInstance(
+          compute_client, user, instance)
+    else:
+      # Otherwise, try to add to the project-wide metadata. If we don't have
+      # permissions to do that, add to the instance 'ssh-keys' metadata.
       try:
-        keys_newly_added = self._EnsureSSHKeyExistsForUser(fetcher, user)
-      # TODO(b/37739425): find out what desired fallback mechanism is and
-      # implement it.
-      except  user_client.UserException as e:
-        log.info(
-            'Error when attempting to prepare keys using clouduaseraccounts '
-            'API, falling back to metadata keys: %s', e)
-        use_account_service = False
-    if not use_account_service:
-      # There are two kinds of metadata: project-wide metadata and per-instance
-      # metadata. There are five SSH-key related metadata keys:
-      #
-      # * project['ssh-keys']: shared project-wide list of keys.
-      # * project['sshKeys']: legacy, shared project-wide list of keys.
-      # * instance['block-project-ssh-keys']: bool, when true indicates that
-      #     instance keys should replace project keys rather than being added
-      #     to them.
-      # * instance['ssh-keys']: instance specific list of keys.
-      # * instance['sshKeys']: legacy, instance specific list of keys. When
-      #     present, instance keys override project keys as if
-      #     instance['block-project-ssh-keys'] was true.
-      #
-      # SSH-like commands work by copying a relevant SSH key to
-      # the appropriate metadata value. The VM grabs keys from the metadata as
-      # follows (pseudo-Python):
-      #
-      #   def GetAllSshKeys(project, instance):
-      #       if 'sshKeys' in instance.metadata:
-      #           return (instance.metadata['sshKeys'] +
-      #                   instance.metadata['ssh-keys'])
-      #       elif instance.metadata['block-project-ssh-keys'] == 'true':
-      #           return instance.metadata['ssh-keys']
-      #       else:
-      #           return (instance.metadata['ssh-keys'] +
-      #                   project.metadata['ssh-keys'] +
-      #                   project.metadata['sshKeys']) # Legacy Project Keys
-      #
-      _, ssh_legacy_keys = _GetSSHKeysFromMetadata(instance.metadata)
-      if ssh_legacy_keys:
-        # If we add a key to project-wide metadata but the per-instance
-        # 'sshKeys' metadata exists, we won't be able to ssh in because the VM
-        # won't check the project-wide metadata. To avoid this, if the instance
-        # has per-instance SSH key metadata, we add the key there instead.
-        keys_newly_added = self.EnsureSSHKeyIsInInstance(
-            compute_client, user, instance, legacy=True)
-      elif _MetadataHasBlockProjectSshKeys(instance.metadata):
-        # If the instance 'ssh-keys' metadata overrides the project-wide
-        # 'ssh-keys' metadata, we should put our key there.
+        keys_newly_added = self.EnsureSSHKeyIsInProject(
+            compute_client, user, project)
+      except SetProjectMetadataError:
+        log.info('Could not set project metadata:', exc_info=True)
+        # If we can't write to the project metadata, it may be because of a
+        # permissions problem (we could inspect this exception object further
+        # to make sure, but because we only get a string back this would be
+        # fragile). If that's the case, we want to try the writing to instance
+        # metadata. We prefer this to the per-instance override of the
+        # project metadata.
+        log.info('Attempting to set instance metadata.')
         keys_newly_added = self.EnsureSSHKeyIsInInstance(
             compute_client, user, instance)
-      else:
-        # Otherwise, try to add to the project-wide metadata. If we don't have
-        # permissions to do that, add to the instance 'ssh-keys' metadata.
-        try:
-          keys_newly_added = self.EnsureSSHKeyIsInProject(
-              compute_client, user, project)
-        except SetProjectMetadataError:
-          log.info('Could not set project metadata:', exc_info=True)
-          # If we can't write to the project metadata, it may be because of a
-          # permissions problem (we could inspect this exception object further
-          # to make sure, but because we only get a string back this would be
-          # fragile). If that's the case, we want to try the writing to instance
-          # metadata. We prefer this to the per-instance override of the
-          # project metadata.
-          log.info('Attempting to set instance metadata.')
-          keys_newly_added = self.EnsureSSHKeyIsInInstance(
-              compute_client, user, instance)
     return keys_newly_added
 
   def CheckForOsloginAndGetUser(self, instance,
@@ -604,8 +557,9 @@ class BaseSSHHelper(object):
     # Connect to the oslogin API and add public key to oslogin user account.
     oslogin = oslogin_client.OsloginClient(release_track)
     if not oslogin:
-      log.warn('OS Login is enabled on Instance/Project, but is not availabe '
-               'in the {0} version of gcloud.'.format(release_track.id))
+      log.warning(
+          'OS Login is enabled on Instance/Project, but is not available '
+          'in the {0} version of gcloud.'.format(release_track.id))
       return requested_user, use_oslogin
     public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
     user_email = properties.VALUES.core.account.Get()
@@ -623,8 +577,8 @@ class BaseSSHHelper(object):
       elif pa.primary:
         oslogin_user = pa.username
 
-    log.warn('Using OS Login user [{0}] instead of default user [{1}]'
-             .format(oslogin_user, requested_user))
+    log.warning('Using OS Login user [{0}] instead of default user [{1}]'
+                .format(oslogin_user, requested_user))
     return oslogin_user, use_oslogin
 
   def GetConfig(self, host_key_alias, strict_host_key_checking=None):
@@ -741,14 +695,11 @@ def HostKeyAlias(instance):
   return 'compute.{0}'.format(instance.id)
 
 
-def GetUserAndInstance(user_host, use_account_service):
+def GetUserAndInstance(user_host):
   """Returns pair consiting of user name and instance name."""
   parts = user_host.split('@')
   if len(parts) == 1:
-    if use_account_service:  # Using Account Service.
-      user = gaia.GetDefaultAccountName()
-    else:  # Uploading keys through metadata.
-      user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
+    user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
     instance = parts[0]
     return user, instance
   if len(parts) == 2:

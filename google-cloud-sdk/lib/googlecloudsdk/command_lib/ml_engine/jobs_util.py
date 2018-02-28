@@ -209,9 +209,9 @@ def GetStreamLogs(async_, stream_logs):
   if async_:
     # TODO(b/36195821): Use the flag deprecation machinery when it supports the
     # store_true action
-    log.warn('The --async flag is deprecated, as the default behavior is to '
-             'submit the job asynchronously; it can be omitted. '
-             'For synchronous behavior, please pass --stream-logs.\n')
+    log.warning('The --async flag is deprecated, as the default behavior is to '
+                'submit the job asynchronously; it can be omitted. '
+                'For synchronous behavior, please pass --stream-logs.\n')
   return stream_logs
 
 

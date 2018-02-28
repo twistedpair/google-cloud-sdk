@@ -99,7 +99,7 @@ def CheckKubectlInstalled():
   """Verify that the kubectl component is installed or print a warning."""
   if (not file_utils.FindExecutableOnPath(_KUBECTL_COMPONENT_NAME) and
       not _KubectlInstalledAsComponent()):
-    log.warn(MISSING_KUBECTL_MSG)
+    log.warning(MISSING_KUBECTL_MSG)
 
 
 def GenerateClusterUrl(cluster_ref):
@@ -270,7 +270,7 @@ class ClusterConfig(object):
     else:
       # This should not happen unless the cluster is in an unusual error
       # state.
-      log.warn('Cluster is missing certificate authority data.')
+      log.warning('Cluster is missing certificate authority data.')
 
     if cls.UseGCPAuthProvider(cluster):
       kwargs['auth_provider'] = 'gcp'

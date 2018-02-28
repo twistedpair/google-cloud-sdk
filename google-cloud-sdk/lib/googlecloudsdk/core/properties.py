@@ -618,24 +618,6 @@ class _SectionFunctions(_Section):
         completer=('googlecloudsdk.command_lib.functions.flags:'
                    'LocationsCompleter'))
 
-    self.use_new_object_trigger = self._AddBool(
-        'use_new_object_trigger',
-        help_text='If True, will set the trigger_event to use when '
-        'deploying a Cloud Function using a Google Cloud Storage bucket '
-        'trigger (e.g. `--trigger-bucket`) to `object.finalize`. If False, '
-        'trigger_event will be set to `object.change`. '
-        'Please see '
-        'https://cloud.google.com/storage/docs/pubsub-notifications for '
-        'more details on trigger_event types.')
-
-    self.use_new_pubsub_trigger = self._AddBool(
-        'use_new_pubsub_trigger',
-        help_text='If True, Cloud Functions deployed using a Google Cloud '
-        'PubSub topic trigger (e.g. `--trigger-topic`) will use new event '
-        'schema. If False, Cloud Function will use legacy event schema. '
-        'Please see {0} for more information on the new '
-        'schema.'.format(_PUBSUB_NOTICE_URL))
-
 
 class _SectionGcloudignore(_Section):
   """Contains the properties for the 'gcloudignore' section."""
@@ -771,7 +753,17 @@ class _SectionContainer(_Section):
         'of release track) will use the v1 API; otherwise, gcloud beta track '
         'commands will use v1beta1 API and gcloud alpha track commands will '
         'use v1alpha1 API. By default, it is set to true. The Kubernetes '
-        'Engine v1alpha1 API is whitelist-only at this time.')
+        'Engine v1alpha1 API is whitelist-only at this time. '
+        'Note: use_v1_api is an alias of use_v1_api_client.')
+    self.use_v1_api_client = self._AddBool(
+        'use_v1_api_client',
+        default=True,
+        help_text='If true, all gcloud Kubernetes Engine commands (regardless '
+        'of release track) will use the v1 API; otherwise, gcloud beta track '
+        'commands will use v1beta1 API and gcloud alpha track commands will '
+        'use v1alpha1 API. By default, it is set to true. The Kubernetes '
+        'Engine v1alpha1 API is whitelist-only at this time. '
+        'Note: use_v1_api_client is an alias of use_v1_api.')
     self.new_scopes_behavior = self._AddBool(
         'new_scopes_behavior',
         default=False,

@@ -15,11 +15,11 @@
 
 from datetime import datetime
 import os
-import re
 import uuid
 from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.source import git
 from googlecloudsdk.api_lib.source.repos import sourcerepo
+from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import properties
 
 # The repo where uploads are stored.
@@ -62,11 +62,6 @@ class UploadManager(object):
     if not project_id:
       project_id = properties.VALUES.core.project.Get(required=True)
     self._project_id = project_id
-    self._ignore_handler = git.GitIgnoreHandler()
-    # Add a top-level ignore for the .git directory (the expression matches
-    # the .git directory and any file contained in it).
-    self._ignore_handler.AddIgnoreRules(
-        '/', [(re.compile(r'^(.*/)?\.git(/.*)?'), True)])
 
   def Upload(self, branch, root_path):
     """Uploads files to a branch in Cloud Source Repositories.
@@ -91,14 +86,19 @@ class UploadManager(object):
       raise exceptions.Error(
           REPO_NOT_FOUND_ERROR.format(UPLOAD_REPO_NAME, self._project_id))
 
+    file_chooser = gcloudignore.GetFileChooserForDir(
+        root_path, write_on_disk=False)
     branch = branch or (_GetNow().strftime(TIME_FORMAT) + '.' + _GetUuid().hex)
     all_paths = [
-        f for f in self._ignore_handler.GetFiles(os.path.abspath(root_path))
-        if not os.path.islink(f)
+        os.path.join(root_path, f)
+        for f in file_chooser.GetIncludedFiles(root_path, include_dirs=False)
     ]
-    paths = [f for f in all_paths if os.path.getsize(f) <= self.SIZE_THRESHOLD]
+    paths = [
+        f for f in all_paths
+        if not os.path.islink(f) and os.path.getsize(f) <= self.SIZE_THRESHOLD
+    ]
     git.Git(self._project_id, UPLOAD_REPO_NAME).ForcePushFilesToBranch(
-        branch, root_path, paths)
+        branch, root_path, sorted(paths))
 
     source_context = {
         'context': {

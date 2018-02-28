@@ -222,7 +222,7 @@ def NodeIdentityOptionsToNodeConfig(options, node_config):
     if options.enable_cloud_endpoints:
       for scope in _ENDPOINTS_SCOPES:
         if scope not in options.scopes:
-          log.warn("""\
+          log.warning("""\
 The behavior of --scopes will change in a future gcloud release: \
 service-control and service-management scopes will no longer be added to what \
 is specified in --scopes. To use these scopes, add them explicitly to \
@@ -238,7 +238,7 @@ is specified in --scopes. To use these scopes, add them explicitly to \
     # Add compute-rw and devstorage-ro as necessary.
     for scope in _OLD_REQUIRED_SCOPES:
       if scope not in options.scopes:
-        log.warn("""\
+        log.warning("""\
 Starting in Kubernetes v1.10, new clusters will no longer get compute-rw and \
 storage-ro scopes added to what is specified in --scopes (though the latter \
 will remain included in the default --scopes). To use these scopes, add them \

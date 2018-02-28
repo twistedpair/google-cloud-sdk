@@ -55,8 +55,9 @@ def AddInstanceGroup(parser, operation_type, with_deprecated_zone=False):
 
 def WarnOnDeprecatedFlags(args):
   if getattr(args, 'zone', None):  # TODO(b/28518663).
-    log.warn('The --zone flag is deprecated, please use --instance-group-zone'
-             ' instead. It will be removed in a future release.')
+    log.warning(
+        'The --zone flag is deprecated, please use --instance-group-zone'
+        ' instead. It will be removed in a future release.')
 
 
 def _GetBalancingModes():

@@ -368,8 +368,8 @@ class Keys(object):
       try:
         self.GetPublicKey()
       except InvalidKeyError:
-        log.warn('The public SSH key file [{}] is corrupt.'
-                 .format(self.keys[_KeyFileKind.PUBLIC]))
+        log.warning('The public SSH key file [{}] is corrupt.'
+                    .format(self.keys[_KeyFileKind.PUBLIC]))
         self.keys[_KeyFileKind.PUBLIC].status = KeyFileStatus.BROKEN
 
     # Summary
@@ -405,7 +405,7 @@ class Keys(object):
     if force_key_file_overwrite is False:
       raise console_io.OperationCancelledError(message + 'Operation aborted.')
     message += 'We are going to overwrite all above files.'
-    log.warn(message)
+    log.warning(message)
     if force_key_file_overwrite is None:
       # - Interactive when pressing 'Y', continue
       # - Interactive when pressing enter or 'N', raise OperationCancelledError
@@ -424,7 +424,7 @@ class Keys(object):
   def _WarnOrReadFirstKeyLine(self, path, kind):
     """Returns the first line from the key file path.
 
-    A None return indicates an error and is always accompanied by a log.warn
+    A None return indicates an error and is always accompanied by a log.warning
     message.
 
     Args:
@@ -432,7 +432,7 @@ class Keys(object):
       kind: The kind of key file, 'private' or 'public'.
 
     Returns:
-      None (and prints a log.warn message) if the file does not exist, is not
+      None (and prints a log.warning message) if the file does not exist, is not
       readable, or is empty. Otherwise returns the first line utf8 decoded.
     """
     try:
@@ -453,7 +453,7 @@ class Keys(object):
       else:
         msg = 'is not readable'
         status = KeyFileStatus.BROKEN
-    log.warn('The %s SSH key file for gcloud %s.', kind, msg)
+    log.warning('The %s SSH key file for gcloud %s.', kind, msg)
     return status
 
   def GetPublicKey(self):
@@ -498,8 +498,8 @@ class Keys(object):
     if key_files_validity is not KeyFileStatus.PRESENT:
       if key_files_validity is KeyFileStatus.ABSENT:
         # If key is broken, message is already displayed
-        log.warn('You do not have an SSH key for gcloud.')
-        log.warn('SSH keygen will be executed to generate a key.')
+        log.warning('You do not have an SSH key for gcloud.')
+        log.warning('SSH keygen will be executed to generate a key.')
 
       if not os.path.exists(self.dir):
         msg = ('This tool needs to create the directory [{0}] before being '
@@ -626,9 +626,10 @@ def GetDefaultSshUsername(warn_on_account_user=False):
     full_account = properties.VALUES.core.account.Get(required=True)
     account_user = gaia.MapGaiaEmailToDefaultAccountName(full_account)
     if warn_on_account_user:
-      log.warn('Invalid characters in local username [{0}]. '
-               'Using username corresponding to active account: [{1}]'.format(
-                   user, account_user))
+      log.warning(
+          'Invalid characters in local username [{0}]. '
+          'Using username corresponding to active account: [{1}]'.format(
+              user, account_user))
     user = account_user
   return user
 

@@ -17,6 +17,7 @@ import functools
 import itertools
 import sys
 
+from googlecloudsdk.api_lib.ml_engine import versions_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
@@ -25,6 +26,7 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.iam import completers as iam_completers
 from googlecloudsdk.command_lib.ml_engine import models_util
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -281,6 +283,20 @@ TASK_NAME = base.Argument(
     help='If set, display only the logs for this particular task.')
 
 
+_FRAMEWORK_CHOICES = {
+    'TENSORFLOW': 'tensorflow',
+    'SCIKIT_LEARN': 'scikit-learn',
+    'XGBOOST': 'xgboost'
+}
+FRAMEWORK_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--framework',
+    (versions_api.GetMessagesModule().
+     GoogleCloudMlV1Version.FrameworkValueValuesEnum),
+    custom_mappings=_FRAMEWORK_CHOICES,
+    help_str=('The ML framework used to train this version of the model. '
+              'If not specified, defaults to `tensorflow`'))
+
+
 def GetModelName(positional=True, required=False):
   help_text = 'Name of the model.'
   if positional:
@@ -294,9 +310,9 @@ def ProcessPackages(args):
   """Flatten PACKAGES flag and warn if multiple arguments were used."""
   if args.packages is not None:
     if len(args.packages) > 1:
-      log.warn('Use of --packages with space separated values is '
-               'deprecated and will not work in the future. Use comma '
-               'instead.')
+      log.warning('Use of --packages with space separated values is '
+                  'deprecated and will not work in the future. Use comma '
+                  'instead.')
     # flatten packages into a single list
     args.packages = list(itertools.chain.from_iterable(args.packages))
 

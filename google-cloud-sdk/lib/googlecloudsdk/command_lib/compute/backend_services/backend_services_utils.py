@@ -35,7 +35,7 @@ def IsDefaultRegionalBackendServicePropertyNoneWarnOtherwise():
       properties.VALUES.core.default_regional_backend_service.GetBool())
   if default_regional is not None:
     # Print a warning if it is set.
-    log.warn(
+    log.warning(
         'core/default_regional_backend_service property is deprecated and '
         'has no meaning.')
 

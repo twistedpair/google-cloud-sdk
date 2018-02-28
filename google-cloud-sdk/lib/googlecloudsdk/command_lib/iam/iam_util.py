@@ -758,4 +758,4 @@ def ApiDisabledPermissionsWarning(permissions):
     msg = (
         'API is not enabled for permissions: [' + ', '.join(permissions) +
         ']. Please enable the corresponding APIs to use those permissions.\n')
-    log.warn(msg)
+    log.warning(msg)

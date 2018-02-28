@@ -38,6 +38,16 @@ class Collections(enum.Enum):
       },
       [u'name']
   )
+  PROJECTS_LOCATIONS_ACCELERATORTYPES = (
+      'projects.locations.acceleratorTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'acceleratorTypes/{acceleratorTypesId}',
+      },
+      [u'name']
+  )
   PROJECTS_LOCATIONS_NODES = (
       'projects.locations.nodes',
       '{+name}',

@@ -34,11 +34,76 @@ class TpuV1alpha1(base_api.BaseApiClient):
         credentials_args=credentials_args,
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers)
+    self.projects_locations_acceleratorTypes = self.ProjectsLocationsAcceleratorTypesService(self)
     self.projects_locations_nodes = self.ProjectsLocationsNodesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_tensorflowVersions = self.ProjectsLocationsTensorflowVersionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsAcceleratorTypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_acceleratorTypes resource."""
+
+    _NAME = u'projects_locations_acceleratorTypes'
+
+    def __init__(self, client):
+      super(TpuV1alpha1.ProjectsLocationsAcceleratorTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      """Gets AcceleratorType.
+
+      Args:
+        request: (TpuProjectsLocationsAcceleratorTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AcceleratorType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/acceleratorTypes/{acceleratorTypesId}',
+        http_method=u'GET',
+        method_id=u'tpu.projects.locations.acceleratorTypes.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'TpuProjectsLocationsAcceleratorTypesGetRequest',
+        response_type_name=u'AcceleratorType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists accelerator types supported by this API.
+
+      Args:
+        request: (TpuProjectsLocationsAcceleratorTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAcceleratorTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/acceleratorTypes',
+        http_method=u'GET',
+        method_id=u'tpu.projects.locations.acceleratorTypes.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/{+parent}/acceleratorTypes',
+        request_field='',
+        request_type_name=u'TpuProjectsLocationsAcceleratorTypesListRequest',
+        response_type_name=u'ListAcceleratorTypesResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsNodesService(base_api.BaseApiService):
     """Service class for the projects_locations_nodes resource."""

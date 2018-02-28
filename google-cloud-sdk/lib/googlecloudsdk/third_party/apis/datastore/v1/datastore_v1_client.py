@@ -268,6 +268,69 @@ entities.
         supports_download=False,
     )
 
+    def Export(self, request, global_params=None):
+      """Exports a copy of all or a subset of entities from Google Cloud Datastore.
+to another storage system, such as Google Cloud Storage. Recent updates to
+entities may not be reflected in the export. The export occurs in the
+background and its progress can be monitored and managed via the
+Operation resource that is created. The output of an export may only be
+used once the associated operation is done. If an export operation is
+cancelled before completion it may leave partial data behind in Google
+Cloud Storage.
+
+      Args:
+        request: (DatastoreProjectsExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'datastore.projects.export',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}:export',
+        request_field=u'googleDatastoreAdminV1ExportEntitiesRequest',
+        request_type_name=u'DatastoreProjectsExportRequest',
+        response_type_name=u'GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      """Imports entities into Google Cloud Datastore. Existing entities with the.
+same key are overwritten. The import occurs in the background and its
+progress can be monitored and managed via the Operation resource that is
+created. If an ImportEntities operation is cancelled, it is possible
+that a subset of the data has already been imported to Cloud Datastore.
+
+      Args:
+        request: (DatastoreProjectsImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'datastore.projects.import',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}:import',
+        request_field=u'googleDatastoreAdminV1ImportEntitiesRequest',
+        request_type_name=u'DatastoreProjectsImportRequest',
+        response_type_name=u'GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Lookup(self, request, global_params=None):
       """Looks up entities by key.
 
@@ -291,6 +354,33 @@ entities.
         request_field=u'lookupRequest',
         request_type_name=u'DatastoreProjectsLookupRequest',
         response_type_name=u'LookupResponse',
+        supports_download=False,
+    )
+
+    def ReserveIds(self, request, global_params=None):
+      """Prevents the supplied keys' IDs from being auto-allocated by Cloud.
+Datastore.
+
+      Args:
+        request: (DatastoreProjectsReserveIdsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReserveIdsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ReserveIds')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReserveIds.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'datastore.projects.reserveIds',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}:reserveIds',
+        request_field=u'reserveIdsRequest',
+        request_type_name=u'DatastoreProjectsReserveIdsRequest',
+        response_type_name=u'ReserveIdsResponse',
         supports_download=False,
     )
 

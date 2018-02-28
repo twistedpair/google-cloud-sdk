@@ -198,7 +198,7 @@ class ConsoleAttr(object):
   _BULLETS_WINDOWS = (u'■', u'≡', u'∞', u'Φ', u'·')  # cp437 compatible unicode
   _BULLETS_ASCII = ('o', '*', '+', '-')
 
-  def __init__(self, encoding=None, out=None):
+  def __init__(self, encoding=None):
     """Constructor.
 
     Args:
@@ -206,24 +206,10 @@ class ConsoleAttr(object):
         ascii -- ASCII art. This is the default.
         utf8 -- UTF-8 unicode.
         win -- Windows code page 437.
-      out: The console output file stream, log.out if None.
     """
-    if not out:
-      try:
-        from googlecloudsdk.core import log  # pylint: disable=g-import-not-at-top, avoid config import loop
-        out = log.out
-      except ImportError:
-        out = sys.stdout
-    self._out = out
     # Normalize the encoding name.
-    console_encoding = None
     if not encoding:
-      if hasattr(self._out, 'encoding') and self._out.encoding:
-        console_encoding = self._out.encoding.lower()
-        if 'utf-8' in console_encoding:
-          encoding = 'utf8'
-        elif 'cp437' in console_encoding:
-          encoding = 'cp437'
+      encoding = self._GetConsoleEncoding()
     elif encoding == 'win':
       encoding = 'cp437'
     self._encoding = encoding or 'ascii'
@@ -258,26 +244,44 @@ class ConsoleAttr(object):
     self._get_raw_key = [console_attr_os.GetRawKeyFunction()]
     self._term_size = console_attr_os.GetTermSize()
 
+  def _GetConsoleEncoding(self):
+    """Gets the encoding as declared by the stdout stream.
+
+    Returns:
+      str, The encoding name or None if it could not be determined.
+    """
+    console_encoding = getattr(sys.stdout, 'encoding', None)
+    if not console_encoding:
+      return None
+    console_encoding = console_encoding.lower()
+    if 'utf-8' in console_encoding:
+      return 'utf8'
+    elif 'cp437' in console_encoding:
+      return 'cp437'
+    return None
+
   def Colorize(self, string, color, justify=None):
-    """Writes string, optionally justified, with color to the console.
+    """Generates a colorized string, optionally justified.
 
     Args:
       string: The string to write.
-      color: The color name -- must b3 in _ANSI_COLOR.
+      color: The color name -- must be in _ANSI_COLOR.
       justify: The justification function, no justification if None. For
         example, justify=lambda s: s.center(10)
+
+    Returns:
+      str, The colorized string that can be printed to the console.
     """
     if justify:
       string = justify(string)
     if self._csi and color in self._ANSI_COLOR:
-      self._out.write('{csi}{color_code}{string}{csi}{reset_code}'.format(
+      return '{csi}{color_code}{string}{csi}{reset_code}'.format(
           csi=self._csi,
           color_code=self._ANSI_COLOR[color],
           reset_code=self._ANSI_COLOR_RESET,
-          string=string))
-      # TODO(b/35939231): Add elif self._encoding == 'cp437': code here.
-    else:
-      self._out.write(string)
+          string=string)
+    # TODO(b/35939231): Add elif self._encoding == 'cp437': code here.
+    return string
 
   def ConvertOutputToUnicode(self, buf):
     """Converts a console output string buf to unicode.
@@ -517,16 +521,19 @@ class Colorizer(object):
   def __str__(self):
     return self._string
 
-  def Render(self, justify=None):
+  def Render(self, stream, justify=None):
     """Renders the string as self._color on the console.
 
     Args:
+      stream: The stream to render the string to. The stream given here *must*
+        have the same encoding as sys.stdout for this to work properly.
       justify: The justification function, self._justify if None.
     """
-    self._con.Colorize(self._string, self._color, justify or self._justify)
+    stream.write(
+        self._con.Colorize(self._string, self._color, justify or self._justify))
 
 
-def GetConsoleAttr(encoding=None, out=None, reset=False):
+def GetConsoleAttr(encoding=None, reset=False):
   """Gets the console attribute state.
 
   If this is the first call or reset is True or encoding is not None and does
@@ -542,7 +549,6 @@ def GetConsoleAttr(encoding=None, out=None, reset=False):
       ascii -- ASCII. This is the default.
       utf8 -- UTF-8 unicode.
       win -- Windows code page 437.
-    out: The console output file stream, ConsoleAttr default if None.
     reset: Force re-initialization if True.
 
   Returns:
@@ -554,10 +560,8 @@ def GetConsoleAttr(encoding=None, out=None, reset=False):
       reset = True
     elif encoding and encoding != attr.GetEncoding():
       reset = True
-    elif out and out != attr._out:  # pylint: disable=protected-access
-      reset = True
   if reset:
-    attr = ConsoleAttr(encoding=encoding, out=out)
+    attr = ConsoleAttr(encoding=encoding)
     ConsoleAttr._CONSOLE_ATTR_STATE = attr  # pylint: disable=protected-access
   return attr
 
@@ -612,8 +616,11 @@ def GetCharacterDisplayWidth(char):
     return 1
 
 
-def EncodeForConsole(string, encoding=None, escape=True):
-  r"""Returns string encoded to prevent output codec exceptions.
+# TODO(b/73165575): The name of this function is misleading because it
+# returns a text string not an encoded byte string. We also want to eventually
+# not allow it to take in byte strings at all.
+def EncodeForConsole(data, encoding=None, escape=True):
+  r"""Returns a text string encoded to prevent output codec exceptions.
 
   This function can be used to massage output strings that may have been encoded
   with an encoding incompatible with the standard output encoding. This happens
@@ -621,8 +628,9 @@ def EncodeForConsole(string, encoding=None, escape=True):
   source of unknown encoding.
 
   Args:
-    string: A string or object that has str() and unicode() methods that may
-      contain an encoding incompatible with the standard output encoding.
+    data: A text string, byte string or object that has str() and unicode()
+      methods that may contain an encoding incompatible with the standard output
+      encoding.
     encoding: The output encoding name. Defaults to
       GetConsoleAttr().GetEncoding().
     escape: Replace unencodable characters with a \uXXXX or \xXX equivalent if
@@ -631,53 +639,48 @@ def EncodeForConsole(string, encoding=None, escape=True):
       \uFFFE for unicode.
 
   Returns:
-    The string encoded to avoid output codec exceptions. In the worst case,
-    with escape=False, it will contain only ? characters.
+    A text string but modified to remove any characters that would result in an
+    encoding exception with the target encoding. In the worst case, with
+    escape=False, it will contain only ? characters.
   """
-  try:
-    # No change needed if the string encodes to ASCII.
-    string.encode('ascii')
-    return string
-  except AttributeError:
-    # The string does not have an encode method.
+  encoding = encoding or GetConsoleAttr().GetEncoding()
+
+  # First we are going to get the data object to be a text string.
+  # Don't use six.string_types here because on Python 3 bytes is not considered
+  # a string type and we want to include that.
+  if not (isinstance(data, six.text_type) or isinstance(data, six.binary_type)):
+    # Some non-string type of object.
     try:
-      string = six.text_type(string)
+      data = six.text_type(data)
     except (TypeError, UnicodeError):
       # The string cannot be converted to unicode -- default to str() which will
       # catch objects with special __str__ methods.
-      string = str(string)
-  except UnicodeError:
-    # The string does not encode to ASCII.
-    pass
+      data = str(data)
 
-  if not encoding:
-    encoding = GetConsoleAttr().GetEncoding()
+  if isinstance(data, six.text_type):
+    string = data
+  else:
+    # Convert the byte string into a text string.
+    try:
+      # It can be decoded using the given encoding so that means it will encode
+      # fine later as well.
+      return data.decode(encoding)
+    except UnicodeError:
+      # Can't decode using the output encoding, DecodeFromConsole() tries a
+      # bunch of other fallback encodings.
+      string = DecodeFromConsole(data, encoding=encoding)
 
   try:
     # No change needed if the string encodes to the output encoding.
     string.encode(encoding)
     return string
   except UnicodeError:
-    # the string does not encode to the output encoding.
-    pass
-
-  try:
-    # The string is encoded using the standard output encoding. Decoding here
-    # gets the string in a form that will print to the standard output.
-    return string.decode(encoding)
-  except (AttributeError, UnicodeError):
-    # Unknown encoding.
-    string = DecodeFromConsole(string, encoding=encoding)
-
-    try:
-      # No change needed if the string encodes to the output encoding.
-      string.encode(encoding)
-      return string
-    except UnicodeError:
-      # Give up and return a string with unknown characters replaced by ?
-      # (escape=False) or a C-style escape (escape=True).
-      return string.encode(encoding,
-                           'backslashreplace' if escape else 'replace')
+    # The string does not encode to the output encoding. Encode it with error
+    # handling then convert it back into a text string (which will be
+    # guaranteed to only contain characters that can be encoded later.
+    return (string
+            .encode(encoding, 'backslashreplace' if escape else 'replace')
+            .decode(encoding))
 
 
 def DecodeFromConsole(string, encoding=None):

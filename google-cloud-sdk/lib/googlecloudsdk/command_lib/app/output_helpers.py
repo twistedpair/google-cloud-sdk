@@ -133,4 +133,4 @@ def DisplayProposedConfigDeployments(project, configs):
       if api_maybe_enabled:
         # Display this warning with a false positive rate for when the Service
         # Manangement API is not enabled or accessible.
-        log.warn(QUEUE_TASKS_WARNING)
+        log.warning(QUEUE_TASKS_WARNING)

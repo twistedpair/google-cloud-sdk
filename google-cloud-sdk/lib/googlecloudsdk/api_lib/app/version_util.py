@@ -352,11 +352,11 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
         version_id=old_default_version.id,
         block=False)
   except operations_util.MiscOperationError as err:
-    log.warn('Error stopping version [{0}]: {1}'.format(old_default_version,
-                                                        str(err)))
-    log.warn('Version [{0}] is still running and you must stop or delete it '
-             'yourself in order to turn it off. (If you do not, you may be '
-             'charged.)'.format(old_default_version))
+    log.warning('Error stopping version [{0}]: {1}'.format(old_default_version,
+                                                           str(err)))
+    log.warning('Version [{0}] is still running and you must stop or delete it '
+                'yourself in order to turn it off. (If you do not, you may be '
+                'charged.)'.format(old_default_version))
   else:
     # TODO(b/318248525): Switch to refer to `gcloud app operations wait` when
     # available

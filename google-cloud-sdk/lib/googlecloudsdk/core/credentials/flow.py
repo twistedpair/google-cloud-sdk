@@ -159,13 +159,13 @@ def Run(flow, launch_browser=True, http=None,
                  'between {start_port} and {end_port}. Please check your '
                  'firewall settings or locally running programs that may be '
                  'blocking or using those ports.')
-      log.warn(message.format(
+      log.warning(message.format(
           start_port=auth_host_port_start,
           end_port=port_number,
       ))
 
       launch_browser = False
-      log.warn('Defaulting to URL copy/paste mode.')
+      log.warning('Defaulting to URL copy/paste mode.')
 
   if not launch_browser:
     flow.redirect_uri = client.OOB_CALLBACK_URN

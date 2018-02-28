@@ -218,9 +218,10 @@ def UpdateDockerCredentials(server, refresh=True):
       # Fall back to the previous manual .dockercfg manipulation
       # in order to support gcloud app's docker-binaryless use case.
       _UpdateDockerConfig(server, _USERNAME, cred.access_token)
-      log.warn("'docker' was not discovered on the path. Credentials have been "
-               'stored, but are not guaranteed to work with the Docker client '
-               ' if an external credential store is configured.')
+      log.warning(
+          "'docker' was not discovered on the path. Credentials have been "
+          'stored, but are not guaranteed to work with the Docker client '
+          ' if an external credential store is configured.')
   else:
     _UpdateDockerConfig(server, _USERNAME, cred.access_token)
 

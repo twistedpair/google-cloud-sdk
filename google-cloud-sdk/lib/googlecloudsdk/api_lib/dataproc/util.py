@@ -142,7 +142,7 @@ def WaitForOperation(dataproc, operation, message, timeout_s, poll_period_s=5):
       # Drop a line to print nicely with the progress tracker.
       log.err.write(tracker_separator)
       for warning in new_warnings:
-        log.warn(warning)
+        log.warning(warning)
 
   with progress_tracker.ProgressTracker(message, autotick=True):
     while timeout_s > (time.time() - start_time):
@@ -386,7 +386,7 @@ def WaitForJobTermination(dataproc,
         try:
           job = dataproc.client.projects_regions_jobs.Get(request)
         except apitools_exceptions.HttpError as error:
-          log.warn('GetJob failed:\n{}'.format(str(error)))
+          log.warning('GetJob failed:\n{}'.format(str(error)))
           # Do not retry on 4xx errors.
           if IsClientHttpException(error):
             raise
@@ -394,7 +394,7 @@ def WaitForJobTermination(dataproc,
             job.driverOutputResourceUri != driver_output_uri):
           if driver_output_uri:
             PrintEqualsLine()
-            log.warn("Job attempt failed. Streaming new attempt's output.")
+            log.warning("Job attempt failed. Streaming new attempt's output.")
             PrintEqualsLine()
           driver_output_uri = job.driverOutputResourceUri
           driver_log_stream = storage_helpers.StorageObjectSeriesStream(
@@ -411,9 +411,9 @@ def WaitForJobTermination(dataproc,
   if state in dataproc.terminal_job_states:
     if stream_driver_log:
       if not driver_log_stream:
-        log.warn('Expected job output not found.')
+        log.warning('Expected job output not found.')
       elif driver_log_stream.open:
-        log.warn('Job terminated, but output did not finish streaming.')
+        log.warning('Job terminated, but output did not finish streaming.')
     if state is goal_state:
       return job
     raise exceptions.JobError(

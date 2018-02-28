@@ -19,7 +19,7 @@ from googlecloudsdk.command_lib.tasks import constants
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.util import files
+from googlecloudsdk.core.console import console_io
 
 
 _PROJECT = properties.VALUES.core.project.GetOrFail
@@ -208,7 +208,7 @@ def _ParseAppEngineHttpRequestArgs(args, task_type, messages):
 
 def _ParsePayloadArgs(args):
   if args.IsSpecified('payload_file'):
-    return files.GetFileOrStdinContents(args.payload_file, binary=False)
+    return console_io.ReadFromFileOrStdin(args.payload_file, binary=False)
   elif args.IsSpecified('payload_content'):
     return args.payload_content
 

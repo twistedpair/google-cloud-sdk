@@ -442,7 +442,7 @@
           "type": "string"
         },
         "minCpuPlatform": {
-          "description": "Minimum CPU platform to be used by this instance. The instance may be\nscheduled on the specified or newer CPU platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform)",
+          "description": "Minimum CPU platform to be used by this instance. The instance may be\nscheduled on the specified or newer CPU platform. Applicable values are the\nfriendly names of CPU platforms, such as\n<code>minCpuPlatform: &quot;Intel Haswell&quot;<\/code> or\n<code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;<\/code>. For more\ninformation, read [how to specify min CPU\nplatform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform)",
           "type": "string"
         },
         "workloadMetadataConfig": {
@@ -471,7 +471,7 @@
     },
     "CustomImageConfig": {
       "id": "CustomImageConfig",
-      "description": "CustomImageConfig contains the information r",
+      "description": "CustomImageConfig contains the information",
       "type": "object",
       "properties": {
         "image": {
@@ -1410,7 +1410,7 @@
     },
     "ClusterStatus": {
       "id": "ClusterStatus",
-      "description": "ClusterStatus is used for internal only purposes to transition a cluster\nbetween DEGRADED AND RUNNING using UpdateClusterInternal. The message is used\nin ClusterUpdate's DesiredClusterStatus field and should not be confused with\nCluster's Status Enum.",
+      "description": "ClusterStatus is used for internal only purposes by the monitoring server\nto transition a cluster between DEGRADED AND RUNNING using\nUpdateClusterInternal. The message is used in ClusterUpdate's\nDesiredClusterStatus field and should not be confused with Cluster's Status\nEnum.\nTODO(b\/69364507) Implement a PatchClusterInternal method that takes an\ninternal proto instead so we don't have to define this message here",
       "type": "object",
       "properties": {
         "status": {
@@ -1432,7 +1432,7 @@
           "type": "string"
         },
         "internal": {
-          "description": "An internal field for the sub-error type or other metadata for the Status.",
+          "description": "An internal field for the sub-error type or other metadata for the\nStatus.",
           "type": "string"
         }
       }
@@ -1663,7 +1663,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
           "type": "string"
         },
         "zone": {
@@ -1874,7 +1874,7 @@
           "$ref": "NodePool"
         },
         "parent": {
-          "description": "The parent (project, location, cluster id) where the node pool will be created.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+          "description": "The parent (project, location, cluster id) where the node pool will be\ncreated. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
           "type": "string"
         },
         "version": {
@@ -2036,7 +2036,7 @@
           "type": "string"
         },
         "name": {
-          "description": "The name (project, location, cluster id) of the cluster to start IP rotation.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster id) of the cluster to start IP\nrotation. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
         },
         "version": {
@@ -2063,7 +2063,7 @@
           "type": "string"
         },
         "name": {
-          "description": "The name (project, location, cluster id) of the cluster to complete IP rotation.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+          "description": "The name (project, location, cluster id) of the cluster to complete IP\nrotation. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
         },
         "version": {
@@ -2078,7 +2078,7 @@
       "type": "object",
       "properties": {
         "projectId": {
-          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
+          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
           "type": "string"
         },
         "zone": {
@@ -2611,6 +2611,53 @@
           }
         }
       }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "ListLocationsResponse returns the list of all GKE locations and their\nrecommendation state.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A full list of GKE locations.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "Only return ListLocationsResponse that occur after the page_token. This\nvalue should be populated from the ListLocationsResponse.next_page_token if\nthat response token was set (which happens when listing more Locations than\nfit in a single ListLocationsResponse). This is currently not used and will\nbe honored once we use pagination.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "Location returns the location name, and if the location is recommended\nfor GKE cluster scheduling.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Contains the type of location this Location is for. Regional or Zonal.",
+          "enumDescriptions": [
+            "LOCATION_TYPE_UNSPECIFIED means the location type was not determined.",
+            "A GKE Location where Zonal clusters can be created.",
+            "A GKE Location where Regional clusters can be created."
+          ],
+          "type": "string",
+          "enum": [
+            "LOCATION_TYPE_UNSPECIFIED",
+            "ZONE",
+            "REGION"
+          ]
+        },
+        "name": {
+          "description": "Contains the name of the resource requested.\nSpecific in the format 'projects\/*\/locations\/*'.",
+          "type": "string"
+        },
+        "recommended": {
+          "description": "Recommended is a bool combining the drain state of the location (ie- has\nthe region been drained manually?), and the stockout status of any zone\naccording to Zone Advisor. This will be internal only for use by pantheon.",
+          "type": "boolean"
+        }
+      }
     }
   },
   "resources": {
@@ -2744,6 +2791,47 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Returns configuration info about the Kubernetes Engine service."
+            },
+            "list": {
+              "id": "container.projects.locations.list",
+              "path": "v1alpha1/{+parent}/locations",
+              "flatPath": "v1alpha1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Contains the name of the resource requested.\nSpecific in the format 'projects\/*\/locations\/*'.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "version": {
+                  "description": "API request version that initiates this operation.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Only return up to this many ListLocationsResponse in the response. If not\nspecified the service will pick the maximum number of results.\nNote: Specifying page_size = 0 is equivalent to not specifying a\npage_size, i.e., will result in the service picking a page_size value.\nThis is currently not used and will be honored once we use pagination.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Only return Locations that occur after the page_token. This value\nshould be populated from the\nListLocationsResponse.next_page_token if that response token was\nset (which happens when listing more Locations than fit in a\nsingle ListLocationsResponse).\nThis is currently not used and will be honored once we use pagination.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": ""
             }
           }
           ,
@@ -3167,7 +3255,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster id) of the cluster to start IP rotation.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster id) of the cluster to start IP\nrotation. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
@@ -3195,7 +3283,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name (project, location, cluster id) of the cluster to complete IP rotation.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The name (project, location, cluster id) of the cluster to complete IP\nrotation. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
@@ -3340,7 +3428,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The parent (project, location, cluster id) where the node pools will be listed.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                          "description": "The parent (project, location, cluster id) where the node pools will be\nlisted. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
@@ -3385,7 +3473,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool to get.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to\nget. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
@@ -3435,7 +3523,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "The parent (project, location, cluster id) where the node pool will be created.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The parent (project, location, cluster id) where the node pool will be\ncreated. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
@@ -3463,7 +3551,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool to delete.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to\ndelete. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
@@ -4096,7 +4184,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "projectId": {
-                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
+                      "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -4591,7 +4679,7 @@
                           "type": "string"
                         },
                         "parent": {
-                          "description": "The parent (project, location, cluster id) where the node pools will be listed.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                          "description": "The parent (project, location, cluster id) where the node pools will be\nlisted. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
                           "location": "query",
                           "type": "string"
                         },
@@ -4645,7 +4733,7 @@
                           "type": "string"
                         },
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool to get.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to\nget. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
                           "location": "query",
                           "type": "string"
                         },
@@ -4741,7 +4829,7 @@
                           "type": "string"
                         },
                         "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool to delete.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to\ndelete. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
                           "location": "query",
                           "type": "string"
                         },
@@ -4868,7 +4956,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "projectId": {
-                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).\nThis field has been deprecated and replaced by the name field.",
+                          "description": "Deprecated. The Google Developers Console [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
                           "location": "path",
                           "required": true,
                           "type": "string"

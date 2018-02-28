@@ -227,8 +227,8 @@ def _AddFlagToSummary(command, summary, length_per_snippet, location, terms):
         if desc_line:
           line = desc_line
         else:
-          log.warn('Attempted to look up a location [{}] that was not '
-                   'found.'.format(location[1]))
+          log.warning('Attempted to look up a location [{}] that was not '
+                      'found.'.format(location[1]))
 
       # Add subsections of flag if given.
       if len(location) > 2:
@@ -242,8 +242,8 @@ def _AddFlagToSummary(command, summary, length_per_snippet, location, terms):
               default = ', '.join([x for x in default])
             line = 'Default: {}.'.format(default)
         else:
-          log.warn('Attempted to look up a location [{}] that was not '
-                   'found.'.format(location[-1]))
+          log.warning('Attempted to look up a location [{}] that was not '
+                      'found.'.format(location[-1]))
 
   # If no specific flag given, get list of all flags.
   else:
@@ -273,8 +273,8 @@ def _AddPositionalToSummary(command, summary, length_per_snippet,
       line = positional.get(lookup.DESCRIPTION, '')
       line = _Snip(line, length_per_snippet, terms)
     else:
-      log.warn('Attempted to look up a location [{}] that was not '
-               'found.'.format(location[1]))
+      log.warning('Attempted to look up a location [{}] that was not '
+                  'found.'.format(location[1]))
 
   # If no specific positional given, just add list of all available.
   else:
@@ -305,8 +305,8 @@ def _AddGenericSectionToSummary(command, summary, length_per_snippet,
     summary.append(
         _Snip(line, length_per_snippet, terms))
   else:
-    log.warn('Attempted to look up a location [{}] that was not '
-             'found.'.format(location[-1]))
+    log.warning('Attempted to look up a location [{}] that was not found.'
+                .format(location[-1]))
 
 
 def _Priority(x):

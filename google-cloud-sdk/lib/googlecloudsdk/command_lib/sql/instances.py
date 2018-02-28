@@ -22,11 +22,33 @@ from googlecloudsdk.api_lib.sql import instances as api_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.core import log
 
 DEFAULT_RELEASE_TRACK = base.ReleaseTrack.GA
 
 # PD = Persistent Disk. This is prefixed to all storage type payloads.
 STORAGE_TYPE_PREFIX = 'PD_'
+
+
+def ShowZoneDeprecationWarnings(args):
+  """Show warnings if both region and zone are specified or neither is.
+
+  Args:
+      args: argparse.Namespace, The arguments that the command was invoked
+          with.
+  """
+
+  region_specified = args.IsSpecified('region')
+  zone_specified = args.IsSpecified('gce_zone')
+
+  if not (region_specified or zone_specified):
+    log.warning('Starting with release 218.0.0, you will need to specify '
+                'either a region or a zone to create an instance.')
+
+  # TODO(b/73362466): Remove this check; these flags will be mutually exclusive.
+  if region_specified and zone_specified:
+    log.warning('Zone will override region. Starting with release 204.0.0, '
+                'region and zone will become mutually exclusive arguments.')
 
 
 class _BaseInstances(object):
@@ -268,10 +290,11 @@ class _BaseInstances(object):
                                       instance_ref=None,
                                       release_track=DEFAULT_RELEASE_TRACK):
     """Constructs Instance for create request from base instance and args."""
+    ShowZoneDeprecationWarnings(args)
     instance_resource = cls._ConstructBaseInstanceFromArgs(
         sql_messages, args, original, instance_ref)
 
-    instance_resource.region = args.region
+    instance_resource.region = reducers.Region(args.region, args.gce_zone)
     instance_resource.databaseVersion = args.database_version
     instance_resource.masterInstanceName = args.master_instance_name
 

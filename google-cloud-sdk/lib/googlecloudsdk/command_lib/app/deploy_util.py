@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Utilities for `gcloud app` deployment.
 
 Mostly created to selectively enable Cloud Endpoints in the beta/preview release
@@ -21,6 +22,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 import enum
 
 from googlecloudsdk.api_lib.app import appengine_client
+from googlecloudsdk.api_lib.app import build as app_cloud_build
 from googlecloudsdk.api_lib.app import deploy_app_command_util
 from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.api_lib.app import metric_names
@@ -29,7 +31,6 @@ from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.api_lib.app.appinfo import appinfo
-from googlecloudsdk.api_lib.cloudbuild import build as cloud_build
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.calliope import actions
@@ -265,7 +266,7 @@ class ServiceDeployer(object):
         log.warning('Deployment of service [{0}] will ignore the skip_files '
                     'field in the configuration file, because the image has '
                     'already been built.'.format(new_version.service))
-      return cloud_build.BuildArtifact.MakeImageArtifact(image)
+      return app_cloud_build.BuildArtifact.MakeImageArtifact(image)
     elif service.RequiresImage():
       build = deploy_command_util.BuildAndPushDockerImage(
           new_version.project, service, source_dir, new_version.id,
@@ -393,10 +394,7 @@ class ServiceDeployer(object):
                                   service_info, manifest, build,
                                   extra_config_settings)
     metrics.CustomTimedEvent(metric_names.DEPLOY_API)
-    message = 'Updating service [{service}]'.format(
-        service=new_version.service)
-    with progress_tracker.ProgressTracker(message):
-      self._PossiblyPromote(all_services, new_version)
+    self._PossiblyPromote(all_services, new_version)
 
 
 def ArgsDeploy(parser):

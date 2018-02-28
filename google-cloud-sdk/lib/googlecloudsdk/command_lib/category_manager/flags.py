@@ -13,57 +13,14 @@
 # limitations under the License.
 """Helpers for commandline flags in Cloud Category Manager."""
 
-from googlecloudsdk.api_lib.category_manager import store
-from googlecloudsdk.api_lib.category_manager import utils
-from googlecloudsdk.core import resources
+from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
-def AddStoreResourceFlags(parser):
-  """Add taxonomy resource flags to the parser."""
-  parser.add_argument(
-      'store_resource',
-      metavar='STORE',
-      nargs='?',
-      help='Resource name of a taxonomy store')
-
-
-def AddTaxonomyResourceFlags(parser):
-  """Add taxonomy resource flags to the parser."""
-  parser.add_argument(
-      '--store-id',
-      default=None,
-      required=False,
-      metavar='store_id',
-      help='Id of the taxonomy store. Will use the store associated with the'
-      ' organization of the currently active project by default.')
-  parser.add_argument(
-      'taxonomy_resource',
-      metavar='TAXONOMY_RESOURCE',
-      nargs='?',
-      help='Resource name of a taxonomy')
-
-
-def GetStoreResourceFromArgs(args):
-  """Parse a store resource. Need to call AddStoreResourceFlags first."""
-  return resources.REGISTRY.Parse(
-      args.store_resource,
-      params={
-          'taxonomyStoresId':
-              args.store_resource
-              or store.GetDefaultStoreId(utils.GetProjectRef())
-      },
-      collection='categorymanager.taxonomyStores')
-
-
-def GetTaxonomyResourceFromArgs(args):
-  """Parse a taxonomy resource. Need to call AddTaxonomyResourceFlags first."""
-  return resources.REGISTRY.Parse(
-      args.taxonomy_resource,
-      params={
-          'taxonomyStoresId':
-              args.store_id
-              or store.GetDefaultStoreId(utils.GetProjectRef()),
-          'taxonomiesId':
-              args.taxonomy_resource,
-      },
-      collection='categorymanager.taxonomies')
+def AddOrganizationIdArg(parser):
+  """Adds 'organization_id' argument as a required CLI input."""
+  concept_parsers.ConceptParser.ForResource(
+      name="organization_id",
+      resource_spec=concepts.ResourceSpec("cloudresourcemanager.organizations"),
+      group_help="Your organization's id.",
+      required=True).AddToParser(parser)

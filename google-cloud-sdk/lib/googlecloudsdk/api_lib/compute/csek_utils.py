@@ -21,7 +21,7 @@ import re
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.util import files
+from googlecloudsdk.core.console import console_io
 
 CSEK_HELP_URL = ('https://cloud.google.com/compute/docs/disks/'
                  'customer-supplied-encryption')
@@ -284,8 +284,7 @@ class CsekKeyStore(object):
                                             larger than max_bytes.
     """
 
-    content = files.GetFileOrStdinContents(fname)
-
+    content = console_io.ReadFromFileOrStdin(fname, binary=False)
     return cls(content, allow_rsa_encrypted)
 
   @staticmethod

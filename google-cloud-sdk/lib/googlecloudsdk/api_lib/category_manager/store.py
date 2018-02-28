@@ -11,46 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Helpers for taxonomy store related operations in Cloud Categoty Manager."""
+"""Helpers for taxonomy store related operations in Cloud Category Manager."""
 
 from googlecloudsdk.api_lib.category_manager import utils
-from googlecloudsdk.core import resources
 
 
-def _GetService():
-  """Gets the data policy annotation service."""
-  return utils.GetClientInstance().taxonomyStores
-
-
-def GetDefault(project_ref):
-  """Makes an API call to the default taxonomy store for a project.
+def GetTaxonomyStoreFromOrgRef(org_ref):
+  """Gets a taxonomy store from an organization reference.
 
   Args:
-    project_ref: A resource reference of a project. Use the current active
-      project if not provided.
+    org_ref: An organization reference object.
 
   Returns:
-    A taxonomy store.
+    A TaxonomyStore message.
   """
-  return _GetService().GetDefault(
-      utils.GetMessagesModule().CategorymanagerTaxonomyStoresGetDefaultRequest(
-          projectId=project_ref.projectId))
-
-
-def GetDefaultStoreId(project_ref):
-  """Get Id of the default store.
-
-  Args:
-    project_ref: A resource reference of a project. Use the current active
-      project if not provided.
-
-  Returns:
-    Id of a taxonomy store.
-  """
-  return resources.REGISTRY.ParseRelativeName(
-      GetDefault(project_ref).name,
-      'categorymanager.taxonomyStores',
-  ).taxonomyStoresId
+  messages = utils.GetMessagesModule()
+  req = messages.CategorymanagerOrganizationsGetTaxonomyStoreRequest(
+      parent=org_ref.RelativeName())
+  return utils.GetClientInstance().organizations.GetTaxonomyStore(request=req)
 
 
 def GetIamPolicy(store_ref):
@@ -63,7 +41,7 @@ def GetIamPolicy(store_ref):
     An IamPolicy message.
   """
   messages = utils.GetMessagesModule()
-  return _GetService().GetIamPolicy(
+  return utils.GetClientInstance().taxonomyStores.GetIamPolicy(
       messages.CategorymanagerTaxonomyStoresGetIamPolicyRequest(
           resource=store_ref.RelativeName(),
           getIamPolicyRequest=messages.GetIamPolicyRequest()))
@@ -80,7 +58,7 @@ def SetIamPolicy(store_ref, policy):
     An IamPolicy message.
   """
   messages = utils.GetMessagesModule()
-  return _GetService().SetIamPolicy(
+  return utils.GetClientInstance().taxonomyStores.SetIamPolicy(
       messages.CategorymanagerTaxonomyStoresSetIamPolicyRequest(
           resource=store_ref.RelativeName(),
           setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))

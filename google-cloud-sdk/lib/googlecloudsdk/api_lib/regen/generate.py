@@ -81,8 +81,8 @@ def GenerateApi(base_dir, root_dir, api_name, api_version, api_config):
     package_dir = os.path.join(package_dir, subdir)
     init_file = os.path.join(package_dir, '__init__.py')
     if not os.path.isfile(init_file):
-      logging.warn('%s does not have __init__.py file, generating ...',
-                   package_dir)
+      logging.warning('%s does not have __init__.py file, generating ...',
+                      package_dir)
       with open(init_file, 'w') as f:
         f.write(_INIT_FILE_CONTENT)
 
@@ -179,9 +179,9 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
   discovery_doc = resource_generator.DiscoveryDoc.FromJson(
       os.path.join(base_dir, root_dir, discovery_doc_path))
   if discovery_doc.api_version != api_version:
-    logging.warn('Discovery api version %s does not match %s, '
-                 'this client will be accessible via new alias.',
-                 discovery_doc.api_version, api_version)
+    logging.warning('Discovery api version %s does not match %s, '
+                    'this client will be accessible via new alias.',
+                    discovery_doc.api_version, api_version)
   if discovery_doc.api_name != api_name:
     raise WrongDiscoveryDoc('api name {0}, expected {1}'
                             .format(discovery_doc.api_name, api_name))

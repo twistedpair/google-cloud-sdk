@@ -15,6 +15,7 @@
 
 import argparse
 from googlecloudsdk.api_lib.sql import constants
+from googlecloudsdk.api_lib.sql import instances as api_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 
@@ -224,3 +225,19 @@ def MachineType(instance=None, tier=None, memory=None, cpu=None):
     machine_type = constants.DEFAULT_MACHINE_TYPE
 
   return machine_type
+
+
+def Region(specified_region, gce_zone):
+  """Generates the region string for the instance.
+
+  Args:
+    specified_region: string, the GCE region to create the instance in.
+    gce_zone: string, the GCE zone to create the instance in.
+
+  Returns:
+    string, the region to create the instance in.
+  """
+  if gce_zone:
+    derived_region = api_util.GetRegionFromZone(gce_zone)
+    return derived_region
+  return specified_region

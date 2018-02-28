@@ -18,7 +18,6 @@ from __future__ import print_function
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.sql import api_util
-from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
@@ -26,11 +25,14 @@ from googlecloudsdk.core.console import console_io
 _POSTGRES_DATABASE_VERSION_PREFIX = 'POSTGRES'
 
 
-class SQLInstanceNotFoundException(exceptions.Error):
-  """An exception raised when the SQL instance was not found by the server.
-  """
+def GetRegionFromZone(gce_zone):
+  """Parses and returns the region string from the gce_zone string."""
+  zone_components = gce_zone.split('-')
+  # The region is the first two components of the zone.
+  return '-'.join(zone_components[:2])
 
 
+# TODO(b/73648377): Factor out static methods into module-level functions.
 class _BaseInstances(object):
   """Common utility functions for sql instances."""
 

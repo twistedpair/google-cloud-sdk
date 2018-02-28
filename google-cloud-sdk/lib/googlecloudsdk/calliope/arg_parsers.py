@@ -1199,7 +1199,7 @@ class _HandleNoArgAction(argparse.Action):
 
   def __call__(self, parser, namespace, value, option_string=None):
     if value is None:
-      log.warn(self.deprecation_message)
+      log.warning(self.deprecation_message)
       if self.none_arg:
         setattr(namespace, self.none_arg, True)
 
@@ -1211,7 +1211,7 @@ def HandleNoArgAction(none_arg, deprecation_message):
 
   This function creates an argparse action which can be used to gracefully
   deprecate a flag using nargs=?. When a flag is created with this action, it
-  simply log.warn()s the given deprecation_message and then sets the value of
+  simply log.warning()s the given deprecation_message and then sets the value of
   the none_arg to True.
 
   This means if you use the none_arg no_foo and attach this action to foo,

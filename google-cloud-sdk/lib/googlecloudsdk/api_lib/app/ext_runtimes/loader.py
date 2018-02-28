@@ -168,7 +168,7 @@ def _PullTags(local_repo, client_wrapper, target_dir):
       revision = local_repo[tag]
       break
     except KeyError:
-      log.warn('Unable to checkout branch %s', tag)
+      log.warning('Unable to checkout branch %s', tag)
 
   else:
     raise AssertionError('No "refs/heads/master" tag found in repository.')

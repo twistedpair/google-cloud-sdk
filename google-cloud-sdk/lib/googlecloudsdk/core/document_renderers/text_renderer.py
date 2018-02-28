@@ -51,11 +51,7 @@ class TextRenderer(renderer.Renderer):
 
   def __init__(self, *args, **kwargs):
     super(TextRenderer, self).__init__(*args, **kwargs)
-    # We want the rendering to match the default console encoding. self._out
-    # could be a file or pipe to a pager, either way we still want to see rich
-    # encoding if the console supports it.
-    encoding = console_attr.GetConsoleAttr().GetEncoding()
-    self._attr = console_attr.GetConsoleAttr(out=self._out, encoding=encoding)
+    self._attr = console_attr.GetConsoleAttr()
     self._blank = True
     self._bullet = self._attr.GetBullets()
     self._csi_char = self._attr.GetControlSequenceIndicator()

@@ -3,6 +3,92 @@
 Copyright 2014-2018 Google Inc. All rights reserved.
 
 
+## 191.0.0 (2018-02-28)
+
+### Breaking Changes
+
+* **(DEPRECATED)** Deprecated `--instance-type` flag for `gcloud beta bigtable
+  instances update`. Use `gcloud beta bigtable instances upgrade` instead.
+* **(DEPRECATED)** Renamed the `--description` flag to `--display-name` for
+  `gcloud beta bigtable instances <create|update>`.
+* **(MODIFIED)** The behavior of `--trigger-bucket` flag for
+   `gcloud functions deploy` has changed and now corresponds to the new
+   `object.finalize` event on file creation. To get the legacy behavior, use the
+   `--trigger-event` and `--trigger-resource` flags  e.g.
+   gcloud functions deploy --trigger-event \
+   providers/cloud.storage/eventTypes/object.change \
+   --trigger-resource <your_bucket_name>
+* **(MODIFIED)** The schema for pub/sub events has changed. `eventId`,
+  `timestamp`, `resource`, and `eventType` have all been moved inside the
+  context property e.g., context.timestamp. All functions deployed using
+  `--trigger-topic` flag will use the new schema. To get the legacy behavior,
+  use the `--trigger-event` and `--trigger-resource` flags e.g.
+  gcloud functions deploy --trigger-event \
+  providers/cloud.pubsub/eventTypes/topic.publish \
+  --trigger-resource <your_topic_name>
+* Please see https://cloud.google.com/storage/docs/pubsub-notifications for more
+  information on storage event types.
+* **(REMOVED)** Removed `functions/use_new_pubsub_trigger` and
+  `functions/use_new_object_trigger` properties.
+* Deprecated `gcloud sql instances export`. Use `gcloud sql export sql` instead.
+* Deprecated `gcloud sql instances import`. Use `gcloud sql import sql` instead.
+* Region is now inferred from `--gce-zone` flag during `gcloud sql instances
+  create` calls, and will override any value set with `--region`.
+*  **(REMOVED)** Removed the deprecated `--port` flag from
+   `gcloud compute backend-services`. Use `--port-name` instead.
+* (DEPRECATED) Deprecated `--additional-zones` (replaced by `--node-locations`)
+
+
+### App Engine
+
+* The Python SSL 2.7 library will be decommissioned on 2 April 2018. After this
+date, apps will be blocked from deploying until you specify the SSL library
+(latest) or (2.7.11).
+
+* Updated the Go SDK to version 1.9.63.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/go/release-notes
+
+### Cloud Bigtable
+
+* Added `gcloud beta bigtable instances upgrade` command which upgrades
+  an existing development instance to a production instance.
+
+### Cloud Datastore
+
+* Promoted `gcloud datastore import` and `gcloud datastore export` to GA.
+
+### Cloud Machine Learning Engine
+
+* Added `--framework` flag to `gcloud ml-engine versions create` to specify
+  the machine learning framework (TensorFlow, scikit-learn, or XGboost) for ML
+  Engine versions.
+
+### Cloud SQL
+
+* Promoted `gcloud sql export` to GA.
+* Promoted `gcloud sql import` to GA.
+* Added warnings when calling `gcloud sql instances create` with both the
+  `--region` and `--gce-zone` flags, or with neither. These flags will become
+  mutually exclusive, with exactly one being required for create calls.
+
+### Container Engine
+
+* Added `container/use_v1_api_client` property as an alias of `container/use_v1_api`.
+  `container/use_v1_api` is still supported.
+
+### Kubernetes Engine
+
+* Added `--enable-pod-security-policy` flag to enable PodSecurityPolicy enforcement in clusters:
+  `gcloud <alpha|beta> container clusters <create|update> --enable-pod-security-policy`
+
+### Stackdriver Debugger
+
+* Changed `gcloud beta source upload` command to use the `.gcloudignore` file if
+  present. If not present and `.gitignore` is, `.gitignore` will still be used.
+  See `gcloud topic gcloudignore` to learn more.
+
+
 ## 190.0.1 (2018-02-22)
 
 *  Hotfix for UnicodeDecodeError issue affecting logging.

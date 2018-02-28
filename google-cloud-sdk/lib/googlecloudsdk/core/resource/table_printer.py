@@ -145,8 +145,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         encoding = name
         break
     if not self._console_attr:
-      self._console_attr = console_attr.GetConsoleAttr(encoding=encoding,
-                                                       out=self._out)
+      self._console_attr = console_attr.GetConsoleAttr(encoding=encoding)
     self._csi = self._console_attr.GetControlSequenceIndicator()
     self._page_count = 0
 
@@ -515,7 +514,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
               self._out.write(' ' * pad)
               pad = 0
             # pylint: disable=cell-var-from-loop
-            cell.Render(justify=lambda s: justify(s, width))
+            cell.Render(self._out, justify=lambda s: justify(s, width))
             if box:
               self._out.write(' ' * table_column_pad)
             else:

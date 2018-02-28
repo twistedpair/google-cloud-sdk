@@ -19,7 +19,7 @@
   "servicePath": "",
   "baseUrl": "https://datastore.googleapis.com/",
   "batchPath": "batch",
-  "version_module": "True",
+  "version_module": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -157,7 +157,7 @@
           }
         },
         "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf true, the operation is completed, and either `error` or `response` is\navailable.",
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
           "type": "boolean"
         },
         "error": {
@@ -206,6 +206,71 @@
       "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleDatastoreAdminV1ExportEntitiesRequest": {
+      "id": "GoogleDatastoreAdminV1ExportEntitiesRequest",
+      "description": "The request for\ngoogle.datastore.admin.v1.DatastoreAdmin.ExportEntities.",
+      "type": "object",
+      "properties": {
+        "labels": {
+          "description": "Client-assigned labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "entityFilter": {
+          "description": "Description of what data from the project is included in the export.",
+          "$ref": "GoogleDatastoreAdminV1EntityFilter"
+        },
+        "outputUrlPrefix": {
+          "description": "Location for the export metadata and data files.\n\nThe full resource URL of the external storage location. Currently, only\nGoogle Cloud Storage is supported. So output_url_prefix should be of the\nform: `gs:\/\/BUCKET_NAME[\/NAMESPACE_PATH]`, where `BUCKET_NAME` is the\nname of the Cloud Storage bucket and `NAMESPACE_PATH` is an optional Cloud\nStorage namespace path (this is not a Cloud Datastore namespace). For more\ninformation about Cloud Storage namespace paths, see\n[Object name\nconsiderations](https:\/\/cloud.google.com\/storage\/docs\/naming#object-considerations).\n\nThe resulting files will be nested deeper than the specified URL prefix.\nThe final output URL will be provided in the\ngoogle.datastore.admin.v1.ExportEntitiesResponse.output_url field. That\nvalue should be used for subsequent ImportEntities operations.\n\nBy nesting the data files deeper, the same Cloud Storage bucket can be used\nin multiple ExportEntities operations without conflict.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDatastoreAdminV1EntityFilter": {
+      "id": "GoogleDatastoreAdminV1EntityFilter",
+      "description": "Identifies a subset of entities in a project. This is specified as\ncombinations of kinds and namespaces (either or both of which may be all, as\ndescribed in the following examples).\nExample usage:\n\nEntire project:\n  kinds=[], namespace_ids=[]\n\nKinds Foo and Bar in all namespaces:\n  kinds=['Foo', 'Bar'], namespace_ids=[]\n\nKinds Foo and Bar only in the default namespace:\n  kinds=['Foo', 'Bar'], namespace_ids=['']\n\nKinds Foo and Bar in both the default and Baz namespaces:\n  kinds=['Foo', 'Bar'], namespace_ids=['', 'Baz']\n\nThe entire Baz namespace:\n  kinds=[], namespace_ids=['Baz']",
+      "type": "object",
+      "properties": {
+        "kinds": {
+          "description": "If empty, then this represents all kinds.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "namespaceIds": {
+          "description": "An empty list represents all namespaces. This is the preferred\nusage for projects that don't use namespaces.\n\nAn empty string element represents the default namespace. This should be\nused if the project has data in non-default namespaces, but doesn't want to\ninclude them.\nEach namespace in this list must be unique.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleDatastoreAdminV1ImportEntitiesRequest": {
+      "id": "GoogleDatastoreAdminV1ImportEntitiesRequest",
+      "description": "The request for\ngoogle.datastore.admin.v1.DatastoreAdmin.ImportEntities.",
+      "type": "object",
+      "properties": {
+        "labels": {
+          "description": "Client-assigned labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "inputUrl": {
+          "description": "The full resource URL of the external storage location. Currently, only\nGoogle Cloud Storage is supported. So input_url should be of the form:\n`gs:\/\/BUCKET_NAME[\/NAMESPACE_PATH]\/OVERALL_EXPORT_METADATA_FILE`, where\n`BUCKET_NAME` is the name of the Cloud Storage bucket, `NAMESPACE_PATH` is\nan optional Cloud Storage namespace path (this is not a Cloud Datastore\nnamespace), and `OVERALL_EXPORT_METADATA_FILE` is the metadata file written\nby the ExportEntities operation. For more information about Cloud Storage\nnamespace paths, see\n[Object name\nconsiderations](https:\/\/cloud.google.com\/storage\/docs\/naming#object-considerations).\n\nFor more information, see\ngoogle.datastore.admin.v1.ExportEntitiesResponse.output_url.",
+          "type": "string"
+        },
+        "entityFilter": {
+          "description": "Optionally specify which kinds\/namespaces are to be imported. If provided,\nthe list must be a subset of the EntityFilter used in creating the export,\notherwise a FAILED_PRECONDITION error will be returned. If no filter is\nspecified then all entities from the export are imported.",
+          "$ref": "GoogleDatastoreAdminV1EntityFilter"
+        }
       }
     },
     "LookupRequest": {
@@ -444,7 +509,7 @@
     },
     "LatLng": {
       "id": "LatLng",
-      "description": "An object representing a latitude\/longitude pair. This is expressed as a pair\nof doubles representing degrees latitude and degrees longitude. Unless\nspecified otherwise, this must conform to the\n<a href=\"http:\/\/www.unoosa.org\/pdf\/icg\/2012\/template\/WGS_84.pdf\">WGS84\nstandard<\/a>. Values must be within normalized ranges.\n\nExample of normalization code in Python:\n\n    def NormalizeLongitude(longitude):\n      \"\"\"Wraps decimal degrees longitude to [-180.0, 180.0].\"\"\"\n      q, r = divmod(longitude, 360.0)\n      if r > 180.0 or (r == 180.0 and q <= -1.0):\n        return r - 360.0\n      return r\n\n    def NormalizeLatLng(latitude, longitude):\n      \"\"\"Wraps decimal degrees latitude and longitude to\n      [-90.0, 90.0] and [-180.0, 180.0], respectively.\"\"\"\n      r = latitude % 360.0\n      if r <= 90.0:\n        return r, NormalizeLongitude(longitude)\n      elif r >= 270.0:\n        return r - 360, NormalizeLongitude(longitude)\n      else:\n        return 180 - r, NormalizeLongitude(longitude + 180.0)\n\n    assert 180.0 == NormalizeLongitude(180.0)\n    assert -180.0 == NormalizeLongitude(-180.0)\n    assert -179.0 == NormalizeLongitude(181.0)\n    assert (0.0, 0.0) == NormalizeLatLng(360.0, 0.0)\n    assert (0.0, 0.0) == NormalizeLatLng(-360.0, 0.0)\n    assert (85.0, 180.0) == NormalizeLatLng(95.0, 0.0)\n    assert (-85.0, -170.0) == NormalizeLatLng(-95.0, 10.0)\n    assert (90.0, 10.0) == NormalizeLatLng(90.0, 10.0)\n    assert (-90.0, -10.0) == NormalizeLatLng(-90.0, -10.0)\n    assert (0.0, -170.0) == NormalizeLatLng(-180.0, 10.0)\n    assert (0.0, -170.0) == NormalizeLatLng(180.0, 10.0)\n    assert (-90.0, 10.0) == NormalizeLatLng(270.0, 10.0)\n    assert (90.0, 10.0) == NormalizeLatLng(-270.0, 10.0)",
+      "description": "An object representing a latitude\/longitude pair. This is expressed as a pair\nof doubles representing degrees latitude and degrees longitude. Unless\nspecified otherwise, this must conform to the\n<a href=\"http:\/\/www.unoosa.org\/pdf\/icg\/2012\/template\/WGS_84.pdf\">WGS84\nstandard<\/a>. Values must be within normalized ranges.",
       "type": "object",
       "properties": {
         "latitude": {
@@ -824,6 +889,44 @@
       "description": "The request for Datastore.BeginTransaction.",
       "type": "object",
       "properties": {
+        "transactionOptions": {
+          "description": "Options for a new transaction.",
+          "$ref": "TransactionOptions"
+        }
+      }
+    },
+    "TransactionOptions": {
+      "id": "TransactionOptions",
+      "description": "Options for beginning a new transaction.\n\nTransactions can be created explicitly with calls to\nDatastore.BeginTransaction or implicitly by setting\nReadOptions.new_transaction in read requests.",
+      "type": "object",
+      "properties": {
+        "readWrite": {
+          "description": "The transaction should allow both reads and writes.",
+          "$ref": "ReadWrite"
+        },
+        "readOnly": {
+          "description": "The transaction should only allow reads.",
+          "$ref": "ReadOnly"
+        }
+      }
+    },
+    "ReadWrite": {
+      "id": "ReadWrite",
+      "description": "Options specific to read \/ write transactions.",
+      "type": "object",
+      "properties": {
+        "previousTransaction": {
+          "description": "The transaction identifier of the transaction being retried.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "ReadOnly": {
+      "id": "ReadOnly",
+      "description": "Options specific to read-only transactions.",
+      "type": "object",
+      "properties": {
       }
     },
     "BeginTransactionResponse": {
@@ -985,6 +1088,31 @@
         }
       }
     },
+    "ReserveIdsRequest": {
+      "id": "ReserveIdsRequest",
+      "description": "The request for Datastore.ReserveIds.",
+      "type": "object",
+      "properties": {
+        "databaseId": {
+          "description": "If not empty, the ID of the database against which to make the request.",
+          "type": "string"
+        },
+        "keys": {
+          "description": "A list of keys with complete key paths whose numeric IDs should not be\nauto-allocated.",
+          "type": "array",
+          "items": {
+            "$ref": "Key"
+          }
+        }
+      }
+    },
+    "ReserveIdsResponse": {
+      "id": "ReserveIdsResponse",
+      "description": "The response for Datastore.ReserveIds.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleDatastoreAdminV1beta1ExportEntitiesMetadata": {
       "id": "GoogleDatastoreAdminV1beta1ExportEntitiesMetadata",
       "description": "Metadata for ExportEntities operations.",
@@ -1028,25 +1156,21 @@
           "format": "google-datetime"
         },
         "operationType": {
-          "description": "The type of the operation.  Can be used as a filter in\nListOperationsRequest.",
+          "description": "The type of the operation. Can be used as a filter in\nListOperationsRequest.",
           "enumDescriptions": [
             "Unspecified.",
             "ExportEntities.",
-            "ImportEntities.",
-            "Build an index.",
-            "Clear an index."
+            "ImportEntities."
           ],
           "type": "string",
           "enum": [
             "OPERATION_TYPE_UNSPECIFIED",
             "EXPORT_ENTITIES",
-            "IMPORT_ENTITIES",
-            "BUILD_INDEX",
-            "CLEAR_INDEX"
+            "IMPORT_ENTITIES"
           ]
         },
         "labels": {
-          "description": "The client-assigned labels which were provided when the operation was\ncreated.  May also include additional labels.",
+          "description": "The client-assigned labels which were provided when the operation was\ncreated. May also include additional labels.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1058,11 +1182,11 @@
             "Unspecified.",
             "Request is being prepared for processing.",
             "Request is actively being processed.",
-            "Request is in the process of being cancelled after user called\nlongrunning.Operations.CancelOperation on the operation.",
+            "Request is in the process of being cancelled after user called\ngoogle.longrunning.Operations.CancelOperation on the operation.",
             "Request has been processed and is in its finalization stage.",
             "Request has completed successfully.",
             "Request has finished being processed, but encountered an error.",
-            "Request has finished being cancelled after user called\nlongrunning.Operations.CancelOperation."
+            "Request has finished being cancelled after user called\ngoogle.longrunning.Operations.CancelOperation."
           ],
           "type": "string",
           "enum": [
@@ -1084,12 +1208,12 @@
       "type": "object",
       "properties": {
         "workCompleted": {
-          "description": "Note that this may be greater than work_estimated.",
+          "description": "The amount of work that has been completed. Note that this may be greater\nthan work_estimated.",
           "type": "string",
           "format": "int64"
         },
         "workEstimated": {
-          "description": "An estimate of how much work needs to be performed.  May be zero if the\nwork estimate is unavailable.",
+          "description": "An estimate of how much work needs to be performed. May be zero if the\nwork estimate is unavailable.",
           "type": "string",
           "format": "int64"
         }
@@ -1097,7 +1221,7 @@
     },
     "GoogleDatastoreAdminV1beta1EntityFilter": {
       "id": "GoogleDatastoreAdminV1beta1EntityFilter",
-      "description": "Identifies a subset of entities in a project.  This is specified as\ncombinations of kind + namespace (either or both of which may be all, as\ndescribed in the following examples).\nExample usage:\n\nEntire project:\n  kinds=[], namespace_ids=[]\n\nKinds Foo and Bar in all namespaces:\n  kinds=['Foo', 'Bar'], namespace_ids=[]\n\nKinds Foo and Bar only in the default namespace:\n  kinds=['Foo', 'Bar'], namespace_ids=['']\n\nKinds Foo and Bar in both the default and Baz namespaces:\n  kinds=['Foo', 'Bar'], namespace_ids=['', 'Baz']\n\nThe entire Baz namespace:\n  kinds=[], namespace_ids=['Baz']",
+      "description": "Identifies a subset of entities in a project. This is specified as\ncombinations of kinds and namespaces (either or both of which may be all, as\ndescribed in the following examples).\nExample usage:\n\nEntire project:\n  kinds=[], namespace_ids=[]\n\nKinds Foo and Bar in all namespaces:\n  kinds=['Foo', 'Bar'], namespace_ids=[]\n\nKinds Foo and Bar only in the default namespace:\n  kinds=['Foo', 'Bar'], namespace_ids=['']\n\nKinds Foo and Bar in both the default and Baz namespaces:\n  kinds=['Foo', 'Bar'], namespace_ids=['', 'Baz']\n\nThe entire Baz namespace:\n  kinds=[], namespace_ids=['Baz']",
       "type": "object",
       "properties": {
         "kinds": {
@@ -1108,7 +1232,7 @@
           }
         },
         "namespaceIds": {
-          "description": "An empty list represents all namespaces.  This is the preferred\nusage for projects that don't use namespaces.\n\nAn empty string element represents the default namespace.  This should be\nused if the project has data in non-default namespaces, but doesn't want to\ninclude them.\nEach namespace in this list must be unique.",
+          "description": "An empty list represents all namespaces. This is the preferred\nusage for projects that don't use namespaces.\n\nAn empty string element represents the default namespace. This should be\nused if the project has data in non-default namespaces, but doesn't want to\ninclude them.\nEach namespace in this list must be unique.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1153,17 +1277,216 @@
           "type": "string"
         }
       }
+    },
+    "GoogleDatastoreAdminV1ExportEntitiesMetadata": {
+      "id": "GoogleDatastoreAdminV1ExportEntitiesMetadata",
+      "description": "Metadata for ExportEntities operations.",
+      "type": "object",
+      "properties": {
+        "common": {
+          "description": "Metadata common to all Datastore Admin operations.",
+          "$ref": "GoogleDatastoreAdminV1CommonMetadata"
+        },
+        "progressEntities": {
+          "description": "An estimate of the number of entities processed.",
+          "$ref": "GoogleDatastoreAdminV1Progress"
+        },
+        "progressBytes": {
+          "description": "An estimate of the number of bytes processed.",
+          "$ref": "GoogleDatastoreAdminV1Progress"
+        },
+        "entityFilter": {
+          "description": "Description of which entities are being exported.",
+          "$ref": "GoogleDatastoreAdminV1EntityFilter"
+        },
+        "outputUrlPrefix": {
+          "description": "Location for the export metadata and data files. This will be the same\nvalue as the\ngoogle.datastore.admin.v1.ExportEntitiesRequest.output_url_prefix\nfield. The final output location is provided in\ngoogle.datastore.admin.v1.ExportEntitiesResponse.output_url.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDatastoreAdminV1CommonMetadata": {
+      "id": "GoogleDatastoreAdminV1CommonMetadata",
+      "description": "Metadata common to all Datastore Admin operations.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "The time that work began on the operation.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time the operation ended, either successfully or otherwise.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "operationType": {
+          "description": "The type of the operation. Can be used as a filter in\nListOperationsRequest.",
+          "enumDescriptions": [
+            "Unspecified.",
+            "ExportEntities.",
+            "ImportEntities."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATION_TYPE_UNSPECIFIED",
+            "EXPORT_ENTITIES",
+            "IMPORT_ENTITIES"
+          ]
+        },
+        "labels": {
+          "description": "The client-assigned labels which were provided when the operation was\ncreated. May also include additional labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "description": "The current state of the Operation.",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Request is being prepared for processing.",
+            "Request is actively being processed.",
+            "Request is in the process of being cancelled after user called\ngoogle.longrunning.Operations.CancelOperation on the operation.",
+            "Request has been processed and is in its finalization stage.",
+            "Request has completed successfully.",
+            "Request has finished being processed, but encountered an error.",
+            "Request has finished being cancelled after user called\ngoogle.longrunning.Operations.CancelOperation."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "INITIALIZING",
+            "PROCESSING",
+            "CANCELLING",
+            "FINALIZING",
+            "SUCCESSFUL",
+            "FAILED",
+            "CANCELLED"
+          ]
+        }
+      }
+    },
+    "GoogleDatastoreAdminV1Progress": {
+      "id": "GoogleDatastoreAdminV1Progress",
+      "description": "Measures the progress of a particular metric.",
+      "type": "object",
+      "properties": {
+        "workCompleted": {
+          "description": "The amount of work that has been completed. Note that this may be greater\nthan work_estimated.",
+          "type": "string",
+          "format": "int64"
+        },
+        "workEstimated": {
+          "description": "An estimate of how much work needs to be performed. May be zero if the\nwork estimate is unavailable.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleDatastoreAdminV1ExportEntitiesResponse": {
+      "id": "GoogleDatastoreAdminV1ExportEntitiesResponse",
+      "description": "The response for\ngoogle.datastore.admin.v1.DatastoreAdmin.ExportEntities.",
+      "type": "object",
+      "properties": {
+        "outputUrl": {
+          "description": "Location of the output metadata file. This can be used to begin an import\ninto Cloud Datastore (this project or another project). See\ngoogle.datastore.admin.v1.ImportEntitiesRequest.input_url.\nOnly present if the operation completed successfully.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDatastoreAdminV1ImportEntitiesMetadata": {
+      "id": "GoogleDatastoreAdminV1ImportEntitiesMetadata",
+      "description": "Metadata for ImportEntities operations.",
+      "type": "object",
+      "properties": {
+        "common": {
+          "description": "Metadata common to all Datastore Admin operations.",
+          "$ref": "GoogleDatastoreAdminV1CommonMetadata"
+        },
+        "progressEntities": {
+          "description": "An estimate of the number of entities processed.",
+          "$ref": "GoogleDatastoreAdminV1Progress"
+        },
+        "progressBytes": {
+          "description": "An estimate of the number of bytes processed.",
+          "$ref": "GoogleDatastoreAdminV1Progress"
+        },
+        "entityFilter": {
+          "description": "Description of which entities are being imported.",
+          "$ref": "GoogleDatastoreAdminV1EntityFilter"
+        },
+        "inputUrl": {
+          "description": "The location of the import metadata file. This will be the same value as\nthe google.datastore.admin.v1.ExportEntitiesResponse.output_url field.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
     "projects": {
       "methods": {
+        "export": {
+          "id": "datastore.projects.export",
+          "path": "v1/projects/{projectId}:export",
+          "flatPath": "v1/projects/{projectId}:export",
+          "httpMethod": "POST",
+          "parameters": {
+            "projectId": {
+              "description": "Project ID against which to make the request.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectId"
+          ],
+          "request": {
+            "$ref": "GoogleDatastoreAdminV1ExportEntitiesRequest"
+          },
+          "response": {
+            "$ref": "GoogleLongrunningOperation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/datastore"
+          ],
+          "description": "Exports a copy of all or a subset of entities from Google Cloud Datastore\nto another storage system, such as Google Cloud Storage. Recent updates to\nentities may not be reflected in the export. The export occurs in the\nbackground and its progress can be monitored and managed via the\nOperation resource that is created. The output of an export may only be\nused once the associated operation is done. If an export operation is\ncancelled before completion it may leave partial data behind in Google\nCloud Storage."
+        },
+        "import": {
+          "id": "datastore.projects.import",
+          "path": "v1/projects/{projectId}:import",
+          "flatPath": "v1/projects/{projectId}:import",
+          "httpMethod": "POST",
+          "parameters": {
+            "projectId": {
+              "description": "Project ID against which to make the request.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectId"
+          ],
+          "request": {
+            "$ref": "GoogleDatastoreAdminV1ImportEntitiesRequest"
+          },
+          "response": {
+            "$ref": "GoogleLongrunningOperation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/datastore"
+          ],
+          "description": "Imports entities into Google Cloud Datastore. Existing entities with the\nsame key are overwritten. The import occurs in the background and its\nprogress can be monitored and managed via the Operation resource that is\ncreated. If an ImportEntities operation is cancelled, it is possible\nthat a subset of the data has already been imported to Cloud Datastore."
+        },
         "lookup": {
           "id": "datastore.projects.lookup",
           "path": "v1/projects/{projectId}:lookup",
           "flatPath": "v1/projects/{projectId}:lookup",
           "httpMethod": "POST",
-          "description": "Looks up entities by key.",
           "parameters": {
             "projectId": {
               "description": "The ID of the project against which to make the request.",
@@ -1184,14 +1507,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/datastore"
-          ]
+          ],
+          "description": "Looks up entities by key."
         },
         "runQuery": {
           "id": "datastore.projects.runQuery",
           "path": "v1/projects/{projectId}:runQuery",
           "flatPath": "v1/projects/{projectId}:runQuery",
           "httpMethod": "POST",
-          "description": "Queries for entities.",
           "parameters": {
             "projectId": {
               "description": "The ID of the project against which to make the request.",
@@ -1212,14 +1535,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/datastore"
-          ]
+          ],
+          "description": "Queries for entities."
         },
         "beginTransaction": {
           "id": "datastore.projects.beginTransaction",
           "path": "v1/projects/{projectId}:beginTransaction",
           "flatPath": "v1/projects/{projectId}:beginTransaction",
           "httpMethod": "POST",
-          "description": "Begins a new transaction.",
           "parameters": {
             "projectId": {
               "description": "The ID of the project against which to make the request.",
@@ -1240,14 +1563,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/datastore"
-          ]
+          ],
+          "description": "Begins a new transaction."
         },
         "commit": {
           "id": "datastore.projects.commit",
           "path": "v1/projects/{projectId}:commit",
           "flatPath": "v1/projects/{projectId}:commit",
           "httpMethod": "POST",
-          "description": "Commits a transaction, optionally creating, deleting or modifying some\nentities.",
           "parameters": {
             "projectId": {
               "description": "The ID of the project against which to make the request.",
@@ -1268,14 +1591,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/datastore"
-          ]
+          ],
+          "description": "Commits a transaction, optionally creating, deleting or modifying some\nentities."
         },
         "rollback": {
           "id": "datastore.projects.rollback",
           "path": "v1/projects/{projectId}:rollback",
           "flatPath": "v1/projects/{projectId}:rollback",
           "httpMethod": "POST",
-          "description": "Rolls back a transaction.",
           "parameters": {
             "projectId": {
               "description": "The ID of the project against which to make the request.",
@@ -1296,14 +1619,14 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/datastore"
-          ]
+          ],
+          "description": "Rolls back a transaction."
         },
         "allocateIds": {
           "id": "datastore.projects.allocateIds",
           "path": "v1/projects/{projectId}:allocateIds",
           "flatPath": "v1/projects/{projectId}:allocateIds",
           "httpMethod": "POST",
-          "description": "Allocates IDs for the given keys, which is useful for referencing an entity\nbefore it is inserted.",
           "parameters": {
             "projectId": {
               "description": "The ID of the project against which to make the request.",
@@ -1324,7 +1647,36 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/datastore"
-          ]
+          ],
+          "description": "Allocates IDs for the given keys, which is useful for referencing an entity\nbefore it is inserted."
+        },
+        "reserveIds": {
+          "id": "datastore.projects.reserveIds",
+          "path": "v1/projects/{projectId}:reserveIds",
+          "flatPath": "v1/projects/{projectId}:reserveIds",
+          "httpMethod": "POST",
+          "parameters": {
+            "projectId": {
+              "description": "The ID of the project against which to make the request.",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "projectId"
+          ],
+          "request": {
+            "$ref": "ReserveIdsRequest"
+          },
+          "response": {
+            "$ref": "ReserveIdsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/datastore"
+          ],
+          "description": "Prevents the supplied keys' IDs from being auto-allocated by Cloud\nDatastore."
         }
       }
       ,
@@ -1336,7 +1688,6 @@
               "path": "v1/{+name}/operations",
               "flatPath": "v1/projects/{projectsId}/operations",
               "httpMethod": "GET",
-              "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id.",
               "parameters": {
                 "name": {
                   "description": "The name of the operation's parent resource.",
@@ -1371,14 +1722,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/datastore"
-              ]
+              ],
+              "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
             },
             "get": {
               "id": "datastore.projects.operations.get",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/operations/{operationsId}",
               "httpMethod": "GET",
-              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice.",
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource.",
@@ -1397,14 +1748,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/datastore"
-              ]
+              ],
+              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
             },
             "delete": {
               "id": "datastore.projects.operations.delete",
               "path": "v1/{+name}",
               "flatPath": "v1/projects/{projectsId}/operations/{operationsId}",
               "httpMethod": "DELETE",
-              "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.",
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource to be deleted.",
@@ -1423,14 +1774,14 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/datastore"
-              ]
+              ],
+              "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`."
             },
             "cancel": {
               "id": "datastore.projects.operations.cancel",
               "path": "v1/{+name}:cancel",
               "flatPath": "v1/projects/{projectsId}/operations/{operationsId}:cancel",
               "httpMethod": "POST",
-              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
               "parameters": {
                 "name": {
                   "description": "The name of the operation resource to be cancelled.",
@@ -1449,7 +1800,8 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/datastore"
-              ]
+              ],
+              "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
             }
           }
         }

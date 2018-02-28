@@ -322,7 +322,7 @@ class BuilderReference(object):
   def WarnIfDeprecated(self):
     """Warns that this runtime is deprecated (if it has been marked as such)."""
     if self.deprecation_message:
-      log.warn(self.deprecation_message)
+      log.warning(self.deprecation_message)
 
   def __eq__(self, other):
     return (self.runtime == other.runtime and

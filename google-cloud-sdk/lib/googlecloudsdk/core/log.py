@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 from collections import OrderedDict
 import datetime
 import errno
@@ -26,6 +27,7 @@ import sys
 import time
 
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import times
@@ -157,32 +159,31 @@ class _ConsoleWriter(object):
     Args:
       *msg: str, The messages to print.
     """
-
-    from googlecloudsdk.core.console import console_attr  # pylint: disable=g-import-not-at-top, avoid import loop
     msg = (console_attr.EncodeForConsole(x, escape=False) for x in msg)
-    message = u' '.join(msg)
-    self.write(message + u'\n')
+    message = ' '.join(msg)
+    self._Write(message + '\n')
 
   def GetConsoleWriterStream(self):
     """Returns the console writer output stream."""
     return self.__stream_wrapper.stream
 
-  # pylint: disable=g-bad-name, This must match file-like objects
-  @property
-  def encoding(self):
-    return getattr(self.__stream_wrapper.stream, 'encoding', None)
-
-  # pylint: disable=g-bad-name, This must match file-like objects
-  def write(self, msg):
+  def _Write(self, msg):
+    """Just a helper so we don't have to double encode from Print and write."""
     log_msg = msg
     stream_msg = msg
-    if isinstance(msg, six.text_type):
+    if six.PY2 and isinstance(msg, six.text_type):
+      # Encode to byte strings for output only on Python 2.
       log_msg = msg.encode('utf8')
-      stream_msg = msg.encode(self.encoding or 'utf8', 'replace')
+      stream_encoding = console_attr.GetConsoleAttr().GetEncoding()
+      stream_msg = msg.encode(stream_encoding or 'utf8', 'replace')
 
     self.__logger.info(log_msg)
     if self.__filter.enabled:
       self.__stream_wrapper.stream.write(stream_msg)
+
+  # pylint: disable=g-bad-name, This must match file-like objects
+  def write(self, msg):
+    self._Write(console_attr.EncodeForConsole(msg, escape=False))
 
   # pylint: disable=g-bad-name, This must match file-like objects
   def writelines(self, lines):
@@ -199,16 +200,34 @@ class _ConsoleWriter(object):
     return isatty() if isatty else False
 
 
+def _FmtString(fmt):
+  """Gets the correct format string to use based on the Python version.
+
+  Args:
+    fmt: text string, The format string to convert.
+
+  Returns:
+    A byte string on Python 2 or the original string on Python 3.
+  """
+  # On Py2, log messages come in as both text and byte strings so the format
+  # strings needs to be bytes so it doesn't coerce byte messages to unicode.
+  # On Py3, only text strings come in and if the format is bytes it can't
+  # combine with the log message.
+  if six.PY2:
+    return fmt.encode('utf8')
+  return fmt
+
+
 class _ConsoleFormatter(logging.Formatter):
   """A formatter for the console logger, handles colorizing messages."""
 
-  LEVEL = '%(levelname)s:'
-  MESSAGE = ' %(message)s'
+  LEVEL = _FmtString('%(levelname)s:')
+  MESSAGE = _FmtString(' %(message)s')
   DEFAULT_FORMAT = LEVEL + MESSAGE
 
-  RED = '\033[1;31m'
-  YELLOW = '\033[1;33m'
-  END = '\033[0m'
+  RED = _FmtString('\033[1;31m')
+  YELLOW = _FmtString('\033[1;33m')
+  END = _FmtString('\033[0m')
 
   FORMATS = {}
   COLOR_FORMATS = {
@@ -235,7 +254,14 @@ class _ConsoleFormatter(logging.Formatter):
     if six.PY3:
       # pylint: disable=protected-access
       self._style._fmt = fmt
-    return logging.Formatter.format(self, record)
+    msg = logging.Formatter.format(self, record)
+    # We need to encode here because this is the first time we are able to
+    # intercept messages that come directly from the log methods (as opposed to
+    # the out.write() methods above.
+    if six.PY2 and isinstance(msg, six.text_type):
+      stream_encoding = console_attr.GetConsoleAttr().GetEncoding()
+      msg = msg.encode(stream_encoding or 'utf8', 'replace')
+    return msg
 
 
 class _JsonFormatter(logging.Formatter):
@@ -261,7 +287,7 @@ class _JsonFormatter(logging.Formatter):
 
       if issubclass(type(log_record.msg), BaseException):
         error_dict['type'] = type(log_record.msg).__name__
-        error_dict['details'] = log_record.msg.message
+        error_dict['details'] = six.text_type(log_record.msg)
         error_dict['stacktrace'] = getattr(log_record.msg,
                                            '__traceback__', None)
       elif issubclass(type(log_record.exc_info[0]), BaseException):
@@ -356,8 +382,8 @@ class _LogManager(object):
 
   def __init__(self):
     # Note: if this ever changes, please update LOG_PREFIX_PATTERN
-    self._file_formatter = logging.Formatter(
-        fmt='%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
+    fmt = _FmtString('%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
+    self._file_formatter = logging.Formatter(fmt=fmt)
 
     # Set up the root logger, it accepts all levels.
     self._root_logger = logging.getLogger()
@@ -414,6 +440,8 @@ class _LogManager(object):
     self._root_logger.addHandler(self.stderr_handler)
 
     # Reset all the log file handlers.
+    for f in self.file_only_logger.handlers:
+      f.close()
     self.file_only_logger.handlers[:] = []
     self.file_only_logger.addHandler(_NullHandler())
 
@@ -516,8 +544,8 @@ class _LogManager(object):
       log_file = self._SetupLogsDir(logs_dir)
       file_handler = logging.FileHandler(log_file)
     except (OSError, IOError, files.Error) as exp:
-      warn(u'Could not setup log file in {0}, ({1}: {2})'
-           .format(logs_dir, type(exp).__name__, exp))
+      warning('Could not setup log file in {0}, ({1}: {2})'
+              .format(logs_dir, type(exp).__name__, exp))
       return
 
     self.current_log_file = log_file
@@ -673,6 +701,30 @@ def Print(*msg):
     *msg: str, The messages to print.
   """
   out.Print(*msg)
+
+
+def WriteToFileOrStdout(path, content, overwrite=True, binary=False,
+                        private=False):
+  """Writes content to the specified file or stdout if path is '-'.
+
+  Args:
+    path: str, The path of the file to write.
+    content: str, The content to write to the file.
+    overwrite: bool, Whether or not to overwrite the file if it exists.
+    binary: bool, True to open the file in binary mode.
+    private: bool, Whether to write the file in private mode.
+
+  Raises:
+    Error: If the file cannot be written.
+  """
+  if path == '-':
+    if binary:
+      files.WriteStreamBytes(sys.stdout, content)
+    else:
+      out.write(content)
+  else:
+    files.WriteFileContents(
+        path, content, overwrite=overwrite, binary=binary, private=private)
 
 
 def Reset(stdout=None, stderr=None):
@@ -905,15 +957,15 @@ def _PrintResourceChange(operation,
   if kind:
     msg.append(kind)
   if resource:
-    msg.append(u'[{0}]'.format(unicode(resource)))
+    msg.append('[{0}]'.format(str(resource)))
   if details:
     msg.append(details)
   if failed:
-    msg[-1] = u'{0}:'.format(msg[-1])
+    msg[-1] = '{0}:'.format(msg[-1])
     msg.append(failed)
   period = '' if msg[-1].endswith('.') else '.'
   writer = error if failed else status.Print
-  writer(u'{0}{1}'.format(' '.join(msg), period))
+  writer('{0}{1}'.format(' '.join(msg), period))
 
 
 def CreatedResource(resource, kind=None, async=False, details=None,
@@ -992,7 +1044,6 @@ getLogger = logging.getLogger
 log = logging.log
 debug = logging.debug
 info = logging.info
-warn = logging.warn
 warning = logging.warning
 error = logging.error
 critical = logging.critical

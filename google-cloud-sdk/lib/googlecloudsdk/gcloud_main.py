@@ -120,7 +120,7 @@ def CreateCLI(surfaces, translator=None):
 
 def _IssueTestWarning(command_path=None):
   del command_path  # Unused in _IssueTestWarning
-  log.warn(
+  log.warning(
       'The `gcloud compute xpn` commands have been renamed and will soon be '
       'removed. Please use `gcloud compute shared-vpc` instead.')
 

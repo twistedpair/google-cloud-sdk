@@ -74,7 +74,7 @@ class Diagnostic(object):
           fixer = None
 
       if not result.passed and fixer and num_retries == self._MAX_RETRIES:
-        log.warn('Unable to fix {0} failure after {1} attempts.'.format(
+        log.warning('Unable to fix {0} failure after {1} attempts.'.format(
             self.title, num_retries))
       if result.passed:
         num_checks_passed += 1

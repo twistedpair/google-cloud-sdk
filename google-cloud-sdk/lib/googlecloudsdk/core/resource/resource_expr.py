@@ -139,15 +139,15 @@ def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
     setattr(backend, warned_attribute, True)
     old_match = 'matches' if deprecated_matched else 'does not match'
     new_match = 'will match' if matched else 'will not match'
-    log.warn('--filter : operator evaluation is changing for '
-             'consistency across Google APIs.  {key}{op}{operand} currently '
-             '{old_match} but {new_match} in the near future.  Run '
-             '`gcloud topic filters` for details.'.format(
-                 key=resource_lex.GetKeyName(key),
-                 op=op,
-                 operand=operand,
-                 old_match=old_match,
-                 new_match=new_match))
+    log.warning('--filter : operator evaluation is changing for '
+                'consistency across Google APIs.  {key}{op}{operand} currently '
+                '{old_match} but {new_match} in the near future.  Run '
+                '`gcloud topic filters` for details.'.format(
+                    key=resource_lex.GetKeyName(key),
+                    op=op,
+                    operand=operand,
+                    old_match=old_match,
+                    new_match=new_match))
   return deprecated_matched
 
 

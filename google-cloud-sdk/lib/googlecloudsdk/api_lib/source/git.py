@@ -178,7 +178,7 @@ def _GetGcloudScript(full_path=False):
         'Please make sure the Cloud SDK bin folder is in PATH.')
   if full_path:
     if not re.match(r'[-a-zA-Z0-9_/]+$', gcloud):
-      log.warn(
+      log.warning(
           textwrap.dedent("""\
           You specified the option to use the full gcloud path in the git
           credential.helper, but the path contains non alphanumberic characters
@@ -260,7 +260,7 @@ def _GetCredHelperCommand(uri, full_path=False):
       CheckGitVersion(_HELPER_MIN)
     except GitVersionException as e:
       helper_min = '.'.join(str(i) for i in _HELPER_MIN)
-      log.warn(
+      log.warning(
           textwrap.dedent("""\
           You are using a Google-hosted repository with a
           {current} which is older than {min_version}. If you upgrade
@@ -271,7 +271,7 @@ def _GetCredHelperCommand(uri, full_path=False):
                current=e.cur_version, min_version=helper_min)))
       return None
     if _HasSystemCredHelper():
-      log.warn(
+      log.warning(
           textwrap.dedent("""\
           If your system's credential.helper requests a password, choose
           cancel."""))

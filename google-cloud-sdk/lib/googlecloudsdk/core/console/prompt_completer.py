@@ -145,7 +145,7 @@ class PromptCompleter(object):
     self._prompt = prompt
     self._choices = choices
     self._out = out or sys.stderr
-    self._attr = console_attr.ConsoleAttr(out=self._out)
+    self._attr = console_attr.ConsoleAttr()
     term_width, term_height = self._attr.GetTermSize()
     if width is None:
       width = 80

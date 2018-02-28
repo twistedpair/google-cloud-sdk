@@ -18,39 +18,52 @@ from googlecloudsdk.api_lib.functions import util as api_util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
-TRIGGER_BUCKET_NOTICE = (
-    'The default trigger_event for `--trigger-bucket` will soon '
-    'change to `object.finalize` from `object.change`. '
-    'To opt-in to the new behavior early, run'
-    '`gcloud config set functions/use_new_object_trigger True`. To restore old '
-    'behavior you can run '
-    '`gcloud config set functions/use_new_object_trigger False` '
-    'or use the `--trigger-event` flag e.g. '
-    '`gcloud functions deploy --trigger-event '
-    'providers/cloud.storage/eventTypes/object.change '
-    '--trigger-resource gs://...`'
-    'Please see https://cloud.google.com/storage/docs/pubsub-notifications'
-    'for more information on storage event types.')
+class TriggerCompatibilityError(core_exceptions.Error):
+  """Raised when deploy trigger is incompatiblie with existing trigger."""
 
-TRIGGER_TOPIC_NOTICE = (
-    'The default event schema returned by Cloud Functions with a pub/sub '
-    '(`--trigger-topic`) trigger will soon change. The `eventId`, `timestamp`, '
-    '`eventType`, and `resource` properties will all be moved into the '
-    '`event.context` property. To opt-in to the new behavior early, run'
-    '`gcloud config set functions/use_new_pubsub_trigger True`. To restore old '
-    'behavior you can run '
-    '`gcloud config set functions/use_new_pubsub_trigger False` '
-    'or use the `--trigger-event` flag e.g. '
-    '`gcloud functions deploy --trigger-event '
+
+_LEGACY_UPGRADE_NOTICE = ('To enable new event trigger semantics for '
+                          'this function code, you must recreate the '
+                          'function by running a fresh '
+                          '`gcloud functions deploy`.')
+
+GCS_COMPATIBILITY_ERROR = (
+    'The `--trigger-bucket` flag corresponds to the '
+    '`google.storage.object.finalize` event on file creation.  '
+    'You are trying to update a function that is using the legacy '
+    '`providers/cloud.storage/eventTypes/object.change` event type. To get the '
+    'legacy behavior, use the `--trigger-event` and `--trigger-resource` flags '
+    'e.g. `gcloud functions deploy --trigger-event '
+    'providers/cloud.storage/eventTypes/object.change '
+    '--trigger-resource [your_bucket_name]`. {upgrade_notice} '
+    'Please see https://cloud.google.com/storage/docs/pubsub-notifications for '
+    'more information on storage event types.'.format(
+        upgrade_notice=_LEGACY_UPGRADE_NOTICE))
+
+PUBSUB_COMPATIBILITY_ERROR = (
+    'The format of the Pub/Sub event source has changed.  You are trying to '
+    'update a function that is using the legacy '
+    '`providers/cloud.pubsub/eventTypes/topic.publish` event type. To get the '
+    'legacy behavior, use the `--trigger-event` and `--trigger-resource` flags '
+    'e.g. `gcloud functions deploy --trigger-event '
     'providers/cloud.pubsub/eventTypes/topic.publish '
-    '--trigger-resource <TOPIC_NAME>` Please see '
-    'https://cloud.google.com/functions/docs/writing/background#event_parameter'
-    'for more information on the new schema.')
+    '--trigger-resource [your_topic_name]`. {upgrade_notice} '
+    'Please see https://cloud.google.com/storage/docs/pubsub-notifications for '
+    'more information on storage event types.'.format(
+        upgrade_notice=_LEGACY_UPGRADE_NOTICE))
+
+
+# Old style trigger events as of 02/2018.
+LEGACY_TRIGGER_EVENTS = {
+    'providers/cloud.storage/eventTypes/object.change': GCS_COMPATIBILITY_ERROR,
+    'providers/cloud.pubsub/eventTypes/topic.publish': (
+        PUBSUB_COMPATIBILITY_ERROR
+    )
+}
 
 
 def CheckTriggerSpecified(args):
@@ -58,7 +71,6 @@ def CheckTriggerSpecified(args):
           or args.IsSpecified('trigger_bucket')
           or args.IsSpecified('trigger_http')
           or args.IsSpecified('trigger_event')):
-    # --trigger-provider is hidden for now so not mentioning it.
     raise calliope_exceptions.OneOfArgumentsRequiredException(
         ['--trigger-topic', '--trigger-bucket', '--trigger-http',
          '--trigger-event'],
@@ -100,28 +112,17 @@ def ValidateTriggerArgs(trigger_event, trigger_resource, retry_specified,
 
 def _GetBucketTriggerEventParams(trigger_bucket):
   bucket_name = trigger_bucket[5:-1]
-  new_behavior = properties.VALUES.functions.use_new_object_trigger.GetBool()
-  if new_behavior is None:
-    log.warn(TRIGGER_BUCKET_NOTICE)
-
   return {
       'trigger_provider': 'cloud.storage',
-      'trigger_event':
-          ('google.storage.object.finalize' if new_behavior
-           else 'providers/cloud.storage/eventTypes/object.change'),
+      'trigger_event': 'google.storage.object.finalize',
       'trigger_resource': bucket_name,
   }
 
 
 def _GetTopicTriggerEventParams(trigger_topic):
-  new_behavior = properties.VALUES.functions.use_new_pubsub_trigger.GetBool()
-  if new_behavior is None:
-    log.warn(TRIGGER_TOPIC_NOTICE)
-
   return {
       'trigger_provider': 'cloud.pubsub',
-      'trigger_event': ('google.pubsub.topic.publish' if new_behavior
-                        else 'providers/cloud.pubsub/eventTypes/topic.publish'),
+      'trigger_event': 'google.pubsub.topic.publish',
       'trigger_resource': trigger_topic,
   }
 
@@ -237,3 +238,11 @@ def CreateEventTrigger(trigger_provider, trigger_event, trigger_resource):
           trigger_resource))
   return event_trigger
 
+
+def CheckLegacyTriggerUpdate(function_trigger, new_trigger_event):
+  if function_trigger:
+    function_event_type = function_trigger.eventType
+    if (function_event_type in LEGACY_TRIGGER_EVENTS and
+        function_event_type != new_trigger_event):
+      error = LEGACY_TRIGGER_EVENTS[function_event_type]
+      raise TriggerCompatibilityError(error)

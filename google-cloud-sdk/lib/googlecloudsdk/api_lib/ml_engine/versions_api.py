@@ -28,15 +28,23 @@ class NoFieldsSpecifiedError(exceptions.Error):
   """Error indicating an invalid Version configuration file."""
 
 
+def GetMessagesModule(version='v1'):
+  return apis.GetMessagesModule('ml', version)
+
+
+def GetClientInstance(version='v1', no_http=False):
+  return apis.GetClientInstance('ml', version, no_http=no_http)
+
+
 class VersionsClient(object):
   """Client for the versions service of Cloud ML Engine."""
 
   _ALLOWED_YAML_FIELDS = set(['autoScaling', 'description', 'deploymentUri',
                               'runtimeVersion', 'manualScaling', 'labels',
-                              'machineType'])
+                              'machineType', 'framework'])
 
   def __init__(self, client=None, messages=None):
-    self.client = client or apis.GetClientInstance('ml', 'v1')
+    self.client = client or GetClientInstance()
     self.messages = messages or self.client.MESSAGES_MODULE
 
   @property
@@ -113,7 +121,8 @@ class VersionsClient(object):
                    runtime_version=None,
                    labels=None,
                    machine_type=None,
-                   description=None):
+                   description=None,
+                   framework=None):
     """Create a Version object.
 
     The object is based on an optional YAML configuration file and the
@@ -132,6 +141,8 @@ class VersionsClient(object):
       labels: Version.LabelsValue, the labels to set for the version
       machine_type: str, the machine type to serve the model version on.
       description: str, the version description.
+      framework: FrameworkValueValuesEnum, the ML framework used to train this
+        version of the model.
 
     Returns:
       A Version object (for the corresponding API version).
@@ -170,7 +181,8 @@ class VersionsClient(object):
         'runtimeVersion': runtime_version,
         'labels': labels,
         'machineType': machine_type,
-        'description': description
+        'description': description,
+        'framework': framework
     }
     for field_name, value in additional_fields.items():
       if value is not None:

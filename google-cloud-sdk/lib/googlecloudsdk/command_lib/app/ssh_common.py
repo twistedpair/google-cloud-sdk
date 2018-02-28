@@ -123,7 +123,7 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
     raise command_exceptions.MissingInstanceError(rel_name)
 
   if not instance.vmDebugEnabled:
-    log.warn(_ENABLE_DEBUG_WARNING)
+    log.warning(_ENABLE_DEBUG_WARNING)
     console_io.PromptContinue(cancel_on_no=True, throw_if_unattended=True)
   user = ssh.GetDefaultSshUsername()
   remote = ssh.Remote(instance.vmIp, user=user)

@@ -1022,6 +1022,8 @@ class GoogleCloudMlV1Version(_messages.Message):
   engine/reference/rest/v1/projects.models.versions/list).  LINT.IfChange
 
   Enums:
+    FrameworkValueValuesEnum: The ML framework used to train this version of
+      the model. If not specified, defaults to `TENSORFLOW`
     StateValueValuesEnum: Output only. The state of a version.
 
   Messages:
@@ -1056,6 +1058,8 @@ class GoogleCloudMlV1Version(_messages.Message):
       conditions: An `etag` is returned in the response to `GetVersion`, and
       systems are expected to put that etag in the request to `UpdateVersion`
       to ensure that their change will be applied to the model as intended.
+    framework: The ML framework used to train this version of the model. If
+      not specified, defaults to `TENSORFLOW`
     isDefault: Output only. If true, this version will be used to handle
       prediction requests that do not specify a version.  You can change the
       default version by calling [projects.methods.versions.setDefault](/ml-
@@ -1083,6 +1087,21 @@ class GoogleCloudMlV1Version(_messages.Message):
       this deployment. If not set, Google Cloud ML will choose a version.
     state: Output only. The state of a version.
   """
+
+  class FrameworkValueValuesEnum(_messages.Enum):
+    """The ML framework used to train this version of the model. If not
+    specified, defaults to `TENSORFLOW`
+
+    Values:
+      FRAMEWORK_UNSPECIFIED: <no description>
+      TENSORFLOW: <no description>
+      SCIKIT_LEARN: <no description>
+      XGBOOST: <no description>
+    """
+    FRAMEWORK_UNSPECIFIED = 0
+    TENSORFLOW = 1
+    SCIKIT_LEARN = 2
+    XGBOOST = 3
 
   class StateValueValuesEnum(_messages.Enum):
     """Output only. The state of a version.
@@ -1143,14 +1162,15 @@ class GoogleCloudMlV1Version(_messages.Message):
   description = _messages.StringField(4)
   errorMessage = _messages.StringField(5)
   etag = _messages.BytesField(6)
-  isDefault = _messages.BooleanField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  lastUseTime = _messages.StringField(9)
-  machineType = _messages.StringField(10)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 11)
-  name = _messages.StringField(12)
-  runtimeVersion = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
+  framework = _messages.EnumField('FrameworkValueValuesEnum', 7)
+  isDefault = _messages.BooleanField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  lastUseTime = _messages.StringField(10)
+  machineType = _messages.StringField(11)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 12)
+  name = _messages.StringField(13)
+  runtimeVersion = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
