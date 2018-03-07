@@ -248,7 +248,7 @@
           ]
         },
         "privateKeyData": {
-          "description": "The private key data. Only provided in `CreateServiceAccountKey`\nresponses. Make sure to keep the private key data secure because it\nallows for the assertion of the service account identity.\nWhen decoded, the private key data can be used to authenticate with\nGoogle API client libraries and with\n<a href=\"\/sdk\/gcloud\/reference\/auth\/activate-service-account\">gcloud\nauth activate-service-account<\/a>.",
+          "description": "The private key data. Only provided in `CreateServiceAccountKey`\nresponses. Make sure to keep the private key data secure because it\nallows for the assertion of the service account identity.\nWhen base64 decoded, the private key data can be used to authenticate with\nGoogle API client libraries and with\n<a href=\"\/sdk\/gcloud\/reference\/auth\/activate-service-account\">gcloud\nauth activate-service-account<\/a>.",
           "type": "string",
           "format": "byte"
         },

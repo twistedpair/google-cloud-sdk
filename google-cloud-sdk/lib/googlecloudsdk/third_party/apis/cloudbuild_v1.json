@@ -6,7 +6,7 @@
   "canonicalName": "Cloud Build",
   "version": "v1",
   "revision": "0",
-  "title": "Google Cloud Container Builder API",
+  "title": "Cloud Container Builder API",
   "description": "Builds container images in the cloud.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -230,13 +230,13 @@
           "description": "Status of the build.\n@OutputOnly",
           "enumDescriptions": [
             "Status of the build is unknown.",
-            "Build is queued; work has not yet begun.",
-            "Build is being executed.",
-            "Build finished successfully.",
-            "Build failed to complete successfully.",
-            "Build failed due to an internal cause.",
-            "Build took longer than was allowed.",
-            "Build was canceled by a user."
+            "Build or step is queued; work has not yet begun.",
+            "Build or step is being executed.",
+            "Build or step finished successfully.",
+            "Build or step failed to complete successfully.",
+            "Build or step failed due to an internal cause.",
+            "Build or step took longer than was allowed.",
+            "Build or step was canceled by a user."
           ],
           "type": "string",
           "enum": [
@@ -471,6 +471,35 @@
         "timing": {
           "description": "Stores timing information for executing this build step.\n@OutputOnly",
           "$ref": "TimeSpan"
+        },
+        "timeout": {
+          "description": "Time limit for executing this build step. If not defined, the step has no\ntime limit and will be allowed to continue to run until either it completes\nor the build itself times out.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "status": {
+          "description": "Status of the build step. At this time, build step status is only updated\non build completion; step status is not updated in real-time as the build\nprogresses.\n@OutputOnly",
+          "enumDescriptions": [
+            "Status of the build is unknown.",
+            "Build or step is queued; work has not yet begun.",
+            "Build or step is being executed.",
+            "Build or step finished successfully.",
+            "Build or step failed to complete successfully.",
+            "Build or step failed due to an internal cause.",
+            "Build or step took longer than was allowed.",
+            "Build or step was canceled by a user."
+          ],
+          "type": "string",
+          "enum": [
+            "STATUS_UNKNOWN",
+            "QUEUED",
+            "WORKING",
+            "SUCCESS",
+            "FAILURE",
+            "INTERNAL_ERROR",
+            "TIMEOUT",
+            "CANCELLED"
+          ]
         }
       }
     },

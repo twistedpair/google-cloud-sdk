@@ -24,7 +24,6 @@ JOB_OUTPUT_PREFIX = 'driveroutput'
 # The scopes that will be added to user-specified scopes. Used for
 # documentation only. Keep in sync with server specified list.
 MINIMUM_SCOPE_URIS = [
-    'https://www.googleapis.com/auth/cloud.useraccounts.readonly',
     'https://www.googleapis.com/auth/devstorage.read_write',
     'https://www.googleapis.com/auth/logging.write',
 ]

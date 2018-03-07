@@ -27,6 +27,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import handlers
 from googlecloudsdk.calliope.concepts import util
+from googlecloudsdk.command_lib.util.concepts import completers
 
 
 class PresentationSpec(object):
@@ -265,6 +266,10 @@ class ResourcePresentationSpec(PresentationSpec):
     plural = attribute == self.resource_spec.anchor and self.plural
     if attribute.completer:
       completer = attribute.completer
+    elif not self.resource_spec.disable_auto_completers:
+      completer = completers.CompleterForAttribute(
+          self.resource_spec,
+          attribute.name)
     else:
       completer = None
     kwargs_dict = {

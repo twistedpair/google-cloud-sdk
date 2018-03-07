@@ -245,6 +245,8 @@ apis:
       default: true
     v1alpha2:
       discovery_doc: genomics_v1alpha2.json
+    v2alpha1:
+      discovery_doc: genomics_v2alpha1.json
   oslogin:
     v1alpha:
       discovery_doc: oslogin_v1alpha.json

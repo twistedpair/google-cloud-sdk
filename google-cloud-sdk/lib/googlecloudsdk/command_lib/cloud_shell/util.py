@@ -18,9 +18,14 @@ import base64
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.util.ssh import ssh
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 
 DEFAULT_ENVIRONMENT_NAME = 'users/me/environments/default'
+
+
+class UnsupportedPlatform(exceptions.Error):
+  """Raised when attempting to run a command on an unsupported platform."""
 
 
 def ParseCommonArgs(parser):

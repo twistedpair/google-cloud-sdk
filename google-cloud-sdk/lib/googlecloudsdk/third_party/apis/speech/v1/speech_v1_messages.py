@@ -160,16 +160,19 @@ class RecognitionConfig(_messages.Message):
   request.
 
   Enums:
-    EncodingValueValuesEnum: *Required* Encoding of audio data sent in all
-      `RecognitionAudio` messages.
+    EncodingValueValuesEnum: Encoding of audio data sent in all
+      `RecognitionAudio` messages. This field is optional for `FLAC` and `WAV`
+      audio files and required for all other audio formats. For details, see
+      AudioEncoding.
 
   Fields:
     enableWordTimeOffsets: *Optional* If `true`, the top result includes a
       list of words and the start and end time offsets (timestamps) for those
       words. If `false`, no word-level time offset information is returned.
       The default is `false`.
-    encoding: *Required* Encoding of audio data sent in all `RecognitionAudio`
-      messages.
+    encoding: Encoding of audio data sent in all `RecognitionAudio` messages.
+      This field is optional for `FLAC` and `WAV` audio files and required for
+      all other audio formats. For details, see AudioEncoding.
     languageCode: *Required* The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
       Example: "en-US". See [Language
@@ -185,28 +188,30 @@ class RecognitionConfig(_messages.Message):
       filter out profanities, replacing all but the initial character in each
       filtered word with asterisks, e.g. "f***". If set to `false` or omitted,
       profanities won't be filtered out.
-    sampleRateHertz: *Required* Sample rate in Hertz of the audio data sent in
-      all `RecognitionAudio` messages. Valid values are: 8000-48000. 16000 is
+    sampleRateHertz: Sample rate in Hertz of the audio data sent in all
+      `RecognitionAudio` messages. Valid values are: 8000-48000. 16000 is
       optimal. For best results, set the sampling rate of the audio source to
       16000 Hz. If that's not possible, use the native sample rate of the
-      audio source (instead of re-sampling).
+      audio source (instead of re-sampling). This field is optional for `FLAC`
+      and `WAV` audio files and required for all other audio formats. For
+      details, see AudioEncoding.
     speechContexts: *Optional* A means to provide context to assist the speech
       recognition.
   """
 
   class EncodingValueValuesEnum(_messages.Enum):
-    """*Required* Encoding of audio data sent in all `RecognitionAudio`
-    messages.
+    """Encoding of audio data sent in all `RecognitionAudio` messages. This
+    field is optional for `FLAC` and `WAV` audio files and required for all
+    other audio formats. For details, see AudioEncoding.
 
     Values:
       ENCODING_UNSPECIFIED: Not specified.
       LINEAR16: Uncompressed 16-bit signed little-endian samples (Linear PCM).
-      FLAC: [`FLAC`](https://xiph.org/flac/documentation.html) (Free Lossless
-        Audio Codec) is the recommended encoding because it is lossless--
-        therefore recognition is not compromised--and requires only about half
-        the bandwidth of `LINEAR16`. `FLAC` stream encoding supports 16-bit
-        and 24-bit samples, however, not all fields in `STREAMINFO` are
-        supported.
+      FLAC: `FLAC` (Free Lossless Audio Codec) is the recommended encoding
+        because it is lossless--therefore recognition is not compromised--and
+        requires only about half the bandwidth of `LINEAR16`. `FLAC` stream
+        encoding supports 16-bit and 24-bit samples, however, not all fields
+        in `STREAMINFO` are supported.
       MULAW: 8-bit samples that compand 14-bit audio samples using G.711 PCMU
         /mu-law.
       AMR: Adaptive Multi-Rate Narrowband codec. `sample_rate_hertz` must be

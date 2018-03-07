@@ -85,13 +85,13 @@ class Build(_messages.Message):
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
-      QUEUED: Build is queued; work has not yet begun.
-      WORKING: Build is being executed.
-      SUCCESS: Build finished successfully.
-      FAILURE: Build failed to complete successfully.
-      INTERNAL_ERROR: Build failed due to an internal cause.
-      TIMEOUT: Build took longer than was allowed.
-      CANCELLED: Build was canceled by a user.
+      QUEUED: Build or step is queued; work has not yet begun.
+      WORKING: Build or step is being executed.
+      SUCCESS: Build or step finished successfully.
+      FAILURE: Build or step failed to complete successfully.
+      INTERNAL_ERROR: Build or step failed due to an internal cause.
+      TIMEOUT: Build or step took longer than was allowed.
+      CANCELLED: Build or step was canceled by a user.
     """
     STATUS_UNKNOWN = 0
     QUEUED = 1
@@ -288,6 +288,11 @@ class BuildOptions(_messages.Message):
 class BuildStep(_messages.Message):
   """BuildStep describes a step to perform in the build pipeline.
 
+  Enums:
+    StatusValueValuesEnum: Status of the build step. At this time, build step
+      status is only updated on build completion; step status is not updated
+      in real-time as the build progresses. @OutputOnly
+
   Fields:
     args: A list of arguments that will be presented to the step when it is
       started.  If the image used to run the step's container has an
@@ -325,6 +330,12 @@ class BuildStep(_messages.Message):
     secretEnv: A list of environment variables which are encrypted using a
       Cloud KMS crypto key. These values must be specified in the build's
       secrets.
+    status: Status of the build step. At this time, build step status is only
+      updated on build completion; step status is not updated in real-time as
+      the build progresses. @OutputOnly
+    timeout: Time limit for executing this build step. If not defined, the
+      step has no time limit and will be allowed to continue to run until
+      either it completes or the build itself times out.
     timing: Stores timing information for executing this build step.
       @OutputOnly
     volumes: List of volumes to mount into the build step.  Each volume will
@@ -339,6 +350,30 @@ class BuildStep(_messages.Message):
       successfully.
   """
 
+  class StatusValueValuesEnum(_messages.Enum):
+    """Status of the build step. At this time, build step status is only
+    updated on build completion; step status is not updated in real-time as
+    the build progresses. @OutputOnly
+
+    Values:
+      STATUS_UNKNOWN: Status of the build is unknown.
+      QUEUED: Build or step is queued; work has not yet begun.
+      WORKING: Build or step is being executed.
+      SUCCESS: Build or step finished successfully.
+      FAILURE: Build or step failed to complete successfully.
+      INTERNAL_ERROR: Build or step failed due to an internal cause.
+      TIMEOUT: Build or step took longer than was allowed.
+      CANCELLED: Build or step was canceled by a user.
+    """
+    STATUS_UNKNOWN = 0
+    QUEUED = 1
+    WORKING = 2
+    SUCCESS = 3
+    FAILURE = 4
+    INTERNAL_ERROR = 5
+    TIMEOUT = 6
+    CANCELLED = 7
+
   args = _messages.StringField(1, repeated=True)
   dir = _messages.StringField(2)
   entrypoint = _messages.StringField(3)
@@ -346,9 +381,11 @@ class BuildStep(_messages.Message):
   id = _messages.StringField(5)
   name = _messages.StringField(6)
   secretEnv = _messages.StringField(7, repeated=True)
-  timing = _messages.MessageField('TimeSpan', 8)
-  volumes = _messages.MessageField('Volume', 9, repeated=True)
-  waitFor = _messages.StringField(10, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 8)
+  timeout = _messages.StringField(9)
+  timing = _messages.MessageField('TimeSpan', 10)
+  volumes = _messages.MessageField('Volume', 11, repeated=True)
+  waitFor = _messages.StringField(12, repeated=True)
 
 
 class BuildTrigger(_messages.Message):

@@ -309,7 +309,7 @@ def CustomFunctionValidator(fn, description, parser=None):
     else:
       if fn(parsed_value):
         return parsed_value
-    encoded_value = console_attr.EncodeForConsole(value)
+    encoded_value = console_attr.SafeText(value)
     formatted_err = u'Bad value [{0}]: {1}'.format(encoded_value, description)
     raise ArgumentTypeError(formatted_err)
 

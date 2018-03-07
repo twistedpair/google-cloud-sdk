@@ -86,7 +86,7 @@ definitions:
       # The name as it should appear on the command line.
       attribute_name: { type: string }
       # The help text for this attribute.
-      help: { type string }
+      help: { type: string }
       # A property to act as the fallthrough for this attribute when it is not
       # provided on the command line.
       property: { $ref: "#definitions/property" }
@@ -95,6 +95,19 @@ definitions:
       fallthroughs:
         type: array
         items: { $ref: "#/definitions/fallthrough" }
+      # The ID field of the return value in the response for completions.
+      completion_id_field: { type: string }
+      # Field names to use as static field values in any request to
+      # complete this resource.
+      completion_request_params:
+        type: array
+        items:
+         type: object
+         additionalProperties: false
+         properties:
+           fieldName: { type: string }
+           value: { type: string }
+
 
   argument:
     oneOf:
@@ -465,6 +478,9 @@ properties:
               attributes:
                 type: array
                 items: { $ref: "#/definitions/resource_attribute" }
+              # If False, allows the resource to create automatic completers for
+              # each argument. True by default.
+              disable_auto_completers: { type: boolean }
       # Enumerates the API fields that need to be set and information
       # about each argument to generate.
       params:

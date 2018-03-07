@@ -18,6 +18,8 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
+from googlecloudsdk.api_lib.services import enable_api as services_api
+from googlecloudsdk.api_lib.services import services_util
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -71,6 +73,24 @@ def CheckIamPermissions(project_id):
     project_id: A string with the name of the project.
   """
   project = projects_api.Get(project_id)
+  # If the user's project doesn't have cloudbuild enabled yet, then the service
+  # account won't even exist. If so, then ask to enable it before continuing.
+  cloudbuild_service_name = 'cloudbuild.googleapis.com'
+  if not services_api.IsServiceEnabled(project.projectId,
+                                       cloudbuild_service_name):
+    prompt_message = ('The Google Cloud Container Builder service is not '
+                      'enabled for this project. It is required for this '
+                      'operation.\n')
+    console_io.PromptContinue(prompt_message,
+                              'Would you like to enable Container Builder?',
+                              throw_if_unattended=True,
+                              cancel_on_no=True)
+    operation = services_api.EnableServiceApiCall(project.projectId,
+                                                  cloudbuild_service_name)
+    # Wait for the operation to finish.
+    services_util.ProcessOperationResult(operation, async=False)
+
+  # Now that we're sure the service account exists, actually check permissions.
   service_account = 'serviceAccount:{0}@cloudbuild.gserviceaccount.com'.format(
       project.projectNumber)
   expected_permissions = {'roles/compute.admin': service_account,

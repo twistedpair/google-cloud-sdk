@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 import os
+import sys
 
 from googlecloudsdk.core.util import platforms
 
@@ -100,3 +101,9 @@ class NetworkIssueError(Error):
         'This may be due to network connectivity issues. Please check your '
         'network settings, and the status of the service you are trying to '
         'reach.'.format(message=message))
+
+
+def reraise(exc_value, tb=None):
+  """Adds tb or the most recent traceback to exc_value and reraises."""
+  exc_value.__traceback__ = tb or sys.exc_info()[2]
+  raise exc_value

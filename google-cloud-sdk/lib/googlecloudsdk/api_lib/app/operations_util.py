@@ -16,7 +16,6 @@
 """
 
 import json
-import sys
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
@@ -58,10 +57,14 @@ def CallAndCollectOpErrors(method, *args, **kwargs):
     return method(*args, **kwargs)
   except apitools_exceptions.HttpError as http_err:
     # Create HttpException locally only to get its human friendly string
-    err_str = str(api_exceptions.HttpException(http_err))
-    raise MiscOperationError, err_str, sys.exc_info()[2]
+    _ReraiseMiscOperationError(api_exceptions.HttpException(http_err))
   except (OperationError, OperationTimeoutError, app_exceptions.Error) as err:
-    raise MiscOperationError, str(err), sys.exc_info()[2]
+    _ReraiseMiscOperationError(err)
+
+
+def _ReraiseMiscOperationError(err):
+  """Transform and re-raise error helper."""
+  exceptions.reraise(MiscOperationError(str(err)))
 
 
 class MiscOperationError(exceptions.Error):

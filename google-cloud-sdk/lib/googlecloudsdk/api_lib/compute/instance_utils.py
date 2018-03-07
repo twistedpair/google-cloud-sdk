@@ -237,14 +237,25 @@ def CreateSchedulingMessage(
 
 
 def CreateShieldedVmConfigMessage(
-    messages, enable_secure_boot, enable_vtpm):
+    messages, enable_secure_boot, enable_vtpm, enable_integrity_monitoring):
   """Create shieldedVMConfig message for VM."""
 
   shielded_vm_config = messages.ShieldedVmConfig(
       enableSecureBoot=enable_secure_boot,
-      enableVtpm=enable_vtpm)
+      enableVtpm=enable_vtpm,
+      enableIntegrityMonitoring=enable_integrity_monitoring)
 
   return shielded_vm_config
+
+
+def CreateShieldedVmIntegrityPolicyMessage(messages,
+                                           update_auto_learn_policy=True):
+  """Creates shieldedVmIntegrityPolicy message for VM."""
+
+  shielded_vm_integrity_policy = messages.ShieldedVmIntegrityPolicy(
+      updateAutoLearnPolicy=update_auto_learn_policy)
+
+  return shielded_vm_integrity_policy
 
 
 def CreateMachineTypeUris(

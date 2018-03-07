@@ -103,10 +103,9 @@ def _RaisesPermissionsError(func):
       return func(*args, **kwargs)  # pytype: disable=missing-parameter
     except (OSError, IOError) as e:
       if e.errno == errno.EACCES:
-        new_exc = PermissionsError(
-            message=e.strerror, path=os.path.abspath(e.filename))
-        # Maintain original stack trace.
-        six.reraise(new_exc, None, sys.exc_info()[2])
+        exceptions.reraise(
+            PermissionsError(message=e.strerror,
+                             path=os.path.abspath(e.filename)))
       raise
     except shutil.Error as e:
       args = e.args[0][0]
@@ -114,10 +113,9 @@ def _RaisesPermissionsError(func):
       # Looking for this substring is looking for errno.EACCES, which has
       # a numeric value of 13.
       if args[2].startswith('[Errno 13]'):
-        new_exc = PermissionsError(
-            message=args[2], path=os.path.abspath(args[0]))
-        # Maintain original stack trace.
-        six.reraise(new_exc, None, sys.exc_info()[2])
+        exceptions.reraise(
+            PermissionsError(message=args[2],
+                             path=os.path.abspath(args[0])))
       raise
   return _TryFunc
 

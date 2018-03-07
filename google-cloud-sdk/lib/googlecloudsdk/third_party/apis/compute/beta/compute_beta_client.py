@@ -4604,6 +4604,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def SimulateMaintenanceEvent(self, request, global_params=None):
+      """Simulates a maintenance event on the instance.
+
+      Args:
+        request: (ComputeInstancesSimulateMaintenanceEventRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SimulateMaintenanceEvent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SimulateMaintenanceEvent.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.simulateMaintenanceEvent',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/simulateMaintenanceEvent',
+        request_field='',
+        request_type_name=u'ComputeInstancesSimulateMaintenanceEventRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Start(self, request, global_params=None):
       """Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.
 

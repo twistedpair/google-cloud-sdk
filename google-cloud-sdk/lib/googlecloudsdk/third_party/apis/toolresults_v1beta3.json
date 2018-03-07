@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20180216",
+ "revision": "20180223",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -165,7 +165,7 @@
    "properties": {
     "androidAppInfo": {
      "$ref": "AndroidAppInfo",
-     "description": "Infomation about the application under test."
+     "description": "Information about the application under test."
     },
     "androidInstrumentationTest": {
      "$ref": "AndroidInstrumentationTest",
@@ -665,7 +665,7 @@
    "properties": {
     "clusters": {
      "type": "array",
-     "description": "The set of clustres associated with an execution Always set",
+     "description": "The set of clusters associated with an execution Always set",
      "items": {
       "$ref": "ScreenshotCluster"
      }

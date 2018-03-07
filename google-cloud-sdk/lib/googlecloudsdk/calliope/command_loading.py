@@ -17,10 +17,10 @@
 import abc
 import os
 import re
-import sys
 
 import googlecloudsdk
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import pkg_resources
 
 from ruamel import yaml
@@ -423,8 +423,7 @@ def _GetModuleFromPath(impl_file, path, construction_id):
   # because if any exceptions make it through for any single command or group
   # file, the whole CLI will not work. Instead, just log whatever it is.
   except Exception as e:
-    _, _, exc_traceback = sys.exc_info()
-    raise CommandLoadFailure('.'.join(path), e), None, exc_traceback
+    exceptions.reraise(CommandLoadFailure('.'.join(path), e))
 
 
 def _ImplementationsFromModule(mod_file, module_attributes, is_command):

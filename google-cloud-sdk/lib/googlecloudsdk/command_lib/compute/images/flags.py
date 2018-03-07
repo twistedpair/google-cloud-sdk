@@ -132,7 +132,7 @@ SOURCE_IMAGE_ARG = compute_flags.ResourceArgument(
     name='--source-image',
     completer=ImagesCompleter,
     global_collection='compute.images',
-    required=True)
+    required=False)
 
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',
@@ -143,13 +143,6 @@ SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     short_help='A source snapshot used to create an image.',
     detailed_help=_SOURCE_SNAPSHOT_DETAILED_HELP,
 )
-
-DESTINATION_IMAGE_ARG = compute_flags.ResourceArgument(
-    resource_name='translated image',
-    name='--destination-image',
-    completer=ImagesCompleter,
-    global_collection='compute.images',
-    required=True)
 
 
 def AddCommonArgs(parser):

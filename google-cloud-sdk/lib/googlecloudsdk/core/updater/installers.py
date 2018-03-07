@@ -31,7 +31,6 @@ from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import retry
 
-import six
 from six.moves import urllib
 
 
@@ -336,6 +335,5 @@ to choose another account.""".format(
     except retry.RetryException as e:
       # last_result is (return value, sys.exc_info)
       if e.last_result[1]:
-        six.reraise(
-            e.last_result[1][0], e.last_result[1][1], e.last_result[1][2])
+        exceptions.reraise(e.last_result[1][1], tb=e.last_result[1][2])
       raise

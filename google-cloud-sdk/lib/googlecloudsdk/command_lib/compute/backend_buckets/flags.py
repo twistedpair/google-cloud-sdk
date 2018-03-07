@@ -14,7 +14,6 @@
 
 """Flags and helpers for the compute backend-buckets commands."""
 
-from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -73,47 +72,3 @@ def BackendBucketArgumentForUrlMap(required=True):
       required=required,
       completer=BackendBucketsCompleter,
       global_collection='compute.backendBuckets')
-
-
-def AddCdnSignedUrlKeyName(parser):
-  """Adds the Cloud CDN Signed URL key name argument to the argparse."""
-  parser.add_argument(
-      '--key-name', required=True, help='Name of the Cloud CDN Signed URL key.')
-
-
-def AddCdnSignedUrlKeyFile(parser):
-  """Adds the Cloud CDN Signed URL key file argument to the argparse."""
-  parser.add_argument(
-      '--key-file',
-      required=True,
-      metavar='LOCAL_FILE_PATH',
-      help="""\
-      The file containing the base64 encoded 128-bit secret key for Cloud CDN
-      Signed URL. It is vital that the key is strongly random. One way to
-      generate such a key is with the following command:
-
-          head -c 16 /dev/random | base64 | tr +/ -_ > [KEY_FILE_NAME]
-
-      """)
-
-
-def AddSignedUrlCacheMaxAge(parser, unspecified_help=None):
-  """Adds the Cloud CDN Signed URL cache max age argument to the argparse."""
-  if unspecified_help is None:
-    unspecified_help = ' If unspecified, the default value is 3600s.'
-  parser.add_argument(
-      '--signed-url-cache-max-age',
-      type=arg_parsers.Duration(),
-      help="""\
-      The amount of time up to which the response to a signed URL request
-      will be cached in the CDN. After this time period, the Signed URL will
-      be revalidated before being served. Cloud CDN will internally act as
-      though all responses from this backend had a
-      `Cache-Control: public, max-age=[TTL]` header, regardless of any
-      existing Cache-Control header. The actual headers served in responses
-      will not be altered.{}
-
-      For example, specifying `12h` will cause the responses to signed URL
-      requests to be cached in the CDN up to 12 hours.
-      See $ gcloud topic datetimes for information on duration formats.
-      """.format(unspecified_help))

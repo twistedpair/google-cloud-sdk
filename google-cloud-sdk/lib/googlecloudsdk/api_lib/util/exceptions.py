@@ -13,12 +13,10 @@
 # limitations under the License.
 
 """A module that converts API exceptions to core exceptions."""
+import io
 import json
 import logging
 import string
-import StringIO
-import sys
-
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -160,7 +158,7 @@ class HttpErrorPayload(string.Formatter):
     if not value and not isinstance(value, (int, float)):
       return '', name
     if printer_format or not isinstance(value, (basestring, int, float)):
-      buf = StringIO.StringIO()
+      buf = io.StringIO()
       resource_printer.Print(
           value, printer_format or 'default', out=buf, single=True)
       value = buf.getvalue().strip()
@@ -323,9 +321,7 @@ def CatchHTTPErrorRaiseHTTPException(format_str=None):
         return run_func(*args, **kwargs)
       except apitools_exceptions.HttpError as error:
         exc = HttpException(error, format_str)
-        unused_type, unused_value, traceback = sys.exc_info()
-        raise HttpException, unicode(exc), traceback
-
+        core_exceptions.reraise(exc)
     return Wrapper
 
   return CatchHTTPErrorRaiseHTTPExceptionDecorator

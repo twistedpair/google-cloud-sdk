@@ -6,7 +6,7 @@
   "canonicalName": "Cloud Resource Manager",
   "version": "v1beta1",
   "revision": "0",
-  "title": "Google Cloud Resource Manager API",
+  "title": "Cloud Resource Manager API",
   "description": "The Google Cloud Resource Manager API provides methods for creating, reading, and updating project metadata.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -467,7 +467,7 @@
       "type": "object",
       "properties": {
         "directoryCustomerId": {
-          "description": "The Google for Work customer id used in the Directory API.",
+          "description": "The G Suite customer id used in the Directory API.",
           "type": "string"
         }
       }
@@ -552,7 +552,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Creates a Project resource.\n\nInitially, the Project resource is owned by its creator exclusively.\nThe creator can later grant permission to others to read or update the\nProject.\n\nSeveral APIs are activated automatically for the Project, including\nGoogle Cloud Storage."
+          "description": "Creates a Project resource.\n\nInitially, the Project resource is owned by its creator exclusively.\nThe creator can later grant permission to others to read or update the\nProject.\n\nSeveral APIs are activated automatically for the Project, including\nGoogle Cloud Storage. The parent is identified by a specified\nResourceId, which must include both an ID and a type, such as\nproject, folder, or organization."
         },
         "list": {
           "id": "cloudresourcemanager.projects.list",
@@ -824,7 +824,7 @@
               "type": "string"
             },
             "filter": {
-              "description": "An optional query string used to filter the Organizations to return in\nthe response. Filter rules are case-insensitive.\n\n\nOrganizations may be filtered by `owner.directoryCustomerId` or by\n`domain`, where the domain is a Google for Work domain, for example:\n\n|Filter|Description|\n|------|-----------|\n|owner.directorycustomerid:123456789|Organizations with `owner.directory_customer_id` equal to `123456789`.|\n|domain:google.com|Organizations corresponding to the domain `google.com`.|\n\nThis field is optional.",
+              "description": "An optional query string used to filter the Organizations to return in\nthe response. Filter rules are case-insensitive.\n\n\nOrganizations may be filtered by `owner.directoryCustomerId` or by\n`domain`, where the domain is a G Suite domain, for example:\n\n|Filter|Description|\n|------|-----------|\n|owner.directorycustomerid:123456789|Organizations with `owner.directory_customer_id` equal to `123456789`.|\n|domain:google.com|Organizations corresponding to the domain `google.com`.|\n\nThis field is optional.",
               "location": "query",
               "type": "string"
             }

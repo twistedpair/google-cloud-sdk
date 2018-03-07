@@ -335,6 +335,13 @@
             "type": "string"
           }
         },
+        "additionalApks": {
+          "description": "APKs to install in addition to those being directly tested.\nCurrently capped at 100.\nOptional",
+          "type": "array",
+          "items": {
+            "$ref": "Apk"
+          }
+        },
         "account": {
           "description": "The device will be logged in on this account for the duration of the test.\nOptional",
           "$ref": "Account"
@@ -360,6 +367,10 @@
         "obbFile": {
           "description": "A reference to an opaque binary blob file",
           "$ref": "ObbFile"
+        },
+        "regularFile": {
+          "description": "A reference to a regular file",
+          "$ref": "RegularFile"
         }
       }
     },
@@ -385,6 +396,36 @@
       "properties": {
         "gcsPath": {
           "description": "A path to a file in Google Cloud Storage.\nExample: gs:\/\/build-app-1414623860166\/app-debug-unaligned.apk",
+          "type": "string"
+        }
+      }
+    },
+    "RegularFile": {
+      "id": "RegularFile",
+      "description": "A file or directory to install on the device before the test starts",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "Required",
+          "$ref": "FileReference"
+        },
+        "devicePath": {
+          "description": "Where to put the content on the device. Must be an absolute, whitelisted\npath. If the file exists, it will be replaced.\nThe following device-side directories and any of their subdirectories are\nwhitelisted:\n<p>${EXTERNAL_STORAGE}, or \/sdcard<\/p>\n<p>${ANDROID_DATA}\/local\/tmp, or \/data\/local\/tmp<\/p>\n<p>Specifying a path outside of these directory trees is invalid.\n\n<p> The paths \/sdcard and \/data will be made available and treated as\nimplicit path substitutions. E.g. if \/sdcard on a particular device does\nnot map to external storage, the system will replace it with the external\nstorage path prefix for that device and copy the file there.\n\n<p> It is strongly advised to use the <a href=\n\"http:\/\/developer.android.com\/reference\/android\/os\/Environment.html\">\nEnvironment API<\/a> in app and test code to access files on the device in a\nportable way.\nRequired",
+          "type": "string"
+        }
+      }
+    },
+    "Apk": {
+      "id": "Apk",
+      "description": "An Android package file to install.",
+      "type": "object",
+      "properties": {
+        "location": {
+          "description": "The path to an APK to be installed on the device before the test begins.\nOptional",
+          "$ref": "FileReference"
+        },
+        "packageName": {
+          "description": "The java package for the APK to be installed.\nOptional, value is determined by examining the application's manifest.",
           "type": "string"
         }
       }
@@ -503,6 +544,10 @@
           "items": {
             "$ref": "RoboDirective"
           }
+        },
+        "roboScript": {
+          "description": "A JSON file with a sequence of actions Robo should perform as a prologue\nfor the crawl.\nOptional",
+          "$ref": "FileReference"
         },
         "startingIntents": {
           "description": "The intents used to launch the app for the crawl.\nIf none are provided, then the main launcher activity is launched.\nIf some are provided, then only those provided are launched (the main\nlauncher activity must be provided explicitly).",

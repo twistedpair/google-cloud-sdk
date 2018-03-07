@@ -22,7 +22,9 @@ from googlecloudsdk.core import properties
 def DeviceAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='device',
-      help_text='The device of the {resource}.')
+      help_text='The device of the {resource}.',
+      completion_request_params={'fieldMask': 'name'},
+      completion_id_field='id')
 
 
 def RegistryAttributeConfig():
@@ -51,7 +53,8 @@ def GetDeviceResourceSpec():
       devicesId=DeviceAttributeConfig(),
       registriesId=RegistryAttributeConfig(),
       locationsId=RegionAttributeConfig(),
-      projectsId=ProjectAttributeConfig())
+      projectsId=ProjectAttributeConfig(),
+      disable_auto_completers=False)
 
 
 def GetRegistryResourceSpec():
@@ -60,7 +63,8 @@ def GetRegistryResourceSpec():
       resource_name='registry',
       registriesId=RegistryAttributeConfig(),
       locationsId=RegionAttributeConfig(),
-      projectsId=ProjectAttributeConfig())
+      projectsId=ProjectAttributeConfig(),
+      disable_auto_completers=False)
 
 
 def GetRegionResourceSpec():

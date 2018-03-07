@@ -30,6 +30,7 @@ import tempfile
 import time
 import traceback
 
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
@@ -226,9 +227,7 @@ def _HandleRemoveError(func, failed_path, exc_info):
   # by *args.
   if not _RetryOperation(exc_info, func, (failed_path,), _ShouldRetryOperation):
     # Always raise the original error.
-    # raises is weird in that you can raise exc_info directly even though it's
-    # a tuple.
-    six.reraise(exc_info[0], exc_info[1], exc_info[2])
+    exceptions.reraise(exc_info[1], tb=exc_info[2])
 
 
 def RmTree(path):
@@ -575,7 +574,7 @@ class TemporaryDirectory(object):
               encoding.Decode(traceback.format_exc()),
               prev_exc_type,
               encoding.Decode(prev_exc_val)))
-      six.reraise(prev_exc_type, message, prev_exc_trace)
+      exceptions.reraise(prev_exc_type(message), tb=prev_exc_trace)
     # always return False so any exceptions will be re-raised
     return False
 
@@ -619,7 +618,10 @@ class Checksum(object):
       self, For method chaining.
     """
     with open(file_path, 'rb') as fp:
-      for chunk in iter(lambda: fp.read(4096), ''):
+      while True:
+        chunk = fp.read(4096)
+        if not chunk:
+          break
         self.__hash.update(chunk)
     return self
 
@@ -987,9 +989,11 @@ def ReadStdinBytes():
 
 
 def WriteFileAtomically(file_name, contents):
-  """Writes a text file to disk safely cross platform.
+  """Writes a file to disk safely cross platform.
 
-  Writes a text file to disk safely cross platform. Note that on Windows, there
+  Specified directories will be created if they don't exist.
+
+  Writes a file to disk safely cross platform. Note that on Windows, there
   is no good way to atomically write a file to disk.
 
   Args:
@@ -1007,6 +1011,16 @@ def WriteFileAtomically(file_name, contents):
   if not isinstance(contents, six.string_types):
     raise TypeError('Invalid contents [{}].'.format(contents))
 
+  dirname = os.path.dirname(file_name)
+
+  # Create the directories, if they dont exist.
+  try:
+    os.makedirs(dirname)
+  except os.error:
+    # Deliberately ignore errors here. This usually means that the directory
+    # already exists. Other errors will surface from the write calls below.
+    pass
+
   if platforms.OperatingSystem.IsWindows():
     # On Windows, there is no good way to atomically write this file.
     with OpenForWritingPrivate(file_name) as writer:
@@ -1014,7 +1028,7 @@ def WriteFileAtomically(file_name, contents):
   else:
     # This opens files with 0600, which are the correct permissions.
     with tempfile.NamedTemporaryFile(
-        dir=os.path.dirname(file_name), delete=False) as temp_file:
+        dir=dirname, delete=False) as temp_file:
       temp_file.write(contents)
       # This was a user-submitted patch to fix a race condition that we couldn't
       # reproduce. It may be due to the file being renamed before the OS's

@@ -22,6 +22,16 @@ DEFAULT_LIST_FORMAT = """\
       creationTimestamp
     )"""
 
+ALPHA_LIST_FORMAT = """\
+    table(
+      name,
+      type,
+      creationTimestamp,
+      expiryTime,
+      managed.status:label=MANAGED_STATUS,
+      managed.domainStatus:format="yaml"
+    )"""
+
 
 class SslCertificatesCompleter(compute_completers.ListCommandCompleter):
 

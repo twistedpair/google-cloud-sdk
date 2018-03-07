@@ -618,6 +618,10 @@
           "description": "The last modified time.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "annotatable": {
+          "description": "Whether the asset is annotatable.",
+          "type": "boolean"
         }
       }
     }
@@ -1881,6 +1885,11 @@
               "location": "query",
               "type": "string",
               "format": "google-duration"
+            },
+            "query.annotatableOnly": {
+              "description": "Filter on whether to exclude assets that are not annotatable.",
+              "location": "query",
+              "type": "boolean"
             },
             "pageSize": {
               "description": "The maximum number of items to return.",

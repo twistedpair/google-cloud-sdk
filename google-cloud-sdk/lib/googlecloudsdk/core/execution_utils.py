@@ -33,8 +33,6 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 
-import six
-
 
 class PermissionError(exceptions.Error):
   """User does not have execute permissions."""
@@ -491,10 +489,8 @@ def _KillPID(pid):
     # No luck, just force kill it.
     os.kill(pid, signal.SIGKILL)
   except OSError as error:
-    # Raise original stack trace.
     if 'No such process' not in error.strerror:
-      (_, i, st) = sys.exc_info()
-      six.reraise(i, None, st)
+      exceptions.reraise(sys.exc_info()[1])
 
 
 def _IsStillRunning(pid):
@@ -511,8 +507,6 @@ def _IsStillRunning(pid):
     if (actual_pid, code) == (0, 0):
       return True
   except OSError as error:
-    # Raise original stack trace.
     if 'No child processes' not in error.strerror:
-      (_, i, st) = sys.exc_info()
-      six.reraise(i, None, st)
+      exceptions.reraise(sys.exc_info()[1])
   return False

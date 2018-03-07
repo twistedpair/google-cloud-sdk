@@ -120,7 +120,7 @@ class _OnGCECache(object):
       try:
         with files.OpenForWritingPrivate(gce_cache_path) as gcecache_file:
           gcecache_file.write(str(on_gce))
-      except (OSError, IOError):
+      except (OSError, IOError, files.Error):
         # Failed to write Google Compute Engine credential cache file.
         # This could be due to permission reasons, or because it doesn't yet
         # exist.

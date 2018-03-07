@@ -857,7 +857,7 @@ class ArgumentParser(argparse.ArgumentParser):
       if self._calliope_command._sub_parser:
         self._calliope_command.LoadAllSubElements()
     else:
-      message = console_attr.EncodeForConsole(message)
+      message = console_attr.SafeText(message)
       log.error(u'({prog}) {message}'.format(prog=self.prog, message=message))
       # multi-line message means hints already added, no need for usage.
       # pylint:disable=protected-access

@@ -22,7 +22,8 @@ import urlparse
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import http
 
-_URL_SCHEME_MUST_BE_HTTPS_MESSAGE = ('The URL scheme must be HTTPS.')
+_URL_SCHEME_MUST_BE_HTTP_HTTPS_MESSAGE = (
+    'The URL scheme must be either HTTP or HTTPS.')
 _URL_MUST_NOT_HAVE_PARAM_MESSAGE = (
     'The URL must not have a \'{}\' query parameter')
 _URL_MUST_NOT_HAVE_FRAGMENT_MESSAGE = ('The URL must not have a fragment.')
@@ -75,8 +76,8 @@ def SignUrl(url, key_name, encoded_key_value, validity_seconds):
   stripped_url = url.strip()
 
   parsed_url = urlparse.urlsplit(stripped_url)
-  if parsed_url.scheme != 'https':
-    raise InvalidCdnSignedUrlError(_URL_SCHEME_MUST_BE_HTTPS_MESSAGE)
+  if parsed_url.scheme != 'https' and parsed_url.scheme != 'http':
+    raise InvalidCdnSignedUrlError(_URL_SCHEME_MUST_BE_HTTP_HTTPS_MESSAGE)
 
   if parsed_url.fragment:
     raise InvalidCdnSignedUrlError(_URL_MUST_NOT_HAVE_FRAGMENT_MESSAGE)

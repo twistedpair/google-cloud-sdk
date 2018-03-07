@@ -426,14 +426,9 @@ class RPCServer(object):
       log.debug('Got response: %s', response)
       return response
     except urllib2.HTTPError as e:
-      (_, _, exc_traceback) = sys.exc_info()
-      # The 3 element form takes (type, instance, traceback).  If the first
-      # element is an instance, it is used as the type and instance and the
-      # second element must be None.  This preserves the original traceback.
-
       # This is the message body, if included in e
       if hasattr(e, 'read'):
         body = e.read()
       else:
         body = ''
-      raise RPCError(e, body=body), None, exc_traceback
+      exceptions.reraise(RPCError(e, body=body))

@@ -301,8 +301,7 @@ def _SetDefaultVersion(new_version, api_client):
   except retry.MaxRetrialsException as e:
     (unused_result, exc_info) = e.last_result
     if exc_info:
-      # This is the 3 tuple of the last exception the function threw.
-      raise exc_info[0], exc_info[1], exc_info[2]
+      exceptions.reraise(exc_info[1], tb=exc_info[2])
     else:
       # This shouldn't happen, but if we don't have the exception info for some
       # reason, just convert the MaxRetrialsException.

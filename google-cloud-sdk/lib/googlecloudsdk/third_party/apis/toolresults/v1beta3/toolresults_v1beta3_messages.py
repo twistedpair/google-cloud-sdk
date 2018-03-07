@@ -73,7 +73,7 @@ class AndroidTest(_messages.Message):
   """An Android mobile test specification.
 
   Fields:
-    androidAppInfo: Infomation about the application under test.
+    androidAppInfo: Information about the application under test.
     androidInstrumentationTest: An Android instrumentation test.
     androidRoboTest: An Android robo test.
     testTimeout: Max time a test is allowed to run before it is automatically
@@ -612,7 +612,7 @@ class ListScreenshotClustersResponse(_messages.Message):
   """A ListScreenshotClustersResponse object.
 
   Fields:
-    clusters: The set of clustres associated with an execution Always set
+    clusters: The set of clusters associated with an execution Always set
   """
 
   clusters = _messages.MessageField('ScreenshotCluster', 1, repeated=True)

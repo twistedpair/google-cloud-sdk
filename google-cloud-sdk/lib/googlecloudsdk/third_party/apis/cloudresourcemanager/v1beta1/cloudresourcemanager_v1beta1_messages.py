@@ -152,7 +152,7 @@ class CloudresourcemanagerOrganizationsListRequest(_messages.Message):
     filter: An optional query string used to filter the Organizations to
       return in the response. Filter rules are case-insensitive.
       Organizations may be filtered by `owner.directoryCustomerId` or by
-      `domain`, where the domain is a Google for Work domain, for example:
+      `domain`, where the domain is a G Suite domain, for example:
       |Filter|Description| |------|-----------|
       |owner.directorycustomerid:123456789|Organizations with
       `owner.directory_customer_id` equal to `123456789`.|
@@ -518,8 +518,7 @@ class OrganizationOwner(_messages.Message):
   will be deleted.
 
   Fields:
-    directoryCustomerId: The Google for Work customer id used in the Directory
-      API.
+    directoryCustomerId: The G Suite customer id used in the Directory API.
   """
 
   directoryCustomerId = _messages.StringField(1)

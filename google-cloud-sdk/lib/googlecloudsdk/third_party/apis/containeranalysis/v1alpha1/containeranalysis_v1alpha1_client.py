@@ -508,13 +508,13 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
           config, request, global_params=global_params)
 
     GetVulnerabilitySummary.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}/vulnerabilitySummary',
+        flat_path=u'v1alpha1/projects/{projectsId}/occurrences:vulnerabilitySummary',
         http_method=u'GET',
         method_id=u'containeranalysis.projects.occurrences.getVulnerabilitySummary',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[u'filter'],
-        relative_path=u'v1alpha1/{+parent}/vulnerabilitySummary',
+        relative_path=u'v1alpha1/{+parent}/occurrences:vulnerabilitySummary',
         request_field='',
         request_type_name=u'ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest',
         response_type_name=u'GetVulnzOccurrencesSummaryResponse',
@@ -540,7 +540,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
         method_id=u'containeranalysis.projects.occurrences.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'filter', u'name', u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'kind', u'name', u'pageSize', u'pageToken'],
         relative_path=u'v1alpha1/{+parent}/occurrences',
         request_field='',
         request_type_name=u'ContaineranalysisProjectsOccurrencesListRequest',

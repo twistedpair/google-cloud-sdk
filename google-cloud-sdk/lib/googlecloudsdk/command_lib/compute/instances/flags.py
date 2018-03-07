@@ -1703,7 +1703,7 @@ def AddDeletionProtectionFlag(parser, use_default_value=True):
       action=action)
 
 
-def AddShieldedVMConfigArgs(parser, use_default_value=True):
+def AddShieldedVMConfigArgs(parser, use_default_value=True, for_update=False):
   """Adds flags for shielded VM configuration.
 
   Args:
@@ -1711,6 +1711,7 @@ def AddShieldedVMConfigArgs(parser, use_default_value=True):
     use_default_value: Bool, if True, flag will be given the default value
         False, else None. Update uses None as an indicator that no update needs
         to be done for deletion protection.
+    for_update: Bool, if True, flags are intended for an update operation.
   """
   if use_default_value:
     kwargs = {
@@ -1721,22 +1722,65 @@ def AddShieldedVMConfigArgs(parser, use_default_value=True):
     kwargs = {
         'action': arg_parsers.StoreTrueFalseAction
     }
+
+  # --shielded-vm-secure-boot
+  secure_boot_help = """\
+      The instance will boot with secure boot enabled.
+      """
+  if for_update:
+    secure_boot_help += """\
+      Changes to this setting (via the update command) will only take effect
+      after stopping and starting the instance.
+      """
   parser.add_argument(
       '--shielded-vm-secure-boot',
-      help="""\
-      The instance will boot with secure boot enabled. Changes to this setting
-      (via the update command) will only take effect after stopping and starting
-      the instance.
-      """,
+      help=secure_boot_help,
       **kwargs)
 
+  # --shielded-vm-vtpm
+  vtpm_help = """\
+      The instance will boot with the TPM (Trusted Platform Module) enabled.
+      A TPM is a hardware module that can be used for different security
+      operations such as remote attestation, encryption and sealing of keys.
+      """
+  if for_update:
+    vtpm_help += """\
+      Changes to this setting (via the update command) will only take effect
+      after stopping and starting the instance.
+      """
   parser.add_argument(
       '--shielded-vm-vtpm',
-      help="""\
-      The instance will boot with the TPM (Trusted Platform Module) enabled.
-      Changes to this setting (via the update command) will only take effect
-      after stopping and starting the instance. A TPM is a hardware module that
-      can be used for different security operations such as remote attestation,
-      encryption and sealing of keys.
-    """,
+      help=vtpm_help,
       **kwargs)
+
+  # --shielded-vm-integrity-monitoring
+  integrity_monitoring_help = """\
+      Enables monitoring and attestation of the boot integrity of the
+      instance. The attestation is performed against the integrity policy
+      baseline. This baseline is initially derived from the implicitly
+      trusted boot image when the instance is created. This baseline can be
+      updated by using `--shielded-vm-learn-integrity-policy`.
+      """
+  if for_update:
+    integrity_monitoring_help += """\
+      Changes to this setting (via the update command) will only take effect
+      after stopping and starting the instance.
+      """
+  parser.add_argument(
+      '--shielded-vm-integrity-monitoring',
+      help=integrity_monitoring_help,
+      **kwargs)
+
+
+def AddShieldedVMIntegrityPolicyArgs(parser):
+  """Adds flags for shielded VM integrity policy settings."""
+  parser.add_argument(
+      '--shielded-vm-learn-integrity-policy',
+      action='store_true',
+      default=None,
+      help="""\
+      Causes the instance to re-learn the integrity policy baseline using
+      the current instance configuration. Use this flag after any planned
+      boot-specific changes in the instance configuration, like kernel
+      updates or kernel driver installation.
+      """)

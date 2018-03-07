@@ -346,11 +346,19 @@ class DemoteMasterContext(_messages.Message):
       master in the replication setup.
     replicaConfiguration: Configuration specific to read-replicas replicating
       from the on-premises master.
+    verifyGtidConsistency: Verify GTID consistency for demote operation.
+      Default value: True. Second Generation instances only. Setting this flag
+      to false enables you to bypass GTID consistency check between on-
+      premises master and Cloud SQL instance during the demotion operation but
+      also exposes you to the risk of future replication failures. Change the
+      value only if you know the reason for the GTID divergence and are
+      confident that doing so will not cause any replication issues.
   """
 
   kind = _messages.StringField(1, default=u'sql#demoteMasterContext')
   masterInstanceName = _messages.StringField(2)
   replicaConfiguration = _messages.MessageField('DemoteMasterConfiguration', 3)
+  verifyGtidConsistency = _messages.BooleanField(4)
 
 
 class DemoteMasterMySqlReplicaConfiguration(_messages.Message):

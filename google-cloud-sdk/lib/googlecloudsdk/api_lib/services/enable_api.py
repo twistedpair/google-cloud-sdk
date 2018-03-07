@@ -14,21 +14,19 @@
 
 """service-management enable helper functions."""
 
-import sys
-
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.services import services_util
 from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 
 
 def _ReraiseError(err, klass):
   """Transform and re-raise error helper."""
-  exc = api_lib_exceptions.HttpException(err)
-  raise klass, exc, sys.exc_info()[2]  # preserve traceback
+  core_exceptions.reraise(klass(api_lib_exceptions.HttpException(err)))
 
 
 def EnableServiceApiCall(project_id, service_name):

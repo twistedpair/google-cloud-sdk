@@ -48,22 +48,37 @@ def Encode(string, encoding=None):
   return string.encode(encoding)
 
 
-def Decode(string, encoding=None):
+def Decode(data, encoding=None):
   """Returns string with non-ascii characters decoded to UNICODE.
 
   UTF-8, the suggested encoding, and the usual suspects will be attempted in
   order. If the string is pure ASCII or UNICODE then it is returned unchanged.
 
   Args:
-    string: A string or object that has str() and unicode() methods that may
+    data: A string or object that has str() and unicode() methods that may
       contain an encoding incompatible with the standard output encoding.
     encoding: The suggested encoding if known.
 
   Returns:
     The string with non-ASCII characters decoded to UNICODE.
   """
-  if string is None:
+  if data is None:
     return None
+
+  # First we are going to get the data object to be a text string.
+  # Don't use six.string_types here because on Python 3 bytes is not considered
+  # a string type and we want to include that.
+  if isinstance(data, six.text_type) or isinstance(data, six.binary_type):
+    string = data
+  else:
+    # Some non-string type of object.
+    try:
+      string = six.text_type(data)
+    except (TypeError, UnicodeError):
+      # The string cannot be converted to unicode -- default to str() which will
+      # catch objects with special __str__ methods.
+      string = str(data)
+
   if isinstance(string, six.text_type):
     # Our work is done here.
     return string
@@ -71,14 +86,6 @@ def Decode(string, encoding=None):
   try:
     # Just return the string if its pure ASCII.
     return string.decode('ascii')
-  except AttributeError:
-    # The string does not have a decode method.
-    try:
-      return six.text_type(string)
-    except (TypeError, UnicodeError):
-      # The string cannot be converted to unicode -- default to str() which will
-      # catch objects with special __str__ methods.
-      string = str(string)
   except UnicodeError:
     # The string is not ASCII encoded.
     pass

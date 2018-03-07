@@ -333,6 +333,9 @@ class Cluster(_messages.Message):
       STOPPING: The STOPPING state indicates the cluster is being deleted.
       ERROR: The ERROR state indicates the cluster may be unusable. Details
         can be found in the `statusMessage` field.
+      DEGRADED: The DEGRADED state indicates the cluster requires user action
+        to restore full functionality. Details can be found in the
+        `statusMessage` field.
     """
     STATUS_UNSPECIFIED = 0
     PROVISIONING = 1
@@ -340,6 +343,7 @@ class Cluster(_messages.Message):
     RECONCILING = 3
     STOPPING = 4
     ERROR = 5
+    DEGRADED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceLabelsValue(_messages.Message):

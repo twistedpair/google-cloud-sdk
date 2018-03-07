@@ -6,7 +6,7 @@
   "canonicalName": "Cloud Natural Language",
   "version": "v1",
   "revision": "0",
-  "title": "Google Cloud Natural Language API",
+  "title": "Cloud Natural Language API",
   "description": "Provides natural language understanding technologies to developers. Examples include sentiment analysis, entity recognition, entity sentiment analysis, and text annotations.",
   "ownerDomain": "google.com",
   "ownerName": "Google",

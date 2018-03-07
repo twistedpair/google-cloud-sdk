@@ -54,11 +54,10 @@ def GetVersionFlag():
   """Set argument for choosing the TPU Tensor Flow version."""
   return base.Argument(
       '--version',
-      required=False,
+      required=True,
       help="""\
-      TensorFlow version for the TPU.
-       If not specified, this defaults to latest TensorFlow version. Currently
-       available versions include `1.2`, `1.1`, `0.12`, `0.11` and `0.10`.
+      TensorFlow version for the TPU, such as `1.6`. For a list of available
+      TensorFlow versions please see https://www.tensorflow.org/versions/.
       """)
 
 

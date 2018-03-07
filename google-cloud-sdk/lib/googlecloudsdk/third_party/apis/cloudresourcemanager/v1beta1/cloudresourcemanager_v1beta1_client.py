@@ -229,7 +229,9 @@ The creator can later grant permission to others to read or update the
 Project.
 
 Several APIs are activated automatically for the Project, including
-Google Cloud Storage.
+Google Cloud Storage. The parent is identified by a specified
+ResourceId, which must include both an ID and a type, such as
+project, folder, or organization.
 
       Args:
         request: (CloudresourcemanagerProjectsCreateRequest) input message

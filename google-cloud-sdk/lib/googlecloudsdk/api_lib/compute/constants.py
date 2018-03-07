@@ -135,7 +135,6 @@ OSLOGIN_ENABLE_METADATA_KEY = 'enable-oslogin'
 MAX_METADATA_VALUE_SIZE_IN_BYTES = 262144
 
 _STORAGE_RO = 'https://www.googleapis.com/auth/devstorage.read_only'
-_USERACCOUNTS_RO = 'https://www.googleapis.com/auth/cloud.useraccounts.readonly'
 _LOGGING_WRITE = 'https://www.googleapis.com/auth/logging.write'
 _MONITORING_WRITE = 'https://www.googleapis.com/auth/monitoring.write'
 _MONITORING = 'https://www.googleapis.com/auth/monitoring'
@@ -147,9 +146,8 @@ _PUBSUB = 'https://www.googleapis.com/auth/pubsub'
 _STACKDRIVER_TRACE = 'https://www.googleapis.com/auth/trace.append'
 
 DEFAULT_SCOPES = sorted([
-    _STORAGE_RO, _USERACCOUNTS_RO, _LOGGING_WRITE, _MONITORING_WRITE,
-    _SERVICE_CONTROL_SCOPE, _SERVICE_MANAGEMENT_SCOPE, _PUBSUB,
-    _STACKDRIVER_TRACE,
+    _STORAGE_RO, _LOGGING_WRITE, _MONITORING_WRITE, _SERVICE_CONTROL_SCOPE,
+    _SERVICE_MANAGEMENT_SCOPE, _PUBSUB, _STACKDRIVER_TRACE,
 ])
 
 GKE_DEFAULT_SCOPES = sorted([
@@ -181,8 +179,6 @@ SCOPES = {
         DEFAULT_SCOPES,
     'gke-default':
         GKE_DEFAULT_SCOPES,
-    'useraccounts-ro': [_USERACCOUNTS_RO],
-    'useraccounts-rw': ['https://www.googleapis.com/auth/cloud.useraccounts'],
     'datastore': ['https://www.googleapis.com/auth/datastore'],
     'logging-write': [_LOGGING_WRITE],
     'monitoring': [_MONITORING],

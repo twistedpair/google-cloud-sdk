@@ -493,24 +493,30 @@ def _GitFilesExist(directory):
   return AnyFileOrDirExists(directory, GIT_FILES)
 
 
-def _GetIgnoreFileContents(default_ignore_file, directory):
+def _GetIgnoreFileContents(default_ignore_file,
+                           directory,
+                           include_gitignore=True):
   ignore_file_contents = default_ignore_file
-  if os.path.exists(os.path.join(directory, '.gitignore')):
+  if include_gitignore and os.path.exists(
+      os.path.join(directory, '.gitignore')):
     ignore_file_contents += '#!include:.gitignore\n'
   return ignore_file_contents
 
 
 def GetFileChooserForDir(
     directory, default_ignore_file=DEFAULT_IGNORE_FILE, write_on_disk=True,
-    gcloud_ignore_creation_predicate=_GitFilesExist):
+    gcloud_ignore_creation_predicate=_GitFilesExist, include_gitignore=True):
   """Gets the FileChooser object for the given directory.
 
   In order of preference:
-  - Uses .gcloudignore file in the top-level directory
-  - Generates Git-centric .gcloudignore file if Git files are found but no
-    .gcloudignore exists. (If the directory is not writable, the file chooser
-    corresponding to the ignore file that would have been generated is used).
-  - If neither is found the returned FileChooser will choose all files.
+  - Uses .gcloudignore file in the top-level directory.
+  - Evaluates creation predicate to determine whether to generate .gcloudignore.
+    include_gitignore determines whether the generated .gcloudignore will
+    include the user's .gitignore if one exists. If the directory is not
+    writable, the file chooser corresponding to the ignore file that would have
+    been generated is used.
+  - If the creation predicate evaluates to false, returned FileChooser
+    will choose all files.
 
   Args:
     directory: str, the path of the top-level directory to upload
@@ -522,6 +528,8 @@ def GetFileChooserForDir(
       directory that would contain the .gcloudignore file. By default
       .gcloudignore file will be created if and only if the directory contains
       .gitignore file or .git directory.
+    include_gitignore: bool, whether the generated gcloudignore should include
+      the user's .gitignore if present.
 
   Raises:
     BadIncludedFileError: if a file being included does not exist or is not in
@@ -547,7 +555,8 @@ def GetFileChooserForDir(
     log.info('Not using a .gcloudignore file.')
     return FileChooser([])
 
-  ignore_contents = _GetIgnoreFileContents(default_ignore_file, directory)
+  ignore_contents = _GetIgnoreFileContents(default_ignore_file, directory,
+                                           include_gitignore)
   log.info('Using default gcloudignore file:\n{0}\n{1}\n{0}'.format(
       '--------------------------------------------------', ignore_contents))
   if write_on_disk:

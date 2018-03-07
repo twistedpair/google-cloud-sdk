@@ -1115,8 +1115,8 @@ class ServiceAccountKey(_messages.Message):
     privateKeyData: The private key data. Only provided in
       `CreateServiceAccountKey` responses. Make sure to keep the private key
       data secure because it allows for the assertion of the service account
-      identity. When decoded, the private key data can be used to authenticate
-      with Google API client libraries and with <a
+      identity. When base64 decoded, the private key data can be used to
+      authenticate with Google API client libraries and with <a
       href="/sdk/gcloud/reference/auth/activate-service-account">gcloud auth
       activate-service-account</a>.
     privateKeyType: The output format for the private key. Only provided in

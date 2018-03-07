@@ -133,7 +133,7 @@ def ReportError(err, is_crash):
   except apitools_exceptions.Error as e:
     log.file_only_logger.error(
         'Unable to report crash stacktrace:\n{0}'.format(
-            console_attr.EncodeForConsole(e)))
+            console_attr.SafeText(e)))
 
 
 def HandleGcloudCrash(err):
@@ -142,7 +142,7 @@ def HandleGcloudCrash(err):
   Args:
     err: Exception err.
   """
-  err_string = console_attr.EncodeForConsole(err)
+  err_string = console_attr.SafeText(err)
   log.file_only_logger.exception('BEGIN CRASH STACKTRACE')
   if _IsInstallationCorruption(err):
     _PrintInstallationAction(err, err_string)

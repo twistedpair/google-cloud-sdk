@@ -240,10 +240,6 @@
           "description": "The image to be processed.",
           "$ref": "Image"
         },
-        "file": {
-          "description": "The file to be processed. If both this field and `image` are specified,\n`image` is ignored. This cannot be set for calls to the synchronous\nBatchAnnotateImages method; an error will be returned.\n\nThis field should be set for input formats that may contain multiple\nimages.",
-          "$ref": "FileSource"
-        },
         "features": {
           "description": "Requested features.",
           "type": "array",
@@ -291,21 +287,6 @@
         },
         "imageUri": {
           "description": "The URI of the source image. Can be either:\n\n1. A Google Cloud Storage URI of the form\n   `gs:\/\/bucket_name\/object_name`. Object versioning is not supported. See\n   [Google Cloud Storage Request\n   URIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris) for more\n   info.\n\n2. A publicly-accessible image HTTP\/HTTPS URL. When fetching images from\n   HTTP\/HTTPS URLs, Google cannot guarantee that the request will be\n   completed. Your request may fail if the specified host denies the\n   request (e.g. due to request throttling or DOS prevention), or if Google\n   throttles requests to the site for abuse prevention. You should not\n   depend on externally-hosted images for production applications.\n\nWhen both `gcs_image_uri` and `image_uri` are specified, `image_uri` takes\nprecedence.",
-          "type": "string"
-        }
-      }
-    },
-    "FileSource": {
-      "id": "FileSource",
-      "description": "Information identifying a file to process.",
-      "type": "object",
-      "properties": {
-        "uri": {
-          "description": "The uri where the file can be found. Only plain GCS uris are supported for\nnow; web uris and wildcards are not supported.",
-          "type": "string"
-        },
-        "mimeType": {
-          "description": "The type of the file. Currently only \"application\/pdf\" and \"image\/tiff\"\nare supported.",
           "type": "string"
         }
       }
@@ -1714,6 +1695,186 @@
         }
       }
     },
+    "AsyncBatchAnnotateFilesRequest": {
+      "id": "AsyncBatchAnnotateFilesRequest",
+      "description": "Multiple async file annotation requests are batched into a single service\ncall.",
+      "type": "object",
+      "properties": {
+        "requests": {
+          "description": "Individual async file annotation requests for this batch.",
+          "type": "array",
+          "items": {
+            "$ref": "AsyncAnnotateFileRequest"
+          }
+        }
+      }
+    },
+    "AsyncAnnotateFileRequest": {
+      "id": "AsyncAnnotateFileRequest",
+      "description": "An offline file annotation request.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "description": "Required. Information about the input file.",
+          "$ref": "InputConfig"
+        },
+        "features": {
+          "description": "Required. Requested features.",
+          "type": "array",
+          "items": {
+            "$ref": "Feature"
+          }
+        },
+        "imageContext": {
+          "description": "Additional context that may accompany the image(s) in the file.",
+          "$ref": "ImageContext"
+        },
+        "outputConfig": {
+          "description": "Required. The desired output location and metadata (e.g. format).",
+          "$ref": "OutputConfig"
+        }
+      }
+    },
+    "InputConfig": {
+      "id": "InputConfig",
+      "description": "The desired input location and metadata.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "The Google Cloud Storage location to read the input from.",
+          "$ref": "GcsSource"
+        },
+        "mimeType": {
+          "description": "The type of the file. Currently only \"application\/pdf\" and \"image\/tiff\"\nare supported. Wildcards are not supported.",
+          "type": "string"
+        }
+      }
+    },
+    "GcsSource": {
+      "id": "GcsSource",
+      "description": "The Google Cloud Storage location where the input will be read from.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Google Cloud Storage URI for the input file. This must only be a GCS\nobject. Wildcards are not currently supported.",
+          "type": "string"
+        }
+      }
+    },
+    "OutputConfig": {
+      "id": "OutputConfig",
+      "description": "The desired output location and metadata.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "The Google Cloud Storage location to write the output(s) to.",
+          "$ref": "GcsDestination"
+        },
+        "batchSize": {
+          "description": "The max number of response protos to put into each output JSON file on GCS.\nThe valid range is [1, 100]. If not specified, the default value is 20.\n\nFor example, for one pdf file with 100 pages, 100 response protos will\nbe generated. If `batch_size` = 20, then 5 json files each\ncontaining 20 response protos will be written under the prefix\n`gcs_destination`.`uri`.\n\nCurrently, batch_size only applies to GcsDestination, with potential future\nsupport for other output configurations.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GcsDestination": {
+      "id": "GcsDestination",
+      "description": "The Google Cloud Storage location where the output will be written to.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Google Cloud Storage URI where the results will be stored. Results will\nbe in JSON format and preceded by its corresponding input URI. This field\ncan either represent a single file, or a prefix for multiple outputs.\nPrefixes must end in a `\/`.\n\nExamples:\n\n*    File: gs:\/\/bucket-name\/filename.json\n*    Prefix: gs:\/\/bucket-name\/prefix\/here\/\n*    File: gs:\/\/bucket-name\/prefix\/here\n\nIf multiple outputs, each response is still AnnotateFileResponse, each of\nwhich contains some subset of the full list of AnnotateImageResponse.\nMultiple outputs can happen if, for example, the output JSON is too large\nand overflows into multiple sharded files.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVisionV1p2beta1AsyncBatchAnnotateFilesResponse": {
+      "id": "GoogleCloudVisionV1p2beta1AsyncBatchAnnotateFilesResponse",
+      "description": "Response to an async batch file annotation request.",
+      "type": "object",
+      "properties": {
+        "responses": {
+          "description": "The list of file annotation responses, one for each request in\nAsyncBatchAnnotateFilesRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVisionV1p2beta1AsyncAnnotateFileResponse"
+          }
+        }
+      }
+    },
+    "GoogleCloudVisionV1p2beta1AsyncAnnotateFileResponse": {
+      "id": "GoogleCloudVisionV1p2beta1AsyncAnnotateFileResponse",
+      "description": "The response for a single offline file annotation request.",
+      "type": "object",
+      "properties": {
+        "outputConfig": {
+          "description": "The output location and metadata from AsyncAnnotateFileRequest.",
+          "$ref": "GoogleCloudVisionV1p2beta1OutputConfig"
+        }
+      }
+    },
+    "GoogleCloudVisionV1p2beta1OutputConfig": {
+      "id": "GoogleCloudVisionV1p2beta1OutputConfig",
+      "description": "The desired output location and metadata.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "The Google Cloud Storage location to write the output(s) to.",
+          "$ref": "GoogleCloudVisionV1p2beta1GcsDestination"
+        },
+        "batchSize": {
+          "description": "The max number of response protos to put into each output JSON file on GCS.\nThe valid range is [1, 100]. If not specified, the default value is 20.\n\nFor example, for one pdf file with 100 pages, 100 response protos will\nbe generated. If `batch_size` = 20, then 5 json files each\ncontaining 20 response protos will be written under the prefix\n`gcs_destination`.`uri`.\n\nCurrently, batch_size only applies to GcsDestination, with potential future\nsupport for other output configurations.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudVisionV1p2beta1GcsDestination": {
+      "id": "GoogleCloudVisionV1p2beta1GcsDestination",
+      "description": "The Google Cloud Storage location where the output will be written to.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Google Cloud Storage URI where the results will be stored. Results will\nbe in JSON format and preceded by its corresponding input URI. This field\ncan either represent a single file, or a prefix for multiple outputs.\nPrefixes must end in a `\/`.\n\nExamples:\n\n*    File: gs:\/\/bucket-name\/filename.json\n*    Prefix: gs:\/\/bucket-name\/prefix\/here\/\n*    File: gs:\/\/bucket-name\/prefix\/here\n\nIf multiple outputs, each response is still AnnotateFileResponse, each of\nwhich contains some subset of the full list of AnnotateImageResponse.\nMultiple outputs can happen if, for example, the output JSON is too large\nand overflows into multiple sharded files.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVisionV1p2beta1OperationMetadata": {
+      "id": "GoogleCloudVisionV1p2beta1OperationMetadata",
+      "description": "Contains metadata for the BatchAnnotateImages operation.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Current state of the batch operation.",
+          "enumDescriptions": [
+            "Invalid.",
+            "Request is received.",
+            "Request is actively being processed.",
+            "The batch processing is done.",
+            "The batch processing was cancelled."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATED",
+            "RUNNING",
+            "DONE",
+            "CANCELLED"
+          ]
+        },
+        "createTime": {
+          "description": "The time when the batch request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "The time when the operation result was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "Contains metadata for the BatchAnnotateImages operation.",
@@ -1754,6 +1915,24 @@
       "description": "Response to an async batch file annotation request.",
       "type": "object",
       "properties": {
+        "responses": {
+          "description": "The list of file annotation responses, one for each request in\nAsyncBatchAnnotateFilesRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "AsyncAnnotateFileResponse"
+          }
+        }
+      }
+    },
+    "AsyncAnnotateFileResponse": {
+      "id": "AsyncAnnotateFileResponse",
+      "description": "The response for a single offline file annotation request.",
+      "type": "object",
+      "properties": {
+        "outputConfig": {
+          "description": "The output location and metadata from AsyncAnnotateFileRequest.",
+          "$ref": "OutputConfig"
+        }
       }
     },
     "BatchOperationMetadata": {
@@ -2014,6 +2193,31 @@
             "https://www.googleapis.com/auth/cloud-vision"
           ],
           "description": "Run image detection and annotation for a batch of images."
+        }
+      }
+    },
+    "files": {
+      "methods": {
+        "asyncBatchAnnotate": {
+          "id": "alpha_vision.files.asyncBatchAnnotate",
+          "path": "v1/files:asyncBatchAnnotate",
+          "flatPath": "v1/files:asyncBatchAnnotate",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "AsyncBatchAnnotateFilesRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-vision"
+          ],
+          "description": "Run async image detection and annotation for a list of generic files (e.g.\nPDF) which may contain multiple pages and multiple images per page.\nProgress and results can be retrieved through the\n`google.longrunning.Operations` interface.\n`Operation.metadata` contains `OperationMetadata` (metadata).\n`Operation.response` contains `AsyncBatchAnnotateFilesResponse` (results)."
         }
       }
     }

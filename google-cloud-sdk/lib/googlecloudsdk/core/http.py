@@ -91,22 +91,25 @@ def MakeUserAgentString(cmd_path=None):
   Returns:
     str, User Agent string.
   """
-  return ('gcloud/{0}'
-          ' command/{1}'
-          ' invocation-id/{2}'
-          ' environment/{3}'
-          ' environment-version/{4}'
-          ' interactive/{5}'
-          ' python/{6}'
-          ' {7}').format(
-              config.CLOUD_SDK_VERSION.replace(' ', '_'),
-              cmd_path or properties.VALUES.metrics.command_name.Get(),
-              uuid.uuid4().hex,
-              properties.GetMetricsEnvironment(),
-              properties.VALUES.metrics.environment_version.Get(),
-              console_io.IsInteractive(error=True, heuristic=True),
-              platform.python_version(),
-              platforms.Platform.Current().UserAgentFragment())
+  return ('gcloud/{version}'
+          ' command/{cmd}'
+          ' invocation-id/{inv_id}'
+          ' environment/{environment}'
+          ' environment-version/{env_version}'
+          ' interactive/{is_interactive}'
+          ' from-script/{from_script}'
+          ' python/{py_version}'
+          ' {ua_fragment}').format(
+              version=config.CLOUD_SDK_VERSION.replace(' ', '_'),
+              cmd=(cmd_path or properties.VALUES.metrics.command_name.Get()),
+              inv_id=uuid.uuid4().hex,
+              environment=properties.GetMetricsEnvironment(),
+              env_version=properties.VALUES.metrics.environment_version.Get(),
+              is_interactive=console_io.IsInteractive(error=True,
+                                                      heuristic=True),
+              py_version=platform.python_version(),
+              ua_fragment=platforms.Platform.Current().UserAgentFragment(),
+              from_script=console_io.IsRunFromShellScript())
 
 
 def GetDefaultTimeout():

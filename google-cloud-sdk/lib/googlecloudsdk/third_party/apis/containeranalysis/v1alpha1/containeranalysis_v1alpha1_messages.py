@@ -596,8 +596,12 @@ class ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest(_messag
 class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
   """A ContaineranalysisProjectsOccurrencesListRequest object.
 
+  Enums:
+    KindValueValuesEnum: The kind of occurrences to filter on.
+
   Fields:
     filter: The filter expression.
+    kind: The kind of occurrences to filter on.
     name: The name field contains the project Id. For example:
       "projects/{project_id} @Deprecated
     pageSize: Number of occurrences to return in the list.
@@ -605,11 +609,34 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
     parent: This contains the project Id for example: projects/{project_id}.
   """
 
+  class KindValueValuesEnum(_messages.Enum):
+    """The kind of occurrences to filter on.
+
+    Values:
+      KIND_UNSPECIFIED: <no description>
+      PACKAGE_VULNERABILITY: <no description>
+      BUILD_DETAILS: <no description>
+      IMAGE_BASIS: <no description>
+      PACKAGE_MANAGER: <no description>
+      DEPLOYABLE: <no description>
+      DISCOVERY: <no description>
+      ATTESTATION_AUTHORITY: <no description>
+    """
+    KIND_UNSPECIFIED = 0
+    PACKAGE_VULNERABILITY = 1
+    BUILD_DETAILS = 2
+    IMAGE_BASIS = 3
+    PACKAGE_MANAGER = 4
+    DEPLOYABLE = 5
+    DISCOVERY = 6
+    ATTESTATION_AUTHORITY = 7
+
   filter = _messages.StringField(1)
-  name = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
+  kind = _messages.EnumField('KindValueValuesEnum', 2)
+  name = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
 
 
 class ContaineranalysisProjectsOccurrencesPatchRequest(_messages.Message):

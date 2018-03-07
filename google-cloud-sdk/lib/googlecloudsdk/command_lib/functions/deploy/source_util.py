@@ -45,9 +45,17 @@ def _GetChooser(path):
 
 
 def _ValidateUnpackedSourceSize(path):
+  """Validate size of unpacked source files."""
   chooser = _GetChooser(path)
   predicate = chooser.IsIncluded
-  size_b = file_utils.GetTreeSizeBytes(path, predicate=predicate)
+  try:
+    size_b = file_utils.GetTreeSizeBytes(path, predicate=predicate)
+  except OSError as e:
+    raise exceptions.FunctionsError(
+        'Error building source archive from path [{path}]. '
+        'Could not validate source files: [{error}]. '
+        'Please ensure that path [{path}] contains function code or '
+        'specify another directory with --source'.format(path=path, error=e))
   size_limit_mb = 512
   size_limit_b = size_limit_mb * 2 ** 20
   if size_b > size_limit_b:

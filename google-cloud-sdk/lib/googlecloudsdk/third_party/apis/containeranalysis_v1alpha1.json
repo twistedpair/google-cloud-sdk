@@ -1841,6 +1841,21 @@
                   "description": "Token to provide to skip to a particular spot in the list.",
                   "location": "query",
                   "type": "string"
+                },
+                "kind": {
+                  "description": "The kind of occurrences to filter on.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "KIND_UNSPECIFIED",
+                    "PACKAGE_VULNERABILITY",
+                    "BUILD_DETAILS",
+                    "IMAGE_BASIS",
+                    "PACKAGE_MANAGER",
+                    "DEPLOYABLE",
+                    "DISCOVERY",
+                    "ATTESTATION_AUTHORITY"
+                  ]
                 }
               },
               "parameterOrder": [
@@ -1973,15 +1988,15 @@
             },
             "getVulnerabilitySummary": {
               "id": "containeranalysis.projects.occurrences.getVulnerabilitySummary",
-              "path": "v1alpha1/{+parent}/vulnerabilitySummary",
-              "flatPath": "v1alpha1/projects/{projectsId}/occurrences/{occurrencesId}/vulnerabilitySummary",
+              "path": "v1alpha1/{+parent}/occurrences:vulnerabilitySummary",
+              "flatPath": "v1alpha1/projects/{projectsId}/occurrences:vulnerabilitySummary",
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
                   "description": "This contains the project Id for example: projects\/{project_id}",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/occurrences\/[^\/]+$",
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {

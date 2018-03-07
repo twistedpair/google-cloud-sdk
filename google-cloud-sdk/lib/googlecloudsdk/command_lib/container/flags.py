@@ -19,6 +19,7 @@ from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.container import constants
 from googlecloudsdk.core import properties
 
@@ -105,6 +106,52 @@ using the following command.
 """.format(target=target)
 
   parser.add_argument('--image-type', help=help_text)
+
+
+def AddImageFlag(parser, hidden=False):
+  """Adds an --image flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: if true, suppress help text for this option
+  """
+
+  help_text = """\
+A specific image to use on the new instances.
+"""
+
+  parser.add_argument('--image', help=help_text, hidden=hidden)
+
+
+def AddImageProjectFlag(parser, hidden=False):
+  """Adds an --image-project flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: if true, suppresses help text for this option.
+  """
+  help_text = """/
+A specific project from which contains the os image or image family.  This is
+required when using --image-type=CUSTOM.
+"""
+
+  parser.add_argument('--image-project', help=help_text, hidden=hidden)
+
+
+def AddImageFamilyFlag(parser, hidden=False):
+  """Adds an --image-family flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: if true, suppresses help text for this option.
+  """
+
+  help_text = """/
+A specific image-family from which the most recent image is used on new
+instances.  If both image and image family are specified, the image must be in
+the image family, and the image is used.
+"""
+  parser.add_argument('--image-family', help=help_text, hidden=hidden)
 
 
 def AddNodeVersionFlag(parser, hidden=False):
@@ -1018,7 +1065,8 @@ def AddWorkloadMetadataFromNodeFlag(parser, hidden=False):
     hidden: Whether or not to hide the help text.
   """
   help_text = """\
-Sets the node metadata option for workload metadata configuration.
+Sets the node metadata option for workload metadata configuration. This feature
+is scheduled to be deprecated in the future and later removed.
 """
 
   parser.add_argument(
@@ -1030,9 +1078,7 @@ Sets the node metadata option for workload metadata configuration.
                     'contains Kubelet credentials, and the instance identity '
                     'token. This is a temporary security solution available '
                     'while the bootstrapping process for cluster nodes is '
-                    'being redesigned with significant security improvements. '
-                    'This feature is scheduled to be deprecated in the future '
-                    'and later removed.',
+                    'being redesigned with significant security improvements.',
           'EXPOSED': 'Exposes all VM metadata to workloads.',
           'UNSPECIFIED': 'Chooses the default.',
       },
@@ -1373,3 +1419,76 @@ MasterAuth field of the Cluster object.
       action='store_true',
       default=True,
       help=help_text)
+
+
+def AddIstioConfigFlag(parser, suppressed=False):
+  """Adds --istio-config flag to the parser.
+
+  Args:
+    parser: A given parser.
+    suppressed: Whether or not to suppress help text.
+  """
+
+  help_text = """\
+Configurations for Istio addon, requires --addons contains Istio for create,
+or --update-addons Istio=ENABLED for update.
+
+*auth*:::Optional Type of auth NONE or MUTUAL_TLS
+Example:
+
+  $ {command} example-cluster --istio-config=auth=NONE
+"""
+  parser.add_argument(
+      '--istio-config',
+      metavar='auth=NONE',
+      type=arg_parsers.ArgDict(
+          spec={
+              'auth': (lambda x: x.upper()),
+          }),
+      help=help_text,
+      hidden=suppressed)
+
+
+def ValidateIstioConfigCreateArgs(istio_config_args, addons_args):
+  """Validates flags specifying Istio config for create.
+
+  Args:
+    istio_config_args: parsed comandline arguments for --istio_config.
+    addons_args: parsed comandline arguments for --addons.
+  Raises:
+    InvalidArgumentException: when auth is not NONE nor MUTUAL_TLS, or
+    --addon=Istio is not specified
+  """
+  if istio_config_args:
+    auth = istio_config_args.get('auth', '')
+    if auth not in ['NONE', 'MUTUAL_TLS']:
+      raise exceptions.InvalidArgumentException(
+          '--istio-config', 'auth is either NONE or MUTUAL_TLS '
+          'e.g. --istio-config auth=NONE')
+    if 'Istio' not in addons_args:
+      raise exceptions.InvalidArgumentException(
+          '--istio-config', '--addon=Istio must be specified when '
+          '--istio-config is given')
+
+
+def ValidateIstioConfigUpdateArgs(istio_config_args, disable_addons_args):
+  """Validates flags specifying Istio config for update.
+
+  Args:
+    istio_config_args: parsed comandline arguments for --istio_config.
+    disable_addons_args: parsed comandline arguments for --update-addons.
+  Raises:
+    InvalidArgumentException: when auth is not NONE nor MUTUAL_TLS, or
+    --update-addons=Istio=ENABLED is not specified
+  """
+  if istio_config_args:
+    auth = istio_config_args.get('auth', '')
+    if auth not in ['NONE', 'MUTUAL_TLS']:
+      raise exceptions.InvalidArgumentException(
+          '--istio-config', 'auth must be one of NONE or MUTUAL_TLS '
+          'e.g. --istio-config auth=NONE')
+    disable_istio = disable_addons_args.get('Istio')
+    if disable_istio is None or disable_istio:
+      raise exceptions.InvalidArgumentException(
+          '--istio-config', '--update-addons=Istio=ENABLED must be specified '
+          'when --istio-config is given')

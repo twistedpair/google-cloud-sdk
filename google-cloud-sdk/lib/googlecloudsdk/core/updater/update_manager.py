@@ -1558,7 +1558,7 @@ def RestartCommand(command=None, args=None, python=None, block=True):
   if short_command == 'gcloud.py':
     short_command = 'gcloud'
   log_args = ' '.join([
-      console_attr.EncodeForConsole(a) for a in command_args])
+      console_attr.SafeText(a) for a in command_args])
   log.status.Print('Restarting command:\n  $ {command} {args}\n'.format(
       command=short_command, args=log_args))
   log.debug('Restarting command: %s %s', command, args)

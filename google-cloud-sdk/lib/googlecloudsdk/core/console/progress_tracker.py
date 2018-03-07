@@ -119,7 +119,11 @@ class _NormalProgressTracker(object):
       else:
         with self._lock:
           sys.stderr.write('\n\nThis operation cannot be cancelled.\n\n')
-    self._old_signal_handler = signal.signal(signal.SIGINT, _CtrlCHandler)
+    try:
+      self._old_signal_handler = signal.signal(signal.SIGINT, _CtrlCHandler)
+      self._restore_old_handler = True
+    except ValueError:
+      self._restore_old_handler = False  # only works in the main thread
     log.file_only_logger.info(self._GetPrefix())
     self._Print()
     if self._autotick:
@@ -245,7 +249,11 @@ class _NormalProgressTracker(object):
         self._Print('done.\n')
     if self._ticker:
       self._ticker.join()
-    signal.signal(signal.SIGINT, self._old_signal_handler)
+    if self._restore_old_handler:
+      try:
+        signal.signal(signal.SIGINT, self._old_signal_handler)
+      except ValueError:
+        pass  # only works in main thread
 
 
 class _NoOpProgressTracker(object):

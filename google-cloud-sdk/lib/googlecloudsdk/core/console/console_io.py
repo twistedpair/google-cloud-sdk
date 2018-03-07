@@ -147,7 +147,7 @@ def ReadStdin(binary=False):
     data = sys.stdin.read()
     if six.PY2:
       # On Python 2, stdin comes in a a byte string. Convert it to text.
-      data = console_attr.DecodeFromConsole(data)
+      data = console_attr.Decode(data)
     return data
 
 
@@ -190,7 +190,6 @@ def IsInteractive(output=False, error=False, heuristic=False):
   return True
 
 
-# TODO(b/69972740) Add this to metrics in addition to current isinteractive.
 def IsRunFromShellScript():
   """Check if command is being run from command line or a script."""
   # Commands run from a shell script typically have getppid() == getpgrp()

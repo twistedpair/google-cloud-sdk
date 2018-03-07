@@ -5,7 +5,7 @@
   "name": "dataflow",
   "version": "v1b3",
   "revision": "0",
-  "title": "Google Dataflow API",
+  "title": "Dataflow API",
   "description": "Manages Google Cloud Dataflow projects on Google Cloud Platform.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -1756,6 +1756,10 @@
         "internal": {
           "description": "Value for internally-defined counters used by the Dataflow service.",
           "type": "any"
+        },
+        "integerGauge": {
+          "description": "Gauge data",
+          "$ref": "IntegerGauge"
         }
       }
     },
@@ -1779,7 +1783,8 @@
             "Aggregated value represents the logical 'or' of all contributed values.",
             "Aggregated value represents the logical 'and' of all contributed values.",
             "Aggregated value is a set of unique contributed values.",
-            "Aggregated value captures statistics about a distribution."
+            "Aggregated value captures statistics about a distribution.",
+            "Aggregated value tracks the latest value of a variable."
           ],
           "type": "string",
           "enum": [
@@ -1791,7 +1796,8 @@
             "OR",
             "AND",
             "SET",
-            "DISTRIBUTION"
+            "DISTRIBUTION",
+            "LATEST_VALUE"
           ]
         }
       }
@@ -1893,7 +1899,8 @@
             "Aggregated value represents the logical 'or' of all contributed values.",
             "Aggregated value represents the logical 'and' of all contributed values.",
             "Aggregated value is a set of unique contributed values.",
-            "Aggregated value captures statistics about a distribution."
+            "Aggregated value captures statistics about a distribution.",
+            "Aggregated value tracks the latest value of a variable."
           ],
           "type": "string",
           "enum": [
@@ -1905,7 +1912,8 @@
             "OR",
             "AND",
             "SET",
-            "DISTRIBUTION"
+            "DISTRIBUTION",
+            "LATEST_VALUE"
           ]
         },
         "description": {
@@ -2082,6 +2090,22 @@
           "description": "Starting index of first stored bucket. The non-inclusive upper-bound of\nthe ith bucket is given by:\n  pow(10,(i-first_bucket_offset)\/3) * (1,2,5)[(i-first_bucket_offset)%3]",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "IntegerGauge": {
+      "id": "IntegerGauge",
+      "description": "A metric value representing temporal values of a variable.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The value of the variable represented by this gauge.",
+          "$ref": "SplitInt64"
+        },
+        "timestamp": {
+          "description": "The time at which this value was measured. Measured as msecs from epoch.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

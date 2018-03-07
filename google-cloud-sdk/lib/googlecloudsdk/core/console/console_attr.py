@@ -616,22 +616,19 @@ def GetCharacterDisplayWidth(char):
     return 1
 
 
-# TODO(b/73165575): The name of this function is misleading because it
-# returns a text string not an encoded byte string. We also want to eventually
-# not allow it to take in byte strings at all.
-def EncodeForConsole(data, encoding=None, escape=True):
-  r"""Returns a text string encoded to prevent output codec exceptions.
+def SafeText(data, encoding=None, escape=True):
+  r"""Converts the data to a text string compatible with the given encoding.
 
-  This function can be used to massage output strings that may have been encoded
-  with an encoding incompatible with the standard output encoding. This happens
-  frequently in tests and error messages where the string is obtained from a
-  source of unknown encoding.
+  This works the same way as Decode() below except it guarantees that any
+  characters in the resulting text string can be re-encoded using the given
+  encoding (or GetConsoleAttr().GetEncoding() if None is given). This means
+  that the string will be safe to print to sys.stdout (for example) without
+  getting codec exceptions if the user's terminal doesn't support the encoding
+  used by the source of the text.
 
   Args:
-    data: A text string, byte string or object that has str() and unicode()
-      methods that may contain an encoding incompatible with the standard output
-      encoding.
-    encoding: The output encoding name. Defaults to
+    data: Any bytes, string, or object that has str() or unicode() methods.
+    encoding: The encoding name to ensure compatibility with. Defaults to
       GetConsoleAttr().GetEncoding().
     escape: Replace unencodable characters with a \uXXXX or \xXX equivalent if
       True. Otherwise replace unencodable characters with an appropriate unknown
@@ -639,36 +636,15 @@ def EncodeForConsole(data, encoding=None, escape=True):
       \uFFFE for unicode.
 
   Returns:
-    A text string but modified to remove any characters that would result in an
-    encoding exception with the target encoding. In the worst case, with
-    escape=False, it will contain only ? characters.
+    A text string representation of the data, but modified to remove any
+    characters that would result in an encoding exception with the target
+    encoding. In the worst case, with escape=False, it will contain only ?
+    characters.
   """
+  if data is None:
+    return u'None'
   encoding = encoding or GetConsoleAttr().GetEncoding()
-
-  # First we are going to get the data object to be a text string.
-  # Don't use six.string_types here because on Python 3 bytes is not considered
-  # a string type and we want to include that.
-  if not (isinstance(data, six.text_type) or isinstance(data, six.binary_type)):
-    # Some non-string type of object.
-    try:
-      data = six.text_type(data)
-    except (TypeError, UnicodeError):
-      # The string cannot be converted to unicode -- default to str() which will
-      # catch objects with special __str__ methods.
-      data = str(data)
-
-  if isinstance(data, six.text_type):
-    string = data
-  else:
-    # Convert the byte string into a text string.
-    try:
-      # It can be decoded using the given encoding so that means it will encode
-      # fine later as well.
-      return data.decode(encoding)
-    except UnicodeError:
-      # Can't decode using the output encoding, DecodeFromConsole() tries a
-      # bunch of other fallback encodings.
-      string = DecodeFromConsole(data, encoding=encoding)
+  string = encoding_util.Decode(data, encoding=encoding)
 
   try:
     # No change needed if the string encodes to the output encoding.
@@ -683,20 +659,17 @@ def EncodeForConsole(data, encoding=None, escape=True):
             .decode(encoding))
 
 
-def DecodeFromConsole(string, encoding=None):
-  """Returns string with non-ascii characters decoded.
+def Decode(data, encoding=None):
+  """Converts the given string, bytes, or object to a text string.
 
   Args:
-    string: A string or object that has str() and unicode() methods that may
-      contain an encoding incompatible with the standard output encoding.
-    encoding: The encoding to decode. Defaults to
+    data: Any bytes, string, or object that has str() or unicode() methods.
+    encoding: A suggesting encoding used to decode. If this encoding doesn't
+      work, other defaults are tried. Defaults to
       GetConsoleAttr().GetEncoding().
 
   Returns:
-    The string with non-ascii characters decoded. If the input string is
-    ascii then it is returned unchanged, otherwise the decoded unicode string
-    is returned.
+    A text string representation of the data.
   """
-  if not encoding:
-    encoding = GetConsoleAttr().GetEncoding()
-  return encoding_util.Decode(string, encoding=encoding)
+  encoding = encoding or GetConsoleAttr().GetEncoding()
+  return encoding_util.Decode(data, encoding=encoding)

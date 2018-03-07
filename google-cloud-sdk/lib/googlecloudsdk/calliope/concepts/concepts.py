@@ -96,8 +96,8 @@ class ConceptSpec(object):
     return self.name == other.name and self.attributes == other.attributes
 
 
-class Attribute(object):
-  """An attribute of a concept.
+class _Attribute(object):
+  """A base class for concept attributes.
 
   Attributes:
     name: The name of the attribute. Used primarily to control the arg or flag
@@ -117,6 +117,7 @@ class Attribute(object):
 
   def __init__(self, name, help_text=None, required=False, fallthroughs=None,
                completer=None, value_type=None):
+    """Initializes."""
     self.name = name
     self.help_text = help_text
     self.required = required
@@ -125,6 +126,7 @@ class Attribute(object):
     self.value_type = value_type or str
 
   def __eq__(self, other):
+    """Overrides."""
     if not isinstance(other, type(self)):
       return False
     return (self.name == other.name and self.help_text == other.help_text
@@ -134,12 +136,40 @@ class Attribute(object):
             and self.value_type == other.value_type)
 
 
+class Attribute(_Attribute):
+  """An attribute of a resource.
+
+  Has all attributes of the base class along with resource-specific attributes.
+
+  Attributes:
+    completion_request_params: {str: str}, a dict of field names to params to
+      use as static field values in any request to complete this resource.
+    completion_id_field: str, the ID field of the return value in the
+        response for completion requests.
+  """
+
+  def __init__(self, name, completion_request_params=None,
+               completion_id_field=None, **kwargs):
+    """Initializes."""
+    self.completion_request_params = completion_request_params or {}
+    self.completion_id_field = completion_id_field
+    super(Attribute, self).__init__(name, **kwargs)
+
+  def __eq__(self, other):
+    """Overrides."""
+    return (super(Attribute, self).__eq__(other)
+            and self.completion_request_params
+            == other.completion_request_params
+            and self.completion_id_field == other.completion_id_field)
+
+
 class ResourceSpec(ConceptSpec):
   """Defines a Cloud resource as a set of attributes for argument creation.
   """
 
+  # TODO(b/67707644): Enable completers by default when confident enough.
   def __init__(self, resource_collection, resource_name=None,
-               api_version=None, **kwargs):
+               api_version=None, disable_auto_completers=True, **kwargs):
     """Initializes a ResourceSpec.
 
     To use a ResourceSpec, give a collection path such as
@@ -162,6 +192,8 @@ class ResourceSpec(ConceptSpec):
         help text.
       api_version: Overrides the default version in the resource
         registry.
+      disable_auto_completers: bool, whether to add completers automatically
+        where possible.
       **kwargs: Parameter names (such as 'projectsId') from the
         collection path, mapped to ResourceParameterAttributeConfigs.
 
@@ -174,6 +206,7 @@ class ResourceSpec(ConceptSpec):
     self._resources = resources.REGISTRY.Clone()
     self._collection_info = self._resources.GetCollectionInfo(
         resource_collection, api_version=api_version)
+    self.disable_auto_completers = disable_auto_completers
     collection_params = self._collection_info.GetParams('')
     self._attributes = []
     self._param_names_map = {}
@@ -194,7 +227,9 @@ class ResourceSpec(ConceptSpec):
           required=True,
           fallthroughs=attribute_config.fallthroughs,
           completer=attribute_config.completer,
-          value_type=str)
+          value_type=str,
+          completion_request_params=attribute_config.completion_request_params,
+          completion_id_field=attribute_config.completion_id_field)
       self._attributes.append(new_attribute)
       # Keep a map from attribute names to param names. While attribute names
       # are used for error messaging and arg creation/parsing, resource parsing
@@ -228,6 +263,10 @@ class ResourceSpec(ConceptSpec):
   def attribute_to_params_map(self):
     """A map from all attribute names to param names."""
     return self._param_names_map
+
+  @property
+  def collection_info(self):
+    return self._collection_info
 
   def _AttributeName(self, param_name, attribute_config, anchor=False):
     """Chooses attribute name for a param name.
@@ -281,8 +320,13 @@ class ResourceSpec(ConceptSpec):
         concept can't be initialized.
     """
     params = {}
+
+    # Returns a function that can be used to parse each attribute, which will be
+    # used only if the resource parser does not receive a fully qualified
+    # resource name.
     def LazyGet(name):
       return lambda: deps.Get(name)
+
     for attribute in self.attributes:
       params[self.ParamName(attribute.name)] = LazyGet(attribute.name)
     self._resources.RegisterApiByName(self._collection_info.api_name,
@@ -299,6 +343,7 @@ class ResourceSpec(ConceptSpec):
 
   def __eq__(self, other):
     return (super(ResourceSpec, self).__eq__(other)
+            and self.disable_auto_completers == other.disable_auto_completers
             and self.attribute_to_params_map == other.attribute_to_params_map)
 
 
@@ -306,7 +351,8 @@ class ResourceParameterAttributeConfig(object):
   """Configuration used to create attributes from resource parameters."""
 
   def __init__(self, name=None, help_text=None, fallthroughs=None,
-               completer=None):
+               completer=None, completion_request_params=None,
+               completion_id_field=None):
     """Create a resource attribute.
 
     Args:
@@ -319,8 +365,14 @@ class ResourceParameterAttributeConfig(object):
         the attribute if it is not provided on the command line.
       completer: core.cache.completion_cache.Completer, the completer
         associated with the attribute.
+      completion_request_params: {str: value}, a dict of field names to static
+        values to fill in for the completion request.
+      completion_id_field: str, the ID field of the return value in the
+        response for completion commands.
     """
     self.attribute_name = name
     self.help_text = help_text
     self.fallthroughs = fallthroughs or []
     self.completer = completer
+    self.completion_request_params = completion_request_params
+    self.completion_id_field = completion_id_field

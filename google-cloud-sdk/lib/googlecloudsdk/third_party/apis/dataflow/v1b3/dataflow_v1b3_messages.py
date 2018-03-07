@@ -278,6 +278,7 @@ class CounterMetadata(_messages.Message):
         values.
       SET: Aggregated value is a set of unique contributed values.
       DISTRIBUTION: Aggregated value captures statistics about a distribution.
+      LATEST_VALUE: Aggregated value tracks the latest value of a variable.
     """
     INVALID = 0
     SUM = 1
@@ -288,6 +289,7 @@ class CounterMetadata(_messages.Message):
     AND = 6
     SET = 7
     DISTRIBUTION = 8
+    LATEST_VALUE = 9
 
   class StandardUnitsValueValuesEnum(_messages.Enum):
     """System defined Units, see above enum.
@@ -410,6 +412,7 @@ class CounterUpdate(_messages.Message):
     floatingPointList: List of floating point numbers, for Set.
     floatingPointMean: Floating point mean aggregation value for Mean.
     integer: Integer value for Sum, Max, Min.
+    integerGauge: Gauge data
     integerList: List of integers, for Set.
     integerMean: Integer mean aggregation value for Mean.
     internal: Value for internally-defined counters used by the Dataflow
@@ -429,13 +432,14 @@ class CounterUpdate(_messages.Message):
   floatingPointList = _messages.MessageField('FloatingPointList', 5)
   floatingPointMean = _messages.MessageField('FloatingPointMean', 6)
   integer = _messages.MessageField('SplitInt64', 7)
-  integerList = _messages.MessageField('IntegerList', 8)
-  integerMean = _messages.MessageField('IntegerMean', 9)
-  internal = _messages.MessageField('extra_types.JsonValue', 10)
-  nameAndKind = _messages.MessageField('NameAndKind', 11)
-  shortId = _messages.IntegerField(12)
-  stringList = _messages.MessageField('StringList', 13)
-  structuredNameAndMetadata = _messages.MessageField('CounterStructuredNameAndMetadata', 14)
+  integerGauge = _messages.MessageField('IntegerGauge', 8)
+  integerList = _messages.MessageField('IntegerList', 9)
+  integerMean = _messages.MessageField('IntegerMean', 10)
+  internal = _messages.MessageField('extra_types.JsonValue', 11)
+  nameAndKind = _messages.MessageField('NameAndKind', 12)
+  shortId = _messages.IntegerField(13)
+  stringList = _messages.MessageField('StringList', 14)
+  structuredNameAndMetadata = _messages.MessageField('CounterStructuredNameAndMetadata', 15)
 
 
 class CreateJobFromTemplateRequest(_messages.Message):
@@ -1889,6 +1893,19 @@ class InstructionOutput(_messages.Message):
   systemName = _messages.StringField(6)
 
 
+class IntegerGauge(_messages.Message):
+  """A metric value representing temporal values of a variable.
+
+  Fields:
+    timestamp: The time at which this value was measured. Measured as msecs
+      from epoch.
+    value: The value of the variable represented by this gauge.
+  """
+
+  timestamp = _messages.StringField(1)
+  value = _messages.MessageField('SplitInt64', 2)
+
+
 class IntegerList(_messages.Message):
   """A metric value representing a list of integers.
 
@@ -2694,6 +2711,7 @@ class NameAndKind(_messages.Message):
         values.
       SET: Aggregated value is a set of unique contributed values.
       DISTRIBUTION: Aggregated value captures statistics about a distribution.
+      LATEST_VALUE: Aggregated value tracks the latest value of a variable.
     """
     INVALID = 0
     SUM = 1
@@ -2704,6 +2722,7 @@ class NameAndKind(_messages.Message):
     AND = 6
     SET = 7
     DISTRIBUTION = 8
+    LATEST_VALUE = 9
 
   kind = _messages.EnumField('KindValueValuesEnum', 1)
   name = _messages.StringField(2)

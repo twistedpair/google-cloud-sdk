@@ -866,7 +866,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     hyperparameters: Optional. The set of Hyperparameters to tune.
     jobDir: Optional. A Google Cloud Storage path in which to store training
       outputs and other data needed for training. This path is passed to your
-      TensorFlow program as the 'job_dir' command-line argument. The benefit
+      TensorFlow program as the '--job-dir' command-line argument. The benefit
       of specifying this field is that Cloud ML validates the path for use in
       training.
     masterType: Optional. Specifies the type of virtual machine to use for
@@ -1019,7 +1019,7 @@ class GoogleCloudMlV1Version(_messages.Message):
   deployed in the cloud, ready to handle prediction requests. A model can have
   multiple versions. You can get information about all of the versions of a
   given model by calling [projects.models.versions.list](/ml-
-  engine/reference/rest/v1/projects.models.versions/list).  LINT.IfChange
+  engine/reference/rest/v1/projects.models.versions/list).
 
   Enums:
     FrameworkValueValuesEnum: The ML framework used to train this version of

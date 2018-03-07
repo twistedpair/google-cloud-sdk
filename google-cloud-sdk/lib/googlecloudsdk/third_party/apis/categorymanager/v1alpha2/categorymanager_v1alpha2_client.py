@@ -165,7 +165,7 @@ class CategorymanagerV1alpha2(base_api.BaseApiClient):
         method_id=u'categorymanager.assets.search',
         ordered_params=[],
         path_params=[],
-        query_params=[u'pageSize', u'pageToken', u'query_annotations', u'query_createAgeFilter_maxAge', u'query_createAgeFilter_minAge', u'query_filter', u'query_includeAnnotatedByGroup', u'query_updateAgeFilter_maxAge', u'query_updateAgeFilter_minAge'],
+        query_params=[u'pageSize', u'pageToken', u'query_annotatableOnly', u'query_annotations', u'query_createAgeFilter_maxAge', u'query_createAgeFilter_minAge', u'query_filter', u'query_includeAnnotatedByGroup', u'query_updateAgeFilter_maxAge', u'query_updateAgeFilter_minAge'],
         relative_path=u'v1alpha2/assets:search',
         request_field='',
         request_type_name=u'CategorymanagerAssetsSearchRequest',

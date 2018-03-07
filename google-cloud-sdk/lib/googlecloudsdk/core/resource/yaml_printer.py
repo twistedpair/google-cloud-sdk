@@ -127,6 +127,7 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
     self._yaml.safe_dump(
         record,
         stream=self._out,
+        encoding=None,  # Core libraries should handle the encoding.
         default_flow_style=False,
         indent=resource_printer_base.STRUCTURED_INDENTATION,
         explicit_start=delimit)

@@ -119,12 +119,7 @@ def RaiseErrorInsteadOf(error, *error_types):
       try:
         return func(*args, **kwargs)
       except error_types:
-        (_, _, exc_traceback) = sys.exc_info()
-        # The 3 element form takes (type, instance, traceback).  If the first
-        # element is an instance, it is used as the type and instance and the
-        # second element must be None.  This preserves the original traceback.
-        # pylint:disable=nonstandard-exception, ToolException is an Exception.
-        raise NewErrorFromCurrentException(error), None, exc_traceback
+        core_exceptions.reraise(NewErrorFromCurrentException(error))
     return TryFunc
   return Wrap
 
@@ -247,7 +242,7 @@ def _FormatNonAsciiMarkerString(args):
   # Make sure that this will still print out nicely on an odd-sized screen
   align = len(marker_string)
   args_string = u' '.join(
-      [console_attr.EncodeForConsole(arg) for arg in args])
+      [console_attr.SafeText(arg) for arg in args])
   width, _ = console_attr_os.GetTermSize()
   fill = '...'
   if width < len(_MARKER) + len(fill):
@@ -291,7 +286,7 @@ class InvalidCharacterInArgException(ToolException):
         u'Failed to read command line argument [{0}] because it does '
         u'not appear to be valid 7-bit ASCII.\n\n'
         u'{1}'.format(
-            console_attr.EncodeForConsole(self.invalid_arg),
+            console_attr.SafeText(self.invalid_arg),
             _FormatNonAsciiMarkerString(args)))
 
 
@@ -472,8 +467,8 @@ def HandleError(exc, command_path, known_error_handler=None):
   known_exc, print_error = ConvertKnownError(exc)
   if known_exc:
     msg = u'({0}) {1}'.format(
-        console_attr.EncodeForConsole(command_path),
-        console_attr.EncodeForConsole(known_exc))
+        console_attr.SafeText(command_path),
+        console_attr.SafeText(known_exc))
     log.debug(msg, exc_info=sys.exc_info())
     if print_error:
       log.error(msg)
@@ -485,7 +480,7 @@ def HandleError(exc, command_path, known_error_handler=None):
     _Exit(known_exc)
   else:
     # Make sure any uncaught exceptions still make it into the log file.
-    log.debug(console_attr.EncodeForConsole(exc), exc_info=sys.exc_info())
+    log.debug(console_attr.SafeText(exc), exc_info=sys.exc_info())
     raise
 
 

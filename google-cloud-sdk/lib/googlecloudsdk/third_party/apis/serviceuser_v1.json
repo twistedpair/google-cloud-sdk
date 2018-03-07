@@ -6,7 +6,7 @@
   "canonicalName": "Service User",
   "version": "v1",
   "revision": "0",
-  "title": "Google Service User API",
+  "title": "Service User API",
   "description": "Enables services that service consumers want to use on Google Cloud Platform, lists the available or enabled services, or disables services that service consumers no longer use.",
   "ownerDomain": "google.com",
   "ownerName": "Google",

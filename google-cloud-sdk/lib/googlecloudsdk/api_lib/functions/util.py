@@ -19,7 +19,6 @@ import httplib
 import json
 import os
 import re
-import sys
 
 from apitools.base.py import exceptions as apitools_exceptions
 
@@ -28,6 +27,7 @@ from googlecloudsdk.api_lib.functions import operations
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as base_exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import encoding
@@ -278,9 +278,8 @@ def CatchHTTPErrorRaiseHTTPException(func):
     try:
       return func(*args, **kwargs)
     except apitools_exceptions.HttpError as error:
-      msg = GetHttpErrorMessage(error)
-      unused_type, unused_value, traceback = sys.exc_info()
-      raise base_exceptions.HttpException, msg, traceback
+      core_exceptions.reraise(
+          base_exceptions.HttpException(GetHttpErrorMessage(error)))
 
   return CatchHTTPErrorRaiseHTTPExceptionFn
 

@@ -124,7 +124,7 @@ def AddAndroidTestArgs(parser):
       'their desired values. The environment variables passed here will '
       'be mirrored on to the adb run command. For example, specify '
       '--environment-variables '
-      'coverage=true,coverageFile="/sdcard/tempDir/coverage.ec" to enable code '
+      'coverage=true,coverageFile="/sdcard/coverage.ec" to enable code '
       'coverage and provide a file path to store the coverage results.')
   parser.add_argument(
       '--obb-files',

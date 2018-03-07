@@ -99,8 +99,26 @@ class AlphaVisionProductSearchCatalogsReferenceImagesListRequest(_messages.Messa
   productId = _messages.StringField(4)
 
 
+class AsyncAnnotateFileResponse(_messages.Message):
+  """The response for a single offline file annotation request.
+
+  Fields:
+    outputConfig: The output location and metadata from
+      AsyncAnnotateFileRequest.
+  """
+
+  outputConfig = _messages.MessageField('OutputConfig', 1)
+
+
 class AsyncBatchAnnotateFilesResponse(_messages.Message):
-  """Response to an async batch file annotation request."""
+  """Response to an async batch file annotation request.
+
+  Fields:
+    responses: The list of file annotation responses, one for each request in
+      AsyncBatchAnnotateFilesRequest.
+  """
+
+  responses = _messages.MessageField('AsyncAnnotateFileResponse', 1, repeated=True)
 
 
 class BatchOperationMetadata(_messages.Message):
@@ -172,6 +190,119 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class GcsDestination(_messages.Message):
+  """The Google Cloud Storage location where the output will be written to.
+
+  Fields:
+    uri: Google Cloud Storage URI where the results will be stored. Results
+      will be in JSON format and preceded by its corresponding input URI. This
+      field can either represent a single file, or a prefix for multiple
+      outputs. Prefixes must end in a `/`.  Examples:  *    File: gs://bucket-
+      name/filename.json *    Prefix: gs://bucket-name/prefix/here/ *    File:
+      gs://bucket-name/prefix/here  If multiple outputs, each response is
+      still AnnotateFileResponse, each of which contains some subset of the
+      full list of AnnotateImageResponse. Multiple outputs can happen if, for
+      example, the output JSON is too large and overflows into multiple
+      sharded files.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleCloudVisionV1p2beta1AsyncAnnotateFileResponse(_messages.Message):
+  """The response for a single offline file annotation request.
+
+  Fields:
+    outputConfig: The output location and metadata from
+      AsyncAnnotateFileRequest.
+  """
+
+  outputConfig = _messages.MessageField('GoogleCloudVisionV1p2beta1OutputConfig', 1)
+
+
+class GoogleCloudVisionV1p2beta1AsyncBatchAnnotateFilesResponse(_messages.Message):
+  """Response to an async batch file annotation request.
+
+  Fields:
+    responses: The list of file annotation responses, one for each request in
+      AsyncBatchAnnotateFilesRequest.
+  """
+
+  responses = _messages.MessageField('GoogleCloudVisionV1p2beta1AsyncAnnotateFileResponse', 1, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1GcsDestination(_messages.Message):
+  """The Google Cloud Storage location where the output will be written to.
+
+  Fields:
+    uri: Google Cloud Storage URI where the results will be stored. Results
+      will be in JSON format and preceded by its corresponding input URI. This
+      field can either represent a single file, or a prefix for multiple
+      outputs. Prefixes must end in a `/`.  Examples:  *    File: gs://bucket-
+      name/filename.json *    Prefix: gs://bucket-name/prefix/here/ *    File:
+      gs://bucket-name/prefix/here  If multiple outputs, each response is
+      still AnnotateFileResponse, each of which contains some subset of the
+      full list of AnnotateImageResponse. Multiple outputs can happen if, for
+      example, the output JSON is too large and overflows into multiple
+      sharded files.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleCloudVisionV1p2beta1OperationMetadata(_messages.Message):
+  """Contains metadata for the BatchAnnotateImages operation.
+
+  Enums:
+    StateValueValuesEnum: Current state of the batch operation.
+
+  Fields:
+    createTime: The time when the batch request was received.
+    state: Current state of the batch operation.
+    updateTime: The time when the operation result was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """Current state of the batch operation.
+
+    Values:
+      STATE_UNSPECIFIED: Invalid.
+      CREATED: Request is received.
+      RUNNING: Request is actively being processed.
+      DONE: The batch processing is done.
+      CANCELLED: The batch processing was cancelled.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATED = 1
+    RUNNING = 2
+    DONE = 3
+    CANCELLED = 4
+
+  createTime = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  updateTime = _messages.StringField(3)
+
+
+class GoogleCloudVisionV1p2beta1OutputConfig(_messages.Message):
+  """The desired output location and metadata.
+
+  Fields:
+    batchSize: The max number of response protos to put into each output JSON
+      file on GCS. The valid range is [1, 100]. If not specified, the default
+      value is 20.  For example, for one pdf file with 100 pages, 100 response
+      protos will be generated. If `batch_size` = 20, then 5 json files each
+      containing 20 response protos will be written under the prefix
+      `gcs_destination`.`uri`.  Currently, batch_size only applies to
+      GcsDestination, with potential future support for other output
+      configurations.
+    gcsDestination: The Google Cloud Storage location to write the output(s)
+      to.
+  """
+
+  batchSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  gcsDestination = _messages.MessageField('GoogleCloudVisionV1p2beta1GcsDestination', 2)
 
 
 class ImportCatalogsGcsSource(_messages.Message):
@@ -393,6 +524,26 @@ class OperationMetadata(_messages.Message):
   createTime = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   updateTime = _messages.StringField(3)
+
+
+class OutputConfig(_messages.Message):
+  """The desired output location and metadata.
+
+  Fields:
+    batchSize: The max number of response protos to put into each output JSON
+      file on GCS. The valid range is [1, 100]. If not specified, the default
+      value is 20.  For example, for one pdf file with 100 pages, 100 response
+      protos will be generated. If `batch_size` = 20, then 5 json files each
+      containing 20 response protos will be written under the prefix
+      `gcs_destination`.`uri`.  Currently, batch_size only applies to
+      GcsDestination, with potential future support for other output
+      configurations.
+    gcsDestination: The Google Cloud Storage location to write the output(s)
+      to.
+  """
+
+  batchSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  gcsDestination = _messages.MessageField('GcsDestination', 2)
 
 
 class ReferenceImage(_messages.Message):

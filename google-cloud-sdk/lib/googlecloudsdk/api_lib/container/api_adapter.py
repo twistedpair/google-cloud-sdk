@@ -23,6 +23,7 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as cloud_resources
@@ -118,8 +119,9 @@ MAX_NODES_PER_POOL = 1000
 INGRESS = 'HttpLoadBalancing'
 HPA = 'HorizontalPodAutoscaling'
 DASHBOARD = 'KubernetesDashboard'
+ISTIO = 'Istio'
 DEFAULT_ADDONS = [INGRESS, HPA]
-ADDONS_OPTIONS = [INGRESS, HPA, DASHBOARD]
+ADDONS_OPTIONS = [INGRESS, HPA, DASHBOARD, ISTIO]
 NETWORK_POLICY = 'NetworkPolicy'
 
 UNSPECIFIED = 'UNSPECIFIED'
@@ -294,6 +296,7 @@ class CreateClusterOptions(object):
                subnetwork=None,
                addons=None,
                disable_addons=None,
+               istio_config=None,
                local_ssd_count=None,
                local_ssd_volume_configs=None,
                tags=None,
@@ -303,6 +306,9 @@ class CreateClusterOptions(object):
                min_nodes=None,
                max_nodes=None,
                image_type=None,
+               image=None,
+               image_project=None,
+               image_family=None,
                issue_client_certificate=None,
                max_nodes_per_pool=None,
                enable_kubernetes_alpha=None,
@@ -353,6 +359,7 @@ class CreateClusterOptions(object):
     self.subnetwork = subnetwork
     self.disable_addons = disable_addons
     self.addons = addons
+    self.istio_config = istio_config
     self.local_ssd_count = local_ssd_count
     self.local_ssd_volume_configs = local_ssd_volume_configs
     self.tags = tags
@@ -362,6 +369,9 @@ class CreateClusterOptions(object):
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
     self.image_type = image_type
+    self.image = image
+    self.image_project = image_project
+    self.image_family = image_family
     self.max_nodes_per_pool = max_nodes_per_pool
     self.enable_kubernetes_alpha = enable_kubernetes_alpha
     self.preemptible = preemptible
@@ -403,10 +413,13 @@ class UpdateClusterOptions(object):
                node_pool=None,
                monitoring_service=None,
                disable_addons=None,
+               istio_config=None,
                enable_autoscaling=None,
                min_nodes=None,
                max_nodes=None,
                image_type=None,
+               image=None,
+               image_project=None,
                locations=None,
                enable_master_authorized_networks=None,
                master_authorized_networks=None,
@@ -419,10 +432,13 @@ class UpdateClusterOptions(object):
     self.node_pool = node_pool
     self.monitoring_service = monitoring_service
     self.disable_addons = disable_addons
+    self.istio_config = istio_config
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
     self.image_type = image_type
+    self.image = image
+    self.image_project = image_project
     self.locations = locations
     self.enable_master_authorized_networks = enable_master_authorized_networks
     self.master_authorized_networks = master_authorized_networks
@@ -470,6 +486,9 @@ class CreateNodePoolOptions(object):
                min_nodes=None,
                enable_autoprovisioning=None,
                image_type=None,
+               image=None,
+               image_project=None,
+               image_family=None,
                preemptible=None,
                enable_autorepair=None,
                enable_autoupgrade=None,
@@ -495,6 +514,9 @@ class CreateNodePoolOptions(object):
     self.min_nodes = min_nodes
     self.enable_autoprovisioning = enable_autoprovisioning
     self.image_type = image_type
+    self.image = image
+    self.image_project = image_project
+    self.image_family = image_family
     self.preemptible = preemptible
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
@@ -687,6 +709,16 @@ class APIAdapter(object):
 
     if options.image_type:
       node_config.imageType = options.image_type
+
+    custom_config = self.messages.CustomImageConfig()
+    if options.image:
+      custom_config.image = options.image
+    if options.image_project:
+      custom_config.imageProject = options.image_project
+    if options.image_family:
+      custom_config.imageFamily = options.image_family
+    if options.image or options.image_project or options.image_family:
+      node_config.nodeImageConfig = custom_config
 
     _AddNodeLabelsToNodeConfig(node_config, options)
     self._AddNodeTaintsToNodeConfig(node_config, options)
@@ -975,7 +1007,9 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredNodeVersion=options.version,
           desiredNodePoolId=options.node_pool,
-          desiredImageType=options.image_type)
+          desiredImageType=options.image_type,
+          desiredImage=options.image,
+          desiredImageProject=options.image_project)
     elif options.update_master:
       update = self.messages.ClusterUpdate(
           desiredMasterVersion=options.version)
@@ -1179,6 +1213,16 @@ class APIAdapter(object):
     if options.image_type:
       node_config.imageType = options.image_type
 
+    custom_config = self.messages.CustomImageConfig()
+    if options.image:
+      custom_config.image = options.image
+    if options.image_project:
+      custom_config.imageProject = options.image_project
+    if options.image_family:
+      custom_config.imageFamily = options.image_family
+    if options.image or options.image_project or options.image_family:
+      node_config.nodeImageConfig = custom_config
+
     NodeIdentityOptionsToNodeConfig(options, node_config)
 
     if options.local_ssd_count:
@@ -1300,6 +1344,10 @@ class APIAdapter(object):
     return (cluster.status ==
             self.messages.Cluster.StatusValueValuesEnum.RUNNING)
 
+  def IsDegraded(self, cluster):
+    return (cluster.status ==
+            self.messages.Cluster.StatusValueValuesEnum.DEGRADED)
+
   def GetOperationError(self, operation):
     return operation.statusMessage
 
@@ -1404,6 +1452,12 @@ class APIAdapter(object):
 
   def RemoveLabels(self, cluster_ref, remove_labels):
     raise NotImplementedError('RemoveLabels is not overridden')
+
+  def GetIamPolicy(self, cluster_ref):
+    raise NotImplementedError('GetIamPolicy is not overridden')
+
+  def SetIamPolicy(self, cluster_ref):
+    raise NotImplementedError('GetIamPolicy is not overridden')
 
 
 class V1Adapter(APIAdapter):
@@ -1948,11 +2002,46 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.local_ssd_volume_configs:
       for pool in cluster.nodePools:
         self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
+    if options.addons:
+      # Istio is disabled by default
+      if ISTIO in options.addons:
+        istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
+        mtls = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_MUTUAL_TLS
+        istio_config = options.istio_config
+        if istio_config is not None:
+          auth_config = istio_config.get('auth')
+          if auth_config is not None:
+            if auth_config == 'MUTUAL_TLS':
+              istio_auth = mtls
+        cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
+            disabled=False, auth=istio_auth)
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
     operation = self.client.projects_locations_clusters.Create(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
+
+  def UpdateCluster(self, cluster_ref, options):
+    update = self.UpdateClusterCommon(options)
+    if (options.disable_addons is not None and
+        options.disable_addons.get(ISTIO) is not None):
+      istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
+      mtls = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_MUTUAL_TLS
+      istio_config = options.istio_config
+      if istio_config is not None:
+        auth_config = istio_config.get('auth')
+        if auth_config is not None:
+          if auth_config == 'MUTUAL_TLS':
+            istio_auth = mtls
+      update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
+          disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(cluster_ref.projectId,
+                                        cluster_ref.zone,
+                                        cluster_ref.clusterId),
+            update=update))
+    return self.ParseOperation(op.name, cluster_ref.zone)
 
   def CreateClusterAutoscalingCommon(self, options):
     """Create cluster's autoscaling configuration.
@@ -2031,6 +2120,23 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       operation = (
           self.client.projects_locations_clusters_nodePools.SetManagement(req))
       return self.ParseOperation(operation.name, node_pool_ref.zone)
+
+  def GetIamPolicy(self, cluster_ref):
+    return self.client.projects.GetIamPolicy(
+        self.messages.ContainerProjectsGetIamPolicyRequest(
+            resource=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.
+                                            zone, cluster_ref.clusterId)))
+
+  def SetIamPolicy(self, cluster_ref, policy_file):
+    policy = iam_util.ParsePolicyFile(policy_file,
+                                      self.messages.GoogleIamV1Policy)
+    return self.client.projects.SetIamPolicy(
+        self.messages.ContainerProjectsSetIamPolicyRequest(
+            googleIamV1SetIamPolicyRequest=self.messages.
+            GoogleIamV1SetIamPolicyRequest(policy=policy),
+            resource=ProjectLocationCluster(cluster_ref.projectId,
+                                            cluster_ref.zone,
+                                            cluster_ref.clusterId)))
 
 
 def _AddNodeLabelsToNodeConfig(node_config, options):

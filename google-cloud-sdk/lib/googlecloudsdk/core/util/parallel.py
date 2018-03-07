@@ -37,12 +37,14 @@ for Apply() and Map()).
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import abc
 import pickle
 import sys
 import threading
 import time
 
+from googlecloudsdk.core import exceptions
 import six
 from six.moves import map  # pylint: disable=redefined-builtin
 from six.moves import queue   # pylint: disable=redefined-builtin
@@ -160,7 +162,7 @@ class _Result(object):
     elif self.error:
       raise self.error  # pylint: disable=raising-bad-type
     else:
-      six.reraise(self.exc_info[0], self.exc_info[1], self.exc_info[2])
+      exceptions.reraise(self.exc_info[1], tb=self.exc_info[2])
 
   def ToPickleableResult(self):
     """Return a pickleable version of this _Result.

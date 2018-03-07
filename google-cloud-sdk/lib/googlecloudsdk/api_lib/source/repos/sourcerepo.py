@@ -16,7 +16,6 @@
 Parse methods accepts strings from command-line arguments, and it can accept
 more formats like "https://...". Get methods are strict about the arguments.
 """
-from apitools.base.py import exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -106,11 +105,7 @@ class Source(object):
     """
     request = self.messages.SourcerepoProjectsReposGetRequest(
         name=repo_resource.RelativeName())
-    try:
-      return self._client.projects_repos.Get(request)
-    except exceptions.HttpNotFoundError:
-      # If the repo does not exist, we get an HTTP 404
-      return None
+    return self._client.projects_repos.Get(request)
 
   def CreateRepo(self, repo_resource):
     """Creates a repo.

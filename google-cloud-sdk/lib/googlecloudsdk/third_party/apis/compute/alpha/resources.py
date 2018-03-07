@@ -255,6 +255,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'region', u'disk']
   )
+  REGIONHEALTHCHECKS = (
+      'regionHealthChecks',
+      'projects/{project}/regions/{region}/healthChecks/{healthCheck}',
+      {},
+      [u'project', u'region', u'healthCheck']
+  )
   REGIONINSTANCEGROUPMANAGERS = (
       'regionInstanceGroupManagers',
       'projects/{project}/regions/{region}/instanceGroupManagers/'
@@ -273,6 +279,19 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/operations/{operation}',
       {},
       [u'project', u'region', u'operation']
+  )
+  REGIONTARGETHTTPPROXIES = (
+      'regionTargetHttpProxies',
+      'projects/{project}/regions/{region}/targetHttpProxies/'
+      '{targetHttpProxy}',
+      {},
+      [u'project', u'region', u'targetHttpProxy']
+  )
+  REGIONURLMAPS = (
+      'regionUrlMaps',
+      'projects/{project}/regions/{region}/urlMaps/{urlMap}',
+      {},
+      [u'project', u'region', u'urlMap']
   )
   REGIONS = (
       'regions',

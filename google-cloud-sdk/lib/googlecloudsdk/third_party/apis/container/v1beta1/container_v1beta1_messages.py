@@ -216,6 +216,9 @@ class Cluster(_messages.Message):
       master_authorized_networks_config instead.
     masterAuthorizedNetworksConfig: The configuration options for master
       authorized networks feature.
+    masterIpv4CidrBlock: The IP prefix in CIDR notation to use for the hosted
+      master network. This prefix will be used for assigning private IP
+      addresses to the master or set of masters, as well as the ILB VIP.
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options:  * `monitoring.googleapis.com` -
       the Google Cloud Monitoring service. * `none` - no metrics will be
@@ -243,6 +246,9 @@ class Cluster(_messages.Message):
     nodePools: The node pools associated with this cluster. This field should
       not be set if "node_config" or "initial_node_count" are specified.
     podSecurityPolicyConfig: Configuration for the PodSecurityPolicy feature.
+    privateCluster: If this is a private cluster setup. Private clusters are
+      clusters that, by default have no external IP addresses on the nodes and
+      where nodes and the master communicate over private IP addresses.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related GCE resources.
     selfLink: [Output only] Server-defined URL for the resource.
@@ -276,6 +282,9 @@ class Cluster(_messages.Message):
       STOPPING: The STOPPING state indicates the cluster is being deleted.
       ERROR: The ERROR state indicates the cluster may be unusable. Details
         can be found in the `statusMessage` field.
+      DEGRADED: The DEGRADED state indicates the cluster requires user action
+        to restore full functionality. Details can be found in the
+        `statusMessage` field.
     """
     STATUS_UNSPECIFIED = 0
     PROVISIONING = 1
@@ -283,6 +292,7 @@ class Cluster(_messages.Message):
     RECONCILING = 3
     STOPPING = 4
     ERROR = 5
+    DEGRADED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceLabelsValue(_messages.Message):
@@ -334,21 +344,23 @@ class Cluster(_messages.Message):
   masterAuth = _messages.MessageField('MasterAuth', 22)
   masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 23)
   masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 24)
-  monitoringService = _messages.StringField(25)
-  name = _messages.StringField(26)
-  network = _messages.StringField(27)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 28)
-  nodeConfig = _messages.MessageField('NodeConfig', 29)
-  nodeIpv4CidrSize = _messages.IntegerField(30, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 31, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 32)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 33)
-  selfLink = _messages.StringField(34)
-  servicesIpv4Cidr = _messages.StringField(35)
-  status = _messages.EnumField('StatusValueValuesEnum', 36)
-  statusMessage = _messages.StringField(37)
-  subnetwork = _messages.StringField(38)
-  zone = _messages.StringField(39)
+  masterIpv4CidrBlock = _messages.StringField(25)
+  monitoringService = _messages.StringField(26)
+  name = _messages.StringField(27)
+  network = _messages.StringField(28)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 29)
+  nodeConfig = _messages.MessageField('NodeConfig', 30)
+  nodeIpv4CidrSize = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 32, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 33)
+  privateCluster = _messages.BooleanField(34)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 35)
+  selfLink = _messages.StringField(36)
+  servicesIpv4Cidr = _messages.StringField(37)
+  status = _messages.EnumField('StatusValueValuesEnum', 38)
+  statusMessage = _messages.StringField(39)
+  subnetwork = _messages.StringField(40)
+  zone = _messages.StringField(41)
 
 
 class ClusterStatus(_messages.Message):

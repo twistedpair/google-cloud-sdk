@@ -42,7 +42,7 @@ def _Stringify(value):  # pylint: disable=invalid-name
   elif isinstance(value, console_attr.Colorizer):
     return value
   elif isinstance(value, six.string_types):
-    return console_attr.DecodeFromConsole(value)
+    return console_attr.Decode(value)
   elif isinstance(value, float):
     return resource_transform.TransformFloat(value)
   elif hasattr(value, '__str__'):
@@ -63,7 +63,7 @@ class _Justify(object):
   """
 
   def __init__(self, attr, string):
-    self._string = console_attr.EncodeForConsole(
+    self._string = console_attr.SafeText(
         string, encoding=attr.GetEncoding(), escape=False)
     self._adjust = attr.DisplayWidth(self._string) - len(self._string)
 

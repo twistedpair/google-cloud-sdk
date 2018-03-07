@@ -23,6 +23,8 @@ from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.third_party.apis import apis_map
 
+import six
+
 
 def _GetApiNameAndAlias(api_name):
   # pylint:disable=protected-access
@@ -32,7 +34,7 @@ def _GetApiNameAndAlias(api_name):
 def _GetDefaultVersion(api_name):
   api_name, _ = _GetApiNameAndAlias(api_name)
   api_vers = apis_map.MAP.get(api_name, {})
-  for ver, api_def in api_vers.iteritems():
+  for ver, api_def in six.iteritems(api_vers):
     if api_def.default_version:
       return ver
   return None
@@ -176,7 +178,7 @@ def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
 def _GetDefaultEndpointUrl(url):
   """Looks up default endpoint based on overridden endpoint value."""
   endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
-  for api_name, overridden_url in endpoint_overrides.iteritems():
+  for api_name, overridden_url in six.iteritems(endpoint_overrides):
     if url.startswith(overridden_url):
       api_version = _GetDefaultVersion(api_name)
       return (_GetClientClass(api_name, api_version).BASE_URL +

@@ -49,12 +49,15 @@ class Converter(completion_cache.Completer):
   Attributes:
       _additional_params: A list of additional parameter names not int the
         parsed resource.
+      _parse_all: If True, attempt to parse any string, otherwise, just parse
+        strings beginning with 'http[s]://'.
       qualified_parameter_names: The list of parameter names that must be fully
         qualified.  Use the name 'collection' to qualify collections.
   """
 
   def __init__(self, additional_params=None, api=None,
-               qualified_parameter_names=None, style=None, **kwargs):
+               qualified_parameter_names=None, style=None,
+               parse_all=False, **kwargs):
     super(Converter, self).__init__(**kwargs)
     if api:
       self.api = api
@@ -76,6 +79,7 @@ class Converter(completion_cache.Completer):
       self._row_to_string = self._GRI_RowToString
     else:
       self._row_to_string = self._FLAGS_RowToString
+    self._parse_all = parse_all
 
   def StringToRow(self, string):
     """Returns the row representation of string."""
@@ -118,7 +122,8 @@ class Converter(completion_cache.Completer):
 
   def _StringToRow(self, string):
     if string and (string.startswith('https://') or
-                   string.startswith('http://')):
+                   string.startswith('http://') or
+                   self._parse_all):
       try:
         row = self.parse(string or None)
         return row
@@ -291,7 +296,7 @@ class ListCommandCompleter(ResourceCompleter):
     try:
       items = list(self.GetAllItems(command, parameter_info) or [])
     except (Exception, SystemExit) as e:  # pylint: disable=broad-except
-      if properties.VALUES.core.print_completion_tracebacks.Get():
+      if properties.VALUES.core.print_completion_tracebacks.GetBool():
         raise
       log.info(unicode(e).rstrip())
       try:
@@ -312,7 +317,7 @@ class ResourceSearchCompleter(ResourceCompleter):
     try:
       items = resource_search.List(query=query, uri=True)
     except Exception as e:  # pylint: disable=broad-except
-      if properties.VALUES.core.print_completion_tracebacks.Get():
+      if properties.VALUES.core.print_completion_tracebacks.GetBool():
         raise
       log.info(unicode(e).rstrip())
       raise (type(e))(u'Update resource query [{}]: {}'.format(

@@ -91,6 +91,7 @@ class Asset(_messages.Message):
     TypeValueValuesEnum: Type of the asset, if available.
 
   Fields:
+    annotatable: Whether the asset is annotatable.
     createTime: The creation time.
     description: Description of the asset, if available.
     displayName: Display name of the asset, if available.
@@ -119,14 +120,15 @@ class Asset(_messages.Message):
     GCS_FILESET = 3
     PUBSUB_TOPIC = 4
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  projectId = _messages.StringField(5)
-  subAsset = _messages.StringField(6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  annotatable = _messages.BooleanField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  name = _messages.StringField(5)
+  projectId = _messages.StringField(6)
+  subAsset = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class AuditConfig(_messages.Message):
@@ -284,6 +286,8 @@ class CategorymanagerAssetsSearchRequest(_messages.Message):
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
+    query_annotatableOnly: Filter on whether to exclude assets that are not
+      annotatable.
     query_annotations: Resource names of annotations to be looked up.
     query_createAgeFilter_maxAge: The maximum age.
     query_createAgeFilter_minAge: The minimum age.
@@ -298,13 +302,14 @@ class CategorymanagerAssetsSearchRequest(_messages.Message):
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
-  query_annotations = _messages.StringField(3, repeated=True)
-  query_createAgeFilter_maxAge = _messages.StringField(4)
-  query_createAgeFilter_minAge = _messages.StringField(5)
-  query_filter = _messages.StringField(6)
-  query_includeAnnotatedByGroup = _messages.BooleanField(7)
-  query_updateAgeFilter_maxAge = _messages.StringField(8)
-  query_updateAgeFilter_minAge = _messages.StringField(9)
+  query_annotatableOnly = _messages.BooleanField(3)
+  query_annotations = _messages.StringField(4, repeated=True)
+  query_createAgeFilter_maxAge = _messages.StringField(5)
+  query_createAgeFilter_minAge = _messages.StringField(6)
+  query_filter = _messages.StringField(7)
+  query_includeAnnotatedByGroup = _messages.BooleanField(8)
+  query_updateAgeFilter_maxAge = _messages.StringField(9)
+  query_updateAgeFilter_minAge = _messages.StringField(10)
 
 
 class CategorymanagerOperationsGetRequest(_messages.Message):

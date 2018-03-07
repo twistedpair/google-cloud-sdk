@@ -5,7 +5,7 @@
   "name": "apikeys",
   "version": "v1",
   "revision": "0",
-  "title": "Google API Keys API",
+  "title": "API Keys API",
   "description": "Manages the API keys associated with developer projects.",
   "ownerDomain": "google.com",
   "ownerName": "Google",

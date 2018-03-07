@@ -22,6 +22,7 @@ code.
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import collections
 import copy
 import re
@@ -1185,5 +1186,5 @@ def _GetApiBaseUrl(api_name, api_version):
       _, url_version, _ = resource_util.SplitDefaultEndpointUrl(
           client_class.BASE_URL)
       if url_version is None:
-        base_url += api_version + u'/'
+        base_url += api_version + '/'
   return base_url

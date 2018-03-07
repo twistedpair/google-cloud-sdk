@@ -443,6 +443,12 @@ MAP = {
             messages_modulepath='genomics_v1alpha2_messages',
             default_version=False
         ),
+        'v2alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.genomics.v2alpha1',
+            client_classpath='genomics_v2alpha1_client.GenomicsV2alpha1',
+            messages_modulepath='genomics_v2alpha1_messages',
+            default_version=False
+        ),
     },
     'iam': {
         'v1': APIDef(

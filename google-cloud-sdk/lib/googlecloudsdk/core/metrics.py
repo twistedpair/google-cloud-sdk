@@ -283,6 +283,7 @@ class _MetricsCollector(object):
         # cd6 passed as argument to _GAEvent - cd6 = Flag Names
         ('cd7', 'environment_version',
          properties.VALUES.metrics.environment_version.Get()),
+        ('cd12', 'from_script', console_io.IsRunFromShellScript()),
         # cd8 passed as argument to _GAEvent - cd8 = Error
         # cd9 passed as argument to _GAEvent - cd9 = Error Extra Info
     ]

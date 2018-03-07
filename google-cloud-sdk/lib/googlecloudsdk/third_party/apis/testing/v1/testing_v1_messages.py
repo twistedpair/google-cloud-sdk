@@ -251,6 +251,8 @@ class AndroidRoboTest(_messages.Message):
     roboDirectives: A set of directives Robo should apply during the crawl.
       This allows users to customize the crawl. For example, the username and
       password for a test account can be provided. Optional
+    roboScript: A JSON file with a sequence of actions Robo should perform as
+      a prologue for the crawl. Optional
     startingIntents: The intents used to launch the app for the crawl. If none
       are provided, then the main launcher activity is launched. If some are
       provided, then only those provided are launched (the main launcher
@@ -263,7 +265,8 @@ class AndroidRoboTest(_messages.Message):
   maxDepth = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   maxSteps = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   roboDirectives = _messages.MessageField('RoboDirective', 6, repeated=True)
-  startingIntents = _messages.MessageField('RoboStartingIntent', 7, repeated=True)
+  roboScript = _messages.MessageField('FileReference', 7)
+  startingIntents = _messages.MessageField('RoboStartingIntent', 8, repeated=True)
 
 
 class AndroidRuntimeConfiguration(_messages.Message):
@@ -331,6 +334,20 @@ class AndroidVersion(_messages.Message):
   releaseDate = _messages.MessageField('Date', 5)
   tags = _messages.StringField(6, repeated=True)
   versionString = _messages.StringField(7)
+
+
+class Apk(_messages.Message):
+  """An Android package file to install.
+
+  Fields:
+    location: The path to an APK to be installed on the device before the test
+      begins. Optional
+    packageName: The java package for the APK to be installed. Optional, value
+      is determined by examining the application's manifest.
+  """
+
+  location = _messages.MessageField('FileReference', 1)
+  packageName = _messages.StringField(2)
 
 
 class ApkDetail(_messages.Message):
@@ -478,9 +495,11 @@ class DeviceFile(_messages.Message):
 
   Fields:
     obbFile: A reference to an opaque binary blob file
+    regularFile: A reference to a regular file
   """
 
   obbFile = _messages.MessageField('ObbFile', 1)
+  regularFile = _messages.MessageField('RegularFile', 2)
 
 
 class Distribution(_messages.Message):
@@ -668,6 +687,30 @@ class Orientation(_messages.Message):
   id = _messages.StringField(1)
   name = _messages.StringField(2)
   tags = _messages.StringField(3, repeated=True)
+
+
+class RegularFile(_messages.Message):
+  """A file or directory to install on the device before the test starts
+
+  Fields:
+    content: Required
+    devicePath: Where to put the content on the device. Must be an absolute,
+      whitelisted path. If the file exists, it will be replaced. The following
+      device-side directories and any of their subdirectories are whitelisted:
+      <p>${EXTERNAL_STORAGE}, or /sdcard</p> <p>${ANDROID_DATA}/local/tmp, or
+      /data/local/tmp</p> <p>Specifying a path outside of these directory
+      trees is invalid.  <p> The paths /sdcard and /data will be made
+      available and treated as implicit path substitutions. E.g. if /sdcard on
+      a particular device does not map to external storage, the system will
+      replace it with the external storage path prefix for that device and
+      copy the file there.  <p> It is strongly advised to use the <a href=
+      "http://developer.android.com/reference/android/os/Environment.html">
+      Environment API</a> in app and test code to access files on the device
+      in a portable way. Required
+  """
+
+  content = _messages.MessageField('FileReference', 1)
+  devicePath = _messages.StringField(2)
 
 
 class ResultStorage(_messages.Message):
@@ -1086,6 +1129,8 @@ class TestSetup(_messages.Message):
   Fields:
     account: The device will be logged in on this account for the duration of
       the test. Optional
+    additionalApks: APKs to install in addition to those being directly
+      tested. Currently capped at 100. Optional
     directoriesToPull: List of directories on the device to upload to GCS at
       the end of the test; they must be absolute paths under /sdcard or
       /data/local/tmp. Path names are restricted to characters a-z A-Z 0-9 _ -
@@ -1102,10 +1147,11 @@ class TestSetup(_messages.Message):
   """
 
   account = _messages.MessageField('Account', 1)
-  directoriesToPull = _messages.StringField(2, repeated=True)
-  environmentVariables = _messages.MessageField('EnvironmentVariable', 3, repeated=True)
-  filesToPush = _messages.MessageField('DeviceFile', 4, repeated=True)
-  networkProfile = _messages.StringField(5)
+  additionalApks = _messages.MessageField('Apk', 2, repeated=True)
+  directoriesToPull = _messages.StringField(3, repeated=True)
+  environmentVariables = _messages.MessageField('EnvironmentVariable', 4, repeated=True)
+  filesToPush = _messages.MessageField('DeviceFile', 5, repeated=True)
+  networkProfile = _messages.StringField(6)
 
 
 class TestSpecification(_messages.Message):

@@ -22,7 +22,8 @@ DEFAULT_REGISTRY = 'gcr.io'
 REGIONAL_REGISTRIES = ['us.gcr.io', 'eu.gcr.io', 'asia.gcr.io']
 LAUNCHER_REGISTRIES = ['l.gcr.io', 'launcher.gcr.io']
 LAUNCHER_PROJECT = 'cloud-marketplace'
-KUBERNETES_REGISTRIES = ['staging-k8s.gcr.io', 'k8s.gcr.io']
+KUBERNETES_PUSH = 'staging-k8s.gcr.io'
+KUBERNETES_READ_ONLY = 'k8s.gcr.io'
 # GCR's regional demand-based mirrors of DockerHub.
 # These are intended for use with the daemon flag, e.g.
 #  --registry-mirror=https://mirror.gcr.io
@@ -31,10 +32,12 @@ MIRROR_REGISTRIES = [
     'mirror.gcr.io'
 ]
 MIRROR_PROJECT = 'cloud-containers-mirror'
+# These are the registries to authenticatefor by default, during
+# `gcloud docker` and `gcloud auth configure-docker`
 DEFAULT_REGISTRIES_TO_AUTHENTICATE = (
-    [DEFAULT_REGISTRY] + REGIONAL_REGISTRIES + KUBERNETES_REGISTRIES)
+    [DEFAULT_REGISTRY] + REGIONAL_REGISTRIES + [KUBERNETES_PUSH])
 ALL_SUPPORTED_REGISTRIES = (
     DEFAULT_REGISTRIES_TO_AUTHENTICATE + LAUNCHER_REGISTRIES +
-    MIRROR_REGISTRIES)
+    MIRROR_REGISTRIES + [KUBERNETES_READ_ONLY])
 DEFAULT_DEVSHELL_IMAGE = (DEFAULT_REGISTRY + '/dev_con/cloud-dev-common:prod')
 METADATA_IMAGE = DEFAULT_REGISTRY + '/google_appengine/faux-metadata:latest'

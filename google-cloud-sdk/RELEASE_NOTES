@@ -3,6 +3,56 @@
 Copyright 2014-2018 Google Inc. All rights reserved.
 
 
+## 192.0.0 (2018-03-07)
+
+### Breaking Changes
+
+*  **(REMOVED)** Removed the deprecated `--port` flag from
+   `gcloud compute backend-services`. Use `--port-name` instead.
+* Changed the flags used with `gcloud compute images import`. This command now
+  requires the user to specify either the `--os` or `--no-translate` flag.
+* Removed `gcloud compute images translate`. The functionality of this command
+  is now a part of the `gcloud compute images import` command.
+
+
+### App Engine
+
+
+* Updated the Java SDK to version 1.9.63.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+
+### Compute Engine
+
+* Promoted `gcloud compute images import` to beta; removed `gcloud alpha compute
+  images translate`. The translate command was combined with the import command.
+* Added `--shielded-vm-integrity-monitoring` flag to
+  `gcloud compute instance-templates create` in alpha to support the
+  configuration of shielded VMs.
+* Added `--shielded-vm-learn-integrity-policy` flag to
+  `gcloud compute instance update` in alpha to support configuration of the
+  shielded VM integrity policy.
+* Modified `gcloud compute sign-url` to accept HTTP URLs in addition to HTTPS URLs
+  for signing.
+* Added support for managed ssl certificates to `gcloud alpha compute
+  ssl-certificates`
+
+### Container Registry
+
+* Fixed a bug with `auth configure-docker` when `~/.docker` doesn't exist.
+
+### Kubernetes Engine
+
+* Added `--private-cluster` flag to enable PrivateCluster creation:
+  `gcloud {alpha,beta} container clusters {create} --private-cluster --master-ipv4-cidr <CIDR>
+* Added `--workload-metadata-from-node` flag to `gcloud beta container
+  <clusters|node-pools> create` to allow enabling metadata concealment on
+  clusters and node pools.  See
+  [https://cloud.google.com/kubernetes-engine/docs/how-to/metadata-proxy](https://cloud.google.com/kubernetes-engine/docs/how-to/metadata-proxy)
+  for more information.  This feature is scheduled to be deprecated in the
+  future and later removed.
+
+
 ## 191.0.0 (2018-02-28)
 
 ### Breaking Changes

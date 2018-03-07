@@ -15,7 +15,6 @@
 """Source apis layer."""
 import json
 import os
-import sys
 
 from apitools.base.py import exceptions
 
@@ -148,9 +147,8 @@ class Project(object):
     try:
       return self._service.List(request).repos
     except exceptions.HttpError as error:
-      msg = GetHttpErrorMessage(error)
-      unused_type, unused_value, traceback = sys.exc_info()
-      raise base_exceptions.HttpException, msg, traceback
+      core_exceptions.reraise(
+          base_exceptions.HttpException(GetHttpErrorMessage(error)))
 
   def GetRepo(self, repo_name):
     """Finds details on the named repo, if it exists.

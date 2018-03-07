@@ -59,11 +59,13 @@ class YAMLResourceArgument(object):
         data['help_text'],
         is_positional=data.get('is_positional', True),
         is_parent_resource=data.get('is_parent_resource', False),
-        removed_flags=data.get('removed_flags')
+        removed_flags=data.get('removed_flags'),
+        disable_auto_completers=data['spec'].get(
+            'disable_auto_completers', True)
     )
 
   def __init__(self, data, group_help, is_positional=True, removed_flags=None,
-               is_parent_resource=False):
+               is_parent_resource=False, disable_auto_completers=True):
     self.name = data['name']
     self.request_id_field = data.get('request_id_field')
 
@@ -75,6 +77,7 @@ class YAMLResourceArgument(object):
     self._full_collection_name = data['collection']
     self._api_version = data.get('api_version')
     self._attribute_data = data['attributes']
+    self._disable_auto_completers = disable_auto_completers
 
     attribute_names = [a['attribute_name'] for a in self._attribute_data]
     for removed in self.removed_flags:
@@ -135,6 +138,7 @@ class YAMLResourceArgument(object):
     return concepts.ResourceSpec(
         full_collection_name, resource_name=self.name,
         api_version=api_version,
+        disable_auto_completers=self._disable_auto_completers,
         **{param: attribute for param, attribute in attributes})
 
 
@@ -215,9 +219,17 @@ def _CreateAttribute(data):
   if prop:
     fallthroughs.insert(0, deps.PropertyFallthrough(prop))
 
+  completion_id_field = data.get('completion_id_field')
+  completion_request_params = data.get('completion_request_params', [])
+  final_params = {
+      param.get('fieldName'): param.get('value')
+      for param in completion_request_params}
+
   completer = data.get('completer')
   attribute = concepts.ResourceParameterAttributeConfig(
       name=attribute_name, help_text=help_text, completer=completer,
-      fallthroughs=fallthroughs)
+      fallthroughs=fallthroughs,
+      completion_id_field=completion_id_field,
+      completion_request_params=final_params)
 
   return (data['parameter_name'], attribute)

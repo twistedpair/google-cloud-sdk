@@ -6,7 +6,7 @@
   "canonicalName": "Cloud OS Login",
   "version": "v1",
   "revision": "0",
-  "title": "Google Cloud OS Login API",
+  "title": "Cloud OS Login API",
   "description": "Manages OS login configuration for Google account users.",
   "ownerDomain": "google.com",
   "ownerName": "Google",

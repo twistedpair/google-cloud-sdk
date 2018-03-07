@@ -33,6 +33,7 @@ import uritemplate
 _ORIGIN_URL_RE = re.compile(r'remote origin\n.*Fetch URL: (?P<url>.+)\n', re.M)
 # This is the minimum version of git required to use credential helpers.
 _HELPER_MIN = (2, 0, 1)
+_WINDOWS_HELPER_MIN = (2, 15, 0)
 
 _TRAILING_SPACES = re.compile(r'(^|^.*[^\\ ]|^.*\\ ) *$')
 
@@ -189,7 +190,7 @@ def _GetGcloudScript(full_path=False):
 
 
 def _NormalizeToUnixPath(path, strip=True):
-  """Returns a path with '/' for the directory separator.
+  r"""Returns a path with '/' for the directory separator.
 
   The regular expressions used in .gitignore processing use '/' as the directory
   separator, but many APIs will convert '/' to '\' on Windows. This method can
@@ -214,32 +215,10 @@ def _NormalizeToUnixPath(path, strip=True):
     return path
 
 
-def _HasSystemCredHelper():
-  """Determine whether there is a system-wide credential helper set.
-
-  Returns:
-    True if a non-cloud system credential helper is set.
-
-  Raises:
-    NoGitException: if `git` was not found.
-  """
-  try:
-    stdout = subprocess.check_output(
-        ['git', 'config', '--system', '--list'], stderr=subprocess.STDOUT)
-    return (re.search(r'^credential.helper=.', stdout, re.MULTILINE) and
-            not re.search(r'^credential.helper=!gcloud', stdout, re.MULTILINE))
-  except OSError as e:
-    if e.errno == errno.ENOENT:
-      raise NoGitException()
-    return False
-  except subprocess.CalledProcessError:
-    return False
-
-
-def _GetCredHelperCommand(uri, full_path=False):
+def _GetCredHelperCommand(uri, full_path=False, min_version=_HELPER_MIN):
   """Returns the gcloud credential helper command for a remote repository.
 
-  The command will be of the form '!gcloud auth-git-helper --account=EMAIL
+  The command will be of the form '!gcloud auth git-helper --account=EMAIL
   --ignore-unknown $@`. See https://git-scm.com/docs/git-config. If the
   installed version of git or the remote repository does not support
   the gcloud credential helper, then returns None.
@@ -247,6 +226,8 @@ def _GetCredHelperCommand(uri, full_path=False):
   Args:
     uri: str, The uri of the remote repository.
     full_path: bool, If true, use the full path to gcloud.
+    min_version: minimum git version; if found git is earlier than this, warn
+        and return None
 
   Returns:
     str, The credential helper command if it is available.
@@ -257,9 +238,9 @@ def _GetCredHelperCommand(uri, full_path=False):
     credentialed_hosts.extend(extra.split(','))
   if any(uri.startswith('https://' + host) for host in credentialed_hosts):
     try:
-      CheckGitVersion(_HELPER_MIN)
+      CheckGitVersion(min_version)
     except GitVersionException as e:
-      helper_min = '.'.join(str(i) for i in _HELPER_MIN)
+      helper_min_str = '.'.join(str(i) for i in min_version)
       log.warning(
           textwrap.dedent("""\
           You are using a Google-hosted repository with a
@@ -268,13 +249,8 @@ def _GetCredHelperCommand(uri, full_path=False):
           this repository. Otherwise, to authenticate, use your Google
           account and the password found by running the following command.
            $ gcloud auth print-access-token""".format(
-               current=e.cur_version, min_version=helper_min)))
+               current=e.cur_version, min_version=helper_min_str)))
       return None
-    if _HasSystemCredHelper():
-      log.warning(
-          textwrap.dedent("""\
-          If your system's credential.helper requests a password, choose
-          cancel."""))
     # Use git alias "!shell command" syntax so we can configure
     # the helper with options. Also git-credential is not
     # prefixed when it starts with "!".
@@ -572,9 +548,17 @@ class Git(object):
     try:
       # If this is a Google-hosted repo, clone with the cred helper.
       cmd = ['git', 'clone', self._uri, abs_repository_path]
-      cred_helper_command = _GetCredHelperCommand(self._uri, full_path)
+      min_git = _HELPER_MIN
+      if (platforms.OperatingSystem.Current() ==
+          platforms.OperatingSystem.WINDOWS):
+        min_git = _WINDOWS_HELPER_MIN
+      cred_helper_command = _GetCredHelperCommand(
+          self._uri, full_path=full_path, min_version=min_git)
       if cred_helper_command:
-        cmd += ['--config', 'credential.helper=' + cred_helper_command]
+        cmd += [
+            '--config', 'credential.helper=', '--config',
+            'credential.helper=' + cred_helper_command
+        ]
       self._RunCommand(cmd, dry_run)
     except subprocess.CalledProcessError as e:
       raise CannotFetchRepositoryException(e)
@@ -601,7 +585,6 @@ class Git(object):
       dry_run: bool, If true do not run but print commands instead.
       full_path: bool, If true use the full path to gcloud.
     """
-    CheckGitVersion()
     with files.TemporaryDirectory() as temp_dir:
       def RunGitCommand(*args):
         git_dir = '--git-dir=' + os.path.join(temp_dir, '.git')
@@ -619,7 +602,8 @@ class Git(object):
       RunGitCommand('commit', '-m', 'source capture uploaded from gcloud')
 
       # Add remote and force push
-      cred_helper_command = _GetCredHelperCommand(self._uri, full_path)
+      cred_helper_command = _GetCredHelperCommand(
+          self._uri, full_path=full_path)
       if cred_helper_command:
         RunGitCommand('config', 'credential.helper', cred_helper_command)
       try:

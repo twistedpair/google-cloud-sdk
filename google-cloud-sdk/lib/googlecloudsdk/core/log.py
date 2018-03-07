@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 from collections import OrderedDict
+import contextlib
 import datetime
 import errno
 import json
@@ -159,7 +160,8 @@ class _ConsoleWriter(object):
     Args:
       *msg: str, The messages to print.
     """
-    msg = (console_attr.EncodeForConsole(x, escape=False) for x in msg)
+    msg = (
+        console_attr.SafeText(x, encoding='utf-8', escape=False) for x in msg)
     message = ' '.join(msg)
     self._Write(message + '\n')
 
@@ -168,22 +170,29 @@ class _ConsoleWriter(object):
     return self.__stream_wrapper.stream
 
   def _Write(self, msg):
-    """Just a helper so we don't have to double encode from Print and write."""
-    log_msg = msg
-    stream_msg = msg
-    if six.PY2 and isinstance(msg, six.text_type):
-      # Encode to byte strings for output only on Python 2.
-      log_msg = msg.encode('utf8')
-      stream_encoding = console_attr.GetConsoleAttr().GetEncoding()
-      stream_msg = msg.encode(stream_encoding or 'utf8', 'replace')
+    """Just a helper so we don't have to double encode from Print and write.
 
-    self.__logger.info(log_msg)
+    Args:
+      msg: A text string that only has characters that are safe to encode with
+        utf-8.
+    """
+    # The log file always users utf-8 encoding, just give it the string.
+    self.__logger.info(msg)
+
     if self.__filter.enabled:
+      # Make sure the string is safe to print in the console. The console might
+      # have a more restrictive encoding than utf-8.
+      stream_encoding = console_attr.GetConsoleAttr().GetEncoding()
+      stream_msg = console_attr.SafeText(
+          msg, encoding=stream_encoding, escape=False)
+      if six.PY2:
+        # Encode to byte strings for output only on Python 2.
+        stream_msg = msg.encode(stream_encoding or 'utf8', 'replace')
       self.__stream_wrapper.stream.write(stream_msg)
 
   # pylint: disable=g-bad-name, This must match file-like objects
   def write(self, msg):
-    self._Write(console_attr.EncodeForConsole(msg, escape=False))
+    self._Write(console_attr.SafeText(msg, encoding='utf-8', escape=False))
 
   # pylint: disable=g-bad-name, This must match file-like objects
   def writelines(self, lines):
@@ -216,6 +225,39 @@ def _FmtString(fmt):
   if six.PY2:
     return fmt.encode('utf8')
   return fmt
+
+
+@contextlib.contextmanager
+def _SafeDecodedLogRecord(record, encoding):
+  """Temporarily modifies a log record to make the message safe to print.
+
+  Python logging creates a single log record for each log event. Each handler
+  is given that record and asked format it. To avoid unicode issues, we decode
+  all the messages in case they are byte strings. Doing this we also want to
+  ensure the resulting string is able to be printed to the given output target.
+
+  Some handlers target the console (which can have many different encodings) and
+  some target the log file (which we always write as utf-8. If we modify the
+  record, depending on the order of handlers, the log message could lose
+  information along the way.
+
+  For example, if the user has an ascii console, we replace non-ascii characters
+  in the string with '?' to print. Then if the log file handler is called, the
+  original unicode data is gone, even though it could successfully be printed
+  to the log file. This context manager changes the log record briefly so it can
+  be formatted without changing it for later handlers.
+
+  Args:
+    record: The log record.
+    encoding: The name of the encoding to SafeDecode with.
+  """
+  original_msg = record.msg
+  try:
+    record.msg = console_attr.SafeText(
+        record.msg, encoding=encoding, escape=False)
+    yield
+  finally:
+    record.msg = original_msg
 
 
 class _ConsoleFormatter(logging.Formatter):
@@ -254,13 +296,31 @@ class _ConsoleFormatter(logging.Formatter):
     if six.PY3:
       # pylint: disable=protected-access
       self._style._fmt = fmt
-    msg = logging.Formatter.format(self, record)
-    # We need to encode here because this is the first time we are able to
-    # intercept messages that come directly from the log methods (as opposed to
-    # the out.write() methods above.
-    if six.PY2 and isinstance(msg, six.text_type):
-      stream_encoding = console_attr.GetConsoleAttr().GetEncoding()
+    # Convert either bytes or text into a text string that is safe for printing.
+    # This is the first time we are able to intercept messages that come
+    # directly from the log methods (as opposed to the out.write() methods
+    # above).
+    stream_encoding = console_attr.GetConsoleAttr().GetEncoding()
+    with _SafeDecodedLogRecord(record, stream_encoding):
+      msg = super(_ConsoleFormatter, self).format(record)
+    if six.PY2:
       msg = msg.encode(stream_encoding or 'utf8', 'replace')
+    return msg
+
+
+class _LogFileFormatter(logging.Formatter):
+  """A formatter for log file contents."""
+  # Note: if this ever changes, please update LOG_PREFIX_PATTERN
+  FORMAT = _FmtString('%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
+
+  def __init__(self):
+    super(_LogFileFormatter, self).__init__(fmt = _LogFileFormatter.FORMAT)
+
+  def format(self, record):
+    # The log file handler expects text strings always, and encodes them to
+    # utf-8 before writing to the file.
+    with _SafeDecodedLogRecord(record, 'utf-8'):
+      msg = super(_LogFileFormatter, self).format(record)
     return msg
 
 
@@ -381,9 +441,7 @@ class _LogManager(object):
   FILE_ONLY_LOGGER_NAME = '___FILE_ONLY___'
 
   def __init__(self):
-    # Note: if this ever changes, please update LOG_PREFIX_PATTERN
-    fmt = _FmtString('%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
-    self._file_formatter = logging.Formatter(fmt=fmt)
+    self._file_formatter = _LogFileFormatter()
 
     # Set up the root logger, it accepts all levels.
     self._root_logger = logging.getLogger()
@@ -542,7 +600,7 @@ class _LogManager(object):
     # A handler to write DEBUG and above to log files in the given directory
     try:
       log_file = self._SetupLogsDir(logs_dir)
-      file_handler = logging.FileHandler(log_file)
+      file_handler = logging.FileHandler(log_file, encoding='utf-8')
     except (OSError, IOError, files.Error) as exp:
       warning('Could not setup log file in {0}, ({1}: {2})'
               .format(logs_dir, type(exp).__name__, exp))
