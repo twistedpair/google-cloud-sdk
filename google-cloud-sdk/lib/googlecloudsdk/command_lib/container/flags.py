@@ -1375,7 +1375,7 @@ def AddTpuFlags(parser, hidden=False):
     hidden: Whether or not to hide the help text.
   """
 
-  tpu_group = parser.add_group(help='TPU')
+  tpu_group = parser.add_group(help='Flags relating to Cloud TPUs:')
 
   tpu_group.add_argument(
       '--enable-tpu',

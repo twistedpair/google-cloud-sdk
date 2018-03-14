@@ -47,7 +47,9 @@ class JobSubmitter(base.Command):
     """This is what gets called when the user runs this command."""
     dataproc = dp.Dataproc(self.ReleaseTrack())
 
-    job_id = util.GetJobId(args.id)
+    request_id = util.GetUniqueId()
+    job_id = args.id if args.id else request_id
+
     job_ref = util.ParseJob(job_id, dataproc)
 
     self.PopulateFilesByType(args)  # pytype: disable=attribute-error
@@ -81,7 +83,8 @@ class JobSubmitter(base.Command):
         projectId=job_ref.projectId,
         region=job_ref.region,
         submitJobRequest=dataproc.messages.SubmitJobRequest(
-            job=job))
+            job=job,
+            requestId=request_id))
 
     job = dataproc.client.projects_regions_jobs.Submit(request)
 

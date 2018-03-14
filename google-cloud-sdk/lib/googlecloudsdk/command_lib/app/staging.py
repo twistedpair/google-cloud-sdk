@@ -37,6 +37,7 @@ import re
 import tempfile
 
 from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.command_lib.app import runtime_registry
 from googlecloudsdk.command_lib.util import java
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -320,116 +321,17 @@ _APPENGINE_TOOLS_JAR = os.path.join(
     'platform', 'google_appengine', 'google', 'appengine', 'tools', 'java',
     'lib', 'appengine-tools-api.jar')
 
-
-class RegistryEntry(object):
-  """An entry in the Registry.
-
-  Attributes:
-    runtime: str or re.RegexObject, the runtime to be staged
-    envs: set(util.Environment), the environments to be staged
-  """
-
-  def __init__(self, runtime, envs):
-    self.runtime = runtime
-    self.envs = envs
-
-  def _RuntimeMatches(self, runtime):
-    try:
-      return self.runtime.match(runtime)
-    except AttributeError:
-      return self.runtime == runtime
-
-  def _EnvMatches(self, env):
-    return env in self.envs
-
-  def Matches(self, runtime, env):
-    """Returns True iff the given runtime and environmt match this entry.
-
-    The runtime matches if it is an exact string match.
-
-    The environment matches if it is an exact Enum match or if this entry has a
-    "wildcard" (that is, None) for the environment.
-
-    Args:
-      runtime: str, the runtime to match
-      env: util.Environment, the environment to match
-
-    Returns:
-      bool, whether the given runtime and environment match.
-    """
-    return self._RuntimeMatches(runtime) and self._EnvMatches(env)
-
-  def __hash__(self):
-    # Sets are unhashable; Environments are unorderable
-    return hash((self.runtime, sum(sorted(map(hash, self.envs)))))
-
-  def __eq__(self, other):
-    return self.runtime == other.runtime and self.envs == other.envs
-
-  def __ne__(self, other):
-    return not self.__eq__(other)
-
-
-class Registry(object):
-  """A registry of stagers for various runtimes.
-
-  The registry is a map of (runtime, app-engine-environment) to _Command object;
-  it should look something like the following:
-
-  STAGING_REGISTRY = {
-    RegistryEntry('intercal', {util.Environment.FLEX}):
-        _BundledCommand(
-            os.path.join('command_dir', 'stage-intercal-flex.sh'),
-            os.path.join('command_dir', 'stage-intercal-flex.exe'),
-            component='app-engine-intercal'),
-    RegistryEntry('x86-asm', {util.Environment.STANDARD}):
-        _BundledCommand(
-            os.path.join('command_dir', 'stage-x86-asm-standard'),
-            os.path.join('command_dir', 'stage-x86-asm-standard.exe'),
-            component='app-engine-intercal'),
-  }
-
-  Attributes:
-    mappings: dict of {RegistryEntry: _Command}, the stagers to use
-      per runtime/environment.
-    override: _Command or None, if given the registry *always* uses this command
-      rather than checking the registry.
-  """
-
-  def __init__(self, mappings=None, override=None):
-    self.mappings = mappings or {}
-    self.override = override
-
-  def Get(self, runtime, env):
-    """Return the command to use for the given runtime/environment.
-
-    Args:
-      runtime: str, the runtime to get a stager for
-      env: util.Environment, the environment to get a stager for
-
-    Returns:
-      _Command, the command to use. May be a NoopCommand if no command is
-        registered.
-    """
-    if self.override:
-      return self.override
-
-    for entry, command in self.mappings.items():
-      if entry.Matches(runtime, env):
-        return command
-    log.debug(('No staging command found for runtime [%s] and environment '
-               '[%s].'), runtime, env.name)
-    return NoopCommand()
-
 _STAGING_REGISTRY = {
-    RegistryEntry(re.compile(r'(go|go1\..+)$'),
-                  {util.Environment.FLEX, util.Environment.STANDARD,
-                   util.Environment.MANAGED_VMS}):
+    runtime_registry.RegistryEntry(
+        re.compile(r'(go|go1\..+)$'), {
+            util.Environment.FLEX, util.Environment.STANDARD,
+            util.Environment.MANAGED_VMS
+        }):
         _BundledCommand(
             os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
             os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
-    RegistryEntry('java-xml', {util.Environment.STANDARD}):
+    runtime_registry.RegistryEntry('java-xml', {util.Environment.STANDARD}):
         _BundledCommand(
             _APPENGINE_TOOLS_JAR,
             _APPENGINE_TOOLS_JAR,
@@ -467,18 +369,20 @@ class Stager(object):
       StagingCommandFailedError: if the staging command process exited non-zero.
     """
     command = self.registry.Get(runtime, environment)
+    if not command:
+      return None
     command.EnsureInstalled()
     return command.Run(self.staging_area, descriptor, app_dir)
 
 
 def GetRegistry():
-  return Registry(_STAGING_REGISTRY)
+  return runtime_registry.Registry(_STAGING_REGISTRY, default=NoopCommand())
 
 
 def GetBetaRegistry():
   mappings = _STAGING_REGISTRY.copy()
   mappings.update(_STAGING_REGISTRY_BETA)
-  return Registry(mappings)
+  return runtime_registry.Registry(mappings, default=NoopCommand())
 
 
 def GetStager(staging_area):
@@ -493,9 +397,12 @@ def GetBetaStager(staging_area):
 
 def GetNoopStager(staging_area):
   """Get a stager with an empty registry."""
-  return Stager(Registry({}), staging_area)
+  return Stager(
+      runtime_registry.Registry({}, default=NoopCommand()), staging_area)
 
 
 def GetOverrideStager(command, staging_area):
   """Get a stager with a registry that always calls the given command."""
-  return Stager(Registry(None, command), staging_area)
+  return Stager(
+      runtime_registry.Registry(None, override=command, default=NoopCommand()),
+      staging_area)

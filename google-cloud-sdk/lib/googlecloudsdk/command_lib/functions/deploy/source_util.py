@@ -101,8 +101,7 @@ def _UploadFileToGcs(source, function_ref, stage_bucket):
   bucket_ref = storage_util.BucketReference.FromArgument(
       stage_bucket)
   gcs_url = storage_util.ObjectReference(bucket_ref, zip_file).ToUrl()
-  upload_result = storage_util.RunGsutilCommand(
-      'cp', '{local} {remote}'.format(local=source, remote=gcs_url))
+  upload_result = storage_util.RunGsutilCommand('cp', [source, gcs_url])
   if upload_result != 0:
     raise exceptions.FunctionsError(
         'Failed to upload the function source code to the bucket {0}'

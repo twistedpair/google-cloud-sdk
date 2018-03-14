@@ -73,10 +73,8 @@ def WaitForResourceDeletion(
       'Deleting resource [{0}] timed out.'.format(resource_ref))
 
 
-def GetJobId(job_id=None):
-  if job_id:
-    return job_id
-  return str(uuid.uuid4())
+def GetUniqueId():
+  return uuid.uuid4().hex
 
 
 class Bunch(object):

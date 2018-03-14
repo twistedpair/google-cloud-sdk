@@ -17,9 +17,9 @@
 import os
 
 from googlecloudsdk.api_lib.app import util
-from googlecloudsdk.api_lib.app.appinfo import appinfo
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.api import appinfo_errors
 from googlecloudsdk.third_party.appengine.api import appinfo_includes
 from googlecloudsdk.third_party.appengine.api import croninfo
@@ -241,7 +241,8 @@ class ServiceYamlInfo(_YamlInfo):
     else:
       self.is_hermetic = False
 
-    self._UpdateSkipFiles(file_path, parsed)
+    self._InitializeHasExplicitSkipFiles(file_path, parsed)
+    self._UpdateSkipFiles(parsed)
 
     if (self.env is util.Environment.MANAGED_VMS) or self.is_hermetic:
       self.runtime = parsed.GetEffectiveRuntime()
@@ -346,23 +347,36 @@ class ServiceYamlInfo(_YamlInfo):
 
     self.parsed.vm_settings['module_yaml_path'] = os.path.basename(self.file)
 
-  def _UpdateSkipFiles(self, file_path, parsed):
+  def GetAppYamlBasename(self):
+    """Returns the basename for the app.yaml file for this service."""
+    return os.path.basename(self.file)
+
+  def HasExplicitSkipFiles(self):
+    """Returns whether user has explicitly defined skip_files in app.yaml."""
+    return self._has_explicit_skip_files
+
+  def _InitializeHasExplicitSkipFiles(self, file_path, parsed):
+    """Read app.yaml to determine whether user explicitly defined skip_files."""
+    if getattr(parsed, 'skip_files', None) == appinfo.DEFAULT_SKIP_FILES:
+      # Make sure that this was actually a default, not from the file.
+      try:
+        with open(file_path, 'r') as readfile:
+          contents = readfile.read()
+      except IOError:  # If the class was initiated with a non-existent file
+        contents = ''
+      self._has_explicit_skip_files = 'skip_files' in contents
+    else:
+      self._has_explicit_skip_files = True
+
+  def _UpdateSkipFiles(self, parsed):
     """Resets skip_files field to Flex default if applicable."""
-    if self.RequiresImage():
-      if parsed.skip_files == appinfo.DEFAULT_SKIP_FILES:
-        # Make sure that this was actually a default, not from the file.
-        try:
-          with open(file_path, 'r') as readfile:
-            contents = readfile.read()
-        except IOError:  # If the class was initiated with a non-existent file
-          contents = ''
-        if 'skip_files' not in contents:
-          # pylint:disable=protected-access
-          parsed.skip_files = validation._RegexStrValue(
-              validation.Regex(DEFAULT_SKIP_FILES_FLEX),
-              DEFAULT_SKIP_FILES_FLEX,
-              'skip_files')
-          # pylint:enable=protected-access
+    if self.RequiresImage() and not self.HasExplicitSkipFiles():
+      # pylint:disable=protected-access
+      parsed.skip_files = validation._RegexStrValue(
+          validation.Regex(DEFAULT_SKIP_FILES_FLEX),
+          DEFAULT_SKIP_FILES_FLEX,
+          'skip_files')
+      # pylint:enable=protected-access
 
 
 def HasLib(parsed, name, version=None):

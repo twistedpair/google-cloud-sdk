@@ -58,8 +58,6 @@ from googlecloudsdk.third_party.appengine.api import apiproxy_stub_map
 # TODO(user): Move the stuff we need from _errors and and _types here?
 from googlecloudsdk.third_party.appengine.api import datastore_errors
 from googlecloudsdk.third_party.appengine.api import datastore_types
-# NOTE(user): weird import to get at _ParseFullAppId
-from googlecloudsdk.third_party.appengine.api.app_identity import app_identity
 from googlecloudsdk.third_party.appengine.datastore import datastore_pb
 from googlecloudsdk.third_party.appengine.datastore import datastore_pbs
 from googlecloudsdk.third_party.appengine.runtime import apiproxy_errors
@@ -108,14 +106,7 @@ def _GetDatastoreType(app=None):
   current_app = datastore_types.ResolveAppId(None)
   if app not in (current_app, None):
     return BaseConnection.UNKNOWN_DATASTORE
-  # TODO(user): Using the presence of a partition is a very fragile way to
-  # detect the datastore type and does not work for dev_appserver. Switch to a
-  # more robust system (e.g. RPC call to appserver). See
-  # http://b/issue?id=6469560.
-  partition, _, _ = app_identity._ParseFullAppId(current_app)
-  if partition:
-    return BaseConnection.HIGH_REPLICATION_DATASTORE
-  return BaseConnection.MASTER_SLAVE_DATASTORE
+  return BaseConnection.HIGH_REPLICATION_DATASTORE
 
 
 class AbstractAdapter(object):

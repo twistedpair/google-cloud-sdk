@@ -71,7 +71,7 @@ class MatrixCreator(object):
     self._release_track = release_track
 
   def _BuildFileReference(self, filename):
-    """Build a FileReference pointing to the GCS copy of an APK/OBB file."""
+    """Build a FileReference pointing to the GCS copy of a file."""
     return self._messages.FileReference(
         gcsPath=os.path.join(self._gcs_results_root,
                              os.path.basename(filename)))
@@ -130,6 +130,9 @@ class MatrixCreator(object):
         maxSteps=self._args.max_steps,
         appInitialActivity=self._args.app_initial_activity,
         roboDirectives=self._BuildRoboDirectives(self._args.robo_directives))
+    if hasattr(self._args, u'robo_script') and self._args.robo_script:
+      spec.androidRoboTest.roboScript = self._BuildFileReference(
+          self._args.robo_script)
     return spec
 
   def _BuildAndroidGameLoopTestSpec(self):

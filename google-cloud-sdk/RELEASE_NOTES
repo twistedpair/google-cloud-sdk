@@ -3,6 +3,75 @@
 Copyright 2014-2018 Google Inc. All rights reserved.
 
 
+## 193.0.0 (2018-03-14)
+
+### Breaking Changes
+
+* (REMOVED) Removed gcloud sql instances set-root-password command.
+* (MODIFIED) Changed default scopes for Kubernetes 1.10 when creating clusters
+  or node pools: `compute-rw` and `devstorage-ro` are no longer always added.
+  (This is the default behavior for all Kubernetes versions for alpha and beta
+  tracks or if `container/new_scopes_behavior` property is set to true.) The
+  version of Kubernetes does not affect the behavior of
+  `--[no-]enable-cloud-endpoints`.
+
+
+### App Engine
+
+* Show server side warnings to the user.
+
+### BigQuery
+
+* Added DEFLATE and SNAPPY compression types for Avro exports.
+* Added flag 'require\_partition\_filter' for creating and updating partitioned
+  tables. This will require a partition filter for any queries over the table.
+* Added flags to filter jobs based on creation time when running `bq ls -j`:
+  'min\_creation\_time' and 'max\_creation\_time'.
+
+### Cloud Dataproc
+
+* Added `get-iam-policy` and `set-iam-policy` commands to the
+  `gcloud beta dataproc jobs`, `gcloud beta dataproc operations`, and
+  `gcloud beta dataproc workflow-templates` command groups.
+
+### Cloud Machine Learning Engine
+
+* Added `gcloud alpha ml-engine locations` command group.
+
+
+### Cloud Tools For PowerShell
+
+*   Updated Cloud Tools for PowerShell to version 1.0.1.6.
+    *   Added `region` support for Google Compute Engine Managed Instance cmdlets.
+
+### Compute Engine
+
+* Add rhel-sap-cloud project to the default public image list.
+* Promote Flexible Route Advertisement commands and flags to GA:
+    *  `gcloud compute routers update`
+    *  `--advertisement-mode`, `--set-advertisement-groups`,
+       `--set-advertisement-ranges` in `gcloud compute routers create` and
+       `gcloud compute routers add-bgp-peer`
+    *  `--advertisement-mode`, `--set-advertisement-groups`,
+       ``--set-advertisement-ranges`, `--add-advertisement-groups`,
+       `--add-advertisement-ranges`, `--remove-advertisement-groups`,
+       `--remove-advertisement-ranges` in
+       `gcloud compute routers update-bgp-peer`
+* Promoted `--source-snapshot` flag of `gcloud compute images create` command to
+  GA. This flag allows creating images from snapshots.
+
+### Deployment Manager
+
+*  Added `--create-policy` to `gcloud <alpha|beta> deployment-manager
+   deployments create`.
+*  Added the create-policy CREATE to Deployment Manager alpha and beta tracks.
+
+
+### Firebase Test Lab
+
+* Added `--robo-script` flag to `gcloud beta firebase test android run` to support running a Robo test with a Robo Script.
+
+
 ## 192.0.0 (2018-03-07)
 
 ### Breaking Changes

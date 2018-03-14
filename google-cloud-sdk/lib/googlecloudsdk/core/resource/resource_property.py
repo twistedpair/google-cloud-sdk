@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import json
 import re
 
@@ -266,7 +267,7 @@ def Get(resource_obj, resource_key, default=None):
       # None is different than an empty dict or list.
       return default
 
-    if hasattr(resource, 'iteritems'):
+    if hasattr(resource, 'items'):
       # dict-like
       if index is None:
         if key:

@@ -540,6 +540,14 @@ MAP = {
             default_version=True
         ),
     },
+    'servicenetworking': {
+        'v1alpha': APIDef(
+            class_path='googlecloudsdk.third_party.apis.servicenetworking.v1alpha',
+            client_classpath='servicenetworking_v1alpha_client.ServicenetworkingV1alpha',
+            messages_modulepath='servicenetworking_v1alpha_messages',
+            default_version=True
+        ),
+    },
     'serviceuser': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.serviceuser.v1',

@@ -24,6 +24,7 @@ Example usage:
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import datetime
 import json
 
@@ -32,6 +33,7 @@ from apitools.base.py import encoding as protorpc_encoding
 
 from googlecloudsdk.core.resource import resource_projection_parser
 from googlecloudsdk.core.resource import resource_property
+from googlecloudsdk.core.util import encoding
 
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
@@ -219,7 +221,7 @@ class Projector(object):
           f >= self._projection.PROJECT and self._columns):
         # Explicit projection paths always show none values.
         try:
-          res[six.text_type(key)] = val
+          res[encoding.Decode(key)] = val
         except UnicodeError:
           res[key] = val
     return res or None
@@ -369,7 +371,12 @@ class Projector(object):
       return None
     elif obj is None:
       pass
-    elif isinstance(obj, six.string_types):
+    elif isinstance(obj, six.text_type) or isinstance(obj, six.binary_type):
+      # Don't use six.string_types because bytes are not considered a string
+      # on Python 3.
+      if isinstance(obj, six.binary_type):
+        # If it's bytes, first decode it, then continue.
+        obj = encoding.Decode(obj)
       # Check for {" because valid compact JSON keys are always "..." quoted.
       if (self._json_decode and (
           obj.startswith('{"') and obj.endswith('}') or
@@ -385,7 +392,7 @@ class Projector(object):
       pass
     elif isinstance(obj, bytearray):
       # bytearray copied to disassociate from original obj.
-      obj = six.text_type(obj)
+      obj = encoding.Decode(obj)
     else:
       self._been_here_done_that.append(obj)
       if isinstance(obj, protorpc_message.Message):
@@ -407,7 +414,7 @@ class Projector(object):
         obj = projection.attribute.transform.Evaluate(obj)
       elif ((flag >= self._projection.PROJECT or projection and projection.tree)
             and hasattr(obj, '__iter__')):
-        if hasattr(obj, 'iteritems'):
+        if hasattr(obj, 'items'):
           try:
             obj = self._ProjectDict(obj, projection, flag)
           except (IOError, TypeError):

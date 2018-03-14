@@ -16,6 +16,8 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import re
 import unicodedata
@@ -47,13 +49,13 @@ def _ReCompile(pattern, flags=0):
     return re.compile(pattern, flags)
   except re.error as e:
     raise resource_exceptions.ExpressionSyntaxError(
-        u'Filter expression RE pattern [{}]: {}'.format(pattern, e))
+        'Filter expression RE pattern [{}]: {}'.format(pattern, e))
 
 
 def _Stringize(value):
   """Returns the unicode string representation for value."""
   if value is None:
-    return u'null'
+    return 'null'
   if not isinstance(value, six.string_types):
     value = repr(value)
   return six.text_type(encoding.Decode(value))
@@ -76,8 +78,8 @@ def NormalizeForSearch(value, html=False):
   if html:
     text = re.sub('<[^>]*>', '', text)  # pytype: disable=wrong-arg-types
   # Convert to NFKD normal form with accents stripped.
-  return u''.join([c for c in unicodedata.normalize('NFKD', text)
-                   if not unicodedata.combining(c)])
+  return ''.join([c for c in unicodedata.normalize('NFKD', text)
+                  if not unicodedata.combining(c)])
 
 
 def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
@@ -653,9 +655,9 @@ class _ExprHAS(_ExprWordMatchBase):
       standard_pattern = '.'
       deprecated_pattern = None
     else:
-      head = u'\\b'
-      glob = u''
-      tail = u'\\b'
+      head = '\\b'
+      glob = ''
+      tail = '\\b'
       normalized_pattern = NormalizeForSearch(pattern)
       parts = normalized_pattern.split('*')
       if len(parts) > 2:
@@ -665,7 +667,7 @@ class _ExprHAS(_ExprWordMatchBase):
       # Construct the standard RE pattern.
       if normalized_pattern.endswith('*'):
         normalized_pattern = normalized_pattern[:-1]
-        tail = u''
+        tail = ''
       word = re.escape(normalized_pattern)
       standard_pattern = head + word + tail
 
@@ -673,13 +675,13 @@ class _ExprHAS(_ExprWordMatchBase):
       if len(parts) == 1:
         parts.append('')
       elif pattern.startswith('*'):
-        head = u''
+        head = ''
       elif pattern.endswith('*'):
-        tail = u''
+        tail = ''
       else:
-        glob = u'.*'
-      left = re.escape(parts[0]) if parts[0] else u''
-      right = re.escape(parts[1]) if parts[1] else u''
+        glob = '.*'
+      left = re.escape(parts[0]) if parts[0] else ''
+      right = re.escape(parts[1]) if parts[1] else ''
       if head and tail:
         if glob:
           deprecated_pattern = '^' + left + glob + right + '$'
@@ -727,10 +729,10 @@ class _ExprEQ(_ExprWordMatchBase):
     word = re.escape(normalized_pattern)
 
     # Construct the standard RE pattern.
-    standard_pattern = u'\\b' + word + u'\\b'
+    standard_pattern = '\\b' + word + '\\b'
 
     # Construct the deprecated RE pattern.
-    deprecated_pattern = u'^' + word + u'$'
+    deprecated_pattern = '^' + word + '$'
 
     reflags = re.IGNORECASE|re.MULTILINE|re.UNICODE
     standard_regex = _ReCompile(standard_pattern, reflags)

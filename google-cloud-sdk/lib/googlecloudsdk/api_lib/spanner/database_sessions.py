@@ -17,39 +17,23 @@ from apitools.base.py import encoding
 from apitools.base.py import extra_types
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.core import properties
-from googlecloudsdk.core import resources
 
 
-def Create(instance, database):
+def Create(database_ref):
   """Create a database session."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  ref = resources.REGISTRY.Parse(
-      database,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'instancesId': instance
-      },
-      collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesSessionsCreateRequest(
-      database=ref.RelativeName())
+      database=database_ref.RelativeName())
   return client.projects_instances_databases_sessions.Create(req)
 
 
-def List(instance, database, server_filter=None):
+def List(database_ref, server_filter=None):
   """Lists all active sessions on the given database."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  ref = resources.REGISTRY.Parse(
-      database,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'instancesId': instance,
-      },
-      collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesSessionsListRequest(
-      database=ref.RelativeName(), filter=server_filter)
+      database=database_ref.RelativeName(), filter=server_filter)
 
   return list_pager.YieldFromList(
       client.projects_instances_databases_sessions,
@@ -60,28 +44,20 @@ def List(instance, database, server_filter=None):
       field='sessions')
 
 
-def Delete(instance, database, session):
+def Delete(session_ref):
   """Delete a database session."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  ref = resources.REGISTRY.Parse(
-      session,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'instancesId': instance,
-          'databasesId': database,
-      },
-      collection='spanner.projects.instances.databases.sessions')
   req = msgs.SpannerProjectsInstancesDatabasesSessionsDeleteRequest(
-      name=ref.RelativeName())
+      name=session_ref.RelativeName())
   return client.projects_instances_databases_sessions.Delete(req)
 
 
-def ExecuteSql(session, sql, query_mode):
+def ExecuteSql(session_ref, sql, query_mode):
   """Execute an SQL command.
 
   Args:
-    session: Session, Indicates that the repo should be created if
+    session_ref: Session, Indicates that the repo should be created if
         it does not exist.
     sql: String, The SQL to execute.
     query_mode: String, The mode in which to run the query. Must be one
@@ -103,11 +79,10 @@ def ExecuteSql(session, sql, query_mode):
       encoder=_ToJson, decoder=_FromJson)(
           msgs.ResultSet.RowsValueListEntry)
 
+  execute_sql_request = msgs.ExecuteSqlRequest(
+      sql=sql,
+      queryMode=msgs.ExecuteSqlRequest.QueryModeValueValuesEnum(query_mode))
   req = msgs.SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest(
-      session=session.name,
-      executeSqlRequest=msgs.ExecuteSqlRequest(
-          sql=sql,
-          queryMode=msgs.ExecuteSqlRequest.QueryModeValueValuesEnum(
-              query_mode)))
+      session=session_ref.RelativeName(), executeSqlRequest=execute_sql_request)
   resp = client.projects_instances_databases_sessions.ExecuteSql(req)
   return resp

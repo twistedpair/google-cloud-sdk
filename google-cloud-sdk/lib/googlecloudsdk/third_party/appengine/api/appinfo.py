@@ -163,7 +163,10 @@ ALTERNATE_HOSTNAME_SEPARATOR = '-dot-'
 # Note(user): This must match api/app_config.py
 BUILTIN_NAME_PREFIX = 'ah-builtin'
 
-RUNTIME_RE_STRING = r'[a-z][a-z0-9\-]{0,29}'
+# Here we expect either normal runtimes (such as 'nodejs' or 'java') or
+# pinned runtime builders, which take the form of the path to a cloudbuild.yaml
+# manifest file in GCS (written as gs://bucket/path/to/build.yaml).
+RUNTIME_RE_STRING = r'((gs://[a-z0-9\-\._/]+)|([a-z][a-z0-9\-\.]{0,29}))'
 
 API_VERSION_RE_STRING = r'[\w.]{1,32}'
 ENV_RE_STRING = r'(1|2|standard|flex|flexible)'
@@ -596,9 +599,10 @@ _SUPPORTED_LIBRARIES = [
         'pytz',
         'https://pypi.python.org/pypi/pytz?',
         'A library for cross-platform timezone calculations',
-        ['2016.4', '2017.2'],
+        ['2016.4', '2017.2', '2017.3'],
         latest_version='2017.2',
         default_version='2017.2',
+        hidden_versions=['2017.3'],
         ),
     _VersionedLibrary(
         'crcmod',
@@ -2699,9 +2703,9 @@ _file_path_negative_1_re = re.compile(r'\.\.|^\./|\.$|/\./|^-|^_ah/|^/')
 # Forbid `//` and trailing `/`
 _file_path_negative_2_re = re.compile(r'//|/$')
 
-# Forbid any use of space and newlines other than in the middle of a directory
-# or file name.
-_file_path_negative_3_re = re.compile(r'^ | $|/ | /|\n')
+# Forbid any use of space other than in the middle of a directory
+# or file name. Forbid line feeds and carriage returns.
+_file_path_negative_3_re = re.compile(r'^ | $|/ | /|\r|\n')
 
 
 # (erinjerison) Lint seems to think I'm specifying the word "character" as an

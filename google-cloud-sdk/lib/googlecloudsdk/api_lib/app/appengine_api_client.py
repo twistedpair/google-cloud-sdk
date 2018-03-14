@@ -20,19 +20,20 @@ import operator
 
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.app import build as app_cloud_build
 from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import instances_util
-from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.app import service_util
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base
-from googlecloudsdk.api_lib.cloudbuild import build as cloud_build
+from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
-from googlecloudsdk.core import metrics
+from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
 
@@ -140,10 +141,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
                     manifest,
                     build,
                     extra_config_settings=None):
-    """Updates and deploys new app versions based on given config.
-
-    If the build operation has not yet completed, streams the Google Cloud
-    Builder logs as well.
+    """Updates and deploys new app versions.
 
     Args:
       service_name: str, The service to deploy.
@@ -153,12 +151,85 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       manifest: Dictionary mapping source files to Google Cloud Storage
         locations.
       build: BuildArtifact, a wrapper which contains either the build
-        ID for an in-progress parallel build, or the name of the container image
-        for a serial build.
+        ID for an in-progress parallel build, the name of the container image
+        for a serial build, or the options for creating a build elsewhere. Not
+        present during standard deploys.
       extra_config_settings: dict, client config settings to pass to the server
         as beta settings.
     Returns:
-      A Version resource representing the deployed version.
+      The Admin API Operation, unfinished.
+    """
+    operation = self._CreateVersion(service_name, version_id,
+                                    service_config, manifest, build,
+                                    extra_config_settings)
+
+    message = 'Updating service [{service}]'.format(service=service_name)
+    if util.Environment.IsFlexible(service_config.env):
+      message += ' (this may take several minutes)'
+
+    operation_metadata_type = self._ResolveMetadataType()
+    # This indicates that a server-side build should be created.
+    if build and build.IsBuildOptions():
+      if not operation_metadata_type:
+        log.warning('Unable to determine build from Operation metadata. '
+                    'Skipping log streaming')
+      else:
+        # Poll the operation until the build is present.
+        poller = operations_util.AppEngineOperationBuildPoller(
+            self.client.apps_operations, operation_metadata_type)
+        operation = operations_util.WaitForOperation(
+            self.client.apps_operations, operation, message=message,
+            poller=poller)
+        build = app_cloud_build.BuildArtifact.MakeBuildIdArtifact(
+            operations_util.GetBuildFromOperation(
+                operation, operation_metadata_type))
+    if build and build.IsBuildId():
+      build_ref = resources.REGISTRY.Parse(
+          build.identifier,
+          params={'projectId': properties.VALUES.core.project.GetOrFail},
+          collection='cloudbuild.projects.builds')
+      cloudbuild_logs.CloudBuildClient().Stream(build_ref)
+
+    done_poller = operations_util.AppEngineOperationPoller(
+        self.client.apps_operations, operation_metadata_type)
+    return operations_util.WaitForOperation(
+        self.client.apps_operations,
+        operation,
+        message=message,
+        poller=done_poller)
+
+  def _ResolveMetadataType(self):
+    """Attempts to resolve the expected type for the operation metadata."""
+    # pylint: disable=protected-access
+    # TODO(b/74075874): Update ApiVersion method to accurately reflect client.
+    metadata_type_name = 'OperationMetadata' + self.client._VERSION.title()
+    # pylint: enable=protected-access
+    return getattr(self.messages, metadata_type_name)
+
+  def _CreateVersion(self,
+                     service_name,
+                     version_id,
+                     service_config,
+                     manifest,
+                     build,
+                     extra_config_settings=None):
+    """Begins the updates and deployment of new app versions.
+
+    Args:
+      service_name: str, The service to deploy.
+      version_id: str, The version of the service to deploy.
+      service_config: AppInfoExternal, Service info parsed from a service yaml
+        file.
+      manifest: Dictionary mapping source files to Google Cloud Storage
+        locations.
+      build: BuildArtifact, a wrapper which contains either the build
+        ID for an in-progress parallel build, the name of the container image
+        for a serial build, or the options to pass to Appengine for a
+        server-side build.
+      extra_config_settings: dict, client config settings to pass to the server
+        as beta settings.
+    Returns:
+      The Admin API Operation, unfinished.
     """
     version_resource = self._CreateVersionResource(
         service_config, manifest, version_id, build, extra_config_settings)
@@ -166,26 +237,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         parent=self._GetServiceRelativeName(service_name=service_name),
         version=version_resource)
 
-    operation = self.client.apps_services_versions.Create(create_request)
-
-    # If build operation is still in progress, stream build logs and wait for
-    # completion before polling the service deployment operation for completion.
-    # Service deployment can never complete before the build has finished, as it
-    # is dependent on the built image.
-    if build and build.IsBuildId() and build.build_op:
-      cloud_build.CloudBuildClient().WaitAndStreamLogs(build.build_op)
-      metrics.CustomTimedEvent(metric_names.CLOUDBUILD_EXECUTE_ASYNC)
-
-    log.debug('Received operation: [{operation}]'.format(
-        operation=operation.name))
-
-    message = 'Updating service [{service}]'.format(service=service_name)
-    if util.Environment.IsFlexible(service_config.env):
-      message += ' (this may take several minutes)'
-
-    return operations_util.WaitForOperation(self.client.apps_operations,
-                                            operation,
-                                            message=message)
+    return self.client.apps_services_versions.Create(create_request)
 
   def GetServiceResource(self, service):
     """Describe the given service.
@@ -547,7 +599,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     return [operations_util.Operation(op) for op in operations]
 
   def _CreateVersionResource(self, service_config, manifest, version_id, build,
-                             extra_config_settings):
+                             extra_config_settings=None):
     """Constructs a Version resource for deployment.
 
     Args:
@@ -556,8 +608,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       manifest: Dictionary mapping source files to Google Cloud Storage
         locations.
       version_id: str, The version of the service.
-      build: BuildArtifact, The build ID or image path. Build ID only supported
-        in beta.
+      build: BuildArtifact, The build ID, image path, or build options.
       extra_config_settings: dict, client config settings to pass to the server
         as beta settings.
 
@@ -592,6 +643,9 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         json_version_resource['deployment']['build'] = {
             'cloudBuildId': build.identifier
         }
+      elif build.IsBuildOptions():
+        json_version_resource['deployment']['cloudBuildOptions'] = (
+            build.identifier)
     version_resource = encoding.PyValueToMessage(self.messages.Version,
                                                  json_version_resource)
 

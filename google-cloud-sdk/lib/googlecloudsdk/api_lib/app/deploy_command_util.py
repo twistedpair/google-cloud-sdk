@@ -28,7 +28,6 @@ from googlecloudsdk.api_lib.app import docker_image
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import runtime_builders
 from googlecloudsdk.api_lib.app import util
-from googlecloudsdk.api_lib.app.appinfo import appinfo
 from googlecloudsdk.api_lib.app.images import config
 from googlecloudsdk.api_lib.app.runtimes import fingerprinter
 from googlecloudsdk.api_lib.cloudbuild import build as cloudbuild_build
@@ -47,6 +46,7 @@ from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.tools import context_util
 
 DEFAULT_DOMAIN = 'appspot.com'

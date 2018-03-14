@@ -15,8 +15,6 @@
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.core import properties
-from googlecloudsdk.core import resources
 
 
 # The list of pre-defined IAM roles in Spanner.
@@ -27,14 +25,10 @@ KNOWN_ROLES = [
 ]
 
 
-def Create(instance, database, ddl):
+def Create(instance_ref, database, ddl):
   """Create a new database."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  instance_ref = resources.REGISTRY.Parse(
-      instance,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection='spanner.projects.instances')
   req = msgs.SpannerProjectsInstancesDatabasesCreateRequest(
       parent=instance_ref.RelativeName(),
       createDatabaseRequest=msgs.CreateDatabaseRequest(
@@ -53,19 +47,12 @@ def SetPolicy(database_ref, policy):
   return client.projects_instances_databases.SetIamPolicy(req)
 
 
-def Delete(instance, database):
+def Delete(database_ref):
   """Delete a database."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  ref = resources.REGISTRY.Parse(
-      database,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'instancesId': instance
-      },
-      collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesDropDatabaseRequest(
-      database=ref.RelativeName())
+      database=database_ref.RelativeName())
   return client.projects_instances_databases.DropDatabase(req)
 
 
@@ -78,48 +65,30 @@ def GetIamPolicy(database_ref):
   return client.projects_instances_databases.GetIamPolicy(req)
 
 
-def Get(instance, database):
+def Get(database_ref):
   """Get a database by name."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  ref = resources.REGISTRY.Parse(
-      database,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'instancesId': instance
-      },
-      collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesGetRequest(
-      name=ref.RelativeName())
+      name=database_ref.RelativeName())
   return client.projects_instances_databases.Get(req)
 
 
-def GetDdl(instance, database):
+def GetDdl(database_ref):
   """Get a database's DDL description."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  ref = resources.REGISTRY.Parse(
-      database,
-      params={
-          'instancesId': instance,
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-      },
-      collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesGetDdlRequest(
-      database=ref.RelativeName())
+      database=database_ref.RelativeName())
   return client.projects_instances_databases.GetDdl(req).statements
 
 
-def List(instance):
+def List(instance_ref):
   """List databases in the instance."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  ref = resources.REGISTRY.Parse(
-      instance,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection='spanner.projects.instances')
   req = msgs.SpannerProjectsInstancesDatabasesListRequest(
-      parent=ref.RelativeName())
+      parent=instance_ref.RelativeName())
   return list_pager.YieldFromList(
       client.projects_instances_databases,
       req,
@@ -127,19 +96,11 @@ def List(instance):
       batch_size_attribute='pageSize')
 
 
-def UpdateDdl(instance, database, ddl):
+def UpdateDdl(database_ref, ddl):
   """Update a database via DDL commands."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  instance_ref = resources.REGISTRY.Parse(
-      database,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'instancesId': instance
-      },
-      collection='spanner.projects.instances.databases')
   req = msgs.SpannerProjectsInstancesDatabasesUpdateDdlRequest(
-      database=instance_ref.RelativeName(),
-      updateDatabaseDdlRequest=msgs.UpdateDatabaseDdlRequest(
-          statements=ddl))
+      database=database_ref.RelativeName(),
+      updateDatabaseDdlRequest=msgs.UpdateDatabaseDdlRequest(statements=ddl))
   return client.projects_instances_databases.UpdateDdl(req)

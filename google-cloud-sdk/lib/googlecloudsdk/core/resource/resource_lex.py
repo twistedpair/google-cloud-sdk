@@ -69,6 +69,8 @@ Typical resource usage:
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
+
 import copy
 import re
 
@@ -721,11 +723,11 @@ class Lexer(object):
               func_name, self.Annotate(here)))
     args = []
     kwargs = {}
-    doc = getattr(func, 'func_doc', None)
+    doc = getattr(func, '__doc__', None)
     if doc and resource_projection_spec.PROJECTION_ARG_DOC in doc:
       # The second transform arg is the caller projection.
       args.append(self._defaults)
-    if getattr(func, 'func_defaults', None):
+    if getattr(func, '__defaults__', None):
       # Separate the args from the kwargs.
       for arg in self.Args():
         name, sep, val = arg.partition('=')
@@ -861,6 +863,6 @@ def GetKeyName(key, quote=True, omit_indices=False):
     elif quote and re.search(r'[^-@\w]', part):
       part = part.replace('\\', '\\\\')
       part = part.replace('"', '\\"')
-      part = u'"{part}"'.format(part=part)
+      part = '"{part}"'.format(part=part)
     parts.append(part)
   return '.'.join(parts) if parts else '.'

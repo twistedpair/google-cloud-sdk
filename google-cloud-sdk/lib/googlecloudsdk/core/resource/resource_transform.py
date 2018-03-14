@@ -42,8 +42,10 @@ Pythonicness of the Transform*() methods:
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import base64
 import datetime
+import io
 import re
 
 from googlecloudsdk.core.console import console_attr
@@ -53,7 +55,6 @@ from googlecloudsdk.core.util import times
 
 import six
 from six.moves import map  # pylint: disable=redefined-builtin
-from six.moves import StringIO
 from six.moves import urllib
 
 
@@ -667,7 +668,7 @@ def TransformGroup(r, *keys):
   """
   if not r:
     return '[]'
-  buf = StringIO()
+  buf = io.StringIO()
   sep = None
   parsed_keys = [_GetParsedKey(key) for key in keys]
   for item in r:
@@ -790,8 +791,8 @@ def TransformList(r, show='', undefined='', separator=','):
       return separator.join(
           [six.text_type(v) for _, v in sorted(six.iteritems(r))])
     else:
-      return separator.join([u'{k}={v}'.format(k=k, v=v)
-                             for k, v in sorted(r.iteritems())])
+      return separator.join(['{k}={v}'.format(k=k, v=v)
+                             for k, v in sorted(six.iteritems(r))])
   if isinstance(r, list):
     return separator.join(map(six.text_type, r))
   return r or undefined
@@ -1251,9 +1252,9 @@ def TransformUri(r, undefined='.'):
       attr = attr()
     except TypeError:
       pass
-    return attr if isinstance(attr, (six.string_types, buffer)) else None
+    return attr if isinstance(attr, six.string_types) else None
 
-  if isinstance(r, (six.string_types, buffer)):
+  if isinstance(r, six.string_types):
     if r.startswith('https://'):
       return r
   elif r:

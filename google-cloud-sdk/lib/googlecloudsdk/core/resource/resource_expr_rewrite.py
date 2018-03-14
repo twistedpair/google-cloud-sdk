@@ -45,6 +45,7 @@ ExprTRUE, ExprAND, ExprOR and ExprNOT do expression rewrites based on None:
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.core.resource import resource_exceptions
 from googlecloudsdk.core.resource import resource_filter

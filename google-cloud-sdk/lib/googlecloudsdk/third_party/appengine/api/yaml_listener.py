@@ -72,7 +72,7 @@ class EventHandler(object):
     """Handle end of sequence event"""
 
   def MappingStart(self, event, loader):
-    """Handle start of mappping event"""
+    """Handle start of mapping event"""
 
   def MappingEnd(self, event, loader):
     """Handle end of mapping event"""

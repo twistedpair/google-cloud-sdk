@@ -31,9 +31,9 @@ class InterconnectAttachment(object):
   }
 
   _EDGE_AVAILABILITY_DOMAIN_CONVERSION = {
-      'availability-domain-1': 'ZONE_1',
-      'availability-domain-2': 'ZONE_2',
-      'any': 'ZONE_ANY'
+      'availability-domain-1': 'AVAILABILITY_DOMAIN_1',
+      'availability-domain-2': 'AVAILABILITY_DOMAIN_2',
+      'any': 'AVAILABILITY_DOMAIN_ANY'
   }
 
   def __init__(self, ref, compute_client=None):
@@ -61,8 +61,8 @@ class InterconnectAttachment(object):
 
   def _MakeCreateRequestTupleAlpha(
       self, description, interconnect, router, attachment_type,
-      availability_zone, admin_enabled, bandwidth, pairing_key, vlan_tag_802_1q,
-      candidate_subnets, partner_metadata, partner_asn):
+      edge_availability_domain, admin_enabled, bandwidth, pairing_key,
+      vlan_tag_802_1q, candidate_subnets, partner_metadata, partner_asn):
     interconnect_self_link = None
     if interconnect:
       interconnect_self_link = interconnect.SelfLink()
@@ -79,7 +79,7 @@ class InterconnectAttachment(object):
                     interconnect=interconnect_self_link,
                     router=router_self_link,
                     type=attachment_type,
-                    availabilityZone=availability_zone,
+                    edgeAvailabilityDomain=edge_availability_domain,
                     adminEnabled=admin_enabled,
                     bandwidth=bandwidth,
                     pairingKey=pairing_key,
@@ -88,9 +88,8 @@ class InterconnectAttachment(object):
                     partnerMetadata=partner_metadata,
                     partnerAsn=partner_asn)))
 
-  def _MakePatchRequestTupleAlpha(
-      self, description, admin_enabled, bandwidth, partner_metadata, labels,
-      label_fingerprint):
+  def _MakePatchRequestTupleAlpha(self, description, admin_enabled, bandwidth,
+                                  partner_metadata, labels, label_fingerprint):
     return (self._client.interconnectAttachments, 'Patch',
             self._messages.ComputeInterconnectAttachmentsPatchRequest(
                 project=self.ref.project,
@@ -151,9 +150,10 @@ class InterconnectAttachment(object):
     """Create an interconnectAttachment."""
     if edge_availability_domain:
       edge_availability_domain = (
-          self._messages.InterconnectAttachment.AvailabilityZoneValueValuesEnum(
-              self.
-              _EDGE_AVAILABILITY_DOMAIN_CONVERSION[edge_availability_domain]))
+          self._messages.
+          InterconnectAttachment.EdgeAvailabilityDomainValueValuesEnum(
+              self._EDGE_AVAILABILITY_DOMAIN_CONVERSION[
+                  edge_availability_domain]))
     if bandwidth:
       bandwidth = (
           self._messages.InterconnectAttachment.BandwidthValueValuesEnum(
@@ -207,9 +207,9 @@ class InterconnectAttachment(object):
     else:
       partner_metadata = None
     requests = [
-        self._MakePatchRequestTupleAlpha(
-            description, admin_enabled, bandwidth, partner_metadata, labels,
-            label_fingerprint)
+        self._MakePatchRequestTupleAlpha(description, admin_enabled, bandwidth,
+                                         partner_metadata, labels,
+                                         label_fingerprint)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

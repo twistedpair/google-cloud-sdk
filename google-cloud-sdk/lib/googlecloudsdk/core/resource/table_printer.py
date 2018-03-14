@@ -16,6 +16,8 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
+import io
 import json
 import operator
 import re
@@ -27,7 +29,6 @@ from googlecloudsdk.core.resource import resource_transform
 
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
-from six.moves import StringIO
 
 
 # Table output column padding.
@@ -171,7 +172,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       for col in self.column_attributes.Columns():
         if col.attribute.subformat:
           # This initializes a nested Printer to a string stream.
-          out = self._out if self._aggregate else StringIO()
+          out = self._out if self._aggregate else io.StringIO()
           wrap = None
           printer = self.Printer(col.attribute.subformat, out=out,
                                  console_attr=self._console_attr,
@@ -422,7 +423,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         line += box.dl
         self._out.write(line)
         self._out.write('\n')
-        line = u'{0}{1}{2}'.format(
+        line = '{0}{1}{2}'.format(
             box.v, _Justify(self._console_attr, title).center(width), box.v)
       else:
         width += table_column_pad * (len(col_widths) - 1)
@@ -459,7 +460,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
           line.append(box.v)
           line.append(row[i].center(col_widths[i]))
         line.append(box.v)
-        self._out.write(u' '.join(line))
+        self._out.write(' '.join(line))
         self._out.write('\n')
         self._out.write(m_rule)
         self._out.write('\n')
@@ -555,6 +556,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
                   self._out.write('    ' + line + '\n')
                 # Rewind the output buffer.
                 subformat.out.truncate(0)
+                subformat.out.seek(0)
         else:
           self._out.write('\n')
     if box and not self._subformats:

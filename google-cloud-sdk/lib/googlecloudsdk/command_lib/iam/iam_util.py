@@ -78,6 +78,23 @@ Can also be one of the following special values:
   parser.add_argument('--member', required=required, help=help_str)
 
 
+def AddArgForPolicyFile(parser):
+  """Adds the IAM policy file argument to the given parser.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object to which we add the argss.
+
+  Raises:
+    ArgumentError if one of the arguments is already defined in the parser.
+  """
+  parser.add_argument(
+      'policy_file',
+      metavar='POLICY_FILE',
+      help="""\
+        Path to a local JSON or YAML formatted file containing a valid policy.
+        """)
+
+
 def AddArgsForAddIamPolicyBinding(parser, completer=None):
   """Adds the IAM policy binding arguments for role and members.
 
@@ -282,8 +299,9 @@ def ParseYamlToRole(file_path, role_message_type):
   return role
 
 
-def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more='',
-                                   additional_flags='', use_an=False):
+def GetDetailedHelpForSetIamPolicy(collection, example_id='',
+                                   example_see_more='', additional_flags='',
+                                   use_an=False):
   """Returns a detailed_help for a set-iam-policy command.
 
   Args:
@@ -299,6 +317,9 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id, example_see_more='',
   Returns:
     a dict with boilerplate help text for the set-iam-policy command
   """
+  if not example_id:
+    example_id = 'example-' + collection
+
   if not example_see_more:
     example_see_more = """
           See https://cloud.google.com/iam/docs/managing-policies for details

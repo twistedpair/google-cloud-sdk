@@ -1,4 +1,3 @@
-
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +22,7 @@ import shutil
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.command_lib.app import source_files_util
 from googlecloudsdk.command_lib.storage import storage_parallel
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -73,12 +73,18 @@ def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
   Returns:
     A deployment manifest (dict) for use with the Admin API.
   """
-  excluded_files_regex = info.parsed.skip_files.regex
   manifest = {}
   bucket_url = 'https://storage.googleapis.com/{0}'.format(bucket_ref.bucket)
 
+  skip_files_regex = info.parsed.skip_files.regex
+  runtime = info.parsed.runtime if info.parsed.runtime else ''
+
+  source_file_iterator = source_files_util.GetSourceFileIterator(
+      source_dir, skip_files_regex, info.HasExplicitSkipFiles(), runtime,
+      info.env)
+
   # Normal application files.
-  for rel_path in util.FileIterator(source_dir, excluded_files_regex):
+  for rel_path in source_file_iterator:
     full_path = os.path.join(source_dir, rel_path)
     sha1_hash = file_utils.Checksum.HashSingleFile(full_path,
                                                    algorithm=hashlib.sha1)

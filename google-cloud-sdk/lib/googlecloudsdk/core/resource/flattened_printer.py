@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_transform
@@ -62,7 +63,7 @@ def _Flatten(obj):
     elif isinstance(obj, dict):
       if obj:
         for k, v in sorted(six.iteritems(obj)):
-          Flatten(v, u'{name}{dot}{key}'.format(
+          Flatten(v, '{name}{dot}{key}'.format(
               name=name, dot='.' if name else '', key=k), res)
       else:
         res.append((name, {}))

@@ -30,7 +30,6 @@ from googlecloudsdk.api_lib.app import runtime_builders
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app import yaml_parsing
-from googlecloudsdk.api_lib.app.appinfo import appinfo
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.calliope import actions
@@ -54,6 +53,11 @@ from googlecloudsdk.core.util import files
 _TASK_CONSOLE_LINK = """\
 https://console.cloud.google.com/appengine/taskqueues/cron?project={}
 """
+
+# The regex for runtimes prior to runtime builders support. Used to deny the
+# use of pinned runtime builders when this feature is disabled.
+ORIGINAL_RUNTIME_RE_STRING = r'[a-z][a-z0-9\-]{0,29}'
+ORIGINAL_RUNTIME_RE = re.compile(ORIGINAL_RUNTIME_RE_STRING + r'\Z')
 
 
 class Error(core_exceptions.Error):
@@ -104,6 +108,18 @@ class FlexImageBuildOptions(enum.Enum):
   """Enum declaring different options for building image for flex deploys."""
   ON_CLIENT = 1
   ON_SERVER = 2
+
+
+def GetFlexImageBuildOption(default_strategy=FlexImageBuildOptions.ON_CLIENT):
+  """Determines where the build should be performed."""
+  trigger_build_server_side = (properties.VALUES.app.trigger_build_server_side
+                               .Get(required=False))
+  if trigger_build_server_side is None:
+    return default_strategy
+  elif trigger_build_server_side:
+    return FlexImageBuildOptions.ON_SERVER
+  else:
+    return FlexImageBuildOptions.ON_CLIENT
 
 
 class DeployOptions(object):
@@ -171,17 +187,6 @@ class DeployOptions(object):
                flex_image_build_option)
 
 
-def _ShouldRewriteRuntime(runtime, use_runtime_builders):
-  server_runtime_pattern = re.compile(appinfo.ORIGINAL_RUNTIME_RE_STRING +
-                                      r'\Z')
-  if server_runtime_pattern.match(runtime):
-    return False
-  elif use_runtime_builders:
-    return True
-  else:
-    raise InvalidRuntimeNameError(runtime, appinfo.ORIGINAL_RUNTIME_RE_STRING)
-
-
 class ServiceDeployer(object):
   """Coordinator (reusable) for deployment of one service at a time.
 
@@ -196,30 +201,18 @@ class ServiceDeployer(object):
     self.api_client = api_client
     self.deploy_options = deploy_options
 
-  def _PossiblyRewriteRuntime(self, service_info):
-    """Rewrites the effective runtime of the service to 'custom' if necessary.
-
-    Some runtimes which are valid client-side are *not* valid in the server.
-    Namely, `gs://` URL runtimes (which are effectively `custom`) and runtimes
-    with `.` in the names (ex. `go-1.8`). For these, we need to rewrite the
-    runtime that we send up to the server to "custom" so that it passes
-    validation.
-
-    This *only* applies when we're using runtime builders to build the
-    application (that is, runtime builders are turned on *and* the environment
-    is Flexible), since neither of these runtime types are valid otherwise. If
-    not, it results in an error.
+  def _ValidateRuntime(self, service_info):
+    """Validates explicit runtime builders are not used without the feature on.
 
     Args:
-      service_info: yaml_parsing.ServiceYamlInfo, service configuration to be
+      service_info: yaml_parsing.ServiceYamlInfo, service
+        configuration to be
         deployed
 
     Raises:
       InvalidRuntimeNameError: if the runtime name is invalid for the deployment
         (see above).
     """
-    # TODO(b/63040070) Remove this whole method (which is a hack) once the API
-    # can take the paths we need as a runtime name.
     runtime = service_info.runtime
     if runtime == 'custom':
       return
@@ -230,8 +223,8 @@ class ServiceDeployer(object):
     strategy = self.deploy_options.runtime_builder_strategy
     use_runtime_builders = deploy_command_util.ShouldUseRuntimeBuilders(
         service_info, strategy, needs_dockerfile)
-    if _ShouldRewriteRuntime(runtime, use_runtime_builders):
-      service_info.parsed.SetEffectiveRuntime('custom')
+    if not use_runtime_builders and not ORIGINAL_RUNTIME_RE.match(runtime):
+      raise InvalidRuntimeNameError(runtime, ORIGINAL_RUNTIME_RE_STRING)
 
   def _PossiblyBuildAndPush(self, new_version, service, source_dir, image,
                             code_bucket_ref, gcr_domain,
@@ -258,7 +251,14 @@ class ServiceDeployer(object):
         build. Possibly None if the service does not require an image.
     """
     if flex_image_build_option == FlexImageBuildOptions.ON_SERVER:
-      return None
+      cloud_build_options = {
+          'appYamlPath': service.GetAppYamlBasename(),
+      }
+      timeout = properties.VALUES.app.cloud_build_timeout.Get()
+      if timeout:
+        cloud_build_options['cloudBuildTimeout'] = timeout
+      return app_cloud_build.BuildArtifact.MakeBuildOptionsArtifact(
+          cloud_build_options)
 
     build = None
     if image:
@@ -338,7 +338,7 @@ class ServiceDeployer(object):
              image,
              all_services,
              gcr_domain,
-             flex_image_build_option=False):
+             flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
     """Deploy the given service.
 
     Performs all deployment steps for the given service (if applicable):
@@ -355,7 +355,7 @@ class ServiceDeployer(object):
       service: deployables.Service, service to be deployed.
       new_version: version_util.Version describing where to deploy the service
       code_bucket_ref: cloud_storage.BucketReference where the service's files
-        have been uploaded
+        will be uploaded
       image: str or None, the URL for the Docker image to be deployed (if image
         already exists).
       all_services: dict of service ID to service_util.Service objects
@@ -369,24 +369,20 @@ class ServiceDeployer(object):
     """
     log.status.Print('Beginning deployment of service [{service}]...'
                      .format(service=new_version.service))
+    if (service.service_info.env == util.Environment.MANAGED_VMS
+        and flex_image_build_option == FlexImageBuildOptions.ON_SERVER):
+      # Server-side builds are not supported for Managed VMs.
+      flex_image_build_option = FlexImageBuildOptions.ON_CLIENT
     source_dir = service.upload_dir
     service_info = service.service_info
-    self._PossiblyRewriteRuntime(service_info)
+    self._ValidateRuntime(service_info)
     build = self._PossiblyBuildAndPush(new_version, service_info, source_dir,
                                        image, code_bucket_ref, gcr_domain,
                                        flex_image_build_option)
     manifest = self._PossiblyUploadFiles(image, service_info, source_dir,
                                          code_bucket_ref,
                                          flex_image_build_option)
-
-    extra_config_settings = None
-    if flex_image_build_option == FlexImageBuildOptions.ON_SERVER:
-      extra_config_settings = {
-          'cloud_build_timeout':
-              properties.VALUES.app.cloud_build_timeout.Get(),
-          'runtime_root':
-              properties.VALUES.app.runtime_root.Get(),
-      }
+    extra_config_settings = {}
 
     # Actually create the new version of the service.
     metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)

@@ -16,11 +16,13 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
+
 import json
 
 from googlecloudsdk.core.resource import resource_printer_base
 
-from six.moves import StringIO
+import six
 
 
 class JsonPrinter(resource_printer_base.ResourcePrinter):
@@ -48,18 +50,24 @@ class JsonPrinter(resource_printer_base.ResourcePrinter):
 
   def __init__(self, *args, **kwargs):
     super(JsonPrinter, self).__init__(*args, retain_none_values=True, **kwargs)
-    self._buffer = StringIO()
     self._empty = True
     self._delimiter = self._BEGIN_DELIMITER
     self._indent = ' ' * resource_printer_base.STRUCTURED_INDENTATION
 
-  def __Dump(self, resource, out=None):
-    json.dump(
+  def __Dump(self, resource):
+    data = json.dumps(
         resource,
-        fp=out or self._out,
+        ensure_ascii=True,
         indent=resource_printer_base.STRUCTURED_INDENTATION,
-        sort_keys=True,
-        separators=(',', ': '))
+        separators=(',', ': '),
+        sort_keys=True)
+    # ensure_ascii makes the json module always return byte strings. Any
+    # non-ascii characters will be escaped. This is the default behavior, it is
+    # just now explicit. We decode here so we get text strings back, and we can
+    # use the default ascii encoding because we know there is no non-ascii in
+    # there.
+    # TODO(b/73727780): Include actual unicode output in json dumps.
+    return six.text_type(data)
 
   def _AddRecord(self, record, delimit=True):
     """Prints one element of a JSON-serializable Python object resource list.
@@ -71,12 +79,10 @@ class JsonPrinter(resource_printer_base.ResourcePrinter):
       delimit: Dump one record if False, used by PrintSingleRecord().
     """
     self._empty = False
+    output = self.__Dump(record)
     if delimit:
       delimiter = self._delimiter + self._indent
       self._delimiter = ',\n'
-      self.__Dump(record, self._buffer)
-      output = self._buffer.getvalue()
-      self._buffer.truncate(0)
       for line in output.split('\n'):
         self._out.write(delimiter + line)
         delimiter = '\n' + self._indent
@@ -84,7 +90,7 @@ class JsonPrinter(resource_printer_base.ResourcePrinter):
       if self._delimiter != self._BEGIN_DELIMITER:
         self._out.write('\n]\n')
         self._delimiter = self._BEGIN_DELIMITER
-      self.__Dump(record)
+      self._out.write(output)
       self._out.write('\n')
 
   def Finish(self):

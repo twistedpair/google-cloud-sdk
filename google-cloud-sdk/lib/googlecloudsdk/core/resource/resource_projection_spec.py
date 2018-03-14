@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import copy
 import sys
 
@@ -351,7 +352,7 @@ class ProjectionSpec(object):
     for i, col in enumerate(self._columns):
       if col.attribute.order or col.attribute.reverse:
         ordering.append(
-            (col.attribute.order or sys.maxint, i, col.attribute.reverse))
+            (col.attribute.order or sys.maxsize, i, col.attribute.reverse))
     return [(i, reverse) for _, i, reverse in sorted(ordering)]
 
   def Print(self, out=sys.stdout):

@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import pkgutil
 import textwrap
 
@@ -358,6 +359,9 @@ def _ParseTransformDocString(func):
     default = argspec.defaults[default_index] if default_index >= 0 else None
     if default is not None:
       default_display = repr(default).replace("'", '"')
+      # Trim off the unicode 'u'.
+      if default_display.startswith('u"'):
+        default_display = default_display[1:]
       if default_display == 'False':
         default_display = 'false'
       elif default_display == 'True':

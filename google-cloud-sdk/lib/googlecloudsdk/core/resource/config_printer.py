@@ -16,13 +16,14 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
+import io
 import pipes
 
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.util import platforms
 
 import six
-from six.moves import StringIO
 
 
 class ConfigPrinter(resource_printer_base.ResourcePrinter):
@@ -43,20 +44,20 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
     if 'export' in self.attributes:
       self._add_items = self._PrintEnvExport
       if platforms.OperatingSystem.IsWindows():
-        self._env_command_format = u'set {name}={value}\n'
+        self._env_command_format = 'set {name}={value}\n'
       else:
-        self._env_command_format = u'export {name}={value}\n'
+        self._env_command_format = 'export {name}={value}\n'
     elif 'unset' in self.attributes:
       self._add_items = self._PrintEnvUnset
       if platforms.OperatingSystem.IsWindows():
-        self._env_command_format = u'set {name}=\n'
+        self._env_command_format = 'set {name}=\n'
       else:
-        self._env_command_format = u'unset {name}\n'
+        self._env_command_format = 'unset {name}\n'
     else:
       self._add_items = self._PrintConfig
     # Print the title if specified.
     if 'title' in self.attributes:
-      self._out.write(self.attributes['title'] + u'\n')
+      self._out.write(self.attributes['title'] + '\n')
 
   def _PrintCategory(self, out, label, items):
     """Prints config items in the label category.
@@ -67,8 +68,8 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       items: The items to list for label, either dict iteritems, an enumerated
         list, or a scalar value.
     """
-    top = StringIO()
-    sub = StringIO()
+    top = io.StringIO()
+    sub = io.StringIO()
     for name, value in sorted(items):
       name = six.text_type(name)
       try:
@@ -78,16 +79,16 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
       except AttributeError:
         pass
       if value is None:
-        top.write(u'{name} (unset)\n'.format(name=name))
+        top.write('{name} (unset)\n'.format(name=name))
       elif isinstance(value, list):
         self._PrintCategory(sub, label + [name], enumerate(value))
       else:
-        top.write(u'{name} = {value}\n'.format(name=name, value=value))
+        top.write('{name} = {value}\n'.format(name=name, value=value))
     top_content = top.getvalue()
     sub_content = sub.getvalue()
     if label and (top_content or
                   sub_content and not sub_content.startswith('[')):
-      out.write(u'[{0}]\n'.format('.'.join(label)))
+      out.write('[{0}]\n'.format('.'.join(label)))
     if top_content:
       out.write(top_content)
     if sub_content:
@@ -124,7 +125,7 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
         self._PrintEnvExport(six.iteritems(value),
                              prefix=self._Prefix(prefix, name))
       elif value is None:
-        self._out.write(u'{name} (unset)\n'.format(name=prefix + name))
+        self._out.write('{name} (unset)\n'.format(name=prefix + name))
       elif isinstance(value, list):
         for i, v in enumerate(value):
           if not isinstance(v, dict):

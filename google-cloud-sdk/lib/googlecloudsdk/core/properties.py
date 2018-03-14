@@ -651,6 +651,10 @@ class _SectionApp(_Section):
         'previously deployed version is stopped. If False, older versions must '
         'be stopped manually.',
         default=True)
+    self.trigger_build_server_side = self._AddBool(
+        'trigger_build_server_side',
+        hidden=True,
+        default=None)
     def CloudBuildTimeoutValidator(build_timeout):
       if build_timeout is None:
         return

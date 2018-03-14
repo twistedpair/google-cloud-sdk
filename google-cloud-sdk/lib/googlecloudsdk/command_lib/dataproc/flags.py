@@ -40,6 +40,16 @@ def AddTemplateFlag(parser, action):
       'template', help='The ID of the workflow template to {0}.'.format(action))
 
 
+def AddJobFlag(parser, action):
+  parser.add_argument(
+      'job', help='The ID of the job to {0}.'.format(action))
+
+
+def AddOperationFlag(parser, action):
+  parser.add_argument(
+      'operation', help='The ID of the operation to {0}.'.format(action))
+
+
 def AddTimeoutFlag(parser, default='10m'):
   # This may be made visible or passed to the server in future.
   parser.add_argument(

@@ -20,16 +20,15 @@ from googlecloudsdk.api_lib.cloudbuild import build
 class BuildArtifact(object):
   """Represents a build of a flex container, either in-progress or completed.
 
-  A build artifact is either a build_id for an in-progress build, or the image
-  name for a completed container build. If a build_id is used in a depoloyment,
-  Flex serving infrastructure is brought up in parallel with the container
-  build. When an image name is used instead, flex serving infrastructure is
-  brought up in serial after the build has completed.
+  A build artifact is either a build_id for an in-progress build, the image
+  name for a completed container build, or options for the build to be created
+  elsewhere.
   """
 
   class BuildType(enum.Enum):
     IMAGE = 1
     BUILD_ID = 2
+    BUILD_OPTIONS = 3
 
   def __init__(self, build_type, identifier, build_op=None):
     self.build_type = build_type
@@ -42,6 +41,9 @@ class BuildArtifact(object):
   def IsBuildId(self):
     return self.build_type == self.BuildType.BUILD_ID
 
+  def IsBuildOptions(self):
+    return self.build_type == self.BuildType.BUILD_OPTIONS
+
   @classmethod
   def MakeBuildIdArtifact(cls, build_id):
     return cls(cls.BuildType.BUILD_ID, build_id)
@@ -49,6 +51,10 @@ class BuildArtifact(object):
   @classmethod
   def MakeImageArtifact(cls, image_name):
     return cls(cls.BuildType.IMAGE, image_name)
+
+  @classmethod
+  def MakeBuildOptionsArtifact(cls, build_options):
+    return cls(cls.BuildType.BUILD_OPTIONS, build_options)
 
   @classmethod
   def MakeBuildIdArtifactFromOp(cls, build_op):

@@ -440,9 +440,9 @@ def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
       dt = dt.replace(tzinfo=tzinfo)
     return dt
   except OverflowError as e:
-    exc = DateTimeValueError
+    exc = DateTimeValueError(six.text_type(e))
   except (AttributeError, ValueError, TypeError) as e:
-    exc = DateTimeSyntaxError
+    exc = DateTimeSyntaxError(six.text_type(e))
     if not tzgetter.timezone_was_specified:
       # Good ole parser.parse() has a tzinfos kwarg that it sometimes ignores.
       # Compensate here when the string ends with a tz.
@@ -451,9 +451,9 @@ def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
         try:
           dt = parser.parse(prefix, default=defaults)
         except OverflowError as e:
-          exc = DateTimeValueError
+          exc = DateTimeValueError(six.text_type(e))
         except (AttributeError, ValueError, TypeError) as e:
-          exc = DateTimeSyntaxError
+          exc = DateTimeSyntaxError(six.text_type(e))
         else:
           return dt.replace(tzinfo=explicit_tzinfo)
 
@@ -462,7 +462,7 @@ def ParseDateTime(string, fmt=None, tzinfo=LOCAL):
     return ParseDuration(string).GetRelativeDateTime(Now(tzinfo=tzinfo))
   except Error:
     # Not a duration - reraise the datetime parse error.
-    raise exc(six.text_type(e))
+    raise exc
 
 
 def GetDateTimeFromTimeStamp(timestamp, tzinfo=LOCAL):

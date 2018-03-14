@@ -80,6 +80,7 @@ Example:
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.core.resource import resource_exceptions
@@ -266,7 +267,8 @@ class _Parser(object):
     try:
       key, transform = self._ParseKey()
       restriction = None
-    except resource_exceptions.ExpressionSyntaxError as syntax_error:
+    except resource_exceptions.ExpressionSyntaxError as e:
+      syntax_error = e
       # An invalid key could be a global restriction.
       self._lex.SetPosition(here)
       restriction = self._lex.Token(resource_lex.OPERATOR_CHARS, space=False)

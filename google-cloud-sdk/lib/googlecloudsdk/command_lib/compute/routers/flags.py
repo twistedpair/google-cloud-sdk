@@ -168,7 +168,7 @@ def AddBgpPeerArgs(parser, for_add_bgp_peer=False):
       '65535. If not specified, will use Google-managed priorities.')
 
 
-def AddCustomAdvertisementArgs(parser, resource_str):
+def AddUpdateCustomAdvertisementArgs(parser, resource_str):
   """Adds common arguments for setting/updating custom advertisements."""
 
   AddReplaceCustomAdvertisementArgs(parser, resource_str)

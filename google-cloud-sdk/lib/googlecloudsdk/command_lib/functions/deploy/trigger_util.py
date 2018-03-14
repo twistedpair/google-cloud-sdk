@@ -23,13 +23,8 @@ from googlecloudsdk.core import resources
 
 
 class TriggerCompatibilityError(core_exceptions.Error):
-  """Raised when deploy trigger is incompatiblie with existing trigger."""
+  """Raised when deploy trigger is incompatible with existing trigger."""
 
-
-_LEGACY_UPGRADE_NOTICE = ('To enable new event trigger semantics for '
-                          'this function code, you must recreate the '
-                          'function by running a fresh '
-                          '`gcloud functions deploy`.')
 
 GCS_COMPATIBILITY_ERROR = (
     'The `--trigger-bucket` flag corresponds to the '
@@ -39,10 +34,9 @@ GCS_COMPATIBILITY_ERROR = (
     'legacy behavior, use the `--trigger-event` and `--trigger-resource` flags '
     'e.g. `gcloud functions deploy --trigger-event '
     'providers/cloud.storage/eventTypes/object.change '
-    '--trigger-resource [your_bucket_name]`. {upgrade_notice} '
+    '--trigger-resource [your_bucket_name]`.'
     'Please see https://cloud.google.com/storage/docs/pubsub-notifications for '
-    'more information on storage event types.'.format(
-        upgrade_notice=_LEGACY_UPGRADE_NOTICE))
+    'more information on storage event types.')
 
 PUBSUB_COMPATIBILITY_ERROR = (
     'The format of the Pub/Sub event source has changed.  You are trying to '
@@ -51,10 +45,7 @@ PUBSUB_COMPATIBILITY_ERROR = (
     'legacy behavior, use the `--trigger-event` and `--trigger-resource` flags '
     'e.g. `gcloud functions deploy --trigger-event '
     'providers/cloud.pubsub/eventTypes/topic.publish '
-    '--trigger-resource [your_topic_name]`. {upgrade_notice} '
-    'Please see https://cloud.google.com/storage/docs/pubsub-notifications for '
-    'more information on storage event types.'.format(
-        upgrade_notice=_LEGACY_UPGRADE_NOTICE))
+    '--trigger-resource [your_topic_name]`.')
 
 
 # Old style trigger events as of 02/2018.

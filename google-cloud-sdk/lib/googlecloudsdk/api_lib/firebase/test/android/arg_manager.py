@@ -43,7 +43,7 @@ def TypedArgRules():
           'required': [],
           'optional': [
               'app_initial_activity', 'max_depth', 'max_steps',
-              'robo_directives'
+              'robo_directives', 'robo_script'
           ],
           'defaults': {
               'max_depth': 50,

@@ -16,6 +16,7 @@
 
 import array
 import httplib
+import itertools
 import re
 import struct
 try:
@@ -399,7 +400,7 @@ class ProtocolMessage:
 
       if o >= 127 or o < 32: return "\\%03o" % o # necessary escapes
       return c
-    return '"' + "".join([escape(c) for c in value]) + '"'
+    return '"' + "".join(escape(c) for c in value) + '"'
   def DebugFormatFloat(self, value):
     return "%ff" % value
   def DebugFormatFixed32(self, value):
@@ -848,19 +849,20 @@ class ExtendableProtocolMessage(ProtocolMessage):
           'Cannot assign to extension "%s" because it is a composite type.' %
           extension.full_name)
     if extension.is_repeated:
-      if (len(args) != 2):
+      try:
+        index, value = args
+      except ValueError:
         raise TypeError(
-            'SetExtension(extension, index, value) for repeated extension '
-            'takes exactly 3 arguments: (%d given)' % len(args))
-      index = args[0]
-      value = args[1]
+            "SetExtension(extension, index, value) for repeated extension "
+            "takes exactly 4 arguments: (%d given)" % (len(args) + 2))
       self._extension_fields[extension][index] = value
     else:
-      if (len(args) != 1):
+      try:
+        (value,) = args
+      except ValueError:
         raise TypeError(
-            'SetExtension(extension, value) for singular extension '
-            'takes exactly 3 arguments: (%d given)' % len(args))
-      value = args[0]
+            "SetExtension(extension, value) for singular extension "
+            "takes exactly 3 arguments: (%d given)" % (len(args) + 2))
       self._extension_fields[extension] = value
 
   def MutableExtension(self, extension, index=None):
@@ -986,11 +988,11 @@ class ExtendableProtocolMessage(ProtocolMessage):
   def _MergeExtensionFields(self, x):
     for ext, val in x._extension_fields.items():
       if ext.is_repeated:
-        for i in xrange(len(val)):
+        for single_val in val:
           if ext.composite_cls is None:
-            self.AddExtension(ext, val[i])
+            self.AddExtension(ext, single_val)
           else:
-            self.AddExtension(ext).MergeFrom(val[i])
+            self.AddExtension(ext).MergeFrom(single_val)
       else:
         if ext.composite_cls is None:
           self.SetExtension(ext, val)
@@ -998,10 +1000,10 @@ class ExtendableProtocolMessage(ProtocolMessage):
           self.MutableExtension(ext).MergeFrom(val)
 
   def _ListExtensions(self):
-    result = [ext for ext in self._extension_fields.keys()
-              if (not ext.is_repeated) or self.ExtensionSize(ext) > 0]
-    result.sort(key = lambda item: item.number)
-    return result
+    return sorted(
+        (ext for ext in self._extension_fields
+         if (not ext.is_repeated) or self.ExtensionSize(ext) > 0),
+        key=lambda item: item.number)
 
   def _ExtensionEquals(self, x):
     extensions = self._ListExtensions()
@@ -1010,8 +1012,8 @@ class ExtendableProtocolMessage(ProtocolMessage):
     for ext in extensions:
       if ext.is_repeated:
         if self.ExtensionSize(ext) != x.ExtensionSize(ext): return False
-        for e1, e2 in zip(self.ExtensionList(ext),
-                          x.ExtensionList(ext)):
+        for e1, e2 in itertools.izip(self.ExtensionList(ext),
+                                     x.ExtensionList(ext)):
           if e1 != e2: return False
       else:
         if self.GetExtension(ext) != x.GetExtension(ext): return False
@@ -1062,18 +1064,17 @@ class ExtendableProtocolMessage(ProtocolMessage):
       else:
         Encoder._TYPE_TO_METHOD[ext.field_type](out, value)
 
-    size = len(extensions)
-    for ext_index in xrange(start_index, size):
-      ext = extensions[ext_index]
+    for ext_index, ext in enumerate(
+        itertools.islice(extensions, start_index, None), start=start_index):
       if ext.number >= end_field_number:
         # exceeding extension range end.
         return ext_index
       if ext.is_repeated:
-        for i in xrange(len(self._extension_fields[ext])):
-          OutputSingleField(ext, self._extension_fields[ext][i])
+        for field in self._extension_fields[ext]:
+          OutputSingleField(ext, field)
       else:
         OutputSingleField(ext, self._extension_fields[ext])
-    return size
+    return len(extensions)
 
   def _ParseOneExtensionField(self, wire_tag, d):
     number = wire_tag >> 3
@@ -1107,7 +1108,7 @@ class ExtendableProtocolMessage(ProtocolMessage):
 
   def _ExtensionByteSize(self, partial):
     size = 0
-    for extension, value in self._extension_fields.items():
+    for extension, value in self._extension_fields.iteritems():
       ftype = extension.field_type
       tag_size = self.lengthVarInt64(extension.wire_tag)
       if ftype == TYPE_GROUP:

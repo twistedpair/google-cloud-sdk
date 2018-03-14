@@ -154,14 +154,18 @@ def _GetInsertTime(operation):
 class AppEngineOperationPoller(waiter.OperationPoller):
   """A poller for appengine operations."""
 
-  def __init__(self, operation_service):
+  def __init__(self, operation_service, operation_metadata_type=None):
     """Sets up poller for appengine operations.
 
     Args:
       operation_service: apitools.base.py.base_api.BaseApiService, api service
         for retrieving information about ongoing operation.
+      operation_metadata_type: Message class for the Operation metadata (for
+        instance, OperationMetadataV1, or OperationMetadataV1Beta).
     """
     self.operation_service = operation_service
+    self.operation_metadata_type = operation_metadata_type
+    self.warnings_seen = set()
 
   def IsDone(self, operation):
     """Overrides."""
@@ -188,7 +192,15 @@ class AppEngineOperationPoller(waiter.OperationPoller):
     """
     request_type = self.operation_service.GetRequestType('Get')
     request = request_type(name=operation_ref.RelativeName())
-    return self.operation_service.Get(request)
+    operation = self.operation_service.Get(request)
+    if self.operation_metadata_type:
+      # Log any new warnings to the end user.
+      new_warnings = GetWarningsFromOperation(
+          operation, self.operation_metadata_type) - self.warnings_seen
+      for warning in new_warnings:
+        log.warning(warning + u'\n')
+        self.warnings_seen.add(warning)
+    return operation
 
   def GetResult(self, operation):
     """Simply returns the operation.
@@ -202,11 +214,55 @@ class AppEngineOperationPoller(waiter.OperationPoller):
     return operation
 
 
+class AppEngineOperationBuildPoller(AppEngineOperationPoller):
+  """Waits for a build to be present, or for the operation to finish."""
+
+  def __init__(self, operation_service, operation_metadata_type):
+    """Sets up poller for appengine operations.
+
+    Args:
+      operation_service: apitools.base.py.base_api.BaseApiService, api service
+        for retrieving information about ongoing operation.
+      operation_metadata_type: Message class for the Operation metadata (for
+        instance, OperationMetadataV1, or OperationMetadataV1Beta).
+    """
+    super(AppEngineOperationBuildPoller, self).__init__(operation_service,
+                                                        operation_metadata_type)
+
+  def IsDone(self, operation):
+    if GetBuildFromOperation(operation, self.operation_metadata_type):
+      return True
+    return super(AppEngineOperationBuildPoller, self).IsDone(operation)
+
+
+def GetMetadataFromOperation(operation, operation_metadata_type):
+  if not operation.metadata:
+    return None
+  return encoding.JsonToMessage(
+      operation_metadata_type,
+      encoding.MessageToJson(operation.metadata))
+
+
+def GetBuildFromOperation(operation, operation_metadata_type):
+  metadata = GetMetadataFromOperation(operation, operation_metadata_type)
+  if not metadata.createVersionMetadata:
+    return None
+  return metadata.createVersionMetadata.cloudBuildId
+
+
+def GetWarningsFromOperation(operation, operation_metadata_type):
+  metadata = GetMetadataFromOperation(operation, operation_metadata_type)
+  if not metadata:
+    return set()
+  return set(warning for warning in metadata.warning)
+
+
 def WaitForOperation(operation_service, operation,
                      max_retries=None,
                      retry_interval=None,
                      operation_collection='appengine.apps.operations',
-                     message=None):
+                     message=None,
+                     poller=None):
   """Wait until the operation is complete or times out.
 
   Args:
@@ -216,6 +272,7 @@ def WaitForOperation(operation_service, operation,
     retry_interval: Frequency of polling in seconds
     operation_collection: The resource collection of the operation.
     message: str, the message to display while progress tracker displays.
+    poller: AppEngineOperationPoller to poll with, defaulting to done.
   Returns:
     The operation resource when it has completed
   Raises:
@@ -223,7 +280,7 @@ def WaitForOperation(operation_service, operation,
     OperationTimeoutError: when the operation polling times out
 
   """
-  poller = AppEngineOperationPoller(operation_service)
+  poller = poller or AppEngineOperationPoller(operation_service)
   if poller.IsDone(operation):
     return poller.GetResult(operation)
   operation_ref = resources.REGISTRY.ParseRelativeName(

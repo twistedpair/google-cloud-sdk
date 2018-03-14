@@ -180,6 +180,11 @@ def InitAPIAdapter(api_version, adapter):
 
 _SERVICE_ACCOUNT_SCOPES = ('https://www.googleapis.com/auth/cloud-platform',)
 
+# Hidden alias for version-specific added scopes.  For clusters & node pools
+# v1.9 and below, GKE API adds compute & storage-ro to maintain same behavior as
+# before; for clusters v1.10+ these extra scopes are added.
+_VERSION_DEFAULT_SCOPE = ('gke-version-default',)
+
 _OLD_REQUIRED_SCOPES = (
     'https://www.googleapis.com/auth/compute',
     'https://www.googleapis.com/auth/devstorage.read_only')
@@ -247,7 +252,7 @@ will remain included in the default --scopes). To use these scopes, add them \
 explicitly to --scopes. To use the new behavior, set \
 container/new_scopes_behavior property (gcloud config set \
 container/new_scopes_behavior true).""")
-        options.scopes += _OLD_REQUIRED_SCOPES
+        options.scopes += _VERSION_DEFAULT_SCOPE
         break
   node_config.oauthScopes = sorted(set(options.scopes))
 

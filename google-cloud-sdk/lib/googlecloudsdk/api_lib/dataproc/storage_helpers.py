@@ -52,7 +52,7 @@ def Upload(files, destination):
   """
   args = files
   args += [destination]
-  exit_code = storage_util.RunGsutilCommand('cp', ' '.join(args))
+  exit_code = storage_util.RunGsutilCommand('cp', args)
   if exit_code != 0:
     raise exceptions.ToolException(
         "Failed to upload files {0} to '{1}' using gsutil.".format(

@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import copy
 import re
 
@@ -137,7 +138,8 @@ class Parser(object):
           ' {transform}{options})'.format(
               flag=self.flag,
               order=('UNORDERED' if self.order is None else str(self.order)),
-              label=repr(self.label),
+              label=(self.label if self.label is None
+                     else "'" + self.label + "'"),
               align=self.align,
               active=self.transform.active if self.transform else None,
               transform=self.transform,

@@ -334,10 +334,10 @@ def Rsync(source_dir, dest_dir, exclude_pattern=None):
   # -c Causes gsutil to compute checksums when comparing files.
   # -R recursively copy all files
   # -x Ignore files using the specified pattern.
-  command_arg_str = '-R -c '
+  command_args = ['-R', '-c']
   if exclude_pattern:
-    command_arg_str += '-x \'{0}\' '.format(exclude_pattern)
+    command_args += ['-x', exclude_pattern]
 
-  command_arg_str += ' '.join([source_dir, dest_dir])
-  return storage_util.RunGsutilCommand('rsync', command_arg_str,
+  command_args += [source_dir, dest_dir]
+  return storage_util.RunGsutilCommand('rsync', command_args,
                                        run_concurrent=True)

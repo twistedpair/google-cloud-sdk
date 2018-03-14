@@ -121,6 +121,7 @@ PUBLIC_IMAGE_PROJECTS = [
     'debian-cloud',
     'cos-cloud',
     'rhel-cloud',
+    'rhel-sap-cloud',
     'suse-cloud',
     'suse-sap-cloud',
     'ubuntu-os-cloud',

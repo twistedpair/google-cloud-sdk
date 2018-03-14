@@ -195,7 +195,8 @@ def _GetAllImplementations(impl_paths, path, construction_id, is_command,
         raise CommandLoadFailure(
             '.'.join(path),
             Exception('Command groups cannot be implemented in yaml'))
-      data = CreateYamlLoader(impl_file).load(pkg_resources.GetData(impl_file))
+      data = CreateYamlLoader(impl_file).load(
+          pkg_resources.GetResourceFromFile(impl_file))
       implementations.extend((_ImplementationsFromYaml(
           path, data, yaml_command_translator)))
     else:
@@ -218,7 +219,8 @@ def CreateYamlLoader(impl_path):
   common_file_path = os.path.join(os.path.dirname(impl_path), '__init__.yaml')
   common_data = None
   if os.path.exists(common_file_path):
-    common_data = yaml.safe_load(pkg_resources.GetData(common_file_path))
+    common_data = yaml.safe_load(
+        pkg_resources.GetResourceFromFile(common_file_path))
 
   class Constructor(yaml.Constructor):
     """A custom yaml constructor.
@@ -366,7 +368,7 @@ def CreateYamlLoader(impl_path):
       yaml_path = os.path.join(root, *parts[0].split('.'))
       yaml_path += '.yaml'
       try:
-        data = yaml.safe_load(pkg_resources.GetData(yaml_path))
+        data = yaml.safe_load(pkg_resources.GetResourceFromFile(yaml_path))
       except IOError as e:
         raise LayoutException(
             'Failed to load Yaml reference file [{}]: {}'.format(yaml_path, e))

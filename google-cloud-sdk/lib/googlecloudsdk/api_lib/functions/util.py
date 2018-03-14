@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """A library that is used to support Functions commands."""
-
+import argparse
 import functools
 import httplib
 import json
@@ -24,6 +24,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.api_lib.functions import operations
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as base_exceptions
@@ -54,13 +55,7 @@ _TOPIC_NAME_ERROR = (
     'the characters - + . _ ~ %. It must start with a letter and be from 3 to '
     '255 characters long.')
 
-_BUCKET_URI_RE = re.compile(
-    r'^(?:gs://)?[a-z\d][a-z\d\._-]{1,230}[a-z\d]/?$')
-_BUCKET_URI_ERROR = (
-    'Bucket must only contain lower case Latin letters, digits and '
-    'characters . _ -. It must start and end with a letter or digit '
-    'and be from 3 to 232 characters long. You may optionally prepend the '
-    'bucket name with gs:// and append / at the end.')
+_BUCKET_RESOURCE_URI_RE = re.compile(r'^projects/_/buckets/.{3,222}$')
 
 _API_NAME = 'cloudfunctions'
 _API_VERSION = 'v1'
@@ -185,12 +180,18 @@ def ValidateAndStandarizeBucketUriOrRaise(bucket):
   Raises:
     ArgumentTypeError: If the name provided by user is not valid.
   """
-  bucket = _ValidateArgumentByRegexOrRaise(bucket, _BUCKET_URI_RE,
-                                           _BUCKET_URI_ERROR)
-  if not bucket.endswith('/'):
-    bucket += '/'
-  if not bucket.startswith('gs://'):
-    bucket = 'gs://' + bucket
+  if _BUCKET_RESOURCE_URI_RE.match(bucket):
+    bucket_ref = storage_util.BucketReference.FromBucketUrl(bucket)
+  else:
+    try:
+      bucket_ref = storage_util.BucketReference.FromArgument(
+          bucket, require_prefix=False)
+    except argparse.ArgumentTypeError as e:
+      raise arg_parsers.ArgumentTypeError(
+          "Invalid value '{}': {}".format(bucket, e))
+
+  # strip any extrenuous '/' and append single '/'
+  bucket = bucket_ref.ToBucketUrl().rstrip('/') + '/'
   return bucket
 
 

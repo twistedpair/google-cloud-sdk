@@ -28,8 +28,6 @@ from googlecloudsdk.third_party.appengine.admin.tools.conversion import yaml_sch
 
 
 API_VERSION_SCHEMAS = {
-    'v1beta4': yaml_schema_v1beta,
-    'v1beta5': yaml_schema_v1beta,
     'v1beta': yaml_schema_v1beta,
     'v1alpha': yaml_schema_v1beta,
     'v1': yaml_schema_v1,

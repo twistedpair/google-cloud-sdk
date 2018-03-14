@@ -1,26 +1,27 @@
-organizations:
-  name: organizations
-  collection: cloudresourcemanager.organizations
+project:
+  name: project
+  collection: categorymanager.projects
   attributes:
-    - parameter_name: organizationsId
-      attribute_name: organization
-      help: The ID of the organization.
+    - &project
+      parameter_name: projectsId
+      attribute_name: project
+      help: The project ID.
 
-taxonomyStore:
-  name: taxonomyStore
-  collection: categorymanager.taxonomyStores
+project_scoped_taxonomy:
+  name: projectTaxonomy
+  collection: categorymanager.projects.taxonomies
   attributes:
-    - &taxonomyStore
-      parameter_name: taxonomyStoresId
-      attribute_name: store
-      help: The ID of the taxonomy store.
-
-taxonomy:
-  name: taxonomy
-  collection: categorymanager.taxonomyStores.taxonomies
-  attributes:
-    - *taxonomyStore
-    - parameter_name: taxonomiesId
+    - &project_scoped_taxonomy
+      parameter_name: taxonomiesId
       attribute_name: taxonomy
-      help: The ID of the taxonomy.
+      help: The ID of the project taxonomy.
 
+project_scoped_annotation:
+  name: projectAnnotation
+  collection: categorymanager.projects.taxonomies.annotations
+  attributes:
+    - *project_scoped_taxonomy
+    - &project_scoped_annotation
+      parameter_name: annotationsId
+      attribute_name: annotation
+      help: The ID of the project annotation.

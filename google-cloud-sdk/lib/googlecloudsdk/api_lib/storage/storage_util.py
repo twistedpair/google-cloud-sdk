@@ -281,7 +281,7 @@ def _GetGsutilPath():
   return os.path.join(sdk_bin_path, 'gsutil')
 
 
-def RunGsutilCommand(command_name, command_arg_str, run_concurrent=False):
+def RunGsutilCommand(command_name, command_args=None, run_concurrent=False):
   """Runs the specified gsutil command and returns the command's exit code.
 
   This is more reliable than storage_api.StorageClient.CopyFilesToGcs especially
@@ -289,7 +289,7 @@ def RunGsutilCommand(command_name, command_arg_str, run_concurrent=False):
 
   Args:
     command_name: The gsutil command to run.
-    command_arg_str: Arguments to pass to the command.
+    command_args: List of arguments to pass to the command.
     run_concurrent: Whether concurrent uploads should be enabled while running
       the command.
 
@@ -298,19 +298,14 @@ def RunGsutilCommand(command_name, command_arg_str, run_concurrent=False):
   """
   command_path = _GetGsutilPath()
 
-  if run_concurrent:
-    command_args = ['-m', command_name]
-  else:
-    command_args = [command_name]
-
-  command_args += command_arg_str.split(' ')
+  args = ['-m', command_name] if run_concurrent else [command_name]
+  if command_args is not None:
+    args += command_args
 
   if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
-    gsutil_args = execution_utils.ArgsForCMDTool(command_path + '.cmd',
-                                                 *command_args)
+    gsutil_args = execution_utils.ArgsForCMDTool(command_path + '.cmd', *args)
   else:
-    gsutil_args = execution_utils.ArgsForExecutableTool(command_path,
-                                                        *command_args)
+    gsutil_args = execution_utils.ArgsForExecutableTool(command_path, *args)
   log.debug('Running command: [{args}]]'.format(args=' '.join(gsutil_args)))
   return execution_utils.Exec(gsutil_args, no_exit=True,
                               out_func=log.file_only_logger.debug,
