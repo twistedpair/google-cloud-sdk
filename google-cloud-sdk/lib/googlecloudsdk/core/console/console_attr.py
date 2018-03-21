@@ -89,6 +89,7 @@ Usage:
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import os
 import sys
 import unicodedata
@@ -109,54 +110,54 @@ class BoxLineCharacters(object):
 
 class BoxLineCharactersUnicode(BoxLineCharacters):
   """unicode Box/line drawing characters (cp437 compatible unicode)."""
-  dl = u'┐'
-  dr = u'┌'
-  h = u'─'
-  hd = u'┬'
-  hu = u'┴'
-  ul = u'┘'
-  ur = u'└'
-  v = u'│'
-  vh = u'┼'
-  vl = u'┤'
-  vr = u'├'
-  d_dl = u'╗'
-  d_dr = u'╔'
-  d_h = u'═'
-  d_hd = u'╦'
-  d_hu = u'╩'
-  d_ul = u'╝'
-  d_ur = u'╚'
-  d_v = u'║'
-  d_vh = u'╬'
-  d_vl = u'╣'
-  d_vr = u'╠'
+  dl = '┐'
+  dr = '┌'
+  h = '─'
+  hd = '┬'
+  hu = '┴'
+  ul = '┘'
+  ur = '└'
+  v = '│'
+  vh = '┼'
+  vl = '┤'
+  vr = '├'
+  d_dl = '╗'
+  d_dr = '╔'
+  d_h = '═'
+  d_hd = '╦'
+  d_hu = '╩'
+  d_ul = '╝'
+  d_ur = '╚'
+  d_v = '║'
+  d_vh = '╬'
+  d_vl = '╣'
+  d_vr = '╠'
 
 
 class BoxLineCharactersAscii(BoxLineCharacters):
   """ASCII Box/line drawing characters."""
-  dl = u'+'
-  dr = u'+'
-  h = u'-'
-  hd = u'+'
-  hu = u'+'
-  ul = u'+'
-  ur = u'+'
-  v = u'|'
-  vh = u'+'
-  vl = u'+'
-  vr = u'+'
-  d_dl = u'#'
-  d_dr = u'#'
-  d_h = u'='
-  d_hd = u'#'
-  d_hu = u'#'
-  d_ul = u'#'
-  d_ur = u'#'
-  d_v = u'#'
-  d_vh = u'#'
-  d_vl = u'#'
-  d_vr = u'#'
+  dl = '+'
+  dr = '+'
+  h = '-'
+  hd = '+'
+  hu = '+'
+  ul = '+'
+  ur = '+'
+  v = '|'
+  vh = '+'
+  vl = '+'
+  vr = '+'
+  d_dl = '#'
+  d_dr = '#'
+  d_h = '='
+  d_hd = '#'
+  d_hu = '#'
+  d_ul = '#'
+  d_ur = '#'
+  d_v = '#'
+  d_vh = '#'
+  d_vl = '#'
+  d_vr = '#'
 
 
 class ConsoleAttr(object):
@@ -194,8 +195,8 @@ class ConsoleAttr(object):
       }
   _ANSI_COLOR_RESET = '39;0m'
 
-  _BULLETS_UNICODE = (u'▪', u'◆', u'▸', u'▫', u'◇', u'▹')
-  _BULLETS_WINDOWS = (u'■', u'≡', u'∞', u'Φ', u'·')  # cp437 compatible unicode
+  _BULLETS_UNICODE = ('▪', '◆', '▸', '▫', '◇', '▹')
+  _BULLETS_WINDOWS = ('■', '≡', '∞', 'Φ', '·')  # cp437 compatible unicode
   _BULLETS_ASCII = ('o', '*', '+', '-')
 
   def __init__(self, encoding=None):
@@ -370,13 +371,13 @@ class ConsoleAttr(object):
         to the console output to control the font settings.
     """
     if not self._csi:
-      return ''
+      return u''
     codes = []
     if bold:
       codes.append(self._font_bold)
     if italic:
       codes.append(self._font_italic)
-    return '{csi}{codes}m'.format(csi=self._csi, codes=';'.join(codes))
+    return u'{csi}{codes}m'.format(csi=self._csi, codes=';'.join(codes))
 
   def GetRawKey(self):
     """Reads one key press from stdin with no echo.
@@ -507,13 +508,23 @@ class Colorizer(object):
     self._string = string
     self._justify = justify
 
-  def __cmp__(self, other):
-    string = str(other)
-    if self._string < string:
-      return -1
-    if self._string > string:
-      return 1
-    return 0
+  def __eq__(self, other):
+    return self._string == six.text_type(other)
+
+  def __ne__(self, other):
+    return not self == other
+
+  def __gt__(self, other):
+    return self._string > six.text_type(other)
+
+  def __lt__(self, other):
+    return self._string < six.text_type(other)
+
+  def __ge__(self, other):
+    return not self < other
+
+  def __le__(self, other):
+    return not self > other
 
   def __len__(self):
     return self._con.DisplayWidth(self._string)
@@ -617,7 +628,7 @@ def GetCharacterDisplayWidth(char):
 
 
 def SafeText(data, encoding=None, escape=True):
-  r"""Converts the data to a text string compatible with the given encoding.
+  br"""Converts the data to a text string compatible with the given encoding.
 
   This works the same way as Decode() below except it guarantees that any
   characters in the resulting text string can be re-encoded using the given
@@ -642,7 +653,7 @@ def SafeText(data, encoding=None, escape=True):
     characters.
   """
   if data is None:
-    return u'None'
+    return 'None'
   encoding = encoding or GetConsoleAttr().GetEncoding()
   string = encoding_util.Decode(data, encoding=encoding)
 

@@ -3288,9 +3288,9 @@ class Commitment(_messages.Message):
       to eventual expiration (each commitment has an end date defined). One of
       the following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
     TypeValueValuesEnum: The type of commitment, which affects the discount
-      rate and the eligible resources. Type LARGE_VM specifies a commitment
-      that will only apply to large VMs. Type NORMAL specifies a commitment
-      that applies to all other resources.
+      rate and the eligible resources. Type MEMORY_OPTIMIZED_VM specifies a
+      commitment that will only apply to memory optimized VMs. Type NORMAL
+      specifies a commitment that applies to all other resources.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -3324,9 +3324,9 @@ class Commitment(_messages.Message):
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
     type: The type of commitment, which affects the discount rate and the
-      eligible resources. Type LARGE_VM specifies a commitment that will only
-      apply to large VMs. Type NORMAL specifies a commitment that applies to
-      all other resources.
+      eligible resources. Type MEMORY_OPTIMIZED_VM specifies a commitment that
+      will only apply to memory optimized VMs. Type NORMAL specifies a
+      commitment that applies to all other resources.
   """
 
   class PlanValueValuesEnum(_messages.Enum):
@@ -3361,16 +3361,16 @@ class Commitment(_messages.Message):
 
   class TypeValueValuesEnum(_messages.Enum):
     """The type of commitment, which affects the discount rate and the
-    eligible resources. Type LARGE_VM specifies a commitment that will only
-    apply to large VMs. Type NORMAL specifies a commitment that applies to all
-    other resources.
+    eligible resources. Type MEMORY_OPTIMIZED_VM specifies a commitment that
+    will only apply to memory optimized VMs. Type NORMAL specifies a
+    commitment that applies to all other resources.
 
     Values:
-      LARGE_VM: <no description>
+      MEMORY_OPTIMIZED_VM: <no description>
       NORMAL: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
-    LARGE_VM = 0
+    MEMORY_OPTIMIZED_VM = 0
     NORMAL = 1
     TYPE_UNSPECIFIED = 2
 
@@ -29928,6 +29928,7 @@ class Quota(_messages.Message):
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_GPUS: <no description>
+      PRIVATE_V6_ACCESS_SUBNETWORKS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
       ROUTERS: <no description>
@@ -29979,26 +29980,27 @@ class Quota(_messages.Message):
     PREEMPTIBLE_LOCAL_SSD_GB = 27
     PREEMPTIBLE_NVIDIA_K80_GPUS = 28
     PREEMPTIBLE_NVIDIA_P100_GPUS = 29
-    REGIONAL_AUTOSCALERS = 30
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 31
-    ROUTERS = 32
-    ROUTES = 33
-    SECURITY_POLICIES = 34
-    SECURITY_POLICY_RULES = 35
-    SNAPSHOTS = 36
-    SSD_TOTAL_GB = 37
-    SSL_CERTIFICATES = 38
-    STATIC_ADDRESSES = 39
-    SUBNETWORKS = 40
-    TARGET_HTTPS_PROXIES = 41
-    TARGET_HTTP_PROXIES = 42
-    TARGET_INSTANCES = 43
-    TARGET_POOLS = 44
-    TARGET_SSL_PROXIES = 45
-    TARGET_TCP_PROXIES = 46
-    TARGET_VPN_GATEWAYS = 47
-    URL_MAPS = 48
-    VPN_TUNNELS = 49
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 30
+    REGIONAL_AUTOSCALERS = 31
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 32
+    ROUTERS = 33
+    ROUTES = 34
+    SECURITY_POLICIES = 35
+    SECURITY_POLICY_RULES = 36
+    SNAPSHOTS = 37
+    SSD_TOTAL_GB = 38
+    SSL_CERTIFICATES = 39
+    STATIC_ADDRESSES = 40
+    SUBNETWORKS = 41
+    TARGET_HTTPS_PROXIES = 42
+    TARGET_HTTP_PROXIES = 43
+    TARGET_INSTANCES = 44
+    TARGET_POOLS = 45
+    TARGET_SSL_PROXIES = 46
+    TARGET_TCP_PROXIES = 47
+    TARGET_VPN_GATEWAYS = 48
+    URL_MAPS = 49
+    VPN_TUNNELS = 50
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -31860,6 +31862,12 @@ class RouterBgpPeer(_messages.Message):
     AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
       to use for advertisement.
     AdvertisedGroupsValueListEntryValuesEnum:
+    ManagementTypeValueValuesEnum: [Output Only] Type of how the
+      resource/configuration of the BGP peer is managed. MANAGED_BY_USER is
+      the default value; MANAGED_BY_ATTACHMENT represents an BGP peer that is
+      automatically created for PARTNER interconnectAttachment, Google will
+      automatically create/delete this type of BGP peer when the PARTNER
+      interconnectAttachment is created/deleted.
 
   Fields:
     advertiseMode: User-specified flag to indicate which mode to use for
@@ -31886,6 +31894,12 @@ class RouterBgpPeer(_messages.Message):
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
+    managementType: [Output Only] Type of how the resource/configuration of
+      the BGP peer is managed. MANAGED_BY_USER is the default value;
+      MANAGED_BY_ATTACHMENT represents an BGP peer that is automatically
+      created for PARTNER interconnectAttachment, Google will automatically
+      create/delete this type of BGP peer when the PARTNER
+      interconnectAttachment is created/deleted.
     name: Name of this BGP peer. The name must be 1-63 characters long and
       comply with RFC1035.
     peerAsn: Peer BGP Autonomous System Number (ASN). For VPN use case, this
@@ -31912,6 +31926,20 @@ class RouterBgpPeer(_messages.Message):
     """
     ALL_SUBNETS = 0
 
+  class ManagementTypeValueValuesEnum(_messages.Enum):
+    """[Output Only] Type of how the resource/configuration of the BGP peer is
+    managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT
+    represents an BGP peer that is automatically created for PARTNER
+    interconnectAttachment, Google will automatically create/delete this type
+    of BGP peer when the PARTNER interconnectAttachment is created/deleted.
+
+    Values:
+      MANAGED_BY_ATTACHMENT: <no description>
+      MANAGED_BY_USER: <no description>
+    """
+    MANAGED_BY_ATTACHMENT = 0
+    MANAGED_BY_USER = 1
+
   advertiseMode = _messages.EnumField('AdvertiseModeValueValuesEnum', 1)
   advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
@@ -31919,13 +31947,22 @@ class RouterBgpPeer(_messages.Message):
   advertisedRoutePriority = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
   interfaceName = _messages.StringField(6)
   ipAddress = _messages.StringField(7)
-  name = _messages.StringField(8)
-  peerAsn = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(10)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 8)
+  name = _messages.StringField(9)
+  peerAsn = _messages.IntegerField(10, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(11)
 
 
 class RouterInterface(_messages.Message):
   """A RouterInterface object.
+
+  Enums:
+    ManagementTypeValueValuesEnum: [Output Only] Type of how the
+      resource/configuration of the interface is managed. MANAGED_BY_USER is
+      the default value; MANAGED_BY_ATTACHMENT represents an interface that is
+      automatically created for PARTNER type interconnectAttachment, Google
+      will automatically create/update/delete this type of interface when the
+      PARTNER interconnectAttachment is created/provisioned/deleted.
 
   Fields:
     ipRange: IP address and range of the interface. The IP range must be in
@@ -31940,14 +31977,36 @@ class RouterInterface(_messages.Message):
       region as the router. Each interface can have at most one linked
       resource and it could either be a VPN Tunnel or an interconnect
       attachment.
+    managementType: [Output Only] Type of how the resource/configuration of
+      the interface is managed. MANAGED_BY_USER is the default value;
+      MANAGED_BY_ATTACHMENT represents an interface that is automatically
+      created for PARTNER type interconnectAttachment, Google will
+      automatically create/update/delete this type of interface when the
+      PARTNER interconnectAttachment is created/provisioned/deleted.
     name: Name of this interface entry. The name must be 1-63 characters long
       and comply with RFC1035.
   """
 
+  class ManagementTypeValueValuesEnum(_messages.Enum):
+    """[Output Only] Type of how the resource/configuration of the interface
+    is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT
+    represents an interface that is automatically created for PARTNER type
+    interconnectAttachment, Google will automatically create/update/delete
+    this type of interface when the PARTNER interconnectAttachment is
+    created/provisioned/deleted.
+
+    Values:
+      MANAGED_BY_ATTACHMENT: <no description>
+      MANAGED_BY_USER: <no description>
+    """
+    MANAGED_BY_ATTACHMENT = 0
+    MANAGED_BY_USER = 1
+
   ipRange = _messages.StringField(1)
   linkedInterconnectAttachment = _messages.StringField(2)
   linkedVpnTunnel = _messages.StringField(3)
-  name = _messages.StringField(4)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 4)
+  name = _messages.StringField(5)
 
 
 class RouterList(_messages.Message):
@@ -33966,6 +34025,18 @@ class Subnetwork(_messages.Message):
   """A Subnetwork resource. (== resource_for beta.subnetworks ==) (==
   resource_for v1.subnetworks ==)
 
+  Enums:
+    PurposeValueValuesEnum: The purpose of the resource. This field can be
+      either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork
+      with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created
+      subnetwork that is reserved for Internal HTTP(S) Load Balancing. If
+      unspecified, the purpose defaults to PRIVATE_RFC_1918.
+    RoleValueValuesEnum: The role of subnetwork. Currenly, this field is only
+      used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set
+      to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
+      used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one
+      that is ready to be promoted to ACTIVE or is currently draining.
+
   Fields:
     allowSubnetCidrRoutesOverlap: Whether this subnetwork can conflict with
       static routes. Setting this to true allows this subnetwork's primary and
@@ -34019,14 +34090,52 @@ class Subnetwork(_messages.Message):
       services without assigned external IP addresses. This field can be both
       set at resource creation time and updated using
       setPrivateIpGoogleAccess.
+    purpose: The purpose of the resource. This field can be either
+      PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with
+      purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork
+      that is reserved for Internal HTTP(S) Load Balancing. If unspecified,
+      the purpose defaults to PRIVATE_RFC_1918.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
+    role: The role of subnetwork. Currenly, this field is only used when
+      purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE
+      or BACKUP. An ACTIVE subnetwork is one that is currently being used for
+      Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is
+      ready to be promoted to ACTIVE or is currently draining.
     secondaryIpRanges: An array of configurations for secondary IP ranges for
       VM instances contained in this subnetwork. The primary IP of such VM
       must belong to the primary ipCidrRange of the subnetwork. The alias IPs
       may belong to either primary or secondary ranges.
     selfLink: [Output Only] Server-defined URL for the resource.
   """
+
+  class PurposeValueValuesEnum(_messages.Enum):
+    """The purpose of the resource. This field can be either PRIVATE_RFC_1918
+    or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with purpose set to
+    INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork that is reserved
+    for Internal HTTP(S) Load Balancing. If unspecified, the purpose defaults
+    to PRIVATE_RFC_1918.
+
+    Values:
+      INTERNAL_HTTPS_LOAD_BALANCER: <no description>
+      PRIVATE_RFC_1918: <no description>
+    """
+    INTERNAL_HTTPS_LOAD_BALANCER = 0
+    PRIVATE_RFC_1918 = 1
+
+  class RoleValueValuesEnum(_messages.Enum):
+    """The role of subnetwork. Currenly, this field is only used when purpose
+    = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or BACKUP.
+    An ACTIVE subnetwork is one that is currently being used for Internal
+    HTTP(S) Load Balancing. A BACKUP subnetwork is one that is ready to be
+    promoted to ACTIVE or is currently draining.
+
+    Values:
+      ACTIVE: <no description>
+      BACKUP: <no description>
+    """
+    ACTIVE = 0
+    BACKUP = 1
 
   allowSubnetCidrRoutesOverlap = _messages.BooleanField(1)
   creationTimestamp = _messages.StringField(2)
@@ -34042,9 +34151,11 @@ class Subnetwork(_messages.Message):
   name = _messages.StringField(12)
   network = _messages.StringField(13)
   privateIpGoogleAccess = _messages.BooleanField(14)
-  region = _messages.StringField(15)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 16, repeated=True)
-  selfLink = _messages.StringField(17)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 15)
+  region = _messages.StringField(16)
+  role = _messages.EnumField('RoleValueValuesEnum', 17)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 18, repeated=True)
+  selfLink = _messages.StringField(19)
 
 
 class SubnetworkAggregatedList(_messages.Message):

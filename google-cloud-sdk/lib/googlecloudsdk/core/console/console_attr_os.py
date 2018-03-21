@@ -18,6 +18,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import os
 import sys
 
@@ -67,7 +68,7 @@ def _GetTermSizePosix():
     try:
       # This magic incantation converts a struct from ioctl(2) containing two
       # binary shorts to a (rows, columns) int tuple.
-      rc = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234'))
+      rc = struct.unpack(b'hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, 'junk'))
       return (rc[1], rc[0]) if rc else None
     except:  # pylint: disable=bare-except
       return None
@@ -105,7 +106,7 @@ def _GetTermSizeWindows():
     return None
   (unused_bufx, unused_bufy, unused_curx, unused_cury, unused_wattr,
    left, top, right, bottom,
-   unused_maxx, unused_maxy) = struct.unpack('hhhhHhhhhhh', csbi.raw)
+   unused_maxx, unused_maxy) = struct.unpack(b'hhhhHhhhhhh', csbi.raw)
   x = right - left + 1
   y = bottom - top + 1
   return (x, y)

@@ -24,7 +24,7 @@ class LanguageV1beta2(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new language handle."""
     url = url or self.BASE_URL
     super(LanguageV1beta2, self).__init__(
@@ -33,7 +33,8 @@ class LanguageV1beta2(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.documents = self.DocumentsService(self)
 
   class DocumentsService(base_api.BaseApiService):

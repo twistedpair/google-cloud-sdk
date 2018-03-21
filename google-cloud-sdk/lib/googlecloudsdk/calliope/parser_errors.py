@@ -17,7 +17,9 @@
 Refer to the calliope.parser_extensions module for a detailed overview.
 """
 
+from __future__ import absolute_import
 import argparse
+import six
 
 
 class ArgumentError(argparse.ArgumentError):
@@ -46,7 +48,7 @@ class ArgumentError(argparse.ArgumentError):
     self.extra_path_arg = extra_path_arg
     self.parser = parser
     self.error_extra_info = kwargs
-    super(ArgumentError, self).__init__(None, unicode(self))
+    super(ArgumentError, self).__init__(None, six.text_type(self))
 
   def __str__(self):
     keys = dict(**self.error_extra_info)

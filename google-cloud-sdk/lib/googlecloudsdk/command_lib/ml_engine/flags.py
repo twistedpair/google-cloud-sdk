@@ -264,6 +264,13 @@ RUNTIME_VERSION = base.Argument(
           'https://cloud.google.com/ml/docs/concepts/runtime-version-list for '
           'a list of accepted versions.'))
 
+PYTHON_VERSION = base.Argument(
+    '--python-version',
+    help=('The version of Python used in training. If not set, the default '
+          'version is 2.7. Python 3.5 is available when `runtime_version` is '
+          'set to 1.4 and above. Python 2.7 works with all supported runtime '
+          'versions.'))
+
 POLLING_INTERVAL = base.Argument(
     '--polling-interval',
     type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),

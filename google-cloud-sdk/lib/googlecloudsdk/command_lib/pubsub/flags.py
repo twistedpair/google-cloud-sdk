@@ -40,7 +40,11 @@ def AddAckIdFlag(parser, action, add_deprecated=False):
             show_message=lambda _: False,  # See ParseAckIdsArgs for reason.
             warn=DEPRECATION_FORMAT_STR.format('ACK_ID', '--ack-ids')))
   parser.add_argument(
-      '--ack-ids', metavar='ACK_ID', type=arg_parsers.ArgList(), help=help_text)
+      '--ack-ids',
+      metavar='ACK_ID',
+      required=not add_deprecated,
+      type=arg_parsers.ArgList(),
+      help=help_text)
 
 
 def ParseAckIdsArgs(args):

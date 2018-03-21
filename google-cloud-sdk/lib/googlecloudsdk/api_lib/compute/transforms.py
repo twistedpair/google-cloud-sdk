@@ -40,7 +40,6 @@ Pythonicness of the Transform*() methods:
       Exceptions for arguments explicitly under the caller's control are OK.
 """
 
-import httplib
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
@@ -187,7 +186,7 @@ def TransformOperationHttpStatus(r, undefined=''):
   """
   if resource_transform.GetKeyValue(r, 'status', None) == 'DONE':
     return (resource_transform.GetKeyValue(r, 'httpErrorStatusCode', None) or
-            httplib.OK)
+            200)  # httplib.OK
   return undefined
 
 

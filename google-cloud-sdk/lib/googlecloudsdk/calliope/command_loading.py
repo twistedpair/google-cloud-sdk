@@ -14,6 +14,7 @@
 
 """Helpers to load commands from the filesystem."""
 
+from __future__ import absolute_import
 import abc
 import os
 import re
@@ -24,6 +25,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import pkg_resources
 
 from ruamel import yaml
+import six
 
 
 class CommandLoadFailure(Exception):
@@ -46,9 +48,8 @@ class ReleaseTrackNotImplementedException(Exception):
   """
 
 
-class YamlCommandTranslator(object):
+class YamlCommandTranslator(six.with_metaclass(abc.ABCMeta, object)):
   """An interface to implement when registering a custom command loader."""
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def Translate(self, path, command_data):
@@ -319,7 +320,7 @@ def CreateYamlLoader(impl_path):
     def _ConstructSequenceHelper(self, macro, source_func, data):
       new_list = []
       for i in data:
-        if isinstance(i, basestring) and i.startswith(macro):
+        if isinstance(i, six.string_types) and i.startswith(macro):
           attribute_path = i[len(macro):]
           for path in attribute_path.split(','):
             new_list.extend(source_func(path))

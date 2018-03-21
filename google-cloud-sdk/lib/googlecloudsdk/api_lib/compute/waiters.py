@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for waiting on Compute Engine operations."""
-import httplib
+
 from googlecloudsdk.api_lib.compute import batch_helper
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.command_lib.util import time_util
@@ -188,7 +188,7 @@ def WaitForOperations(
         # httpErrorStatusCode is set only when the operation is not
         # successful.
         if (operation.httpErrorStatusCode and
-            operation.httpErrorStatusCode != httplib.OK):
+            operation.httpErrorStatusCode != 200):  # httplib.OK
           continue
 
         # Just in case the server did not set httpErrorStatusCode but

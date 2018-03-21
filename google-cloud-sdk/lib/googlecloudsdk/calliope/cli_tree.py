@@ -14,6 +14,7 @@
 
 """A module for the Cloud SDK CLI tree external representation."""
 
+from __future__ import absolute_import
 import json
 import os
 import re
@@ -32,6 +33,8 @@ from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.updater import update_manager
+
+import six
 
 
 # This module is the CLI tree generator. VERSION is a stamp that is used to
@@ -156,7 +159,7 @@ def _NormalizeDescription(description):
     description = description()
   if description:
     description = textwrap.dedent(description)
-  return unicode(description or '')
+  return six.text_type(description or '')
 
 
 class Argument(object):
@@ -212,10 +215,10 @@ class FlagOrPositional(Argument):
     self.completer = completer
     self.default = arg.default
     self.description = _NormalizeDescription(_GetDescription(arg))
-    self.name = unicode(name)
+    self.name = six.text_type(name)
     self.nargs = str(arg.nargs or 0)
     if arg.metavar:
-      self.value = unicode(arg.metavar)
+      self.value = six.text_type(arg.metavar)
     else:
       self.value = self.name.lstrip('-').replace('-', '_').upper()
     self._Scrub()
@@ -232,7 +235,7 @@ class FlagOrPositional(Argument):
     None and the trailing "The default ... is ..." sentence in the description,
     if any, is deleted. It's OK to be conservative here and match aggressively.
     """
-    if not isinstance(self.default, basestring):
+    if not isinstance(self.default, six.string_types):
       return
     if not re.match(r'/|[A-Za-z]:\\', self.default):
       return
@@ -269,8 +272,8 @@ class Flag(FlagOrPositional):
       self.type = 'bool'
       self.default = bool(flag.default)
     else:
-      if (isinstance(flag.type, (int, long)) or
-          isinstance(flag.default, (int, long))):
+      if (isinstance(flag.type, six.integer_types) or
+          isinstance(flag.default, six.integer_types)):
         self.type = 'int'
       elif isinstance(flag.type, float) or isinstance(flag.default, float):
         self.type = 'float'
@@ -402,7 +405,7 @@ class Command(object):
     if notes:
       sections['NOTES'] = notes
     if sections:
-      for name, contents in sections.iteritems():
+      for name, contents in six.iteritems(sections):
         # islower() section names were used to convert markdown in command
         # docstrings into the static self.section[] entries seen here.
         if name.isupper():
@@ -651,7 +654,7 @@ def _Serialize(tree):
           pass
 
   def _ReplaceFlagWithIndex(command):
-    for name, flag in command.flags.iteritems():
+    for name, flag in six.iteritems(command.flags):
       command.flags[name] = all_flags[_FlagIndexKey(flag)].index
       _ReplaceConstraintFlagWithIndex(command.constraints.arguments)
     for subcommand in command.commands.values():
@@ -822,7 +825,7 @@ def _Load(path, cli=None, force=False, verbose=False):
       pass
   except (IOError, OSError) as e:
     if not cli:
-      raise CliTreeLoadError(unicode(e))
+      raise CliTreeLoadError(six.text_type(e))
   return None
 
 
@@ -848,7 +851,7 @@ def _Deserialize(tree):
 
   def _ReplaceIndexWithFlagReference(command):
     flags = command[LOOKUP_FLAGS]
-    for name, index in flags.iteritems():
+    for name, index in six.iteritems(flags):
       flags[name] = all_flags_list[index]
     arguments = command[LOOKUP_CONSTRAINTS][LOOKUP_ARGUMENTS]
     _ReplaceConstraintIndexWithArgReference(

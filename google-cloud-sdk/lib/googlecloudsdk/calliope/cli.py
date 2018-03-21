@@ -14,6 +14,7 @@
 
 """The calliope CLI/API is a framework for building library interfaces."""
 
+from __future__ import absolute_import
 import argparse
 import os
 import re
@@ -36,6 +37,8 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import session_capturer
 from googlecloudsdk.core.util import pkg_resources
+
+import six
 
 
 _COMMAND_SUFFIX = '.py'
@@ -213,7 +216,7 @@ class CLILoader(object):
     """
     path_string = '.'.join(command_path)
     return [component
-            for path, component in self.__missing_components.iteritems()
+            for path, component in six.iteritems(self.__missing_components)
             if path_string.startswith(self.__name + '.' + path)]
 
   def ReplicateCommandPathForAllOtherTracks(self, command_path):
@@ -280,7 +283,7 @@ class CLILoader(object):
     # Sub groups for each alternate release track.
     loaded_release_tracks = dict([(calliope_base.ReleaseTrack.GA, top_group)])
     track_names = set(track.prefix for track in self.__release_tracks.keys())
-    for track, (module_dir, component) in self.__release_tracks.iteritems():
+    for track, (module_dir, component) in six.iteritems(self.__release_tracks):
       impl_path = self.__ValidateCommandOrGroupInfo(
           module_dir,
           allow_non_existing_modules=self.__allow_non_existing_modules)
@@ -307,7 +310,7 @@ class CLILoader(object):
       root, name = match.group(1, 2)
       try:
         # Mount each registered sub group under each release track that exists.
-        for track, track_root_group in loaded_release_tracks.iteritems():
+        for track, track_root_group in six.iteritems(loaded_release_tracks):
           # pylint: disable=line-too-long
           parent_group = self.__FindParentGroup(track_root_group, root)  # type: backend.CommandGroup
           # pylint: enable=line-too-long
@@ -631,43 +634,27 @@ class CLI(object):
     Returns:
       A new list of args with non-ascii args converted to unicode.
     """
-    console_encoding = console_attr.GetConsoleAttr().GetEncoding()
-    filesystem_encoding = sys.getfilesystemencoding()
     argv = []
     for arg in args:
-
-      try:
-        arg.encode('ascii')
-        # Already ascii.
+      if isinstance(arg, six.text_type):
+        # Arg is already a text string, just use it.
         argv.append(arg)
-        continue
-      except UnicodeError:
-        pass
-
-      try:
-        # Convert bytestring to unicode using the console encoding.
-        argv.append(unicode(arg, console_encoding))
-        continue
-      except TypeError:
-        # Already unicode.
-        argv.append(arg)
-        continue
-      except UnicodeError:
-        pass
-
-      try:
-        # Convert bytestring to unicode using the filesystem encoding.
-        # A pathname could have been passed in rather than typed, and
-        # might not match the user terminal encoding, but still be a valid
-        # path. For example: $ foo $(grep -l bar *)
-        argv.append(unicode(arg, filesystem_encoding))
-        continue
-      except UnicodeError:
-        pass
-
-      # Can't convert to unicode -- bail out.
-      raise exceptions.InvalidCharacterInArgException([self.name] + args, arg)
-
+      else:
+        # Argument is a byte string.
+        try:
+          # For now we want to leave byte strings as is if they are only ascii
+          # characters. Later we should always convert everything to text.
+          decoded_arg = arg.decode('ascii')  # If this passes, it's ascii only.
+          # Add the original byte string if on PY2, for PY3 start living in the
+          # text only world.
+          argv.append(arg if six.PY2 else decoded_arg)
+        except UnicodeError:
+          # There are unicode characters in the byte string.
+          try:
+            argv.append(console_attr.Decode(arg))
+          except UnicodeError:
+            raise exceptions.InvalidCharacterInArgException(
+                [self.name] + args, arg)
     return argv
 
   def _EnforceAsciiArgs(self, argv):
@@ -681,7 +668,10 @@ class CLI(object):
     """
     for arg in argv:
       try:
-        arg.decode('ascii')
+        if isinstance(arg, six.text_type):
+          arg.encode('ascii')
+        else:
+          arg.decode('ascii')
       except UnicodeError:
         raise exceptions.InvalidCharacterInArgException([self.name] + argv, arg)
 
@@ -718,7 +708,7 @@ class CLI(object):
     Raises:
       ValueError: for ill-typed arguments.
     """
-    if isinstance(args, basestring):
+    if isinstance(args, six.string_types):
       raise ValueError('Execute expects an iterable of strings, not a string.')
 
     # The argparse module does not handle unicode args when run in Python 2
@@ -729,7 +719,7 @@ class CLI(object):
     # statement coaxes the Python 3 behavior out of argparse running in
     # Python 2. Doing it here ensures that the workaround is in place for
     # calliope argparse use cases.
-    argparse.str = unicode
+    argparse.str = six.text_type
 
     if call_arg_complete:
       _ArgComplete(self.__top_element.ai)

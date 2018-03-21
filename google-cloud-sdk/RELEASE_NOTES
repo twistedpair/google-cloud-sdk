@@ -3,6 +3,30 @@
 Copyright 2014-2018 Google Inc. All rights reserved.
 
 
+## 194.0.0 (2018-03-21)
+
+### Breaking Changes
+
+* Removed --disable-addons in gcloud container clusters create.
+
+
+### Cloud Machine Learning Engine
+
+*   Added `--python-version` flag to `gcloud ml-engine jobs submit training`.
+
+### Compute Engine
+
+* Added `--disk-scope` flag to `detach-disk` operation in alpha.
+* Promoted `gcloud compute networks subnets list-usable` to beta.
+* Promoted `--guest-os-features` flag of `gcloud compute disks create` to GA.
+  This flag allows create disks with additional specified GuestOS features.
+* Removed `gcloud compute networks switch-mode`. Please use `gcloud compute
+  networks update --switch-to-custom-mode` instead.
+* Removed `--mode` flag from `gcloud compute networks create`. Please use
+  `--subnet-mode` instead.
+* Promoted `gcloud compute images export` to beta.
+
+
 ## 193.0.0 (2018-03-14)
 
 ### Breaking Changes

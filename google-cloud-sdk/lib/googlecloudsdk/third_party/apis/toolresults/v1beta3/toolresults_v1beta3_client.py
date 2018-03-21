@@ -24,7 +24,7 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new toolresults handle."""
     url = url or self.BASE_URL
     super(ToolresultsV1beta3, self).__init__(
@@ -33,7 +33,8 @@ class ToolresultsV1beta3(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.projects_histories_executions_clusters = self.ProjectsHistoriesExecutionsClustersService(self)
     self.projects_histories_executions_steps_perfMetricsSummary = self.ProjectsHistoriesExecutionsStepsPerfMetricsSummaryService(self)
     self.projects_histories_executions_steps_perfSampleSeries_samples = self.ProjectsHistoriesExecutionsStepsPerfSampleSeriesSamplesService(self)

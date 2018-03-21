@@ -14,8 +14,10 @@
 
 """A module for walking the Cloud SDK CLI tree."""
 
+from __future__ import absolute_import
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
+import six
 
 
 class Walker(object):
@@ -128,11 +130,11 @@ class Walker(object):
       parent = self._Visit(node, parent, is_group=True)
       commands_and_groups = []
       if node.commands:
-        for name, command in node.commands.iteritems():
+        for name, command in six.iteritems(node.commands):
           if _Include(command):
             commands_and_groups.append((name, command, False))
       if node.groups:
-        for name, command in node.groups.iteritems():
+        for name, command in six.iteritems(node.groups):
           if _Include(command, traverse=True):
             commands_and_groups.append((name, command, True))
       for _, command, is_group in sorted(commands_and_groups):

@@ -2393,6 +2393,8 @@ class BackendService(_messages.Message):
     connectionDraining: A ConnectionDraining attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    customRequestHeaders: Headers that the HTTP/S load balancer should add to
+      proxied requests.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     enableCDN: If true, enable Cloud CDN for this BackendService.  When the
@@ -2509,23 +2511,24 @@ class BackendService(_messages.Message):
   cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 3)
   connectionDraining = _messages.MessageField('ConnectionDraining', 4)
   creationTimestamp = _messages.StringField(5)
-  description = _messages.StringField(6)
-  enableCDN = _messages.BooleanField(7)
-  fingerprint = _messages.BytesField(8)
-  healthChecks = _messages.StringField(9, repeated=True)
-  iap = _messages.MessageField('BackendServiceIAP', 10)
-  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(12, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 13)
-  name = _messages.StringField(14)
-  port = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(16)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 17)
-  region = _messages.StringField(18)
-  securityPolicy = _messages.StringField(19)
-  selfLink = _messages.StringField(20)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 21)
-  timeoutSec = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  customRequestHeaders = _messages.StringField(6, repeated=True)
+  description = _messages.StringField(7)
+  enableCDN = _messages.BooleanField(8)
+  fingerprint = _messages.BytesField(9)
+  healthChecks = _messages.StringField(10, repeated=True)
+  iap = _messages.MessageField('BackendServiceIAP', 11)
+  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(13, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 14)
+  name = _messages.StringField(15)
+  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(17)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 18)
+  region = _messages.StringField(19)
+  securityPolicy = _messages.StringField(20)
+  selfLink = _messages.StringField(21)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 22)
+  timeoutSec = _messages.IntegerField(23, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -23923,6 +23926,7 @@ class Quota(_messages.Message):
       NETWORKS: <no description>
       NVIDIA_K80_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
+      NVIDIA_V100_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
@@ -23970,30 +23974,31 @@ class Quota(_messages.Message):
     NETWORKS = 19
     NVIDIA_K80_GPUS = 20
     NVIDIA_P100_GPUS = 21
-    PREEMPTIBLE_CPUS = 22
-    PREEMPTIBLE_LOCAL_SSD_GB = 23
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 24
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 25
-    REGIONAL_AUTOSCALERS = 26
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 27
-    ROUTERS = 28
-    ROUTES = 29
-    SECURITY_POLICIES = 30
-    SECURITY_POLICY_RULES = 31
-    SNAPSHOTS = 32
-    SSD_TOTAL_GB = 33
-    SSL_CERTIFICATES = 34
-    STATIC_ADDRESSES = 35
-    SUBNETWORKS = 36
-    TARGET_HTTPS_PROXIES = 37
-    TARGET_HTTP_PROXIES = 38
-    TARGET_INSTANCES = 39
-    TARGET_POOLS = 40
-    TARGET_SSL_PROXIES = 41
-    TARGET_TCP_PROXIES = 42
-    TARGET_VPN_GATEWAYS = 43
-    URL_MAPS = 44
-    VPN_TUNNELS = 45
+    NVIDIA_V100_GPUS = 22
+    PREEMPTIBLE_CPUS = 23
+    PREEMPTIBLE_LOCAL_SSD_GB = 24
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 25
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 26
+    REGIONAL_AUTOSCALERS = 27
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 28
+    ROUTERS = 29
+    ROUTES = 30
+    SECURITY_POLICIES = 31
+    SECURITY_POLICY_RULES = 32
+    SNAPSHOTS = 33
+    SSD_TOTAL_GB = 34
+    SSL_CERTIFICATES = 35
+    STATIC_ADDRESSES = 36
+    SUBNETWORKS = 37
+    TARGET_HTTPS_PROXIES = 38
+    TARGET_HTTP_PROXIES = 39
+    TARGET_INSTANCES = 40
+    TARGET_POOLS = 41
+    TARGET_SSL_PROXIES = 42
+    TARGET_TCP_PROXIES = 43
+    TARGET_VPN_GATEWAYS = 44
+    URL_MAPS = 45
+    VPN_TUNNELS = 46
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

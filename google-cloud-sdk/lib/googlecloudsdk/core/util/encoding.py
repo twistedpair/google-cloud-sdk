@@ -52,7 +52,7 @@ def Decode(data, encoding=None):
   """Returns string with non-ascii characters decoded to UNICODE.
 
   UTF-8, the suggested encoding, and the usual suspects will be attempted in
-  order. If the string is pure ASCII or UNICODE then it is returned unchanged.
+  order.
 
   Args:
     data: A string or object that has str() and unicode() methods that may
@@ -60,7 +60,7 @@ def Decode(data, encoding=None):
     encoding: The suggested encoding if known.
 
   Returns:
-    The string with non-ASCII characters decoded to UNICODE.
+    A text string representing the decoded byte string.
   """
   if data is None:
     return None

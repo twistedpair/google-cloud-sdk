@@ -13,6 +13,7 @@
 # limitations under the License.
 """Parameter info lib for resource completers."""
 
+from __future__ import absolute_import
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.calliope.concepts import handlers
 from googlecloudsdk.calliope.concepts import util

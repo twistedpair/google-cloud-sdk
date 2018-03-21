@@ -33,9 +33,11 @@ same attribute across several resources (for example,
 attribute configs).
 """
 
+from __future__ import absolute_import
 from googlecloudsdk.calliope.concepts import deps as deps_lib
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
+import six
 
 
 ANCHOR_HELP = ('The ID of the {resource} or a fully qualified identifier for '
@@ -243,7 +245,7 @@ class ResourceSpec(ConceptSpec):
       raise ResourceConfigurationError('Resource [{}] was given an attribute '
                                        'config for unknown attribute(s): [{}]'
                                        .format(self._name,
-                                               ', '.join(kwargs.keys())))
+                                               ', '.join(six.iterkeys(kwargs))))
 
   @property
   def attributes(self):
@@ -296,7 +298,7 @@ class ResourceSpec(ConceptSpec):
 
   def AttributeName(self, param_name):
     """Given a param name, gets the attribute name."""
-    for attribute_name, p in self.attribute_to_params_map.iteritems():
+    for attribute_name, p in six.iteritems(self.attribute_to_params_map):
       if p == param_name:
         return attribute_name
 

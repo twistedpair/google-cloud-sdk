@@ -18,6 +18,8 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import base64
 import json
@@ -440,7 +442,11 @@ def ToJson(credentials):
     creds_dict = {
         'client_email': credentials._service_account_email,
         'type': creds_type.key,
-        'private_key': base64.b64encode(credentials._private_key_pkcs12),
+        # The base64 only deals with bytes. The encoded value is bytes but is
+        # known to be a safe ascii string. To serialize it, convert it to a
+        # text object.
+        'private_key': (base64.b64encode(credentials._private_key_pkcs12)
+                        .decode('ascii')),
         'password': credentials._private_key_password
     }
   else:

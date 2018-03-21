@@ -488,6 +488,14 @@ MAP = {
             default_version=True
         ),
     },
+    'monitoring': {
+        'v3': APIDef(
+            class_path='googlecloudsdk.third_party.apis.monitoring.v3',
+            client_classpath='monitoring_v3_client.MonitoringV3',
+            messages_modulepath='monitoring_v3_messages',
+            default_version=True
+        ),
+    },
     'oslogin': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.oslogin.v1',

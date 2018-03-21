@@ -13,6 +13,7 @@
 # limitations under the License.
 
 """Utilities for generating and parsing arguments from API fields."""
+from __future__ import absolute_import
 from collections import OrderedDict
 import re
 
@@ -22,6 +23,8 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_property
+
+import six
 
 
 class Error(Exception):
@@ -304,13 +307,13 @@ def ConvertValue(field, value, repeated=None, processor=None, choices=None):
 
 
 def _MapChoice(choices, value):
-  if isinstance(value, basestring):
+  if isinstance(value, six.string_types):
     value = value.lower()
   return choices.get(value, value)
 
 
 def ParseResourceIntoMessage(ref, method, message, resource_method_params=None,
-                             request_id_field=None):
+                             request_id_field=None, use_relative_name=True):
   """Set fields in message corresponding to a resource.
 
   Args:
@@ -321,6 +324,7 @@ def ParseResourceIntoMessage(ref, method, message, resource_method_params=None,
       to resource ref attribute name, if any
     request_id_field: str, the name that the ID of the resource arg takes if the
       API method params and the resource params don't match.
+    use_relative_name: Used ref.RelativeName() if True, otherwise ref.Name().
   """
   resource_method_params = resource_method_params or {}
   resource_method_params = resource_method_params.copy()
@@ -338,12 +342,12 @@ def ParseResourceIntoMessage(ref, method, message, resource_method_params=None,
     ref = ref.Parent(
         parent_collection=method.request_collection.full_name)
 
-  relative_name = ref.RelativeName()
+  ref_name = ref.RelativeName() if use_relative_name else ref.Name()
   for p in method.params:
-    value = getattr(ref, resource_method_params.pop(p, p), relative_name)
+    value = getattr(ref, resource_method_params.pop(p, p), ref_name)
     SetFieldInMessage(message, p, value)
   for message_field_name, ref_param_name in resource_method_params.items():
-    value = getattr(ref, ref_param_name, relative_name)
+    value = getattr(ref, ref_param_name, ref_name)
     SetFieldInMessage(message, message_field_name, value)
 
 
@@ -355,7 +359,7 @@ def ParseStaticFieldsIntoMessage(message, static_fields=None):
     static_fields: dict of fields to values.
   """
   static_fields = static_fields or {}
-  for field_path, value in static_fields.iteritems():
+  for field_path, value in six.iteritems(static_fields):
     field = GetFieldFromMessage(message, field_path)
     SetFieldInMessage(
         message, field_path, ConvertValue(field, value))
@@ -373,13 +377,16 @@ def EnumNameToChoice(name):
   return name.replace('_', '-').lower()
 
 
+_LONG_TYPE = long if six.PY2 else int
+
+
 TYPES = {
     messages.Variant.DOUBLE: float,
     messages.Variant.FLOAT: float,
 
-    messages.Variant.INT64: long,
-    messages.Variant.UINT64: long,
-    messages.Variant.SINT64: long,
+    messages.Variant.INT64: _LONG_TYPE,
+    messages.Variant.UINT64: _LONG_TYPE,
+    messages.Variant.SINT64: _LONG_TYPE,
 
     messages.Variant.INT32: int,
     messages.Variant.UINT32: int,
@@ -598,7 +605,7 @@ class ChoiceEnumMapper(object):
       }
       self._enum_to_choice = {
           y.name: x
-          for x, y in self._choice_to_enum.iteritems()
+          for x, y in six.iteritems(self._choice_to_enum)
       }
       self._choices = sorted(self._choice_to_enum.keys())
 
@@ -615,7 +622,7 @@ class ChoiceEnumMapper(object):
     self._enum_to_choice = {}
     self._choices = OrderedDict()
     for enum_string, (choice, help_str) in sorted(
-        self._custom_mappings.iteritems()):
+        six.iteritems(self._custom_mappings)):
       self._choice_to_enum[choice] = self._enum(enum_string)
       self._enum_to_choice[enum_string] = choice
       self._choices[choice] = help_str
@@ -632,8 +639,9 @@ class ChoiceEnumMapper(object):
     self._choice_to_enum = {}
     self._choices = []
 
-    for enum_string, choice_string in sorted(self._custom_mappings.iteritems()):
-      if not isinstance(choice_string, basestring):
+    for enum_string, choice_string in sorted(
+        six.iteritems(self._custom_mappings)):
+      if not isinstance(choice_string, six.string_types):
         raise TypeError(
             self._CUSTOM_MAPPING_ERROR.format(self._custom_mappings))
       self._choice_to_enum[choice_string] = self._enum(enum_string)

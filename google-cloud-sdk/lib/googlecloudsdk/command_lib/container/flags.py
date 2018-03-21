@@ -1305,10 +1305,9 @@ def AddDeprecatedNodePoolNodeIdentityFlags(parser):
       new_behavior=False)
 
 
-def AddAddonsFlags(parser, add_disable_addons_flag=False):
-  """Adds the --addons and --disable-addons flags to the parser."""
-  group = parser.add_mutually_exclusive_group()
-  group.add_argument(
+def AddAddonsFlags(parser):
+  """Adds the --addons flag to the parser."""
+  parser.add_argument(
       '--addons',
       type=arg_parsers.ArgList(choices=api_adapter.ADDONS_OPTIONS),
       metavar='ADDON',
@@ -1319,18 +1318,6 @@ Default set of addons includes {0}. Addons
 are additional Kubernetes cluster components. Addons specified by this flag will
 be enabled. The others will be disabled.
 """.format(', '.join(api_adapter.DEFAULT_ADDONS)))
-  action = actions.DeprecationAction(
-      'disable-addons',
-      removed=not add_disable_addons_flag,
-      warn='This flag is deprecated. '
-      'Use --addons instead.')
-  group.add_argument(
-      '--disable-addons',
-      type=arg_parsers.ArgList(choices=api_adapter.ADDONS_OPTIONS),
-      metavar='DISABLE_ADDON',
-      action=action,
-      help='List of cluster addons to disable. Options are {0}'.format(
-          ', '.join(api_adapter.ADDONS_OPTIONS)))
 
 
 def AddPodSecurityPolicyFlag(parser, hidden=False):

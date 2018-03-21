@@ -14,12 +14,14 @@
 
 """Generate usage text for displaying to the user."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import argparse
 from collections import OrderedDict
 import copy
 import difflib
+import io
 import re
-import StringIO
 import sys
 import textwrap
 
@@ -30,6 +32,7 @@ import enum
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import parser_arguments
+import six
 
 LINE_WIDTH = 80
 HELP_INDENT = 25
@@ -121,11 +124,10 @@ class TextChoiceSuggester(object):
     if not self._choices:
       return None
 
-    match = difflib.get_close_matches(arg.lower(),
-                                      [unicode(c) for c in self._choices],
-                                      1)
+    match = difflib.get_close_matches(
+        arg.lower(), [six.text_type(c) for c in self._choices], 1)
     if match:
-      choice = [c for c in self._choices if unicode(c) == match[0]][0]
+      choice = [c for c in self._choices if six.text_type(c) == match[0]][0]
       return self._choices[choice]
     return self._choices[match[0]] if match else None
 
@@ -149,13 +151,13 @@ def GetPositionalUsage(arg, markdown=False):
   if markdown:
     var = _ApplyMarkdownItalic(var)
   if arg.nargs == '+':
-    return u'{var} [{var} ...]'.format(var=var)
+    return '{var} [{var} ...]'.format(var=var)
   elif arg.nargs == '*':
-    return u'[{var} ...]'.format(var=var)
+    return '[{var} ...]'.format(var=var)
   elif arg.nargs == argparse.REMAINDER:
-    return u'[-- {var} ...]'.format(var=var)
+    return '[-- {var} ...]'.format(var=var)
   elif arg.nargs == '?':
-    return u'[{var}]'.format(var=var)
+    return '[{var}]'.format(var=var)
   else:
     return var
 
@@ -233,7 +235,7 @@ def GetFlagUsage(arg, brief=False, markdown=False,
     if not value or arg.nargs == 0:
       return long_string
     flag_metavar = _GetFlagMetavar(arg, metavar, name=long_string)
-    return u'{flag}{metavar}'.format(
+    return '{flag}{metavar}'.format(
         flag=long_string,
         metavar=flag_metavar)
   if arg.nargs == 0:
@@ -247,7 +249,7 @@ def GetFlagUsage(arg, brief=False, markdown=False,
     for name in names:
       flag_metavar = _GetFlagMetavar(arg, metavar, name=name, markdown=markdown)
       usage_list.append(
-          u'{bb}{flag}{be}{flag_metavar}'.format(
+          '{bb}{flag}{be}{flag_metavar}'.format(
               bb=base.MARKDOWN_BOLD if markdown else '',
               flag=name,
               be=base.MARKDOWN_BOLD if markdown else '',
@@ -258,11 +260,11 @@ def GetFlagUsage(arg, brief=False, markdown=False,
       if isinstance(arg.default, list):
         default = ','.join(arg.default)
       elif isinstance(arg.default, dict):
-        default = ','.join([u'{0}={1}'.format(k, v)
-                            for k, v in sorted(arg.default.iteritems())])
+        default = ','.join(['{0}={1}'.format(k, v)
+                            for k, v in sorted(six.iteritems(arg.default))])
       else:
         default = arg.default
-      usage += u'; default={0}'.format(_QuoteValue(default))
+      usage += '; default={0}'.format(_QuoteValue(default))
   return usage
 
 
@@ -310,21 +312,21 @@ def GetArgDetails(arg):
       # TBD I guess?
       one_of = '(currently only one value is supported)'
     if isinstance(choices, dict):
-      choices_iteritems = choices.iteritems()
+      choices_iteritems = six.iteritems(choices)
       if not isinstance(choices, OrderedDict):
         choices_iteritems = sorted(choices_iteritems)
       extra_help.append(
-          u'_{metavar}_ must be {one_of}:\n\n{choices}\n\n'.format(
+          '_{metavar}_ must be {one_of}:\n\n{choices}\n\n'.format(
               metavar=metavar,
               one_of=one_of,
               choices='\n'.join(
-                  [u'*{name}*::: {desc}'.format(name=name, desc=desc)
+                  ['*{name}*::: {desc}'.format(name=name, desc=desc)
                    for name, desc in choices_iteritems])))
     else:
-      extra_help.append(u'_{metavar}_ must be {one_of}: {choices}.'.format(
+      extra_help.append('_{metavar}_ must be {one_of}: {choices}.'.format(
           metavar=metavar,
           one_of=one_of,
-          choices=', '.join([u'*{0}*'.format(x) for x in choices])))
+          choices=', '.join(['*{0}*'.format(x) for x in choices])))
   elif arg.is_group or arg.is_positional or arg.nargs:
     # Not a Boolean flag.
     pass
@@ -437,7 +439,7 @@ def _MarkOptional(usage):
   # If the leading bracket matches the trailing bracket its already marked.
   if re.match(r'^\[[^][]*(\[[^][]*\])*[^][]*\]$', usage):
     return usage
-  return u'[{}]'.format(usage)
+  return '[{}]'.format(usage)
 
 
 def GetArgUsage(arg, brief=False, definition=False, markdown=False,
@@ -541,7 +543,7 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
           nesting += 1
       positional_usage.append(usage)
     if nesting:
-      positional_usage[-1] = u'{}{}'.format(positional_usage[-1], ']' * nesting)
+      positional_usage[-1] = '{}{}'.format(positional_usage[-1], ']' * nesting)
   if required_usage:
     all_other_usage.append(sep.join(required_usage))
   if optional_usage:
@@ -561,7 +563,7 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
     all_usage.append(' '.join(remainder_usage))
   usage = ' '.join(all_usage)
   if arg.is_required:
-    return u'({})'.format(usage)
+    return '({})'.format(usage)
   if not top and len(all_usage) > 1:
     usage = _MarkOptional(usage)
   return usage
@@ -698,7 +700,7 @@ def GetArgSections(arguments, is_root):
     del categories[category]
 
   # Add the remaining categories in sorted order.
-  for category, args in sorted(categories.iteritems()):
+  for category, args in sorted(six.iteritems(categories)):
     sections.append(Section(_GetArgHeading(category),
                             parser_arguments.Argument(arguments=args)))
 
@@ -762,7 +764,7 @@ def GetUsage(command, argument_interceptor):
   topic = len(command.GetPath()) >= 2 and command.GetPath()[1] == 'topic'
   command_id = 'topic' if topic else 'command'
 
-  buf = StringIO.StringIO()
+  buf = io.StringIO()
 
   buf.write('Usage: ')
 
@@ -775,9 +777,9 @@ def GetUsage(command, argument_interceptor):
   group_helps = command.GetSubGroupHelps()
   command_helps = command.GetSubCommandHelps()
 
-  groups = sorted([name for (name, help_info) in group_helps.iteritems()
+  groups = sorted([name for (name, help_info) in six.iteritems(group_helps)
                    if command.IsHidden() or not help_info.is_hidden])
-  commands = sorted([name for (name, help_info) in command_helps.iteritems()
+  commands = sorted([name for (name, help_info) in six.iteritems(command_helps)
                      if command.IsHidden() or not help_info.is_hidden])
 
   all_subtypes = []
@@ -793,7 +795,7 @@ def GetUsage(command, argument_interceptor):
 
   usage_msg = ' '.join(usage_parts)
 
-  non_option = u'{command} '.format(command=command_path)
+  non_option = '{command} '.format(command=command_path)
 
   buf.write(non_option + usage_msg + '\n')
 
@@ -807,7 +809,7 @@ def GetUsage(command, argument_interceptor):
     WrapWithPrefix('optional flags may be', ' | '.join(optional_flags),
                    HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
 
-  buf.write(u"""
+  buf.write("""
 For detailed information on this command and its flags, run:
   {command_path} --help
 """.format(command_path=' '.join(command.GetPath())))

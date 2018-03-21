@@ -39,12 +39,15 @@ Usage:
   markdown = generator.Edit()
 """
 
+from __future__ import absolute_import
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.calliope import markdown
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import properties
+
+import six
 
 
 def _GetReleaseTrackFromId(release_id):
@@ -216,8 +219,8 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
                                  subcommand.get('hidden', False)),
         release_track=_GetReleaseTrackFromId(
             subcommand[cli_tree.LOOKUP_RELEASE]))
-            for name, subcommand in self._command[
-                cli_tree.LOOKUP_COMMANDS].iteritems()
+            for name, subcommand in six.iteritems(self._command[
+                cli_tree.LOOKUP_COMMANDS])
             if subcommand[cli_tree.LOOKUP_IS_GROUP] == is_group}
 
   def GetSubCommandHelp(self):

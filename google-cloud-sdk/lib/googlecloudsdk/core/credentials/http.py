@@ -17,6 +17,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
@@ -26,6 +27,7 @@ from googlecloudsdk.core.credentials import creds as core_creds
 from googlecloudsdk.core.credentials import store
 
 from oauth2client import client
+import six
 
 
 class Error(exceptions.Error):
@@ -140,6 +142,7 @@ def _HandleAuthError(e):
   Raises:
     sore.TokenRefreshError: If an auth error occurs.
   """
-  log.debug('Exception caught during HTTP request: %s', e.message,
+  msg = six.text_type(e)
+  log.debug('Exception caught during HTTP request: %s', msg,
             exc_info=True)
-  raise store.TokenRefreshError(e.message)
+  raise store.TokenRefreshError(msg)

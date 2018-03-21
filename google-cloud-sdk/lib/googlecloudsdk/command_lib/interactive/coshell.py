@@ -49,7 +49,6 @@ import os
 import re
 import signal
 import subprocess
-import sys
 
 
 _GET_COMPLETIONS_SHELL_FUNCTION = r"""
@@ -283,6 +282,8 @@ class _UnixCoshellBase(_CoshellBase):
     """Consults the user shell config for defaults."""
 
     self._SendCommand(
+        # Set $? to $1.
+        '_status() {{ return $1; }};'
         # The $ENV file configures aliases and set -o modes.
         '[ -f "$ENV" ] && . "$ENV";'
         # The exit command hits this trap, reaped by _GetStatus() in Run().
@@ -294,8 +295,7 @@ class _UnixCoshellBase(_CoshellBase):
                 get_completions=_GET_COMPLETIONS_SHELL_FUNCTION))
 
     # Enable job control if supported.
-    if not sys.platform.startswith('darwin'):
-      self._SendCommand('set -o monitor 2>/dev/null')
+    self._SendCommand('set -o monitor 2>/dev/null')
 
     # Enable alias expansion if supported.
     self._SendCommand('shopt -s expand_aliases 2>/dev/null')
@@ -395,7 +395,7 @@ class _UnixCoshell(_UnixCoshellBase):
     """Runs command in the coshell and waits for it to complete."""
     self._SendCommand(
         'command eval {command} <&{fdin} && echo 0 >&{fdstatus} || '
-        '{{ status=$?; echo $status 1>&{fdstatus}; (exit $status); }}'.format(
+        '{{ status=$?; echo $status 1>&{fdstatus}; _status $status; }}'.format(
             command=self._Quote(command),
             fdstatus=self.SHELL_STATUS_FD,
             fdin=self.SHELL_STDIN_FD))

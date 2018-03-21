@@ -16,7 +16,9 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 
+import io
 import os
 import socket
 import threading
@@ -102,7 +104,7 @@ class _OnGCECache(object):
     gce_cache_path = config.Paths().GCECachePath()
     with self.file_lock:
       try:
-        with open(gce_cache_path) as gcecache_file:
+        with io.open(gce_cache_path) as gcecache_file:
           mtime = os.stat(gce_cache_path).st_mtime
           expiration_time = mtime + _GCE_CACHE_MAX_AGE
           return gcecache_file.read() == str(True), expiration_time

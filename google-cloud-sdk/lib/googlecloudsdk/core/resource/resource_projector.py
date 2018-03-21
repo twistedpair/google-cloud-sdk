@@ -392,7 +392,7 @@ class Projector(object):
       pass
     elif isinstance(obj, bytearray):
       # bytearray copied to disassociate from original obj.
-      obj = encoding.Decode(obj)
+      obj = encoding.Decode(bytes(obj))
     else:
       self._been_here_done_that.append(obj)
       if isinstance(obj, protorpc_message.Message):

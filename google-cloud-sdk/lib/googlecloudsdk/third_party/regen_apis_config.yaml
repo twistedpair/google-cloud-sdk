@@ -181,6 +181,8 @@ apis:
     v1:
       discovery_doc: container_v1.json
       default: true
+      resources:
+        projects.zones: projects/{projectId}/zones/{zoneId}
     v1beta1:
       discovery_doc: container_v1beta1.json
       resources:
@@ -281,6 +283,14 @@ apis:
   ml:
     v1:
       discovery_doc: ml_v1.json
+  monitoring:
+    v3:
+      discovery_doc: monitoring_v3.json
+      resources:
+        projects.alertPolicies.conditions: "projects/{projectsId}/alertPolicies/{alertPoliciesId}/conditions/{conditionsId}"
+      unelidable_request_methods:
+      - monitoring.projects.alertPolicies.create
+      - monitoring.projects.notificationChannels.create
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json

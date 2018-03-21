@@ -24,7 +24,7 @@ class ComputeAlpha(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new compute handle."""
     url = url or self.BASE_URL
     super(ComputeAlpha, self).__init__(
@@ -33,7 +33,8 @@ class ComputeAlpha(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.acceleratorTypes = self.AcceleratorTypesService(self)
     self.addresses = self.AddressesService(self)
     self.autoscalers = self.AutoscalersService(self)
@@ -11618,7 +11619,7 @@ For more information, see Deleting snaphots.
     )
 
     def Patch(self, request, global_params=None):
-      """Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range and allow_subnet_cidr_routes_overlap. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.
+      """Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.
 
       Args:
         request: (ComputeSubnetworksPatchRequest) input message

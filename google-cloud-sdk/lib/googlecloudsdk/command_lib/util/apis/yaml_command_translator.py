@@ -20,6 +20,7 @@ interface and provides generators for a yaml command spec. The schema for the
 spec can be found in yaml_command_schema.yaml.
 """
 
+from __future__ import absolute_import
 from apitools.base.protorpclite import messages as apitools_messages
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
@@ -292,6 +293,7 @@ class CommandBuilder(object):
     # pylint: disable=protected-access, The linter gets confused about 'self'
     # and thinks we are accessing something protected.
     class Command(base.ListCommand):
+      """Get IAM policy command closure."""
 
       @staticmethod
       def Args(parser):
@@ -299,7 +301,7 @@ class CommandBuilder(object):
         base.URI_FLAG.RemoveFromParser(parser)
 
       def Run(self_, args):
-        unused_ref, response = self._CommonRun(args)
+        _, response = self._CommonRun(args)
         return self._HandleResponse(response)
 
     return Command
@@ -389,7 +391,8 @@ class CommandBuilder(object):
     else:
       request = self.arg_generator.CreateRequest(
           args, self.spec.request.static_fields,
-          self.spec.request.resource_method_params)
+          self.spec.request.resource_method_params,
+          use_relative_name=self.spec.request.use_relative_name)
       for hook in self.spec.request.modify_request_hooks:
         request = hook(ref, args, request)
 

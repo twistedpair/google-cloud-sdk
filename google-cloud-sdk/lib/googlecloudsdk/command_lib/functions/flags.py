@@ -124,9 +124,9 @@ def AddSourceFlag(parser):
 
       Location of the source can be one of the following:
 
-      * Source code in Google Cloud Storage,
+      * Source code in Google Cloud Storage (must be a `.zip` archive),
       * Reference to source repository or,
-      * Local filesystem path.
+      * Local filesystem path (root directory of function source).
 
       The value of the flag will be interpreted as a Cloud Storage location, if
       it starts with `gs://`.

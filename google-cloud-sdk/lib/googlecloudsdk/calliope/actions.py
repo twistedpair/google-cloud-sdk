@@ -15,9 +15,10 @@
 """argparse Actions for use with calliope.
 """
 
+from __future__ import absolute_import
 import argparse
+import io
 import os
-import StringIO
 import sys
 
 from googlecloudsdk.calliope import markdown
@@ -27,6 +28,7 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.document_renderers import render_document
+import six
 
 
 class _AdditionalHelp(object):
@@ -430,7 +432,7 @@ def RenderDocumentAction(command, default_style=None):
       title = None
 
       for attributes in values:
-        for name, value in attributes.iteritems():
+        for name, value in six.iteritems(attributes):
           if name == 'notes':
             notes = value
           elif name == 'style':
@@ -448,8 +450,8 @@ def RenderDocumentAction(command, default_style=None):
       # '--help' is set by the --help flag, the others by gcloud <style> ... .
       if style in ('--help', 'help', 'topic'):
         style = 'text'
-      md = StringIO.StringIO(markdown.Markdown(command))
-      out = (StringIO.StringIO() if console_io.IsInteractive(output=True)
+      md = io.StringIO(markdown.Markdown(command))
+      out = (io.StringIO() if console_io.IsInteractive(output=True)
              else None)
       render_document.RenderDocument(style, md, out=out or log.out, notes=notes,
                                      title=title)
@@ -491,7 +493,7 @@ def _PreActionHook(action, func, additional_help=None):
   if not callable(func):
     raise TypeError('func should be a callable of the form func(value)')
 
-  if not isinstance(action, basestring) and not issubclass(
+  if not isinstance(action, six.string_types) and not issubclass(
       action, argparse.Action):
     raise TypeError(('action should be either a subclass of argparse.Action '
                      'or a string representing one of the default argparse '
@@ -508,7 +510,7 @@ def _PreActionHook(action, func, additional_help=None):
       cls.wrapped_action = action
 
     def _GetActionClass(self):
-      if isinstance(self.wrapped_action, basestring):
+      if isinstance(self.wrapped_action, six.string_types):
         action_cls = GetArgparseBuiltInAction(self.wrapped_action)
       else:
         action_cls = self.wrapped_action

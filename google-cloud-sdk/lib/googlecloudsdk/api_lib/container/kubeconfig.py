@@ -169,57 +169,26 @@ def Cluster(name, server, ca_path=None, ca_data=None):
   }
 
 
-def User(name, token=None, username=None, password=None, auth_provider=None,
-         cert_path=None, cert_data=None, key_path=None, key_data=None):
+def User(name, auth_provider):
   """Generate and return a user kubeconfig object.
 
   Args:
     name: str, nickname for this user entry.
-    token: str, bearer token.
-    username: str, basic auth user.
-    password: str, basic auth password.
     auth_provider: str, authentication provider.
-    cert_path: str, path to client certificate file.
-    cert_data: str, base64 encoded client certificate data.
-    key_path: str, path to client key file.
-    key_data: str, base64 encoded client key data.
   Returns:
     dict, valid kubeconfig user entry.
 
   Raises:
-    Error: if no auth info is provided (token or username AND password)
+    Error: if no auth_provider is provided
   """
-  # TODO(b/70856999) Figure out what the correct behavior for client certs is.
-  if (not auth_provider and not token and not cert_path and not cert_data and
-      (not username or not password)):
-    raise Error('either auth_provider, token or username & password must be'
-                ' provided')
-  user = {}
-  if auth_provider:
-    user['auth-provider'] = _AuthProvider(name=auth_provider)
-  elif token:
-    user['token'] = token
-  else:
-    user['username'] = username
-    user['password'] = password
-
-  if cert_path and cert_data:
-    raise Error('cannot specify both cert_path and cert_data')
-  if cert_path:
-    user['client-certificate'] = cert_path
-  elif cert_data:
-    user['client-certificate-data'] = cert_data
-
-  if key_path and key_data:
-    raise Error('cannot specify both key_path and key_data')
-  if key_path:
-    user['client-key'] = key_path
-  elif key_data:
-    user['client-key-data'] = key_data
+  if not auth_provider:
+    raise Error('auth_provider must be provided')
 
   return {
       'name': name,
-      'user': user
+      'user': {
+          'auth-provider': _AuthProvider(name=auth_provider)
+      }
   }
 
 

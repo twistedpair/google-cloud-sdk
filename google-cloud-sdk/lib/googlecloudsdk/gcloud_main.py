@@ -49,7 +49,6 @@ def _DoStartupChecks():
   if not platforms.PythonVersion().IsCompatible():
     sys.exit(1)
 
-_DoStartupChecks()
 
 if not config.Paths().sdk_root:
   # Don't do update checks if there is no install root.
@@ -126,6 +125,7 @@ def _IssueTestWarning(command_path=None):
 
 
 def main(gcloud_cli=None, credential_providers=None):
+  _DoStartupChecks()
   metrics.Started(START_TIME)
   # TODO(b/36049857): Put a real version number here
   metrics.Executions(

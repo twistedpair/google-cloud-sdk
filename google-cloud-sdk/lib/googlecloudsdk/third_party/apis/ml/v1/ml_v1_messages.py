@@ -679,7 +679,7 @@ class GoogleCloudMlV1ParameterSpec(_messages.Message):
       The list should be in strictly increasing order. For instance, this
       parameter might have possible settings of 1.5, 2.5, and 4.0. This list
       should not contain more than 1,000 values.
-    maxValue: Required if typeis `DOUBLE` or `INTEGER`. This field should be
+    maxValue: Required if type is `DOUBLE` or `INTEGER`. This field should be
       unset if type is `CATEGORICAL`. This value should be integers if type is
       `INTEGER`.
     minValue: Required if type is `DOUBLE` or `INTEGER`. This field should be
@@ -855,7 +855,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   command to submit your training job, you can specify the input parameters as
   command-line arguments and/or in a YAML configuration file referenced from
   the --config command-line argument. For details, see the guide to <a href
-  ="/ml-engine/docs/training-jobs">submitting a training job</a>.
+  ="/ml-engine/docs/training-jobs">submitting a training job</a>. Next ID: 22
 
   Enums:
     ScaleTierValueValuesEnum: Required. Specifies the machine types, the
@@ -1083,6 +1083,10 @@ class GoogleCloudMlV1Version(_messages.Message):
       on the selected number of nodes.
     name: Required.The name specified for the version when it was created.
       The version name must be unique within the model it is created in.
+    pythonVersion: Optional. The version of Python used in prediction. If not
+      set, the default version is '2.7'. Python '3.5' is available when
+      `runtime_version` is set to '1.4' and above. Python '2.7' works with all
+      supported runtime versions.
     runtimeVersion: Optional. The Google Cloud ML runtime version to use for
       this deployment. If not set, Google Cloud ML will choose a version.
     state: Output only. The state of a version.
@@ -1169,8 +1173,9 @@ class GoogleCloudMlV1Version(_messages.Message):
   machineType = _messages.StringField(11)
   manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 12)
   name = _messages.StringField(13)
-  runtimeVersion = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
+  pythonVersion = _messages.StringField(14)
+  runtimeVersion = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):

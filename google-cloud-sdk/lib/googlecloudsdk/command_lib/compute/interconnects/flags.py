@@ -22,15 +22,7 @@ _INTERCONNECT_TYPE_CHOICES_GA = {
     'DEDICATED': 'Dedicated private interconnect.',
 }
 
-_INTERCONNECT_TYPE_CHOICES_BETA = {
-    'IT_PRIVATE':
-        'Dedicated private interconnect. (Warning: IT_PRIVATE is deprecated, '
-        'use DEDICATED instead.)',
-    'DEDICATED':
-        'Dedicated private interconnect.',
-}
-
-_INTERCONNECT_TYPE_CHOICES_ALPHA = {
+_INTERCONNECT_TYPE_CHOICES_BETA_AND_ALPHA = {
     'IT_PRIVATE':
         'Dedicated private interconnect. (Warning: IT_PRIVATE is deprecated, '
         'use DEDICATED instead.)',
@@ -129,13 +121,7 @@ def AddCreateGaArgs(parser):
 def AddCreateBetaArgs(parser):
   """Adds beta flags for create command to the argparse.ArgumentParser."""
   AddCreateCommonArgs(parser)
-  AddInterconnectTypeBeta(parser)
-
-
-def AddCreateAlphaArgs(parser):
-  """Adds alpha flags for create command to the argparse.ArgumentParser."""
-  AddCreateCommonArgs(parser)
-  AddInterconnectTypeAlpha(parser)
+  AddInterconnectTypeBetaAndAlpha(parser)
 
 
 def AddDescription(parser):
@@ -160,31 +146,11 @@ def _ShouldShowDeprecatedWarning(value):
   return value and value.upper() == 'IT_PRIVATE'
 
 
-def AddInterconnectTypeBeta(parser):
+def AddInterconnectTypeBetaAndAlpha(parser):
   """Adds interconnect-type flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--interconnect-type',
-      choices=_INTERCONNECT_TYPE_CHOICES_BETA,
-      action=calliope_actions.DeprecationAction(
-          'interconnect-type',
-          removed=False,
-          show_message=_ShouldShowDeprecatedWarning,
-          warn=('IT_PRIVATE will be deprecated '
-                'for {flag_name}. '
-                'Please use DEDICATED instead.'),
-          error='Value IT_PRIVATE for {flag_name} has been removed. '
-                'Please use DEDICATED instead.'),
-      required=True,
-      help="""\
-      Type of the interconnect.
-      """)
-
-
-def AddInterconnectTypeAlpha(parser):
-  """Adds interconnect-type flag to the argparse.ArgumentParser."""
-  parser.add_argument(
-      '--interconnect-type',
-      choices=_INTERCONNECT_TYPE_CHOICES_ALPHA,
+      choices=_INTERCONNECT_TYPE_CHOICES_BETA_AND_ALPHA,
       action=calliope_actions.DeprecationAction(
           'interconnect-type',
           removed=False,

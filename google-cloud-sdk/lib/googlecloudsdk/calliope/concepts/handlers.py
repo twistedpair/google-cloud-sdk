@@ -13,12 +13,14 @@
 # limitations under the License.
 """Classes for runtime handling of concept arguments."""
 
+from __future__ import absolute_import
 import abc
 
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps as deps_lib
 from googlecloudsdk.calliope.concepts import util
 from googlecloudsdk.core import exceptions
+import six
 
 
 class Error(exceptions.Error):
@@ -74,14 +76,14 @@ class RuntimeHandler(object):
           return None
 
     setattr(self, name, LazyParse(concept_info.Parse, self.ParsedArgs))
-    for _, arg_name in concept_info.attribute_to_args_map.iteritems():
+    for _, arg_name in six.iteritems(concept_info.attribute_to_args_map):
       self._arg_name_lookup[util.NormalizeFormat(arg_name)] = concept_info
 
   def ArgNameToConceptInfo(self, arg_name):
     return self._arg_name_lookup.get(util.NormalizeFormat(arg_name))
 
 
-class ConceptInfo(object):
+class ConceptInfo(six.with_metaclass(abc.ABCMeta, object)):
   """Holds information for a concept argument.
 
   The ConceptInfo object is responsible for holding information about the
@@ -94,7 +96,6 @@ class ConceptInfo(object):
       flags.
     fallthroughs_map: A map of attributes to non-argument fallthroughs.
   """
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def Parse(self, parsed_args=None):

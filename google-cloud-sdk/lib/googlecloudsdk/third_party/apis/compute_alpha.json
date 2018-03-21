@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20180226",
+ "revision": "20180314",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2866,9 +2866,9 @@
     },
     "type": {
      "type": "string",
-     "description": "The type of commitment, which affects the discount rate and the eligible resources. Type LARGE_VM specifies a commitment that will only apply to large VMs. Type NORMAL specifies a commitment that applies to all other resources.",
+     "description": "The type of commitment, which affects the discount rate and the eligible resources. Type MEMORY_OPTIMIZED_VM specifies a commitment that will only apply to memory optimized VMs. Type NORMAL specifies a commitment that applies to all other resources.",
      "enum": [
-      "LARGE_VM",
+      "MEMORY_OPTIMIZED_VM",
       "NORMAL",
       "TYPE_UNSPECIFIED"
      ],
@@ -14386,6 +14386,7 @@
       "PREEMPTIBLE_LOCAL_SSD_GB",
       "PREEMPTIBLE_NVIDIA_K80_GPUS",
       "PREEMPTIBLE_NVIDIA_P100_GPUS",
+      "PRIVATE_V6_ACCESS_SUBNETWORKS",
       "REGIONAL_AUTOSCALERS",
       "REGIONAL_INSTANCE_GROUP_MANAGERS",
       "ROUTERS",
@@ -14408,6 +14409,7 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -16245,6 +16247,18 @@
      "type": "string",
      "description": "IP address of the interface inside Google Cloud Platform. Only IPv4 is supported."
     },
+    "managementType": {
+     "type": "string",
+     "description": "[Output Only] Type of how the resource/configuration of the BGP peer is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT represents an BGP peer that is automatically created for PARTNER interconnectAttachment, Google will automatically create/delete this type of BGP peer when the PARTNER interconnectAttachment is created/deleted.",
+     "enum": [
+      "MANAGED_BY_ATTACHMENT",
+      "MANAGED_BY_USER"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "name": {
      "type": "string",
      "description": "Name of this BGP peer. The name must be 1-63 characters long and comply with RFC1035.",
@@ -16276,6 +16290,18 @@
     "linkedVpnTunnel": {
      "type": "string",
      "description": "URI of the linked VPN tunnel. It must be in the same region as the router. Each interface can have at most one linked resource and it could either be a VPN Tunnel or an interconnect attachment."
+    },
+    "managementType": {
+     "type": "string",
+     "description": "[Output Only] Type of how the resource/configuration of the interface is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT represents an interface that is automatically created for PARTNER type interconnectAttachment, Google will automatically create/update/delete this type of interface when the PARTNER interconnectAttachment is created/provisioned/deleted.",
+     "enum": [
+      "MANAGED_BY_ATTACHMENT",
+      "MANAGED_BY_USER"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     },
     "name": {
      "type": "string",
@@ -18179,9 +18205,33 @@
      "type": "boolean",
      "description": "Whether the VMs in this subnet can access Google services without assigned external IP addresses. This field can be both set at resource creation time and updated using setPrivateIpGoogleAccess."
     },
+    "purpose": {
+     "type": "string",
+     "description": "The purpose of the resource. This field can be either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork that is reserved for Internal HTTP(S) Load Balancing. If unspecified, the purpose defaults to PRIVATE_RFC_1918.",
+     "enum": [
+      "INTERNAL_HTTPS_LOAD_BALANCER",
+      "PRIVATE_RFC_1918"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "region": {
      "type": "string",
      "description": "URL of the region where the Subnetwork resides. This field can be set only at resource creation time."
+    },
+    "role": {
+     "type": "string",
+     "description": "The role of subnetwork. Currenly, this field is only used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is ready to be promoted to ACTIVE or is currently draining.",
+     "enum": [
+      "ACTIVE",
+      "BACKUP"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     },
     "secondaryIpRanges": {
      "type": "array",
@@ -40854,7 +40904,7 @@
      "id": "compute.subnetworks.patch",
      "path": "{project}/regions/{region}/subnetworks/{subnetwork}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range and allow_subnet_cidr_routes_overlap. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.",
+     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.",
      "parameters": {
       "project": {
        "type": "string",

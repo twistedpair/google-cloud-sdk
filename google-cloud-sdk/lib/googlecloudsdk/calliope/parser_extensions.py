@@ -55,6 +55,7 @@ The intercepted args namespace object passed to the Command.Run() method adds
 methods to access/modify info collected during the parse.
 """
 
+from __future__ import absolute_import
 import abc
 import argparse
 import itertools
@@ -72,6 +73,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.updater import update_manager
+import six
 
 
 class Namespace(argparse.Namespace):
@@ -143,7 +145,7 @@ class Namespace(argparse.Namespace):
     """
     return {
         name: getattr(self, dest, 'UNKNOWN')
-        for dest, name in self._specified_args.iteritems()
+        for dest, name in six.iteritems(self._specified_args)
     }
 
   def IsSpecified(self, dest):
@@ -639,10 +641,10 @@ class ArgumentParser(argparse.ArgumentParser):
     # This is copied from this method in argparse's version of this method.
     if action.choices is None or value in action.choices:
       return
-    if isinstance(value, basestring):
+    if isinstance(value, six.string_types):
       arg = value
     else:
-      arg = unicode(value)
+      arg = six.text_type(value)
 
     # We add this to check if we can lazy load the element.
     if is_subparser and action.IsValidChoice(arg):
@@ -692,7 +694,7 @@ class ArgumentParser(argparse.ArgumentParser):
       # Add command suggestions if the group registered any.
       cmd_suggestions = self._calliope_command._common_type.CommandSuggestions()
       cli_name = self._calliope_command.GetPath()[0]
-      for cmd, suggestion in cmd_suggestions.iteritems():
+      for cmd, suggestion in six.iteritems(cmd_suggestions):
         suggester.AddAliases([cmd], cli_name + ' ' + suggestion)
     suggestion = suggester.GetSuggestion(arg)
     if suggestion:
@@ -700,7 +702,7 @@ class ArgumentParser(argparse.ArgumentParser):
     elif not is_subparser:
       # Command group choices will be displayed in the usage message.
       message += u'\n\nValid choices are [{0}].'.format(
-          ', '.join([unicode(c) for c in choices]))
+          ', '.join([six.text_type(c) for c in choices]))
 
     # Log to analytics the attempt to execute a command.
     # We don't know if the user entered 'value' is a mistyped command or
@@ -734,7 +736,7 @@ class ArgumentParser(argparse.ArgumentParser):
     if alternates:
       top_element = self._calliope_command._TopCLIElement()
       # Sort by the release track prefix.
-      for _, command_path in sorted(alternates.iteritems(),
+      for _, command_path in sorted(six.iteritems(alternates),
                                     key=lambda x: x[0].prefix):
         alternative_cmd = top_element.LoadSubElementByPath(command_path[1:])
         if alternative_cmd and not alternative_cmd.IsHidden():
@@ -943,15 +945,14 @@ class ArgumentParser(argparse.ArgumentParser):
 
 
 # pylint:disable=protected-access
-class CloudSDKSubParsersAction(argparse._SubParsersAction):
+class CloudSDKSubParsersAction(six.with_metaclass(abc.ABCMeta,
+                                                  argparse._SubParsersAction)):
   """A custom subclass for arg parsing behavior.
 
   While the above ArgumentParser overrides behavior for parsing the flags
   associated with a specific group or command, this class overrides behavior
   for loading those sub parsers.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def IsValidChoice(self, choice):
@@ -1009,7 +1010,8 @@ class CommandGroupAction(CloudSDKSubParsersAction):
         parser, namespace, values, option_string=option_string)
 
 
-class DynamicPositionalAction(CloudSDKSubParsersAction):
+class DynamicPositionalAction(six.with_metaclass(abc.ABCMeta,
+                                                 CloudSDKSubParsersAction)):
   """An argparse action that adds new flags to the parser when it is called.
 
   We need to use a subparser for this because for a given parser, argparse
@@ -1017,8 +1019,6 @@ class DynamicPositionalAction(CloudSDKSubParsersAction):
   on the fly doesn't work. With a subparser, it is independent so we can load
   flags into here on the fly before argparse loads this particular parser.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, *args, **kwargs):
     self.hidden = kwargs.pop('hidden', False)

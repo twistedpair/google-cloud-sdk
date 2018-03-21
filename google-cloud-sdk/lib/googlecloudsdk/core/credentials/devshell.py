@@ -16,6 +16,8 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
+
 import datetime
 import json
 import os
@@ -27,8 +29,8 @@ from googlecloudsdk.core import config
 from oauth2client import client
 import six
 
-
-DEVSHELL_ENV = 'DEVSHELL_CLIENT_PORT'
+DEVSHELL_ENV = 'CLOUD_SHELL'
+DEVSHELL_CLIENT_ENV = 'DEVSHELL_CLIENT_PORT'
 DEVSHELL_ENV_IPV6_ENABLED = 'DEVSHELL_CLIENT_PORT_IPV6_ENABLED'
 
 
@@ -150,11 +152,10 @@ def _SendRecvPort(request, port):
     s = socket.socket()
 
   s.connect(('localhost', port))
-  msg = '%s\n%s' % (nstr, data)
+  msg = ('%s\n%s' % (nstr, data)).encode('utf8')
   s.sendall(msg)
 
-  resp_buffer = ''
-  resp_1 = s.recv(6)
+  resp_1 = s.recv(6).decode('utf8')
   if '\n' not in resp_1:
     raise CommunicationError('saw no newline in the first 6 bytes')
   nstr, extra = resp_1.split('\n', 1)
@@ -162,7 +163,7 @@ def _SendRecvPort(request, port):
   n = int(nstr)
   to_read = n-len(extra)
   if to_read > 0:
-    resp_buffer += s.recv(to_read, socket.MSG_WAITALL)
+    resp_buffer += s.recv(to_read, socket.MSG_WAITALL).decode('utf8')
 
   return JSONToMessage(resp_buffer, CredentialInfoResponse)
 
@@ -229,5 +230,9 @@ def LoadDevshellCredentials():
 
 
 def IsDevshellEnvironment():
-  port = int(os.getenv(DEVSHELL_ENV, 0))
+  return bool(os.getenv(DEVSHELL_ENV, False)) or HasDevshellAuth()
+
+
+def HasDevshellAuth():
+  port = int(os.getenv(DEVSHELL_CLIENT_ENV, 0))
   return port != 0

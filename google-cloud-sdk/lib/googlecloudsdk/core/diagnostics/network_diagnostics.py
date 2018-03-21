@@ -16,9 +16,9 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import socket
 import ssl
-import urlparse
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import http
@@ -29,6 +29,7 @@ from googlecloudsdk.core.diagnostics import http_proxy_setup
 
 import httplib2
 from six.moves import http_client
+from six.moves import urllib
 import socks
 
 
@@ -57,7 +58,7 @@ def DefaultUrls():
   download_urls = (properties.VALUES.component_manager.snapshot_url.Get() or
                    config.INSTALLATION_CONFIG.snapshot_url)
   urls.extend(u for u in download_urls.split(',')
-              if urlparse.urlparse(u).scheme in ('http', 'https'))
+              if urllib.parse.urlparse(u).scheme in ('http', 'https'))
   return urls
 
 

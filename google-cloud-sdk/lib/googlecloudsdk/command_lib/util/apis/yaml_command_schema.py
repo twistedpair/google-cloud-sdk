@@ -15,6 +15,7 @@
 """Data objects to support the yaml command schema."""
 
 
+from __future__ import absolute_import
 from enum import Enum
 
 from googlecloudsdk.calliope import base
@@ -96,6 +97,7 @@ class Request(object):
         util.Hook.FromPath(p) for p in data.get('modify_request_hooks', [])]
     self.create_request_hook = util.Hook.FromData(data, 'create_request_hook')
     self.issue_request_hook = util.Hook.FromData(data, 'issue_request_hook')
+    self.use_relative_name = data.get('use_relative_name', True)
 
 
 class Response(object):

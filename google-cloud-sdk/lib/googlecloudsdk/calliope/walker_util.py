@@ -14,6 +14,7 @@
 
 """A collection of CLI walkers."""
 
+from __future__ import absolute_import
 import cStringIO
 import os
 
@@ -116,7 +117,7 @@ class DevSiteGenerator(walker.Walker):
     command = node.GetPath()
     if is_group:
       directory = os.path.join(self._directory, *command[1:])
-      files.MakeDir(directory, mode=0755)
+      files.MakeDir(directory, mode=0o755)
     else:
       directory = os.path.join(self._directory, *command[1:-1])
 
@@ -179,7 +180,7 @@ class HelpTextGenerator(walker.Walker):
     command = node.GetPath()
     if is_group:
       directory = os.path.join(self._directory, *command[1:])
-      files.MakeDir(directory, mode=0755)
+      files.MakeDir(directory, mode=0o755)
     else:
       directory = os.path.join(self._directory, *command[1:-1])
 

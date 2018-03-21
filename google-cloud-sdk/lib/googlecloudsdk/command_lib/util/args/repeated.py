@@ -111,6 +111,44 @@ class CachedResult(object):
       return lambda: getattr(self.Get(), attr)
 
 
+def ParseResourceNameArgs(args, arg_name, current_value_thunk, resource_parser):
+  """Parse the modification to the given repeated resource name field.
+
+  To be used in combination with AddPrimitiveArgs. This variant assumes the
+  repeated field contains resource names and will use the given resource_parser
+  to convert the arguments to relative names.
+
+  Args:
+    args: argparse.Namespace of parsed arguments
+    arg_name: string, the (plural) suffix of the argument (snake_case).
+    current_value_thunk: zero-arg function that returns the current value of the
+      attribute to be updated. Will be called lazily if required.
+    resource_parser: one-arg function that returns a resource reference that
+      corresponds to the resource name list to be udpated.
+
+  Raises:
+    ValueError: if more than one arg is set.
+
+  Returns:
+    List of str: the new value for the field, or None if no change is required.
+  """
+  remove = _ConvertValuesToRelativeNames(
+      getattr(args, 'remove_' + arg_name), resource_parser)
+  add = _ConvertValuesToRelativeNames(
+      getattr(args, 'add_' + arg_name), resource_parser)
+  clear = getattr(args, 'clear_' + arg_name)
+  set_ = _ConvertValuesToRelativeNames(
+      getattr(args, 'set_' + arg_name), resource_parser)
+
+  return _ModifyCurrentValue(remove, add, clear, set_, current_value_thunk)
+
+
+def _ConvertValuesToRelativeNames(names, resource_parser):
+  if names:
+    names = [resource_parser(name).RelativeName() for name in names]
+  return names
+
+
 def ParsePrimitiveArgs(args, arg_name, current_value_thunk):
   """Parse the modification to the given repeated field.
 
@@ -134,6 +172,26 @@ def ParsePrimitiveArgs(args, arg_name, current_value_thunk):
   clear = getattr(args, 'clear_' + arg_name)
   set_ = getattr(args, 'set_' + arg_name)
 
+  return _ModifyCurrentValue(remove, add, clear, set_, current_value_thunk)
+
+
+def _ModifyCurrentValue(remove, add, clear, set_, current_value_thunk):
+  """Performs the modification of the current value based on the args.
+
+  Args:
+    remove: list[str], items to be removed from the current value.
+    add: list[str], items to be added to the current value.
+    clear: bool, whether or not to clear the current value.
+    set_: list[str], items to replace the current value.
+    current_value_thunk: zero-arg function that returns the current value of the
+      attribute to be updated. Will be called lazily if required.
+
+  Raises:
+    ValueError: if more than one arg is set.
+
+  Returns:
+    List of str: the new value for the field, or None if no change is required.
+  """
   if sum(map(bool, (remove, add, clear, set_))) > 1:
     raise ValueError('At most one arg may be set.')
 

@@ -258,11 +258,6 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
       A port or port range can be specified after PROTOCOL to which the
       firewall rule apply on traffic through specific ports. If no port
       or port range is specified, connections through all ranges are applied.
-      For example, the following will create a rule that blocks TCP
-      traffic through port 80 and ICMP traffic:
-
-        $ {command} MY-RULE --action deny --rules tcp:80,icmp
-
       TCP and UDP rules must include a port or port range.
       """
   if for_update:
@@ -272,6 +267,11 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
   else:
     rules_help += """
       If specified, the flag --action must also be specified.
+
+      For example, the following will create a rule that blocks TCP
+      traffic through port 80 and ICMP traffic:
+
+        $ {command} MY-RULE --action deny --rules tcp:80,icmp
       """
   parser.add_argument(
       '--rules',

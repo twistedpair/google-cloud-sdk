@@ -116,6 +116,7 @@ class JobsClient(object):
                        scale_tier=None,
                        user_args=None,
                        runtime_version=None,
+                       python_version=None,
                        labels=None):
     """Builds a Cloud ML Engine Job from a config file and/or flag values.
 
@@ -133,6 +134,8 @@ class JobsClient(object):
         user_args: [str]. A list of arguments to pass through to the job.
         (overrides yaml file)
         runtime_version: the runtime version in which to run the job (overrides
+          yaml file)
+        python_version: the Python version in which to run the job (overrides
           yaml file)
         labels: Job.LabelsValue, the Cloud labels for the job
     Returns:
@@ -160,7 +163,8 @@ class JobsClient(object):
         'region': region,
         'jobDir': job_dir,
         'scaleTier': scale_tier,
-        'runtimeVersion': runtime_version
+        'runtimeVersion': runtime_version,
+        'pythonVersion': python_version
     }
     for field_name, value in additional_fields.items():
       if value is not None:

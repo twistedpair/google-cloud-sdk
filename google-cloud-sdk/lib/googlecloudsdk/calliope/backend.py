@@ -18,6 +18,7 @@ Not to be used by mortals.
 
 """
 
+from __future__ import absolute_import
 import argparse
 import re
 import textwrap
@@ -35,6 +36,7 @@ from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.util import text
+import six
 
 
 class _Notes(object):
@@ -119,7 +121,7 @@ class CommandCommon(object):
         self._common_type._is_unicode_supported = True
       # Propagate down notices from the deprecation decorator.
       if parent_group.Notices():
-        for tag, msg in parent_group.Notices().iteritems():
+        for tag, msg in six.iteritems(parent_group.Notices()):
           self._common_type.AddNotice(tag, msg, preserve_existing=True)
 
     self.detailed_help = getattr(self._common_type, 'detailed_help', {})
@@ -461,7 +463,7 @@ class CommandCommon(object):
     if alternates:
       top_element = self._TopCLIElement()
       # Pre-sort by the release track prefix so GA commands always list first.
-      for _, command_path in sorted(alternates.iteritems(),
+      for _, command_path in sorted(six.iteritems(alternates),
                                     key=lambda x: x[0].prefix):
         alternative_cmd = top_element.LoadSubElementByPath(command_path[1:])
         if alternative_cmd and not alternative_cmd.IsHidden():
@@ -542,11 +544,11 @@ class CommandGroup(CommandCommon):
     # pylint: disable=protected-access, This is the same class.
     other_group._groups_to_load.update(
         {name: impl_paths
-         for name, impl_paths in self._groups_to_load.iteritems()
+         for name, impl_paths in six.iteritems(self._groups_to_load)
          if name not in ignore})
     other_group._commands_to_load.update(
         {name: impl_paths
-         for name, impl_paths in self._commands_to_load.iteritems()
+         for name, impl_paths in six.iteritems(self._commands_to_load)
          if name not in ignore})
 
   def SubParser(self):
@@ -753,7 +755,7 @@ class Command(CommandCommon):
         cmd=self.dotted_name,
         args=u', '.join(
             u'{arg}: "{value}"'.format(arg=arg, value=value)
-            for arg, value in sorted(args.GetSpecifiedArgs().iteritems()))))
+            for arg, value in sorted(six.iteritems(args.GetSpecifiedArgs())))))
     resources = command_instance.Run(args)
     resources = display.Displayer(command_instance, args, resources,
                                   display_info=self.ai.display_info).Display()

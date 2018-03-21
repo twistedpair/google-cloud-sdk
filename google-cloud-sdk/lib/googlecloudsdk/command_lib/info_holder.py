@@ -21,10 +21,10 @@ installations, and so on.
 
 import datetime
 import getpass
+import io
 import os
 import platform as system_platform
 import re
-import StringIO
 import subprocess
 import sys
 import textwrap
@@ -127,7 +127,7 @@ class InfoHolder(object):
     self.tools = ToolsInfo(anonymizer)
 
   def __str__(self):
-    out = StringIO.StringIO()
+    out = io.StringIO()
     out.write(unicode(self.basic) + '\n')
     out.write(unicode(self.installation) + '\n')
     out.write(unicode(self.config) + '\n')
@@ -214,7 +214,7 @@ class InstallationInfo(object):
       self.kubectl = anonymizer.ProcessPath(self.kubectl[0])
 
   def __str__(self):
-    out = StringIO.StringIO()
+    out = io.StringIO()
     out.write(u'Installation Root: [{0}]\n'.format(
         self.sdk_root if self.sdk_root else 'N/A'))
     if config.INSTALLATION_CONFIG.IsAlternateReleaseChannel():
@@ -280,7 +280,7 @@ class ConfigInfo(object):
           self.properties['proxy']['password'])
 
   def __str__(self):
-    out = StringIO.StringIO()
+    out = io.StringIO()
     out.write(u'Installation Properties: [{0}]\n'
               .format(self.paths['installation_properties_path']))
     out.write(u'User Config Directory: [{0}]\n'
@@ -332,8 +332,8 @@ class ProxyInfoFromEnvironmentVars(object):
                 self.password]):
       return ''
 
-    out = StringIO.StringIO()
-    out.write('Environmental Proxy Settings:\n')
+    out = io.StringIO()
+    out.write(u'Environmental Proxy Settings:\n')
     if self.type:
       out.write(u'  type: [{0}]\n'.format(self.type))
     if self.address:

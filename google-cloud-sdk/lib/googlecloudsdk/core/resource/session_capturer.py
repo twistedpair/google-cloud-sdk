@@ -267,9 +267,9 @@ def _FilterHeaders(headers):
 
 
 def _KeepHeader(header):
-  if header.startswith('x-google'):
+  if header.startswith(b'x-google'):
     return False
-  if header in ('user-agent', 'Authorization', 'content-length',):
+  if header in (b'user-agent', b'Authorization', b'content-length',):
     return False
   return True
 
@@ -308,7 +308,7 @@ class SessionCapturer(object):
     self._records.append({
         'response': {
             'response': _FilterHeaders(response),
-            'content': self._ToList(content)
+            'content': self._ToList(six.text_type(content))
         }})
 
   def CaptureArgs(self, args):
@@ -410,7 +410,8 @@ class SessionCapturer(object):
 
   @staticmethod
   def _FinalizePrimitive(primitive):
-    if isinstance(primitive, six.string_types):
+    if (isinstance(primitive, six.text_type) or
+        isinstance(primitive, six.binary_type)):
       project = properties.VALUES.core.project.Get()
       if not project:
         return primitive

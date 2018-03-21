@@ -163,6 +163,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'interconnect']
   )
+  LICENSECODES = (
+      'licenseCodes',
+      'projects/{project}/global/licenseCodes/{licenseCode}',
+      {},
+      [u'project', u'licenseCode']
+  )
   LICENSES = (
       'licenses',
       'projects/{project}/global/licenses/{license}',
@@ -259,6 +265,12 @@ class Collections(enum.Enum):
       'projects/{project}/global/sslCertificates/{sslCertificate}',
       {},
       [u'project', u'sslCertificate']
+  )
+  SSLPOLICIES = (
+      'sslPolicies',
+      'projects/{project}/global/sslPolicies/{sslPolicy}',
+      {},
+      [u'project', u'sslPolicy']
   )
   SUBNETWORKS = (
       'subnetworks',

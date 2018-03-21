@@ -6756,13 +6756,21 @@ class ComputeInstancesInsertRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
+    sourceInstanceTemplate: Specifies instance template to create the
+      instance.  This field is optional. It can be a full or partial URL. For
+      example, the following are all valid URLs to an instance template:   - h
+      ttps://www.googleapis.com/compute/v1/projects/project/global/global/inst
+      anceTemplates/instanceTemplate  -
+      projects/project/global/global/instanceTemplates/instanceTemplate  -
+      global/instancesTemplates/instanceTemplate
     zone: The name of the zone for this request.
   """
 
   instance = _messages.MessageField('Instance', 1)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
+  sourceInstanceTemplate = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesListReferrersRequest(_messages.Message):
@@ -7653,6 +7661,56 @@ class ComputeInterconnectsPatchRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeLicenseCodesGetRequest(_messages.Message):
+  """A ComputeLicenseCodesGetRequest object.
+
+  Fields:
+    licenseCode: Number corresponding to the License code resource to return.
+    project: Project ID for this request.
+  """
+
+  licenseCode = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class ComputeLicenseCodesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeLicenseCodesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
+class ComputeLicensesDeleteRequest(_messages.Message):
+  """A ComputeLicensesDeleteRequest object.
+
+  Fields:
+    license: Name of the license resource to delete.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  license = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
 class ComputeLicensesGetRequest(_messages.Message):
   """A ComputeLicensesGetRequest object.
 
@@ -7663,6 +7721,90 @@ class ComputeLicensesGetRequest(_messages.Message):
 
   license = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+
+
+class ComputeLicensesInsertRequest(_messages.Message):
+  """A ComputeLicensesInsertRequest object.
+
+  Fields:
+    license: A License resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  license = _messages.MessageField('License', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class ComputeLicensesListRequest(_messages.Message):
+  """A ComputeLicensesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeLicensesTestIamPermissionsRequest(_messages.Message):
+  """A ComputeLicensesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeMachineTypesAggregatedListRequest(_messages.Message):
@@ -9849,6 +9991,184 @@ class ComputeSslCertificatesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeSslPoliciesDeleteRequest(_messages.Message):
+  """A ComputeSslPoliciesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sslPolicy: Name of the SSL policy to delete. The name must be 1-63
+      characters long, and comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sslPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeSslPoliciesGetRequest(_messages.Message):
+  """A ComputeSslPoliciesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    sslPolicy: Name of the SSL policy to update. The name must be 1-63
+      characters long, and comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  sslPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeSslPoliciesInsertRequest(_messages.Message):
+  """A ComputeSslPoliciesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sslPolicy: A SslPolicy resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sslPolicy = _messages.MessageField('SslPolicy', 3)
+
+
+class ComputeSslPoliciesListAvailableFeaturesRequest(_messages.Message):
+  """A ComputeSslPoliciesListAvailableFeaturesRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeSslPoliciesListRequest(_messages.Message):
+  """A ComputeSslPoliciesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeSslPoliciesPatchRequest(_messages.Message):
+  """A ComputeSslPoliciesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sslPolicy: Name of the SSL policy to update. The name must be 1-63
+      characters long, and comply with RFC1035.
+    sslPolicyResource: A SslPolicy resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sslPolicy = _messages.StringField(3, required=True)
+  sslPolicyResource = _messages.MessageField('SslPolicy', 4)
+
+
 class ComputeSubnetworksAggregatedListRequest(_messages.Message):
   """A ComputeSubnetworksAggregatedListRequest object.
 
@@ -10353,6 +10673,34 @@ class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
   targetHttpsProxiesSetSslCertificatesRequest = _messages.MessageField('TargetHttpsProxiesSetSslCertificatesRequest', 3)
+  targetHttpsProxy = _messages.StringField(4, required=True)
+
+
+class ComputeTargetHttpsProxiesSetSslPolicyRequest(_messages.Message):
+  """A ComputeTargetHttpsProxiesSetSslPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sslPolicyReference: A SslPolicyReference resource to be passed as the
+      request body.
+    targetHttpsProxy: Name of the TargetHttpsProxy resource whose SSL policy
+      is to be set. The name must be 1-63 characters long, and comply with
+      RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sslPolicyReference = _messages.MessageField('SslPolicyReference', 3)
   targetHttpsProxy = _messages.StringField(4, required=True)
 
 
@@ -11046,6 +11394,33 @@ class ComputeTargetSslProxiesSetSslCertificatesRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
   targetSslProxiesSetSslCertificatesRequest = _messages.MessageField('TargetSslProxiesSetSslCertificatesRequest', 3)
+  targetSslProxy = _messages.StringField(4, required=True)
+
+
+class ComputeTargetSslProxiesSetSslPolicyRequest(_messages.Message):
+  """A ComputeTargetSslProxiesSetSslPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sslPolicyReference: A SslPolicyReference resource to be passed as the
+      request body.
+    targetSslProxy: Name of the TargetSslProxy resource whose SSL policy is to
+      be set. The name must be 1-63 characters long, and comply with RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sslPolicyReference = _messages.MessageField('SslPolicyReference', 3)
   targetSslProxy = _messages.StringField(4, required=True)
 
 
@@ -12000,6 +12375,8 @@ class Disk(_messages.Message):
       format.
     lastDetachTimestamp: [Output Only] Last detach timestamp in RFC3339 text
       format.
+    licenseCodes: Integer license codes indicating which licenses are attached
+      to this disk.
     licenses: Any applicable publicly visible licenses.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -12113,21 +12490,22 @@ class Disk(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 8)
   lastAttachTimestamp = _messages.StringField(9)
   lastDetachTimestamp = _messages.StringField(10)
-  licenses = _messages.StringField(11, repeated=True)
-  name = _messages.StringField(12)
-  options = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  sizeGb = _messages.IntegerField(15)
-  sourceImage = _messages.StringField(16)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceImageId = _messages.StringField(18)
-  sourceSnapshot = _messages.StringField(19)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
-  sourceSnapshotId = _messages.StringField(21)
-  status = _messages.EnumField('StatusValueValuesEnum', 22)
-  type = _messages.StringField(23)
-  users = _messages.StringField(24, repeated=True)
-  zone = _messages.StringField(25)
+  licenseCodes = _messages.IntegerField(11, repeated=True)
+  licenses = _messages.StringField(12, repeated=True)
+  name = _messages.StringField(13)
+  options = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  sizeGb = _messages.IntegerField(16)
+  sourceImage = _messages.StringField(17)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
+  sourceImageId = _messages.StringField(19)
+  sourceSnapshot = _messages.StringField(20)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceSnapshotId = _messages.StringField(22)
+  status = _messages.EnumField('StatusValueValuesEnum', 23)
+  type = _messages.StringField(24)
+  users = _messages.StringField(25, repeated=True)
+  zone = _messages.StringField(26)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -14693,6 +15071,8 @@ class Image(_messages.Message):
       an image.
     labels: Labels to apply to this image. These can be later modified by the
       setLabels method.
+    licenseCodes: Integer license codes indicating which licenses are attached
+      to this image.
     licenses: Any applicable license URI.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -14841,21 +15221,22 @@ class Image(_messages.Message):
   kind = _messages.StringField(10, default=u'compute#image')
   labelFingerprint = _messages.BytesField(11)
   labels = _messages.MessageField('LabelsValue', 12)
-  licenses = _messages.StringField(13, repeated=True)
-  name = _messages.StringField(14)
-  rawDisk = _messages.MessageField('RawDiskValue', 15)
-  selfLink = _messages.StringField(16)
-  sourceDisk = _messages.StringField(17)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
-  sourceDiskId = _messages.StringField(19)
-  sourceImage = _messages.StringField(20)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
-  sourceImageId = _messages.StringField(22)
-  sourceSnapshot = _messages.StringField(23)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
-  sourceSnapshotId = _messages.StringField(25)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 26, default=u'RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 27)
+  licenseCodes = _messages.IntegerField(13, repeated=True)
+  licenses = _messages.StringField(14, repeated=True)
+  name = _messages.StringField(15)
+  rawDisk = _messages.MessageField('RawDiskValue', 16)
+  selfLink = _messages.StringField(17)
+  sourceDisk = _messages.StringField(18)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  sourceDiskId = _messages.StringField(20)
+  sourceImage = _messages.StringField(21)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
+  sourceImageId = _messages.StringField(23)
+  sourceSnapshot = _messages.StringField(24)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
+  sourceSnapshotId = _messages.StringField(26)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 27, default=u'RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 28)
 
 
 class ImageList(_messages.Message):
@@ -18381,16 +18762,234 @@ class License(_messages.Message):
   Fields:
     chargesUseFee: [Output Only] Deprecated. This field no longer reflects
       whether a license charges a usage fee.
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional textual description of the resource; provided by
+      the client when the resource is created.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
     kind: [Output Only] Type of resource. Always compute#license for licenses.
+    licenseCode: [Output Only] The unique code used to attach this license to
+      images, snapshots, and disks.
     name: [Output Only] Name of the resource. The name is 1-63 characters long
       and complies with RFC1035.
+    resourceRequirements: A LicenseResourceRequirements attribute.
     selfLink: [Output Only] Server-defined URL for the resource.
+    transferable: If false, licenses will not be copied from the source
+      resource when creating an image from a disk, disk from snapshot, or
+      snapshot from disk.
   """
 
   chargesUseFee = _messages.BooleanField(1)
-  kind = _messages.StringField(2, default=u'compute#license')
-  name = _messages.StringField(3)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#license')
+  licenseCode = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  name = _messages.StringField(7)
+  resourceRequirements = _messages.MessageField('LicenseResourceRequirements', 8)
+  selfLink = _messages.StringField(9)
+  transferable = _messages.BooleanField(10)
+
+
+class LicenseCode(_messages.Message):
+  """A LicenseCode object.
+
+  Enums:
+    StateValueValuesEnum: [Output Only] Current state of this License Code.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: [Output Only] Description of this License Code.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of resource. Always compute#licenseCode for
+      licenses.
+    licenseAlias: [Output Only] URL and description aliases of Licenses with
+      the same License Code.
+    name: [Output Only] Name of the resource. The name is 1-20 characters long
+      and must be a valid 64 bit integer.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    state: [Output Only] Current state of this License Code.
+    transferable: [Output Only] If true, the license will remain attached when
+      creating images or snapshots from disks. Otherwise, the license is not
+      transferred.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """[Output Only] Current state of this License Code.
+
+    Values:
+      DISABLED: <no description>
+      ENABLED: <no description>
+      RESTRICTED: <no description>
+      STATE_UNSPECIFIED: <no description>
+      TERMINATED: <no description>
+    """
+    DISABLED = 0
+    ENABLED = 1
+    RESTRICTED = 2
+    STATE_UNSPECIFIED = 3
+    TERMINATED = 4
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(4, default=u'compute#licenseCode')
+  licenseAlias = _messages.MessageField('LicenseCodeLicenseAlias', 5, repeated=True)
+  name = _messages.StringField(6)
+  selfLink = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  transferable = _messages.BooleanField(9)
+
+
+class LicenseCodeLicenseAlias(_messages.Message):
+  """A LicenseCodeLicenseAlias object.
+
+  Fields:
+    description: [Output Only] Description of this License Code.
+    selfLink: [Output Only] URL of license corresponding to this License Code.
+  """
+
+  description = _messages.StringField(1)
+  selfLink = _messages.StringField(2)
+
+
+class LicenseResourceRequirements(_messages.Message):
+  """A LicenseResourceRequirements object.
+
+  Fields:
+    minGuestCpuCount: Minimum number of guest cpus required to use the
+      Instance. Enforced at Instance creation and Instance start.
+    minMemoryMb: Minimum memory required to use the Instance. Enforced at
+      Instance creation and Instance start.
+  """
+
+  minGuestCpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minMemoryMb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class LicensesListResponse(_messages.Message):
+  """A LicensesListResponse object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of License resources.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('License', 2, repeated=True)
+  nextPageToken = _messages.StringField(3)
   selfLink = _messages.StringField(4)
+  warning = _messages.MessageField('WarningValue', 5)
 
 
 class MachineType(_messages.Message):
@@ -20230,6 +20829,7 @@ class Quota(_messages.Message):
       NETWORKS: <no description>
       NVIDIA_K80_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
+      NVIDIA_V100_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
@@ -20277,30 +20877,31 @@ class Quota(_messages.Message):
     NETWORKS = 19
     NVIDIA_K80_GPUS = 20
     NVIDIA_P100_GPUS = 21
-    PREEMPTIBLE_CPUS = 22
-    PREEMPTIBLE_LOCAL_SSD_GB = 23
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 24
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 25
-    REGIONAL_AUTOSCALERS = 26
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 27
-    ROUTERS = 28
-    ROUTES = 29
-    SECURITY_POLICIES = 30
-    SECURITY_POLICY_RULES = 31
-    SNAPSHOTS = 32
-    SSD_TOTAL_GB = 33
-    SSL_CERTIFICATES = 34
-    STATIC_ADDRESSES = 35
-    SUBNETWORKS = 36
-    TARGET_HTTPS_PROXIES = 37
-    TARGET_HTTP_PROXIES = 38
-    TARGET_INSTANCES = 39
-    TARGET_POOLS = 40
-    TARGET_SSL_PROXIES = 41
-    TARGET_TCP_PROXIES = 42
-    TARGET_VPN_GATEWAYS = 43
-    URL_MAPS = 44
-    VPN_TUNNELS = 45
+    NVIDIA_V100_GPUS = 22
+    PREEMPTIBLE_CPUS = 23
+    PREEMPTIBLE_LOCAL_SSD_GB = 24
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 25
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 26
+    REGIONAL_AUTOSCALERS = 27
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 28
+    ROUTERS = 29
+    ROUTES = 30
+    SECURITY_POLICIES = 31
+    SECURITY_POLICY_RULES = 32
+    SNAPSHOTS = 33
+    SSD_TOTAL_GB = 34
+    SSL_CERTIFICATES = 35
+    STATIC_ADDRESSES = 36
+    SUBNETWORKS = 37
+    TARGET_HTTPS_PROXIES = 38
+    TARGET_HTTP_PROXIES = 39
+    TARGET_INSTANCES = 40
+    TARGET_POOLS = 41
+    TARGET_SSL_PROXIES = 42
+    TARGET_TCP_PROXIES = 43
+    TARGET_VPN_GATEWAYS = 44
+    URL_MAPS = 45
+    VPN_TUNNELS = 46
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -22291,6 +22892,8 @@ class Snapshot(_messages.Message):
       retrieve a snapshot.
     labels: Labels to apply to this snapshot. These can be later modified by
       the setLabels method. Label values may be empty.
+    licenseCodes: Integer license codes indicating which licenses are attached
+      to this snapshot.
     licenses: [Output Only] A list of public visible licenses that apply to
       this snapshot. This can be because the original image had licenses
       attached (such as a Windows image).
@@ -22392,16 +22995,17 @@ class Snapshot(_messages.Message):
   kind = _messages.StringField(5, default=u'compute#snapshot')
   labelFingerprint = _messages.BytesField(6)
   labels = _messages.MessageField('LabelsValue', 7)
-  licenses = _messages.StringField(8, repeated=True)
-  name = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
-  sourceDisk = _messages.StringField(12)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
-  sourceDiskId = _messages.StringField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  storageBytes = _messages.IntegerField(16)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 17)
+  licenseCodes = _messages.IntegerField(8, repeated=True)
+  licenses = _messages.StringField(9, repeated=True)
+  name = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
+  sourceDisk = _messages.StringField(13)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
+  sourceDiskId = _messages.StringField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  storageBytes = _messages.IntegerField(17)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 18)
 
 
 class SnapshotList(_messages.Message):
@@ -22690,6 +23294,350 @@ class SslCertificateList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class SslPoliciesList(_messages.Message):
+  """A SslPoliciesList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of SslPolicy resources.
+    kind: [Output Only] Type of the resource. Always compute#sslPoliciesList
+      for lists of sslPolicies.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    """[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('SslPolicy', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#sslPoliciesList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class SslPoliciesListAvailableFeaturesResponse(_messages.Message):
+  """A SslPoliciesListAvailableFeaturesResponse object.
+
+  Fields:
+    features: A string attribute.
+  """
+
+  features = _messages.StringField(1, repeated=True)
+
+
+class SslPolicy(_messages.Message):
+  """A SSL policy specifies the server-side support for SSL features. This can
+  be attached to a TargetHttpsProxy or a TargetSslProxy. This affects
+  connections between clients and the HTTPS or SSL proxy load balancer. They
+  do not affect the connection between the load balancers and the backends.
+
+  Enums:
+    MinTlsVersionValueValuesEnum: The minimum version of SSL protocol that can
+      be used by the clients to establish a connection with the load balancer.
+      This can be one of TLS_1_0, TLS_1_1, TLS_1_2, TLS_1_3.
+    ProfileValueValuesEnum: Profile specifies the set of SSL features that can
+      be used by the load balancer when negotiating SSL with clients. This can
+      be one of COMPATIBLE, MODERN, RESTRICTED, or CUSTOM. If using CUSTOM,
+      the set of SSL features to enable must be specified in the
+      customFeatures field.
+
+  Messages:
+    WarningsValueListEntry: A WarningsValueListEntry object.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    customFeatures: List of features enabled when the selected profile is
+      CUSTOM. The - method returns the set of features that can be specified
+      in this list. This field must be empty if the profile is not CUSTOM.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    enabledFeatures: [Output Only] The list of features enabled in the SSL
+      policy.
+    fingerprint: Fingerprint of this resource. A hash of the contents stored
+      in this object. This field is used in optimistic locking. This field
+      will be ignored when inserting a SslPolicy. An up-to-date fingerprint
+      must be provided in order to update the SslPolicy.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output only] Type of the resource. Always compute#sslPolicyfor SSL
+      policies.
+    minTlsVersion: The minimum version of SSL protocol that can be used by the
+      clients to establish a connection with the load balancer. This can be
+      one of TLS_1_0, TLS_1_1, TLS_1_2, TLS_1_3.
+    name: Name of the resource. The name must be 1-63 characters long, and
+      comply with RFC1035. Specifically, the name must be 1-63 characters long
+      and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
+      means the first character must be a lowercase letter, and all following
+      characters must be a dash, lowercase letter, or digit, except the last
+      character, which cannot be a dash.
+    profile: Profile specifies the set of SSL features that can be used by the
+      load balancer when negotiating SSL with clients. This can be one of
+      COMPATIBLE, MODERN, RESTRICTED, or CUSTOM. If using CUSTOM, the set of
+      SSL features to enable must be specified in the customFeatures field.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    warnings: [Output Only] If potential misconfigurations are detected for
+      this SSL policy, this field will be populated with warning messages.
+  """
+
+  class MinTlsVersionValueValuesEnum(_messages.Enum):
+    """The minimum version of SSL protocol that can be used by the clients to
+    establish a connection with the load balancer. This can be one of TLS_1_0,
+    TLS_1_1, TLS_1_2, TLS_1_3.
+
+    Values:
+      TLS_1_0: <no description>
+      TLS_1_1: <no description>
+      TLS_1_2: <no description>
+      TLS_1_3: <no description>
+    """
+    TLS_1_0 = 0
+    TLS_1_1 = 1
+    TLS_1_2 = 2
+    TLS_1_3 = 3
+
+  class ProfileValueValuesEnum(_messages.Enum):
+    """Profile specifies the set of SSL features that can be used by the load
+    balancer when negotiating SSL with clients. This can be one of COMPATIBLE,
+    MODERN, RESTRICTED, or CUSTOM. If using CUSTOM, the set of SSL features to
+    enable must be specified in the customFeatures field.
+
+    Values:
+      COMPATIBLE: <no description>
+      CUSTOM: <no description>
+      MODERN: <no description>
+      RESTRICTED: <no description>
+    """
+    COMPATIBLE = 0
+    CUSTOM = 1
+    MODERN = 2
+    RESTRICTED = 3
+
+  class WarningsValueListEntry(_messages.Message):
+    """A WarningsValueListEntry object.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      """[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      """A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  creationTimestamp = _messages.StringField(1)
+  customFeatures = _messages.StringField(2, repeated=True)
+  description = _messages.StringField(3)
+  enabledFeatures = _messages.StringField(4, repeated=True)
+  fingerprint = _messages.BytesField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#sslPolicy')
+  minTlsVersion = _messages.EnumField('MinTlsVersionValueValuesEnum', 8)
+  name = _messages.StringField(9)
+  profile = _messages.EnumField('ProfileValueValuesEnum', 10)
+  selfLink = _messages.StringField(11)
+  warnings = _messages.MessageField('WarningsValueListEntry', 12, repeated=True)
+
+
+class SslPolicyReference(_messages.Message):
+  """A SslPolicyReference object.
+
+  Fields:
+    sslPolicy: URL of the SSL policy resource. Set this to empty string to
+      clear any existing SSL policy associated with the target proxy resource.
+  """
+
+  sslPolicy = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -23486,6 +24434,9 @@ class TargetHttpsProxy(_messages.Message):
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections between users and the load balancer. Currently,
       exactly one SSL certificate must be specified.
+    sslPolicy: URL of SslPolicy resource that will be associated with the
+      TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource
+      will not have any SSL policy configured.
     urlMap: A fully-qualified or valid partial URL to the UrlMap resource that
       defines the mapping from URL to the BackendService. For example, the
       following are all valid URLs for specifying a URL map:   -
@@ -23500,7 +24451,8 @@ class TargetHttpsProxy(_messages.Message):
   name = _messages.StringField(5)
   selfLink = _messages.StringField(6)
   sslCertificates = _messages.StringField(7, repeated=True)
-  urlMap = _messages.StringField(8)
+  sslPolicy = _messages.StringField(8)
+  urlMap = _messages.StringField(9)
 
 
 class TargetHttpsProxyList(_messages.Message):
@@ -24728,6 +25680,9 @@ class TargetSslProxy(_messages.Message):
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections to Backends. Currently exactly one SSL
       certificate must be specified.
+    sslPolicy: URL of SslPolicy resource that will be associated with the
+      TargetSslProxy resource. If not set, the TargetSslProxy resource will
+      not have any SSL policy configured.
   """
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
@@ -24750,6 +25705,7 @@ class TargetSslProxy(_messages.Message):
   selfLink = _messages.StringField(7)
   service = _messages.StringField(8)
   sslCertificates = _messages.StringField(9, repeated=True)
+  sslPolicy = _messages.StringField(10)
 
 
 class TargetSslProxyList(_messages.Message):
@@ -25560,6 +26516,28 @@ class TestFailure(_messages.Message):
   expectedService = _messages.StringField(2)
   host = _messages.StringField(3)
   path = _messages.StringField(4)
+
+
+class TestPermissionsRequest(_messages.Message):
+  """A TestPermissionsRequest object.
+
+  Fields:
+    permissions: The set of permissions to check for the 'resource'.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestPermissionsResponse(_messages.Message):
+  """A TestPermissionsResponse object.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
 
 
 class UrlMap(_messages.Message):

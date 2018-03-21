@@ -945,6 +945,9 @@ class _SectionCore(_Section):
         'trace_log',
         default=False,
         hidden=True)
+    self.request_reason = self._Add(
+        'request_reason',
+        hidden=True)
     self.pass_credentials_to_gsutil = self._AddBool(
         'pass_credentials_to_gsutil',
         default=True,
@@ -1066,8 +1069,6 @@ class _SectionCore(_Section):
           'The project property must be set to a valid project ID, '
           '[{value}] is not a valid project ID.'.format(value=project))
 
-    # pylint: disable=unnecessary-lambda, We don't want to call Metadata()
-    # unless we really have to.
     self.project = self._Add(
         'project',
         help_text='The project id of the Cloud Platform project to operate on '
@@ -1086,11 +1087,9 @@ class _SectionAuth(_Section):
 
   def __init__(self):
     super(_SectionAuth, self).__init__('auth')
-    # pylint: disable=unnecessary-lambda, We don't want to call Metadata()
-    # unless we really have to.
     self.auth_host = self._Add(
         'auth_host', hidden=True,
-        default='https://accounts.google.com/o/oauth2/auth')
+        default=b'https://accounts.google.com/o/oauth2/auth')
     self.disable_credentials = self._AddBool(
         'disable_credentials', default=False,
         help_text='If true, gcloud will not attempt to load any credentials or '
@@ -1098,7 +1097,7 @@ class _SectionAuth(_Section):
         'that adds authentication to your requests.')
     self.token_host = self._Add(
         'token_host', hidden=True,
-        default='https://accounts.google.com/o/oauth2/token')
+        default=b'https://www.googleapis.com/oauth2/v4/token')
     self.disable_ssl_validation = self._AddBool(
         'disable_ssl_validation', hidden=True)
     self.client_id = self._Add(

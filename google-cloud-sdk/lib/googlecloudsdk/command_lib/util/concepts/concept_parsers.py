@@ -23,11 +23,15 @@ of all resources needed for the command, and they should be added all at once
 during calliope's Args method.
 """
 
+from __future__ import absolute_import
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import handlers
 from googlecloudsdk.calliope.concepts import util
 from googlecloudsdk.command_lib.util.concepts import completers
+
+import six
+from six.moves import filter  # pylint: disable=redefined-builtin
 
 
 class PresentationSpec(object):
@@ -258,7 +262,7 @@ class ResourcePresentationSpec(PresentationSpec):
     required = is_anchor and not attribute.fallthroughs
     # If this is the only argument in the group, the help text should be the
     # "group" help.
-    if len(filter(bool, self.attribute_to_args_map.values())) == 1:
+    if len(list(filter(bool, self.attribute_to_args_map.values()))) == 1:
       help_text = self.group_help
     else:
       # Expand the help text.
@@ -476,7 +480,7 @@ class ConceptParser(object):
                                                       presentation_spec.name))
 
     # Also check for duplicate attribute names.
-    for a, arg_name in presentation_spec.attribute_to_args_map.iteritems():
+    for a, arg_name in six.iteritems(presentation_spec.attribute_to_args_map):
       del a  # Unused.
       name = util.NormalizeFormat(arg_name)
       if name in self._all_args:
@@ -493,7 +497,7 @@ class ConceptParser(object):
       parser: the parser for a Calliope command.
     """
     parser.add_concepts(self._runtime_handler)
-    for spec_name, spec in self._specs.iteritems():
+    for spec_name, spec in six.iteritems(self._specs):
       self._runtime_handler.AddConcept(
           util.NormalizeFormat(spec_name), spec.GetInfo(),
           required=spec.required)
@@ -502,7 +506,7 @@ class ConceptParser(object):
   def GetExampleArgString(self):
     """Returns a command line example arg string for the concept."""
     examples = []
-    for _, spec in self._specs.iteritems():
+    for _, spec in six.iteritems(self._specs):
       args = spec.GetExampleArgList()
       if args:
         examples.extend(args)

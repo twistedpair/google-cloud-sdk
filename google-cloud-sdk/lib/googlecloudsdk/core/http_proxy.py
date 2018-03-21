@@ -23,7 +23,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import http_proxy_types
 
 import httplib2
-import six
+from six.moves import urllib
 
 
 def GetDefaultProxyInfo(method='http'):
@@ -40,13 +40,10 @@ def GetDefaultProxyInfo(method='http'):
     httplib2 ProxyInfo object or None
   """
 
-  proxy_dict = urllib.getproxies()
+  proxy_dict = urllib.request.getproxies()
   proxy_url = proxy_dict.get(method, None)
   if not proxy_url:
     return None
-
-  if isinstance(proxy_url, six.text_type):
-    proxy_url = proxy_url.encode('idna')
 
   pi = httplib2.proxy_info_from_url(proxy_url, method)
 
@@ -58,7 +55,9 @@ def GetDefaultProxyInfo(method='http'):
   # Since the urllib.proxy_bypass _function_ (no self arg) is not "bound" to the
   # class instance, it doesn't receive the self arg when its called. We don't
   # need to "bind" it via types.MethodType(urllib.proxy_bypass, pi).
-  pi.bypass_host = urllib.proxy_bypass
+  pi.bypass_host = urllib.request.proxy_bypass
+
+  # Modify proxy info object?
 
   return pi
 

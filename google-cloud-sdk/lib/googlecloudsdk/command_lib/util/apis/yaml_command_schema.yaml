@@ -325,6 +325,8 @@ properties:
       # the parsed args namespace. It should create a request, make the
       # API call, and return the response.
       issue_request_hook: { $ref: "#/definitions/python_hook" }
+      # Use ref.RelativeName() if true, ref.Name() otherwise. Default True.
+      use_relative_name: { type: boolean }
 
   # Configuration for handling the API response.
   response:

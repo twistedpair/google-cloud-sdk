@@ -15,7 +15,7 @@
 """Completer extensions for the core.cache.completion_cache module."""
 
 import abc
-import StringIO
+import io
 
 from googlecloudsdk.api_lib.util import resource_search
 from googlecloudsdk.command_lib.util import parameter_info_lib
@@ -276,7 +276,7 @@ class ListCommandCompleter(ResourceCompleter):
       if not self._parse_output:
         return parameter_info.Execute(command)
       log_out = log.out
-      out = StringIO.StringIO()
+      out = io.StringIO()
       log.out = out
       parameter_info.Execute(command)
       return out.getvalue().rstrip('\n').split('\n')

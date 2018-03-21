@@ -17,6 +17,7 @@
 from __future__ import absolute_import
 from __future__ import division
 
+from __future__ import unicode_literals
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
@@ -35,7 +36,7 @@ class Diagnostic(object):
   _MAX_RETRIES = 5
 
   def __init__(self, intro, title, checklist):
-    """Initializes Diagnostic with neccessary attributes.
+    """Initializes Diagnostic with necessary attributes.
 
     Args:
       intro: A message to introduce the objectives and tasks of the diagnostic.

@@ -14,6 +14,7 @@
 
 """Common helper methods for Genomics commands."""
 
+import re
 import tempfile
 
 from apitools.base.protorpclite.messages import DecodeError
@@ -98,6 +99,10 @@ def GetProjectId():
   return properties.VALUES.core.project.Get(required=True)
 
 
+def IsGcsPath(path):
+  return path.startswith(GCS_PREFIX)
+
+
 def GetFileAsMessage(path, message, client):
   """Reads a YAML or JSON object of type message from path (local or GCS).
 
@@ -111,7 +116,7 @@ def GetFileAsMessage(path, message, client):
   Raises:
     files.Error, genomics_exceptions.GenomicsInputFileError
   """
-  if path.startswith(GCS_PREFIX):
+  if IsGcsPath(path):
     # Download remote file to a local temp file
     tf = tempfile.NamedTemporaryFile(delete=False)
     tf.close()
@@ -185,3 +190,32 @@ def GetQueryFields(referenced_fields, prefix):
     return None
   return ','.join(['nextPageToken'] +
                   ['.'.join([prefix, field]) for field in referenced_fields])
+
+
+def CanonicalizeOperationName(name):
+  """Returns a canonical form of an operation name and whether it is a v2 name.
+
+  Args:
+    name: An operation name, optionally including projects/, operations/, and a
+        project name.
+
+  Returns:
+    A tuple containing the canonicalized operation name and a bool which is true
+        if the name is a v2 operation name.
+  """
+  v2 = True
+
+  # Split name and strip API version if present.
+  parts = name.split('/')[-4:]
+  if len(parts) == 1:
+    parts.insert(0, 'operations')
+
+  if re.search('[a-zA-Z]', parts[-1]):
+    v2 = False
+  else:
+    if len(parts) == 2:
+      parts.insert(0, GetProjectId())
+    if len(parts) == 3:
+      parts.insert(0, 'projects')
+
+  return '/'.join(parts), v2

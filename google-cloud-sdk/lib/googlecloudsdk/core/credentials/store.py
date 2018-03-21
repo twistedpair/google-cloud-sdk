@@ -19,6 +19,8 @@ A detailed description of auth.
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
+
 import datetime
 import json
 import os
@@ -38,6 +40,7 @@ import httplib2
 from oauth2client import client
 from oauth2client.contrib import gce as oauth2client_gce
 from oauth2client.contrib import reauth_errors
+import six
 
 
 GOOGLE_OAUTH2_PROVIDER_AUTHORIZATION_URI = (
@@ -376,7 +379,7 @@ def Refresh(credentials, http_client=None):
   try:
     credentials.refresh(http_client or http.Http())
   except (client.AccessTokenRefreshError, httplib2.ServerNotFoundError) as e:
-    raise TokenRefreshError(e.message)
+    raise TokenRefreshError(six.text_type(e))
   except reauth_errors.ReauthError as e:
     raise TokenRefreshReauthError(e.message)
 

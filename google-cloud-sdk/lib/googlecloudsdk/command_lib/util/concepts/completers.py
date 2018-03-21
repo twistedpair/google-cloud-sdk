@@ -13,6 +13,7 @@
 # limitations under the License.
 """completers for resource library."""
 
+from __future__ import absolute_import
 from apitools.base.protorpclite import messages
 
 from googlecloudsdk.api_lib.util import resource as resource_lib  # pylint: disable=unused-import
@@ -25,6 +26,8 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+
+import six
 import typing  # pylint: disable=unused-import
 
 DEFAULT_ID_FIELD = 'name'
@@ -126,9 +129,9 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
     except Exception as e:  # pylint: disable=broad-except
       if properties.VALUES.core.print_completion_tracebacks.GetBool():
         raise
-      log.info(unicode(e).rstrip())
+      log.info(six.text_type(e).rstrip())
       raise Error(u'Could not build query to list completions: {} {}'.format(
-          type(e), unicode(e).rstrip()))
+          type(e), six.text_type(e).rstrip()))
     try:
       response = self.method.Call(query)
       response_collection = self.method.collection
@@ -141,16 +144,16 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
     except Exception as e:  # pylint: disable=broad-except
       if properties.VALUES.core.print_completion_tracebacks.GetBool():
         raise
-      log.info(unicode(e).rstrip())
+      log.info(six.text_type(e).rstrip())
       # Give user more information if they hit an apitools validation error,
       # which probably means that they haven't provided enough information
       # for us to complete.
       if isinstance(e, messages.ValidationError):
         raise Error(u'Update query failed, may not have enough information to '
                     u'list existing resources: {} {}'.format(
-                        type(e), unicode(e).rstrip()))
+                        type(e), six.text_type(e).rstrip()))
       raise Error(u'Update query [{}]: {} {}'.format(
-          query, type(e), unicode(e).rstrip()))
+          query, type(e), six.text_type(e).rstrip()))
 
     return [self.StringToRow(item.RelativeName()) for item in items]
 
@@ -197,7 +200,7 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
     if method is None:
       return None
     message = method.GetRequestType()()
-    for field, value in self._static_params.iteritems():
+    for field, value in six.iteritems(self._static_params):
       arg_utils.SetFieldInMessage(message, field, value)
     parent = self.GetParentRef(parameter_info,
                                aggregations=aggregations)
@@ -223,7 +226,7 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
         for p in self.collection_info.GetParams('')[:-1]
     }
     aggregations_dict = self._GetAggregationsValuesDict(aggregations)
-    for name, value in aggregations_dict.iteritems():
+    for name, value in six.iteritems(aggregations_dict):
       if value and not param_values.get(name, None):
         param_values[name] = value
     final_param = self.collection_info.GetParams('')[-1]

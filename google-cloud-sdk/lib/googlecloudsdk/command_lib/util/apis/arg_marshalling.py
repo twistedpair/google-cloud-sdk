@@ -14,6 +14,7 @@
 
 """Classes that generate and parse arguments for apitools messages."""
 
+from __future__ import absolute_import
 from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
@@ -65,7 +66,7 @@ class DeclarativeArgumentGenerator(object):
     return args
 
   def CreateRequest(self, namespace, static_fields=None,
-                    resource_method_params=None):
+                    resource_method_params=None, use_relative_name=True):
     """Generates the request object for the method call from the parsed args.
 
     Args:
@@ -77,6 +78,7 @@ class DeclarativeArgumentGenerator(object):
       resource_method_params: {str: str}, A mapping of API method parameter name
         to resource ref attribute name when the API method uses non-standard
         names.
+      use_relative_name: Use ref.RelativeName() if True otherwise ref.Name().
 
     Returns:
       The apitools message to be send to the method.
@@ -98,7 +100,8 @@ class DeclarativeArgumentGenerator(object):
     arg_utils.ParseResourceIntoMessage(
         ref, self.method, message,
         resource_method_params=resource_method_params,
-        request_id_field=self.resource_arg.request_id_field)
+        request_id_field=self.resource_arg.request_id_field,
+        use_relative_name=use_relative_name)
     return message
 
   def GetRequestResourceRef(self, namespace):

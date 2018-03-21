@@ -23,6 +23,7 @@ code.
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
 import collections
 import copy
 import re
@@ -160,9 +161,11 @@ class UnknownCollectionException(UserError):
 class InvalidCollectionException(UserError):
   """A command line that was given did not specify a collection."""
 
-  def __init__(self, collection):
-    super(InvalidCollectionException, self).__init__(
-        'unknown collection [{collection}]'.format(collection=collection))
+  def __init__(self, collection, api_version=None):
+    message = 'unknown collection [{collection}]'.format(collection=collection)
+    if api_version:
+      message += ' for API version [{version}]'.format(version=api_version)
+    super(InvalidCollectionException, self).__init__(message)
 
 
 class _ResourceParser(object):
@@ -762,7 +765,7 @@ class Registry(object):
 
     Args:
       api_name: str, The API name.
-      api_version: if available, the version of the API being registered.
+      api_version: str, The API version, None for the default version.
     Returns:
       api version which was registered.
     """
@@ -842,11 +845,12 @@ class Registry(object):
 
     cur_level[None] = subcollection, parser  # pytype: disable=attribute-error
 
-  def GetParserForCollection(self, collection):
+  def GetParserForCollection(self, collection, api_version=None):
     """Returns a parser object for collection.
 
     Args:
       collection: str, The resource collection name.
+      api_version: str, The API version, None for the default version.
 
     Raises:
       InvalidCollectionException: If there is no parser.
@@ -856,16 +860,16 @@ class Registry(object):
     """
     # Register relevant API if necessary and possible
     api_name = _APINameFromCollection(collection)
-    api_version = self.RegisterApiByName(api_name)
+    api_version = self.RegisterApiByName(api_name, api_version=api_version)
 
     parser = (self.parsers_by_collection
               .get(api_name, {}).get(api_version, {}).get(collection, None))
     if parser is None:
-      raise InvalidCollectionException(collection)
+      raise InvalidCollectionException(collection, api_version)
     return parser
 
   def ParseResourceId(self, collection, resource_id, kwargs, validate=True,
-                      default_resolver=None):
+                      api_version=None, default_resolver=None):
     """Parse a resource id string into a Resource.
 
     Args:
@@ -887,6 +891,7 @@ class Registry(object):
             strings character by character. Completers need to do the
             string => parameters => string round trip with validate=False to
             handle the "add character TAB" cycle.
+      api_version: str, The API version, None for the default version.
       default_resolver: func(str) => str, a default param resolver function
         called if kwargs doesn't resolve a param.
 
@@ -911,7 +916,7 @@ class Registry(object):
     if not collection:
       raise UnknownCollectionException(resource_id)
 
-    parser = self.GetParserForCollection(collection)
+    parser = self.GetParserForCollection(collection, api_version=api_version)
     base_url = _GetApiBaseUrl(parser.collection_info.api_name,
                               parser.collection_info.api_version)
 
@@ -930,7 +935,7 @@ class Registry(object):
               .get(api_name, {}).get(api_version, {})
               .get(collection_name, None))
     if parser is None:
-      raise InvalidCollectionException(collection_name)
+      raise InvalidCollectionException(collection_name, api_version)
     return parser.collection_info
 
   def ParseURL(self, url):
@@ -1037,9 +1042,10 @@ class Registry(object):
         None, params, base_url=endpoint,
         subcollection=subcollection)
 
-  def ParseRelativeName(self, relative_name, collection, url_unescape=False):
+  def ParseRelativeName(self, relative_name, collection, url_unescape=False,
+                        api_version=None):
     """Parser relative names. See Resource.RelativeName() method."""
-    parser = self.GetParserForCollection(collection)
+    parser = self.GetParserForCollection(collection, api_version=api_version)
     base_url = _GetApiBaseUrl(parser.collection_info.api_name,
                               parser.collection_info.api_version)
     subcollection = parser.collection_info.GetSubcollection(collection)
@@ -1069,7 +1075,7 @@ class Registry(object):
         kwargs={'bucket': match.group(1)})
 
   def Parse(self, line, params=None, collection=None, enforce_collection=True,
-            validate=True, default_resolver=None):
+            validate=True, default_resolver=None, api_version=None):
     """Parse a Cloud resource from a command line.
 
     Args:
@@ -1086,6 +1092,7 @@ class Registry(object):
         construction.
       default_resolver: func(str) => str, a default param resolver function
         called if params doesn't resolve a param.
+      api_version: str, The API version, None for the default version.
 
     Returns:
       A resource object.
@@ -1144,6 +1151,7 @@ class Registry(object):
       raise InvalidResourceException(line)
 
     return self.ParseResourceId(collection, line, params or {},
+                                api_version=api_version,
                                 validate=validate,
                                 default_resolver=default_resolver)
 

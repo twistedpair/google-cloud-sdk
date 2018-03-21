@@ -14,14 +14,17 @@
 
 """The Calliope command help document markdown generator."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import abc
+import io
 import re
-import StringIO
 import textwrap
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core.console import console_io
+import six
 
 
 _SPLIT = 78  # Split lines longer than this.
@@ -166,7 +169,7 @@ class ExampleCommandLineSplitter(object):
     return ''.join(lines)
 
 
-class MarkdownGenerator(object):
+class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
   """Command help markdown document generator base class.
 
   Attributes:
@@ -185,8 +188,6 @@ class MarkdownGenerator(object):
     _release_track: The calliope.base.ReleaseTrack.
   """
 
-  __metaclass__ = abc.ABCMeta
-
   def __init__(self, command_path, release_track, is_hidden):
     """Constructor.
 
@@ -200,7 +201,7 @@ class MarkdownGenerator(object):
     self._subcommands = None  # type: dict
     self._subgroups = None  # type: dict
     self._top = self._command_path[0] if self._command_path else ''
-    self._buf = StringIO.StringIO()
+    self._buf = io.StringIO()
     self._out = self._buf.write
     self._capsule = ''
     self._docstring = ''
@@ -413,16 +414,16 @@ class MarkdownGenerator(object):
     usage = usage_text.GetArgUsage(arg, definition=True, markdown=True)
     if not usage:
       return
-    self._out(u'\n{usage}{depth}\n'.format(usage=usage,
-                                           depth=':' * (depth + 2)))
+    self._out('\n{usage}{depth}\n'.format(
+        usage=usage, depth=':' * (depth + 2)))
     if arg.is_required and depth:
       modal = (' This {arg_type} must be specified if any of the other '
                'arguments in this group are specified.').format(
                    arg_type=self._ArgTypeName(arg))
     else:
       modal = ''
-    self._out(u'\n{details}{modal}\n'.format(details=self.GetArgDetails(arg),
-                                             modal=modal))
+    self._out('\n{details}{modal}\n'.format(
+        details=self.GetArgDetails(arg), modal=modal))
 
   def _PrintArgGroup(self, arg, depth=0):
     """Prints an arg group definition list at depth."""
@@ -474,7 +475,7 @@ class MarkdownGenerator(object):
       self._out('\n')
     self._out('{0}::\n'.format(
         usage_text.GetFlagUsage(flag, markdown=True)))
-    self._out(u'\n{arghelp}\n'.format(arghelp=self.GetArgDetails(flag)))
+    self._out('\n{arghelp}\n'.format(arghelp=self.GetArgDetails(flag)))
 
   def PrintFlagSection(self, heading, arg, disable_header=False):
     """Prints a flag section.
@@ -555,7 +556,7 @@ class MarkdownGenerator(object):
       help_message = help_stuff
     if not disable_header:
       self.PrintSectionHeader(name)
-    self._out(u'{message}\n'.format(
+    self._out('{message}\n'.format(
         message=textwrap.dedent(help_message).strip()))
 
   def PrintExtraSections(self, disable_header=False):
@@ -594,7 +595,7 @@ class MarkdownGenerator(object):
     """
     # Determine if the section has any content.
     content = ''
-    for subcommand, help_info in sorted(subcommands.iteritems()):
+    for subcommand, help_info in sorted(six.iteritems(subcommands)):
       if self._is_hidden or not help_info.is_hidden:
         # If this group is already hidden, we can safely include hidden
         # sub-items.  Else, only include them if they are not hidden.

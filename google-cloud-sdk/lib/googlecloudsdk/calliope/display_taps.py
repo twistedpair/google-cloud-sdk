@@ -36,6 +36,7 @@ There is a tapper for each of the --filter, --flatten, --limit, and --page
 flags.
 """
 
+from __future__ import absolute_import
 from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_projector

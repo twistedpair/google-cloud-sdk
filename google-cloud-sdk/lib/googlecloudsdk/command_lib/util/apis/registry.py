@@ -14,6 +14,7 @@
 
 """Utilities for the gcloud meta apis surface."""
 
+from __future__ import absolute_import
 from apitools.base.protorpclite import messages
 from apitools.base.py import  exceptions as apitools_exc
 from apitools.base.py import list_pager
@@ -25,6 +26,7 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.apis import apis_map
+import six
 
 NAME_SEPARATOR = '.'
 
@@ -410,7 +412,7 @@ def _ValidateAndGetDefaultVersion(api_name, api_version):
       raise UnknownAPIVersionError(api_name, api_version)
     return api_version
 
-  for version, api_def in api_vers.iteritems():
+  for version, api_def in six.iteritems(api_vers):
     if api_def.default_version:
       return version
   raise NoDefaultVersionError(api_name)
@@ -440,8 +442,8 @@ def GetAllAPIs():
     [API], A list of API definitions.
   """
   all_apis = []
-  for api_name, versions in apis_map.MAP.iteritems():
-    for api_version, _ in versions.iteritems():
+  for api_name, versions in six.iteritems(apis_map.MAP):
+    for api_version, _ in six.iteritems(versions):
       all_apis.append(GetAPI(api_name, api_version))
   return all_apis
 
@@ -467,7 +469,7 @@ def GetAPICollections(api_name=None, api_version=None):
     all_apis = {x.name: x.version for x in GetAllAPIs() if x.is_default}
 
   collections = []
-  for n, v in all_apis.iteritems():
+  for n, v in six.iteritems(all_apis):
     # pylint:disable=protected-access
     collections.extend(
         [APICollection(c) for c in apis_internal._GetApiCollections(n, v)])

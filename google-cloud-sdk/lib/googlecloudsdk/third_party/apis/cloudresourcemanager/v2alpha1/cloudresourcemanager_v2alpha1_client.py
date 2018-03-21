@@ -24,7 +24,7 @@ class CloudresourcemanagerV2alpha1(base_api.BaseApiClient):
                get_credentials=True, http=None, model=None,
                log_request=False, log_response=False,
                credentials_args=None, default_global_params=None,
-               additional_http_headers=None):
+               additional_http_headers=None, response_encoding=None):
     """Create a new cloudresourcemanager handle."""
     url = url or self.BASE_URL
     super(CloudresourcemanagerV2alpha1, self).__init__(
@@ -33,7 +33,8 @@ class CloudresourcemanagerV2alpha1(base_api.BaseApiClient):
         log_request=log_request, log_response=log_response,
         credentials_args=credentials_args,
         default_global_params=default_global_params,
-        additional_http_headers=additional_http_headers)
+        additional_http_headers=additional_http_headers,
+        response_encoding=response_encoding)
     self.folders = self.FoldersService(self)
 
   class FoldersService(base_api.BaseApiService):

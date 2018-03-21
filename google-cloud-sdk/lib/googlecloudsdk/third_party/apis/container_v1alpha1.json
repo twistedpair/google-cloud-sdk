@@ -192,7 +192,7 @@
           "$ref": "AddonsConfig"
         },
         "subnetwork": {
-          "description": "The name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/subnetworks) to which the\ncluster is connected.",
+          "description": "The name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/subnetworks) to which the\ncluster is connected. On output this shows the subnetwork ID instead of\nthe name.",
           "type": "string"
         },
         "nodePools": {
@@ -289,7 +289,7 @@
           "type": "string"
         },
         "initialClusterVersion": {
-          "description": "The initial Kubernetes version for this cluster.  Valid versions are those\nfound in validMasterVersions returned by getServerConfig.  The version can\nbe upgraded over time; such upgrades are reflected in\ncurrentMasterVersion and currentNodeVersion.",
+          "description": "The initial Kubernetes version for this cluster.  Valid versions are those\nfound in validMasterVersions returned by getServerConfig.  The version can\nbe upgraded over time; such upgrades are reflected in\ncurrentMasterVersion and currentNodeVersion.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"\",\"-\": picks the default Kubernetes version",
           "type": "string"
         },
         "currentMasterVersion": {
@@ -1321,7 +1321,7 @@
       "type": "object",
       "properties": {
         "desiredNodeVersion": {
-          "description": "The Kubernetes version to change the nodes to (typically an\nupgrade). Use `-` to upgrade to the latest version supported by\nthe server.",
+          "description": "The Kubernetes version to change the nodes to (typically an\nupgrade).\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the Kubernetes master version",
           "type": "string"
         },
         "desiredMonitoringService": {
@@ -1379,13 +1379,13 @@
           "description": "The desired use of IP aliases in a cluster.",
           "type": "boolean"
         },
-        "concurrentNodes": {
+        "concurrentNodeCount": {
           "description": "Controls how many nodes to upgrade in parallel. A maximum of 20 concurrent\nnodes is allowed.",
           "type": "integer",
           "format": "int32"
         },
         "desiredMasterVersion": {
-          "description": "The Kubernetes version to change the master to. The only valid value is the\nlatest supported version. Use \"-\" to have the server automatically select\nthe latest version.",
+          "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
           "type": "string"
         },
         "desiredMasterMachineType": {
@@ -1472,7 +1472,7 @@
           "type": "string"
         },
         "nodeVersion": {
-          "description": "The Kubernetes version to change the nodes to (typically an\nupgrade). Use `-` to upgrade to the latest version supported by\nthe server.",
+          "description": "The Kubernetes version to change the nodes to (typically an\nupgrade).\n\nUsers may specify either explicit versions offered by Kubernetes Engine or\nversion aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the Kubernetes master version",
           "type": "string"
         },
         "imageType": {
@@ -1677,7 +1677,7 @@
           "type": "string"
         },
         "masterVersion": {
-          "description": "The Kubernetes version to change the master to. The only valid value is the\nlatest supported version. Use \"-\" to have the server automatically select\nthe latest version.",
+          "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by Kubernetes Engine or\nversion aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
           "type": "string"
         },
         "masterMachineType": {
@@ -2660,6 +2660,47 @@
           "type": "boolean"
         }
       }
+    },
+    "ListUsableSubnetworksResponse": {
+      "id": "ListUsableSubnetworksResponse",
+      "description": "ListUsableSubnetworksResponse is the response of\nListUsableSubnetworksRequest.",
+      "type": "object",
+      "properties": {
+        "subnetworks": {
+          "description": "A list of usable subnetworks in the specified network project.",
+          "type": "array",
+          "items": {
+            "$ref": "UsableSubnetwork"
+          }
+        },
+        "nextPageToken": {
+          "description": "This token allows you to get the next page of results for list requests.\nIf the number of results is larger than `page_size`, use the\n`next_page_token` as a value for the query parameter `page_token` in the\nnext request. The value will become empty when there are no more pages.",
+          "type": "string"
+        },
+        "version": {
+          "description": "API request version that initiates this operation.",
+          "type": "string"
+        }
+      }
+    },
+    "UsableSubnetwork": {
+      "id": "UsableSubnetwork",
+      "description": "UsableSubnetwork resource returns the subnetwork name, its associated network\nand the primary CIDR range.",
+      "type": "object",
+      "properties": {
+        "subnetwork": {
+          "description": "Subnetwork Name.",
+          "type": "string"
+        },
+        "network": {
+          "description": "Network Name.",
+          "type": "string"
+        },
+        "ipCidrRange": {
+          "description": "The range of internal addresses that are owned by this subnetwork.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -2691,7 +2732,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Sets the access control policy for a resource. Replaces any existing\npolicy.\n\nAuthorization requires the Google IAM permission\n'datahub.entries.setIamPolicy' on the specified resource."
+          "description": "Sets the access control policy for a resource. Replaces any existing\npolicy.\n\nAuthorization requires the Google IAM permission\n'container.clusters.setIamPolicy' on the specified resource."
         },
         "getIamPolicy": {
           "id": "container.projects.getIamPolicy",
@@ -2719,7 +2760,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Gets the access control policy for a resource. Returns NOT_FOUND error if\nthe resource does not exist. Returns an empty policy if the resource exists\nbut does not have a policy set.\n\nAuthorization requires the Google IAM permission\n`datahub.entries.getIamPolicy` on the specified resource."
+          "description": "Gets the access control policy for a resource. Returns NOT_FOUND error if\nthe resource does not exist. Returns an empty policy if the resource exists\nbut does not have a policy set.\n\nAuthorization requires the Google IAM permission\n`container.clusters.getIamPolicy` on the specified resource."
         },
         "testIamPermissions": {
           "id": "container.projects.testIamPermissions",
@@ -2801,7 +2842,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Contains the name of the resource requested.\nSpecific in the format 'projects\/*\/locations\/*'.",
+                  "description": "Contains the name of the resource requested.\nSpecific in the format 'projects\/*\/locations'.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5134,6 +5175,60 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Cancels the specified operation."
+                }
+              }
+            }
+          }
+        },
+        "aggregated": {
+          "resources": {
+            "usableSubnetworks": {
+              "methods": {
+                "list": {
+                  "id": "container.projects.aggregated.usableSubnetworks.list",
+                  "path": "v1alpha1/{+parent}/aggregated/usableSubnetworks",
+                  "flatPath": "v1alpha1/projects/{projectsId}/aggregated/usableSubnetworks",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The parent project where subnetworks are usable.\nSpecified in the format 'projects\/*'.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Filtering currently only supports equality on the networkProjectId and must\nbe in the form: \"networkProjectId=[PROJECTID]\", where `networkProjectId`\nis the project which owns the listed subnetworks. This defaults to the\nparent project ID.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The max number of results per page that should be returned. If the number\nof available results is larger than `page_size`, a `next_page_token` is\nreturned which can be used to get the next page of results in subsequent\nrequests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Specifies a page token to use. Set this to the next_page_token returned by\nprevious list requests to get the next page of results.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "version": {
+                      "description": "API request version that initiates this operation.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListUsableSubnetworksResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists subnetworks that are usable for creating clusters in a project."
                 }
               }
             }

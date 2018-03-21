@@ -29,7 +29,8 @@ Typical usage (update command):
   labels_diff = labels_util.Diff.FromUpdateArgs(args)
   if labels_diff.MayHaveUpdates():
     orig_resource = Get(...)  # to prevent unnecessary Get calls
-    new_resource.labels = labels_diff.Apply(labels_cls, orig_resource.labels)
+    new_resource.labels = labels_diff.Apply(
+        labels_cls, orig_resource.labels).GetOrNone()
   Update(..., new_resource)
 """
 
@@ -96,46 +97,54 @@ KEY_FORMAT_VALIDATOR = arg_parsers.CustomFunctionValidator(
 VALUE_FORMAT_VALIDATOR = arg_parsers.CustomFunctionValidator(
     IsValidLabelValue, VALUE_FORMAT_ERROR)
 
-CREATE_LABELS_FLAG = base.Argument(
-    '--labels',
-    metavar='KEY=VALUE',
-    type=arg_parsers.ArgDict(
-        key_type=KEY_FORMAT_VALIDATOR, value_type=VALUE_FORMAT_VALIDATOR),
-    action=arg_parsers.UpdateAction,
-    help='A list of label KEY=VALUE pairs to add.')
 
-CLEAR_LABELS_FLAG = base.Argument(
-    '--clear-labels',
-    action='store_true',
-    help="""\
-        Removes all labels. If `--update-labels` is also specified then
-        `--clear-labels` is applied first.
-
-        For example, to remove all labels:
-
-            $ {command} --clear-labels
-
-        To set the labels to exactly "foo" and "baz":
-
-            $ {command} --clear-labels --update-labels foo=bar,baz=qux
-        """)
-
-
-def _GetUpdateLabelsFlag(extra_message):
+def GetCreateLabelsFlag(extra_message='', labels_name='labels',
+                        validate_values=True):
+  value_type = VALUE_FORMAT_VALIDATOR if validate_values else None
   return base.Argument(
-      '--update-labels',
+      '--{}'.format(labels_name),
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(
-          key_type=KEY_FORMAT_VALIDATOR, value_type=VALUE_FORMAT_VALIDATOR),
+          key_type=KEY_FORMAT_VALIDATOR, value_type=value_type),
+      action=arg_parsers.UpdateAction,
+      help='A list of label KEY=VALUE pairs to add.' + extra_message)
+
+
+def GetClearLabelsFlag(labels_name='labels'):
+  return base.Argument(
+      '--clear-{}'.format(labels_name),
+      action='store_true',
+      help="""\
+          Removes all labels. If `--update-{labels}` is also specified then
+          `--clear-{labels}` is applied first.
+
+          For example, to remove all labels:
+
+              $ {{command}} --clear-{labels}
+
+          To set the labels to exactly "foo" and "baz":
+
+              $ {{command}} --clear-{labels} --update-{labels} foo=bar,baz=qux
+          """.format(labels=labels_name))
+
+
+def GetUpdateLabelsFlag(extra_message, labels_name='labels',
+                        validate_values=True):
+  value_type = VALUE_FORMAT_VALIDATOR if validate_values else None
+  return base.Argument(
+      '--update-{}'.format(labels_name),
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(
+          key_type=KEY_FORMAT_VALIDATOR, value_type=value_type),
       action=arg_parsers.UpdateAction,
       help="""\
       A list of label KEY=VALUE pairs to update. If a label exists its value
       is modified, otherwise a new label is created.""" + extra_message)
 
 
-def _GetRemoveLabelsFlag(extra_message):
+def GetRemoveLabelsFlag(extra_message, labels_name='labels'):
   return base.Argument(
-      '--remove-labels',
+      '--remove-{}'.format(labels_name),
       metavar='KEY',
       type=arg_parsers.ArgList(),
       action=arg_parsers.UpdateAction,
@@ -150,7 +159,7 @@ def AddCreateLabelsFlags(parser):
   Args:
     parser: The argparse parser to add the flags to.
   """
-  CREATE_LABELS_FLAG.AddToParser(parser)
+  GetCreateLabelsFlag().AddToParser(parser)
 
 
 def AddUpdateLabelsFlags(
@@ -166,13 +175,13 @@ def AddUpdateLabelsFlags(
                           --delete-labels flag.
     enable_clear: bool, whether to include the --clear-labels flag.
   """
-  _GetUpdateLabelsFlag(extra_update_message).AddToParser(parser)
+  GetUpdateLabelsFlag(extra_update_message).AddToParser(parser)
   if enable_clear:
     remove_group = parser.add_mutually_exclusive_group()
-    CLEAR_LABELS_FLAG.AddToParser(remove_group)
-    _GetRemoveLabelsFlag(extra_remove_message).AddToParser(remove_group)
+    GetClearLabelsFlag().AddToParser(remove_group)
+    GetRemoveLabelsFlag(extra_remove_message).AddToParser(remove_group)
   else:
-    _GetRemoveLabelsFlag(extra_remove_message).AddToParser(parser)
+    GetRemoveLabelsFlag(extra_remove_message).AddToParser(parser)
 
 
 def GetUpdateLabelsDictFromArgs(args):

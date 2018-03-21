@@ -31,6 +31,7 @@ where only one of the three elements need be present.
 # Pytype fails to check this file.
 # type: ignore
 
+from __future__ import absolute_import
 from googlecloudsdk.calliope import display_taps
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -44,6 +45,7 @@ from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.resource import resource_reference
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import peek_iterable
+import six
 
 
 class Error(exceptions.Error):
@@ -211,7 +213,7 @@ class Displayer(object):
         assert None < value
         return value
       except (AssertionError, TypeError):
-        return unicode(value)
+        return six.text_type(value)
 
     self._resources = sorted(
         self._resources,

@@ -22,10 +22,12 @@ during runtime before the Deps object is used) when Get() is called for a given
 attribute, depending on the fallthroughs.
 """
 
+from __future__ import absolute_import
 import abc
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
+import six
 
 
 class Error(exceptions.Error):
@@ -40,7 +42,7 @@ class AttributeNotFoundError(Error, AttributeError):
   """Raised when an attribute value cannot be found by a Deps object."""
 
 
-class _FallthroughBase(object):
+class _FallthroughBase(six.with_metaclass(abc.ABCMeta, object)):
   """Represents a way to get information about a concept's attribute.
 
   Specific implementations of Fallthrough objects must implement the method:
@@ -52,7 +54,6 @@ class _FallthroughBase(object):
   attribute. The hint property is used to provide an informative error when an
   attribute can't be found.
   """
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, hint):
     """Initializes a fallthrough to an arbitrary function.

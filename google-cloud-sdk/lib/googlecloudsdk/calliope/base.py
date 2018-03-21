@@ -15,6 +15,7 @@
 
 """
 
+from __future__ import absolute_import
 import abc
 import collections
 from functools import wraps
@@ -27,6 +28,8 @@ from googlecloudsdk.calliope import display
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer
+
+import six
 
 
 # Common markdown.
@@ -63,6 +66,9 @@ class ReleaseTrack(object):
 
     def __eq__(self, other):
       return self.id == other.id
+
+    def __hash__(self):
+      return hash(self.id)
 
   GA = _TRACK('GA', None, None, None)
   BETA = _TRACK(
@@ -123,10 +129,8 @@ class ReleaseTrack(object):
     raise ValueError('Unknown release track id [{}].'.format(id))
 
 
-class Action(object):
+class Action(six.with_metaclass(abc.ABCMeta, object)):
   """A class that allows you to save an Action configuration for reuse."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, *args, **kwargs):
     """Creates the Action.
@@ -326,7 +330,7 @@ FILTER_FLAG = Argument(
 
 LIMIT_FLAG = Argument(
     '--limit',
-    type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
+    type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
     category=LIST_COMMAND_FLAGS,
     help="""\
     The maximum number of resources to list. The default is *unlimited*.
@@ -336,7 +340,7 @@ LIMIT_FLAG = Argument(
 
 PAGE_SIZE_FLAG = Argument(
     '--page-size',
-    type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
+    type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
     category=LIST_COMMAND_FLAGS,
     help="""\
     Some services group resource list output into pages. This flag specifies
@@ -365,10 +369,8 @@ URI_FLAG = Argument(
     help='Print a list of resource URIs instead of the default output.')
 
 
-class _Common(object):
+class _Common(six.with_metaclass(abc.ABCMeta, object)):
   """Base class for Command and Group."""
-
-  __metaclass__ = abc.ABCMeta
   _cli_generator = None
   _is_hidden = False
   _is_unicode_supported = False
@@ -404,7 +406,10 @@ class _Common(object):
 
   @classmethod
   def IsUnicodeSupported(cls):
-    return cls._is_unicode_supported
+    if six.PY2:
+      return cls._is_unicode_supported
+    # We always support unicode on Python 3.
+    return True
 
   @classmethod
   def ReleaseTrack(cls):
@@ -509,7 +514,7 @@ class Group(_Common):
     return cls._command_suggestions
 
 
-class Command(_Common):
+class Command(six.with_metaclass(abc.ABCMeta, _Common)):
   """Command is a base class for commands to implement.
 
   Attributes:
@@ -520,8 +525,6 @@ class Command(_Common):
         common initialization among commands.
     _uri_cache_enabled: bool, The URI cache enabled state.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, cli, context):
     super(Command, self).__init__(is_group=False)
@@ -590,10 +593,8 @@ class Command(_Common):
     return None
 
 
-class TopicCommand(Command):
+class TopicCommand(six.with_metaclass(abc.ABCMeta, Command)):
   """A command that displays its own help on execution."""
-
-  __metaclass__ = abc.ABCMeta
 
   def Run(self, args):
     self.ExecuteCommandDoNotUse(args.command_path[1:] +
@@ -601,36 +602,28 @@ class TopicCommand(Command):
     return None
 
 
-class SilentCommand(Command):
+class SilentCommand(six.with_metaclass(abc.ABCMeta, Command)):
   """A command that produces no output."""
-
-  __metaclass__ = abc.ABCMeta
 
   @staticmethod
   def _Flags(parser):
     parser.display_info.AddFormat('none')
 
 
-class DescribeCommand(Command):
+class DescribeCommand(six.with_metaclass(abc.ABCMeta, Command)):
   """A command that prints one resource in the 'default' format."""
 
-  __metaclass__ = abc.ABCMeta
 
-
-class CacheCommand(Command):
+class CacheCommand(six.with_metaclass(abc.ABCMeta, Command)):
   """A command that affects the resource URI cache."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, *args, **kwargs):
     super(CacheCommand, self).__init__(*args, **kwargs)
     self._uri_cache_enabled = True
 
 
-class ListCommand(CacheCommand):
+class ListCommand(six.with_metaclass(abc.ABCMeta, CacheCommand)):
   """A command that pretty-prints all resources."""
-
-  __metaclass__ = abc.ABCMeta
 
   @staticmethod
   def _Flags(parser):
@@ -865,7 +858,7 @@ def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,
     raise ValueError('Choices must not be empty.')
 
   if (not isinstance(choices, collections.Iterable)
-      or isinstance(choices, basestring)):
+      or isinstance(choices, six.string_types)):
     raise TypeError(
         'Choices must be an iterable container of options: [{}].'.format(
             ', '.join(choices)))

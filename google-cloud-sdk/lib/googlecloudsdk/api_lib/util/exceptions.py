@@ -27,6 +27,8 @@ from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import encoding
 
+import six
+
 
 # The underlying formatter treats bare : specially. It is escaped before passing
 # to the formatter as '{'+_ESCAPED_COLON+'}' and then reconstituted either as a
@@ -101,7 +103,7 @@ class HttpErrorPayload(string.Formatter):
     self.status_description = ''
     self.status_message = ''
     self.url = ''
-    if isinstance(http_error, basestring):
+    if isinstance(http_error, six.string_types):
       self.message = http_error
     else:
       self._ExtractResponseAndJsonContent(http_error)
@@ -280,12 +282,12 @@ class HttpException(core_exceptions.Error):
       error_format = '{message}{details?\n{?}}'
       if log.GetVerbosity() <= logging.DEBUG:
         error_format += '{.debugInfo?\n{?}}'
-    return self.payload.format(unicode(error_format).replace(
+    return self.payload.format(six.text_type(error_format).replace(
         ':', '{' + _ESCAPED_COLON + '}'))  # pytype: disable=wrong-arg-types
 
   @property
   def message(self):
-    return unicode(self)
+    return six.text_type(self)
 
   def __eq__(self, other):
     if isinstance(other, HttpException):

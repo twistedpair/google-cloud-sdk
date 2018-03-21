@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import contextlib
 import os
 import re
@@ -748,15 +749,15 @@ class _NormalProgressBar(object):
       label += ' ' * diff
     left = self._box.d_vr + self._box.d_h
     right = self._box.d_h + self._box.d_vl
-    self._label = u'{left} {label} {right}'.format(left=left, label=label,
-                                                   right=right)
+    self._label = '{left} {label} {right}'.format(
+        left=left, label=label, right=right)
 
   def Start(self):
     """Starts the progress bar by writing the top rule and label."""
     if self._first or self._redraw:
       left = self._box.d_dr if self._first else self._box.d_vr
       right = self._box.d_dl if self._first else self._box.d_vl
-      rule = u'{left}{middle}{right}\n'.format(
+      rule = '{left}{middle}{right}\n'.format(
           left=left, middle=self._box.d_h * self._total_ticks, right=right)
       self._Write(rule)
     self._Write(self._label + '\n')

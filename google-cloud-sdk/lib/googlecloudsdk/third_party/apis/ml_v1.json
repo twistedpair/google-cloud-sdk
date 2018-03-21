@@ -6,7 +6,7 @@
   "canonicalName": "Cloud Machine Learning Engine",
   "version": "v1",
   "revision": "0",
-  "title": "Google Cloud Machine Learning Engine",
+  "title": "Cloud Machine Learning Engine",
   "description": "An API to enable creating and using machine learning models.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -204,7 +204,7 @@
     },
     "GoogleCloudMlV1__TrainingInput": {
       "id": "GoogleCloudMlV1__TrainingInput",
-      "description": "Represents input parameters for a training job. When using the\ngcloud command to submit your training job, you can specify\nthe input parameters as command-line arguments and\/or in a YAML configuration\nfile referenced from the --config command-line argument. For\ndetails, see the guide to\n<a href=\"\/ml-engine\/docs\/training-jobs\">submitting a training job<\/a>.",
+      "description": "Represents input parameters for a training job. When using the\ngcloud command to submit your training job, you can specify\nthe input parameters as command-line arguments and\/or in a YAML configuration\nfile referenced from the --config command-line argument. For\ndetails, see the guide to\n<a href=\"\/ml-engine\/docs\/training-jobs\">submitting a training job<\/a>.\nNext ID: 22",
       "type": "object",
       "properties": {
         "scaleTier": {
@@ -372,7 +372,7 @@
           "format": "double"
         },
         "maxValue": {
-          "description": "Required if typeis `DOUBLE` or `INTEGER`. This field\nshould be unset if type is `CATEGORICAL`. This value should be integers if\ntype is `INTEGER`.",
+          "description": "Required if type is `DOUBLE` or `INTEGER`. This field\nshould be unset if type is `CATEGORICAL`. This value should be integers if\ntype is `INTEGER`.",
           "type": "number",
           "format": "double"
         },
@@ -936,6 +936,10 @@
             "SCIKIT_LEARN",
             "XGBOOST"
           ]
+        },
+        "pythonVersion": {
+          "description": "Optional. The version of Python used in prediction. If not set, the default\nversion is '2.7'. Python '3.5' is available when `runtime_version` is set\nto '1.4' and above. Python '2.7' works with all supported runtime versions.",
+          "type": "string"
         }
       }
     },

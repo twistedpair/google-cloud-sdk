@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import atexit
 import json
 import os
@@ -26,7 +27,6 @@ import subprocess
 import sys
 import tempfile
 import time
-import urllib
 import uuid
 
 from googlecloudsdk.core import config
@@ -39,6 +39,9 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
 import six
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 
 
 _GA_ENDPOINT = 'https://ssl.google-analytics.com/batch'
@@ -427,7 +430,7 @@ class _MetricsCollector(object):
     """Adds metric with latencies for the given command to the metrics queue."""
     params = self._timer.GetCSIParams()
     params.extend(self._csi_params)
-    data = urllib.urlencode(params)
+    data = six.moves.urllib.parse.urlencode(params)
 
     headers = {'user-agent': self._user_agent}
     self.CollectHTTPBeacon('{0}?{1}'.format(_CSI_ENDPOINT, data),
@@ -450,14 +453,14 @@ class _MetricsCollector(object):
         if v is not None]
     params.extend(sorted(custom_dimensions))
     params.extend(self._ga_event_params)
-    data = urllib.urlencode(params)
+    data = six.moves.urllib.parse.urlencode(params)
     self._ga_events.append(data)
 
   def CollectGAMetric(self):
     ga_timings = []
     for timing_params in self._timer.GetGATimingsParams():
       timing_params.extend(self._ga_timing_params)
-      timing_data = urllib.urlencode(timing_params)
+      timing_data = six.moves.urllib.parse.urlencode(timing_params)
       ga_timings.append(timing_data)
 
     data = '\n'.join(self._ga_events + ga_timings)

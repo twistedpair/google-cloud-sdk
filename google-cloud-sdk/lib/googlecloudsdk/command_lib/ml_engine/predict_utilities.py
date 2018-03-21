@@ -66,7 +66,8 @@ def ReadInstances(input_file, data_format, limit=None):
       instances.append(line_content)
 
   if not instances:
-    raise InvalidInstancesFileError('No valid instance was found.')
+    raise InvalidInstancesFileError(
+        'No valid instance was found in input file.')
 
   return instances
 

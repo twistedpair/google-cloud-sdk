@@ -60,6 +60,9 @@ def ResourceDescription(name):
 
   To list a subset of resource keys in a resource, use projections. \
   {see_projection}
+
+  To work through an interactive tutorial about using the filter and format
+  flags instead, see: https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/GoogleCloudPlatform/cloud-shell-tutorials&page=editor&tutorial=cloudsdk/tutorial.md
   """
   # topic <name> => gcloud topic <command>
   topics = {

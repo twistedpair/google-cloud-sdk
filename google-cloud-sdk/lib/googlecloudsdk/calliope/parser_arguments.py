@@ -17,6 +17,7 @@
 Refer to the calliope.parser_extensions module for a detailed overview.
 """
 
+from __future__ import absolute_import
 import argparse
 
 from googlecloudsdk.calliope import base

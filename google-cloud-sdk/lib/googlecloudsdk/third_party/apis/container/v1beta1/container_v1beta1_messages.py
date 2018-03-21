@@ -80,6 +80,17 @@ class AutoUpgradeOptions(_messages.Message):
   requestedUpgradeStartTime = _messages.StringField(3)
 
 
+class BinaryAuthorization(_messages.Message):
+  """Configuration for Binary Authorization.
+
+  Fields:
+    enabled: Enable Binary Authorization for this cluster. If enabled, all
+      container images will be validated by Google Binauthz.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class CIDR(_messages.Message):
   """CIDR contains an optional name and one CIDR block.
 
@@ -153,6 +164,7 @@ class Cluster(_messages.Message):
     addonsConfig: Configurations for the various addons available to run in
       the cluster.
     auditConfig: Configuration for audit logging.
+    binaryAuthorization: Configuration for Binary Authorization.
     clusterIpv4Cidr: The IP address range of the container pods in this
       cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `10.96.0.0/14`). Leave blank to have one
@@ -183,7 +195,13 @@ class Cluster(_messages.Message):
     initialClusterVersion: The initial Kubernetes version for this cluster.
       Valid versions are those found in validMasterVersions returned by
       getServerConfig.  The version can be upgraded over time; such upgrades
-      are reflected in currentMasterVersion and currentNodeVersion.
+      are reflected in currentMasterVersion and currentNodeVersion.  Users may
+      specify either explicit versions offered by Kubernetes Engine or version
+      aliases, which have the following behavior:  - "latest": picks the
+      highest valid Kubernetes version - "1.X": picks the highest valid
+      patch+gke.N patch in the 1.X version - "1.X.Y": picks the highest valid
+      gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an explicit
+      Kubernetes version - "","-": picks the default Kubernetes version
     initialNodeCount: The number of nodes to create in this cluster. You must
       ensure that your Compute Engine <a href="/compute/docs/resource-
       quotas">resource quota</a> is sufficient for this number of instances.
@@ -230,7 +248,9 @@ class Cluster(_messages.Message):
       start with a letter. * Must end with a number or a letter.
     network: The name of the Google Compute Engine [network](/compute/docs
       /networks-and-firewalls#networks) to which the cluster is connected. If
-      left unspecified, the `default` network will be used.
+      left unspecified, the `default` network will be used. On output this
+      shows the network ID instead of the name.
+    networkConfig: Configuration for cluster networking.
     networkPolicy: Configuration options for the NetworkPolicy feature.
     nodeConfig: Parameters used in creating the cluster's nodes. See
       `nodeConfig` for the description of its properties. For requests, this
@@ -261,7 +281,7 @@ class Cluster(_messages.Message):
       status of this cluster, if available.
     subnetwork: The name of the Google Compute Engine
       [subnetwork](/compute/docs/subnetworks) to which the cluster is
-      connected.
+      connected. On output this shows the subnetwork ID instead of the name.
     zone: [Output only] The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field is deprecated, use location instead.
@@ -322,45 +342,47 @@ class Cluster(_messages.Message):
 
   addonsConfig = _messages.MessageField('AddonsConfig', 1)
   auditConfig = _messages.MessageField('AuditConfig', 2)
-  clusterIpv4Cidr = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  currentMasterVersion = _messages.StringField(5)
-  currentNodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  currentNodeVersion = _messages.StringField(7)
-  description = _messages.StringField(8)
-  enableKubernetesAlpha = _messages.BooleanField(9)
-  endpoint = _messages.StringField(10)
-  expireTime = _messages.StringField(11)
-  initialClusterVersion = _messages.StringField(12)
-  initialNodeCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(14, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 15)
-  labelFingerprint = _messages.StringField(16)
-  legacyAbac = _messages.MessageField('LegacyAbac', 17)
-  location = _messages.StringField(18)
-  locations = _messages.StringField(19, repeated=True)
-  loggingService = _messages.StringField(20)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 21)
-  masterAuth = _messages.MessageField('MasterAuth', 22)
-  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 23)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 24)
-  masterIpv4CidrBlock = _messages.StringField(25)
-  monitoringService = _messages.StringField(26)
-  name = _messages.StringField(27)
-  network = _messages.StringField(28)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 29)
-  nodeConfig = _messages.MessageField('NodeConfig', 30)
-  nodeIpv4CidrSize = _messages.IntegerField(31, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 32, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 33)
-  privateCluster = _messages.BooleanField(34)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 35)
-  selfLink = _messages.StringField(36)
-  servicesIpv4Cidr = _messages.StringField(37)
-  status = _messages.EnumField('StatusValueValuesEnum', 38)
-  statusMessage = _messages.StringField(39)
-  subnetwork = _messages.StringField(40)
-  zone = _messages.StringField(41)
+  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 3)
+  clusterIpv4Cidr = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  currentMasterVersion = _messages.StringField(6)
+  currentNodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  currentNodeVersion = _messages.StringField(8)
+  description = _messages.StringField(9)
+  enableKubernetesAlpha = _messages.BooleanField(10)
+  endpoint = _messages.StringField(11)
+  expireTime = _messages.StringField(12)
+  initialClusterVersion = _messages.StringField(13)
+  initialNodeCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(15, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 16)
+  labelFingerprint = _messages.StringField(17)
+  legacyAbac = _messages.MessageField('LegacyAbac', 18)
+  location = _messages.StringField(19)
+  locations = _messages.StringField(20, repeated=True)
+  loggingService = _messages.StringField(21)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 22)
+  masterAuth = _messages.MessageField('MasterAuth', 23)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 24)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 25)
+  masterIpv4CidrBlock = _messages.StringField(26)
+  monitoringService = _messages.StringField(27)
+  name = _messages.StringField(28)
+  network = _messages.StringField(29)
+  networkConfig = _messages.MessageField('NetworkConfig', 30)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 31)
+  nodeConfig = _messages.MessageField('NodeConfig', 32)
+  nodeIpv4CidrSize = _messages.IntegerField(33, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 34, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 35)
+  privateCluster = _messages.BooleanField(36)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 37)
+  selfLink = _messages.StringField(38)
+  servicesIpv4Cidr = _messages.StringField(39)
+  status = _messages.EnumField('StatusValueValuesEnum', 40)
+  statusMessage = _messages.StringField(41)
+  subnetwork = _messages.StringField(42)
+  zone = _messages.StringField(43)
 
 
 class ClusterStatus(_messages.Message):
@@ -406,11 +428,13 @@ class ClusterUpdate(_messages.Message):
   provided.
 
   Fields:
-    concurrentNodes: Controls how many nodes to upgrade in parallel. A maximum
-      of 20 concurrent nodes is allowed.
+    concurrentNodeCount: Controls how many nodes to upgrade in parallel. A
+      maximum of 20 concurrent nodes is allowed.
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
     desiredAuditConfig: The desired configuration for audit logging.
+    desiredBinaryAuthorization: The desired configuration options for the
+      Binary Authorization feature.
     desiredClusterStatus: The desired status fields for the cluster.
     desiredImage: The desired name of the image to use for this node. This is
       used to create clusters using a custom image.
@@ -436,8 +460,13 @@ class ClusterUpdate(_messages.Message):
       type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
       master to.
     desiredMasterVersion: The Kubernetes version to change the master to. The
-      only valid value is the latest supported version. Use "-" to have the
-      server automatically select the latest version.
+      only valid value is the latest supported version.  Users may specify
+      either explicit versions offered by Kubernetes Engine or version
+      aliases, which have the following behavior:  - "latest": picks the
+      highest valid Kubernetes version - "1.X": picks the highest valid
+      patch+gke.N patch in the 1.X version - "1.X.Y": picks the highest valid
+      gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an explicit
+      Kubernetes version - "-": picks the default Kubernetes version
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options:  *
       "monitoring.googleapis.com" - the Google Cloud Monitoring service *
@@ -451,30 +480,36 @@ class ClusterUpdate(_messages.Message):
       "desired_node_pool_autoscaling" is specified and there is more than one
       node pool on the cluster.
     desiredNodeVersion: The Kubernetes version to change the nodes to
-      (typically an upgrade). Use `-` to upgrade to the latest version
-      supported by the server.
+      (typically an upgrade).  Users may specify either explicit versions
+      offered by Kubernetes Engine or version aliases, which have the
+      following behavior:  - "latest": picks the highest valid Kubernetes
+      version - "1.X": picks the highest valid patch+gke.N patch in the 1.X
+      version - "1.X.Y": picks the highest valid gke.N patch in the 1.X.Y
+      version - "1.X.Y-gke.N": picks an explicit Kubernetes version - "-":
+      picks the Kubernetes master version
     desiredPodSecurityPolicyConfig: The desired configuration options for the
       PodSecurityPolicy feature.
   """
 
-  concurrentNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  concurrentNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 2)
   desiredAuditConfig = _messages.MessageField('AuditConfig', 3)
-  desiredClusterStatus = _messages.MessageField('ClusterStatus', 4)
-  desiredImage = _messages.StringField(5)
-  desiredImageProject = _messages.StringField(6)
-  desiredImageType = _messages.StringField(7)
-  desiredLocations = _messages.StringField(8, repeated=True)
-  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 9)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 10)
-  desiredMasterId = _messages.StringField(11)
-  desiredMasterMachineType = _messages.StringField(12)
-  desiredMasterVersion = _messages.StringField(13)
-  desiredMonitoringService = _messages.StringField(14)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 15)
-  desiredNodePoolId = _messages.StringField(16)
-  desiredNodeVersion = _messages.StringField(17)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 18)
+  desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 4)
+  desiredClusterStatus = _messages.MessageField('ClusterStatus', 5)
+  desiredImage = _messages.StringField(6)
+  desiredImageProject = _messages.StringField(7)
+  desiredImageType = _messages.StringField(8)
+  desiredLocations = _messages.StringField(9, repeated=True)
+  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 10)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 11)
+  desiredMasterId = _messages.StringField(12)
+  desiredMasterMachineType = _messages.StringField(13)
+  desiredMasterVersion = _messages.StringField(14)
+  desiredMonitoringService = _messages.StringField(15)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 16)
+  desiredNodePoolId = _messages.StringField(17)
+  desiredNodeVersion = _messages.StringField(18)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 19)
 
 
 class ClusterUpdateOptions(_messages.Message):
@@ -517,6 +552,33 @@ class CompleteIPRotationRequest(_messages.Message):
   projectId = _messages.StringField(3)
   version = _messages.StringField(4)
   zone = _messages.StringField(5)
+
+
+class ContainerProjectsAggregatedUsableSubnetworksListRequest(_messages.Message):
+  """A ContainerProjectsAggregatedUsableSubnetworksListRequest object.
+
+  Fields:
+    filter: Filtering currently only supports equality on the networkProjectId
+      and must be in the form: "networkProjectId=[PROJECTID]", where
+      `networkProjectId` is the project which owns the listed subnetworks.
+      This defaults to the parent project ID.
+    pageSize: The max number of results per page that should be returned. If
+      the number of available results is larger than `page_size`, a
+      `next_page_token` is returned which can be used to get the next page of
+      results in subsequent requests. Acceptable values are 0 to 500,
+      inclusive. (Default: 500)
+    pageToken: Specifies a page token to use. Set this to the nextPageToken
+      returned by previous list requests to get the next page of results.
+    parent: The parent project where subnetworks are usable. Specified in the
+      format 'projects/*'.
+    version: API request version that initiates this operation.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  version = _messages.StringField(5)
 
 
 class ContainerProjectsLocationsClustersDeleteRequest(_messages.Message):
@@ -1227,6 +1289,26 @@ class ListOperationsResponse(_messages.Message):
   version = _messages.StringField(3)
 
 
+class ListUsableSubnetworksResponse(_messages.Message):
+  """ListUsableSubnetworksResponse is the response of
+  ListUsableSubnetworksRequest.
+
+  Fields:
+    nextPageToken: This token allows you to get the next page of results for
+      list requests. If the number of results is larger than `page_size`, use
+      the `next_page_token` as a value for the query parameter `page_token` in
+      the next request. The value will become empty when there are no more
+      pages.
+    subnetworks: A list of usable subnetworks in the specified network
+      project.
+    version: API request version that initiates this operation.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  subnetworks = _messages.MessageField('UsableSubnetwork', 2, repeated=True)
+  version = _messages.StringField(3)
+
+
 class MaintenancePolicy(_messages.Message):
   """MaintenancePolicy defines the maintenance policy to be used for the
   cluster.
@@ -1314,6 +1396,22 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
 
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
   enabled = _messages.BooleanField(2)
+
+
+class NetworkConfig(_messages.Message):
+  """NetworkConfig reports the full network & subnetwork names.
+
+  Fields:
+    network: Output only. The name of the Google Compute Engine
+      network(/compute/docs/networks-and-firewalls#networks). Example:
+      projects/my-project/global/networks/my-network
+    subnetwork: Output only. The name of the Google Compute Engine
+      [subnetwork](/compute/docs/vpc). Example: projects/my-project/regions
+      /us-central1/subnetworks/my-subnet
+  """
+
+  network = _messages.StringField(1)
+  subnetwork = _messages.StringField(2)
 
 
 class NetworkPolicy(_messages.Message):
@@ -2372,9 +2470,13 @@ class UpdateMasterRequest(_messages.Message):
     masterMachineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-8`) to change the
       master to.
-    masterVersion: The Kubernetes version to change the master to. The only
-      valid value is the latest supported version. Use "-" to have the server
-      automatically select the latest version.
+    masterVersion: The Kubernetes version to change the master to.  Users may
+      specify either explicit versions offered by Kubernetes Engine or version
+      aliases, which have the following behavior:  - "latest": picks the
+      highest valid Kubernetes version - "1.X": picks the highest valid
+      patch+gke.N patch in the 1.X version - "1.X.Y": picks the highest valid
+      gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an explicit
+      Kubernetes version - "-": picks the default Kubernetes version
     name: The name (project, location, cluster) of the cluster to update.
       Specified in the format 'projects/*/locations/*/clusters/*'.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -2412,8 +2514,13 @@ class UpdateNodePoolRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to upgrade. This field
       has been deprecated and replaced by the name field.
     nodeVersion: The Kubernetes version to change the nodes to (typically an
-      upgrade). Use `-` to upgrade to the latest version supported by the
-      server.
+      upgrade).  Users may specify either explicit versions offered by
+      Kubernetes Engine or version aliases, which have the following behavior:
+      - "latest": picks the highest valid Kubernetes version - "1.X": picks
+      the highest valid patch+gke.N patch in the 1.X version - "1.X.Y": picks
+      the highest valid gke.N patch in the 1.X.Y version - "1.X.Y-gke.N":
+      picks an explicit Kubernetes version - "-": picks the Kubernetes master
+      version
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -2433,6 +2540,24 @@ class UpdateNodePoolRequest(_messages.Message):
   projectId = _messages.StringField(8)
   version = _messages.StringField(9)
   zone = _messages.StringField(10)
+
+
+class UsableSubnetwork(_messages.Message):
+  """UsableSubnetwork resource returns the subnetwork name, its associated
+  network and the primary CIDR range.
+
+  Fields:
+    ipCidrRange: The range of internal addresses that are owned by this
+      subnetwork.
+    network: Network Name. Example: projects/my-project/global/networks/my-
+      network
+    subnetwork: Subnetwork Name. Example: projects/my-project/regions/us-
+      central1/subnetworks/my-subnet
+  """
+
+  ipCidrRange = _messages.StringField(1)
+  network = _messages.StringField(2)
+  subnetwork = _messages.StringField(3)
 
 
 class WorkloadMetadataConfig(_messages.Message):
