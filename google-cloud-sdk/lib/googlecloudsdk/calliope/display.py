@@ -32,6 +32,7 @@ where only one of the three elements need be present.
 # type: ignore
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope import display_taps
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -346,7 +347,7 @@ class Displayer(object):
     flag_filter = self._GetFlag('filter')
     if flag_filter is None:
       if self._filter:
-        log.info('Display filter %s.', repr(self._filter))
+        log.info('Display filter: "%s"', six.text_type(self._filter))
       return self._filter
     else:
       return flag_filter
@@ -469,7 +470,7 @@ class Displayer(object):
     resources_were_displayed = True
     if self._printer:
       # Most command output will end up here.
-      log.info('Display format "%s".', self._format)
+      log.info('Display format: "%s"', self._format)
       self._printer.Print(self._resources)
       resources_were_displayed = self._printer.ResourcesWerePrinted()
     elif hasattr(self._command, 'Display'):

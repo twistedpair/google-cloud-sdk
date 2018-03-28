@@ -353,8 +353,7 @@ class Resource(object):
 
     self._self_link = '{0}{1}'.format(
         self._endpoint_url, uritemplate.expand(self._path, self.AsDict()))
-    if (self._collection_info.api_name
-        in ('compute', 'clouduseraccounts', 'storage')):
+    if self._collection_info.api_name in ('compute', 'storage'):
       # TODO(b/15425944): Unquote URLs for now for these apis.
       self._self_link = urllib.parse.unquote(self._self_link)
     self._initialized = True

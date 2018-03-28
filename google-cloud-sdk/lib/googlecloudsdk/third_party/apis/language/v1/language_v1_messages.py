@@ -301,7 +301,8 @@ class ClassificationCategory(_messages.Message):
     confidence: The classifier's confidence of the category. Number represents
       how certain the classifier is that this category represents the given
       text.
-    name: The name of the category representing the document.
+    name: The name of the category representing the document, from the
+      [predefined taxonomy](/natural-language/docs/categories).
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)

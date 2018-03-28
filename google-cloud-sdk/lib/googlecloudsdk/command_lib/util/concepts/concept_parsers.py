@@ -24,6 +24,7 @@ during calliope's Args method.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import handlers
@@ -198,7 +199,7 @@ class ResourcePresentationSpec(PresentationSpec):
     if not self.required:
       return False
     for attribute in self.concept_spec.attributes:
-      if not attribute.fallthroughs:
+      if self._GetAttributeArg(attribute) and not attribute.fallthroughs:
         return True
     return False
 
@@ -297,9 +298,10 @@ class ResourcePresentationSpec(PresentationSpec):
         kwargs_dict.update({'type': arg_parsers.ArgList()})
     return kwargs_dict
 
-  def _GetAttributeArg(self, attribute, is_anchor=False):
+  def _GetAttributeArg(self, attribute):
     """Creates argument for a specific attribute."""
     name = self.attribute_to_args_map.get(attribute.name, None)
+    is_anchor = attribute == self.resource_spec.anchor
     # Return None for any false value.
     if not name:
       return None
@@ -310,16 +312,10 @@ class ResourcePresentationSpec(PresentationSpec):
   def GetAttributeArgs(self):
     """Generate args to add to the argument group."""
     args = []
-    for attribute in self.resource_spec.attributes[:-1]:
+    for attribute in self.resource_spec.attributes:
       arg = self._GetAttributeArg(attribute)
       if arg:
         args.append(arg)
-    # If the group is optional, the anchor arg is "modal": it is required only
-    # if another argument in the group is specified.
-    arg = self._GetAttributeArg(
-        self.concept_spec.anchor, is_anchor=True)
-    if arg:
-      args.append(arg)
 
     return args
 

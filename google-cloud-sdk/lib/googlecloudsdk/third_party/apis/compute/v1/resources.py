@@ -191,7 +191,7 @@ class Collections(enum.Enum):
       'nextHopGateways',
       'projects/{project}/global/gateways/{nextHopGateway}',
       {},
-      ['project', 'nextHopGateway']
+      [u'project', u'nextHopGateway']
   )
   PROJECTS = (
       'projects',

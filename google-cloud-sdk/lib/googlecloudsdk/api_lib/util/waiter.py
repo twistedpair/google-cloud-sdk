@@ -14,6 +14,8 @@
 
 """Utilities to support long running operations."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import abc
 import time
 
@@ -21,6 +23,7 @@ from apitools.base.py import encoding
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
+import six
 
 
 _TIMEOUT_MESSAGE = (
@@ -41,7 +44,7 @@ class OperationError(exceptions.Error):
   pass
 
 
-class OperationPoller(object):
+class OperationPoller(six.with_metaclass(abc.ABCMeta, object)):
   """Interface for defining operation which can be polled and waited on.
 
   This construct manages operation_ref, operation and result abstract objects.
@@ -51,7 +54,6 @@ class OperationPoller(object):
     2. Given operation_ref fetch operation object
     3. Given operation object fetch result object
   """
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def IsDone(self, operation):

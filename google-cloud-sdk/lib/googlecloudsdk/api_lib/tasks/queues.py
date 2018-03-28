@@ -112,8 +112,7 @@ class Queues(object):
   def GetIamPolicy(self, queue_ref):
     request = (
         self.api.messages.CloudtasksProjectsLocationsQueuesGetIamPolicyRequest(
-            resource=queue_ref.RelativeName(),
-            getIamPolicyRequest=self.api.messages.GetIamPolicyRequest()))
+            resource=queue_ref.RelativeName()))
     return self.api.queues_service.GetIamPolicy(request)
 
   def SetIamPolicy(self, queue_ref, policy):

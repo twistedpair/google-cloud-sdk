@@ -14,6 +14,7 @@
 """completers for resource library."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.protorpclite import messages
 
 from googlecloudsdk.api_lib.util import resource as resource_lib  # pylint: disable=unused-import
@@ -130,7 +131,7 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
       if properties.VALUES.core.print_completion_tracebacks.GetBool():
         raise
       log.info(six.text_type(e).rstrip())
-      raise Error(u'Could not build query to list completions: {} {}'.format(
+      raise Error('Could not build query to list completions: {} {}'.format(
           type(e), six.text_type(e).rstrip()))
     try:
       response = self.method.Call(query)
@@ -149,10 +150,10 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
       # which probably means that they haven't provided enough information
       # for us to complete.
       if isinstance(e, messages.ValidationError):
-        raise Error(u'Update query failed, may not have enough information to '
-                    u'list existing resources: {} {}'.format(
+        raise Error('Update query failed, may not have enough information to '
+                    'list existing resources: {} {}'.format(
                         type(e), six.text_type(e).rstrip()))
-      raise Error(u'Update query [{}]: {} {}'.format(
+      raise Error('Update query [{}]: {} {}'.format(
           query, type(e), six.text_type(e).rstrip()))
 
     return [self.StringToRow(item.RelativeName()) for item in items]

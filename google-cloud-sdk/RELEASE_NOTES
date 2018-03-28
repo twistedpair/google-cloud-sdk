@@ -2,6 +2,53 @@
 
 Copyright 2014-2018 Google Inc. All rights reserved.
 
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 195.0.0 (2018-03-28)
+
+### Breaking Changes
+
+*   **(Kubernetes Engine)** Fixed issue where `--service-account` flag did not add `userinfo.email` scope
+  in `gcloud container`.
+
+
+### App Engine
+
+* Updated the Go SDK to version 1.9.64.
+* Update go-app-stager to use Go version 1.10 for staging App Engine Flexible apps with `runtime: go` in app.yaml.
+
+### Cloud Dataproc
+
+* Added PREEMPTIBLE_WORKER_COUNT to gcloud dataproc clusters list.
+* Removed unnecessary zone flag from dataproc workflow-templates create.
+
+### Cloud Endpoints
+
+* Updated the `gcloud endpoints services deploy` command to recognize files
+  ending in `.proto.bin` as protobuf binary descriptor files, improving
+  interoperability with [Bazel](https://bazel.build/)'s
+  [`proto_library`](https://docs.bazel.build/versions/master/be/protocol-buffer.html#proto_library)
+  rule which outputs protobuf descriptors with this extension.
+
+### Cloud Machine Learning Engine
+
+*   Added `--python-version` flag to `gcloud beta ml-engine versions create`.
+
+### Cloud SQL
+
+* Promoted `--availability-type` of `gcloud sql instances <create|patch>` to GA.
+
+### Compute Engine
+
+* Add support for internationalized domain names to alpha ssl-certificates.
+* Promoted `--source-instance-template` flag of `gcloud compute instances
+  create` command to GA.
+* Promoted `gcloud compute images export` to GA.
+*   Promoted QUIC support to beta
+    *   Promoted `--quic-override` flag of `compute target-https-proxies
+        <create|update>` to beta.
+
 
 ## 194.0.0 (2018-03-21)
 

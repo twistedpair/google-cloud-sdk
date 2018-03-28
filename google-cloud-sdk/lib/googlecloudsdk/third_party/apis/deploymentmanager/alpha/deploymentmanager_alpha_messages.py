@@ -573,10 +573,11 @@ class DeploymentmanagerDeploymentsInsertRequest(_messages.Message):
   """A DeploymentmanagerDeploymentsInsertRequest object.
 
   Enums:
-    CreatePolicyValueValuesEnum:
+    CreatePolicyValueValuesEnum: Sets the policy to use for creating new
+      resources.
 
   Fields:
-    createPolicy:
+    createPolicy: Sets the policy to use for creating new resources.
     deployment: A Deployment resource to be passed as the request body.
     preview: If set to true, creates a deployment and creates "shell"
       resources but does not actually instantiate these resources. This allows
@@ -590,7 +591,7 @@ class DeploymentmanagerDeploymentsInsertRequest(_messages.Message):
   """
 
   class CreatePolicyValueValuesEnum(_messages.Enum):
-    """CreatePolicyValueValuesEnum enum type.
+    """Sets the policy to use for creating new resources.
 
     Values:
       ACQUIRE: <no description>

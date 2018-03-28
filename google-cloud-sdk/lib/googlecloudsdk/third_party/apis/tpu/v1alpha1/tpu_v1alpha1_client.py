@@ -548,7 +548,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Get(self, request, global_params=None):
-      """Get information about a location.
+      """Gets information about a location.
 
       Args:
         request: (TpuProjectsLocationsGetRequest) input message

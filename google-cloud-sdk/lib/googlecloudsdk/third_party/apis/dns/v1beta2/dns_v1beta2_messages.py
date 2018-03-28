@@ -487,6 +487,10 @@ class DnsManagedZonesDeleteRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
+class DnsManagedZonesDeleteResponse(_messages.Message):
+  """An empty DnsManagedZonesDelete response."""
+
+
 class DnsManagedZonesGetRequest(_messages.Message):
   """A DnsManagedZonesGetRequest object.
 
@@ -741,16 +745,6 @@ class ManagedZoneOperationsListResponse(_messages.Message):
   kind = _messages.StringField(2, default=u'dns#managedZoneOperationsListResponse')
   nextPageToken = _messages.StringField(3)
   operations = _messages.MessageField('Operation', 4, repeated=True)
-
-
-class ManagedZonesDeleteResponse(_messages.Message):
-  """A ManagedZonesDeleteResponse object.
-
-  Fields:
-    header: A ResponseHeader attribute.
-  """
-
-  header = _messages.MessageField('ResponseHeader', 1)
 
 
 class ManagedZonesListResponse(_messages.Message):

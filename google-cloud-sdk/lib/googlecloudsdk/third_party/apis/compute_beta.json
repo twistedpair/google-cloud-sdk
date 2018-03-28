@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20180314",
+ "revision": "20180316",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -13654,6 +13654,10 @@
     "config": {
      "$ref": "SecurityPolicyRuleMatcherConfig",
      "description": "The configuration options available when specifying versioned_expr. This field must be specified if versioned_expr is specified and cannot be specified if versioned_expr is not specified."
+    },
+    "expr": {
+     "$ref": "Expr",
+     "description": "User defined CEVAL expression. A CEVAL expression is used to specify match criteria such as origin.ip, source.region_code and contents in the request header."
     },
     "srcIpRanges": {
      "type": "array",

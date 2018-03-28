@@ -26381,6 +26381,9 @@ class SecurityPolicyRuleMatcher(_messages.Message):
     config: The configuration options available when specifying
       versioned_expr. This field must be specified if versioned_expr is
       specified and cannot be specified if versioned_expr is not specified.
+    expr: User defined CEVAL expression. A CEVAL expression is used to specify
+      match criteria such as origin.ip, source.region_code and contents in the
+      request header.
     srcIpRanges: CIDR IP address range.
     versionedExpr: Preconfigured versioned expression. If this field is
       specified, config must also be specified. Available preconfigured
@@ -26402,8 +26405,9 @@ class SecurityPolicyRuleMatcher(_messages.Message):
     VERSIONED_EXPR_UNSPECIFIED = 1
 
   config = _messages.MessageField('SecurityPolicyRuleMatcherConfig', 1)
-  srcIpRanges = _messages.StringField(2, repeated=True)
-  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 3)
+  expr = _messages.MessageField('Expr', 2)
+  srcIpRanges = _messages.StringField(3, repeated=True)
+  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 4)
 
 
 class SecurityPolicyRuleMatcherConfig(_messages.Message):

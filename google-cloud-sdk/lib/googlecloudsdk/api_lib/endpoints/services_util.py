@@ -247,7 +247,8 @@ def FilenameMatchesExtension(filename, extensions):
 
 
 def IsProtoDescriptor(filename):
-  return FilenameMatchesExtension(filename, ['.pb', '.descriptor'])
+  return FilenameMatchesExtension(
+      filename, ['.pb', '.descriptor', '.proto.bin'])
 
 
 def IsRawProto(filename):

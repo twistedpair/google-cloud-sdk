@@ -15,6 +15,7 @@
 """Calliope argparse argument completer objects."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 
 from googlecloudsdk.core.cache import resource_cache
@@ -82,9 +83,9 @@ class ArgumentCompleter(object):
     else:
       completer_name = self._completer_class.__name__
     return self._MakeCompletionErrorMessages([
-        u'{}ERROR: {} resource completer failed.'.format(
+        '{}ERROR: {} resource completer failed.'.format(
             prefix, completer_name),
-        u'{}REASON: {}'.format(prefix, six.text_type(exception)),
+        '{}REASON: {}'.format(prefix, six.text_type(exception)),
     ])
 
   def __call__(self, prefix='', parsed_args=None, **kwargs):

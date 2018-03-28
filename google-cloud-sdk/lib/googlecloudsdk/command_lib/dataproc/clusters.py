@@ -40,6 +40,8 @@ def ArgsForClusterRef(parser, beta=False):
   instances_flags.AddTagsArgs(parser)
   # 30m is backend timeout + 5m for safety buffer.
   flags.AddTimeoutFlag(parser, default='35m')
+  flags.AddZoneFlag(parser)
+
   parser.add_argument(
       '--metadata',
       type=arg_parsers.ArgDict(min_length=1),

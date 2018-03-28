@@ -177,7 +177,8 @@ def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None):
   return safe_bucket_name
 
 
-def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None):
+def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
+                  user_zone=None):
   """Run a build with Daisy on Google Cloud Builder.
 
   Args:
@@ -188,6 +189,8 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None):
     daisy_bucket: A string containing the name of the GCS bucket that daisy
       should use.
     tags: A list of strings for adding tags to the Argo build.
+    user_zone: The GCP zone to tell Daisy to do work in. If unspecified,
+      defaults to wherever the Argo runner happens to be.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -211,6 +214,8 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None):
                 '-variables={0}'.format(variables),
                 workflow,
                ]
+  if user_zone is not None:
+    daisy_args = ['-zone={0}'.format(user_zone)] + daisy_args
 
   build_tags = ['gce-daisy']
   if tags:

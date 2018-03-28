@@ -34,6 +34,7 @@ attribute configs).
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope.concepts import deps as deps_lib
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
@@ -341,7 +342,7 @@ class ResourceSpec(ConceptSpec):
     except deps_lib.AttributeNotFoundError as e:
       raise InitializationError(
           'The [{}] resource is not properly specified.\n'
-          '{}'.format(self.name, e.message))
+          '{}'.format(self.name, six.text_type(e)))
 
   def __eq__(self, other):
     return (super(ResourceSpec, self).__eq__(other)

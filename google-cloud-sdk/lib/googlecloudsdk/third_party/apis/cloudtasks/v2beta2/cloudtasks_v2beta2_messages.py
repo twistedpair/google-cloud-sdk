@@ -1050,6 +1050,8 @@ class Location(_messages.Message):
       capacity at the given location.
 
   Fields:
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
     labels: Cross-service attributes for the location. For example
       {"cloud.googleapis.com/region": "us-east1"}
     locationId: The canonical id for this location. For example: `"us-east1"`.
@@ -1111,10 +1113,11 @@ class Location(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  locationId = _messages.StringField(2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  name = _messages.StringField(4)
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
 
 
 class PauseQueueRequest(_messages.Message):

@@ -29,6 +29,7 @@ from __future__ import division
 from __future__ import print_function
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
 
 
@@ -107,16 +108,19 @@ def AddHost(parser):
 
 
 def AddAvailabilityType(parser):
-  parser.add_argument(
+  """Add the '--availability-type' flag to the parser."""
+  availabilty_type_flag = base.ChoiceArgument(
       '--availability-type',
       required=False,
       choices={
-          'REGIONAL': 'Provides high availability and is recommended for '
+          'regional': 'Provides high availability and is recommended for '
                       'production instances; instance automatically fails over '
                       'to another zone within your selected region.',
-          'ZONAL': 'Provides no failover capability. This is the default.'
+          'zonal': 'Provides no failover capability. This is the default.'
       },
-      help='Specifies level of availability. Only applies to PSQL instances.')
+      help_str=('Specifies level of availability. Only applies to PostgreSQL '
+                'instances.'))
+  availabilty_type_flag.AddToParser(parser)
 
 
 def AddPassword(parser):
@@ -261,7 +265,7 @@ def AddMaintenanceReleaseChannel(parser):
                      'their compatibility with your application prior '
                      'to the production release.'
       },
-      type=str.lower,
+      type=lambda val: val.lower(),
       help="Which channel's updates to apply during the maintenance window. "
            "If not specified, Cloud SQL chooses the timing of updates to your "
            "instance.")

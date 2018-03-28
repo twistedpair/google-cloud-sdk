@@ -71,8 +71,8 @@ def import_prediction_lib():
       # like normal; we're probably missing dependencies. We just want to import
       # prediction.prediction_lib.
       sys.path.insert(0, os.path.join(sdk_root_dir, 'lib', 'third_party',
-                                      'cloud_ml_engine_sdk', 'prediction'))
-      import prediction_lib  # pytype: disable=import-error
+                                      'cloud_ml_engine_sdk'))
+      from prediction import prediction_lib  # pytype: disable=import-error
       return prediction_lib
     finally:
       sys.path.pop(0)

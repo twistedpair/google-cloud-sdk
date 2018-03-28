@@ -14,6 +14,8 @@
 """Parameter info lib for resource completers."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.calliope.concepts import handlers
 from googlecloudsdk.calliope.concepts import util

@@ -16,7 +16,7 @@
 import enum
 
 
-BASE_URL = 'https://categorymanager.googleapis.com/v1alpha1/'
+BASE_URL = 'https://categorymanager.googleapis.com/'
 DOCS_URL = 'https://cloud.google.com/'
 
 
@@ -27,47 +27,13 @@ class Collections(enum.Enum):
       'assets',
       'assets/{assetId}',
       {},
-      ['assetId']
+      [u'assetId']
   )
   ASSETS_TAG = (
       'assets.tag',
       'assets/{assetId}/annotationTag',
       {},
-      ['assetId']
-  )
-  OPERATIONS = (
-      'operations',
-      '{+name}',
-      {
-          '':
-              'operations/{operationsId}',
-      },
-      [u'name']
-  )
-  TAXONOMYSTORES = (
-      'taxonomyStores',
-      'taxonomyStores/{taxonomyStoresId}',
-      {},
-      [u'taxonomyStoresId']
-  )
-  TAXONOMYSTORES_TAXONOMIES = (
-      'taxonomyStores.taxonomies',
-      '{+name}',
-      {
-          '':
-              'taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}',
-      },
-      [u'name']
-  )
-  TAXONOMYSTORES_TAXONOMIES_ANNOTATIONS = (
-      'taxonomyStores.taxonomies.annotations',
-      '{+name}',
-      {
-          '':
-              'taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}/'
-              'annotations/{annotationsId}',
-      },
-      [u'name']
+      [u'assetId']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

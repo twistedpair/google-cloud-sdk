@@ -17,6 +17,7 @@
 from __future__ import absolute_import
 from __future__ import division
 
+from __future__ import unicode_literals
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import properties
 
@@ -43,7 +44,7 @@ class HttplibConnectionHandler(urllib.request.HTTPHandler,
       if callable(proxy_info):
         proxy_info = proxy_info('http')
       return httplib2.HTTPConnectionWithTimeout(
-          host.encode('idna'),
+          host.encode('idna').decode(),
           proxy_info=proxy_info,
           **kwargs)
     return self.do_open(build, req)
@@ -55,7 +56,7 @@ class HttplibConnectionHandler(urllib.request.HTTPHandler,
         proxy_info = proxy_info('https')
       ca_certs = properties.VALUES.core.custom_ca_certs_file.Get()
       return httplib2.HTTPSConnectionWithTimeout(
-          host.encode('idna'),
+          host.encode('idna').decode(),
           proxy_info=proxy_info,
           ca_certs=ca_certs,
           **kwargs)

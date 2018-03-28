@@ -784,6 +784,375 @@ class GoogleCloudVideointelligenceV1beta2VideoSegment(_messages.Message):
   startTimeOffset = _messages.StringField(2)
 
 
+class GoogleCloudVideointelligenceV1p1beta1AnnotateVideoProgress(_messages.Message):
+  """Video annotation progress. Included in the `metadata` field of the
+  `Operation` returned by the `GetOperation` call of the
+  `google::longrunning::Operations` service.
+
+  Fields:
+    annotationProgress: Progress metadata for all videos specified in
+      `AnnotateVideoRequest`.
+  """
+
+  annotationProgress = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoAnnotationProgress', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p1beta1AnnotateVideoResponse(_messages.Message):
+  """Video annotation response. Included in the `response` field of the
+  `Operation` returned by the `GetOperation` call of the
+  `google::longrunning::Operations` service.
+
+  Fields:
+    annotationResults: Annotation results for all videos specified in
+      `AnnotateVideoRequest`.
+  """
+
+  annotationResults = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p1beta1EmotionAttribute(_messages.Message):
+  """Emotion attribute.
+
+  Enums:
+    EmotionValueValuesEnum: Emotion entry.
+
+  Fields:
+    emotion: Emotion entry.
+    score: Confidence score.
+  """
+
+  class EmotionValueValuesEnum(_messages.Enum):
+    """Emotion entry.
+
+    Values:
+      EMOTION_UNSPECIFIED: Unspecified emotion.
+      AMUSEMENT: Amusement.
+      ANGER: Anger.
+      CONCENTRATION: Concentration.
+      CONTENTMENT: Contentment.
+      DESIRE: Desire.
+      DISAPPOINTMENT: Disappointment.
+      DISGUST: Disgust.
+      ELATION: Elation.
+      EMBARRASSMENT: Embarrassment.
+      INTEREST: Interest.
+      PRIDE: Pride.
+      SADNESS: Sadness.
+      SURPRISE: Surprise.
+    """
+    EMOTION_UNSPECIFIED = 0
+    AMUSEMENT = 1
+    ANGER = 2
+    CONCENTRATION = 3
+    CONTENTMENT = 4
+    DESIRE = 5
+    DISAPPOINTMENT = 6
+    DISGUST = 7
+    ELATION = 8
+    EMBARRASSMENT = 9
+    INTEREST = 10
+    PRIDE = 11
+    SADNESS = 12
+    SURPRISE = 13
+
+  emotion = _messages.EnumField('EmotionValueValuesEnum', 1)
+  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVideointelligenceV1p1beta1Entity(_messages.Message):
+  """Detected entity from video analysis.
+
+  Fields:
+    description: Textual description, e.g. `Fixed-gear bicycle`.
+    entityId: Opaque entity ID. Some IDs may be available in [Google Knowledge
+      Graph Search API](https://developers.google.com/knowledge-graph/).
+    languageCode: Language code for `description` in BCP-47 format.
+  """
+
+  description = _messages.StringField(1)
+  entityId = _messages.StringField(2)
+  languageCode = _messages.StringField(3)
+
+
+class GoogleCloudVideointelligenceV1p1beta1ExplicitContentAnnotation(_messages.Message):
+  """Explicit content annotation (based on per-frame visual signals only). If
+  no explicit content has been detected in a frame, no annotations are present
+  for that frame.
+
+  Fields:
+    frames: All video frames where explicit content was detected.
+  """
+
+  frames = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1ExplicitContentFrame', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p1beta1ExplicitContentFrame(_messages.Message):
+  """Video frame level annotation results for explicit content.
+
+  Enums:
+    PornographyLikelihoodValueValuesEnum: Likelihood of the pornography
+      content..
+
+  Fields:
+    pornographyLikelihood: Likelihood of the pornography content..
+    timeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the video frame for this location.
+  """
+
+  class PornographyLikelihoodValueValuesEnum(_messages.Enum):
+    """Likelihood of the pornography content..
+
+    Values:
+      LIKELIHOOD_UNSPECIFIED: Unspecified likelihood.
+      VERY_UNLIKELY: Very unlikely.
+      UNLIKELY: Unlikely.
+      POSSIBLE: Possible.
+      LIKELY: Likely.
+      VERY_LIKELY: Very likely.
+    """
+    LIKELIHOOD_UNSPECIFIED = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  pornographyLikelihood = _messages.EnumField('PornographyLikelihoodValueValuesEnum', 1)
+  timeOffset = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1p1beta1FaceDetectionAnnotation(_messages.Message):
+  """Face detection annotation.
+
+  Fields:
+    frames: All video frames where a face was detected.
+    segments: All video segments where a face was detected.
+  """
+
+  frames = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1FaceDetectionFrame', 1, repeated=True)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1FaceSegment', 2, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p1beta1FaceDetectionAttribute(_messages.Message):
+  """Face detection attribute.
+
+  Fields:
+    emotions: Emotion attributes.
+    normalizedBoundingBox: Normalized Bounding box.
+  """
+
+  emotions = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1EmotionAttribute', 1, repeated=True)
+  normalizedBoundingBox = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1NormalizedBoundingBox', 2)
+
+
+class GoogleCloudVideointelligenceV1p1beta1FaceDetectionFrame(_messages.Message):
+  """Video frame level annotation results for face detection.
+
+  Fields:
+    attributes: Face attributes in a frame. There can be more than one
+      attributes if the same face is detected in multiple locations within the
+      current frame.
+    timeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the video frame for this location.
+  """
+
+  attributes = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1FaceDetectionAttribute', 1, repeated=True)
+  timeOffset = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1p1beta1FaceSegment(_messages.Message):
+  """Video segment level annotation results for face detection.
+
+  Fields:
+    segment: Video segment where a face was detected.
+  """
+
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 1)
+
+
+class GoogleCloudVideointelligenceV1p1beta1LabelAnnotation(_messages.Message):
+  """Label annotation.
+
+  Fields:
+    categoryEntities: Common categories for the detected entity. E.g. when the
+      label is `Terrier` the category is likely `dog`. And in some cases there
+      might be more than one categories e.g. `Terrier` could also be a `pet`.
+    entity: Detected entity.
+    frames: All video frames where a label was detected.
+    segments: All video segments where a label was detected.
+  """
+
+  categoryEntities = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1Entity', 1, repeated=True)
+  entity = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1Entity', 2)
+  frames = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelFrame', 3, repeated=True)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelSegment', 4, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p1beta1LabelFrame(_messages.Message):
+  """Video frame level annotation results for label detection.
+
+  Fields:
+    confidence: Confidence that the label is accurate. Range: [0, 1].
+    timeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the video frame for this location.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  timeOffset = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1p1beta1LabelSegment(_messages.Message):
+  """Video segment level annotation results for label detection.
+
+  Fields:
+    confidence: Confidence that the label is accurate. Range: [0, 1].
+    segment: Video segment where a label was detected.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 2)
+
+
+class GoogleCloudVideointelligenceV1p1beta1NormalizedBoundingBox(_messages.Message):
+  """Normalized bounding box. The normalized vertex coordinates are relative
+  to the original image. Range: [0, 1].
+
+  Fields:
+    bottom: Bottom Y coordinate.
+    left: Left X coordinate.
+    right: Right X coordinate.
+    top: Top Y coordinate.
+  """
+
+  bottom = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  left = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  right = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  top = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVideointelligenceV1p1beta1SpeechRecognitionAlternative(_messages.Message):
+  """Alternative hypotheses (a.k.a. n-best list).
+
+  Fields:
+    confidence: Output only. The confidence estimate between 0.0 and 1.0. A
+      higher number indicates an estimated greater likelihood that the
+      recognized words are correct. This field is typically provided only for
+      the top hypothesis, and only for `is_final=true` results. Clients should
+      not rely on the `confidence` field as it is not guaranteed to be
+      accurate or consistent. The default of 0.0 is a sentinel value
+      indicating `confidence` was not set.
+    transcript: Output only. Transcript text representing the words that the
+      user spoke.
+    words: Output only. A list of word-specific information for each
+      recognized word.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  transcript = _messages.StringField(2)
+  words = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1WordInfo', 3, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p1beta1SpeechTranscription(_messages.Message):
+  """A speech recognition result corresponding to a portion of the audio.
+
+  Fields:
+    alternatives: Output only. May contain one or more recognition hypotheses
+      (up to the maximum specified in `max_alternatives`). These alternatives
+      are ordered in terms of accuracy, with the top (first) alternative being
+      the most probable, as ranked by the recognizer.
+  """
+
+  alternatives = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1SpeechRecognitionAlternative', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationProgress(_messages.Message):
+  """Annotation progress for a single video.
+
+  Fields:
+    inputUri: Video file location in [Google Cloud
+      Storage](https://cloud.google.com/storage/).
+    progressPercent: Approximate percentage processed thus far. Guaranteed to
+      be 100 when fully processed.
+    startTime: Time when the request was received.
+    updateTime: Time of the most recent update.
+  """
+
+  inputUri = _messages.StringField(1)
+  progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
+class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Message):
+  """Annotation results for a single video.
+
+  Fields:
+    error: If set, indicates an error. Note that for a single
+      `AnnotateVideoRequest` some videos may succeed and some may fail.
+    explicitAnnotation: Explicit content annotation.
+    faceDetectionAnnotations: Face detection annotations.
+    frameLabelAnnotations: Label annotations on frame level. There is exactly
+      one element for each unique label.
+    inputUri: Video file location in [Google Cloud
+      Storage](https://cloud.google.com/storage/).
+    segmentLabelAnnotations: Label annotations on video level or user
+      specified segment level. There is exactly one element for each unique
+      label.
+    shotAnnotations: Shot annotations. Each shot is represented as a video
+      segment.
+    shotLabelAnnotations: Label annotations on shot level. There is exactly
+      one element for each unique label.
+    speechTranscriptions: Speech transcription.
+  """
+
+  error = _messages.MessageField('GoogleRpcStatus', 1)
+  explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1ExplicitContentAnnotation', 2)
+  faceDetectionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1FaceDetectionAnnotation', 3, repeated=True)
+  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 4, repeated=True)
+  inputUri = _messages.StringField(5)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 6, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 7, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 8, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1SpeechTranscription', 9, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p1beta1VideoSegment(_messages.Message):
+  """Video segment.
+
+  Fields:
+    endTimeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the end of the segment (inclusive).
+    startTimeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the start of the segment (inclusive).
+  """
+
+  endTimeOffset = _messages.StringField(1)
+  startTimeOffset = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1p1beta1WordInfo(_messages.Message):
+  """Word-specific information for recognized words. Word information is only
+  included in the response when certain request parameters are set, such as
+  `enable_word_time_offsets`.
+
+  Fields:
+    endTime: Output only. Time offset relative to the beginning of the audio,
+      and corresponding to the end of the spoken word. This field is only set
+      if `enable_word_time_offsets=true` and only in the top hypothesis. This
+      is an experimental feature and the accuracy of the time offset can vary.
+    startTime: Output only. Time offset relative to the beginning of the
+      audio, and corresponding to the start of the spoken word. This field is
+      only set if `enable_word_time_offsets=true` and only in the top
+      hypothesis. This is an experimental feature and the accuracy of the time
+      offset can vary.
+    word: Output only. The word corresponding to this set of information.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+  word = _messages.StringField(3)
+
+
 class GoogleLongrunningCancelOperationRequest(_messages.Message):
   """The request message for Operations.CancelOperation."""
 

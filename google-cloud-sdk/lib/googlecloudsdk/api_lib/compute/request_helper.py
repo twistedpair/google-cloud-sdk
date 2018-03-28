@@ -269,9 +269,7 @@ def MakeRequests(requests, http, batch_url, errors, progress_tracker=None):
       resource_service = service
       project = request_body.project
 
-      if response.kind == 'clouduseraccounts#operation':
-        operation_service = service.client.globalAccountsOperations
-      elif response.zone:
+      if response.zone:
         operation_service = service.client.zoneOperations
       elif response.region:
         operation_service = service.client.regionOperations

@@ -414,13 +414,10 @@ class Documentation(_messages.Message):
   the display text used for the link, this can be used:
   <pre><code>&#91;display text]&#91;fully.qualified.proto.name]</code></pre>
   Text can be excluded from doc using the following notation:
-  <pre><code>&#40;-- internal comment --&#41;</code></pre> Comments can be
-  made conditional using a visibility label. The below text will be only
-  rendered if the `BETA` label is available: <pre><code>&#40;--BETA: comment
-  for BETA users --&#41;</code></pre> A few directives are available in
-  documentation. Note that directives must appear on a single line to be
-  properly identified. The `include` directive includes a markdown file from
-  an external source: <pre><code>&#40;== include path/to/file
+  <pre><code>&#40;-- internal comment --&#41;</code></pre>  A few directives
+  are available in documentation. Note that directives must appear on a single
+  line to be properly identified. The `include` directive includes a markdown
+  file from an external source: <pre><code>&#40;== include path/to/file
   ==&#41;</code></pre> The `resource_for` directive marks a message to be the
   resource of a collection in REST view. If it is not specified, tools attempt
   to infer the resource from the operations in a collection:
@@ -1824,7 +1821,6 @@ class Service(_messages.Message):
       as types used by the `google.protobuf.Any` type, should be listed here
       by name. Example:      types:     - name: google.protobuf.Int32
     usage: Configuration controlling usage of this service.
-    visibility: API visibility configuration.
   """
 
   apis = _messages.MessageField('Api', 1, repeated=True)
@@ -1855,7 +1851,6 @@ class Service(_messages.Message):
   title = _messages.StringField(26)
   types = _messages.MessageField('Type', 27, repeated=True)
   usage = _messages.MessageField('Usage', 28)
-  visibility = _messages.MessageField('Visibility', 29)
 
 
 class ServiceuserProjectsServicesDisableRequest(_messages.Message):
@@ -2301,48 +2296,6 @@ class UsageRule(_messages.Message):
   allowUnregisteredCalls = _messages.BooleanField(1)
   selector = _messages.StringField(2)
   skipServiceControl = _messages.BooleanField(3)
-
-
-class Visibility(_messages.Message):
-  """`Visibility` defines restrictions for the visibility of service elements.
-  Restrictions are specified using visibility labels (e.g., TRUSTED_TESTER)
-  that are elsewhere linked to users and projects.  Users and projects can
-  have access to more than one visibility label. The effective visibility for
-  multiple labels is the union of each label's elements, plus any unrestricted
-  elements.  If an element and its parents have no restrictions, visibility is
-  unconditionally granted.  Example:      visibility:       rules:       -
-  selector: google.calendar.Calendar.EnhancedSearch         restriction:
-  TRUSTED_TESTER       - selector: google.calendar.Calendar.Delegate
-  restriction: GOOGLE_INTERNAL  Here, all methods are publicly visible except
-  for the restricted methods EnhancedSearch and Delegate.
-
-  Fields:
-    rules: A list of visibility rules that apply to individual API elements.
-      **NOTE:** All service configuration rules follow "last one wins" order.
-  """
-
-  rules = _messages.MessageField('VisibilityRule', 1, repeated=True)
-
-
-class VisibilityRule(_messages.Message):
-  """A visibility rule provides visibility configuration for an individual API
-  element.
-
-  Fields:
-    restriction: A comma-separated list of visibility labels that apply to the
-      `selector`. Any of the listed labels can be used to grant the
-      visibility.  If a rule has multiple labels, removing one of the labels
-      but not all of them can break clients.  Example:      visibility:
-      rules:       - selector: google.calendar.Calendar.EnhancedSearch
-      restriction: GOOGLE_INTERNAL, TRUSTED_TESTER  Removing GOOGLE_INTERNAL
-      from this restriction will break clients that rely on this method and
-      only had access to it through GOOGLE_INTERNAL.
-    selector: Selects methods, messages, fields, enums, etc. to which this
-      rule applies.  Refer to selector for syntax details.
-  """
-
-  restriction = _messages.StringField(1)
-  selector = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

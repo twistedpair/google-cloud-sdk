@@ -151,6 +151,10 @@
           "description": "The canonical id for this location. For example: `\"us-east1\"`.",
           "type": "string"
         },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name.\nFor example, \"Tokyo\".",
+          "type": "string"
+        },
         "labels": {
           "description": "Cross-service attributes for the location. For example\n\n    {\"cloud.googleapis.com\/region\": \"us-east1\"}",
           "type": "object",
@@ -362,7 +366,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Get information about a location."
+              "description": "Gets information about a location."
             }
           }
           ,

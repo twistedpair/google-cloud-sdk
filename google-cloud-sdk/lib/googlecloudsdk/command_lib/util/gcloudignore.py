@@ -25,6 +25,10 @@ A typical use would be:
     print 'uploading {}'.format(f)
     # actually do the upload, too
 """
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import collections
 import fnmatch
 import os
@@ -36,6 +40,8 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 IGNORE_FILE_NAME = '.gcloudignore'

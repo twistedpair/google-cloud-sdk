@@ -333,7 +333,8 @@ class Updater(BaseUpdater):
     template = list(row_template)
     if self.columns > len(template):
       template += [None] * (self.columns - len(template))
-    log.info('cache template=%s', template)
+    log.info(
+        'cache template=[%s]', ', '.join(["'{}'".format(t) for t in template]))
     # Values keeps track of all valid permutations of values to select from
     # cache tables. The nth item in each permutation corresponds to the nth
     # parameter for which generate is True. The list of aggregations (which is

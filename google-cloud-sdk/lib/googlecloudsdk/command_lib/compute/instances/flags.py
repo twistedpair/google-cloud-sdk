@@ -1573,7 +1573,7 @@ def AddKonletArgs(parser):
       choices=['never', 'on-failure', 'always'],
       default='always',
       metavar='POLICY',
-      type=str.lower,
+      type=lambda val: val.lower(),
       help="""\
       Specify whether to restart a container on exit.
       """)

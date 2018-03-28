@@ -25,6 +25,8 @@ from googlecloudsdk.core.cache import exceptions as cache_exceptions
 from googlecloudsdk.core.cache import file_cache
 from googlecloudsdk.core.cache import resource_cache
 
+import six
+
 
 _CACHE_RI_DEFAULT = 'resource://'
 
@@ -74,7 +76,7 @@ class GetCache(object):
   def __enter__(self):
     # Each cache_class has a default cache name. None or '' names that default.
     if self._name:
-      for cache_id, cache_class in self._TYPES.iteritems():
+      for cache_id, cache_class in six.iteritems(self._TYPES):
         if self._name.startswith(cache_id + '://'):
           name = self._name[len(cache_id) + 3:]
           if not name:

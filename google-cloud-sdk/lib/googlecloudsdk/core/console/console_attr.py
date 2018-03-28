@@ -90,6 +90,7 @@ Usage:
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
 import os
 import sys
 import unicodedata
@@ -668,6 +669,47 @@ def SafeText(data, encoding=None, escape=True):
     return (string
             .encode(encoding, 'backslashreplace' if escape else 'replace')
             .decode(encoding))
+
+
+def EncodeToBytes(data):
+  r"""Encode data to bytes.
+
+  The primary use case is for base64/mime style 7-bit ascii encoding where the
+  encoder input must be bytes. "safe" means that the conversion always returns
+  bytes and will not raise codec exceptions.
+
+  If data is text then an 8-bit ascii encoding is attempted, then the console
+  encoding, and finally utf-8.
+
+  Args:
+    data: Any bytes, string, or object that has str() or unicode() methods.
+
+  Returns:
+    A bytes string representation of the data.
+  """
+  if data is None:
+    return b''
+  if isinstance(data, bytes):
+    # Already bytes - our work is done.
+    return data
+
+  # Coerce to text that will be converted to bytes.
+  s = six.text_type(data)
+
+  try:
+    # Assume the text can be directly converted to bytes (8-bit ascii).
+    return s.encode('iso-8859-1')
+  except UnicodeEncodeError:
+    pass
+
+  try:
+    # Try the output encoding.
+    return s.encode(GetConsoleAttr().GetEncoding())
+  except UnicodeEncodeError:
+    pass
+
+  # Punt to utf-8.
+  return s.encode('utf-8')
 
 
 def Decode(data, encoding=None):

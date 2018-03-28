@@ -52,6 +52,9 @@ class AppEngineHttpTarget(_messages.Message):
 
   Fields:
     appEngineRouting: App Engine Routing setting for the job.
+    body: Body.  HTTP request body. A request body is allowed only if the HTTP
+      method is POST or PUT. It will result in an error to set body on a job
+      with an incompatible HttpMethod.
     headers: HTTP request headers.  This map contains the header field names
       and values. Headers can be set when the job is created.  Cloud Scheduler
       sets some headers to default values:  * `User-Agent`: By default, this
@@ -75,10 +78,6 @@ class AppEngineHttpTarget(_messages.Message):
       /creating-handlers#reading_request_headers).
     httpMethod: The HTTP method to use for the request. The default is POST.
       PATCH and OPTIONS are not permitted.
-    payload: Payload.  The payload will be sent as the HTTP message body. A
-      message body, and thus a payload, is allowed only if the HTTP method is
-      POST or PUT. It is an error to set a data payload on a job with an
-      incompatible HttpMethod.
     relativeUrl: The relative URL.  The relative URL must begin with "/" and
       must be a valid HTTP relative URL. It can contain a path, query string
       arguments, and `#` fragments. If the relative URL is empty, then the
@@ -97,6 +96,8 @@ class AppEngineHttpTarget(_messages.Message):
       HEAD: HTTP Head
       PUT: HTTP Put
       DELETE: HTTP Delete
+      PATCH: HTTP Patch
+      OPTIONS: HTTP Options
     """
     HTTP_METHOD_UNSPECIFIED = 0
     POST = 1
@@ -104,6 +105,8 @@ class AppEngineHttpTarget(_messages.Message):
     HEAD = 3
     PUT = 4
     DELETE = 5
+    PATCH = 6
+    OPTIONS = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HeadersValue(_messages.Message):
@@ -150,9 +153,9 @@ class AppEngineHttpTarget(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   appEngineRouting = _messages.MessageField('AppEngineRouting', 1)
-  headers = _messages.MessageField('HeadersValue', 2)
-  httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 3)
-  payload = _messages.BytesField(4)
+  body = _messages.BytesField(2)
+  headers = _messages.MessageField('HeadersValue', 3)
+  httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 4)
   relativeUrl = _messages.StringField(5)
 
 
@@ -166,7 +169,7 @@ class AppEngineRouting(_messages.Message):
   routing](/appengine/docs/flexible/python/how-requests-are-routed).
 
   Fields:
-    host: Output only.  The host that the job is sent to. For more information
+    host: Output only. The host that the job is sent to.  For more information
       about how App Engine requests are routed, see
       [here](/appengine/docs/standard/python/how-requests-are-routed).  The
       host is constructed as:   * `host = [application_domain_name]`</br>   `|
@@ -402,6 +405,113 @@ class Empty(_messages.Message):
 
 
 
+class HttpTarget(_messages.Message):
+  """Http target. The job will be pushed to the job handler by means of an
+  HTTP request via an HttpTarget.http_method such as HTTP POST, HTTP GET, etc.
+  The job is acknowledged by means of an HTTP response code in the range [200
+  - 299]. A failure to receive a response before the deadline constitutes a
+  failed execution.
+
+  Enums:
+    HttpMethodValueValuesEnum: Which HTTP method to use for the request. The
+      default is POST.
+
+  Messages:
+    HeadersValue: The user can specify HTTP request headers to send with the
+      Job's HTTP request. This map contains the header field names and values.
+      Repeated headers are not supported, but a header value can contain
+      commas. These headers represent a subset of the headers that will
+      accompany the Job's HTTP request. Some HTTP request headers will be
+      ignored or replaced. A partial list of headers that will be ignored or
+      replaced is below: - Host: This will be computed by Cloud Scheduler and
+      derived from HttpTarget.url. - Content-Length: This will be computed by
+      Cloud Scheduler. - User-Agent: This will be populated by Cloud
+      Scheduler. - X-Google-*: Google internal use only. - X-AppEngine-*:
+      Google internal use only.
+
+  Fields:
+    body: HTTP request body. A request body is allowed only if the HTTP method
+      is POST, PUT, or PATCH. It will result in  an error to set body on a job
+      with an incompatible HttpMethod.
+    headers: The user can specify HTTP request headers to send with the Job's
+      HTTP request. This map contains the header field names and values.
+      Repeated headers are not supported, but a header value can contain
+      commas. These headers represent a subset of the headers that will
+      accompany the Job's HTTP request. Some HTTP request headers will be
+      ignored or replaced. A partial list of headers that will be ignored or
+      replaced is below: - Host: This will be computed by Cloud Scheduler and
+      derived from HttpTarget.url. - Content-Length: This will be computed by
+      Cloud Scheduler. - User-Agent: This will be populated by Cloud
+      Scheduler. - X-Google-*: Google internal use only. - X-AppEngine-*:
+      Google internal use only.
+    httpMethod: Which HTTP method to use for the request. The default is POST.
+    url: Required.  The full url path that the request will be sent to. This
+      string must begin with either "http://" or "https://". Some examples of
+      valid values for HttpTarget.url are: `http://acme.com` and
+      `https://acme.com/sales:8080`.
+  """
+
+  class HttpMethodValueValuesEnum(_messages.Enum):
+    """Which HTTP method to use for the request. The default is POST.
+
+    Values:
+      HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
+      POST: HTTP Post
+      GET: HTTP Get
+      HEAD: HTTP Head
+      PUT: HTTP Put
+      DELETE: HTTP Delete
+      PATCH: HTTP Patch
+      OPTIONS: HTTP Options
+    """
+    HTTP_METHOD_UNSPECIFIED = 0
+    POST = 1
+    GET = 2
+    HEAD = 3
+    PUT = 4
+    DELETE = 5
+    PATCH = 6
+    OPTIONS = 7
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class HeadersValue(_messages.Message):
+    """The user can specify HTTP request headers to send with the Job's HTTP
+    request. This map contains the header field names and values. Repeated
+    headers are not supported, but a header value can contain commas. These
+    headers represent a subset of the headers that will accompany the Job's
+    HTTP request. Some HTTP request headers will be ignored or replaced. A
+    partial list of headers that will be ignored or replaced is below: - Host:
+    This will be computed by Cloud Scheduler and derived from HttpTarget.url.
+    - Content-Length: This will be computed by Cloud Scheduler. - User-Agent:
+    This will be populated by Cloud Scheduler. - X-Google-*: Google internal
+    use only. - X-AppEngine-*: Google internal use only.
+
+    Messages:
+      AdditionalProperty: An additional property for a HeadersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type HeadersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a HeadersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  body = _messages.BytesField(1)
+  headers = _messages.MessageField('HeadersValue', 2)
+  httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 3)
+  url = _messages.StringField(4)
+
+
 class Job(_messages.Message):
   """Configuration for a job.
 
@@ -412,8 +522,11 @@ class Job(_messages.Message):
   Fields:
     appEngineHttpTarget: App Engine Http target.
     description: A human-readable description for the job.
+    httpTarget: Http target.
     jobState: Output only. State of the job. For example: running, paused, or
       disabled.
+    lastAttemptTime: Output only. The started time of the last completed job
+      attempt.
     name: The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.  Caller-
       specified in CreateJobRequest, after which it becomes output only.
@@ -454,14 +567,16 @@ class Job(_messages.Message):
 
   appEngineHttpTarget = _messages.MessageField('AppEngineHttpTarget', 1)
   description = _messages.StringField(2)
-  jobState = _messages.EnumField('JobStateValueValuesEnum', 3)
-  name = _messages.StringField(4)
-  nextScheduleTime = _messages.StringField(5)
-  pubsubTarget = _messages.MessageField('PubsubTarget', 6)
-  retryConfig = _messages.MessageField('RetryConfig', 7)
-  schedule = _messages.MessageField('Schedule', 8)
-  status = _messages.MessageField('Status', 9)
-  userUpdateTime = _messages.StringField(10)
+  httpTarget = _messages.MessageField('HttpTarget', 3)
+  jobState = _messages.EnumField('JobStateValueValuesEnum', 4)
+  lastAttemptTime = _messages.StringField(5)
+  name = _messages.StringField(6)
+  nextScheduleTime = _messages.StringField(7)
+  pubsubTarget = _messages.MessageField('PubsubTarget', 8)
+  retryConfig = _messages.MessageField('RetryConfig', 9)
+  schedule = _messages.MessageField('Schedule', 10)
+  status = _messages.MessageField('Status', 11)
+  userUpdateTime = _messages.StringField(12)
 
 
 class ListJobsResponse(_messages.Message):
@@ -471,7 +586,7 @@ class ListJobsResponse(_messages.Message):
     jobs: The list of jobs.
     nextPageToken: A token to retrieve next page of results. Pass this value
       in the ListJobsRequest.page_token field in the subsequent call to
-      JobQueues.ListJobs to retrieve the next page of results. If this is
+      CloudScheduler.ListJobs to retrieve the next page of results. If this is
       empty it indicates that there are no more results through which to
       paginate.  For JSON requests, the value of this field must be
       base64-encoded.  The page token is valid for only 2 hours.
@@ -504,6 +619,8 @@ class Location(_messages.Message):
       capacity at the given location.
 
   Fields:
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
     labels: Cross-service attributes for the location. For example
       {"cloud.googleapis.com/region": "us-east1"}
     locationId: The canonical id for this location. For example: `"us-east1"`.
@@ -565,10 +682,11 @@ class Location(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  locationId = _messages.StringField(2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  name = _messages.StringField(4)
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
 
 
 class PubsubMessage(_messages.Message):
@@ -724,12 +842,12 @@ class Schedule(_messages.Message):
       like format. See https://cloud.google.com/appengine/docs/standard/python
       /config/cronref#schedule_format
     timezone: Specifies the time zone to be used in interpreting
-      ScheduleSpec.schedule. The value of this field must be a time zone name
-      from the tz database: http://en.wikipedia.org/wiki/Tz_database.  Note
-      that some timezones include a includes a provision for daylight savings
-      time. The rules for daylight saving time are determined by the chosen
-      tz. For UTC use the string "utc". If a timezone is not specified, the
-      default will be in UTC (also known as GMT).
+      Schedule.schedule. The value of this field must be a time zone name from
+      the tz database: http://en.wikipedia.org/wiki/Tz_database.  Note that
+      some timezones include a includes a provision for daylight savings time.
+      The rules for daylight saving time are determined by the chosen tz. For
+      UTC use the string "utc". If a timezone is not specified, the default
+      will be in UTC (also known as GMT).
   """
 
   schedule = _messages.StringField(1)

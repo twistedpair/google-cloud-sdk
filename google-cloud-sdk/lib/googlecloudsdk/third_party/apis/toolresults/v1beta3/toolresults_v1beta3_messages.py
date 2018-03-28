@@ -508,7 +508,7 @@ class History(_messages.Message):
       INVALID_ARGUMENT if this field is set or overwritten by the caller.  -
       In response always set - In create request: never set
     name: A name to uniquely identify a history within a project. Maximum of
-      100 characters.  - In response always set - In create request: always
+      200 characters.  - In response always set - In create request: always
       set
   """
 
@@ -1382,11 +1382,13 @@ class Timestamp(_messages.Message):
   always expressed using four digits while {month}, {day}, {hour}, {min}, and
   {sec} are zero-padded to two digits each. The fractional seconds, which can
   go up to 9 digits (i.e. up to 1 nanosecond resolution), are optional. The
-  "Z" suffix indicates the timezone ("UTC"); the timezone is required, though
-  only UTC (as indicated by "Z") is currently supported.  For example,
-  "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past 01:30 UTC on January
-  15, 2017.  In JavaScript, one can convert a Date object to this format using
-  the standard [toISOString()](https://developer.mozilla.org/en-
+  "Z" suffix indicates the timezone ("UTC"); the timezone is required. A
+  proto3 JSON serializer should always use UTC (as indicated by "Z") when
+  printing the Timestamp type and a proto3 JSON parser should be able to
+  accept both UTC and other timezones (as indicated by an offset).  For
+  example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past 01:30 UTC on
+  January 15, 2017.  In JavaScript, one can convert a Date object to this
+  format using the standard [toISOString()](https://developer.mozilla.org/en-
   US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString] method. In
   Python, a standard `datetime.datetime` object can be converted to this
   format using

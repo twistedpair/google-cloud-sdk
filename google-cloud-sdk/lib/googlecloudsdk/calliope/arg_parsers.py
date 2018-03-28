@@ -47,6 +47,7 @@ Example usage:
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import argparse
 import copy
 import re
@@ -314,7 +315,7 @@ def CustomFunctionValidator(fn, description, parser=None):
       if fn(parsed_value):
         return parsed_value
     encoded_value = console_attr.SafeText(value)
-    formatted_err = u'Bad value [{0}]: {1}'.format(encoded_value, description)
+    formatted_err = 'Bad value [{0}]: {1}'.format(encoded_value, description)
     raise ArgumentTypeError(formatted_err)
 
   return Parse
@@ -521,7 +522,7 @@ class Day(object):
     except times.Error as e:
       raise ArgumentTypeError(
           _GenerateErrorMessage(
-              u'Failed to parse date: {0}'.format(six.text_type(e)),
+              'Failed to parse date: {0}'.format(six.text_type(e)),
               user_input=s))
 
 
@@ -538,7 +539,7 @@ class Datetime(object):
     except times.Error as e:
       raise ArgumentTypeError(
           _GenerateErrorMessage(
-              u'Failed to parse date/time: {0}'.format(six.text_type(e)),
+              'Failed to parse date/time: {0}'.format(six.text_type(e)),
               user_input=s))
 
 
@@ -1140,8 +1141,8 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
     remaining_args = remaining_args[:split_index]
 
     if pass_through_args:
-      msg = (u'unrecognized args: {args}\n' + self.explanation).format(
-          args=u' '.join(pass_through_args))
+      msg = ('unrecognized args: {args}\n' + self.explanation).format(
+          args=' '.join(pass_through_args))
       raise parser_errors.UnrecognizedArgumentsError(msg)
     self(None, namespace, pass_through_args)
     return namespace, remaining_args

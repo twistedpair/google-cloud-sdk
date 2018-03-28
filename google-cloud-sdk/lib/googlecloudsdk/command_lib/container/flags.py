@@ -1242,11 +1242,11 @@ property is set to true.
       default=True,
       help=cloud_endpoints_help_text)
 
-  sa_help_text = """\
-The Google Cloud Platform Service Account to be used by the node VMs.  If a \
-service account is specified, the cloud-platform scope is used. If no Service \
-Account is specified, the project default service account is used.
-"""
+  sa_help_text = (
+      'The Google Cloud Platform Service Account to be used by the node VMs. '
+      'If a service account is specified, the cloud-platform and '
+      'userinfo.email scopes are used. If no Service Account is specified, the '
+      'project default service account is used.')
   node_identity_group.add_argument('--service-account', help=sa_help_text)
 
 

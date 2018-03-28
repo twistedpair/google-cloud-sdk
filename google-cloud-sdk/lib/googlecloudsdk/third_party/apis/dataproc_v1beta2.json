@@ -209,7 +209,7 @@
     },
     "Cluster": {
       "id": "Cluster",
-      "description": "Describes the identifying information, config, and status of a cluster of Google Compute Engine instances.",
+      "description": "Describes the identifying information, config, and status of a cluster of Compute Engine instances.",
       "type": "object",
       "properties": {
         "projectId": {
@@ -258,23 +258,23 @@
       "type": "object",
       "properties": {
         "configBucket": {
-          "description": "Optional. A Google Cloud Storage staging bucket used for sharing generated SSH keys and config. If you do not specify a staging bucket, Cloud Dataproc will determine an appropriate Cloud Storage location (US, ASIA, or EU) for your cluster's staging bucket according to the Google Compute Engine zone where your cluster is deployed, and then it will create and manage this project-level, per-location bucket for you.",
+          "description": "Optional. A Cloud Storage staging bucket used for sharing generated SSH keys and config. If you do not specify a staging bucket, Cloud Dataproc will determine an appropriate Cloud Storage location (US, ASIA, or EU) for your cluster's staging bucket according to the Google Compute Engine zone where your cluster is deployed, and then it will create and manage this project-level, per-location bucket for you.",
           "type": "string"
         },
         "gceClusterConfig": {
-          "description": "Required. The shared Google Compute Engine config settings for all instances in a cluster.",
+          "description": "Required. The shared Compute Engine config settings for all instances in a cluster.",
           "$ref": "GceClusterConfig"
         },
         "masterConfig": {
-          "description": "Optional. The Google Compute Engine config settings for the master instance in a cluster.",
+          "description": "Optional. The Compute Engine config settings for the master instance in a cluster.",
           "$ref": "InstanceGroupConfig"
         },
         "workerConfig": {
-          "description": "Optional. The Google Compute Engine config settings for worker instances in a cluster.",
+          "description": "Optional. The Compute Engine config settings for worker instances in a cluster.",
           "$ref": "InstanceGroupConfig"
         },
         "secondaryWorkerConfig": {
-          "description": "Optional. The Google Compute Engine config settings for additional worker instances in a cluster.",
+          "description": "Optional. The Compute Engine config settings for additional worker instances in a cluster.",
           "$ref": "InstanceGroupConfig"
         },
         "softwareConfig": {
@@ -296,19 +296,19 @@
     },
     "GceClusterConfig": {
       "id": "GceClusterConfig",
-      "description": "Common config settings for resources of Google Compute Engine cluster instances, applicable to all instances in the cluster.",
+      "description": "Common config settings for resources of Compute Engine cluster instances, applicable to all instances in the cluster.",
       "type": "object",
       "properties": {
         "zoneUri": {
-          "description": "Optional. The zone where the Google Compute Engine cluster will be located. On a create request, it is required in the \"global\" region. If omitted in a non-global Cloud Dataproc region, the service will pick a zone in the corresponding Compute Engine region. On a get request, zone will always be present.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/[zone]\nprojects\/[project_id]\/zones\/[zone]\nus-central1-f",
+          "description": "Optional. The zone where the Compute Engine cluster will be located. On a create request, it is required in the \"global\" region. If omitted in a non-global Cloud Dataproc region, the service will pick a zone in the corresponding Compute Engine region. On a get request, zone will always be present.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/[zone]\nprojects\/[project_id]\/zones\/[zone]\nus-central1-f",
           "type": "string"
         },
         "networkUri": {
-          "description": "Optional. The Google Compute Engine network to be used for machine communications. Cannot be specified with subnetwork_uri. If neither network_uri nor subnetwork_uri is specified, the \"default\" network of the project is used, if it exists. Cannot be a \"Custom Subnet Network\" (see Using Subnetworks for more information).A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/global\/default\nprojects\/[project_id]\/regions\/global\/default\ndefault",
+          "description": "Optional. The Compute Engine network to be used for machine communications. Cannot be specified with subnetwork_uri. If neither network_uri nor subnetwork_uri is specified, the \"default\" network of the project is used, if it exists. Cannot be a \"Custom Subnet Network\" (see Using Subnetworks for more information).A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/global\/default\nprojects\/[project_id]\/regions\/global\/default\ndefault",
           "type": "string"
         },
         "subnetworkUri": {
-          "description": "Optional. The Google Compute Engine subnetwork to be used for machine communications. Cannot be specified with network_uri.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/us-east1\/sub0\nprojects\/[project_id]\/regions\/us-east1\/sub0\nsub0",
+          "description": "Optional. The Compute Engine subnetwork to be used for machine communications. Cannot be specified with network_uri.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/us-east1\/sub0\nprojects\/[project_id]\/regions\/us-east1\/sub0\nsub0",
           "type": "string"
         },
         "internalIpOnly": {
@@ -316,7 +316,7 @@
           "type": "boolean"
         },
         "serviceAccount": {
-          "description": "Optional. The service account of the instances. Defaults to the default Google Compute Engine service account. Custom service accounts need permissions equivalent to the folloing IAM roles:\nroles\/logging.logWriter\nroles\/storage.objectAdmin(see https:\/\/cloud.google.com\/compute\/docs\/access\/service-accounts#custom_service_accounts for more information). Example: [account_id]@[project_id].iam.gserviceaccount.com",
+          "description": "Optional. The service account of the instances. Defaults to the default Compute Engine service account. Custom service accounts need permissions equivalent to the folloing IAM roles:\nroles\/logging.logWriter\nroles\/storage.objectAdmin(see https:\/\/cloud.google.com\/compute\/docs\/access\/service-accounts#custom_service_accounts for more information). Example: [account_id]@[project_id].iam.gserviceaccount.com",
           "type": "string"
         },
         "serviceAccountScopes": {
@@ -327,14 +327,14 @@
           }
         },
         "tags": {
-          "description": "The Google Compute Engine tags to add to all instances (see Tagging instances).",
+          "description": "The Compute Engine tags to add to all instances (see Tagging instances).",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "metadata": {
-          "description": "The Google Compute Engine metadata entries to add to all instances (see Project and instance metadata (https:\/\/cloud.google.com\/compute\/docs\/storing-retrieving-metadata#project_and_instance_metadata)).",
+          "description": "The Compute Engine metadata entries to add to all instances (see Project and instance metadata (https:\/\/cloud.google.com\/compute\/docs\/storing-retrieving-metadata#project_and_instance_metadata)).",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -344,7 +344,7 @@
     },
     "InstanceGroupConfig": {
       "id": "InstanceGroupConfig",
-      "description": "Optional. The config settings for Google Compute Engine resources in an instance group, such as a master or worker group.",
+      "description": "Optional. The config settings for Compute Engine resources in an instance group, such as a master or worker group.",
       "type": "object",
       "properties": {
         "numInstances": {
@@ -360,11 +360,11 @@
           }
         },
         "imageUri": {
-          "description": "Output only. The Google Compute Engine image resource used for cluster instances. Inferred from SoftwareConfig.image_version.",
+          "description": "Output only. The Compute Engine image resource used for cluster instances. Inferred from SoftwareConfig.image_version.",
           "type": "string"
         },
         "machineTypeUri": {
-          "description": "Optional. The Google Compute Engine machine type used for cluster instances.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2\nprojects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2\nn1-standard-2",
+          "description": "Optional. The Compute Engine machine type used for cluster instances.A full URL, partial URI, or short name are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2\nprojects\/[project_id]\/zones\/us-east1-a\/machineTypes\/n1-standard-2\nn1-standard-2",
           "type": "string"
         },
         "diskConfig": {
@@ -376,11 +376,11 @@
           "type": "boolean"
         },
         "managedGroupConfig": {
-          "description": "Output only. The config for Google Compute Engine Instance Group Manager that manages this group. This is only used for preemptible instance groups.",
+          "description": "Output only. The config for Compute Engine Instance Group Manager that manages this group. This is only used for preemptible instance groups.",
           "$ref": "ManagedGroupConfig"
         },
         "accelerators": {
-          "description": "Optional. The Google Compute Engine accelerator configuration for these instances.Beta Feature: This feature is still under development. It may be changed before final release.",
+          "description": "Optional. The Compute Engine accelerator configuration for these instances.Beta Feature: This feature is still under development. It may be changed before final release.",
           "type": "array",
           "items": {
             "$ref": "AcceleratorConfig"
@@ -434,7 +434,7 @@
       "type": "object",
       "properties": {
         "acceleratorTypeUri": {
-          "description": "Full URL, partial URI, or short name of the accelerator type resource to expose to this instance. See Google Compute Engine AcceleratorTypes( \/compute\/docs\/reference\/beta\/acceleratorTypes)Examples * https:\/\/www.googleapis.com\/compute\/beta\/projects\/[project_id]\/zones\/us-east1-a\/acceleratorTypes\/nvidia-tesla-k80 * projects\/[project_id]\/zones\/us-east1-a\/acceleratorTypes\/nvidia-tesla-k80 * nvidia-tesla-k80",
+          "description": "Full URL, partial URI, or short name of the accelerator type resource to expose to this instance. See Compute Engine AcceleratorTypes( \/compute\/docs\/reference\/beta\/acceleratorTypes)Examples * https:\/\/www.googleapis.com\/compute\/beta\/projects\/[project_id]\/zones\/us-east1-a\/acceleratorTypes\/nvidia-tesla-k80 * projects\/[project_id]\/zones\/us-east1-a\/acceleratorTypes\/nvidia-tesla-k80 * nvidia-tesla-k80",
           "type": "string"
         },
         "acceleratorCount": {
@@ -490,7 +490,7 @@
       "type": "object",
       "properties": {
         "executableFile": {
-          "description": "Required. Google Cloud Storage URI of executable file.",
+          "description": "Required. Cloud Storage URI of executable file.",
           "type": "string"
         },
         "executionTimeout": {
@@ -1196,7 +1196,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "Required. The template id.",
+          "description": "Required. The template id.The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end with underscore or hyphen. Must consist of between 3 and 50 characters.",
           "type": "string"
         },
         "name": {
@@ -1259,7 +1259,7 @@
       "type": "object",
       "properties": {
         "clusterName": {
-          "description": "Required. The cluster name. Cluster names within a project must be unique. Names from deleted clusters can be reused.",
+          "description": "Required. The cluster name prefix. A unique cluster name will be formed by appending a random suffix.The name must contain only lower-case letters (a-z), numbers (0-9), and hyphens (-). Must begin with a letter. Cannot begin or end with hyphen. Must consist of between 2 and 35 characters.",
           "type": "string"
         },
         "config": {
@@ -1267,7 +1267,7 @@
           "$ref": "ClusterConfig"
         },
         "labels": {
-          "description": "Optional. The labels to associate with this cluster.Label keys must be between 1 and 63 characters long, and must conform to the following PCRE regular expression: \\p{Ll}\\p{Lo}{0,62}Label values must be between 1 and 63 characters long, and must conform to the following PCRE regular expression: \\p{Ll}\\p{Lo}\\p{N}_-{0,63}No more than 64 labels can be associated with a given cluster.",
+          "description": "Optional. The labels to associate with this cluster.Label keys must be between 1 and 63 characters long, and must conform to the following PCRE regular expression: \\p{Ll}\\p{Lo}{0,62}Label values must be between 1 and 63 characters long, and must conform to the following PCRE regular expression: \\p{Ll}\\p{Lo}\\p{N}_-{0,63}No more than 32 labels can be associated with a given cluster.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1299,7 +1299,7 @@
       "type": "object",
       "properties": {
         "stepId": {
-          "description": "Required. The step id. The id must be unique among all jobs within the template.The step id is used as prefix for job id, as job workflow-step-id label, and in prerequisite_step_ids field from other steps.",
+          "description": "Required. The step id. The id must be unique among all jobs within the template.The step id is used as prefix for job id, as job goog-dataproc-workflow-step-id label, and in prerequisiteStepIds field from other steps.The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end with underscore or hyphen. Must consist of between 3 and 50 characters.",
           "type": "string"
         },
         "hadoopJob": {
@@ -1327,7 +1327,7 @@
           "$ref": "SparkSqlJob"
         },
         "labels": {
-          "description": "Optional. The labels to associate with this job.Label keys must be between 1 and 63 characters long, and must conform to the following regular expression: \\p{Ll}\\p{Lo}{0,62}Label values must be between 1 and 63 characters long, and must conform to the following regular expression: \\p{Ll}\\p{Lo}\\p{N}_-{0,63}No more than 64 labels can be associated with a given job.",
+          "description": "Optional. The labels to associate with this job.Label keys must be between 1 and 63 characters long, and must conform to the following regular expression: \\p{Ll}\\p{Lo}{0,62}Label values must be between 1 and 63 characters long, and must conform to the following regular expression: \\p{Ll}\\p{Lo}\\p{N}_-{0,63}No more than 32 labels can be associated with a given job.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1467,7 +1467,7 @@
       "type": "object",
       "properties": {
         "outputUri": {
-          "description": "Output only. The Google Cloud Storage URI of the diagnostic output. The output report is a plain text file with a summary of collected diagnostics.",
+          "description": "Output only. The Cloud Storage URI of the diagnostic output. The output report is a plain text file with a summary of collected diagnostics.",
           "type": "string"
         }
       }
@@ -1601,6 +1601,13 @@
         "clusterName": {
           "description": "Output only. The name of the managed cluster.",
           "type": "string"
+        },
+        "parameters": {
+          "description": "Map from parameter names to values that were used for those parameters.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

@@ -1110,6 +1110,470 @@
           "format": "google-datetime"
         }
       }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_AnnotateVideoResponse": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_AnnotateVideoResponse",
+      "description": "Video annotation response. Included in the `response`\nfield of the `Operation` returned by the `GetOperation`\ncall of the `google::longrunning::Operations` service.",
+      "type": "object",
+      "properties": {
+        "annotationResults": {
+          "description": "Annotation results for all videos specified in `AnnotateVideoRequest`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_VideoAnnotationResults"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_VideoAnnotationResults": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_VideoAnnotationResults",
+      "description": "Annotation results for a single video.",
+      "type": "object",
+      "properties": {
+        "inputUri": {
+          "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
+          "type": "string"
+        },
+        "segmentLabelAnnotations": {
+          "description": "Label annotations on video level or user specified segment level.\nThere is exactly one element for each unique label.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_LabelAnnotation"
+          }
+        },
+        "shotLabelAnnotations": {
+          "description": "Label annotations on shot level.\nThere is exactly one element for each unique label.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_LabelAnnotation"
+          }
+        },
+        "frameLabelAnnotations": {
+          "description": "Label annotations on frame level.\nThere is exactly one element for each unique label.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_LabelAnnotation"
+          }
+        },
+        "faceDetectionAnnotations": {
+          "description": "Face detection annotations.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionAnnotation"
+          }
+        },
+        "shotAnnotations": {
+          "description": "Shot annotations. Each shot is represented as a video segment.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_VideoSegment"
+          }
+        },
+        "explicitAnnotation": {
+          "description": "Explicit content annotation.",
+          "$ref": "GoogleCloudVideointelligenceV1p1beta1_ExplicitContentAnnotation"
+        },
+        "speechTranscriptions": {
+          "description": "Speech transcription.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_SpeechTranscription"
+          }
+        },
+        "error": {
+          "description": "If set, indicates an error. Note that for a single `AnnotateVideoRequest`\nsome videos may succeed and some may fail.",
+          "$ref": "GoogleRpc_Status"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_LabelAnnotation": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_LabelAnnotation",
+      "description": "Label annotation.",
+      "type": "object",
+      "properties": {
+        "entity": {
+          "description": "Detected entity.",
+          "$ref": "GoogleCloudVideointelligenceV1p1beta1_Entity"
+        },
+        "categoryEntities": {
+          "description": "Common categories for the detected entity.\nE.g. when the label is `Terrier` the category is likely `dog`. And in some\ncases there might be more than one categories e.g. `Terrier` could also be\na `pet`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_Entity"
+          }
+        },
+        "segments": {
+          "description": "All video segments where a label was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_LabelSegment"
+          }
+        },
+        "frames": {
+          "description": "All video frames where a label was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_LabelFrame"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_Entity": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_Entity",
+      "description": "Detected entity from video analysis.",
+      "type": "object",
+      "properties": {
+        "entityId": {
+          "description": "Opaque entity ID. Some IDs may be available in\n[Google Knowledge Graph Search\nAPI](https:\/\/developers.google.com\/knowledge-graph\/).",
+          "type": "string"
+        },
+        "description": {
+          "description": "Textual description, e.g. `Fixed-gear bicycle`.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "Language code for `description` in BCP-47 format.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_LabelSegment": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_LabelSegment",
+      "description": "Video segment level annotation results for label detection.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment where a label was detected.",
+          "$ref": "GoogleCloudVideointelligenceV1p1beta1_VideoSegment"
+        },
+        "confidence": {
+          "description": "Confidence that the label is accurate. Range: [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_VideoSegment": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_VideoSegment",
+      "description": "Video segment.",
+      "type": "object",
+      "properties": {
+        "startTimeOffset": {
+          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the start of the segment (inclusive).",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "endTimeOffset": {
+          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the end of the segment (inclusive).",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_LabelFrame": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_LabelFrame",
+      "description": "Video frame level annotation results for label detection.",
+      "type": "object",
+      "properties": {
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the\nvideo frame for this location.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "confidence": {
+          "description": "Confidence that the label is accurate. Range: [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionAnnotation": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionAnnotation",
+      "description": "Face detection annotation.",
+      "type": "object",
+      "properties": {
+        "segments": {
+          "description": "All video segments where a face was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_FaceSegment"
+          }
+        },
+        "frames": {
+          "description": "All video frames where a face was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionFrame"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_FaceSegment": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_FaceSegment",
+      "description": "Video segment level annotation results for face detection.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment where a face was detected.",
+          "$ref": "GoogleCloudVideointelligenceV1p1beta1_VideoSegment"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionFrame": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionFrame",
+      "description": "Video frame level annotation results for face detection.",
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "description": "Face attributes in a frame.\nThere can be more than one attributes if the same face is detected in\nmultiple locations within the current frame.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionAttribute"
+          }
+        },
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the video frame for this location.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionAttribute": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionAttribute",
+      "description": "Face detection attribute.",
+      "type": "object",
+      "properties": {
+        "normalizedBoundingBox": {
+          "description": "Normalized Bounding box.",
+          "$ref": "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox"
+        },
+        "emotions": {
+          "description": "Emotion attributes.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_EmotionAttribute"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox",
+      "description": "Normalized bounding box.\nThe normalized vertex coordinates are relative to the original image.\nRange: [0, 1].",
+      "type": "object",
+      "properties": {
+        "left": {
+          "description": "Left X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "top": {
+          "description": "Top Y coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "right": {
+          "description": "Right X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "bottom": {
+          "description": "Bottom Y coordinate.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_EmotionAttribute": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_EmotionAttribute",
+      "description": "Emotion attribute.",
+      "type": "object",
+      "properties": {
+        "emotion": {
+          "description": "Emotion entry.",
+          "enumDescriptions": [
+            "Unspecified emotion.",
+            "Amusement.",
+            "Anger.",
+            "Concentration.",
+            "Contentment.",
+            "Desire.",
+            "Disappointment.",
+            "Disgust.",
+            "Elation.",
+            "Embarrassment.",
+            "Interest.",
+            "Pride.",
+            "Sadness.",
+            "Surprise."
+          ],
+          "type": "string",
+          "enum": [
+            "EMOTION_UNSPECIFIED",
+            "AMUSEMENT",
+            "ANGER",
+            "CONCENTRATION",
+            "CONTENTMENT",
+            "DESIRE",
+            "DISAPPOINTMENT",
+            "DISGUST",
+            "ELATION",
+            "EMBARRASSMENT",
+            "INTEREST",
+            "PRIDE",
+            "SADNESS",
+            "SURPRISE"
+          ]
+        },
+        "score": {
+          "description": "Confidence score.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_ExplicitContentAnnotation": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_ExplicitContentAnnotation",
+      "description": "Explicit content annotation (based on per-frame visual signals only).\nIf no explicit content has been detected in a frame, no annotations are\npresent for that frame.",
+      "type": "object",
+      "properties": {
+        "frames": {
+          "description": "All video frames where explicit content was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_ExplicitContentFrame"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_ExplicitContentFrame": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_ExplicitContentFrame",
+      "description": "Video frame level annotation results for explicit content.",
+      "type": "object",
+      "properties": {
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the\nvideo frame for this location.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "pornographyLikelihood": {
+          "description": "Likelihood of the pornography content..",
+          "enumDescriptions": [
+            "Unspecified likelihood.",
+            "Very unlikely.",
+            "Unlikely.",
+            "Possible.",
+            "Likely.",
+            "Very likely."
+          ],
+          "type": "string",
+          "enum": [
+            "LIKELIHOOD_UNSPECIFIED",
+            "VERY_UNLIKELY",
+            "UNLIKELY",
+            "POSSIBLE",
+            "LIKELY",
+            "VERY_LIKELY"
+          ]
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_SpeechTranscription": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_SpeechTranscription",
+      "description": "A speech recognition result corresponding to a portion of the audio.",
+      "type": "object",
+      "properties": {
+        "alternatives": {
+          "description": "Output only. May contain one or more recognition hypotheses (up to the\nmaximum specified in `max_alternatives`).\nThese alternatives are ordered in terms of accuracy, with the top (first)\nalternative being the most probable, as ranked by the recognizer.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_SpeechRecognitionAlternative"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_SpeechRecognitionAlternative": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_SpeechRecognitionAlternative",
+      "description": "Alternative hypotheses (a.k.a. n-best list).",
+      "type": "object",
+      "properties": {
+        "transcript": {
+          "description": "Output only. Transcript text representing the words that the user spoke.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "Output only. The confidence estimate between 0.0 and 1.0. A higher number\nindicates an estimated greater likelihood that the recognized words are\ncorrect. This field is typically provided only for the top hypothesis, and\nonly for `is_final=true` results. Clients should not rely on the\n`confidence` field as it is not guaranteed to be accurate or consistent.\nThe default of 0.0 is a sentinel value indicating `confidence` was not set.",
+          "type": "number",
+          "format": "float"
+        },
+        "words": {
+          "description": "Output only. A list of word-specific information for each recognized word.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_WordInfo"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_WordInfo": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_WordInfo",
+      "description": "Word-specific information for recognized words. Word information is only\nincluded in the response when certain request parameters are set, such\nas `enable_word_time_offsets`.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Output only. Time offset relative to the beginning of the audio, and\ncorresponding to the start of the spoken word. This field is only set if\n`enable_word_time_offsets=true` and only in the top hypothesis. This is an\nexperimental feature and the accuracy of the time offset can vary.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "endTime": {
+          "description": "Output only. Time offset relative to the beginning of the audio, and\ncorresponding to the end of the spoken word. This field is only set if\n`enable_word_time_offsets=true` and only in the top hypothesis. This is an\nexperimental feature and the accuracy of the time offset can vary.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "word": {
+          "description": "Output only. The word corresponding to this set of information.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_AnnotateVideoProgress": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_AnnotateVideoProgress",
+      "description": "Video annotation progress. Included in the `metadata`\nfield of the `Operation` returned by the `GetOperation`\ncall of the `google::longrunning::Operations` service.",
+      "type": "object",
+      "properties": {
+        "annotationProgress": {
+          "description": "Progress metadata for all videos specified in `AnnotateVideoRequest`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_VideoAnnotationProgress"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_VideoAnnotationProgress": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_VideoAnnotationProgress",
+      "description": "Annotation progress for a single video.",
+      "type": "object",
+      "properties": {
+        "inputUri": {
+          "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
+          "type": "string"
+        },
+        "progressPercent": {
+          "description": "Approximate percentage processed thus far.\nGuaranteed to be 100 when fully processed.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "startTime": {
+          "description": "Time when the request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Time of the most recent update.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
     }
   },
   "resources": {

@@ -15,6 +15,9 @@
 """Various functions intended to be used as argument processors."""
 
 
+from __future__ import unicode_literals
+
+
 def RelativeName(ref):
   """Converts a resource reference into its relative name string."""
   return ref.RelativeName() if ref else None

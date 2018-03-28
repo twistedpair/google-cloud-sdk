@@ -1,0 +1,44 @@
+project:
+  name: project
+  collection: tpu.projects
+  attributes:
+    - &project
+      parameter_name: projectsId
+      attribute_name: project
+      help: The project ID.
+
+location:
+  name: location
+  api_version: v1alpha1
+  collection: tpu.projects.locations
+  attributes:
+    - &location
+      parameter_name: locationsId
+      attribute_name: zone
+      help: |
+        The compute/zone of the Cloud TPU.
+
+        If not specified, will use `default` compute/zone.
+      property: compute/zone
+
+node:
+  name: node
+  api_version: v1alpha1
+  collection: tpu.projects.locations.nodes
+  attributes:
+    - *location
+    - &node
+      parameter_name: nodesId
+      attribute_name: tpu_id
+      help: The name of the Cloud TPU.
+
+tesnorflow_version:
+  name: tensorflowversion
+  api_version: v1alpha1
+  collection: tpu.projects.locations.tensorflowVersions
+  attributes:
+    - *location
+    - &tensorflowversion
+      parameter_name: tensorflowVersionsId
+      attribute_name: version
+      help: The id of the Tensorflow version.

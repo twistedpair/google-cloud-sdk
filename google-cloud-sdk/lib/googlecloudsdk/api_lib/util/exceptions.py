@@ -13,6 +13,8 @@
 # limitations under the License.
 
 """A module that converts API exceptions to core exceptions."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import io
 import json
 import logging
@@ -30,11 +32,73 @@ from googlecloudsdk.core.util import encoding
 import six
 
 
-# The underlying formatter treats bare : specially. It is escaped before passing
-# to the formatter as '{'+_ESCAPED_COLON+'}' and then reconstituted either as a
-# formatter variable named _ESCAPED_COLON or as the literal string
-# '{'+_ESCAPED_COLON+'}'.
-_ESCAPED_COLON = '?COLON?'
+# Some formatter characters are special inside {...}. The _Escape / _Expand pair
+# escapes special chars inside {...} and ignores them outside.
+_ESCAPE = '~'  # '\x01'
+_ESCAPED_COLON = 'C'
+_ESCAPED_ESCAPE = 'E'
+_ESCAPED_LEFT_CURLY = 'L'
+_ESCAPED_RIGHT_CURLY = 'R'
+
+
+def _Escape(s):
+  """Return s with format special characters escaped."""
+  r = []
+  n = 0
+  for c in s:
+    if c == _ESCAPE:
+      r.append(_ESCAPE + _ESCAPED_ESCAPE + _ESCAPE)
+    elif c == ':':
+      r.append(_ESCAPE + _ESCAPED_COLON + _ESCAPE)
+    elif c == '{':
+      if n > 0:
+        r.append(_ESCAPE + _ESCAPED_LEFT_CURLY + _ESCAPE)
+      else:
+        r.append('{')
+      n += 1
+    elif c == '}':
+      n -= 1
+      if n > 0:
+        r.append(_ESCAPE + _ESCAPED_RIGHT_CURLY + _ESCAPE)
+      else:
+        r.append('}')
+    else:
+      r.append(c)
+  return ''.join(r)
+
+
+def _Expand(s):
+  """Return s with escaped format special characters expanded."""
+  r = []
+  n = 0
+  i = 0
+  while i < len(s):
+    c = s[i]
+    i += 1
+    if c == _ESCAPE and i + 1 < len(s) and s[i + 1] == _ESCAPE:
+      c = s[i]
+      i += 2
+      if c == _ESCAPED_LEFT_CURLY:
+        if n > 0:
+          r.append(_ESCAPE + _ESCAPED_LEFT_CURLY)
+        else:
+          r.append('{')
+        n += 1
+      elif c == _ESCAPED_RIGHT_CURLY:
+        n -= 1
+        if n > 0:
+          r.append(_ESCAPE + _ESCAPED_RIGHT_CURLY)
+        else:
+          r.append('}')
+      elif n > 0:
+        r.append(s[i - 3:i])
+      elif c == _ESCAPED_COLON:
+        r.append(':')
+      elif c == _ESCAPED_ESCAPE:
+        r.append(_ESCAPE)
+    else:
+      r.append(c)
+  return ''.join(r)
 
 
 class _JsonSortedDict(dict):
@@ -128,12 +192,10 @@ class HttpErrorPayload(string.Formatter):
     Returns:
       The value of field_name for string.Formatter.format().
     """
-    if field_name.startswith('?'):
-      if field_name == '?':
-        return self._value, field_name
-      if field_name == _ESCAPED_COLON:
-        return ':', field_name
-    parts = field_name.replace('{' + _ESCAPED_COLON + '}', ':').split('?', 1)
+    field_name = _Expand(field_name)
+    if field_name == '?':
+      return self._value, field_name
+    parts = field_name.split('?', 1)
     subparts = parts.pop(0).split(':', 1)
     name = subparts.pop(0)
     printer_format = subparts.pop(0) if subparts else None
@@ -159,14 +221,15 @@ class HttpErrorPayload(string.Formatter):
       value = None
     if not value and not isinstance(value, (int, float)):
       return '', name
-    if printer_format or not isinstance(value, (basestring, int, float)):
+    if printer_format or not isinstance(
+        value, (six.text_type, six.binary_type, float) + six.integer_types):
       buf = io.StringIO()
       resource_printer.Print(
           value, printer_format or 'default', out=buf, single=True)
       value = buf.getvalue().strip()
     if recursive_format:
       self._value = value
-      value = self.format(recursive_format)
+      value = self.format(_Expand(recursive_format))  # pytype: disable=wrong-arg-types
     return value, name
 
   def _ExtractResponseAndJsonContent(self, http_error):
@@ -230,26 +293,26 @@ class HttpErrorPayload(string.Formatter):
     """Makes a generic human readable message from the HttpError."""
     description = self._MakeDescription()
     if self.status_message:
-      return u'{0}: {1}'.format(description, self.status_message)
+      return '{0}: {1}'.format(description, self.status_message)
     return description
 
   def _MakeDescription(self):
     """Makes description for error by checking which fields are filled in."""
     if self.status_code and self.resource_item and self.instance_name:
       if self.status_code == 403:
-        return (u'User [{0}] does not have permission to access {1} [{2}] (or '
-                u'it may not exist)').format(
+        return ('User [{0}] does not have permission to access {1} [{2}] (or '
+                'it may not exist)').format(
                     properties.VALUES.core.account.Get(),
                     self.resource_item, self.instance_name)
       if self.status_code == 404:
-        return u'{0} [{1}] not found'.format(
+        return '{0} [{1}] not found'.format(
             self.resource_item.capitalize(), self.instance_name)
       if self.status_code == 409:
         if self.resource_item == 'project':
-          return (u'Resource in project [{0}] '
-                  u'is the subject of a conflict').format(self.instance_name)
+          return ('Resource in project [{0}] '
+                  'is the subject of a conflict').format(self.instance_name)
         else:
-          return u'{0} [{1}] is the subject of a conflict'.format(
+          return '{0} [{1}] is the subject of a conflict'.format(
               self.resource_item.capitalize(), self.instance_name)
 
     description = self.status_description
@@ -258,7 +321,7 @@ class HttpErrorPayload(string.Formatter):
         description = description[:-1]
       return description
     # Example: 'HTTPError 403'
-    return u'HTTPError {0}'.format(self.status_code)
+    return 'HTTPError {0}'.format(self.status_code)
 
 
 class HttpException(core_exceptions.Error):
@@ -282,12 +345,14 @@ class HttpException(core_exceptions.Error):
       error_format = '{message}{details?\n{?}}'
       if log.GetVerbosity() <= logging.DEBUG:
         error_format += '{.debugInfo?\n{?}}'
-    return self.payload.format(six.text_type(error_format).replace(
-        ':', '{' + _ESCAPED_COLON + '}'))  # pytype: disable=wrong-arg-types
+    return _Expand(self.payload.format(_Escape(error_format)))  # pytype: disable=wrong-arg-types
 
   @property
   def message(self):
     return six.text_type(self)
+
+  def __hash__(self):
+    return hash(self.message)
 
   def __eq__(self, other):
     if isinstance(other, HttpException):

@@ -72,7 +72,7 @@ def WaitForOpMaybe(operations_client, op, async_=False, message=None):
 def Create(versions_client, operations_client, version_id,
            model=None, origin=None, staging_bucket=None, runtime_version=None,
            config_file=None, async_=None, labels=None, machine_type=None,
-           description=None, framework=None):
+           description=None, framework=None, python_version=None):
   """Create a version, optionally waiting for creation to finish."""
   if origin:
     try:
@@ -90,7 +90,8 @@ def Create(versions_client, operations_client, version_id,
                                          labels=labels,
                                          description=description,
                                          machine_type=machine_type,
-                                         framework=framework)
+                                         framework=framework,
+                                         python_version=python_version)
   if not version.deploymentUri:
     raise InvalidArgumentCombinationError(
         'Either `--origin` must be provided or `deploymentUri` must be '

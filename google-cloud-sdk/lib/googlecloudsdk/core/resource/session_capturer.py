@@ -16,6 +16,8 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
+
 import abc
 import copy
 import io
@@ -24,7 +26,9 @@ import random
 import sys
 
 from googlecloudsdk.core import log
+from googlecloudsdk.core import module_util
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import yaml_printer
@@ -72,7 +76,7 @@ class _StreamCapturerBase(io.IOBase):
 
 
 class OutputStreamCapturer(_StreamCapturerBase):
-  """A file-like object that captures all the information wrote to stream."""
+  """A file-like object that captures all the information written to stream."""
 
   def write(self, *args, **kwargs):
     self._capturing_stream.write(*args, **kwargs)
@@ -267,9 +271,10 @@ def _FilterHeaders(headers):
 
 
 def _KeepHeader(header):
-  if header.startswith(b'x-google'):
+  s = console_attr.SafeText(header)
+  if s.startswith('x-google'):
     return False
-  if header in (b'user-agent', b'Authorization', b'content-length',):
+  if s in ('user-agent', 'Authorization', 'content-length',):
     return False
   return True
 
@@ -368,8 +373,8 @@ class SessionCapturer(object):
   def CaptureException(self, exc):
     self._records.append({
         'exception': {
-            'type': str(type(exc)),
-            'message': exc.message
+            'type': module_util.GetModulePath(exc),
+            'message': six.text_type(exc)
         }
     })
 

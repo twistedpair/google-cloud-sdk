@@ -1003,7 +1003,7 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Only updates the `device` fields indicated by this mask.\nThe field mask must not be empty, and it must not contain fields that\nare immutable or only set by the server.\nMutable top-level fields: `credentials`, `enabled_state`, and `metadata`",
+                          "description": "Only updates the `device` fields indicated by this mask.\nThe field mask must not be empty, and it must not contain fields that\nare immutable or only set by the server.\nMutable top-level fields: `credentials`, `blocked`, and `metadata`",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"

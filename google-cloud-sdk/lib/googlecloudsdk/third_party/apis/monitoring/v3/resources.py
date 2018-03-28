@@ -43,7 +43,7 @@ class Collections(enum.Enum):
       'projects/{projectsId}/alertPolicies/{alertPoliciesId}/conditions/'
       '{conditionsId}',
       {},
-      ['projectsId', 'alertPoliciesId', 'conditionsId']
+      [u'projectsId', u'alertPoliciesId', u'conditionsId']
   )
   PROJECTS_GROUPS = (
       'projects.groups',

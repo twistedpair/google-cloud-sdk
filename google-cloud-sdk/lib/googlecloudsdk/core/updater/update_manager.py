@@ -1023,7 +1023,7 @@ To revert your SDK to the previously installed version, you may run:
 
   {0}
 
-  """.format('\n'.join(duplicate_commands)))
+  """.format('\n  '.join(duplicate_commands)))
 
     return True
 

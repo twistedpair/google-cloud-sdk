@@ -180,9 +180,10 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         operation = operations_util.WaitForOperation(
             self.client.apps_operations, operation, message=message,
             poller=poller)
-        build = app_cloud_build.BuildArtifact.MakeBuildIdArtifact(
-            operations_util.GetBuildFromOperation(
-                operation, operation_metadata_type))
+        build_id = operations_util.GetBuildFromOperation(
+            operation, operation_metadata_type)
+        if build_id:
+          build = app_cloud_build.BuildArtifact.MakeBuildIdArtifact(build_id)
     if build and build.IsBuildId():
       build_ref = resources.REGISTRY.Parse(
           build.identifier,

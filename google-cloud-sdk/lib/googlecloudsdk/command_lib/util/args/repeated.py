@@ -60,10 +60,15 @@ Makes a command that works like so:
     [...]
 
 """
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import functools
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 class CachedResult(object):
@@ -106,7 +111,7 @@ class CachedResult(object):
         transformed) of the result (which is cached).
     """
     if transform:
-      return lambda: map(transform, getattr(self.Get(), attr))
+      return lambda: list(map(transform, getattr(self.Get(), attr)))
     else:
       return lambda: getattr(self.Get(), attr)
 

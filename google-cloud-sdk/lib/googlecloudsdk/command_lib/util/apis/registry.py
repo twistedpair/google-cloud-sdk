@@ -15,6 +15,7 @@
 """Utilities for the gcloud meta apis surface."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.protorpclite import messages
 from apitools.base.py import  exceptions as apitools_exc
 from apitools.base.py import list_pager
@@ -202,6 +203,23 @@ class APIMethod(object):
       response_type = arg_utils.GetFieldFromMessage(
           response_type, item_field).type
     return response_type
+
+  def GetMessageByName(self, name):
+    """Gets a arbitrary apitools message class by name.
+
+    This method can be used to get arbitrary apitools messages from the
+    underlying service. Examples:
+
+    policy_type = method.GetMessageByName('Policy')
+    status_type = method.GetMessageByName('Status')
+
+    Args:
+      name: str, the name of the message to return.
+    Returns:
+      The apitools Message object.
+    """
+    msgs = self._service.client.MESSAGES_MODULE
+    return getattr(msgs, name, None)
 
   def IsList(self):
     """Determines whether this is a List method."""

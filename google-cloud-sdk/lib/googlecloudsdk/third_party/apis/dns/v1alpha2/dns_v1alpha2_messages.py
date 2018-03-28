@@ -23,6 +23,7 @@ class Change(_messages.Message):
       exactly.
     id: Unique identifier for the resource; defined by the server (output
       only).
+    isServing: If the DNS queries for the zone will be served.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#change".
     startTime: The time that this operation was started by the server (output
@@ -43,9 +44,10 @@ class Change(_messages.Message):
   additions = _messages.MessageField('ResourceRecordSet', 1, repeated=True)
   deletions = _messages.MessageField('ResourceRecordSet', 2, repeated=True)
   id = _messages.StringField(3)
-  kind = _messages.StringField(4, default=u'dns#change')
-  startTime = _messages.StringField(5)
-  status = _messages.EnumField('StatusValueValuesEnum', 6)
+  isServing = _messages.BooleanField(4)
+  kind = _messages.StringField(5, default=u'dns#change')
+  startTime = _messages.StringField(6)
+  status = _messages.EnumField('StatusValueValuesEnum', 7)
 
 
 class ChangesListResponse(_messages.Message):
@@ -485,6 +487,10 @@ class DnsManagedZonesDeleteRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
+class DnsManagedZonesDeleteResponse(_messages.Message):
+  """An empty DnsManagedZonesDelete response."""
+
+
 class DnsManagedZonesGetRequest(_messages.Message):
   """A DnsManagedZonesGetRequest object.
 
@@ -590,6 +596,10 @@ class DnsPoliciesDeleteRequest(_messages.Message):
   clientOperationId = _messages.StringField(1)
   policy = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
+
+
+class DnsPoliciesDeleteResponse(_messages.Message):
+  """An empty DnsPoliciesDelete response."""
 
 
 class DnsPoliciesGetRequest(_messages.Message):
@@ -923,16 +933,6 @@ class ManagedZonePrivateVisibilityConfigNetwork(_messages.Message):
   networkUrl = _messages.StringField(2)
 
 
-class ManagedZonesDeleteResponse(_messages.Message):
-  """A ManagedZonesDeleteResponse object.
-
-  Fields:
-    header: A ResponseHeader attribute.
-  """
-
-  header = _messages.MessageField('ResponseHeader', 1)
-
-
 class ManagedZonesListResponse(_messages.Message):
   """A ManagedZonesListResponse object.
 
@@ -1032,16 +1032,6 @@ class OperationManagedZoneContext(_messages.Message):
 
   newValue = _messages.MessageField('ManagedZone', 1)
   oldValue = _messages.MessageField('ManagedZone', 2)
-
-
-class PoliciesDeleteResponse(_messages.Message):
-  """A PoliciesDeleteResponse object.
-
-  Fields:
-    header: A ResponseHeader attribute.
-  """
-
-  header = _messages.MessageField('ResponseHeader', 1)
 
 
 class PoliciesListResponse(_messages.Message):

@@ -21,10 +21,12 @@ spec can be found in yaml_command_schema.yaml.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.protorpclite import messages as apitools_messages
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import command_loading
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util.apis import arg_marshalling
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import registry
@@ -85,6 +87,9 @@ class CommandBuilder(object):
     elif (self.spec.command_type ==
           yaml_command_schema.CommandType.GET_IAM_POLICY):
       command = self._GenerateGetIamPolicyCommand()
+    elif (self.spec.command_type ==
+          yaml_command_schema.CommandType.SET_IAM_POLICY):
+      command = self._GenerateSetIamPolicyCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
       command = self._GenerateGenericCommand()
     else:
@@ -302,6 +307,39 @@ class CommandBuilder(object):
 
       def Run(self_, args):
         _, response = self._CommonRun(args)
+        return self._HandleResponse(response)
+
+    return Command
+
+  def _GenerateSetIamPolicyCommand(self):
+    """Generates a set-iam-policy command.
+
+    A set-iam-policy command takes a resource argument, a policy to set on that
+    resource, and an API method to call to set the policy on the resource. The
+    result is returned using the default output format.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.Command):
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        iam_util.AddArgForPolicyFile(parser)
+        base.URI_FLAG.RemoveFromParser(parser)
+
+      def Run(self_, args):
+        policy_type = self.method.GetMessageByName('Policy')
+        policy = iam_util.ParsePolicyFile(args.policy_file, policy_type)
+        self.spec.request.static_fields['setIamPolicyRequest.policy'] = policy
+        ref, response = self._CommonRun(args)
+        iam_util.LogSetIamPolicy(ref.Name(), self.resource_type)
         return self._HandleResponse(response)
 
     return Command

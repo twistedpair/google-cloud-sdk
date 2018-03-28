@@ -14,8 +14,13 @@
 
 """Various functions intended to be used as an argument type function."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import resources
+
+import six
 
 
 def Resource(collection, api_version=None):
@@ -38,7 +43,7 @@ def Resource(collection, api_version=None):
       return None
     ref = resources.REGISTRY.Parse(
         value, collection=collection,
-        params={k: f for k, f in arg_utils.DEFAULT_PARAMS.iteritems()
+        params={k: f for k, f in six.iteritems(arg_utils.DEFAULT_PARAMS)
                 if k in params})
     return ref
 

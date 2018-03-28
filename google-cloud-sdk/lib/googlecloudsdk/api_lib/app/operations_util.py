@@ -169,6 +169,7 @@ class AppEngineOperationPoller(waiter.OperationPoller):
 
   def IsDone(self, operation):
     """Overrides."""
+    self._LogNewWarnings(operation)
     if operation.done:
       log.debug('Operation [{0}] complete. Result: {1}'.format(
           operation.name,
@@ -193,6 +194,10 @@ class AppEngineOperationPoller(waiter.OperationPoller):
     request_type = self.operation_service.GetRequestType('Get')
     request = request_type(name=operation_ref.RelativeName())
     operation = self.operation_service.Get(request)
+    self._LogNewWarnings(operation)
+    return operation
+
+  def _LogNewWarnings(self, operation):
     if self.operation_metadata_type:
       # Log any new warnings to the end user.
       new_warnings = GetWarningsFromOperation(
@@ -200,7 +205,6 @@ class AppEngineOperationPoller(waiter.OperationPoller):
       for warning in new_warnings:
         log.warning(warning + u'\n')
         self.warnings_seen.add(warning)
-    return operation
 
   def GetResult(self, operation):
     """Simply returns the operation.
@@ -245,7 +249,7 @@ def GetMetadataFromOperation(operation, operation_metadata_type):
 
 def GetBuildFromOperation(operation, operation_metadata_type):
   metadata = GetMetadataFromOperation(operation, operation_metadata_type)
-  if not metadata.createVersionMetadata:
+  if not metadata or not metadata.createVersionMetadata:
     return None
   return metadata.createVersionMetadata.cloudBuildId
 

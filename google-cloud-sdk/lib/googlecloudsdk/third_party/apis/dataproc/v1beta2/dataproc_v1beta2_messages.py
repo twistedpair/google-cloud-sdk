@@ -20,12 +20,12 @@ class AcceleratorConfig(_messages.Message):
     acceleratorCount: The number of the accelerator cards of this type exposed
       to this instance.
     acceleratorTypeUri: Full URL, partial URI, or short name of the
-      accelerator type resource to expose to this instance. See Google Compute
-      Engine AcceleratorTypes(
-      /compute/docs/reference/beta/acceleratorTypes)Examples *
-      https://www.googleapis.com/compute/beta/projects/[project_id]/zones/us-
-      east1-a/acceleratorTypes/nvidia-tesla-k80 * projects/[project_id]/zones
-      /us-east1-a/acceleratorTypes/nvidia-tesla-k80 * nvidia-tesla-k80
+      accelerator type resource to expose to this instance. See Compute Engine
+      AcceleratorTypes( /compute/docs/reference/beta/acceleratorTypes)Examples
+      * https://www.googleapis.com/compute/beta/projects/[project_id]/zones
+      /us-east1-a/acceleratorTypes/nvidia-tesla-k80 *
+      projects/[project_id]/zones/us-east1-a/acceleratorTypes/nvidia-tesla-k80
+      * nvidia-tesla-k80
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -63,7 +63,7 @@ class CancelJobRequest(_messages.Message):
 
 class Cluster(_messages.Message):
   """Describes the identifying information, config, and status of a cluster of
-  Google Compute Engine instances.
+  Compute Engine instances.
 
   Messages:
     LabelsValue: Optional. The labels to associate with this cluster. Label
@@ -138,15 +138,14 @@ class ClusterConfig(_messages.Message):
   """The cluster config.
 
   Fields:
-    configBucket: Optional. A Google Cloud Storage staging bucket used for
-      sharing generated SSH keys and config. If you do not specify a staging
-      bucket, Cloud Dataproc will determine an appropriate Cloud Storage
-      location (US, ASIA, or EU) for your cluster's staging bucket according
-      to the Google Compute Engine zone where your cluster is deployed, and
-      then it will create and manage this project-level, per-location bucket
-      for you.
-    gceClusterConfig: Required. The shared Google Compute Engine config
-      settings for all instances in a cluster.
+    configBucket: Optional. A Cloud Storage staging bucket used for sharing
+      generated SSH keys and config. If you do not specify a staging bucket,
+      Cloud Dataproc will determine an appropriate Cloud Storage location (US,
+      ASIA, or EU) for your cluster's staging bucket according to the Google
+      Compute Engine zone where your cluster is deployed, and then it will
+      create and manage this project-level, per-location bucket for you.
+    gceClusterConfig: Required. The shared Compute Engine config settings for
+      all instances in a cluster.
     initializationActions: Optional. Commands to execute on each node after
       config is completed. By default, executables are run on master and all
       worker nodes. You can test a node's <code>role</code> metadata to run an
@@ -157,14 +156,14 @@ class ClusterConfig(_messages.Message):
       ... else   ... worker specific actions ... fi
     lifecycleConfig: Optional. The config setting for auto delete cluster
       schedule.
-    masterConfig: Optional. The Google Compute Engine config settings for the
-      master instance in a cluster.
-    secondaryWorkerConfig: Optional. The Google Compute Engine config settings
-      for additional worker instances in a cluster.
+    masterConfig: Optional. The Compute Engine config settings for the master
+      instance in a cluster.
+    secondaryWorkerConfig: Optional. The Compute Engine config settings for
+      additional worker instances in a cluster.
     softwareConfig: Optional. The config settings for software inside the
       cluster.
-    workerConfig: Optional. The Google Compute Engine config settings for
-      worker instances in a cluster.
+    workerConfig: Optional. The Compute Engine config settings for worker
+      instances in a cluster.
   """
 
   configBucket = _messages.StringField(1)
@@ -1249,9 +1248,9 @@ class DiagnoseClusterResults(_messages.Message):
   """The location of diagnostic output.
 
   Fields:
-    outputUri: Output only. The Google Cloud Storage URI of the diagnostic
-      output. The output report is a plain text file with a summary of
-      collected diagnostics.
+    outputUri: Output only. The Cloud Storage URI of the diagnostic output.
+      The output report is a plain text file with a summary of collected
+      diagnostics.
   """
 
   outputUri = _messages.StringField(1)
@@ -1290,12 +1289,12 @@ class Empty(_messages.Message):
 
 
 class GceClusterConfig(_messages.Message):
-  """Common config settings for resources of Google Compute Engine cluster
-  instances, applicable to all instances in the cluster.
+  """Common config settings for resources of Compute Engine cluster instances,
+  applicable to all instances in the cluster.
 
   Messages:
-    MetadataValue: The Google Compute Engine metadata entries to add to all
-      instances (see Project and instance metadata
+    MetadataValue: The Compute Engine metadata entries to add to all instances
+      (see Project and instance metadata
       (https://cloud.google.com/compute/docs/storing-retrieving-
       metadata#project_and_instance_metadata)).
 
@@ -1307,21 +1306,20 @@ class GceClusterConfig(_messages.Message):
       enabled for subnetwork enabled networks, and all off-cluster
       dependencies must be configured to be accessible without external IP
       addresses.
-    metadata: The Google Compute Engine metadata entries to add to all
-      instances (see Project and instance metadata
-      (https://cloud.google.com/compute/docs/storing-retrieving-
-      metadata#project_and_instance_metadata)).
-    networkUri: Optional. The Google Compute Engine network to be used for
-      machine communications. Cannot be specified with subnetwork_uri. If
-      neither network_uri nor subnetwork_uri is specified, the "default"
-      network of the project is used, if it exists. Cannot be a "Custom Subnet
-      Network" (see Using Subnetworks for more information).A full URL,
-      partial URI, or short name are valid. Examples: https://www.googleapis.c
-      om/compute/v1/projects/[project_id]/regions/global/default
+    metadata: The Compute Engine metadata entries to add to all instances (see
+      Project and instance metadata (https://cloud.google.com/compute/docs
+      /storing-retrieving-metadata#project_and_instance_metadata)).
+    networkUri: Optional. The Compute Engine network to be used for machine
+      communications. Cannot be specified with subnetwork_uri. If neither
+      network_uri nor subnetwork_uri is specified, the "default" network of
+      the project is used, if it exists. Cannot be a "Custom Subnet Network"
+      (see Using Subnetworks for more information).A full URL, partial URI, or
+      short name are valid. Examples: https://www.googleapis.com/compute/v1/pr
+      ojects/[project_id]/regions/global/default
       projects/[project_id]/regions/global/default default
     serviceAccount: Optional. The service account of the instances. Defaults
-      to the default Google Compute Engine service account. Custom service
-      accounts need permissions equivalent to the folloing IAM roles:
+      to the default Compute Engine service account. Custom service accounts
+      need permissions equivalent to the folloing IAM roles:
       roles/logging.logWriter roles/storage.objectAdmin(see
       https://cloud.google.com/compute/docs/access/service-
       accounts#custom_service_accounts for more information). Example:
@@ -1337,26 +1335,26 @@ class GceClusterConfig(_messages.Message):
       https://www.googleapis.com/auth/bigtable.admin.table
       https://www.googleapis.com/auth/bigtable.data
       https://www.googleapis.com/auth/devstorage.full_control
-    subnetworkUri: Optional. The Google Compute Engine subnetwork to be used
-      for machine communications. Cannot be specified with network_uri.A full
-      URL, partial URI, or short name are valid. Examples:
+    subnetworkUri: Optional. The Compute Engine subnetwork to be used for
+      machine communications. Cannot be specified with network_uri.A full URL,
+      partial URI, or short name are valid. Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/regions/us-
       east1/sub0 projects/[project_id]/regions/us-east1/sub0 sub0
-    tags: The Google Compute Engine tags to add to all instances (see Tagging
+    tags: The Compute Engine tags to add to all instances (see Tagging
       instances).
-    zoneUri: Optional. The zone where the Google Compute Engine cluster will
-      be located. On a create request, it is required in the "global" region.
-      If omitted in a non-global Cloud Dataproc region, the service will pick
-      a zone in the corresponding Compute Engine region. On a get request,
-      zone will always be present.A full URL, partial URI, or short name are
-      valid. Examples:
+    zoneUri: Optional. The zone where the Compute Engine cluster will be
+      located. On a create request, it is required in the "global" region. If
+      omitted in a non-global Cloud Dataproc region, the service will pick a
+      zone in the corresponding Compute Engine region. On a get request, zone
+      will always be present.A full URL, partial URI, or short name are valid.
+      Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/zones/[zone]
       projects/[project_id]/zones/[zone] us-central1-f
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """The Google Compute Engine metadata entries to add to all instances (see
+    """The Compute Engine metadata entries to add to all instances (see
     Project and instance metadata (https://cloud.google.com/compute/docs
     /storing-retrieving-metadata#project_and_instance_metadata)).
 
@@ -1561,31 +1559,30 @@ class HiveJob(_messages.Message):
 
 
 class InstanceGroupConfig(_messages.Message):
-  """Optional. The config settings for Google Compute Engine resources in an
-  instance group, such as a master or worker group.
+  """Optional. The config settings for Compute Engine resources in an instance
+  group, such as a master or worker group.
 
   Fields:
-    accelerators: Optional. The Google Compute Engine accelerator
-      configuration for these instances.Beta Feature: This feature is still
-      under development. It may be changed before final release.
+    accelerators: Optional. The Compute Engine accelerator configuration for
+      these instances.Beta Feature: This feature is still under development.
+      It may be changed before final release.
     diskConfig: Optional. Disk option config settings.
-    imageUri: Output only. The Google Compute Engine image resource used for
-      cluster instances. Inferred from SoftwareConfig.image_version.
+    imageUri: Output only. The Compute Engine image resource used for cluster
+      instances. Inferred from SoftwareConfig.image_version.
     instanceNames: Optional. The list of instance names. Cloud Dataproc
       derives the names from cluster_name, num_instances, and the instance
       group if not set by user (recommended practice is to let Cloud Dataproc
       derive the name).
     isPreemptible: Optional. Specifies that this instance group contains
       preemptible instances.
-    machineTypeUri: Optional. The Google Compute Engine machine type used for
-      cluster instances.A full URL, partial URI, or short name are valid.
-      Examples:
+    machineTypeUri: Optional. The Compute Engine machine type used for cluster
+      instances.A full URL, partial URI, or short name are valid. Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
       east1-a/machineTypes/n1-standard-2 projects/[project_id]/zones/us-
       east1-a/machineTypes/n1-standard-2 n1-standard-2
-    managedGroupConfig: Output only. The config for Google Compute Engine
-      Instance Group Manager that manages this group. This is only used for
-      preemptible instance groups.
+    managedGroupConfig: Output only. The config for Compute Engine Instance
+      Group Manager that manages this group. This is only used for preemptible
+      instance groups.
     minCpuPlatform: Optional. Specifies the minimum cpu platform for the
       Instance Group. See Cloud Dataproc&rarr;Minimum CPU Platform.
     numInstances: Optional. The number of VM instances in the instance group.
@@ -1988,18 +1985,21 @@ class ManagedCluster(_messages.Message):
       keys must be between 1 and 63 characters long, and must conform to the
       following PCRE regular expression: \p{Ll}\p{Lo}{0,62}Label values must
       be between 1 and 63 characters long, and must conform to the following
-      PCRE regular expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels
+      PCRE regular expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 32 labels
       can be associated with a given cluster.
 
   Fields:
-    clusterName: Required. The cluster name. Cluster names within a project
-      must be unique. Names from deleted clusters can be reused.
+    clusterName: Required. The cluster name prefix. A unique cluster name will
+      be formed by appending a random suffix.The name must contain only lower-
+      case letters (a-z), numbers (0-9), and hyphens (-). Must begin with a
+      letter. Cannot begin or end with hyphen. Must consist of between 2 and
+      35 characters.
     config: Required. The cluster configuration.
     labels: Optional. The labels to associate with this cluster.Label keys
       must be between 1 and 63 characters long, and must conform to the
       following PCRE regular expression: \p{Ll}\p{Lo}{0,62}Label values must
       be between 1 and 63 characters long, and must conform to the following
-      PCRE regular expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels
+      PCRE regular expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 32 labels
       can be associated with a given cluster.
   """
 
@@ -2009,7 +2009,7 @@ class ManagedCluster(_messages.Message):
     between 1 and 63 characters long, and must conform to the following PCRE
     regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between 1 and
     63 characters long, and must conform to the following PCRE regular
-    expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels can be
+    expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 32 labels can be
     associated with a given cluster.
 
     Messages:
@@ -2056,7 +2056,7 @@ class NodeInitializationAction(_messages.Message):
   period for executable completion.
 
   Fields:
-    executableFile: Required. Google Cloud Storage URI of executable file.
+    executableFile: Required. Cloud Storage URI of executable file.
     executionTimeout: Optional. Amount of time executable has to complete.
       Default is 10 minutes. Cluster creation fails with an explanatory error
       message (the name of the executable that caused the error and the
@@ -2183,7 +2183,7 @@ class OrderedJob(_messages.Message):
       must be between 1 and 63 characters long, and must conform to the
       following regular expression: \p{Ll}\p{Lo}{0,62}Label values must be
       between 1 and 63 characters long, and must conform to the following
-      regular expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels can
+      regular expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 32 labels can
       be associated with a given job.
 
   Fields:
@@ -2193,7 +2193,7 @@ class OrderedJob(_messages.Message):
       between 1 and 63 characters long, and must conform to the following
       regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between 1 and
       63 characters long, and must conform to the following regular
-      expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels can be
+      expression: \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 32 labels can be
       associated with a given job.
     pigJob: Job is a Pig job.
     prerequisiteStepIds: Optional. The optional list of prerequisite job
@@ -2204,8 +2204,11 @@ class OrderedJob(_messages.Message):
     sparkJob: Job is a Spark job.
     sparkSqlJob: Job is a SparkSql job.
     stepId: Required. The step id. The id must be unique among all jobs within
-      the template.The step id is used as prefix for job id, as job workflow-
-      step-id label, and in prerequisite_step_ids field from other steps.
+      the template.The step id is used as prefix for job id, as job goog-
+      dataproc-workflow-step-id label, and in prerequisiteStepIds field from
+      other steps.The id must contain only letters (a-z, A-Z), numbers (0-9),
+      underscores (_), and hyphens (-). Cannot begin or end with underscore or
+      hyphen. Must consist of between 3 and 50 characters.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2214,7 +2217,7 @@ class OrderedJob(_messages.Message):
     between 1 and 63 characters long, and must conform to the following
     regular expression: \p{Ll}\p{Lo}{0,62}Label values must be between 1 and
     63 characters long, and must conform to the following regular expression:
-    \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 64 labels can be associated with a
+    \p{Ll}\p{Lo}\p{N}_-{0,63}No more than 32 labels can be associated with a
     given job.
 
     Messages:
@@ -2889,11 +2892,17 @@ class WorkflowMetadata(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. The workflow state.
 
+  Messages:
+    ParametersValue: Map from parameter names to values that were used for
+      those parameters.
+
   Fields:
     clusterName: Output only. The name of the managed cluster.
     createCluster: Output only. The create cluster operation metadata.
     deleteCluster: Output only. The delete cluster operation metadata.
     graph: Output only. The workflow graph.
+    parameters: Map from parameter names to values that were used for those
+      parameters.
     state: Output only. The workflow state.
     template: Output only. The "resource name" of the template.
     version: Output only. The version of template at the time of workflow
@@ -2914,13 +2923,38 @@ class WorkflowMetadata(_messages.Message):
     RUNNING = 2
     DONE = 3
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    """Map from parameter names to values that were used for those parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   clusterName = _messages.StringField(1)
   createCluster = _messages.MessageField('ClusterOperation', 2)
   deleteCluster = _messages.MessageField('ClusterOperation', 3)
   graph = _messages.MessageField('WorkflowGraph', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  template = _messages.StringField(6)
-  version = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  parameters = _messages.MessageField('ParametersValue', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  template = _messages.StringField(7)
+  version = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 class WorkflowNode(_messages.Message):
@@ -2978,7 +3012,9 @@ class WorkflowTemplate(_messages.Message):
 
   Fields:
     createTime: Output only. The time template was created.
-    id: Required. The template id.
+    id: Required. The template id.The id must contain only letters (a-z, A-Z),
+      numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end
+      with underscore or hyphen. Must consist of between 3 and 50 characters.
     jobs: Required. The Directed Acyclic Graph of Jobs to submit.
     labels: Optional. The labels to associate with this template. These labels
       will be propagated to all jobs and clusters created by the workflow

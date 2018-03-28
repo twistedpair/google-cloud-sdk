@@ -109,7 +109,7 @@ def GetTypeEnumMapper():
           and export data amongst themselves. A project may belong to at most
           one regular access zone.
 
-          A *bridge* access zone llows resources in different regular access
+          A *bridge* access zone allows resources in different regular access
           zones to import and export data between each other. A project may
           belong to multiple bridge access zones (only if it also belongs to a
           regular access zone). Both restricted and unrestricted service lists,

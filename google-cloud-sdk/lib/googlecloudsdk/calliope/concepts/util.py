@@ -14,6 +14,9 @@
 """Utilities for resource args."""
 
 
+from __future__ import unicode_literals
+
+
 PREFIX = '--'
 
 

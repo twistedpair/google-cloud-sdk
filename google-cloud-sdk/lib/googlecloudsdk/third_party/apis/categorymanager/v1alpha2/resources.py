@@ -27,13 +27,13 @@ class Collections(enum.Enum):
       'assets',
       'assets/{assetId}',
       {},
-      ['assetId']
+      [u'assetId']
   )
   ASSETS_TAG = (
       'assets.tag',
       'assets/{assetId}/annotationTag',
       {},
-      ['assetId']
+      [u'assetId']
   )
   OPERATIONS = (
       'operations',

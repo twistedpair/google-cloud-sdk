@@ -99,7 +99,12 @@ def _StrFtime(dt, fmt):
   """Convert strftime exceptions to Datetime Errors."""
   try:
     return dt.strftime(fmt)
-  except (AttributeError, OverflowError, TypeError, ValueError) as e:
+  except TypeError as e:
+    if '%Z' not in fmt:
+      raise DateTimeValueError(six.text_type(e))
+    # Most likely a non-ascii tzname() in python2. Fall back to +-HH:MM.
+    return FormatDateTime(dt, fmt.replace('%Z', '%Ez'))
+  except (AttributeError, OverflowError, ValueError) as e:
     raise DateTimeValueError(six.text_type(e))
 
 

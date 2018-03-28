@@ -153,12 +153,6 @@ apis:
   cloudscheduler:
     v1alpha1:
       discovery_doc: cloudscheduler_v1alpha1.json
-  clouduseraccounts:
-    alpha:
-      discovery_doc: clouduseraccounts_alpha.json
-    beta:
-      discovery_doc: clouduseraccounts_beta.json
-      default: true
   compute:
     alpha:
       discovery_doc: compute_alpha.json

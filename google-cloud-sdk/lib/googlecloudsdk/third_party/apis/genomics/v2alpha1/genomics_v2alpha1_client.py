@@ -53,12 +53,14 @@ class GenomicsV2alpha1(base_api.BaseApiClient):
     def Run(self, request, global_params=None):
       """Runs a pipeline.
 
-**Note:** In order to use this method, the Genomics Service Agent must have
-access to your project.  This is done automatically when the Genomics API
-is first enabled, but if you delete this permission, or if you have
-already enabled the Genomics API prior to the launch of the v2alpha1 API,
-you must disable and re-enable the API to grant the Genomics Service Agent
-the required permissions.
+**Note:** In order to use this method, the Genomics Service Agent
+must have access to your project.  This is done automatically when the
+Genomics API is first enabled, but if you delete this permission, or if
+you have already enabled the Genomics API prior to the launch of the
+v2alpha1 API, you must disable and re-enable the API to grant the Genomics
+Service Agent the required permissions.
+
+[1]: /genomics/gsa
 
       Args:
         request: (RunPipelineRequest) input message

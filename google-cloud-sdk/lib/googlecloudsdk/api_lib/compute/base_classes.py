@@ -30,7 +30,6 @@ from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import resource_specs
 from googlecloudsdk.api_lib.compute import scope_prompter
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
@@ -71,34 +70,6 @@ class ComputeApiHolder(object):
     return self._resources
 
 
-class ComputeUserAccountsApiHolder(object):
-  """Convenience class to hold lazy initialized client and resources."""
-
-  def __init__(self, release_track):
-    if release_track == base.ReleaseTrack.ALPHA:
-      self._api_version = 'alpha'
-    else:
-      self._api_version = 'beta'
-    self._client = None
-    self._resources = None
-
-  @property
-  def client(self):
-    """Specifies the compute client."""
-    if self._client is None:
-      self._client = core_apis.GetClientInstance(
-          'clouduseraccounts', self._api_version)
-    return self._client
-
-  @property
-  def resources(self):
-    """Specifies the resources parser for compute resources."""
-    if self._resources is None:
-      self._resources = resources.REGISTRY.Clone()
-      self._resources.RegisterApiByName('clouduseraccounts', self._api_version)
-    return self._resources
-
-
 class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   """Base class for all compute subcommands."""
 
@@ -108,8 +79,6 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
     self.__resource_spec = None
     self._project = properties.VALUES.core.project.Get(required=True)  # type: str
     self._compute_holder = ComputeApiHolder(self.ReleaseTrack())
-    self._user_accounts_holder = ComputeUserAccountsApiHolder(
-        self.ReleaseTrack())
 
   @property
   def _resource_spec(self):
@@ -163,14 +132,6 @@ class BaseCommand(base.Command, scope_prompter.ScopePrompter):
   def resources(self):
     """Specifies the resources parser for compute resources."""
     return self._compute_holder.resources   # pytype: disable=attribute-error
-
-  @property
-  def clouduseraccounts(self):
-    return self._user_accounts_holder.client
-
-  @property
-  def clouduseraccounts_resources(self):
-    return self._user_accounts_holder.resources
 
   @property
   def messages(self):

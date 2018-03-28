@@ -301,7 +301,12 @@ class DeploymentmanagerDeploymentsGetRequest(_messages.Message):
 class DeploymentmanagerDeploymentsInsertRequest(_messages.Message):
   """A DeploymentmanagerDeploymentsInsertRequest object.
 
+  Enums:
+    CreatePolicyValueValuesEnum: Sets the policy to use for creating new
+      resources.
+
   Fields:
+    createPolicy: Sets the policy to use for creating new resources.
     deployment: A Deployment resource to be passed as the request body.
     preview: If set to true, creates a deployment and creates "shell"
       resources but does not actually instantiate these resources. This allows
@@ -314,9 +319,20 @@ class DeploymentmanagerDeploymentsInsertRequest(_messages.Message):
     project: The project ID for this request.
   """
 
-  deployment = _messages.MessageField('Deployment', 1)
-  preview = _messages.BooleanField(2)
-  project = _messages.StringField(3, required=True)
+  class CreatePolicyValueValuesEnum(_messages.Enum):
+    """Sets the policy to use for creating new resources.
+
+    Values:
+      ACQUIRE: <no description>
+      CREATE_OR_ACQUIRE: <no description>
+    """
+    ACQUIRE = 0
+    CREATE_OR_ACQUIRE = 1
+
+  createPolicy = _messages.EnumField('CreatePolicyValueValuesEnum', 1, default=u'CREATE_OR_ACQUIRE')
+  deployment = _messages.MessageField('Deployment', 2)
+  preview = _messages.BooleanField(3)
+  project = _messages.StringField(4, required=True)
 
 
 class DeploymentmanagerDeploymentsListRequest(_messages.Message):

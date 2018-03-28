@@ -14,6 +14,7 @@
 """Classes for runtime handling of concept arguments."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import abc
 
 from googlecloudsdk.calliope.concepts import concepts
@@ -72,7 +73,7 @@ class RuntimeHandler(object):
           return self.parse(self.arg_getter())
         except concepts.InitializationError as e:
           if required:
-            raise ParseError(name, e.message)
+            raise ParseError(name, six.text_type(e))
           return None
 
     setattr(self, name, LazyParse(concept_info.Parse, self.ParsedArgs))

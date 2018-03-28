@@ -1,0 +1,31 @@
+project:
+  name: project
+  collection: spanner.projects
+  attributes:
+    - &project
+      parameter_name: projectsId
+      attribute_name: project
+      help: The project name.
+
+instance:
+  name: instance
+  collection: spanner.projects.instances
+  attributes:
+    - *project
+    - &instance
+      parameter_name: instancesId
+      attribute_name: instance
+      help: |
+        The name of the spanner instance.
+
+database:
+  name: database
+  collection: spanner.projects.instances.databases
+  attributes:
+    - *project
+    - *instance
+    - &repository
+      parameter_name: databasesId
+      attribute_name: database
+      help: |
+        The name of the database.

@@ -2307,10 +2307,6 @@ class AppInfoExternal(validation.Validated):
       # Default optional to custom (we don't do that in attributes just so
       # we know that it's been defaulted)
       self.runtime = 'custom'
-    if (not self.handlers and not self.builtins and not self.includes
-        and not self.IsVm()):
-      raise appinfo_errors.MissingURLMapping(
-          'No URLMap entries found in application configuration')
     if self.handlers and len(self.handlers) > MAX_URL_MAPS:
       raise appinfo_errors.TooManyURLMappings(
           'Found more than %d URLMap entries in application configuration' %

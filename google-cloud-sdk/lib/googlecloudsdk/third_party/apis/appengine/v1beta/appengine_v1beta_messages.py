@@ -728,7 +728,7 @@ class Application(_messages.Message):
     locationId: Location from which this application runs. Application
       instances run out of the data centers in the specified location, which
       is also where all of the application's end user content is
-      stored.Defaults to us-central1.View the list of supported locations
+      stored.Defaults to us-central.View the list of supported locations
       (https://cloud.google.com/appengine/docs/locations).
     name: Full path to the Application resource in the API. Example:
       apps/myapp.@OutputOnly
@@ -995,6 +995,18 @@ class CpuUtilization(_messages.Message):
   targetUtilization = _messages.FloatField(2)
 
 
+class CreateVersionMetadataV1(_messages.Message):
+  """Metadata for the given google.longrunning.Operation during a
+  google.appengine.v1.CreateVersionRequest.
+
+  Fields:
+    cloudBuildId: The Cloud Build ID if one was created as part of the version
+      create. @OutputOnly
+  """
+
+  cloudBuildId = _messages.StringField(1)
+
+
 class CreateVersionMetadataV1Alpha(_messages.Message):
   """Metadata for the given google.longrunning.Operation during a
   google.appengine.v1alpha.CreateVersionRequest.
@@ -1166,9 +1178,14 @@ class Empty(_messages.Message):
 class EndpointsApiService(_messages.Message):
   """Cloud Endpoints (https://cloud.google.com/endpoints) configuration. The
   Endpoints API Service provides tooling for serving Open API and gRPC
-  endpoints via an NGINX proxy.The fields here refer to the name and
-  configuration id of a "service" resource in the Service Management API
-  (https://cloud.google.com/service-management/overview).
+  endpoints via an NGINX proxy. Only valid for App Engine Flexible environment
+  deployments.The fields here refer to the name and configuration id of a
+  "service" resource in the Service Management API (https://cloud.google.com
+  /service-management/overview).
+
+  Enums:
+    RolloutStrategyValueValuesEnum: Endpoints rollout strategy. If FIXED,
+      config_id must be specified. If MANAGED, config_id must be omitted.
 
   Fields:
     configId: Endpoints service configuration id as specified by the Service
@@ -1179,10 +1196,28 @@ class EndpointsApiService(_messages.Message):
     name: Endpoints service name which is the name of the "service" resource
       in the Service Management API. For example
       "myapi.endpoints.myproject.cloud.goog"
+    rolloutStrategy: Endpoints rollout strategy. If FIXED, config_id must be
+      specified. If MANAGED, config_id must be omitted.
   """
+
+  class RolloutStrategyValueValuesEnum(_messages.Enum):
+    """Endpoints rollout strategy. If FIXED, config_id must be specified. If
+    MANAGED, config_id must be omitted.
+
+    Values:
+      UNSPECIFIED_ROLLOUT_STRATEGY: Not specified. Defaults to FIXED.
+      FIXED: Endpoints service configuration id will be fixed to the
+        configuration id specified by config_id.
+      MANAGED: Endpoints service configuration id will be updated with each
+        rollout.
+    """
+    UNSPECIFIED_ROLLOUT_STRATEGY = 0
+    FIXED = 1
+    MANAGED = 2
 
   configId = _messages.StringField(1)
   name = _messages.StringField(2)
+  rolloutStrategy = _messages.EnumField('RolloutStrategyValueValuesEnum', 3)
 
 
 class ErrorHandler(_messages.Message):
@@ -1575,6 +1610,8 @@ class Location(_messages.Message):
       capacity at the given location.
 
   Fields:
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
     labels: Cross-service attributes for the location. For example
       {"cloud.googleapis.com/region": "us-east1"}
     locationId: The canonical id for this location. For example: "us-east1".
@@ -1636,10 +1673,11 @@ class Location(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  locationId = _messages.StringField(2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  name = _messages.StringField(4)
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
 
 
 class LocationMetadata(_messages.Message):
@@ -1912,6 +1950,7 @@ class OperationMetadataV1(_messages.Message):
   """Metadata for the given google.longrunning.Operation.
 
   Fields:
+    createVersionMetadata: A CreateVersionMetadataV1 attribute.
     endTime: Time that this operation completed.@OutputOnly
     ephemeralMessage: Ephemeral message that may change every time the
       operation is polled. @OutputOnly
@@ -1925,13 +1964,14 @@ class OperationMetadataV1(_messages.Message):
       @OutputOnly
   """
 
-  endTime = _messages.StringField(1)
-  ephemeralMessage = _messages.StringField(2)
-  insertTime = _messages.StringField(3)
-  method = _messages.StringField(4)
-  target = _messages.StringField(5)
-  user = _messages.StringField(6)
-  warning = _messages.StringField(7, repeated=True)
+  createVersionMetadata = _messages.MessageField('CreateVersionMetadataV1', 1)
+  endTime = _messages.StringField(2)
+  ephemeralMessage = _messages.StringField(3)
+  insertTime = _messages.StringField(4)
+  method = _messages.StringField(5)
+  target = _messages.StringField(6)
+  user = _messages.StringField(7)
+  warning = _messages.StringField(8, repeated=True)
 
 
 class OperationMetadataV1Alpha(_messages.Message):

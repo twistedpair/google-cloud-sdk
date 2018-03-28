@@ -15,6 +15,8 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from __future__ import unicode_literals
+import six
 
 
 def UpdateMessage(message, diff):
@@ -40,7 +42,7 @@ def UpdateMessage(message, diff):
 
 
 def _UpdateMessageHelper(message, diff):
-  for key, val in diff.iteritems():
+  for key, val in six.iteritems(diff):
     if hasattr(message, key):
       if isinstance(val, dict):
         _UpdateMessageHelper(getattr(message, key), diff[key])

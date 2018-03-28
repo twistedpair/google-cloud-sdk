@@ -112,6 +112,9 @@ class _BaseInstances(object):
     if args.storage_auto_increase is not None:
       settings.storageAutoResize = args.storage_auto_increase
 
+    if args.IsSpecified('availability_type'):
+      settings.availabilityType = args.availability_type.upper()
+
     # BETA args.
     if release_track == base.ReleaseTrack.BETA:
       if args.IsSpecified('storage_auto_increase_limit'):
@@ -128,9 +131,6 @@ class _BaseInstances(object):
               '--storage-auto-increase', 'To set the storage capacity limit '
               'using [--storage-auto-increase-limit], '
               '[--storage-auto-increase] must be enabled.')
-
-      if args.IsSpecified('availability_type'):
-        settings.availabilityType = args.availability_type
 
     return settings
 
@@ -174,18 +174,18 @@ class _BaseInstances(object):
     if args.storage_type:
       settings.dataDiskType = STORAGE_TYPE_PREFIX + args.storage_type
 
+    # Check that availability type is only specified if this is Postgres.
+    if (args.IsSpecified('availability_type') and
+        not api_util.InstancesV1Beta4.IsPostgresDatabaseVersion(
+            args.database_version)):
+      raise exceptions.InvalidArgumentException(
+          '--availability-type', 'Cannot set [--availability-type] on a '
+          'non-Postgres instance.')
+
     # BETA args.
     if release_track == base.ReleaseTrack.BETA:
       settings.userLabels = labels_util.ParseCreateArgs(
           args, sql_messages.Settings.UserLabelsValue)
-
-      # Check that availability type is only specified if this is Postgres.
-      if (args.IsSpecified('availability_type') and
-          not api_util.InstancesV1Beta4.IsPostgresDatabaseVersion(
-              args.database_version)):
-        raise exceptions.InvalidArgumentException(
-            '--availability-type', 'Cannot set [--availability-type] on a '
-            'non-Postgres instance.')
 
     return settings
 

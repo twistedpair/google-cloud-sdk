@@ -17,7 +17,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
-import urllib
+from __future__ import unicode_literals
 
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import http_proxy_types

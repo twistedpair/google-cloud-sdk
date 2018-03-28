@@ -619,6 +619,40 @@ where only some modifications have taken effect.
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      """This is a private alpha release of Cloud Bigtable instance level.
+permissions. This feature is not currently available to most Cloud Bigtable
+customers. This feature might be changed in backward-incompatible ways and
+is not recommended for production use. It is not subject to any SLA or
+deprecation policy.
+
+Gets the access control policy for an instance resource. Returns an empty
+policy if an instance exists but does not have a policy set.
+
+      Args:
+        request: (BigtableadminProjectsInstancesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}:getIamPolicy',
+        http_method=u'POST',
+        method_id=u'bigtableadmin.projects.instances.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v2/{+resource}:getIamPolicy',
+        request_field=u'getIamPolicyRequest',
+        request_type_name=u'BigtableadminProjectsInstancesGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       """Lists information about instances in a project.
 
@@ -670,6 +704,73 @@ where only some modifications have taken effect.
         request_field=u'instance',
         request_type_name=u'BigtableadminProjectsInstancesPartialUpdateInstanceRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      """This is a private alpha release of Cloud Bigtable instance level.
+permissions. This feature is not currently available to most Cloud Bigtable
+customers. This feature might be changed in backward-incompatible ways and
+is not recommended for production use. It is not subject to any SLA or
+deprecation policy.
+
+Sets the access control policy on an instance resource. Replaces any
+existing policy.
+
+      Args:
+        request: (BigtableadminProjectsInstancesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'bigtableadmin.projects.instances.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v2/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'BigtableadminProjectsInstancesSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      """This is a private alpha release of Cloud Bigtable instance level.
+permissions. This feature is not currently available to most Cloud Bigtable
+customers. This feature might be changed in backward-incompatible ways and
+is not recommended for production use. It is not subject to any SLA or
+deprecation policy.
+
+Returns permissions that the caller has on the specified instance resource.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'bigtableadmin.projects.instances.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v2/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'BigtableadminProjectsInstancesTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
 

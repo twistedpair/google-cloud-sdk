@@ -56,6 +56,7 @@ methods to access/modify info collected during the parse.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import abc
 import argparse
 import itertools
@@ -387,12 +388,12 @@ class ArgumentParser(argparse.ArgumentParser):
 
     # If there is a single arg, put it on the same line.  If there are multiple
     # add each on it's own line for better clarity.
-    separator = u'\n  ' if len(messages) > 1 else u' '
+    separator = '\n  ' if len(messages) > 1 else ' '
     # This try-except models the real parse_args() pathway to self.error().
     try:
       raise parser_errors.UnrecognizedArgumentsError(
-          u'unrecognized arguments:{0}{1}'.format(separator,
-                                                  separator.join(messages)),
+          'unrecognized arguments:{0}{1}'.format(
+              separator, separator.join(messages)),
           parser=self,
           total_unrecognized=len(unknown_args),
           total_suggestions=len(suggestions),
@@ -669,14 +670,14 @@ class ArgumentParser(argparse.ArgumentParser):
       action.LoadAllChoices()
 
     # Command is not valid, see what we can suggest as a fix...
-    message = u"Invalid choice: '{0}'.".format(value)
+    message = "Invalid choice: '{0}'.".format(value)
 
     # Determine if the requested command is available in another release track.
     existing_alternatives = self._ExistingAlternativeReleaseTracks(arg)
     if existing_alternatives:
-      message += (u'\nThis command is available in one or more alternate '
-                  u'release tracks.  Try:\n  ')
-      message += u'\n  '.join(existing_alternatives)
+      message += ('\nThis command is available in one or more alternate '
+                  'release tracks.  Try:\n  ')
+      message += '\n  '.join(existing_alternatives)
 
       # Log to analytics the attempt to execute a command.
       # We know the user entered 'value' is a valid command in a different
@@ -698,10 +699,10 @@ class ArgumentParser(argparse.ArgumentParser):
         suggester.AddAliases([cmd], cli_name + ' ' + suggestion)
     suggestion = suggester.GetSuggestion(arg)
     if suggestion:
-      message += u" Did you mean '{0}'?".format(suggestion)
+      message += " Did you mean '{0}'?".format(suggestion)
     elif not is_subparser:
       # Command group choices will be displayed in the usage message.
-      message += u'\n\nValid choices are [{0}].'.format(
+      message += '\n\nValid choices are [{0}].'.format(
           ', '.join([six.text_type(c) for c in choices]))
 
     # Log to analytics the attempt to execute a command.
@@ -860,7 +861,7 @@ class ArgumentParser(argparse.ArgumentParser):
         self._calliope_command.LoadAllSubElements()
     else:
       message = console_attr.SafeText(message)
-      log.error(u'({prog}) {message}'.format(prog=self.prog, message=message))
+      log.error('({prog}) {message}'.format(prog=self.prog, message=message))
       # multi-line message means hints already added, no need for usage.
       # pylint:disable=protected-access
       if '\n' not in message:

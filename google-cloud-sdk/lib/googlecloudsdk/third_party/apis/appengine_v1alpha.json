@@ -482,6 +482,10 @@
           "description": "The canonical id for this location. For example: \"us-east1\".",
           "type": "string"
         },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
         "labels": {
           "description": "Cross-service attributes for the location. For example\n{\"cloud.googleapis.com\/region\": \"us-east1\"}\n",
           "type": "object",
@@ -706,6 +710,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "createVersionMetadata": {
+          "$ref": "CreateVersionMetadataV1"
+        }
+      }
+    },
+    "CreateVersionMetadataV1": {
+      "id": "CreateVersionMetadataV1",
+      "description": "Metadata for the given google.longrunning.Operation during a google.appengine.v1.CreateVersionRequest.",
+      "type": "object",
+      "properties": {
+        "cloudBuildId": {
+          "description": "The Cloud Build ID if one was created as part of the version create. @OutputOnly",
+          "type": "string"
         }
       }
     },
@@ -1264,7 +1282,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloud-platform.read-only"
               ],
-              "description": "Get information about a location."
+              "description": "Gets information about a location."
             }
           }
         }

@@ -34,9 +34,14 @@ Typical usage (update command):
   Update(..., new_resource)
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+
+import six
 
 
 def _IsLower(c):
@@ -242,7 +247,7 @@ def _PackageLabels(labels_cls, labels):
   # Sorted for test stability
   return labels_cls(additionalProperties=[
       labels_cls.AdditionalProperty(key=key, value=value)
-      for key, value in sorted(labels.iteritems())])
+      for key, value in sorted(six.iteritems(labels))])
 
 
 def _GetExistingLabelsDict(labels):

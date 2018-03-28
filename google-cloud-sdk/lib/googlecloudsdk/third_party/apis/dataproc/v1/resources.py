@@ -27,7 +27,7 @@ class Collections(enum.Enum):
       'projects.regions',
       'projects/{projectId}/regions/{regionId}',
       {},
-      ['projectId', 'regionId']
+      [u'projectId', u'regionId']
   )
   PROJECTS_REGIONS_CLUSTERS = (
       'projects.regions.clusters',
@@ -55,7 +55,7 @@ class Collections(enum.Enum):
       'projects.regions.operations_list',
       'projects/{projectId}/regions/{regionId}/operations',
       {},
-      ['projectId', 'regionId']
+      [u'projectId', u'regionId']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

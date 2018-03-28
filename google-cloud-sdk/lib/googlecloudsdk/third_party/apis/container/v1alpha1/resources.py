@@ -69,7 +69,7 @@ class Collections(enum.Enum):
       'projects.zones',
       'projects/{projectId}/zones/{zoneId}',
       {},
-      ['projectId', 'zoneId']
+      [u'projectId', u'zoneId']
   )
   PROJECTS_ZONES_CLUSTERS = (
       'projects.zones.clusters',

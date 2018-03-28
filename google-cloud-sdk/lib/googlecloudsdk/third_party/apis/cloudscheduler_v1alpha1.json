@@ -21,6 +21,7 @@
   "baseUrl": "https://cloudscheduler.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -150,6 +151,10 @@
           "description": "The canonical id for this location. For example: `\"us-east1\"`.",
           "type": "string"
         },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name.\nFor example, \"Tokyo\".",
+          "type": "string"
+        },
         "labels": {
           "description": "Cross-service attributes for the location. For example\n\n    {\"cloud.googleapis.com\/region\": \"us-east1\"}",
           "type": "object",
@@ -180,7 +185,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token to retrieve next page of results. Pass this value in the\nListJobsRequest.page_token field in the subsequent call to\nJobQueues.ListJobs to retrieve the next page of results.\nIf this is empty it indicates that there are no more results\nthrough which to paginate.\n\nFor JSON requests, the value of this field must be\nbase64-encoded.\n\nThe page token is valid for only 2 hours.",
+          "description": "A token to retrieve next page of results. Pass this value in the\nListJobsRequest.page_token field in the subsequent call to\nCloudScheduler.ListJobs to retrieve the next page of results.\nIf this is empty it indicates that there are no more results\nthrough which to paginate.\n\nFor JSON requests, the value of this field must be\nbase64-encoded.\n\nThe page token is valid for only 2 hours.",
           "type": "string",
           "format": "byte"
         }
@@ -206,6 +211,10 @@
         "appEngineHttpTarget": {
           "description": "App Engine Http target.",
           "$ref": "AppEngineHttpTarget"
+        },
+        "httpTarget": {
+          "description": "Http target.",
+          "$ref": "HttpTarget"
         },
         "schedule": {
           "description": "Specifies a schedule of start times. This can be used to\nspecify complicated and time-zone-aware schedules.\n\nA scheduled start time will be skipped if the previous\nexecution has not ended when its scheduled time occurs.\n\nIf RetryConfig.retry_count > 0 and a job attempt fails,\nthe job will be a total of tried RetryConfig.retry_count\ntimes, with exponential backoff, until the next scheduled start\ntime.",
@@ -238,6 +247,11 @@
         },
         "nextScheduleTime": {
           "description": "Output only. The next time the job is scheduled. Note that this may be a\nretry of a previously failed execution or the next execution time\naccording to the schedule.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastAttemptTime": {
+          "description": "Output only. The started time of the last completed job attempt.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -279,7 +293,9 @@
             "HTTP Get",
             "HTTP Head",
             "HTTP Put",
-            "HTTP Delete"
+            "HTTP Delete",
+            "HTTP Patch",
+            "HTTP Options"
           ],
           "type": "string",
           "enum": [
@@ -288,7 +304,9 @@
             "GET",
             "HEAD",
             "PUT",
-            "DELETE"
+            "DELETE",
+            "PATCH",
+            "OPTIONS"
           ]
         },
         "appEngineRouting": {
@@ -306,8 +324,8 @@
             "type": "string"
           }
         },
-        "payload": {
-          "description": "Payload.\n\nThe payload will be sent as the HTTP message body. A message\nbody, and thus a payload, is allowed only if the HTTP method is\nPOST or PUT. It is an error to set a data payload on a job with\nan incompatible HttpMethod.",
+        "body": {
+          "description": "Body.\n\nHTTP request body. A request body is allowed only if the HTTP method is\nPOST or PUT. It will result in an error to set body on a job with\nan incompatible HttpMethod.",
           "type": "string",
           "format": "byte"
         }
@@ -331,8 +349,55 @@
           "type": "string"
         },
         "host": {
-          "description": "Output only.\n\nThe host that the job is sent to. For more information about how App\nEngine requests are routed, see\n[here](\/appengine\/docs\/standard\/python\/how-requests-are-routed).\n\nThe host is constructed as:\n\n\n* `host = [application_domain_name]`<\/br>\n  `| [service] + '.' + [application_domain_name]`<\/br>\n  `| [version] + '.' + [application_domain_name]`<\/br>\n  `| [version_dot_service]+ '.' + [application_domain_name]`<\/br>\n  `| [instance] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_service] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_version] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_version_dot_service] + '.' + [application_domain_name]`\n\n* `application_domain_name` = The domain name of the app, for\n  example <app-id>.appspot.com, which is associated with the\n  job's project ID.\n\n* `service =` AppEngineRouting.service\n\n* `version =` AppEngineRouting.version\n\n* `version_dot_service =`\n  AppEngineRouting.version `+ '.' +` AppEngineRouting.service\n\n* `instance =` AppEngineRouting.instance\n\n* `instance_dot_service =`\n  AppEngineRouting.instance `+ '.' +` AppEngineRouting.service\n\n* `instance_dot_version =`\n  AppEngineRouting.instance `+ '.' +` AppEngineRouting.version\n\n* `instance_dot_version_dot_service =`\n  AppEngineRouting.instance `+ '.' +`\n  AppEngineRouting.version `+ '.' +` AppEngineRouting.service\n\nIf AppEngineRouting.service is empty, then the job will be sent\nto the service which is the default service when the job is attempted.\n\nIf AppEngineRouting.version is empty, then the job will be sent\nto the version which is the default version when the job is attempted.\n\nIf AppEngineRouting.instance is empty, then the job will be sent\nto an instance which is available when the job is attempted.\n\nWhen AppEngineRouting.service is \"default\",\nAppEngineRouting.version is \"default\", and\nAppEngineRouting.instance is empty, AppEngineRouting.host is\nshortened to just the `application_domain_name`.\n\nIf AppEngineRouting.service, AppEngineRouting.version, or\nAppEngineRouting.instance is invalid, then the job will be sent\nto the default version of the default service when the job is attempted.",
+          "description": "Output only. The host that the job is sent to.\n\nFor more information about how App Engine requests are routed, see\n[here](\/appengine\/docs\/standard\/python\/how-requests-are-routed).\n\nThe host is constructed as:\n\n\n* `host = [application_domain_name]`<\/br>\n  `| [service] + '.' + [application_domain_name]`<\/br>\n  `| [version] + '.' + [application_domain_name]`<\/br>\n  `| [version_dot_service]+ '.' + [application_domain_name]`<\/br>\n  `| [instance] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_service] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_version] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_version_dot_service] + '.' + [application_domain_name]`\n\n* `application_domain_name` = The domain name of the app, for\n  example <app-id>.appspot.com, which is associated with the\n  job's project ID.\n\n* `service =` AppEngineRouting.service\n\n* `version =` AppEngineRouting.version\n\n* `version_dot_service =`\n  AppEngineRouting.version `+ '.' +` AppEngineRouting.service\n\n* `instance =` AppEngineRouting.instance\n\n* `instance_dot_service =`\n  AppEngineRouting.instance `+ '.' +` AppEngineRouting.service\n\n* `instance_dot_version =`\n  AppEngineRouting.instance `+ '.' +` AppEngineRouting.version\n\n* `instance_dot_version_dot_service =`\n  AppEngineRouting.instance `+ '.' +`\n  AppEngineRouting.version `+ '.' +` AppEngineRouting.service\n\nIf AppEngineRouting.service is empty, then the job will be sent\nto the service which is the default service when the job is attempted.\n\nIf AppEngineRouting.version is empty, then the job will be sent\nto the version which is the default version when the job is attempted.\n\nIf AppEngineRouting.instance is empty, then the job will be sent\nto an instance which is available when the job is attempted.\n\nWhen AppEngineRouting.service is \"default\",\nAppEngineRouting.version is \"default\", and\nAppEngineRouting.instance is empty, AppEngineRouting.host is\nshortened to just the `application_domain_name`.\n\nIf AppEngineRouting.service, AppEngineRouting.version, or\nAppEngineRouting.instance is invalid, then the job will be sent\nto the default version of the default service when the job is attempted.",
           "type": "string"
+        }
+      }
+    },
+    "HttpTarget": {
+      "id": "HttpTarget",
+      "description": "Http target. The job will be pushed to the job handler by means of\nan HTTP request via an HttpTarget.http_method such as HTTP\nPOST, HTTP GET, etc. The job is acknowledged by means of an HTTP\nresponse code in the range [200 - 299]. A failure to receive a response\nbefore the deadline constitutes a failed execution.",
+      "type": "object",
+      "properties": {
+        "url": {
+          "description": "Required.\n\nThe full url path that the request will be sent to. This string\nmust begin with either \"http:\/\/\" or \"https:\/\/\". Some examples of\nvalid values for HttpTarget.url are:\n`http:\/\/acme.com` and `https:\/\/acme.com\/sales:8080`.",
+          "type": "string"
+        },
+        "httpMethod": {
+          "description": "Which HTTP method to use for the request. The default is POST.",
+          "enumDescriptions": [
+            "HTTP method unspecified",
+            "HTTP Post",
+            "HTTP Get",
+            "HTTP Head",
+            "HTTP Put",
+            "HTTP Delete",
+            "HTTP Patch",
+            "HTTP Options"
+          ],
+          "type": "string",
+          "enum": [
+            "HTTP_METHOD_UNSPECIFIED",
+            "POST",
+            "GET",
+            "HEAD",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "OPTIONS"
+          ]
+        },
+        "headers": {
+          "description": "The user can specify HTTP request headers to send with the Job's\nHTTP request. This map contains the header field names and\nvalues. Repeated headers are not supported, but a header value can\ncontain commas. These headers represent a subset of the headers\nthat will accompany the Job's HTTP request. Some HTTP request\nheaders will be ignored or replaced. A partial list of headers that\nwill be ignored or replaced is below:\n- Host: This will be computed by Cloud Scheduler and derived from\nHttpTarget.url.\n- Content-Length: This will be computed by Cloud Scheduler.\n- User-Agent: This will be populated by Cloud Scheduler.\n- X-Google-*: Google internal use only.\n- X-AppEngine-*: Google internal use only.\n",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "body": {
+          "description": "HTTP request body. A request body is allowed only if the HTTP\nmethod is POST, PUT, or PATCH. It will result in  an error to set\nbody on a job with an incompatible HttpMethod.",
+          "type": "string",
+          "format": "byte"
         }
       }
     },
@@ -342,7 +407,7 @@
       "type": "object",
       "properties": {
         "timezone": {
-          "description": "Specifies the time zone to be used in interpreting\nScheduleSpec.schedule. The value of this field must be a\ntime zone name from the tz database:\nhttp:\/\/en.wikipedia.org\/wiki\/Tz_database.\n\nNote that some timezones include a includes a provision for\ndaylight savings time. The rules for daylight saving time are\ndetermined by the chosen tz. For UTC use the string \"utc\". If a\ntimezone is not specified, the default will be in UTC (also known\nas GMT).",
+          "description": "Specifies the time zone to be used in interpreting\nSchedule.schedule. The value of this field must be a\ntime zone name from the tz database:\nhttp:\/\/en.wikipedia.org\/wiki\/Tz_database.\n\nNote that some timezones include a includes a provision for\ndaylight savings time. The rules for daylight saving time are\ndetermined by the chosen tz. For UTC use the string \"utc\". If a\ntimezone is not specified, the default will be in UTC (also known\nas GMT).",
           "type": "string"
         },
         "schedule": {
@@ -522,7 +587,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Get information about a location."
+              "description": "Gets information about a location."
             }
           }
           ,

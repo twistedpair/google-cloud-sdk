@@ -29,6 +29,18 @@ class Collections(enum.Enum):
       {},
       [u'project', u'managedZone', u'changeId']
   )
+  DNSKEYS = (
+      'dnsKeys',
+      'projects/{project}/managedZones/{managedZone}/dnsKeys/{dnsKeyId}',
+      {},
+      [u'project', u'managedZone', u'dnsKeyId']
+  )
+  MANAGEDZONEOPERATIONS = (
+      'managedZoneOperations',
+      'projects/{project}/managedZones/{managedZone}/operations/{operation}',
+      {},
+      [u'project', u'managedZone', u'operation']
+  )
   MANAGEDZONES = (
       'managedZones',
       'projects/{project}/managedZones/{managedZone}',

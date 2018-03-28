@@ -1529,11 +1529,11 @@ class Autoscaler(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    recommendedSize: [Output Only] Target recommended MIG size computed by
-      autoscaler. Autoscaler calculates recommended MIG size even when
-      autoscaling policy mode is different from ON. This field is empty when
-      autoscaler is not connected to the existing managed instance group or
-      autoscaler did not generate its first prediction.
+    recommendedSize: [Output Only] Target recommended MIG size (number of
+      instances) computed by autoscaler. Autoscaler calculates recommended MIG
+      size even when autoscaling policy mode is different from ON. This field
+      is empty when autoscaler is not connected to the existing managed
+      instance group or autoscaler did not generate its prediction.
     region: [Output Only] URL of the region where the instance group resides
       (for autoscalers living in regional scope).
     selfLink: [Output Only] Server-defined URL for the resource.

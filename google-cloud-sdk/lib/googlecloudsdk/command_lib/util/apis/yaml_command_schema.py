@@ -16,6 +16,7 @@
 
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from enum import Enum
 
 from googlecloudsdk.calliope import base
@@ -63,6 +64,7 @@ class CommandType(Enum):
   WAIT = 'get'
   # IAM support currently implemented as subcommands
   GET_IAM_POLICY = 'getIamPolicy'
+  SET_IAM_POLICY = 'setIamPolicy'
   # Generic commands are those that don't extend a specific calliope command
   # base class.
   GENERIC = None

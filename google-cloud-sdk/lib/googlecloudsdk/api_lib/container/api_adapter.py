@@ -178,7 +178,8 @@ def InitAPIAdapter(api_version, adapter):
   return adapter(registry, api_client, messages)
 
 
-_SERVICE_ACCOUNT_SCOPES = ('https://www.googleapis.com/auth/cloud-platform',)
+_SERVICE_ACCOUNT_SCOPES = ('https://www.googleapis.com/auth/cloud-platform',
+                           'https://www.googleapis.com/auth/userinfo.email')
 
 # Hidden alias for version-specific added scopes.  For clusters & node pools
 # v1.9 and below, GKE API adds compute & storage-ro to maintain same behavior as
@@ -197,9 +198,9 @@ _ENDPOINTS_SCOPES = (
 def NodeIdentityOptionsToNodeConfig(options, node_config):
   """Convert node identity options into node config.
 
-  If a service account was provided, use that and cloud-platform scope.
-  Otherwise, if options.new_scopes_behavior is True (we're in alpha or beta
-  track), or container/new_scopes_behavior property is set, just use what's
+  If a service account was provided, use that and cloud-platform/userinfo.email
+  scopes.  Otherwise, if options.new_scopes_behavior is True (we're in alpha or
+  beta track), or container/new_scopes_behavior property is set, just use what's
   passed to --scopes (or the default).  Otherwise, emulate the deprecated
   behavior: expand the scopes, add or remove endpoints scopes as necessary, add
   compute-rw and devstorage-ro, sort, and return.  Print warnings as necessary.

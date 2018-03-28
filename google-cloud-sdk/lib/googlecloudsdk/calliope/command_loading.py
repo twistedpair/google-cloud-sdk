@@ -15,6 +15,7 @@
 """Helpers to load commands from the filesystem."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import abc
 import os
 import re
@@ -203,7 +204,8 @@ def _GetAllImplementations(impl_paths, path, construction_id, is_command,
     else:
       module = _GetModuleFromPath(impl_file, path, construction_id)
       implementations.extend(_ImplementationsFromModule(
-          module.__file__, module.__dict__.values(), is_command=is_command))
+          module.__file__, list(module.__dict__.values()),
+          is_command=is_command))
   return implementations
 
 

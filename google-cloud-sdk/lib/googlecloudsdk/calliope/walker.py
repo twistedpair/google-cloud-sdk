@@ -15,6 +15,7 @@
 """A module for walking the Cloud SDK CLI tree."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 import six

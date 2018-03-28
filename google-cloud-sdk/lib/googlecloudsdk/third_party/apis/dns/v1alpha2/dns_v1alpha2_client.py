@@ -298,7 +298,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
         request: (DnsManagedZonesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ManagedZonesDeleteResponse) The response message.
+        (DnsManagedZonesDeleteResponse) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -313,7 +313,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
         relative_path=u'projects/{project}/managedZones/{managedZone}',
         request_field='',
         request_type_name=u'DnsManagedZonesDeleteRequest',
-        response_type_name=u'ManagedZonesDeleteResponse',
+        response_type_name=u'DnsManagedZonesDeleteResponse',
         supports_download=False,
     )
 
@@ -464,7 +464,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
         request: (DnsPoliciesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (PoliciesDeleteResponse) The response message.
+        (DnsPoliciesDeleteResponse) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -479,7 +479,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
         relative_path=u'projects/{project}/policies/{policy}',
         request_field='',
         request_type_name=u'DnsPoliciesDeleteRequest',
-        response_type_name=u'PoliciesDeleteResponse',
+        response_type_name=u'DnsPoliciesDeleteResponse',
         supports_download=False,
     )
 

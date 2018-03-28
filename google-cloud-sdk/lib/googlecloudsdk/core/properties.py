@@ -1355,12 +1355,10 @@ class _SectionApiEndpointOverrides(_Section):
     self.cloudkms = self._Add('cloudkms')
     self.cloudresourcemanager = self._Add('cloudresourcemanager')
     self.cloudresourcesearch = self._Add('cloudresourcesearch')
-    self.clouduseraccounts = self._Add('clouduseraccounts')
     self.compute = self._Add('compute')
     self.container = self._Add('container')
     self.containeranalysis = self._Add('containeranalysis')
     self.dataflow = self._Add('dataflow')
-    self.dataproc = self._Add('dataproc')
     self.datapol = self._Add('datapol')
     self.dataproc = self._Add('dataproc')
     self.datastore = self._Add('datastore')
@@ -1373,6 +1371,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.logging = self._Add('logging')
     self.manager = self._Add('manager')
     self.ml = self._Add('ml')
+    self.oslogin = self._Add('oslogin')
     self.pubsub = self._Add('pubsub')
     self.replicapoolupdater = self._Add('replicapoolupdater')
     self.runtimeconfig = self._Add('runtimeconfig')
@@ -1387,8 +1386,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.storage = self._Add('storage')
     self.testing = self._Add('testing')
     self.toolresults = self._Add('toolresults')
-    self.vision = self._Add('vision')
     self.tpu = self._Add('tpu')
+    self.vision = self._Add('vision')
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""

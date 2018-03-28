@@ -205,6 +205,9 @@ class AndroidModel(_messages.Message):
       @OutputOnly
     tags: Tags for this dimension. Examples: "default", "preview",
       "deprecated"
+    videoRecordingNotSupported: True if and only if tests with this model DO
+      NOT have video output. See also
+      TestSpecification.disable_video_recording @OutputOnly
   """
 
   class FormValueValuesEnum(_messages.Enum):
@@ -231,6 +234,7 @@ class AndroidModel(_messages.Message):
   supportedAbis = _messages.StringField(10, repeated=True)
   supportedVersionIds = _messages.StringField(11, repeated=True)
   tags = _messages.StringField(12, repeated=True)
+  videoRecordingNotSupported = _messages.BooleanField(13)
 
 
 class AndroidRoboTest(_messages.Message):
@@ -874,10 +878,15 @@ class TestDetails(_messages.Message):
       progress. For example: "Provisioning a device", "Starting Test".  During
       the course of execution new data may be appended to the end of
       progress_messages. @OutputOnly
+    videoRecordingDisabled: Indicates that video will not be recorded for this
+      execution either because the user chose to disable it or the device does
+      not support it. See AndroidModel.video_recording_not_supported
+      @OutputOnly
   """
 
   errorMessage = _messages.StringField(1)
   progressMessages = _messages.StringField(2, repeated=True)
+  videoRecordingDisabled = _messages.BooleanField(3)
 
 
 class TestEnvironmentCatalog(_messages.Message):

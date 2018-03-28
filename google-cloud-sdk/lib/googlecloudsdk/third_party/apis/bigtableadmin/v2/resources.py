@@ -36,7 +36,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectId}',
       {},
-      ['projectId']
+      [u'projectId']
   )
   PROJECTS_INSTANCES = (
       'projects.instances',

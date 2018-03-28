@@ -16,6 +16,7 @@
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import abc
 import collections
 from functools import wraps
@@ -455,28 +456,6 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
     if tag in cls._notices and preserve_existing:
       return
     cls._notices[tag] = msg
-
-  @classmethod
-  def GetExecutionFunction(cls, *args):
-    """Get a fully bound function that will call another gcloud command.
-
-    This class method can be called at any time to generate a function that will
-    execute another gcloud command.  The function itself can only be executed
-    after the gcloud CLI has been built i.e. after all Args methods have
-    been called.
-
-    Args:
-      *args: str, The args for the command to execute.  Each token should be a
-        separate string and the tokens should start from after the 'gcloud'
-        part of the invocation.
-
-    Returns:
-      A bound function to call the gcloud command.
-    """
-    def ExecFunc():
-      return cls._cli_generator.Generate().Execute(list(args),
-                                                   call_arg_complete=False)
-    return ExecFunc
 
   @classmethod
   def GetCLIGenerator(cls):

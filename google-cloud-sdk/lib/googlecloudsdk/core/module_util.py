@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import compileall
 import imp
 import importlib
@@ -23,6 +24,7 @@ import os
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files
+import six
 
 
 class Error(exceptions.Error):
@@ -82,7 +84,7 @@ def _GetPrivateModulePath(module_path):
 
 
 def GetModulePath(obj):
-  """Returns the module path string for obj, None if its builtin.
+  """Returns the module path string for obj, None if it's builtin.
 
   The module path is relative and importable by ImportModule() from any
   installation of the current release.
@@ -100,6 +102,8 @@ def GetModulePath(obj):
     # ... or it has a __class__ that has a __module__.
     obj = obj.__class__
     module = obj.__module__
+  if six.PY3 and module == 'builtins':
+    return None
   if module.startswith('__'):
     module = _GetPrivateModulePath(module)  # pylint: disable=assignment-from-none, function is a test mock hook
     if not module:

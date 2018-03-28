@@ -330,7 +330,27 @@ class Git(object):
           appear as 'd/file1' in the repository.
       dry_run: bool, If true do not run but print commands instead.
       full_path: bool, If true use the full path to gcloud.
+
+    Raises:
+      CannotPushToRepositoryException: If the operation fails in any way.
     """
+    # Git treats relative paths strangely with the --work-tree flag.
+    # git add --work-tree=a a/b will try to look for a/a/b.
+    # To avoid the lookup, always convert to absolute paths.
+    paths = [os.path.abspath(p) for p in paths]
+
+    # Check for git files and don't allow upload if they are included.
+    for path in paths:
+      for segment in path.split(os.sep):
+        if segment in ('.git', '.gitignore'):
+          message = ("Can't upload the file tree. "
+                     'Uploading a directory containing a git repository as a '
+                     'subdirectory is not supported. '
+                     'Please either upload from the top level git repository '
+                     'or any of its subdirectories. '
+                     'Unsupported git file detected: %s' % path)
+          raise CannotPushToRepositoryException(message)
+
     with files.TemporaryDirectory() as temp_dir:
       def RunGitCommand(*args):
         git_dir = '--git-dir=' + os.path.join(temp_dir, '.git')

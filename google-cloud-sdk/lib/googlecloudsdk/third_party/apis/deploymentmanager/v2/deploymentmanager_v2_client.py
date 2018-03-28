@@ -173,7 +173,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
         method_id=u'deploymentmanager.deployments.insert',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'preview'],
+        query_params=[u'createPolicy', u'preview'],
         relative_path=u'projects/{project}/global/deployments',
         request_field=u'deployment',
         request_type_name=u'DeploymentmanagerDeploymentsInsertRequest',

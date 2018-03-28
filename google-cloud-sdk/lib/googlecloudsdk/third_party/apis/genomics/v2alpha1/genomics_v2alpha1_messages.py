@@ -21,7 +21,17 @@ class Action(_messages.Message):
   Messages:
     EnvironmentValue: The environment to pass into the container.  This
       environment is merged with any values specified in the Pipeline message.
-      These values overwrite any in the Pipeline message.
+      These values overwrite any in the Pipeline message.  In addition to the
+      values passed here, a few other values are automatically injected into
+      the environment.  These cannot be hidden or overwritten.
+      `GOOGLE_PIPELINE_FAILED` will be set to "1" if the pipeline has failed
+      because an action has exited with a non-zero status (and did not have
+      the IGNORE_EXIT_STATUS flag set).  This can be used to determine if
+      additional debug or logging actions should execute.
+      `GOOGLE_LAST_EXIT_STATUS` will be set to the exit status of the last
+      non-background action that executed.  This can be used by workflow
+      engine authors to determine whether an individual action has succeeded
+      or failed.
     LabelsValue: Labels to associate with the action.  This field is provided
       to assist workflow engine authors in identifying actions (for example,
       to indicate what sort of action they perform: eg. localization,
@@ -43,7 +53,17 @@ class Action(_messages.Message):
       container.
     environment: The environment to pass into the container.  This environment
       is merged with any values specified in the Pipeline message.  These
-      values overwrite any in the Pipeline message.
+      values overwrite any in the Pipeline message.  In addition to the values
+      passed here, a few other values are automatically injected into the
+      environment.  These cannot be hidden or overwritten.
+      `GOOGLE_PIPELINE_FAILED` will be set to "1" if the pipeline has failed
+      because an action has exited with a non-zero status (and did not have
+      the IGNORE_EXIT_STATUS flag set).  This can be used to determine if
+      additional debug or logging actions should execute.
+      `GOOGLE_LAST_EXIT_STATUS` will be set to the exit status of the last
+      non-background action that executed.  This can be used by workflow
+      engine authors to determine whether an individual action has succeeded
+      or failed.
     flags: The set of flags to apply to this action.
     imageUri: The URI to pull the container image from.  Note that all images
       referenced by actions in the pipeline are pulled before the first action
@@ -88,19 +108,32 @@ class Action(_messages.Message):
       IGNORE_EXIT_STATUS: <no description>
       RUN_IN_BACKGROUND: <no description>
       ALWAYS_RUN: <no description>
+      ENABLE_FUSE: <no description>
       PUBLISH_EXPOSED_PORTS: <no description>
+      DISABLE_IMAGE_PREFETCH: <no description>
     """
     FLAG_UNSPECIFIED = 0
     IGNORE_EXIT_STATUS = 1
     RUN_IN_BACKGROUND = 2
     ALWAYS_RUN = 3
-    PUBLISH_EXPOSED_PORTS = 4
+    ENABLE_FUSE = 4
+    PUBLISH_EXPOSED_PORTS = 5
+    DISABLE_IMAGE_PREFETCH = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvironmentValue(_messages.Message):
     """The environment to pass into the container.  This environment is merged
     with any values specified in the Pipeline message.  These values overwrite
-    any in the Pipeline message.
+    any in the Pipeline message.  In addition to the values passed here, a few
+    other values are automatically injected into the environment.  These
+    cannot be hidden or overwritten.  `GOOGLE_PIPELINE_FAILED` will be set to
+    "1" if the pipeline has failed because an action has exited with a non-
+    zero status (and did not have the IGNORE_EXIT_STATUS flag set).  This can
+    be used to determine if additional debug or logging actions should
+    execute.  `GOOGLE_LAST_EXIT_STATUS` will be set to the exit status of the
+    last non-background action that executed.  This can be used by workflow
+    engine authors to determine whether an individual action has succeeded or
+    failed.
 
     Messages:
       AdditionalProperty: An additional property for a EnvironmentValue
@@ -1087,14 +1120,14 @@ class RunPipelineRequest(_messages.Message):
 
   Messages:
     LabelsValue: User defined labels to associate with the returned operation.
-      These labels are not propogated to any Google Cloud Platform resources
+      These labels are not propagated to any Google Cloud Platform resources
       used by the operation, and may be modified at any time.  To associate
       labels with resources created while executing the operation, see the
       appropriate resource message (i.e., VirtualMachine).
 
   Fields:
     labels: User defined labels to associate with the returned operation.
-      These labels are not propogated to any Google Cloud Platform resources
+      These labels are not propagated to any Google Cloud Platform resources
       used by the operation, and may be modified at any time.  To associate
       labels with resources created while executing the operation, see the
       appropriate resource message (i.e., VirtualMachine).
@@ -1104,7 +1137,7 @@ class RunPipelineRequest(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """User defined labels to associate with the returned operation.  These
-    labels are not propogated to any Google Cloud Platform resources used by
+    labels are not propagated to any Google Cloud Platform resources used by
     the operation, and may be modified at any time.  To associate labels with
     resources created while executing the operation, see the appropriate
     resource message (i.e., VirtualMachine).

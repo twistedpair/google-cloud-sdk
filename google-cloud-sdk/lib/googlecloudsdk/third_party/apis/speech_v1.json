@@ -6,7 +6,7 @@
   "canonicalName": "Speech",
   "version": "v1",
   "revision": "0",
-  "title": "Google Cloud Speech API",
+  "title": "Cloud Speech API",
   "description": "Converts audio to text by applying powerful neural network models.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -21,6 +21,7 @@
   "baseUrl": "https://speech.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",

@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Google Cloud Functions API",
-  "description": "API for managing lightweight user-provided functions executed in response to events.",
+  "description": "Manages lightweight user-provided functions executed in response to events.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -412,6 +412,10 @@
         "name": {
           "description": "The name of the runtime.",
           "type": "string"
+        },
+        "version": {
+          "description": "Version specification.",
+          "type": "string"
         }
       }
     },
@@ -515,6 +519,10 @@
         },
         "locationId": {
           "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name.\nFor example, \"Tokyo\".",
           "type": "string"
         },
         "labels": {
@@ -814,7 +822,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Get information about a location."
+              "description": "Gets information about a location."
             }
           }
           ,
@@ -1023,7 +1031,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control\/signed-urls.\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.\n\nWhen uploading source code to the generated signed URL, please follow\nthese restrictions:\n\n* Source file type should be a zip file.\n* Source file size should not exceed 100MB limit.\n\nWhen making a HTTP PUT request, these two headers need to be specified:\n\n* `content-type: application\/zip`\n* `x-google-content-length-range: 0,104857600`"
+                  "description": "Returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see:\nhttps:\/\/cloud.google.com\/storage\/docs\/access-control\/signed-urls.\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.\n\nWhen uploading source code to the generated signed URL, please follow\nthese restrictions:\n\n* Source file type should be a zip file.\n* Source file size should not exceed 100MB limit.\n\nWhen making a HTTP PUT request, these two headers need to be specified:\n\n* `content-type: application\/zip`\n* `x-goog-content-length-range: 0,104857600`"
                 },
                 "generateDownloadUrl": {
                   "id": "cloudfunctions.projects.locations.functions.generateDownloadUrl",

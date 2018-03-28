@@ -229,7 +229,7 @@
           "type": "string"
         },
         "locationId": {
-          "description": "Location from which this application runs. Application instances run out of the data centers in the specified location, which is also where all of the application's end user content is stored.Defaults to us-central1.View the list of supported locations (https:\/\/cloud.google.com\/appengine\/docs\/locations).",
+          "description": "Location from which this application runs. Application instances run out of the data centers in the specified location, which is also where all of the application's end user content is stored.Defaults to us-central.View the list of supported locations (https:\/\/cloud.google.com\/appengine\/docs\/locations).",
           "type": "string"
         },
         "codeBucket": {
@@ -1309,6 +1309,10 @@
         "zip": {
           "description": "The zip file for this deployment, if this is a zip deployment.",
           "$ref": "ZipInfo"
+        },
+        "cloudBuildOptions": {
+          "description": "Options for any Google Cloud Container Builder builds created as a part of this deployment.Note that this is orthogonal to the build parameter, where the deployment depends on an already existing cloud build. These options will only be used if a new build is created, such as when deploying to the App Engine flexible environment using files or zip.",
+          "$ref": "CloudBuildOptions"
         }
       }
     },
@@ -1358,9 +1362,25 @@
         }
       }
     },
+    "CloudBuildOptions": {
+      "id": "CloudBuildOptions",
+      "description": "Options for the build operations performed as a part of the version deployment. Only applicable for App Engine flexible environment when creating a version using source code directly.",
+      "type": "object",
+      "properties": {
+        "appYamlPath": {
+          "description": "Path to the yaml file used in deployment, used to determine runtime configuration details.Required for flexible environment builds.See https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/config\/appref for more details.",
+          "type": "string"
+        },
+        "cloudBuildTimeout": {
+          "description": "The Cloud Build timeout used as part of any dependent builds performed by version creation. Defaults to 10 minutes.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
     "EndpointsApiService": {
       "id": "EndpointsApiService",
-      "description": "Cloud Endpoints (https:\/\/cloud.google.com\/endpoints) configuration. The Endpoints API Service provides tooling for serving Open API and gRPC endpoints via an NGINX proxy.The fields here refer to the name and configuration id of a \"service\" resource in the Service Management API (https:\/\/cloud.google.com\/service-management\/overview).",
+      "description": "Cloud Endpoints (https:\/\/cloud.google.com\/endpoints) configuration. The Endpoints API Service provides tooling for serving Open API and gRPC endpoints via an NGINX proxy. Only valid for App Engine Flexible environment deployments.The fields here refer to the name and configuration id of a \"service\" resource in the Service Management API (https:\/\/cloud.google.com\/service-management\/overview).",
       "type": "object",
       "properties": {
         "name": {
@@ -1806,6 +1826,10 @@
           "description": "The canonical id for this location. For example: \"us-east1\".",
           "type": "string"
         },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
         "labels": {
           "description": "Cross-service attributes for the location. For example\n{\"cloud.googleapis.com\/region\": \"us-east1\"}\n",
           "type": "object",
@@ -2030,6 +2054,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "createVersionMetadata": {
+          "$ref": "CreateVersionMetadataV1"
+        }
+      }
+    },
+    "CreateVersionMetadataV1": {
+      "id": "CreateVersionMetadataV1",
+      "description": "Metadata for the given google.longrunning.Operation during a google.appengine.v1.CreateVersionRequest.",
+      "type": "object",
+      "properties": {
+        "cloudBuildId": {
+          "description": "The Cloud Build ID if one was created as part of the version create. @OutputOnly",
+          "type": "string"
         }
       }
     },
@@ -3318,7 +3356,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloud-platform.read-only"
               ],
-              "description": "Get information about a location."
+              "description": "Gets information about a location."
             }
           }
         }

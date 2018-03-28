@@ -137,7 +137,6 @@ def GetIamPolicy(project_ref):
 
   policy_request = messages.CloudresourcemanagerProjectsGetIamPolicyRequest(
       resource=project_ref.Name(),
-      getIamPolicyRequest=messages.GetIamPolicyRequest(),
   )
   return client.projects.GetIamPolicy(policy_request)
 

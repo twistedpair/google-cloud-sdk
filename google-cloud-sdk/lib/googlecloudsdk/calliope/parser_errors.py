@@ -18,6 +18,7 @@ Refer to the calliope.parser_extensions module for a detailed overview.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import argparse
 import six
 
@@ -65,7 +66,7 @@ class ArgumentError(argparse.ArgumentError):
         message = self.error_format
         break
     if self.argument:
-      message = u'argument {argument}: {message}'.format(
+      message = 'argument {argument}: {message}'.format(
           argument=self.argument, message=message)
     return message
 

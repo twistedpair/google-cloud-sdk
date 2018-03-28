@@ -42,7 +42,7 @@ class Collections(enum.Enum):
       'projects.buckets',
       'projects/_/buckets/{bucketId}',
       {},
-      ['bucketId']
+      [u'bucketId']
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
@@ -67,7 +67,7 @@ class Collections(enum.Enum):
       'providers.event_types',
       'providers/{triggerProvider}/eventTypes/{triggerEvent}',
       {},
-      ['triggerProvider', 'triggerEvent']
+      [u'triggerProvider', u'triggerEvent']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

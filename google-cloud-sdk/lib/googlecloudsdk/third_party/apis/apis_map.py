@@ -272,20 +272,6 @@ MAP = {
             default_version=True
         ),
     },
-    'clouduseraccounts': {
-        'alpha': APIDef(
-            class_path='googlecloudsdk.third_party.apis.clouduseraccounts.alpha',
-            client_classpath='clouduseraccounts_alpha_client.ClouduseraccountsAlpha',
-            messages_modulepath='clouduseraccounts_alpha_messages',
-            default_version=False
-        ),
-        'beta': APIDef(
-            class_path='googlecloudsdk.third_party.apis.clouduseraccounts.beta',
-            client_classpath='clouduseraccounts_beta_client.ClouduseraccountsBeta',
-            messages_modulepath='clouduseraccounts_beta_messages',
-            default_version=True
-        ),
-    },
     'compute': {
         'alpha': APIDef(
             class_path='googlecloudsdk.third_party.apis.compute.alpha',

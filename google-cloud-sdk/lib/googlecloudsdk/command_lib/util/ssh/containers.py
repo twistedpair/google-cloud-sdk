@@ -15,6 +15,9 @@
 """Utilities for using containers in conjunction with ssh."""
 
 
+from __future__ import unicode_literals
+
+
 def GetRemoteCommand(container, command):
   """Assemble the remote command list given user-supplied args.
 

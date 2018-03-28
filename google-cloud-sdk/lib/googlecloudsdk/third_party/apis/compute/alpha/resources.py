@@ -217,7 +217,7 @@ class Collections(enum.Enum):
       'nextHopGateways',
       'projects/{project}/global/gateways/{nextHopGateway}',
       {},
-      ['project', 'nextHopGateway']
+      [u'project', u'nextHopGateway']
   )
   PROJECTS = (
       'projects',
@@ -322,7 +322,7 @@ class Collections(enum.Enum):
       'projects/{project}/global/securityPolicies/{securityPolicy}/'
       'securityPolicyRules/{securityPolicyRule}',
       {},
-      ['project', 'securityPolicy', 'securityPolicyRule']
+      [u'project', u'securityPolicy', u'securityPolicyRule']
   )
   SNAPSHOTS = (
       'snapshots',

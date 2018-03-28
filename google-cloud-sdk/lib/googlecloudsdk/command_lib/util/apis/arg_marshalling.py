@@ -15,6 +15,7 @@
 """Classes that generate and parse arguments for apitools messages."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils

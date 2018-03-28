@@ -27,7 +27,7 @@ class Collections(enum.Enum):
       'apis.versions',
       '{api}/{version}',
       {},
-      ['api', 'version']
+      [u'api', u'version']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

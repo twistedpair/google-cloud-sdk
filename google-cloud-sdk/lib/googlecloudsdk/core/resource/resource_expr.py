@@ -548,8 +548,11 @@ class _ExprOperator(_Expr):  # pytype: disable=ignored-abstractmethod
         except (AttributeError, ValueError):
           pass
         except TypeError:
-          if (not isinstance(value, (six.string_types, dict, list)) and
+          if (value is not None and
+              not isinstance(value, (six.string_types, dict, list)) and
               self.Apply(_Stringize(value), operand.string_value)):
+            return True
+          if six.PY3 and value is None and self.Apply('', operand.string_value):
             return True
 
     return False

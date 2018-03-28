@@ -363,6 +363,18 @@ class CertificateRawData(_messages.Message):
   publicCertificate = _messages.StringField(2)
 
 
+class CreateVersionMetadataV1(_messages.Message):
+  """Metadata for the given google.longrunning.Operation during a
+  google.appengine.v1.CreateVersionRequest.
+
+  Fields:
+    cloudBuildId: The Cloud Build ID if one was created as part of the version
+      create. @OutputOnly
+  """
+
+  cloudBuildId = _messages.StringField(1)
+
+
 class CreateVersionMetadataV1Alpha(_messages.Message):
   """Metadata for the given google.longrunning.Operation during a
   google.appengine.v1alpha.CreateVersionRequest.
@@ -490,6 +502,8 @@ class Location(_messages.Message):
       capacity at the given location.
 
   Fields:
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
     labels: Cross-service attributes for the location. For example
       {"cloud.googleapis.com/region": "us-east1"}
     locationId: The canonical id for this location. For example: "us-east1".
@@ -551,10 +565,11 @@ class Location(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  locationId = _messages.StringField(2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  name = _messages.StringField(4)
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
 
 
 class LocationMetadata(_messages.Message):
@@ -766,6 +781,7 @@ class OperationMetadataV1(_messages.Message):
   """Metadata for the given google.longrunning.Operation.
 
   Fields:
+    createVersionMetadata: A CreateVersionMetadataV1 attribute.
     endTime: Time that this operation completed.@OutputOnly
     ephemeralMessage: Ephemeral message that may change every time the
       operation is polled. @OutputOnly
@@ -779,13 +795,14 @@ class OperationMetadataV1(_messages.Message):
       @OutputOnly
   """
 
-  endTime = _messages.StringField(1)
-  ephemeralMessage = _messages.StringField(2)
-  insertTime = _messages.StringField(3)
-  method = _messages.StringField(4)
-  target = _messages.StringField(5)
-  user = _messages.StringField(6)
-  warning = _messages.StringField(7, repeated=True)
+  createVersionMetadata = _messages.MessageField('CreateVersionMetadataV1', 1)
+  endTime = _messages.StringField(2)
+  ephemeralMessage = _messages.StringField(3)
+  insertTime = _messages.StringField(4)
+  method = _messages.StringField(5)
+  target = _messages.StringField(6)
+  user = _messages.StringField(7)
+  warning = _messages.StringField(8, repeated=True)
 
 
 class OperationMetadataV1Alpha(_messages.Message):

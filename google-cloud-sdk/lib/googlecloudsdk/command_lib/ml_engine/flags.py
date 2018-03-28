@@ -264,12 +264,6 @@ RUNTIME_VERSION = base.Argument(
           'https://cloud.google.com/ml/docs/concepts/runtime-version-list for '
           'a list of accepted versions.'))
 
-PYTHON_VERSION = base.Argument(
-    '--python-version',
-    help=('The version of Python used in training. If not set, the default '
-          'version is 2.7. Python 3.5 is available when `runtime_version` is '
-          'set to 1.4 and above. Python 2.7 works with all supported runtime '
-          'versions.'))
 
 POLLING_INTERVAL = base.Argument(
     '--polling-interval',
@@ -302,6 +296,18 @@ FRAMEWORK_MAPPER = arg_utils.ChoiceEnumMapper(
     custom_mappings=_FRAMEWORK_CHOICES,
     help_str=('The ML framework used to train this version of the model. '
               'If not specified, defaults to `tensorflow`'))
+
+
+def AddPythonVersionFlag(parser, context):
+  help_str = (
+      'The version of Python used {context}. If not set, the default '
+      'version is 2.7. Python 3.5 is available when `runtime_version` is '
+      'set to 1.4 and above. Python 2.7 works with all supported runtime '
+      'versions.').format(context=context)
+  version = base.Argument(
+      '--python-version',
+      help=help_str)
+  version.AddToParser(parser)
 
 
 def GetModelName(positional=True, required=False):

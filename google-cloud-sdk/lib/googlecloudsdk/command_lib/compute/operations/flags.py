@@ -18,15 +18,6 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util import completers
 
 
-class AccountOperationsCompleter(compute_completers.ListCommandCompleter):
-
-  def __init__(self, **kwargs):
-    super(AccountOperationsCompleter, self).__init__(
-        collection='clouduseraccounts.globalAccountsOperations',
-        list_command='alpha compute operations list --uri --accounts',
-        **kwargs)
-
-
 class GlobalOperationsCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
@@ -60,7 +51,6 @@ class OperationsCompleter(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
     super(OperationsCompleter, self).__init__(
-        # Could add AccountOperationsCompleter here - does it make sense?
         completers=[GlobalOperationsCompleter,
                     RegionalOperationsCompleter,
                     ZonalOperationsCompleter],
@@ -74,11 +64,4 @@ COMPUTE_OPERATION_ARG = compute_flags.ResourceArgument(
     regional_collection='compute.regionOperations',
     zonal_collection='compute.zoneOperations',
     required=True,
-    plural=False)
-
-ACCOUNT_OPERATION_ARG = compute_flags.ResourceArgument(
-    resource_name='operation',
-    completer=AccountOperationsCompleter,
-    global_collection='clouduseraccounts.globalAccountsOperations',
-    required=False,
     plural=False)

@@ -384,10 +384,10 @@ class LogEntry(_messages.Message):
       payloads.
     receiveTimestamp: Output only. The time the log entry was received by
       Stackdriver Logging.
-    resource: Required. The monitored resource associated with this log entry.
-      Example: a log entry that reports a database error would be associated
-      with the monitored resource designating the particular database that
-      reported the error.
+    resource: Required. The primary monitored resource associated with this
+      log entry. Example: a log entry that reports a database error would be
+      associated with the monitored resource designating the particular
+      database that reported the error.
     severity: Optional. The severity of the log entry. The default value is
       LogSeverity.DEFAULT.
     sourceLocation: Optional. Source code location information associated with

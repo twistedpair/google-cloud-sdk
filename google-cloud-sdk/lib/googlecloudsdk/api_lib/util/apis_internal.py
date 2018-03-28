@@ -18,6 +18,8 @@ This should only be called by api_lib.util.apis, core.resources, gcloud meta
 commands, and module tests.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import resource as resource_util
 from googlecloudsdk.core import properties
@@ -61,7 +63,7 @@ def _GetVersions(api_name):
   version_map = apis_map.MAP.get(api_name, None)
   if version_map is None:
     raise apis_util.UnknownAPIError(api_name)
-  return version_map.keys()
+  return list(version_map.keys())
 
 
 def _GetApiDef(api_name, api_version):

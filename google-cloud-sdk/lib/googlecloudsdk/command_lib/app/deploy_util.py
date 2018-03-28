@@ -250,7 +250,8 @@ class ServiceDeployer(object):
         an in-progress build, or the name of the container image for a serial
         build. Possibly None if the service does not require an image.
     """
-    if flex_image_build_option == FlexImageBuildOptions.ON_SERVER:
+    if (service.RequiresImage() and
+        flex_image_build_option == FlexImageBuildOptions.ON_SERVER):
       cloud_build_options = {
           'appYamlPath': service.GetAppYamlBasename(),
       }

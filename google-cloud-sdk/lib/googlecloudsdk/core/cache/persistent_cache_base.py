@@ -62,11 +62,11 @@ from __future__ import absolute_import
 from __future__ import division
 import abc
 import time
-import urllib
 
 from googlecloudsdk.core.cache import exceptions
 
 import six
+import six.moves.urllib.parse
 
 
 def Now():
@@ -143,7 +143,7 @@ class Table(object):  # pytype: disable=ignored-abstractmethod
     if not name:
       raise exceptions.CacheTableNameInvalid(
           'Cache table name [{}] is invalid.'.format(name))
-    return urllib.quote(name, '!@+,')
+    return six.moves.urllib.parse.quote(name, '!@+,')
 
   def _CheckRows(self, rows):
     """Raise an exception if the size of any row in rows is invalid.

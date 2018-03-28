@@ -4,7 +4,7 @@
  "id": "dns:v1alpha2",
  "name": "dns",
  "version": "v1alpha2",
- "revision": "20180223",
+ "revision": "20180316",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -106,6 +106,10 @@
     "id": {
      "type": "string",
      "description": "Unique identifier for the resource; defined by the server (output only)."
+    },
+    "isServing": {
+     "type": "boolean",
+     "description": "If the DNS queries for the zone will be served."
     },
     "kind": {
      "type": "string",
@@ -542,15 +546,6 @@
     }
    }
   },
-  "ManagedZonesDeleteResponse": {
-   "id": "ManagedZonesDeleteResponse",
-   "type": "object",
-   "properties": {
-    "header": {
-     "$ref": "ResponseHeader"
-    }
-   }
-  },
   "ManagedZonesListResponse": {
    "id": "ManagedZonesListResponse",
    "type": "object",
@@ -649,15 +644,6 @@
     "oldValue": {
      "$ref": "ManagedZone",
      "description": "The pre-operation ManagedZone resource."
-    }
-   }
-  },
-  "PoliciesDeleteResponse": {
-   "id": "PoliciesDeleteResponse",
-   "type": "object",
-   "properties": {
-    "header": {
-     "$ref": "ResponseHeader"
     }
    }
   },
@@ -1400,9 +1386,6 @@
       "project",
       "managedZone"
      ],
-     "response": {
-      "$ref": "ManagedZonesDeleteResponse"
-     },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
@@ -1630,9 +1613,6 @@
       "project",
       "policy"
      ],
-     "response": {
-      "$ref": "PoliciesDeleteResponse"
-     },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/ndev.clouddns.readwrite"

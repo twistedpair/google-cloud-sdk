@@ -162,7 +162,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Cancel(self, request, global_params=None):
-      """Cancels a requested build in progress.
+      """Cancels a build in progress.
 
       Args:
         request: (CloudbuildProjectsBuildsCancelRequest) input message
@@ -190,9 +190,9 @@ is the parent resource, without the operations collection id.
     def Create(self, request, global_params=None):
       """Starts a build with the specified configuration.
 
-The long-running Operation returned by this method will include the ID of
-the build, which can be passed to GetBuild to determine its status (e.g.,
-success or failure).
+This method returns a long-running `Operation`, which includes the build
+ID. Pass the build ID to `GetBuild` to determine the build status (such as
+`SUCCESS` or `FAILURE`).
 
       Args:
         request: (CloudbuildProjectsBuildsCreateRequest) input message
@@ -220,8 +220,8 @@ success or failure).
     def Get(self, request, global_params=None):
       """Returns information about a previously requested build.
 
-The Build that is returned includes its status (e.g., success or failure,
-or in-progress), and timing information.
+The `Build` that is returned includes its status (such as `SUCCESS`,
+`FAILURE`, or `WORKING`), and timing information.
 
       Args:
         request: (CloudbuildProjectsBuildsGetRequest) input message
@@ -276,17 +276,17 @@ successfully or unsuccessfully.
     )
 
     def Retry(self, request, global_params=None):
-      """Creates a new build based on the given build.
+      """Creates a new build based on the specified build.
 
-This API creates a new build using the original build request,  which may
+This method creates a new build using the original build request, which may
 or may not result in an identical build.
 
 For triggered builds:
 
-* Triggered builds resolve to a precise revision, so a retry of a triggered
-build will result in a build that uses the same revision.
+* Triggered builds resolve to a precise revision; therefore a retry of a
+triggered build will result in a build that uses the same revision.
 
-For non-triggered builds that specify RepoSource:
+For non-triggered builds that specify `RepoSource`:
 
 * If the original build built from the tip of a branch, the retried build
 will build from the tip of that branch, which may not be the same revision
@@ -294,11 +294,11 @@ as the original build.
 * If the original build specified a commit sha or revision ID, the retried
 build will use the identical source.
 
-For builds that specify StorageSource:
+For builds that specify `StorageSource`:
 
-* If the original build pulled source from Cloud Storage without specifying
-the generation of the object, the new build will use the current object,
-which may be different from the original build source.
+* If the original build pulled source from Google Cloud Storage without
+specifying the generation of the object, the new build will use the current
+object, which may be different from the original build source.
 * If the original build pulled source from Cloud Storage and specified the
 generation of the object, the new build will attempt to use the same
 object, which may or may not be available depending on the bucket's
@@ -338,7 +338,7 @@ lifecycle management settings.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new BuildTrigger.
+      """Creates a new `BuildTrigger`.
 
 This API is experimental.
 
@@ -366,7 +366,7 @@ This API is experimental.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an BuildTrigger by its project ID and trigger ID.
+      """Deletes a `BuildTrigger` by its project ID and trigger ID.
 
 This API is experimental.
 
@@ -394,7 +394,7 @@ This API is experimental.
     )
 
     def Get(self, request, global_params=None):
-      """Gets information about a BuildTrigger.
+      """Returns information about a `BuildTrigger`.
 
 This API is experimental.
 
@@ -422,7 +422,7 @@ This API is experimental.
     )
 
     def List(self, request, global_params=None):
-      """Lists existing BuildTrigger.
+      """Lists existing `BuildTrigger`s.
 
 This API is experimental.
 
@@ -450,7 +450,7 @@ This API is experimental.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an BuildTrigger by its project ID and trigger ID.
+      """Updates a `BuildTrigger` by its project ID and trigger ID.
 
 This API is experimental.
 
@@ -478,7 +478,7 @@ This API is experimental.
     )
 
     def Run(self, request, global_params=None):
-      """Runs a BuildTrigger at a particular source revision.
+      """Runs a `BuildTrigger` at a particular source revision.
 
       Args:
         request: (CloudbuildProjectsTriggersRunRequest) input message

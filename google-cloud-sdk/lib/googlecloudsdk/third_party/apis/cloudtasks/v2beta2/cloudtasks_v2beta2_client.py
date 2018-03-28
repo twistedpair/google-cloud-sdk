@@ -787,7 +787,7 @@ may "fail open" without warning.
           }
 
     def Get(self, request, global_params=None):
-      """Get information about a location.
+      """Gets information about a location.
 
       Args:
         request: (CloudtasksProjectsLocationsGetRequest) input message

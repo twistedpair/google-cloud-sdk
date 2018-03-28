@@ -17,6 +17,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from __future__ import unicode_literals
 import os
 import re
 import shutil
@@ -25,6 +26,8 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+
+import six
 
 
 # TODO(b/34807345): print to stderr
@@ -278,7 +281,7 @@ def _GetPreferredShell(path, default='bash'):
     return default
   name = os.path.basename(path)
   for shell in ('bash', 'zsh', 'ksh', 'fish'):
-    if shell in name:
+    if shell in six.text_type(name):
       return shell
   return default
 

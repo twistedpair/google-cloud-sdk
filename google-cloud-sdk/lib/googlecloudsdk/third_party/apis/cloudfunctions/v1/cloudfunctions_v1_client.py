@@ -324,7 +324,7 @@ these restrictions:
 When making a HTTP PUT request, these two headers need to be specified:
 
 * `content-type: application/zip`
-* `x-google-content-length-range: 0,104857600`
+* `x-goog-content-length-range: 0,104857600`
 
       Args:
         request: (CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest) input message
@@ -442,7 +442,7 @@ When making a HTTP PUT request, these two headers need to be specified:
           }
 
     def Get(self, request, global_params=None):
-      """Get information about a location.
+      """Gets information about a location.
 
       Args:
         request: (CloudfunctionsProjectsLocationsGetRequest) input message

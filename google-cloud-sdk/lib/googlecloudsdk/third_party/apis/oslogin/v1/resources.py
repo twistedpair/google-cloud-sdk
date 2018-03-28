@@ -33,7 +33,7 @@ class Collections(enum.Enum):
       'users.projects',
       'users/{user}/projects/{project}',
       {},
-      ['user', 'project']
+      [u'user', u'project']
   )
   USERS_SSHPUBLICKEYS = (
       'users.sshPublicKeys',

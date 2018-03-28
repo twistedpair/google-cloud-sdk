@@ -60,14 +60,14 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}/registries/'
       '{registriesId}/devices/{devicesId}/configVersions/{configVersion}',
       {},
-      ['projectsId', 'locationsId', 'registriesId', 'devicesId', 'configVersion']
+      [u'projectsId', u'locationsId', u'registriesId', u'devicesId', u'configVersion']
   )
   PROJECTS_LOCATIONS_REGISTRIES_DEVICES_STATES = (
       'projects.locations.registries.devices.states',
       'projects/{projectsId}/locations/{locationsId}/registries/'
       '{registriesId}/devices/{devicesId}/states/{statesId}',
       {},
-      ['projectsId', 'locationsId', 'registriesId', 'devicesId', 'statesId']
+      [u'projectsId', u'locationsId', u'registriesId', u'devicesId', u'statesId']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

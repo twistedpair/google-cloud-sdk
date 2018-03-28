@@ -27,7 +27,7 @@ class Collections(enum.Enum):
       'liens',
       'liens/{liensId}',
       {},
-      ['liensId']
+      [u'liensId']
   )
   OPERATIONS = (
       'operations',

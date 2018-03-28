@@ -30,7 +30,7 @@ from oauth2client import client
 import six
 
 DEVSHELL_ENV = 'CLOUD_SHELL'
-DEVSHELL_CLIENT_ENV = 'DEVSHELL_CLIENT_PORT'
+DEVSHELL_CLIENT_PORT = 'DEVSHELL_CLIENT_PORT'
 DEVSHELL_ENV_IPV6_ENABLED = 'DEVSHELL_CLIENT_PORT_IPV6_ENABLED'
 
 
@@ -128,7 +128,7 @@ class CredentialInfoResponse(messages.Message):
 
 def _SendRecv(request):
   """Communicate with the devshell access token service."""
-  port = int(os.getenv(DEVSHELL_ENV, 0))
+  port = int(os.getenv(DEVSHELL_CLIENT_PORT, 0))
   if not port:
     raise NoDevshellServer()
   return _SendRecvPort(request, port)
@@ -234,5 +234,5 @@ def IsDevshellEnvironment():
 
 
 def HasDevshellAuth():
-  port = int(os.getenv(DEVSHELL_CLIENT_ENV, 0))
+  port = int(os.getenv(DEVSHELL_CLIENT_PORT, 0))
   return port != 0

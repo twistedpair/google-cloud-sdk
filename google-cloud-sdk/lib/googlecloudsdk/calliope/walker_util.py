@@ -15,7 +15,8 @@
 """A collection of CLI walkers."""
 
 from __future__ import absolute_import
-import cStringIO
+from __future__ import unicode_literals
+import io
 import os
 
 from googlecloudsdk.calliope import arg_parsers
@@ -128,7 +129,7 @@ class DevSiteGenerator(walker.Walker):
       md = markdown.Markdown(node)
       render_document.RenderDocument(style='devsite',
                                      title=' '.join(command),
-                                     fin=cStringIO.StringIO(md),
+                                     fin=io.StringIO(md),
                                      out=f)
     _UpdateTOC()
     return parent
@@ -188,7 +189,7 @@ class HelpTextGenerator(walker.Walker):
     path = os.path.join(directory, 'GROUP' if is_group else command[-1])
     with open(path, 'w') as f:
       md = markdown.Markdown(node)
-      render_document.RenderDocument(style='text', fin=cStringIO.StringIO(md),
+      render_document.RenderDocument(style='text', fin=io.StringIO(md),
                                      out=f)
     return parent
 
@@ -236,7 +237,7 @@ class DocumentGenerator(walker.Walker):
       md = markdown.Markdown(node)
       render_document.RenderDocument(style=self._style,
                                      title=' '.join(command),
-                                     fin=cStringIO.StringIO(md),
+                                     fin=io.StringIO(md),
                                      out=f)
     return parent
 

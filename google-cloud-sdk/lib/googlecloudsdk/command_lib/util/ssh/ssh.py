@@ -14,6 +14,8 @@
 
 """SSH client utilities for key-generation, dispatching the ssh commands etc."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import errno
 import getpass
 import os
@@ -30,6 +32,7 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
+
 import six
 
 
@@ -254,7 +257,10 @@ class Keys(object):
       # convert to unicode. Assume UTF 8, but if we miss a character we can just
       # replace it with a '?'. The only source of issues would be the hostnames,
       # which are relatively inconsequential.
-      parts = key_string.strip().decode('utf8', 'replace').split(' ', 2)
+      decoded_key = key_string.strip()
+      if isinstance(key_string, six.binary_type):
+        decoded_key = decoded_key.decode('utf8', 'replace')
+      parts = decoded_key.split(' ', 2)
       if len(parts) < 2:
         raise InvalidKeyError('Public key [{}] is invalid.'.format(key_string))
       comment = parts[2].strip() if len(parts) > 2 else ''  # e.g. `me@host`
@@ -269,9 +275,9 @@ class Keys(object):
       Returns:
         str, A key string on the form `TYPE DATA` or `TYPE DATA COMMENT`.
       """
-      out_format = u'{type} {data}'
+      out_format = '{type} {data}'
       if include_comment and self.comment:
-        out_format += u' {comment}'
+        out_format += ' {comment}'
       return out_format.format(
           type=self.key_type, data=self.key_data, comment=self.comment)
 
@@ -444,7 +450,9 @@ class Keys(object):
         # encoded so it cannot contain any unicode. Comments may contain
         # unicode, but they are ignored in the key file analysis here, so
         # replacing invalid chars with ? is OK.
-        line = f.readline().strip().decode('utf8', 'replace')
+        line = f.readline().strip()
+        if isinstance(line, six.binary_type):
+          line = line.decode('utf8', 'replace')
         if line:
           return line
         msg = 'is empty'

@@ -36,7 +36,7 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      ['projectsId']
+      [u'projectsId']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

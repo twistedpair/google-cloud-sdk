@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20180223",
+ "revision": "20180316",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1137,7 +1137,6 @@
        "type": "string",
        "description": "The name of the deployment for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
       },
       "project": {
@@ -1234,6 +1233,20 @@
      "httpMethod": "POST",
      "description": "Creates a deployment and all of the resources described by the deployment manifest.",
      "parameters": {
+      "createPolicy": {
+       "type": "string",
+       "description": "Sets the policy to use for creating new resources.",
+       "default": "CREATE_OR_ACQUIRE",
+       "enum": [
+        "ACQUIRE",
+        "CREATE_OR_ACQUIRE"
+       ],
+       "enumDescriptions": [
+        "",
+        ""
+       ],
+       "location": "query"
+      },
       "preview": {
        "type": "boolean",
        "description": "If set to true, creates a deployment and creates \"shell\" resources but does not actually instantiate these resources. This allows you to preview what your deployment looks like. After previewing a deployment, you can deploy your resources by making a request with the update() method or you can use the cancelPreview() method to cancel the preview altogether. Note that the deployment will still exist after you cancel the preview and you must separately delete this deployment if you want to remove it.",
