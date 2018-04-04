@@ -33,9 +33,11 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
 
 
-_CIDR_REGEX = (r'(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})'
-               r'(\.(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})){3}'
-               r'(\/([0-9]|[1-2][0-9]|3[0-2]))$')
+_IP_ADDRESS_PART = r'(25[0-5]|2[0-4][0-9]|1?[0-9]{1,2})'  # Match decimal 0-255
+_CIDR_PREFIX_PART = r'([0-9]|[1-2][0-9]|3[0-2])'  # Match decimal 0-32
+# Matches either IPv4 range in CIDR notation or a naked IPv4 address.
+_CIDR_REGEX = r'{addr_part}(\.{addr_part}){{3}}(\/{prefix_part})?$'.format(
+    addr_part=_IP_ADDRESS_PART, prefix_part=_CIDR_PREFIX_PART)
 
 
 class DatabaseCompleter(completers.ListCommandCompleter):

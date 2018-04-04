@@ -16,7 +16,7 @@
 import enum
 
 
-BASE_URL = 'https://vision.googleapis.com/'
+BASE_URL = 'https://vision.googleapis.com/v1/'
 DOCS_URL = 'https://cloud.google.com/vision/'
 
 
@@ -28,6 +28,30 @@ class Collections(enum.Enum):
       'images',
       {},
       []
+  )
+  LOCATIONS = (
+      'locations',
+      'locations/{locationsId}',
+      {},
+      [u'locationsId']
+  )
+  LOCATIONS_OPERATIONS = (
+      'locations.operations',
+      '{+name}',
+      {
+          '':
+              'locations/{locationsId}/operations/{operationsId}',
+      },
+      [u'name']
+  )
+  OPERATIONS = (
+      'operations',
+      '{+name}',
+      {
+          '':
+              'operations/{operationsId}',
+      },
+      [u'name']
   )
 
   def __init__(self, collection_name, path, flat_paths, params):

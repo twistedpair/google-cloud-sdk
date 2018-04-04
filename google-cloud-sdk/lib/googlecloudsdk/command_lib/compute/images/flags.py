@@ -128,10 +128,11 @@ SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     required=False)
 
 SOURCE_IMAGE_ARG = compute_flags.ResourceArgument(
-    resource_name='imported image',
+    resource_name='source image',
     name='--source-image',
     completer=ImagesCompleter,
     global_collection='compute.images',
+    short_help='An existing Compute Engine image from which to import.',
     required=False)
 
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(

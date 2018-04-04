@@ -401,19 +401,10 @@ def AddEnableBinAuthzFlag(parser, hidden=True):
   )
 
 
-def AddZoneFlag(parser):
+def AddZoneAndRegionFlags(parser, region_hidden=False):
+  """Adds the --zone and --region flags to the parser."""
   # TODO(b/33343238): Remove the short form of the zone flag.
   # TODO(b/18105938): Add zone prompting
-  """Adds the --zone flag to the parser."""
-  parser.add_argument(
-      '--zone',
-      '-z',
-      help='The compute zone (e.g. us-central1-a) for the cluster',
-      action=actions.StoreProperty(properties.VALUES.compute.zone))
-
-
-def AddZoneAndRegionFlags(parser):
-  """Adds the --zone and --region flags to the parser."""
   group = parser.add_mutually_exclusive_group()
   group.add_argument(
       '--zone',
@@ -422,6 +413,7 @@ def AddZoneAndRegionFlags(parser):
       action=actions.StoreProperty(properties.VALUES.compute.zone))
   group.add_argument(
       '--region',
+      hidden=region_hidden,
       help='The compute region (e.g. us-central1) for the cluster.')
 
 
@@ -1479,3 +1471,18 @@ def ValidateIstioConfigUpdateArgs(istio_config_args, disable_addons_args):
       raise exceptions.InvalidArgumentException(
           '--istio-config', '--update-addons=Istio=ENABLED must be specified '
           'when --istio-config is given')
+
+
+def AddConcurrentNodeCountFlag(parser):
+  help_text = """\
+The number of nodes to upgrade concurrently. Valid values are [1, {max}].
+It is a recommended best practice to set this value to no higher than 3% of
+your cluster size.'
+""".format(max=api_adapter.MAX_CONCURRENT_NODE_COUNT)
+
+  parser.add_argument(
+      '--concurrent-node-count',
+      type=arg_parsers.BoundedInt(1, api_adapter.MAX_CONCURRENT_NODE_COUNT),
+      # TODO(b/76150055): Un-hide once this is ready for release.
+      hidden=True,
+      help=help_text)

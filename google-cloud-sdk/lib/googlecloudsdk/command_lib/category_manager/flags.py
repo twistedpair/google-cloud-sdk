@@ -84,9 +84,28 @@ def CreateAssetResourceArg(positional=False):
       prefixes=False)
 
 
+def AddTaxonomyResourceArg(parser, required=True, positional=True):
+  if positional:
+    parser.add_argument('taxonomy', help='The ID of the taxonomy.')
+  else:
+    parser.add_argument(
+        '--taxonomy', required=required, help='The ID of the taxonomy.')
+
+
+def AddAnnotationAnnotation(parser, positional=True):
+  parser.add_argument(
+      'annotation' if positional else '--annotation',
+      help='The ID of the annotation.')
+
+
 def AddSubAssetFlag(parser, hidden=False):
   help_text = """\
   The name of the sub-asset to apply an annotation to. For instance, for
           Google Cloud Bigquery, this is the name of the column in the table
           (which is the asset). """
   parser.add_argument('--sub-asset', help=help_text, hidden=hidden)
+
+
+def AddDescriptionFlag(parser, required=True):
+  help_text = 'A human-readable description of the taxonomy.'
+  parser.add_argument('--description', help=help_text, required=required)

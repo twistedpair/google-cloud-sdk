@@ -752,20 +752,22 @@ class _SectionContainer(_Section):
         'the cluster API server.')
     self.use_v1_api = self._AddBool(
         'use_v1_api',
-        default=True,
-        help_text='If true, all gcloud Kubernetes Engine commands (regardless '
+        default=False,
+        help_text='This property is DEPRECATED. '
+        'If true, all gcloud Kubernetes Engine commands (regardless '
         'of release track) will use the v1 API; otherwise, gcloud beta track '
         'commands will use v1beta1 API and gcloud alpha track commands will '
-        'use v1alpha1 API. By default, it is set to true. The Kubernetes '
+        'use v1alpha1 API. By default, it is set to false. The Kubernetes '
         'Engine v1alpha1 API is whitelist-only at this time. '
         'Note: use_v1_api is an alias of use_v1_api_client.')
     self.use_v1_api_client = self._AddBool(
         'use_v1_api_client',
-        default=True,
-        help_text='If true, all gcloud Kubernetes Engine commands (regardless '
+        default=False,
+        help_text='This property is DEPRECATED. '
+        'If true, all gcloud Kubernetes Engine commands (regardless '
         'of release track) will use the v1 API; otherwise, gcloud beta track '
         'commands will use v1beta1 API and gcloud alpha track commands will '
-        'use v1alpha1 API. By default, it is set to true. The Kubernetes '
+        'use v1alpha1 API. By default, it is set to false. The Kubernetes '
         'Engine v1alpha1 API is whitelist-only at this time. '
         'Note: use_v1_api_client is an alias of use_v1_api.')
     self.new_scopes_behavior = self._AddBool(

@@ -861,3 +861,22 @@ def DisableUserProjectQuota():
   if not properties.VALUES.billing.quota_project.IsExplicitlySet():
     properties.VALUES.billing.quota_project.Set(
         properties.VALUES.billing.LEGACY)
+
+
+def LogCommand(prog, args):
+  """Log (to debug) the command/arguments being run in a standard format.
+
+  `gcloud feedback` depends on this format.
+
+  Example format is:
+
+      Running [gcloud.example.command] with arguments: [--bar: "baz"]
+
+  Args:
+    prog: string, the dotted name of the command being run (ex.
+        "gcloud.foos.list")
+    args: argparse.namespace, the parsed arguments from the command line
+  """
+  specified_args = sorted(six.iteritems(args.GetSpecifiedArgs()))
+  arg_string = ', '.join(['{}: "{}"'.format(k, v) for k, v in specified_args])
+  log.debug('Running [{}] with arguments: [{}]'.format(prog, arg_string))

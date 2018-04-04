@@ -348,7 +348,7 @@ class AcceleratorTypesScopedList(_messages.Message):
       accelerator types list is empty.
 
   Fields:
-    acceleratorTypes: [Output Only] List of accelerator types contained in
+    acceleratorTypes: [Output Only] A list of accelerator types contained in
       this scope.
     warning: [Output Only] An informational warning that appears when the
       accelerator types list is empty.
@@ -895,7 +895,7 @@ class AddressesScopedList(_messages.Message):
       of addresses when the list is empty.
 
   Fields:
-    addresses: [Output Only] List of addresses contained in this scope.
+    addresses: [Output Only] A list of addresses contained in this scope.
     warning: [Output Only] Informational warning which replaces the list of
       addresses when the list is empty.
   """
@@ -1642,7 +1642,7 @@ class AutoscalersScopedList(_messages.Message):
       of autoscalers when the list is empty.
 
   Fields:
-    autoscalers: [Output Only] List of autoscalers contained in this scope.
+    autoscalers: [Output Only] A list of autoscalers contained in this scope.
     warning: [Output Only] Informational warning which replaces the list of
       autoscalers when the list is empty.
   """
@@ -2587,7 +2587,7 @@ class BackendServicesScopedList(_messages.Message):
       services when the list is empty.
 
   Fields:
-    backendServices: List of BackendServices contained in this scope.
+    backendServices: A list of BackendServices contained in this scope.
     warning: Informational warning which replaces the list of backend services
       when the list is empty.
   """
@@ -2776,8 +2776,8 @@ class Commitment(_messages.Message):
       rate. The currently supported plans are TWELVE_MONTH (1 year), and
       THIRTY_SIX_MONTH (3 years).
     region: [Output Only] URL of the region where this commitment may be used.
-    resources: List of commitment amounts for particular resources. Note that
-      VCPU and MEMORY resource commitments must occur together.
+    resources: A list of commitment amounts for particular resources. Note
+      that VCPU and MEMORY resource commitments must occur together.
     selfLink: [Output Only] Server-defined URL for the resource.
     startTimestamp: [Output Only] Commitment start time in RFC3339 text
       format.
@@ -3117,7 +3117,7 @@ class CommitmentsScopedList(_messages.Message):
       of commitments when the list is empty.
 
   Fields:
-    commitments: [Output Only] List of commitments contained in this scope.
+    commitments: [Output Only] A list of commitments contained in this scope.
     warning: [Output Only] Informational warning which replaces the list of
       commitments when the list is empty.
   """
@@ -13124,7 +13124,7 @@ class DiskTypesScopedList(_messages.Message):
       of disk types when the list is empty.
 
   Fields:
-    diskTypes: [Output Only] List of disk types contained in this scope.
+    diskTypes: [Output Only] A list of disk types contained in this scope.
     warning: [Output Only] Informational warning which replaces the list of
       disk types when the list is empty.
   """
@@ -13248,7 +13248,7 @@ class DisksScopedList(_messages.Message):
       of disks when the list is empty.
 
   Fields:
-    disks: [Output Only] List of disks contained in this scope.
+    disks: [Output Only] A list of disks contained in this scope.
     warning: [Output Only] Informational warning which replaces the list of
       disks when the list is empty.
   """
@@ -14111,7 +14111,7 @@ class ForwardingRulesScopedList(_messages.Message):
       rules when the list is empty.
 
   Fields:
-    forwardingRules: List of forwarding rules contained in this scope.
+    forwardingRules: A list of forwarding rules contained in this scope.
     warning: Informational warning which replaces the list of forwarding rules
       when the list is empty.
   """
@@ -15390,7 +15390,7 @@ class Instance(_messages.Message):
       property when you create the resource.
     disks: Array of disks associated with this instance. Persistent disks must
       be created before you can assign them.
-    guestAccelerators: List of the type and count of accelerator cards
+    guestAccelerators: A list of the type and count of accelerator cards
       attached to the instance.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -15708,13 +15708,13 @@ class InstanceGroup(_messages.Message):
       8080}]   Named ports apply to all instances in this instance group.
     network: The URL of the network to which all instances in the instance
       group belong.
-    region: The URL of the region where the instance group is located (for
-      regional resources).
+    region: [Output Only] The URL of the region where the instance group is
+      located (for regional resources).
     selfLink: [Output Only] The URL for this instance group. The server
       generates this URL.
     size: [Output Only] The total number of instances in the instance group.
-    subnetwork: The URL of the subnetwork to which all instances in the
-      instance group belong.
+    subnetwork: [Output Only] The URL of the subnetwork to which all instances
+      in the instance group belong.
     zone: [Output Only] The URL of the zone where the instance group is
       located (for zonal resources).
   """
@@ -17471,7 +17471,7 @@ class InstancesScopedList(_messages.Message):
       of instances when the list is empty.
 
   Fields:
-    instances: [Output Only] List of instances contained in this scope.
+    instances: [Output Only] A list of instances contained in this scope.
     warning: [Output Only] Informational warning which replaces the list of
       instances when the list is empty.
   """
@@ -17622,7 +17622,7 @@ class InstancesSetMachineResourcesRequest(_messages.Message):
   """A InstancesSetMachineResourcesRequest object.
 
   Fields:
-    guestAccelerators: List of the type and count of accelerator cards
+    guestAccelerators: A list of the type and count of accelerator cards
       attached to the instance.
   """
 
@@ -17698,15 +17698,15 @@ class Interconnect(_messages.Message):
       to true, the Interconnect is functional and can carry traffic. When set
       to false, no packets can be carried over the interconnect and no BGP
       routes are exchanged over it. By default, the status is set to true.
-    circuitInfos: [Output Only] List of CircuitInfo objects, that describe the
-      individual circuits in this LAG.
+    circuitInfos: [Output Only] A list of CircuitInfo objects, that describe
+      the individual circuits in this LAG.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customerName: Customer name, to put in the Letter of Authorization as the
       party authorized to request a crossconnect.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    expectedOutages: [Output Only] List of outages expected for this
+    expectedOutages: [Output Only] A list of outages expected for this
       Interconnect.
     googleIpAddress: [Output Only] IP address configured on the Google side of
       the Interconnect link. This can be used only for ping tests.
@@ -18182,7 +18182,7 @@ class InterconnectAttachmentsScopedList(_messages.Message):
       when the list is empty.
 
   Fields:
-    interconnectAttachments: List of interconnect attachments contained in
+    interconnectAttachments: A list of interconnect attachments contained in
       this scope.
     warning: Informational warning which replaces the list of addresses when
       the list is empty.
@@ -19022,8 +19022,8 @@ class MachineType(_messages.Message):
     memoryMb: [Output Only] The amount of physical memory available to the
       instance, defined in MB.
     name: [Output Only] Name of the resource.
-    scratchDisks: [Output Only] List of extended scratch disks assigned to the
-      instance.
+    scratchDisks: [Output Only] A list of extended scratch disks assigned to
+      the instance.
     selfLink: [Output Only] Server-defined URL for the resource.
     zone: [Output Only] The name of the zone where the machine type resides,
       such as us-central1-a.
@@ -19339,7 +19339,8 @@ class MachineTypesScopedList(_messages.Message):
       machine types list is empty.
 
   Fields:
-    machineTypes: [Output Only] List of machine types contained in this scope.
+    machineTypes: [Output Only] A list of machine types contained in this
+      scope.
     warning: [Output Only] An informational warning that appears when the
       machine types list is empty.
   """
@@ -19703,7 +19704,7 @@ class Network(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    peerings: [Output Only] List of network peerings for the resource.
+    peerings: [Output Only] A list of network peerings for the resource.
     routingConfig: The network-level routing configuration for this network.
       Used by Cloud Router to determine what type of network-wide routing
       behavior to enforce.
@@ -20531,7 +20532,7 @@ class OperationsScopedList(_messages.Message):
       of operations when the list is empty.
 
   Fields:
-    operations: [Output Only] List of operations contained in this scope.
+    operations: [Output Only] A list of operations contained in this scope.
     warning: [Output Only] Informational warning which replaces the list of
       operations when the list is empty.
   """
@@ -21375,7 +21376,7 @@ class RegionInstanceGroupManagersListInstancesResponse(_messages.Message):
   """A RegionInstanceGroupManagersListInstancesResponse object.
 
   Fields:
-    managedInstances: List of managed instances.
+    managedInstances: A list of managed instances.
   """
 
   managedInstances = _messages.MessageField('ManagedInstance', 1, repeated=True)
@@ -22628,7 +22629,7 @@ class RoutersScopedList(_messages.Message):
       when the list is empty.
 
   Fields:
-    routers: List of routers contained in this scope.
+    routers: A list of routers contained in this scope.
     warning: Informational warning which replaces the list of routers when the
       list is empty.
   """
@@ -23453,7 +23454,7 @@ class SslPolicy(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    customFeatures: List of features enabled when the selected profile is
+    customFeatures: A list of features enabled when the selected profile is
       CUSTOM. The - method returns the set of features that can be specified
       in this list. This field must be empty if the profile is not CUSTOM.
     description: An optional description of this resource. Provide this
@@ -24060,7 +24061,7 @@ class SubnetworksScopedList(_messages.Message):
       addresses is empty.
 
   Fields:
-    subnetworks: List of subnetworks contained in this scope.
+    subnetworks: A list of subnetworks contained in this scope.
     warning: An informational warning that appears when the list of addresses
       is empty.
   """
@@ -24922,7 +24923,7 @@ class TargetInstancesScopedList(_messages.Message):
       when the list is empty.
 
   Fields:
-    targetInstances: List of target instances contained in this scope.
+    targetInstances: A list of target instances contained in this scope.
     warning: Informational warning which replaces the list of addresses when
       the list is empty.
   """
@@ -25482,7 +25483,7 @@ class TargetPoolsScopedList(_messages.Message):
       when the list is empty.
 
   Fields:
-    targetPools: List of target pools contained in this scope.
+    targetPools: A list of target pools contained in this scope.
     warning: Informational warning which replaces the list of addresses when
       the list is empty.
   """
@@ -26395,8 +26396,8 @@ class TargetVpnGatewaysScopedList(_messages.Message):
       of addresses when the list is empty.
 
   Fields:
-    targetVpnGateways: [Output Only] List of target vpn gateways contained in
-      this scope.
+    targetVpnGateways: [Output Only] A list of target vpn gateways contained
+      in this scope.
     warning: [Output Only] Informational warning which replaces the list of
       addresses when the list is empty.
   """
@@ -27182,7 +27183,7 @@ class VpnTunnelsScopedList(_messages.Message):
       when the list is empty.
 
   Fields:
-    vpnTunnels: List of vpn tunnels contained in this scope.
+    vpnTunnels: A list of vpn tunnels contained in this scope.
     warning: Informational warning which replaces the list of addresses when
       the list is empty.
   """

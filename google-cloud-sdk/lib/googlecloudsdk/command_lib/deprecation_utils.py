@@ -32,7 +32,7 @@ def DeprecateCommandAtVersion(remove_version,
       marked as removed.
 
       remove: boolean, True if the command should be removed in underlying
-      base.Deprecate decorator, False it it should only print a warning
+      base.Deprecate decorator, False if it should only print a warning
 
       alt_command: string, optional alternative command to use in place of
       deprecated command

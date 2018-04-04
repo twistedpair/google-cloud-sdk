@@ -128,6 +128,69 @@
     }
   },
   "schemas": {
+    "ProjectConfig": {
+      "id": "ProjectConfig",
+      "description": "Cloud Source Repositories configuration of a project.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the project. Values are of the form `projects\/<project>`.",
+          "type": "string"
+        },
+        "pubsubConfigs": {
+          "description": "How this project publishes a change in the repositories through Cloud\nPub\/Sub. Keyed by the topic names.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "PubsubConfig"
+          }
+        },
+        "enablePrivateKeyCheck": {
+          "description": "Reject a Git push that contains a private key.",
+          "type": "boolean"
+        }
+      }
+    },
+    "PubsubConfig": {
+      "id": "PubsubConfig",
+      "description": "Configuration to publish a Cloud Pub\/Sub message.",
+      "type": "object",
+      "properties": {
+        "topic": {
+          "description": "A topic of Cloud Pub\/Sub. Values are of the form\n`projects\/<project>\/topics\/<topic>`. The project needs to be the same\nproject as this config is in.",
+          "type": "string"
+        },
+        "messageFormat": {
+          "description": "The format of the Cloud Pub\/Sub messages.",
+          "enumDescriptions": [
+            "Unspecified.",
+            "The message payload is a serialized protocol buffer of SourceRepoEvent.",
+            "The message payload is a JSON string of SourceRepoEvent."
+          ],
+          "type": "string",
+          "enum": [
+            "MESSAGE_FORMAT_UNSPECIFIED",
+            "PROTOBUF",
+            "JSON"
+          ]
+        }
+      }
+    },
+    "UpdateProjectConfigRequest": {
+      "id": "UpdateProjectConfigRequest",
+      "description": "Request for UpdateProjectConfig.",
+      "type": "object",
+      "properties": {
+        "projectConfig": {
+          "description": "The new configuration for the project.",
+          "$ref": "ProjectConfig"
+        },
+        "updateMask": {
+          "description": "A FieldMask specifying which fields of the project_config to modify. Only\nthe fields in the mask will be modified. If no mask is provided, this\nrequest is no-op.",
+          "type": "string",
+          "format": "google-fieldmask"
+        }
+      }
+    },
     "ListReposResponse": {
       "id": "ListReposResponse",
       "description": "Response for ListRepos.  The size is not set in the returned repositories.",
@@ -167,6 +230,13 @@
         "mirrorConfig": {
           "description": "How this repository mirrors a repository managed by another service.\nRead-only field.",
           "$ref": "MirrorConfig"
+        },
+        "pubsubConfigs": {
+          "description": "How this repository publishes a change in the repository through Cloud\nPub\/Sub. Keyed by the topic names.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "PubsubConfig"
+          }
         }
       }
     },
@@ -186,6 +256,22 @@
         "deployKeyId": {
           "description": "ID of the SSH deploy key at the other hosting service.\nRemoving this key from the other service would deauthorize\nGoogle Cloud Source Repositories from mirroring.",
           "type": "string"
+        }
+      }
+    },
+    "UpdateRepoRequest": {
+      "id": "UpdateRepoRequest",
+      "description": "Request for UpdateRepo.",
+      "type": "object",
+      "properties": {
+        "repo": {
+          "description": "The new configuration for the repository.",
+          "$ref": "Repo"
+        },
+        "updateMask": {
+          "description": "A FieldMask specifying which fields of the repo to modify. Only the fields\nin the mask will be modified. If no mask is provided, this request is\nno-op.",
+          "type": "string",
+          "format": "google-fieldmask"
         }
       }
     },
@@ -340,6 +426,68 @@
   },
   "resources": {
     "projects": {
+      "methods": {
+        "getConfig": {
+          "id": "sourcerepo.projects.getConfig",
+          "path": "v1/{+name}/config",
+          "flatPath": "v1/projects/{projectsId}/config",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "The name of the requested project. Values are of the form\n`projects\/<project>`.",
+              "location": "path",
+              "required": true,
+              "pattern": "^projects\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "ProjectConfig"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/source.full_control",
+            "https://www.googleapis.com/auth/source.read_only",
+            "https://www.googleapis.com/auth/source.read_write"
+          ],
+          "description": "Returns the Cloud Source Repositories configuration of the project."
+        },
+        "updateConfig": {
+          "id": "sourcerepo.projects.updateConfig",
+          "path": "v1/{+name}/config",
+          "flatPath": "v1/projects/{projectsId}/config",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "The name of the requested project. Values are of the form\n`projects\/<project>`.",
+              "location": "path",
+              "required": true,
+              "pattern": "^projects\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "UpdateProjectConfigRequest"
+          },
+          "response": {
+            "$ref": "ProjectConfig"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/source.full_control",
+            "https://www.googleapis.com/auth/source.read_only",
+            "https://www.googleapis.com/auth/source.read_write"
+          ],
+          "description": "Updates the Cloud Source Repositories configuration of the project."
+        }
+      }
+      ,
       "resources": {
         "repos": {
           "methods": {
@@ -409,6 +557,37 @@
                 "https://www.googleapis.com/auth/source.read_write"
               ],
               "description": "Returns information about a repo."
+            },
+            "patch": {
+              "id": "sourcerepo.projects.repos.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/repos/{reposId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "The name of the requested repository. Values are of the form\n`projects\/<project>\/repos\/<repo>`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/repos\/.+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "UpdateRepoRequest"
+              },
+              "response": {
+                "$ref": "Repo"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/source.full_control",
+                "https://www.googleapis.com/auth/source.read_only",
+                "https://www.googleapis.com/auth/source.read_write"
+              ],
+              "description": "Updates information about a repo."
             },
             "create": {
               "id": "sourcerepo.projects.repos.create",

@@ -757,6 +757,10 @@ class CLI(object):
       if not calliope_command.IsUnicodeSupported():
         self._EnforceAsciiArgs(argv)
       specified_arg_names = args.GetSpecifiedArgNames()
+      # If the CLI has not been reloaded since the last command execution (e.g.
+      # in test runs), args.CONCEPTS may contain cached values.
+      if args.CONCEPTS is not None:
+        args.CONCEPTS.Reset()
 
       # -h|--help|--document are dispatched by parse_args and never get here.
 

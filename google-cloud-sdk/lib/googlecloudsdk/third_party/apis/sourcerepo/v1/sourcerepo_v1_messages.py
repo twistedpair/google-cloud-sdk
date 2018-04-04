@@ -187,9 +187,89 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class ProjectConfig(_messages.Message):
+  """Cloud Source Repositories configuration of a project.
+
+  Messages:
+    PubsubConfigsValue: How this project publishes a change in the
+      repositories through Cloud Pub/Sub. Keyed by the topic names.
+
+  Fields:
+    enablePrivateKeyCheck: Reject a Git push that contains a private key.
+    name: The name of the project. Values are of the form
+      `projects/<project>`.
+    pubsubConfigs: How this project publishes a change in the repositories
+      through Cloud Pub/Sub. Keyed by the topic names.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PubsubConfigsValue(_messages.Message):
+    """How this project publishes a change in the repositories through Cloud
+    Pub/Sub. Keyed by the topic names.
+
+    Messages:
+      AdditionalProperty: An additional property for a PubsubConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type PubsubConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a PubsubConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PubsubConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PubsubConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  enablePrivateKeyCheck = _messages.BooleanField(1)
+  name = _messages.StringField(2)
+  pubsubConfigs = _messages.MessageField('PubsubConfigsValue', 3)
+
+
+class PubsubConfig(_messages.Message):
+  """Configuration to publish a Cloud Pub/Sub message.
+
+  Enums:
+    MessageFormatValueValuesEnum: The format of the Cloud Pub/Sub messages.
+
+  Fields:
+    messageFormat: The format of the Cloud Pub/Sub messages.
+    topic: A topic of Cloud Pub/Sub. Values are of the form
+      `projects/<project>/topics/<topic>`. The project needs to be the same
+      project as this config is in.
+  """
+
+  class MessageFormatValueValuesEnum(_messages.Enum):
+    """The format of the Cloud Pub/Sub messages.
+
+    Values:
+      MESSAGE_FORMAT_UNSPECIFIED: Unspecified.
+      PROTOBUF: The message payload is a serialized protocol buffer of
+        SourceRepoEvent.
+      JSON: The message payload is a JSON string of SourceRepoEvent.
+    """
+    MESSAGE_FORMAT_UNSPECIFIED = 0
+    PROTOBUF = 1
+    JSON = 2
+
+  messageFormat = _messages.EnumField('MessageFormatValueValuesEnum', 1)
+  topic = _messages.StringField(2)
+
+
 class Repo(_messages.Message):
   """A repository (or repo) is a Git repository storing versioned source
   content.
+
+  Messages:
+    PubsubConfigsValue: How this repository publishes a change in the
+      repository through Cloud Pub/Sub. Keyed by the topic names.
 
   Fields:
     mirrorConfig: How this repository mirrors a repository managed by another
@@ -197,16 +277,45 @@ class Repo(_messages.Message):
     name: Resource name of the repository, of the form
       `projects/<project>/repos/<repo>`.  The repo name may contain slashes.
       eg, `projects/myproject/repos/name/with/slash`
+    pubsubConfigs: How this repository publishes a change in the repository
+      through Cloud Pub/Sub. Keyed by the topic names.
     size: The disk usage of the repo, in bytes. Read-only field. Size is only
       returned by GetRepo.
     url: URL to clone the repository from Google Cloud Source Repositories.
       Read-only field.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PubsubConfigsValue(_messages.Message):
+    """How this repository publishes a change in the repository through Cloud
+    Pub/Sub. Keyed by the topic names.
+
+    Messages:
+      AdditionalProperty: An additional property for a PubsubConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type PubsubConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a PubsubConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PubsubConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PubsubConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   mirrorConfig = _messages.MessageField('MirrorConfig', 1)
   name = _messages.StringField(2)
-  size = _messages.IntegerField(3)
-  url = _messages.StringField(4)
+  pubsubConfigs = _messages.MessageField('PubsubConfigsValue', 3)
+  size = _messages.IntegerField(4)
+  url = _messages.StringField(5)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -225,6 +334,17 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class SourcerepoProjectsGetConfigRequest(_messages.Message):
+  """A SourcerepoProjectsGetConfigRequest object.
+
+  Fields:
+    name: The name of the requested project. Values are of the form
+      `projects/<project>`.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class SourcerepoProjectsReposCreateRequest(_messages.Message):
@@ -292,6 +412,20 @@ class SourcerepoProjectsReposListRequest(_messages.Message):
   pageToken = _messages.StringField(3)
 
 
+class SourcerepoProjectsReposPatchRequest(_messages.Message):
+  """A SourcerepoProjectsReposPatchRequest object.
+
+  Fields:
+    name: The name of the requested repository. Values are of the form
+      `projects/<project>/repos/<repo>`.
+    updateRepoRequest: A UpdateRepoRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateRepoRequest = _messages.MessageField('UpdateRepoRequest', 2)
+
+
 class SourcerepoProjectsReposSetIamPolicyRequest(_messages.Message):
   """A SourcerepoProjectsReposSetIamPolicyRequest object.
 
@@ -320,6 +454,20 @@ class SourcerepoProjectsReposTestIamPermissionsRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class SourcerepoProjectsUpdateConfigRequest(_messages.Message):
+  """A SourcerepoProjectsUpdateConfigRequest object.
+
+  Fields:
+    name: The name of the requested project. Values are of the form
+      `projects/<project>`.
+    updateProjectConfigRequest: A UpdateProjectConfigRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateProjectConfigRequest = _messages.MessageField('UpdateProjectConfigRequest', 2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -411,6 +559,34 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class UpdateProjectConfigRequest(_messages.Message):
+  """Request for UpdateProjectConfig.
+
+  Fields:
+    projectConfig: The new configuration for the project.
+    updateMask: A FieldMask specifying which fields of the project_config to
+      modify. Only the fields in the mask will be modified. If no mask is
+      provided, this request is no-op.
+  """
+
+  projectConfig = _messages.MessageField('ProjectConfig', 1)
+  updateMask = _messages.StringField(2)
+
+
+class UpdateRepoRequest(_messages.Message):
+  """Request for UpdateRepo.
+
+  Fields:
+    repo: The new configuration for the repository.
+    updateMask: A FieldMask specifying which fields of the repo to modify.
+      Only the fields in the mask will be modified. If no mask is provided,
+      this request is no-op.
+  """
+
+  repo = _messages.MessageField('Repo', 1)
+  updateMask = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

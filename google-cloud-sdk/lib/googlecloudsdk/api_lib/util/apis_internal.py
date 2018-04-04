@@ -152,11 +152,15 @@ def _GetClientInstance(api_name, api_version, no_http=False,
     from googlecloudsdk.core.credentials import http
     http_client = http.Http(enable_resource_quota=enable_resource_quota)
 
+  # TODO(b/77278279): Decide whether we should always set this or not.
+  encoding = None if six.PY2 else 'utf8'
+
   client_class = _GetClientClass(api_name, api_version)
   client_instance = client_class(
       url=_GetEffectiveApiEndpoint(api_name, api_version, client_class),
       get_credentials=False,
-      http=http_client)
+      http=http_client,
+      response_encoding=encoding)
   if check_response_func is not None:
     client_instance.check_response_func = check_response_func
   api_key = properties.VALUES.core.api_key.Get()

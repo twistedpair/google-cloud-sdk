@@ -22,6 +22,8 @@ import sys
 
 from googlecloudsdk.core.util import platforms
 
+import six
+
 
 class _Error(Exception):
   """A base exception for all Cloud SDK errors.
@@ -105,5 +107,5 @@ class NetworkIssueError(Error):
 
 def reraise(exc_value, tb=None):
   """Adds tb or the most recent traceback to exc_value and reraises."""
-  exc_value.__traceback__ = tb or sys.exc_info()[2]
-  raise exc_value
+  tb = tb or sys.exc_info()[2]
+  six.reraise(type(exc_value), exc_value, tb)

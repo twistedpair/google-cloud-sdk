@@ -21,11 +21,11 @@ from googlecloudsdk.api_lib.category_manager import utils
 DELETE_TAG_NAME_PATTERN = '{}/annotationTag'
 
 
-def ListAssetAnnotationTags(asset_ref):
+def ListAssetAnnotationTags(asset_resource):
   """Gets all annotation tags associated with an asset.
 
   Args:
-    asset_ref: An asset reference object.
+    asset_resource: A category_manager.assets core.Resource asset object.
 
   Returns:
     A ListAnnotationTagsResponse message.
@@ -33,16 +33,17 @@ def ListAssetAnnotationTags(asset_ref):
   messages = utils.GetMessagesModule()
   # Set url_escape=True because the resource name of the asset must be escaped.
   req = messages.CategorymanagerAssetsAnnotationTagsListRequest(
-      name=asset_ref.RelativeName(url_escape=True))
+      name=asset_resource.RelativeName(url_escape=True))
   return utils.GetClientInstance().assets_annotationTags.List(request=req)
 
 
-def ApplyAnnotationTag(asset_ref, annotation_ref, sub_asset=None):
+def ApplyAnnotationTag(asset_resource, annotation_resource, sub_asset=None):
   """Applies an annotation tag to an asset.
 
   Args:
-    asset_ref: An asset reference object.
-    annotation_ref: An annotation reference object.
+    asset_resource: A category_manager.assets core.Resource asset object.
+    annotation_resource: A category_manager.taxonomies.annotations
+      core.Resource asset object.
     sub_asset: A string representing the asset's sub-asset, if any.
 
   Returns:
@@ -51,18 +52,19 @@ def ApplyAnnotationTag(asset_ref, annotation_ref, sub_asset=None):
   messages = utils.GetMessagesModule()
   # Set url_escape=True because the resource name of the asset must be escaped.
   req = messages.CategorymanagerAssetsApplyAnnotationTagRequest(
-      name=asset_ref.RelativeName(url_escape=True),
+      name=asset_resource.RelativeName(url_escape=True),
       applyAnnotationTagRequest=messages.ApplyAnnotationTagRequest(
-          annotation=annotation_ref.RelativeName(), subAsset=sub_asset))
+          annotation=annotation_resource.RelativeName(), subAsset=sub_asset))
   return utils.GetClientInstance().assets.ApplyAnnotationTag(request=req)
 
 
-def DeleteAnnotationTag(asset_ref, annotation_ref, sub_asset=None):
+def DeleteAnnotationTag(asset_resource, annotation_resource, sub_asset=None):
   """Delete an annotation tag on an asset.
 
   Args:
-    asset_ref: An asset reference object.
-    annotation_ref: An annotation reference object.
+    asset_resource: A category_manager.assets core.Resource asset object.
+    annotation_resource: A category_manager.taxonomies.annotations
+      core.Resource asset object.
     sub_asset: A string representing the asset's sub-asset, if any.
 
   Returns:
@@ -72,7 +74,7 @@ def DeleteAnnotationTag(asset_ref, annotation_ref, sub_asset=None):
   # Set url_escape=True because the resource name of the asset must be escaped.
   req = messages.CategorymanagerAssetsDeleteAnnotationTagRequest(
       name=DELETE_TAG_NAME_PATTERN.format(
-          asset_ref.RelativeName(url_escape=True)),
-      annotation=annotation_ref.RelativeName(),
+          asset_resource.RelativeName(url_escape=True)),
+      annotation=annotation_resource.RelativeName(),
       subAsset=sub_asset)
   return utils.GetClientInstance().assets.DeleteAnnotationTag(request=req)

@@ -134,7 +134,8 @@ class ListSubscriptionsResponse(_messages.Message):
 
 
 class ListTopicSnapshotsResponse(_messages.Message):
-  """Response for the `ListTopicSnapshots` method.
+  """Response for the `ListTopicSnapshots` method. [ALPHA] This method is a
+  part of a closed Alpha API.
 
   Fields:
     nextPageToken: If not empty, indicates that there may be more snapshots
@@ -1055,7 +1056,8 @@ class Subscription(_messages.Message):
       `retain_acked_messages` is true, then this also configures the retention
       of acknowledged messages, and thus configures how far back in time a
       `Seek` can be done. Defaults to 7 days. Cannot be more than 7 days or
-      less than 10 minutes.
+      less than 10 minutes. [ALPHA] This field is a part of a closed Alpha
+      API.
     name: The name of the subscription. It must have the format
       `"projects/{project}/subscriptions/{subscription}"`. `{subscription}`
       must start with a letter, and contain only letters (`[A-Za-z]`), numbers
@@ -1068,7 +1070,8 @@ class Subscription(_messages.Message):
     retainAckedMessages: Indicates whether to retain acknowledged messages. If
       true, then messages are not expunged from the subscription's backlog,
       even if they are acknowledged, until they fall out of the
-      `message_retention_duration` window.
+      `message_retention_duration` window. [ALPHA] This field is a part of a
+      closed Alpha API.
     topic: The name of the topic from which this subscription is receiving
       messages. Format is `projects/{project}/topics/{topic}`. The value of
       this field will be `_deleted-topic_` if the topic has been deleted.

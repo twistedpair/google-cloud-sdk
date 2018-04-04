@@ -171,6 +171,8 @@ class ResourcePresentationSpec(PresentationSpec):
     name = self.name.upper()
     if not util.IsPositional(name):
       name = name[len(util.PREFIX):].replace('-', ' ')
+    else:
+      name = name.replace('_', ' ')
     return '{}'.format(name)
 
   @property

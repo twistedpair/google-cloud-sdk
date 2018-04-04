@@ -1016,12 +1016,37 @@ class Detail(_messages.Message):
 class Discovered(_messages.Message):
   """Provides information about the scan status of a discovered resource.
 
+  Enums:
+    AnalysisStatusValueValuesEnum: The status of discovery for the resource.
+
   Fields:
+    analysisStatus: The status of discovery for the resource.
     operation: Output only. An operation that indicates the status of the
       current scan.
   """
 
-  operation = _messages.MessageField('Operation', 1)
+  class AnalysisStatusValueValuesEnum(_messages.Enum):
+    """The status of discovery for the resource.
+
+    Values:
+      ANALYSIS_STATUS_UNSPECIFIED: Unknown
+      PENDING: Resource is known but no action has been taken yet.
+      SCANNING: Resource is being analyzed.
+      FINISHED_SUCCESS: Analysis has finished successfully.
+      FINISHED_FAILED: Analysis has finished unsuccessfully, the analysis
+        itself is in a bad state.
+      UNSUPPORTED_RESOURCE: Analysis will not happen, the resource is not
+        supported.
+    """
+    ANALYSIS_STATUS_UNSPECIFIED = 0
+    PENDING = 1
+    SCANNING = 2
+    FINISHED_SUCCESS = 3
+    FINISHED_FAILED = 4
+    UNSUPPORTED_RESOURCE = 5
+
+  analysisStatus = _messages.EnumField('AnalysisStatusValueValuesEnum', 1)
+  operation = _messages.MessageField('Operation', 2)
 
 
 class Discovery(_messages.Message):
@@ -1805,7 +1830,7 @@ class PgpSignedAttestation(_messages.Message):
     pgpKeyId: The cryptographic fingerprint of the key used to generate the
       signature, as output by, e.g. `gpg --list-keys`. This should be the
       version 4, full 160-bit fingerprint, expressed as a 40 character
-      hexidecimal string. See https://tools.ietf.org/html/rfc4880#section-12.2
+      hexadecimal string. See https://tools.ietf.org/html/rfc4880#section-12.2
       for details. Implementations may choose to acknowledge "LONG", "SHORT",
       or other abbreviated key IDs, but only the full fingerprint is
       guaranteed to work. In gpg, the full fingerprint can be retrieved from

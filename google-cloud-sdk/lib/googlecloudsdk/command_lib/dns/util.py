@@ -80,13 +80,13 @@ def ParseDnssecConfigArgs(args, messages):
   if key_specs:
     dnssec_config_args['defaultKeySpecs'] = key_specs
   if getattr(args, 'denial_of_existence', None) is not None:
-    dnssec_config_args['nonExistence'] = (flags.GetDoeFlagMapper()
-                                          .GetEnumForChoice(
-                                              args.denial_of_existence))
+    dnssec_config_args['nonExistence'] = (
+        flags.GetDoeFlagMapper(messages).GetEnumForChoice(
+            args.denial_of_existence))
   if args.dnssec_state is not None:
-    dnssec_config_args['state'] = (flags.GetDnsSecStateFlagMapper()
-                                   .GetEnumForChoice(
-                                       args.dnssec_state))
+    dnssec_config_args['state'] = (
+        flags.GetDnsSecStateFlagMapper(messages)
+        .GetEnumForChoice(args.dnssec_state))
 
   if dnssec_config_args:
     dnssec_config = messages.ManagedZoneDnsSecConfig(**dnssec_config_args)

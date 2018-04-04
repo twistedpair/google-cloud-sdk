@@ -506,3 +506,21 @@ properties:
     properties:
       # Corresponds tothe default output format setting on the command.
       format: { type: string }
+
+
+  # Additional information for handling the IAM Commands.
+  iam:
+    type: object
+    additionalProperties: false
+    properties:
+      # Path to the policy/updateMask fields in the SetIamRequest message for
+      # APIs that use non-standard naming.
+      # Example: 'setMyAPIIamPolicyRequest'
+      set_iam_policy_request_path: { type: string }
+      # A mapping of policy message type names to apitools message types for
+      # APIs that use non-standard naming.
+      # Example: policy: MyApiPolicy
+      message_type_overrides:
+        type: object
+        patternProperties:
+          .*: { type: string }

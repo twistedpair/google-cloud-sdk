@@ -2094,16 +2094,16 @@
           "description": "The response status, populated even when the ResponseObject is not a Status\ntype.  For successful responses, this will only include the Code and\nStatusSuccess.  For non-status type error responses, this will be\nauto-populated with the error Message.\n+optional",
           "$ref": "MetaV1Status"
         },
-        "requestObject": {
-          "description": "API object from the request, in JSON format. The RequestObject is recorded\nas-is in the request (possibly re-encoded as JSON), prior to version\nconversion, defaulting, admission or merging. It is an external versioned\nobject type, and may not be a valid object on its own.  Omitted for\nnon-resource requests.  Only logged at Request Level and higher.\n+optional",
+        "oldRequestObject": {
+          "description": "API object from the request, in JSON format. The RequestObject is recorded\nas-is in the request (possibly re-encoded as JSON), prior to version\nconversion, defaulting, admission or merging. It is an external versioned\nobject type, and may not be a valid object on its own.  Omitted for\nnon-resource requests.  Only logged at Request Level and higher.\nDEPRECATED: Use RequestObject instead.\n+optional",
           "type": "object",
           "additionalProperties": {
             "type": "any",
             "description": "Properties of the object."
           }
         },
-        "responseObject": {
-          "description": "API object returned in the response, in JSON. The ResponseObject is\nrecorded after conversion to the external type, and serialized as JSON.\nOmitted for non-resource requests.  Only logged at Response Level and\nhigher.\n+optional",
+        "oldResponseObject": {
+          "description": "API object returned in the response, in JSON. The ResponseObject is\nrecorded after conversion to the external type, and serialized as JSON.\nOmitted for non-resource requests.  Only logged at Response Level and\nhigher.\nDEPRECATED: Use ResponseObject instead.\n+optional",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -2119,6 +2119,14 @@
           "description": "Time the request reached current audit stage.\n+optional",
           "type": "string",
           "format": "google-datetime"
+        },
+        "requestObject": {
+          "description": "API object from the request, in JSON format. The RequestObject is recorded\nas-is in the request (possibly re-encoded as JSON), prior to version\nconversion, defaulting, admission or merging. It is an external versioned\nobject type, and may not be a valid object on its own.  Omitted for\nnon-resource requests.  Only logged at Request Level and higher.\n+optional",
+          "type": "any"
+        },
+        "responseObject": {
+          "description": "API object returned in the response, in JSON. The ResponseObject is\nrecorded after conversion to the external type, and serialized as JSON.\nOmitted for non-resource requests.  Only logged at Response Level and\nhigher.\n+optional",
+          "type": "any"
         }
       }
     },

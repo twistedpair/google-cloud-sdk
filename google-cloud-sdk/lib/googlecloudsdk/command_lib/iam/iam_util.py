@@ -227,7 +227,8 @@ def ParsePolicyFile(policy_file_path, policy_message_type):
   Raises:
     BadFileException if the JSON or YAML file is malformed.
   """
-  policy = ParseYamlorJsonPolicyFile(policy_file_path, policy_message_type)
+  policy, unused_mask = ParseYamlOrJsonPolicyFile(policy_file_path,
+                                                  policy_message_type)
 
   if not policy.etag:
     msg = ('The specified policy does not contain an "etag" field '
@@ -239,15 +240,47 @@ def ParsePolicyFile(policy_file_path, policy_message_type):
   return policy
 
 
-def ParseYamlorJsonPolicyFile(policy_file_path, policy_message_type):
+def ParsePolicyFileWithUpdateMask(policy_file_path, policy_message_type):
+  """Construct an IAM Policy protorpc.Message from a JSON/YAML formatted file.
+
+  Also contructs a FieldMask based on input policy.
+  Args:
+    policy_file_path: Path to the JSON or YAML IAM policy file.
+    policy_message_type: Policy message type to convert JSON or YAML to.
+  Returns:
+    a tuple of (policy, updateMask) where policy is a protorpc.Message of type
+    policy_message_type filled in from the JSON or YAML policy file and
+    updateMask is a FieldMask containing policy fields to be modified, based on
+    which fields are present in the input file.
+  Raises:
+    BadFileException if the JSON or YAML file is malformed.
+    IamEtagReadError if the etag is badly formatted.
+  """
+  policy, update_mask = ParseYamlOrJsonPolicyFile(policy_file_path,
+                                                  policy_message_type)
+
+  if not policy.etag:
+    msg = ('The specified policy does not contain an "etag" field '
+           'identifying a specific version to replace. Changing a '
+           'policy without an "etag" can overwrite concurrent policy '
+           'changes.')
+    console_io.PromptContinue(
+        message=msg, prompt_string='Replace existing policy', cancel_on_no=True)
+  return (policy, update_mask)
+
+
+def ParseYamlOrJsonPolicyFile(policy_file_path, policy_message_type):
   """Create an IAM Policy protorpc.Message from a YAML or JSON formatted file.
 
+  Returns the parsed policy object and FieldMask derived from input dict.
   Args:
     policy_file_path: Path to the YAML or JSON IAM policy file.
     policy_message_type: Policy message type to convert YAML to.
   Returns:
-    a protorpc.Message of type policy_message_type filled in from the input
-    policy file.
+    a tuple of (policy, updateMask) where policy is a protorpc.Message of type
+    policy_message_type filled in from the JSON or YAML policy file and
+    updateMask is a FieldMask containing policy fields to be modified, based on
+    which fields are present in the input file.
   Raises:
     BadFileException if the YAML or JSON file is malformed.
     IamEtagReadError if the etag is badly formatted.
@@ -255,6 +288,7 @@ def ParseYamlorJsonPolicyFile(policy_file_path, policy_message_type):
   policy_to_parse = yaml.load_path(policy_file_path)
   try:
     policy = encoding.PyValueToMessage(policy_message_type, policy_to_parse)
+    update_mask = ','.join(sorted(policy_to_parse.keys()))
   except (AttributeError) as e:
     # Raised when the input file is not properly formatted YAML policy file.
     raise gcloud_exceptions.BadFileException(
@@ -262,11 +296,11 @@ def ParseYamlorJsonPolicyFile(policy_file_path, policy_message_type):
         'policy file. {1}'
         .format(policy_file_path, str(e)))
   except (apitools_messages.DecodeError) as e:
-    # DecodeError is raised when etag is badly formatted (not proper Base64)
+ # DecodeError is raised when etag is badly formatted (not proper Base64)
     raise IamEtagReadError(
         'The etag of policy file [{0}] is not properly formatted. {1}'
         .format(policy_file_path, str(e)))
-  return policy
+  return (policy, update_mask)
 
 
 def ParseYamlToRole(file_path, role_message_type):

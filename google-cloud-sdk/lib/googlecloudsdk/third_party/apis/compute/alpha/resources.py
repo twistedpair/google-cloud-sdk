@@ -193,13 +193,6 @@ class Collections(enum.Enum):
       {},
       [u'project', u'zone', u'machineType']
   )
-  MAINTENANCEPOLICIES = (
-      'maintenancePolicies',
-      'projects/{project}/regions/{region}/maintenancePolicies/'
-      '{maintenancePolicy}',
-      {},
-      [u'project', u'region', u'maintenancePolicy']
-  )
   NETWORKENDPOINTGROUPS = (
       'networkEndpointGroups',
       'projects/{project}/zones/{zone}/networkEndpointGroups/'
@@ -218,6 +211,24 @@ class Collections(enum.Enum):
       'projects/{project}/global/gateways/{nextHopGateway}',
       {},
       [u'project', u'nextHopGateway']
+  )
+  NODEGROUPS = (
+      'nodeGroups',
+      'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}',
+      {},
+      [u'project', u'zone', u'nodeGroup']
+  )
+  NODETEMPLATES = (
+      'nodeTemplates',
+      'projects/{project}/regions/{region}/nodeTemplates/{nodeTemplate}',
+      {},
+      [u'project', u'region', u'nodeTemplate']
+  )
+  NODETYPES = (
+      'nodeTypes',
+      'projects/{project}/zones/{zone}/nodeTypes/{nodeType}',
+      {},
+      [u'project', u'zone', u'nodeType']
   )
   PROJECTS = (
       'projects',

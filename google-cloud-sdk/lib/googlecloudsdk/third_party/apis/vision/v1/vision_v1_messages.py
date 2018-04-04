@@ -102,10 +102,12 @@ class Block(_messages.Message):
       of top-left, top-right, bottom-right, bottom-left. When a rotation of
       the bounding box is detected the rotation is represented as around the
       top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      orientation. For example:  * when the text is horizontal it might look
+      like:          0----1         |    |         3----2  * when it's rotated
+      180 degrees around the top-left corner it becomes:          2----3
+      |    |         1----0    and the vertice order will still be (0, 1, 2,
+      3).
+    confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
       text).
     property: Additional information detected for the block.
@@ -131,8 +133,9 @@ class Block(_messages.Message):
 
   blockType = _messages.EnumField('BlockTypeValueValuesEnum', 1)
   boundingBox = _messages.MessageField('BoundingPoly', 2)
-  paragraphs = _messages.MessageField('Paragraph', 3, repeated=True)
-  property = _messages.MessageField('TextProperty', 4)
+  confidence = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  paragraphs = _messages.MessageField('Paragraph', 4, repeated=True)
+  property = _messages.MessageField('TextProperty', 5)
 
 
 class BoundingPoly(_messages.Message):
@@ -143,6 +146,10 @@ class BoundingPoly(_messages.Message):
   """
 
   vertices = _messages.MessageField('Vertex', 1, repeated=True)
+
+
+class CancelOperationRequest(_messages.Message):
+  """The request message for Operations.CancelOperation."""
 
 
 class Color(_messages.Message):
@@ -336,16 +343,26 @@ class DominantColorsAnnotation(_messages.Message):
   colors = _messages.MessageField('ColorInfo', 1, repeated=True)
 
 
+class Empty(_messages.Message):
+  """A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance:      service Foo {
+  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
+  JSON representation for `Empty` is empty JSON object `{}`.
+  """
+
+
+
 class EntityAnnotation(_messages.Message):
   """Set of detected entity features.
 
   Fields:
     boundingPoly: Image region to which this entity belongs. Not produced for
       `LABEL_DETECTION` features.
-    confidence: The accuracy of the entity detection in an image. For example,
-      for an image in which the "Eiffel Tower" entity is detected, this field
-      represents the confidence that there is a tower in the query image.
-      Range [0, 1].
+    confidence: **Deprecated. Use `score` instead.** The accuracy of the
+      entity detection in an image. For example, for an image in which the
+      "Eiffel Tower" entity is detected, this field represents the confidence
+      that there is a tower in the query image. Range [0, 1].
     description: Entity textual description, expressed in its `locale`
       language.
     locale: The language code for the locale in which the entity textual
@@ -597,16 +614,18 @@ class FaceAnnotation(_messages.Message):
 
 
 class Feature(_messages.Message):
-  """Users describe the type of Google Cloud Vision API tasks to perform over
-  images by using *Feature*s. Each Feature indicates a type of image detection
-  task to perform. Features encode the Cloud Vision API vertical to operate on
-  and the number of top-scoring results to return.
+  """The type of Google Cloud Vision API detection to perform, and the maximum
+  number of results to return for that type. Multiple `Feature` objects can be
+  specified in the `features` list.
 
   Enums:
     TypeValueValuesEnum: The feature type.
 
   Fields:
-    maxResults: Maximum number of results of this type.
+    maxResults: Maximum number of results of this type. Does not apply to
+      `TEXT_DETECTION`, `DOCUMENT_TEXT_DETECTION`, or `CROP_HINTS`.
+    model: Model to use for the feature. Supported values: "builtin/stable"
+      (the default if unset) and "builtin/latest".
     type: The feature type.
   """
 
@@ -619,11 +638,14 @@ class Feature(_messages.Message):
       LANDMARK_DETECTION: Run landmark detection.
       LOGO_DETECTION: Run logo detection.
       LABEL_DETECTION: Run label detection.
-      TEXT_DETECTION: Run OCR.
+      TEXT_DETECTION: Run text detection / optical character recognition
+        (OCR). Text detection is optimized for areas of text within a larger
+        image; if the image is a document, use `DOCUMENT_TEXT_DETECTION`
+        instead.
       DOCUMENT_TEXT_DETECTION: Run dense text document OCR. Takes precedence
-        when both DOCUMENT_TEXT_DETECTION and TEXT_DETECTION are present.
-      SAFE_SEARCH_DETECTION: Run computer vision models to compute image safe-
-        search properties.
+        when both `DOCUMENT_TEXT_DETECTION` and `TEXT_DETECTION` are present.
+      SAFE_SEARCH_DETECTION: Run Safe Search to detect potentially unsafe or
+        undesirable content.
       IMAGE_PROPERTIES: Compute a set of image properties, such as the image's
         dominant colors.
       CROP_HINTS: Run crop hints.
@@ -642,19 +664,116 @@ class Feature(_messages.Message):
     WEB_DETECTION = 10
 
   maxResults = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  model = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class GoogleCloudVisionV1p2beta1AsyncAnnotateFileResponse(_messages.Message):
+  """The response for a single offline file annotation request.
+
+  Fields:
+    outputConfig: The output location and metadata from
+      AsyncAnnotateFileRequest.
+    outputs: The full list of output files in GCS.
+  """
+
+  outputConfig = _messages.MessageField('GoogleCloudVisionV1p2beta1OutputConfig', 1)
+  outputs = _messages.MessageField('GoogleCloudVisionV1p2beta1GcsDestination', 2, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1AsyncBatchAnnotateFilesResponse(_messages.Message):
+  """Response to an async batch file annotation request.
+
+  Fields:
+    responses: The list of file annotation responses, one for each request in
+      AsyncBatchAnnotateFilesRequest.
+  """
+
+  responses = _messages.MessageField('GoogleCloudVisionV1p2beta1AsyncAnnotateFileResponse', 1, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1GcsDestination(_messages.Message):
+  """The Google Cloud Storage location where the output will be written to.
+
+  Fields:
+    uri: Google Cloud Storage URI where the results will be stored. Results
+      will be in JSON format and preceded by its corresponding input URI. This
+      field can either represent a single file, or a prefix for multiple
+      outputs. Prefixes must end in a `/`.  Examples:  *    File: gs://bucket-
+      name/filename.json *    Prefix: gs://bucket-name/prefix/here/ *    File:
+      gs://bucket-name/prefix/here  If multiple outputs, each response is
+      still AnnotateFileResponse, each of which contains some subset of the
+      full list of AnnotateImageResponse. Multiple outputs can happen if, for
+      example, the output JSON is too large and overflows into multiple
+      sharded files.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleCloudVisionV1p2beta1OperationMetadata(_messages.Message):
+  """Contains metadata for the BatchAnnotateImages operation.
+
+  Enums:
+    StateValueValuesEnum: Current state of the batch operation.
+
+  Fields:
+    createTime: The time when the batch request was received.
+    state: Current state of the batch operation.
+    updateTime: The time when the operation result was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """Current state of the batch operation.
+
+    Values:
+      STATE_UNSPECIFIED: Invalid.
+      CREATED: Request is received.
+      RUNNING: Request is actively being processed.
+      DONE: The batch processing is done.
+      CANCELLED: The batch processing was cancelled.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATED = 1
+    RUNNING = 2
+    DONE = 3
+    CANCELLED = 4
+
+  createTime = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  updateTime = _messages.StringField(3)
+
+
+class GoogleCloudVisionV1p2beta1OutputConfig(_messages.Message):
+  """The desired output location and metadata.
+
+  Fields:
+    batchSize: The max number of response protos to put into each output JSON
+      file on GCS. The valid range is [1, 100]. If not specified, the default
+      value is 20.  For example, for one pdf file with 100 pages, 100 response
+      protos will be generated. If `batch_size` = 20, then 5 json files each
+      containing 20 response protos will be written under the prefix
+      `gcs_destination`.`uri`.  Currently, batch_size only applies to
+      GcsDestination, with potential future support for other output
+      configurations.
+    gcsDestination: The Google Cloud Storage location to write the output(s)
+      to.
+  """
+
+  batchSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  gcsDestination = _messages.MessageField('GoogleCloudVisionV1p2beta1GcsDestination', 2)
 
 
 class Image(_messages.Message):
   """Client image to perform Google Cloud Vision API tasks over.
 
   Fields:
-    content: Image content, represented as a stream of bytes. Note: as with
+    content: Image content, represented as a stream of bytes. Note: As with
       all `bytes` fields, protobuffers use a pure binary representation,
       whereas JSON representations use base64.
-    source: Google Cloud Storage image location. If both `content` and
-      `source` are provided for an image, `content` takes precedence and is
-      used to perform the image annotation request.
+    source: Google Cloud Storage image location, or publicly-accessible image
+      URL. If both `content` and `source` are provided for an image, `content`
+      takes precedence and is used to perform the image annotation request.
   """
 
   content = _messages.BytesField(1)
@@ -675,11 +794,13 @@ class ImageContext(_messages.Message):
       detection returns an error if one or more of the specified languages is
       not one of the [supported languages](/vision/docs/languages).
     latLongRect: lat/long rectangle that specifies the location of the image.
+    webDetectionParams: Parameters for web detection.
   """
 
   cropHintsParams = _messages.MessageField('CropHintsParams', 1)
   languageHints = _messages.StringField(2, repeated=True)
   latLongRect = _messages.MessageField('LatLongRect', 3)
+  webDetectionParams = _messages.MessageField('WebDetectionParams', 4)
 
 
 class ImageProperties(_messages.Message):
@@ -693,21 +814,25 @@ class ImageProperties(_messages.Message):
 
 
 class ImageSource(_messages.Message):
-  """External image source (Google Cloud Storage image location).
+  """External image source (Google Cloud Storage or web URL image location).
 
   Fields:
-    gcsImageUri: NOTE: For new code `image_uri` below is preferred. Google
-      Cloud Storage image URI, which must be in the following form:
-      `gs://bucket_name/object_name` (for details, see [Google Cloud Storage
-      Request URIs](https://cloud.google.com/storage/docs/reference-uris)).
-      NOTE: Cloud Storage object versioning is not supported.
-    imageUri: Image URI which supports: 1) Google Cloud Storage image URI,
-      which must be in the following form: `gs://bucket_name/object_name` (for
-      details, see [Google Cloud Storage Request
-      URIs](https://cloud.google.com/storage/docs/reference-uris)). NOTE:
-      Cloud Storage object versioning is not supported. 2) Publicly accessible
-      image HTTP/HTTPS URL. This is preferred over the legacy `gcs_image_uri`
-      above. When both `gcs_image_uri` and `image_uri` are specified,
+    gcsImageUri: **Use `image_uri` instead.**  The Google Cloud Storage  URI
+      of the form `gs://bucket_name/object_name`. Object versioning is not
+      supported. See [Google Cloud Storage Request
+      URIs](https://cloud.google.com/storage/docs/reference-uris) for more
+      info.
+    imageUri: The URI of the source image. Can be either:  1. A Google Cloud
+      Storage URI of the form    `gs://bucket_name/object_name`. Object
+      versioning is not supported. See    [Google Cloud Storage Request
+      URIs](https://cloud.google.com/storage/docs/reference-uris) for more
+      info.  2. A publicly-accessible image HTTP/HTTPS URL. When fetching
+      images from    HTTP/HTTPS URLs, Google cannot guarantee that the request
+      will be    completed. Your request may fail if the specified host denies
+      the    request (e.g. due to request throttling or DOS prevention), or if
+      Google    throttles requests to the site for abuse prevention. You
+      should not    depend on externally-hosted images for production
+      applications.  When both `gcs_image_uri` and `image_uri` are specified,
       `image_uri` takes precedence.
   """
 
@@ -835,6 +960,19 @@ class LatLongRect(_messages.Message):
   minLatLng = _messages.MessageField('LatLng', 2)
 
 
+class ListOperationsResponse(_messages.Message):
+  """The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
 class LocationInfo(_messages.Message):
   """Detected entity location information.
 
@@ -845,20 +983,131 @@ class LocationInfo(_messages.Message):
   latLng = _messages.MessageField('LatLng', 1)
 
 
+class Operation(_messages.Message):
+  """This resource represents a long-running operation that is the result of a
+  network API call.
+
+  Messages:
+    MetadataValue: Service-specific metadata associated with the operation.
+      It typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata.  Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    ResponseValue: The normal response of the operation in case of success.
+      If the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`.  If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name.  For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+  Fields:
+    done: If the value is `false`, it means the operation is still in
+      progress. If `true`, the operation is completed, and either `error` or
+      `response` is available.
+    error: The error result of the operation in case of failure or
+      cancellation.
+    metadata: Service-specific metadata associated with the operation.  It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata.  Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    name: The server-assigned name, which is only unique within the same
+      service that originally returns it. If you use the default HTTP mapping,
+      the `name` should have the format of `operations/some/unique/name`.
+    response: The normal response of the operation in case of success.  If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`.  If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name.  For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    """Service-specific metadata associated with the operation.  It typically
+    contains progress information and common metadata such as create time.
+    Some services might not provide such metadata.  Any method that returns a
+    long-running operation should document the metadata type, if any.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseValue(_messages.Message):
+    """The normal response of the operation in case of success.  If the
+    original method returns no data on success, such as `Delete`, the response
+    is `google.protobuf.Empty`.  If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    methods, the response should have the type `XxxResponse`, where `Xxx` is
+    the original method name.  For example, if the original method name is
+    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      """An additional property for a ResponseValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('Status', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  response = _messages.MessageField('ResponseValue', 5)
+
+
 class Page(_messages.Message):
   """Detected page from OCR.
 
   Fields:
     blocks: List of blocks of text, images etc on this page.
-    height: Page height in pixels.
+    confidence: Confidence of the OCR results on the page. Range [0, 1].
+    height: Page height. For PDFs the unit is points. For images (including
+      TIFFs) the unit is pixels.
     property: Additional information detected on the page.
-    width: Page width in pixels.
+    width: Page width. For PDFs the unit is points. For images (including
+      TIFFs) the unit is pixels.
   """
 
   blocks = _messages.MessageField('Block', 1, repeated=True)
-  height = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  property = _messages.MessageField('TextProperty', 3)
-  width = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  height = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  property = _messages.MessageField('TextProperty', 4)
+  width = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class Paragraph(_messages.Message):
@@ -873,13 +1122,15 @@ class Paragraph(_messages.Message):
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
       1----0   and the vertice order will still be (0, 1, 2, 3).
+    confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of words in this paragraph.
   """
 
   boundingBox = _messages.MessageField('BoundingPoly', 1)
-  property = _messages.MessageField('TextProperty', 2)
-  words = _messages.MessageField('Word', 3, repeated=True)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  property = _messages.MessageField('TextProperty', 3)
+  words = _messages.MessageField('Word', 4, repeated=True)
 
 
 class Position(_messages.Message):
@@ -922,6 +1173,10 @@ class SafeSearchAnnotation(_messages.Message):
       image. Adult content may contain elements such as nudity, pornographic
       images or cartoons, or sexual activities.
     MedicalValueValuesEnum: Likelihood that this is a medical image.
+    RacyValueValuesEnum: Likelihood that the request image contains racy
+      content. Racy content may include (but is not limited to) skimpy or
+      sheer clothing, strategically covered nudity, lewd or provocative poses,
+      or close-ups of sensitive body areas.
     SpoofValueValuesEnum: Spoof likelihood. The likelihood that an
       modification was made to the image's canonical version to make it appear
       funny or offensive.
@@ -933,6 +1188,10 @@ class SafeSearchAnnotation(_messages.Message):
       content may contain elements such as nudity, pornographic images or
       cartoons, or sexual activities.
     medical: Likelihood that this is a medical image.
+    racy: Likelihood that the request image contains racy content. Racy
+      content may include (but is not limited to) skimpy or sheer clothing,
+      strategically covered nudity, lewd or provocative poses, or close-ups of
+      sensitive body areas.
     spoof: Spoof likelihood. The likelihood that an modification was made to
       the image's canonical version to make it appear funny or offensive.
     violence: Likelihood that this image contains violent content.
@@ -964,6 +1223,31 @@ class SafeSearchAnnotation(_messages.Message):
 
   class MedicalValueValuesEnum(_messages.Enum):
     """Likelihood that this is a medical image.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class RacyValueValuesEnum(_messages.Enum):
+    """Likelihood that the request image contains racy content. Racy content
+    may include (but is not limited to) skimpy or sheer clothing,
+    strategically covered nudity, lewd or provocative poses, or close-ups of
+    sensitive body areas.
 
     Values:
       UNKNOWN: Unknown likelihood.
@@ -1031,8 +1315,9 @@ class SafeSearchAnnotation(_messages.Message):
 
   adult = _messages.EnumField('AdultValueValuesEnum', 1)
   medical = _messages.EnumField('MedicalValueValuesEnum', 2)
-  spoof = _messages.EnumField('SpoofValueValuesEnum', 3)
-  violence = _messages.EnumField('ViolenceValueValuesEnum', 4)
+  racy = _messages.EnumField('RacyValueValuesEnum', 3)
+  spoof = _messages.EnumField('SpoofValueValuesEnum', 4)
+  violence = _messages.EnumField('ViolenceValueValuesEnum', 5)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1192,13 +1477,15 @@ class Symbol(_messages.Message):
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
       1----0   and the vertice order will still be (0, 1, 2, 3).
+    confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.
   """
 
   boundingBox = _messages.MessageField('BoundingPoly', 1)
-  property = _messages.MessageField('TextProperty', 2)
-  text = _messages.StringField(3)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  property = _messages.MessageField('TextProperty', 3)
+  text = _messages.StringField(4)
 
 
 class TextAnnotation(_messages.Message):
@@ -1244,10 +1531,70 @@ class Vertex(_messages.Message):
   y = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class VisionLocationsOperationsGetRequest(_messages.Message):
+  """A VisionLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VisionOperationsCancelRequest(_messages.Message):
+  """A VisionOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class VisionOperationsDeleteRequest(_messages.Message):
+  """A VisionOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VisionOperationsGetRequest(_messages.Message):
+  """A VisionOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VisionOperationsListRequest(_messages.Message):
+  """A VisionOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class WebDetection(_messages.Message):
   """Relevant information for the image from the Internet.
 
   Fields:
+    bestGuessLabels: Best guess text labels for the request image.
     fullMatchingImages: Fully matching images from the Internet. Can include
       resized copies of the query image.
     pagesWithMatchingImages: Web pages containing the matching images from the
@@ -1259,11 +1606,23 @@ class WebDetection(_messages.Message):
     webEntities: Deduced entities from similar images on the Internet.
   """
 
-  fullMatchingImages = _messages.MessageField('WebImage', 1, repeated=True)
-  pagesWithMatchingImages = _messages.MessageField('WebPage', 2, repeated=True)
-  partialMatchingImages = _messages.MessageField('WebImage', 3, repeated=True)
-  visuallySimilarImages = _messages.MessageField('WebImage', 4, repeated=True)
-  webEntities = _messages.MessageField('WebEntity', 5, repeated=True)
+  bestGuessLabels = _messages.MessageField('WebLabel', 1, repeated=True)
+  fullMatchingImages = _messages.MessageField('WebImage', 2, repeated=True)
+  pagesWithMatchingImages = _messages.MessageField('WebPage', 3, repeated=True)
+  partialMatchingImages = _messages.MessageField('WebImage', 4, repeated=True)
+  visuallySimilarImages = _messages.MessageField('WebImage', 5, repeated=True)
+  webEntities = _messages.MessageField('WebEntity', 6, repeated=True)
+
+
+class WebDetectionParams(_messages.Message):
+  """Parameters for web detection request.
+
+  Fields:
+    includeGeoResults: Whether to include results derived from the geo
+      information in the image.
+  """
+
+  includeGeoResults = _messages.BooleanField(1)
 
 
 class WebEntity(_messages.Message):
@@ -1293,16 +1652,39 @@ class WebImage(_messages.Message):
   url = _messages.StringField(2)
 
 
+class WebLabel(_messages.Message):
+  """Label to provide extra metadata for the web detection.
+
+  Fields:
+    label: Label for extra metadata.
+    languageCode: The BCP-47 language code for `label`, such as "en-US" or
+      "sr-Latn". For more information, see
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+  """
+
+  label = _messages.StringField(1)
+  languageCode = _messages.StringField(2)
+
+
 class WebPage(_messages.Message):
   """Metadata for web pages.
 
   Fields:
+    fullMatchingImages: Fully matching images on the page. Can include resized
+      copies of the query image.
+    pageTitle: Title for the web page, may contain HTML markups.
+    partialMatchingImages: Partial matching images on the page. Those images
+      are similar enough to share some key-point features. For example an
+      original image will likely have partial matching for its crops.
     score: (Deprecated) Overall relevancy score for the web page.
     url: The result web page URL.
   """
 
-  score = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  url = _messages.StringField(2)
+  fullMatchingImages = _messages.MessageField('WebImage', 1, repeated=True)
+  pageTitle = _messages.StringField(2)
+  partialMatchingImages = _messages.MessageField('WebImage', 3, repeated=True)
+  score = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  url = _messages.StringField(5)
 
 
 class Word(_messages.Message):
@@ -1317,14 +1699,16 @@ class Word(_messages.Message):
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
       1----0   and the vertice order will still be (0, 1, 2, 3).
+    confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the
       natural reading order.
   """
 
   boundingBox = _messages.MessageField('BoundingPoly', 1)
-  property = _messages.MessageField('TextProperty', 2)
-  symbols = _messages.MessageField('Symbol', 3, repeated=True)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  property = _messages.MessageField('TextProperty', 3)
+  symbols = _messages.MessageField('Symbol', 4, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

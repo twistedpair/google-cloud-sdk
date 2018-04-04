@@ -1121,12 +1121,6 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists,
     taskqueue
       - https://www.googleapis.com/auth/taskqueue
 
-    useraccounts-ro
-      - https://www.googleapis.com/auth/cloud.useraccounts.readonly
-
-    useraccounts-rw
-      - https://www.googleapis.com/auth/cloud.useraccounts
-
     userinfo-email
       - https://www.googleapis.com/auth/userinfo.email
 

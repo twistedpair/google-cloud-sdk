@@ -54,7 +54,7 @@ class ArgumentCompleter(object):
     attr = console_attr.GetConsoleAttr()
     width, _ = attr.GetTermSize()
     # No worries for long msg: negative_integer * ' ' yields ''.
-    return [msg + (width / 2 - len(msg)) * ' ' for msg in msgs]
+    return [msg + (width // 2 - len(msg)) * ' ' for msg in msgs]
 
   def _HandleCompleterException(self, exception, prefix, completer=None):
     """Handles completer errors by crafting two "completions" from exception.

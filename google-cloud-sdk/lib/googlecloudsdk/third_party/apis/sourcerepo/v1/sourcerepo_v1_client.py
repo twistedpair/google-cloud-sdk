@@ -189,6 +189,33 @@ not set by ListRepos.  To get the size of a repo, use GetRepo.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      """Updates information about a repo.
+
+      Args:
+        request: (SourcerepoProjectsReposPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Repo) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/repos/{reposId}',
+        http_method=u'PATCH',
+        method_id=u'sourcerepo.projects.repos.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field=u'updateRepoRequest',
+        request_type_name=u'SourcerepoProjectsReposPatchRequest',
+        response_type_name=u'Repo',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       """Sets the access control policy on the specified resource. Replaces any.
 existing policy.
@@ -255,3 +282,57 @@ permissions, not a NOT_FOUND error.
       super(SourcerepoV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetConfig(self, request, global_params=None):
+      """Returns the Cloud Source Repositories configuration of the project.
+
+      Args:
+        request: (SourcerepoProjectsGetConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProjectConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/config',
+        http_method=u'GET',
+        method_id=u'sourcerepo.projects.getConfig',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/config',
+        request_field='',
+        request_type_name=u'SourcerepoProjectsGetConfigRequest',
+        response_type_name=u'ProjectConfig',
+        supports_download=False,
+    )
+
+    def UpdateConfig(self, request, global_params=None):
+      """Updates the Cloud Source Repositories configuration of the project.
+
+      Args:
+        request: (SourcerepoProjectsUpdateConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProjectConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/config',
+        http_method=u'PATCH',
+        method_id=u'sourcerepo.projects.updateConfig',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/config',
+        request_field=u'updateProjectConfigRequest',
+        request_type_name=u'SourcerepoProjectsUpdateConfigRequest',
+        response_type_name=u'ProjectConfig',
+        supports_download=False,
+    )

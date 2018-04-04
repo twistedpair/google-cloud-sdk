@@ -1022,8 +1022,12 @@ class GoogleCloudMlV1Version(_messages.Message):
   engine/reference/rest/v1/projects.models.versions/list).
 
   Enums:
-    FrameworkValueValuesEnum: The ML framework used to train this version of
-      the model. If not specified, defaults to `TENSORFLOW`
+    FrameworkValueValuesEnum: Optional. The machine learning framework Cloud
+      ML Engine uses to train this version of the model. Valid values are
+      `TENSORFLOW`, `SCIKIT_LEARN`, and `XGBOOST`. If you do not specify a
+      framework, Cloud ML Engine uses TensorFlow. If you choose `SCIKIT_LEARN`
+      or `XGBOOST`, you must also set the runtime version of the model to 1.4
+      or greater.
     StateValueValuesEnum: Output only. The state of a version.
 
   Messages:
@@ -1058,8 +1062,11 @@ class GoogleCloudMlV1Version(_messages.Message):
       conditions: An `etag` is returned in the response to `GetVersion`, and
       systems are expected to put that etag in the request to `UpdateVersion`
       to ensure that their change will be applied to the model as intended.
-    framework: The ML framework used to train this version of the model. If
-      not specified, defaults to `TENSORFLOW`
+    framework: Optional. The machine learning framework Cloud ML Engine uses
+      to train this version of the model. Valid values are `TENSORFLOW`,
+      `SCIKIT_LEARN`, and `XGBOOST`. If you do not specify a framework, Cloud
+      ML Engine uses TensorFlow. If you choose `SCIKIT_LEARN` or `XGBOOST`,
+      you must also set the runtime version of the model to 1.4 or greater.
     isDefault: Output only. If true, this version will be used to handle
       prediction requests that do not specify a version.  You can change the
       default version by calling [projects.methods.versions.setDefault](/ml-
@@ -1093,8 +1100,11 @@ class GoogleCloudMlV1Version(_messages.Message):
   """
 
   class FrameworkValueValuesEnum(_messages.Enum):
-    """The ML framework used to train this version of the model. If not
-    specified, defaults to `TENSORFLOW`
+    """Optional. The machine learning framework Cloud ML Engine uses to train
+    this version of the model. Valid values are `TENSORFLOW`, `SCIKIT_LEARN`,
+    and `XGBOOST`. If you do not specify a framework, Cloud ML Engine uses
+    TensorFlow. If you choose `SCIKIT_LEARN` or `XGBOOST`, you must also set
+    the runtime version of the model to 1.4 or greater.
 
     Values:
       FRAMEWORK_UNSPECIFIED: <no description>

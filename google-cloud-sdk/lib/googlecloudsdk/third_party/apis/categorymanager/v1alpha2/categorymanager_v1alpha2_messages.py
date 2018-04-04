@@ -267,7 +267,7 @@ class CategorymanagerAssetsDeleteAnnotationTagRequest(_messages.Message):
       The request will be failed with a NOT_FOUND error if the annotation is
       not tagged on the given asset / sub asset.
     name: [Required] Resource name of the asset whose annotation tag is to be
-      removed.
+      removed, must be RFC3986 escaped.
     subAsset: A finer grained sub asset whose annotation tag is to be removed.
       For Bigquery, provide the name of the column that contains the
       annotation tag. If this field is empty, it means given annotation tag is

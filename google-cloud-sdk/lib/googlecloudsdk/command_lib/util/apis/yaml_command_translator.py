@@ -327,6 +327,7 @@ class CommandBuilder(object):
     # pylint: disable=protected-access, The linter gets confused about 'self'
     # and thinks we are accessing something protected.
     class Command(base.Command):
+      """Set IAM policy command closure."""
 
       @staticmethod
       def Args(parser):
@@ -336,8 +337,10 @@ class CommandBuilder(object):
 
       def Run(self_, args):
         policy_type = self.method.GetMessageByName('Policy')
-        policy = iam_util.ParsePolicyFile(args.policy_file, policy_type)
+        policy, update_mask = iam_util.ParsePolicyFileWithUpdateMask(
+            args.policy_file, policy_type)
         self.spec.request.static_fields['setIamPolicyRequest.policy'] = policy
+        self._SetPolicyUpdateMask(update_mask)
         ref, response = self._CommonRun(args)
         iam_util.LogSetIamPolicy(ref.Name(), self.resource_type)
         return self._HandleResponse(response)
@@ -438,6 +441,12 @@ class CommandBuilder(object):
                                 limit=self.arg_generator.Limit(args),
                                 page_size=self.arg_generator.PageSize(args))
     return ref, response
+
+  def _SetPolicyUpdateMask(self, update_mask):
+    update_request = self.method.GetMessageByName('SetIamPolicyRequest')
+    if hasattr(update_request, 'updateMask'):
+      self.spec.request.static_fields['setIamPolicyRequest.updateMask'] = (
+          update_mask)
 
   def _HandleAsync(self, args, resource_ref, operation,
                    request_string, extract_resource_result=True):

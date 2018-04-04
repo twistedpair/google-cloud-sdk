@@ -17,6 +17,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
 import json
 import re
 
@@ -174,12 +175,12 @@ def GetMessageFieldType(resource_key, message):
       actual_name = convert(name)
       try:
         message = message.field_by_name(actual_name).type
-      except KeyError:
+      except (AttributeError, KeyError):
         pass
       else:
         break
     else:
-      raise
+      raise KeyError('Field {} not in message.'.format(name))
     actual_key.append(actual_name)
   if message == six.integer_types:
     # A distinction we don't need, especially since python 3 only has "int".

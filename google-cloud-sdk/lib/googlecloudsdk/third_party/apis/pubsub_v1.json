@@ -330,7 +330,7 @@
     },
     "ListTopicSnapshotsResponse": {
       "id": "ListTopicSnapshotsResponse",
-      "description": "Response for the `ListTopicSnapshots` method.",
+      "description": "Response for the `ListTopicSnapshots` method.\n[ALPHA] This method is a part of a closed Alpha API.",
       "type": "object",
       "properties": {
         "snapshots": {
@@ -376,11 +376,11 @@
           "format": "int32"
         },
         "retainAckedMessages": {
-          "description": "Indicates whether to retain acknowledged messages. If true, then\nmessages are not expunged from the subscription's backlog, even if they are\nacknowledged, until they fall out of the `message_retention_duration`\nwindow.",
+          "description": "Indicates whether to retain acknowledged messages. If true, then\nmessages are not expunged from the subscription's backlog, even if they are\nacknowledged, until they fall out of the `message_retention_duration`\nwindow.\n[ALPHA] This field is a part of a closed Alpha API.",
           "type": "boolean"
         },
         "messageRetentionDuration": {
-          "description": "How long to retain unacknowledged messages in the subscription's backlog,\nfrom the moment a message is published.\nIf `retain_acked_messages` is true, then this also configures the retention\nof acknowledged messages, and thus configures how far back in time a `Seek`\ncan be done. Defaults to 7 days. Cannot be more than 7 days or less than 10\nminutes.",
+          "description": "How long to retain unacknowledged messages in the subscription's backlog,\nfrom the moment a message is published.\nIf `retain_acked_messages` is true, then this also configures the retention\nof acknowledged messages, and thus configures how far back in time a `Seek`\ncan be done. Defaults to 7 days. Cannot be more than 7 days or less than 10\nminutes.\n[ALPHA] This field is a part of a closed Alpha API.",
           "type": "string",
           "format": "google-duration"
         },
@@ -982,7 +982,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/pubsub"
                   ],
-                  "description": "Lists the names of the snapshots on this topic."
+                  "description": "Lists the names of the snapshots on this topic.\n[ALPHA] This method is a part of a closed Alpha API."
                 }
               }
             }
@@ -1364,7 +1364,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Seeks an existing subscription to a point in time or to a given snapshot,\nwhichever is provided in the request."
+              "description": "Seeks an existing subscription to a point in time or to a given snapshot,\nwhichever is provided in the request.\n[ALPHA] This method is a part of a closed Alpha API."
             }
           }
         },
@@ -1478,7 +1478,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Gets the configuration details of a snapshot."
+              "description": "Gets the configuration details of a snapshot.\n[ALPHA] This method is a part of a closed Alpha API."
             },
             "list": {
               "id": "pubsub.projects.snapshots.list",
@@ -1515,7 +1515,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Lists the existing snapshots."
+              "description": "Lists the existing snapshots.\n[ALPHA] This method is a part of a closed Alpha API."
             },
             "create": {
               "id": "pubsub.projects.snapshots.create",
@@ -1544,7 +1544,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Creates a snapshot from the requested subscription.\nIf the snapshot already exists, returns `ALREADY_EXISTS`.\nIf the requested subscription doesn't exist, returns `NOT_FOUND`.\nIf the backlog in the subscription is too old -- and the resulting snapshot\nwould expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned.\nSee also the `Snapshot.expire_time` field.\n\nIf the name is not provided in the request, the server will assign a random\nname for this snapshot on the same project as the subscription, conforming\nto the\n[resource name\nformat](https:\/\/cloud.google.com\/pubsub\/docs\/overview#names). The generated\nname is populated in the returned Snapshot object. Note that for REST API\nrequests, you must specify a name in the request."
+              "description": "[ALPHA] This method is a part of a closed Alpha API.\nCreates a snapshot from the requested subscription.\nIf the snapshot already exists, returns `ALREADY_EXISTS`.\nIf the requested subscription doesn't exist, returns `NOT_FOUND`.\nIf the backlog in the subscription is too old -- and the resulting snapshot\nwould expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned.\nSee also the `Snapshot.expire_time` field.\n\nIf the name is not provided in the request, the server will assign a random\nname for this snapshot on the same project as the subscription, conforming\nto the\n[resource name\nformat](https:\/\/cloud.google.com\/pubsub\/docs\/overview#names). The generated\nname is populated in the returned Snapshot object. Note that for REST API\nrequests, you must specify a name in the request."
             },
             "patch": {
               "id": "pubsub.projects.snapshots.patch",
@@ -1573,7 +1573,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Updates an existing snapshot. Note that certain properties of a\nsnapshot are not modifiable."
+              "description": "Updates an existing snapshot. Note that certain properties of a\nsnapshot are not modifiable.\n[ALPHA] This method is a part of a closed Alpha API."
             },
             "delete": {
               "id": "pubsub.projects.snapshots.delete",
@@ -1599,7 +1599,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Removes an existing snapshot. All messages retained in the snapshot\nare immediately dropped. After a snapshot is deleted, a new one may be\ncreated with the same name, but the new one has no association with the old\nsnapshot or its subscription, unless the same subscription is specified."
+              "description": "Removes an existing snapshot. All messages retained in the snapshot\nare immediately dropped. After a snapshot is deleted, a new one may be\ncreated with the same name, but the new one has no association with the old\nsnapshot or its subscription, unless the same subscription is specified.\n[ALPHA] This method is a part of a closed Alpha API."
             }
           }
         }

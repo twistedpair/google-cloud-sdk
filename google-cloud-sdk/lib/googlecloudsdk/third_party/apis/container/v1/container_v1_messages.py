@@ -87,16 +87,17 @@ class AuditEvent(_messages.Message):
   ster/staging/src/k8s.io/apiserver/pkg/apis/audit/v1beta1/generated.proto.
 
   Messages:
-    RequestObjectValue: API object from the request, in JSON format. The
+    OldRequestObjectValue: API object from the request, in JSON format. The
       RequestObject is recorded as-is in the request (possibly re-encoded as
       JSON), prior to version conversion, defaulting, admission or merging. It
       is an external versioned object type, and may not be a valid object on
       its own.  Omitted for non-resource requests.  Only logged at Request
-      Level and higher. +optional
-    ResponseObjectValue: API object returned in the response, in JSON. The
+      Level and higher. DEPRECATED: Use RequestObject instead. +optional
+    OldResponseObjectValue: API object returned in the response, in JSON. The
       ResponseObject is recorded after conversion to the external type, and
       serialized as JSON. Omitted for non-resource requests.  Only logged at
-      Response Level and higher. +optional
+      Response Level and higher. DEPRECATED: Use ResponseObject instead.
+      +optional
 
   Fields:
     auditID: Unique audit ID, generated for each request.
@@ -107,6 +108,17 @@ class AuditEvent(_messages.Message):
       object is not used.
     objectRef: Object reference this request is targeted at.  Does not apply
       for List-type requests, or non-resource requests. +optional
+    oldRequestObject: API object from the request, in JSON format. The
+      RequestObject is recorded as-is in the request (possibly re-encoded as
+      JSON), prior to version conversion, defaulting, admission or merging. It
+      is an external versioned object type, and may not be a valid object on
+      its own.  Omitted for non-resource requests.  Only logged at Request
+      Level and higher. DEPRECATED: Use RequestObject instead. +optional
+    oldResponseObject: API object returned in the response, in JSON. The
+      ResponseObject is recorded after conversion to the external type, and
+      serialized as JSON. Omitted for non-resource requests.  Only logged at
+      Response Level and higher. DEPRECATED: Use ResponseObject instead.
+      +optional
     requestObject: API object from the request, in JSON format. The
       RequestObject is recorded as-is in the request (possibly re-encoded as
       JSON), prior to version conversion, defaulting, admission or merging. It
@@ -138,16 +150,16 @@ class AuditEvent(_messages.Message):
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class RequestObjectValue(_messages.Message):
+  class OldRequestObjectValue(_messages.Message):
     """API object from the request, in JSON format. The RequestObject is
     recorded as-is in the request (possibly re-encoded as JSON), prior to
     version conversion, defaulting, admission or merging. It is an external
     versioned object type, and may not be a valid object on its own.  Omitted
     for non-resource requests.  Only logged at Request Level and higher.
-    +optional
+    DEPRECATED: Use RequestObject instead. +optional
 
     Messages:
-      AdditionalProperty: An additional property for a RequestObjectValue
+      AdditionalProperty: An additional property for a OldRequestObjectValue
         object.
 
     Fields:
@@ -155,7 +167,7 @@ class AuditEvent(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a RequestObjectValue object.
+      """An additional property for a OldRequestObjectValue object.
 
       Fields:
         key: Name of the additional property.
@@ -168,14 +180,14 @@ class AuditEvent(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class ResponseObjectValue(_messages.Message):
+  class OldResponseObjectValue(_messages.Message):
     """API object returned in the response, in JSON. The ResponseObject is
     recorded after conversion to the external type, and serialized as JSON.
     Omitted for non-resource requests.  Only logged at Response Level and
-    higher. +optional
+    higher. DEPRECATED: Use ResponseObject instead. +optional
 
     Messages:
-      AdditionalProperty: An additional property for a ResponseObjectValue
+      AdditionalProperty: An additional property for a OldResponseObjectValue
         object.
 
     Fields:
@@ -183,7 +195,7 @@ class AuditEvent(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseObjectValue object.
+      """An additional property for a OldResponseObjectValue object.
 
       Fields:
         key: Name of the additional property.
@@ -199,17 +211,19 @@ class AuditEvent(_messages.Message):
   impersonatedUser = _messages.MessageField('AuthnV1UserInfo', 2)
   metadata = _messages.MessageField('ObjectMeta', 3)
   objectRef = _messages.MessageField('AuditObjectReference', 4)
-  requestObject = _messages.MessageField('RequestObjectValue', 5)
-  requestReceivedTimestamp = _messages.StringField(6)
-  requestURI = _messages.StringField(7)
-  responseObject = _messages.MessageField('ResponseObjectValue', 8)
-  responseStatus = _messages.MessageField('MetaV1Status', 9)
-  sourceIPs = _messages.StringField(10, repeated=True)
-  stage = _messages.StringField(11)
-  stageTimestamp = _messages.StringField(12)
-  timestamp = _messages.StringField(13)
-  user = _messages.MessageField('AuthnV1UserInfo', 14)
-  verb = _messages.StringField(15)
+  oldRequestObject = _messages.MessageField('OldRequestObjectValue', 5)
+  oldResponseObject = _messages.MessageField('OldResponseObjectValue', 6)
+  requestObject = _messages.MessageField('extra_types.JsonValue', 7)
+  requestReceivedTimestamp = _messages.StringField(8)
+  requestURI = _messages.StringField(9)
+  responseObject = _messages.MessageField('extra_types.JsonValue', 10)
+  responseStatus = _messages.MessageField('MetaV1Status', 11)
+  sourceIPs = _messages.StringField(12, repeated=True)
+  stage = _messages.StringField(13)
+  stageTimestamp = _messages.StringField(14)
+  timestamp = _messages.StringField(15)
+  user = _messages.MessageField('AuthnV1UserInfo', 16)
+  verb = _messages.StringField(17)
 
 
 class AuditEventList(_messages.Message):

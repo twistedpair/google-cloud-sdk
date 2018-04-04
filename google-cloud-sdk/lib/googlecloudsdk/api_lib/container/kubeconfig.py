@@ -169,26 +169,52 @@ def Cluster(name, server, ca_path=None, ca_data=None):
   }
 
 
-def User(name, auth_provider):
+def User(name,
+         auth_provider=None,
+         cert_path=None,
+         cert_data=None,
+         key_path=None,
+         key_data=None):
   """Generate and return a user kubeconfig object.
 
   Args:
     name: str, nickname for this user entry.
     auth_provider: str, authentication provider.
+    cert_path: str, path to client certificate file.
+    cert_data: str, base64 encoded client certificate data.
+    key_path: str, path to client key file.
+    key_data: str, base64 encoded client key data.
   Returns:
     dict, valid kubeconfig user entry.
 
   Raises:
-    Error: if no auth_provider is provided
+    Error: if no auth info is provided (auth_provider or cert AND key)
   """
-  if not auth_provider:
-    raise Error('auth_provider must be provided')
+  # TODO(b/70856999) Figure out what the correct behavior for client certs is.
+  if not (auth_provider or (cert_path and key_path) or
+          (cert_data and key_data)):
+    raise Error('either auth_provider or cert & key must be provided')
+  user = {}
+  if auth_provider:
+    user['auth-provider'] = _AuthProvider(name=auth_provider)
+
+  if cert_path and cert_data:
+    raise Error('cannot specify both cert_path and cert_data')
+  if cert_path:
+    user['client-certificate'] = cert_path
+  elif cert_data:
+    user['client-certificate-data'] = cert_data
+
+  if key_path and key_data:
+    raise Error('cannot specify both key_path and key_data')
+  if key_path:
+    user['client-key'] = key_path
+  elif key_data:
+    user['client-key-data'] = key_data
 
   return {
       'name': name,
-      'user': {
-          'auth-provider': _AuthProvider(name=auth_provider)
-      }
+      'user': user
   }
 
 

@@ -958,6 +958,26 @@
         "operation": {
           "description": "Output only. An operation that indicates the status of the current scan.",
           "$ref": "Operation"
+        },
+        "analysisStatus": {
+          "description": "The status of discovery for the resource.",
+          "enumDescriptions": [
+            "Unknown",
+            "Resource is known but no action has been taken yet.",
+            "Resource is being analyzed.",
+            "Analysis has finished successfully.",
+            "Analysis has finished unsuccessfully, the analysis itself is in a bad\nstate.",
+            "Analysis will not happen, the resource is not supported."
+          ],
+          "type": "string",
+          "enum": [
+            "ANALYSIS_STATUS_UNSPECIFIED",
+            "PENDING",
+            "SCANNING",
+            "FINISHED_SUCCESS",
+            "FINISHED_FAILED",
+            "UNSUPPORTED_RESOURCE"
+          ]
         }
       }
     },
@@ -1055,7 +1075,7 @@
           ]
         },
         "pgpKeyId": {
-          "description": "The cryptographic fingerprint of the key used to generate the signature,\nas output by, e.g. `gpg --list-keys`. This should be the version 4, full\n160-bit fingerprint, expressed as a 40 character hexidecimal string. See\nhttps:\/\/tools.ietf.org\/html\/rfc4880#section-12.2 for details.\nImplementations may choose to acknowledge \"LONG\", \"SHORT\", or other\nabbreviated key IDs, but only the full fingerprint is guaranteed to work.\nIn gpg, the full fingerprint can be retrieved from the `fpr` field\nreturned when calling --list-keys with --with-colons.  For example:\n```\ngpg --with-colons --with-fingerprint --force-v4-certs \\\n    --list-keys attester@example.com\ntru::1:1513631572:0:3:1:5\npub:...<SNIP>...\nfpr:::::::::24FF6481B76AC91E66A00AC657A93A81EF3AE6FB:\n```\nAbove, the fingerprint is `24FF6481B76AC91E66A00AC657A93A81EF3AE6FB`.",
+          "description": "The cryptographic fingerprint of the key used to generate the signature,\nas output by, e.g. `gpg --list-keys`. This should be the version 4, full\n160-bit fingerprint, expressed as a 40 character hexadecimal string. See\nhttps:\/\/tools.ietf.org\/html\/rfc4880#section-12.2 for details.\nImplementations may choose to acknowledge \"LONG\", \"SHORT\", or other\nabbreviated key IDs, but only the full fingerprint is guaranteed to work.\nIn gpg, the full fingerprint can be retrieved from the `fpr` field\nreturned when calling --list-keys with --with-colons.  For example:\n```\ngpg --with-colons --with-fingerprint --force-v4-certs \\\n    --list-keys attester@example.com\ntru::1:1513631572:0:3:1:5\npub:...<SNIP>...\nfpr:::::::::24FF6481B76AC91E66A00AC657A93A81EF3AE6FB:\n```\nAbove, the fingerprint is `24FF6481B76AC91E66A00AC657A93A81EF3AE6FB`.",
           "type": "string"
         }
       }

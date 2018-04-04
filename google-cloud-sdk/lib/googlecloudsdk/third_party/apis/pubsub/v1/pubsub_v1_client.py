@@ -53,7 +53,8 @@ class PubsubV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a snapshot from the requested subscription.
+      """[ALPHA] This method is a part of a closed Alpha API.
+Creates a snapshot from the requested subscription.
 If the snapshot already exists, returns `ALREADY_EXISTS`.
 If the requested subscription doesn't exist, returns `NOT_FOUND`.
 If the backlog in the subscription is too old -- and the resulting snapshot
@@ -97,6 +98,7 @@ requests, you must specify a name in the request.
 are immediately dropped. After a snapshot is deleted, a new one may be
 created with the same name, but the new one has no association with the old
 snapshot or its subscription, unless the same subscription is specified.
+[ALPHA] This method is a part of a closed Alpha API.
 
       Args:
         request: (PubsubProjectsSnapshotsDeleteRequest) input message
@@ -124,6 +126,7 @@ snapshot or its subscription, unless the same subscription is specified.
 
     def Get(self, request, global_params=None):
       """Gets the configuration details of a snapshot.
+[ALPHA] This method is a part of a closed Alpha API.
 
       Args:
         request: (PubsubProjectsSnapshotsGetRequest) input message
@@ -180,6 +183,7 @@ set.
 
     def List(self, request, global_params=None):
       """Lists the existing snapshots.
+[ALPHA] This method is a part of a closed Alpha API.
 
       Args:
         request: (PubsubProjectsSnapshotsListRequest) input message
@@ -208,6 +212,7 @@ set.
     def Patch(self, request, global_params=None):
       """Updates an existing snapshot. Note that certain properties of a.
 snapshot are not modifiable.
+[ALPHA] This method is a part of a closed Alpha API.
 
       Args:
         request: (PubsubProjectsSnapshotsPatchRequest) input message
@@ -611,6 +616,7 @@ subscription.
     def Seek(self, request, global_params=None):
       """Seeks an existing subscription to a point in time or to a given snapshot,.
 whichever is provided in the request.
+[ALPHA] This method is a part of a closed Alpha API.
 
       Args:
         request: (PubsubProjectsSubscriptionsSeekRequest) input message
@@ -709,6 +715,7 @@ may "fail open" without warning.
 
     def List(self, request, global_params=None):
       """Lists the names of the snapshots on this topic.
+[ALPHA] This method is a part of a closed Alpha API.
 
       Args:
         request: (PubsubProjectsTopicsSnapshotsListRequest) input message

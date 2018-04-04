@@ -5,6 +5,87 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 196.0.0 (2018-04-04)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Renamed the `--no-translate` flag of `gcloud compute images import` to
+  `--data-disk`.
+*   **(Docker)** `gcloud docker` will not be supported for Docker client versions above 18.03.
+  Please use `gcloud auth configure-docker` to configure `docker` to use
+  `gcloud` as a credential helper; then, use `docker` as you would for non-GCR
+  registries, e.g. `docker pull gcr.io/project-id/my-image`.
+    *   See: [https://cloud.google.com/container-registry/docs/support/deprecation-notices#gcloud-docker](https://cloud.google.com/container-registry/docs/support/deprecation-notices#gcloud-docker)
+*   **(Kubernetes Engine)** Modified the default value of deprecated property `container/use_v1_api`,
+  whose alias is `container/use_v1_api_client`, from `true` to `false`.
+
+
+### Cloud DNS
+
+* Promoted DNSSEC flags of `gcloud dns managed-zones` to GA.
+    * `--denial-of-existence`
+    * `--dnssec-state`
+    * `--ksk-algorithm`
+    * `--ksk-key-length`
+    * `--zsk-algorithm`
+    * `--zsk-key-length`
+
+### Cloud Interconnect
+
+*   Promoted interconnects attachments partner related commands to Beta.
+
+### Cloud TPU
+
+* Added gcloud compute tpus versions <list|describe> to beta.
+* Added gcloud compute tpus locations <list|describe> to beta.
+
+### Cloud Tools For PowerShell
+
+*   Updated Cloud Tools for PowerShell to version 1.0.1.7.
+    *   Fix a bug where `Get-GceMetaData` failed when called twice.
+
+### Compute Engine
+
+* Promoted `gcloud compute images import` to GA.
+* Promoted the following to GA:
+    *  `gcloud compute instances network-interfaces update`
+    *  `--add-secondary-ranges` and `--remove-secondary-ranges` flags of
+       `gcloud compute networks subnets update`
+* Promoted `gcloud compute instances simulate-maintenance-event` to beta.
+* Added three flags (`--prefix-length`, `--purpose` and `--network`) to `gcloud
+  compute addresses create` in alpha to support reserving IP range from virtual
+  network for peering.
+* Promoted `--enable-flow-logs` flag of
+  `gcloud compute networks subnets <create|update>` to beta.
+*   Promoted SSL policies support to GA.
+    *   Promoted the following commands to GA:
+        *   compute ssl-policies create
+        *   compute ssl-policies describe
+        *   compute ssl-policies list
+        *   compute ssl-policies update
+        *   compute ssl-policies delete
+        *   compute ssl-policies list-available-features
+    *   Promoted `--ssl-policy` flag of `compute
+        <target-https-proxies|target-ssl-proxies> create` to GA.
+    *   Promoted `--ssl-policy` and `--clear-ssl-policy` flags of
+        `compute <target-https-proxies|target-ssl-proxies> update` to GA.
+* Promoted `--custom-request-headers` and `--no-custom-request-headers` flags of
+  `gcloud compute backend-services <create|update>` to beta.
+
+### Container Registry
+
+* Promoted `gcloud auth configure-docker` to GA.
+* Modified `container images add-tag` to allow the specification of multiple destination tags.
+
+### Kubernetes Engine
+
+* Restore `container/use_client_certificate` option functionality. It was
+  accidentally removed in previous release.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 195.0.0 (2018-03-28)
 
 ### Breaking Changes

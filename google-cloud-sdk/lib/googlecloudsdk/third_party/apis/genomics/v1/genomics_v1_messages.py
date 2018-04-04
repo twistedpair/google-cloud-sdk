@@ -263,9 +263,7 @@ class Binding(_messages.Message):
 
 class CallSet(_messages.Message):
   """A call set is a collection of variant calls, typically for one sample. It
-  belongs to a variant set.  For more genomics resource definitions, see
-  [Fundamentals of Google Genomics](https://cloud.google.com/genomics
-  /fundamentals-of-google-genomics)
+  belongs to a variant set.
 
   Messages:
     InfoValue: A map of additional call set information. This must be of the
@@ -529,9 +527,7 @@ class CoverageBucket(_messages.Message):
 
 
 class Dataset(_messages.Message):
-  """A Dataset is a collection of genomic data.  For more genomics resource
-  definitions, see [Fundamentals of Google
-  Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+  """A Dataset is a collection of genomic data.
 
   Fields:
     createTime: The time this dataset was created, in seconds from the epoch.
@@ -2034,12 +2030,10 @@ class Read(_messages.Message):
   reference sequence, in addition to metadata about the fragment (the molecule
   of DNA sequenced) and the read (the bases which were read by the sequencer).
   A read is equivalent to a line in a SAM file. A read belongs to exactly one
-  read group and exactly one read group set.  For more genomics resource
-  definitions, see [Fundamentals of Google
-  Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
-  ### Reverse-stranded reads  Mapped reads (reads having a non-null
-  `alignment`) can be aligned to either the forward or the reverse strand of
-  their associated reference. Strandedness of a mapped read is encoded by
+  read group and exactly one read group set.  ### Reverse-stranded reads
+  Mapped reads (reads having a non-null `alignment`) can be aligned to either
+  the forward or the reverse strand of their associated reference.
+  Strandedness of a mapped read is encoded by
   `alignment.position.reverseStrand`.  If we consider the reference to be a
   forward-stranded coordinate space of `[0, reference.length)` with `0` as the
   left-most position and `reference.length` as the right-most position, reads
@@ -2261,9 +2255,7 @@ class ReadGroupSet(_messages.Message):
   collections of reads produced by a sequencer. A read group set typically
   models reads corresponding to one sample, sequenced one way, and aligned one
   way.  * A read group set belongs to one dataset. * A read group belongs to
-  one read group set. * A read belongs to one read group.  For more genomics
-  resource definitions, see [Fundamentals of Google
-  Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+  one read group set. * A read belongs to one read group.
 
   Messages:
     InfoValue: A map of additional read group set information.
@@ -2320,9 +2312,7 @@ class Reference(_messages.Message):
   """A reference is a canonical assembled DNA sequence, intended to act as a
   reference coordinate space for other genomic annotations. A single reference
   might represent the human chromosome 1 or mitochandrial DNA, for instance. A
-  reference belongs to one or more reference sets.  For more genomics resource
-  definitions, see [Fundamentals of Google
-  Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
+  reference belongs to one or more reference sets.
 
   Fields:
     id: The server-generated reference ID, unique across all references.
@@ -2369,9 +2359,7 @@ class ReferenceSet(_messages.Message):
   reference assembly for a species, such as `GRCh38` which is representative
   of the human genome. A reference set defines a common coordinate space for
   comparing reference-aligned experimental data. A reference set contains 1 or
-  more references.  For more genomics resource definitions, see [Fundamentals
-  of Google Genomics](https://cloud.google.com/genomics/fundamentals-of-
-  google-genomics)
+  more references.
 
   Fields:
     assemblyId: Public id of this reference set, such as `GRCh37`.
@@ -3056,9 +3044,7 @@ class UnexpectedExitStatusEvent(_messages.Message):
 class Variant(_messages.Message):
   """A variant represents a change in DNA sequence relative to a reference
   sequence. For example, a variant could represent a SNP or an insertion.
-  Variants belong to a variant set.  For more genomics resource definitions,
-  see [Fundamentals of Google Genomics](https://cloud.google.com/genomics
-  /fundamentals-of-google-genomics)  Each of the calls on a variant represent
+  Variants belong to a variant set.  Each of the calls on a variant represent
   a determination of genotype with respect to that variant. For example, a
   call might assign probability of 0.32 to the occurrence of a SNP named
   rs1234 in a sample named NA12345. A call belongs to a call set, which
@@ -3350,8 +3336,6 @@ class VariantCall(_messages.Message):
 class VariantSet(_messages.Message):
   """A variant set is a collection of call sets and variants. It contains
   summary statistics of those contents. A variant set belongs to a dataset.
-  For more genomics resource definitions, see [Fundamentals of Google
-  Genomics](https://cloud.google.com/genomics/fundamentals-of-google-genomics)
 
   Fields:
     datasetId: The dataset to which this variant set belongs.

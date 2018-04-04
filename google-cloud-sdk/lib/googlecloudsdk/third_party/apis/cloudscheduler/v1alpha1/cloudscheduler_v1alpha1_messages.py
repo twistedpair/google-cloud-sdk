@@ -266,9 +266,7 @@ class CloudschedulerProjectsLocationsJobsGetRequest(_messages.Message):
       Job.View.BASIC; not all information is retrieved by default because some
       data, such as payloads, might be desirable to return only when needed
       because of its large size or because of the sensitivity of data that it
-      contains.  Authorization for Job.View.FULL requires
-      `cloudscheduler.jobs.fullView` [Google
-      IAM](https://cloud.google.com/iam/) permission on the Job.name resource.
+      contains.
 
   Fields:
     name: The job name. For example:
@@ -278,9 +276,6 @@ class CloudschedulerProjectsLocationsJobsGetRequest(_messages.Message):
       not all information is retrieved by default because some data, such as
       payloads, might be desirable to return only when needed because of its
       large size or because of the sensitivity of data that it contains.
-      Authorization for Job.View.FULL requires `cloudscheduler.jobs.fullView`
-      [Google IAM](https://cloud.google.com/iam/) permission on the Job.name
-      resource.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
@@ -288,9 +283,7 @@ class CloudschedulerProjectsLocationsJobsGetRequest(_messages.Message):
     By default ListJobsRequest.response_view is Job.View.BASIC; not all
     information is retrieved by default because some data, such as payloads,
     might be desirable to return only when needed because of its large size or
-    because of the sensitivity of data that it contains.  Authorization for
-    Job.View.FULL requires `cloudscheduler.jobs.fullView` [Google
-    IAM](https://cloud.google.com/iam/) permission on the Job.name resource.
+    because of the sensitivity of data that it contains.
 
     Values:
       VIEW_UNSPECIFIED: <no description>
@@ -314,9 +307,6 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
       not all information is retrieved by default because some data, such as
       payloads, might be desirable to return only when needed because of its
       large size or because of the sensitivity of data that it contains.
-      Authorization for Job.View.FULL requires `cloudscheduler.jobs.fullView`
-      [Google IAM](https://cloud.google.com/iam/) permission on the Job.name
-      resource.
 
   Fields:
     pageSize: Requested page size. Fewer jobs than requested might be
@@ -329,17 +319,14 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
       ListJobsResponse.next_page_token returned from the previous call to
       CloudScheduler.ListJobs. It is an error to switch the value of
       ListJobsRequest.filter or ListJobsRequest.order_by while iterating
-      through pages.  For JSON requests, the value of this field must be
-      base64-encoded.
+      through pages.
     parent: Required.  The location name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID`.
     responseView: The response_view specifies which subset of the Job will be
       returned.  By default response_view is Job.View.BASIC; not all
       information is retrieved by default because some data, such as payloads,
       might be desirable to return only when needed because of its large size
-      or because of the sensitivity of data that it contains.  Authorization
-      for Job.View.FULL requires `cloudscheduler.jobs.fullView` [Google
-      IAM](https://cloud.google.com/iam/) permission on the Job.name resource.
+      or because of the sensitivity of data that it contains.
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
@@ -347,9 +334,7 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
     By default response_view is Job.View.BASIC; not all information is
     retrieved by default because some data, such as payloads, might be
     desirable to return only when needed because of its large size or because
-    of the sensitivity of data that it contains.  Authorization for
-    Job.View.FULL requires `cloudscheduler.jobs.fullView` [Google
-    IAM](https://cloud.google.com/iam/) permission on the Job.name resource.
+    of the sensitivity of data that it contains.
 
     Values:
       VIEW_UNSPECIFIED: <no description>
@@ -361,7 +346,7 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
     FULL = 2
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.BytesField(2)
+  pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   responseView = _messages.EnumField('ResponseViewValueValuesEnum', 4)
 
@@ -409,8 +394,7 @@ class HttpTarget(_messages.Message):
   """Http target. The job will be pushed to the job handler by means of an
   HTTP request via an HttpTarget.http_method such as HTTP POST, HTTP GET, etc.
   The job is acknowledged by means of an HTTP response code in the range [200
-  - 299]. A failure to receive a response before the deadline constitutes a
-  failed execution.
+  - 299]. A failure to receive a response constitutes a failed execution.
 
   Enums:
     HttpMethodValueValuesEnum: Which HTTP method to use for the request. The
@@ -448,7 +432,9 @@ class HttpTarget(_messages.Message):
     url: Required.  The full url path that the request will be sent to. This
       string must begin with either "http://" or "https://". Some examples of
       valid values for HttpTarget.url are: `http://acme.com` and
-      `https://acme.com/sales:8080`.
+      `https://acme.com/sales:8080`. Cloud Scheduler will encode some
+      characters for safety and compatibility. The maximum allowed URL length
+      is 2083 characters after encoding.
   """
 
   class HttpMethodValueValuesEnum(_messages.Enum):
@@ -517,13 +503,13 @@ class Job(_messages.Message):
 
   Enums:
     JobStateValueValuesEnum: Output only. State of the job. For example:
-      running, paused, or disabled.
+      enabled, paused, or disabled.
 
   Fields:
     appEngineHttpTarget: App Engine Http target.
     description: A human-readable description for the job.
     httpTarget: Http target.
-    jobState: Output only. State of the job. For example: running, paused, or
+    jobState: Output only. State of the job. For example: enabled, paused, or
       disabled.
     lastAttemptTime: Output only. The started time of the last completed job
       attempt.
@@ -548,7 +534,7 @@ class Job(_messages.Message):
   """
 
   class JobStateValueValuesEnum(_messages.Enum):
-    """Output only. State of the job. For example: running, paused, or
+    """Output only. State of the job. For example: enabled, paused, or
     disabled.
 
     Values:
@@ -588,12 +574,11 @@ class ListJobsResponse(_messages.Message):
       in the ListJobsRequest.page_token field in the subsequent call to
       CloudScheduler.ListJobs to retrieve the next page of results. If this is
       empty it indicates that there are no more results through which to
-      paginate.  For JSON requests, the value of this field must be
-      base64-encoded.  The page token is valid for only 2 hours.
+      paginate.  The page token is valid for only 2 hours.
   """
 
   jobs = _messages.MessageField('Job', 1, repeated=True)
-  nextPageToken = _messages.BytesField(2)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -792,10 +777,8 @@ class PubsubTarget(_messages.Message):
 class RetryConfig(_messages.Message):
   """Settings that determine the retry behavior.  By default, if a job does
   not complete successfully (meaning that an acknowledgement is not received
-  from the handler before the
-  [deadline](/appengine/docs/python/taskqueue/push/#the_task_deadline), then
-  it will be retried with exponential backoff according to the settings in
-  RetryConfig.
+  from the handler, then it will be retried with exponential backoff according
+  to the settings in RetryConfig.
 
   Fields:
     jobAgeLimit: The time limit for retrying a failed job, measured from when
@@ -810,8 +793,8 @@ class RetryConfig(_messages.Message):
       The default value of this field is 16.
     minBackoffSeconds: The minimum amount of time to wait before retrying a
       task after it fails.  The default value of this field is 0.1 seconds.
-    retryCount: It determines the total number  attempts that the system will
-      make to deliver a job using the exponential backoff procedure described
+    retryCount: It determines the  number attempts that the system will make
+      to deliver a job using the exponential backoff procedure described
       above.  The default value of retry_count is zero.  If retry_count is
       zero, a job attempt will *not* be retried if it fails. Instead the Cloud
       Scheduler system will wait for the next scheduled execution time.  If

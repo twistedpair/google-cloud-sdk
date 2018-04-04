@@ -272,7 +272,7 @@ class RecognizeResponse(_messages.Message):
   messages.
 
   Fields:
-    results: *Output-only* Sequential list of transcription results
+    results: Output only. Sequential list of transcription results
       corresponding to sequential portions of audio.
   """
 
@@ -310,16 +310,16 @@ class SpeechRecognitionAlternative(_messages.Message):
   """Alternative hypotheses (a.k.a. n-best list).
 
   Fields:
-    confidence: *Output-only* The confidence estimate between 0.0 and 1.0. A
+    confidence: Output only. The confidence estimate between 0.0 and 1.0. A
       higher number indicates an estimated greater likelihood that the
       recognized words are correct. This field is set only for the top
       alternative of a non-streaming result or, of a streaming result where
       `is_final=true`. This field is not guaranteed to be accurate and users
       should not rely on it to be always provided. The default of 0.0 is a
       sentinel value indicating `confidence` was not set.
-    transcript: *Output-only* Transcript text representing the words that the
+    transcript: Output only. Transcript text representing the words that the
       user spoke.
-    words: *Output-only* A list of word-specific information for each
+    words: Output only. A list of word-specific information for each
       recognized word.
   """
 
@@ -332,7 +332,7 @@ class SpeechRecognitionResult(_messages.Message):
   """A speech recognition result corresponding to a portion of the audio.
 
   Fields:
-    alternatives: *Output-only* May contain one or more recognition hypotheses
+    alternatives: Output only. May contain one or more recognition hypotheses
       (up to the maximum specified in `max_alternatives`). These alternatives
       are ordered in terms of accuracy, with the top (first) alternative being
       the most probable, as ranked by the recognizer.
@@ -490,16 +490,16 @@ class WordInfo(_messages.Message):
   """Word-specific information for recognized words.
 
   Fields:
-    endTime: *Output-only* Time offset relative to the beginning of the audio,
+    endTime: Output only. Time offset relative to the beginning of the audio,
       and corresponding to the end of the spoken word. This field is only set
       if `enable_word_time_offsets=true` and only in the top hypothesis. This
       is an experimental feature and the accuracy of the time offset can vary.
-    startTime: *Output-only* Time offset relative to the beginning of the
+    startTime: Output only. Time offset relative to the beginning of the
       audio, and corresponding to the start of the spoken word. This field is
       only set if `enable_word_time_offsets=true` and only in the top
       hypothesis. This is an experimental feature and the accuracy of the time
       offset can vary.
-    word: *Output-only* The word corresponding to this set of information.
+    word: Output only. The word corresponding to this set of information.
   """
 
   endTime = _messages.StringField(1)

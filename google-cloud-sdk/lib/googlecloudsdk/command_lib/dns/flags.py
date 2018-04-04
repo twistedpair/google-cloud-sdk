@@ -14,29 +14,9 @@
 
 """Common flags for some of the DNS commands."""
 
-from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.apis import arg_utils
-
-
-_DNSEC_MAP = arg_utils.ChoiceEnumMapper(
-    '--dnssec-state', (apis.GetMessagesModule('dns', 'v1beta2')
-                       .ManagedZoneDnsSecConfig.StateValueValuesEnum),
-    custom_mappings={
-        'off': ('off', 'Disable DNSSEC for the managed zone.'),
-        'on': ('on', 'Enable DNSSEC for the managed zone.'),
-        'transfer': ('transfer', ('Enable DNSSEC and allow '
-                                  'transferring a signed zone in '
-                                  'or out.'))
-    },
-    help_str='The DNSSEC state for this managed zone.')
-
-_DOE_MAP = arg_utils.ChoiceEnumMapper(
-    '--denial-of-existence',
-    (apis.GetMessagesModule('dns', 'v2beta1')
-     .ManagedZoneDnsSecConfig.NonExistenceValueValuesEnum),
-    help_str='Requires DNSSEC enabled.')
 
 
 class KeyCompleter(completers.ListCommandCompleter):
@@ -103,18 +83,30 @@ def GetManagedZonesDescriptionArg(required=False):
       help='Short description for the managed-zone.')
 
 
-def GetDnsSecStateFlagMapper():
-  return _DNSEC_MAP
+def GetDnsSecStateFlagMapper(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--dnssec-state', messages.ManagedZoneDnsSecConfig.StateValueValuesEnum,
+      custom_mappings={
+          'off': ('off', 'Disable DNSSEC for the managed zone.'),
+          'on': ('on', 'Enable DNSSEC for the managed zone.'),
+          'transfer': ('transfer', ('Enable DNSSEC and allow '
+                                    'transferring a signed zone in '
+                                    'or out.'))
+      },
+      help_str='The DNSSEC state for this managed zone.')
 
 
-def GetDoeFlagMapper():
-  return _DOE_MAP
+def GetDoeFlagMapper(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--denial-of-existence',
+      messages.ManagedZoneDnsSecConfig.NonExistenceValueValuesEnum,
+      help_str='Requires DNSSEC enabled.')
 
 
-def AddCommonManagedZonesDnssecArgs(parser):
+def AddCommonManagedZonesDnssecArgs(parser, messages):
   """Add Common DNSSEC flags for the managed-zones group."""
-  _DNSEC_MAP.choice_arg.AddToParser(parser)
-  _DOE_MAP.choice_arg.AddToParser(parser)
+  GetDnsSecStateFlagMapper(messages).choice_arg.AddToParser(parser)
+  GetDoeFlagMapper(messages).choice_arg.AddToParser(parser)
   parser.add_argument(
       '--ksk-algorithm',
       help='String mnemonic specifying the DNSSEC algorithm of the '

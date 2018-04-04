@@ -14,6 +14,8 @@
 
 """Error Reporting Handler."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import sys
 import traceback
 
@@ -147,7 +149,7 @@ def HandleGcloudCrash(err):
   if _IsInstallationCorruption(err):
     _PrintInstallationAction(err, err_string)
   else:
-    log.error(u'gcloud crashed ({0}): {1}'.format(
+    log.error('gcloud crashed ({0}): {1}'.format(
         getattr(err, 'error_name', type(err).__name__), err_string))
     ReportError(err, is_crash=True)
     log.err.Print('\nIf you would like to report this issue, please run the '

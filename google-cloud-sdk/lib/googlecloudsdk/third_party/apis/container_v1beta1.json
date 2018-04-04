@@ -214,7 +214,7 @@
           "type": "boolean"
         },
         "resourceLabels": {
-          "description": "The resource labels for the cluster to use to annotate any related GCE\nresources.",
+          "description": "The resource labels for the cluster to use to annotate any related\nGoogle Compute Engine resources.",
           "type": "object",
           "additionalProperties": {
             "type": "string"

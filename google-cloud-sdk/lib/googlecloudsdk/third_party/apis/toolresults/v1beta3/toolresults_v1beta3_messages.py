@@ -1261,7 +1261,9 @@ class TestIssue(_messages.Message):
     Values:
       anr: <no description>
       compatibleWithOrchestrator: <no description>
+      completeRoboScriptExecution: <no description>
       fatalException: <no description>
+      incompleteRoboScriptExecution: <no description>
       launcherActivityNotFound: <no description>
       nativeCrash: <no description>
       startActivityNotFound: <no description>
@@ -1270,12 +1272,14 @@ class TestIssue(_messages.Message):
     """
     anr = 0
     compatibleWithOrchestrator = 1
-    fatalException = 2
-    launcherActivityNotFound = 3
-    nativeCrash = 4
-    startActivityNotFound = 5
-    unspecifiedType = 6
-    unusedRoboDirective = 7
+    completeRoboScriptExecution = 2
+    fatalException = 3
+    incompleteRoboScriptExecution = 4
+    launcherActivityNotFound = 5
+    nativeCrash = 6
+    startActivityNotFound = 7
+    unspecifiedType = 8
+    unusedRoboDirective = 9
 
   errorMessage = _messages.StringField(1)
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)

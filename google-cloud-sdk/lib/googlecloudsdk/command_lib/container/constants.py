@@ -43,8 +43,6 @@ KUBERNETES_REGIONAL_CHARGES_PROMPT = (
 KUBERNETES_API_MISMATCH_WARNING_TEMPLATE = (
     "You invoked `gcloud {track}`, but with current configuration "
     "Kubernetes Engine v1 API will be used instead of {api} API.\n"
-    "`gcloud {track}` will switch to use Kubernetes Engine {api} API by "
-    "default by the end of March 2018.\n"
     "If you want to keep using `gcloud {track}` to talk to v1 API temporarily, "
     "please set `container/use_v1_api` property to true.\n"
     "But we will drop the support for this property at the beginning of "

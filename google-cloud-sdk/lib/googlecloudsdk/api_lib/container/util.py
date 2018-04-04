@@ -21,6 +21,7 @@ from googlecloudsdk.api_lib.container import kubeconfig as kconfig
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files as file_utils
@@ -111,8 +112,6 @@ def GenerateClusterUrl(cluster_ref):
 KUBECONFIG_USAGE_FMT = '''\
 kubeconfig entry generated for {cluster}.'''
 
-MIN_GCP_AUTH_PROVIDER_VERSION = '1.3.0'
-
 
 class MissingEndpointError(Error):
   """Error for attempting to persist a cluster that has no endpoint."""
@@ -156,8 +155,11 @@ class ClusterConfig(object):
     self.zone_id = kwargs['zone_id']
     self.project_id = kwargs['project_id']
     self.server = kwargs['server']
+    # auth options are auth-provider, or client certificate.
     self.auth_provider = kwargs.get('auth_provider')
     self.ca_data = kwargs.get('ca_data')
+    self.client_cert_data = kwargs.get('client_cert_data')
+    self.client_key_data = kwargs.get('client_key_data')
 
   def __str__(self):
     return 'ClusterConfig{project:%s, cluster:%s, zone:%s}' % (
@@ -177,8 +179,20 @@ class ClusterConfig(object):
         self.cluster_name, self.zone_id, self.project_id)
 
   @property
+  def has_cert_data(self):
+    return bool(self.client_key_data and self.client_cert_data)
+
+  @property
+  def has_certs(self):
+    return self.has_cert_data
+
+  @property
   def has_ca_cert(self):
     return self.ca_data
+
+  @staticmethod
+  def UseGCPAuthProvider():
+    return not properties.VALUES.container.use_client_certificate.GetBool()
 
   @staticmethod
   def GetConfigDir(cluster_name, zone_id, project_id):
@@ -202,6 +216,9 @@ class ClusterConfig(object):
     }
     if self.has_ca_cert:
       cluster_kwargs['ca_data'] = self.ca_data
+    if self.has_cert_data:
+      user_kwargs['cert_data'] = self.client_cert_data
+      user_kwargs['key_data'] = self.client_key_data
 
     # Use same key for context, cluster, and user
     kubeconfig.contexts[context] = kconfig.Context(context, context, context)
@@ -249,7 +266,12 @@ class ClusterConfig(object):
       # state.
       log.warning('Cluster is missing certificate authority data.')
 
-    kwargs['auth_provider'] = 'gcp'
+    if cls.UseGCPAuthProvider():
+      kwargs['auth_provider'] = 'gcp'
+    else:
+      if auth.clientCertificate and auth.clientKey:
+        kwargs['client_key_data'] = auth.clientKey
+        kwargs['client_cert_data'] = auth.clientCertificate
 
     c_config = cls(**kwargs)
     c_config.GenKubeconfig()
@@ -302,7 +324,11 @@ class ClusterConfig(object):
 
     # Verify user data
     auth_provider = user.get('auth-provider')
-    if not auth_provider:
+    cert_data = user.get('client-certificate-data')
+    key_data = user.get('client-key-data')
+    cert_auth = cert_data and key_data
+    has_valid_auth = auth_provider or cert_auth
+    if not has_valid_auth:
       log.debug('missing auth info for user %s: %s', key, user)
       return None
     # Construct ClusterConfig
@@ -313,6 +339,8 @@ class ClusterConfig(object):
         'server': server,
         'auth_provider': auth_provider,
         'ca_data': ca_data,
+        'client_key_data': key_data,
+        'client_cert_data': cert_data,
     }
     return cls(**kwargs)
 

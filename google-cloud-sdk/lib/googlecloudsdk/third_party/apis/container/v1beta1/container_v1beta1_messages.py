@@ -158,7 +158,7 @@ class Cluster(_messages.Message):
 
   Messages:
     ResourceLabelsValue: The resource labels for the cluster to use to
-      annotate any related GCE resources.
+      annotate any related Google Compute Engine resources.
 
   Fields:
     addonsConfig: Configurations for the various addons available to run in
@@ -270,7 +270,7 @@ class Cluster(_messages.Message):
       clusters that, by default have no external IP addresses on the nodes and
       where nodes and the master communicate over private IP addresses.
     resourceLabels: The resource labels for the cluster to use to annotate any
-      related GCE resources.
+      related Google Compute Engine resources.
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
       services in this cluster, in [CIDR](http://en.wikipedia.org/wiki
@@ -316,8 +316,8 @@ class Cluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceLabelsValue(_messages.Message):
-    """The resource labels for the cluster to use to annotate any related GCE
-    resources.
+    """The resource labels for the cluster to use to annotate any related
+    Google Compute Engine resources.
 
     Messages:
       AdditionalProperty: An additional property for a ResourceLabelsValue

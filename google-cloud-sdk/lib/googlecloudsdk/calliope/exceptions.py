@@ -22,6 +22,8 @@ from within calliope.
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
+
+import errno
 from functools import wraps
 import os
 import sys
@@ -32,6 +34,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_attr_os
+
+import six
 
 
 def NewErrorFromCurrentException(error, *args):
@@ -193,6 +197,23 @@ def _TruncateToLineWidth(string, align, width, fill=''):
 _MARKER = '^ invalid character'
 
 
+def _NonAsciiIndex(s):
+  """Returns the index of the first non-ascii char in s, -1 if all ascii."""
+  if isinstance(s, six.text_type):
+    for i, c in enumerate(s):
+      try:
+        c.encode('ascii')
+      except (AttributeError, UnicodeError):
+        return i
+  else:
+    for i, b in enumerate(s):
+      try:
+        b.decode('ascii')
+      except (AttributeError, UnicodeError):
+        return i
+  return -1
+
+
 # pylint: disable=g-doc-bad-indent
 def _FormatNonAsciiMarkerString(args):
   r"""Format a string that will mark the first non-ASCII character it contains.
@@ -217,25 +238,18 @@ def _FormatNonAsciiMarkerString(args):
   Raises:
     ValueError: if the given string is all ASCII characters
   """
-  # nonascii will be True if at least one arg contained a non-ASCII character
-  nonascii = False
   # pos is the position of the first non-ASCII character in ' '.join(args)
   pos = 0
   for arg in args:
-    try:
-      # idx is the index of the first non-ASCII character in arg
-      for idx, char in enumerate(arg):
-        char.decode('ascii')
-    except UnicodeError:
-      # idx will remain set, indicating the first non-ASCII character
-      pos += idx
-      nonascii = True
+    first_non_ascii_index = _NonAsciiIndex(arg)
+    if first_non_ascii_index >= 0:
+      pos += first_non_ascii_index
       break
     # this arg was all ASCII; add 1 for the ' ' between args
     pos += len(arg) + 1
-  if not nonascii:
-    raise ValueError('The command line is composed entirely of ASCII '
-                     'characters.')
+  else:
+    raise ValueError(
+        'The command line is composed entirely of ASCII characters.')
 
   # Make a string that, when printed in parallel, will point to the non-ASCII
   # character
@@ -412,6 +426,27 @@ def _GetExceptionName(cls):
   return cls.__module__ + '.' + cls.__name__
 
 
+_SOCKET_ERRNO_NAMES = {
+    'EADDRINUSE', 'EADDRNOTAVAIL', 'EAFNOSUPPORT', 'EBADMSG', 'ECOMM',
+    'ECONNABORTED', 'ECONNREFUSED', 'ECONNRESET', 'EDESTADDRREQ', 'EHOSTDOWN',
+    'EHOSTUNREACH', 'EISCONN', 'EMSGSIZE', 'EMULTIHOP', 'ENETDOWN', 'ENETRESET',
+    'ENETUNREACH', 'ENOBUFS', 'ENOPROTOOPT', 'ENOTCONN', 'ENOTSOCK', 'ENOTUNIQ',
+    'EOPNOTSUPP', 'EPFNOSUPPORT', 'EPROTO', 'EPROTONOSUPPORT', 'EPROTOTYPE',
+    'EREMCHG', 'EREMOTEIO', 'ESHUTDOWN', 'ESOCKTNOSUPPORT', 'ETIMEDOUT',
+    'ETOOMANYREFS',
+}
+
+
+def _IsSocketError(exc):
+  """Returns True if exc is a socket error exception."""
+
+  # I've a feeling we're not in python 2 anymore. PEP 3151 eliminated module
+  # specific exceptions in favor of builtin exceptions like OSError. Good
+  # for some things, bad for others. For instance, this brittle errno check
+  # for "network" errors. We use names because errnos are system dependent.
+  return errno.errorcode[exc.errno] in _SOCKET_ERRNO_NAMES
+
+
 def ConvertKnownError(exc):
   """Convert the given exception into an alternate type if it is known.
 
@@ -438,7 +473,10 @@ def ConvertKnownError(exc):
     cls = classes.pop(0)
     processed.add(cls)
     name = _GetExceptionName(cls)
-    known_err = _KNOWN_ERRORS.get(name)
+    if name == 'builtins.OSError' and _IsSocketError(exc):
+      known_err = core_exceptions.NetworkIssueError
+    else:
+      known_err = _KNOWN_ERRORS.get(name)
     if known_err:
       break
 

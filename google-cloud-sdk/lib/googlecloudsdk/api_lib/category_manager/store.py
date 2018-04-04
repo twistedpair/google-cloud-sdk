@@ -16,26 +16,27 @@
 from googlecloudsdk.api_lib.category_manager import utils
 
 
-def GetTaxonomyStoreFromOrgRef(org_ref):
-  """Gets a taxonomy store from an organization reference.
+def GetTaxonomyStoreFromOrgResource(org_resource):
+  """Gets a taxonomy store from an organization resource.
 
   Args:
-    org_ref: An organization reference object.
+    org_resource: A cloudresourcemanager.organizations core.Resource object.
 
   Returns:
     A TaxonomyStore message.
   """
   messages = utils.GetMessagesModule()
   req = messages.CategorymanagerOrganizationsGetTaxonomyStoreRequest(
-      parent=org_ref.RelativeName())
+      parent=org_resource.RelativeName())
   return utils.GetClientInstance().organizations.GetTaxonomyStore(request=req)
 
 
-def GetIamPolicy(store_ref):
+def GetIamPolicy(taxonomy_store_resource):
   """Gets IAM policy for a given taxonomy store.
 
   Args:
-    store_ref: a taxonomy store resource reference.
+    taxonomy_store_resource: A categorymanager.taxonomyStores core.Resource
+      object.
 
   Returns:
     An IamPolicy message.
@@ -43,15 +44,16 @@ def GetIamPolicy(store_ref):
   messages = utils.GetMessagesModule()
   return utils.GetClientInstance().taxonomyStores.GetIamPolicy(
       messages.CategorymanagerTaxonomyStoresGetIamPolicyRequest(
-          resource=store_ref.RelativeName(),
+          resource=taxonomy_store_resource.RelativeName(),
           getIamPolicyRequest=messages.GetIamPolicyRequest()))
 
 
-def SetIamPolicy(store_ref, policy):
+def SetIamPolicy(taxonomy_store_resource, policy):
   """Sets IAM policy on a taxonomy store.
 
   Args:
-    store_ref: a taxonomy store resource reference.
+    taxonomy_store_resource: A categorymanager.taxonomyStores core.Resource
+      object.
     policy: An IamPolicy message.
 
   Returns:
@@ -60,5 +62,5 @@ def SetIamPolicy(store_ref, policy):
   messages = utils.GetMessagesModule()
   return utils.GetClientInstance().taxonomyStores.SetIamPolicy(
       messages.CategorymanagerTaxonomyStoresSetIamPolicyRequest(
-          resource=store_ref.RelativeName(),
+          resource=taxonomy_store_resource.RelativeName(),
           setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))

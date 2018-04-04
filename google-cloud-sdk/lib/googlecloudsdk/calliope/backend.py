@@ -752,11 +752,7 @@ class Command(CommandCommon):
 
     command_instance = self._common_type(cli=cli, context=tool_context)
 
-    log.debug('Running [{cmd}] with arguments: [{args}]'.format(
-        cmd=self.dotted_name,
-        args=', '.join(
-            '{arg}: "{value}"'.format(arg=arg, value=value)
-            for arg, value in sorted(six.iteritems(args.GetSpecifiedArgs())))))
+    base.LogCommand(self.dotted_name, args)
     resources = command_instance.Run(args)
     resources = display.Displayer(command_instance, args, resources,
                                   display_info=self.ai.display_info).Display()

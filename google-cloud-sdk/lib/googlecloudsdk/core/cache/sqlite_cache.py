@@ -21,6 +21,7 @@ See the persistent_cache module for a detailed description.
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import errno
 import os
 
@@ -65,10 +66,10 @@ def _Where(row_template=None):
         continue
       if isinstance(term, six.string_types):
         pattern = term.replace('*', '%').replace('.', '_').replace('"', '""')
-        terms.append(u'{field} LIKE "{pattern}"'.format(
+        terms.append('{field} LIKE "{pattern}"'.format(
             field=_FieldRef(index), pattern=pattern))
       else:
-        terms.append(u'{field} = {term}'.format(
+        terms.append('{field} = {term}'.format(
             field=_FieldRef(index), term=term))
   if not terms:
     return ''
@@ -166,7 +167,7 @@ class _Table(persistent_cache_base.Table):
           '[{}] cache table [{}] has expired.'.format(
               self._cache.name, self.name))
     self._cache.cursor.execute(
-        u'SELECT {fields} FROM "{table}"{where}'.format(
+        'SELECT {fields} FROM "{table}"{where}'.format(
             fields=self._fields, table=self.name, where=_Where(row_template)))
     return self._cache.cursor.fetchall()
 
@@ -189,7 +190,7 @@ class Cache(metadata_table.CacheUsingMetadataTable):
     _tables: The map of open table objects.
   """
 
-  _EXPECTED_MAGIC = 'SQLite format 3'
+  _EXPECTED_MAGIC = b'SQLite format 3'
 
   def __init__(self, name, create=True, timeout=None, version=None):
     super(Cache, self).__init__(
@@ -199,7 +200,7 @@ class Cache(metadata_table.CacheUsingMetadataTable):
     # Surprise, we have to do the heavy lifting.
     # That stops here.
     try:
-      with open(name, 'r') as f:
+      with open(name, 'rb') as f:
         actual_magic = f.read(len(self._EXPECTED_MAGIC))
         if actual_magic != self._EXPECTED_MAGIC:
           raise exceptions.CacheInvalid(

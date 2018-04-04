@@ -71,43 +71,8 @@ class ArgumentError(argparse.ArgumentError):
     return message
 
 
-class ModalGroupError(ArgumentError):
-  """Modal group conflict error."""
-
-  def __init__(self, conflict, **kwargs):
-    super(ModalGroupError, self).__init__(
-        '{conflict} must be specified.',
-        conflict=conflict,
-        **kwargs)
-
-
-class OptionalMutexError(ArgumentError):
-  """Optional mutex conflict error."""
-
-  def __init__(self, conflict, **kwargs):
-    super(OptionalMutexError, self).__init__(
-        'At most one of {conflict} may be specified.',
-        conflict=conflict,
-        **kwargs)
-
-
-class RequiredError(ArgumentError):
-  """Required error."""
-
-  def __init__(self, **kwargs):
-    super(RequiredError, self).__init__(
-        'Must be specified.',
-        **kwargs)
-
-
-class RequiredMutexError(ArgumentError):
-  """Required mutex conflict error."""
-
-  def __init__(self, conflict, **kwargs):
-    super(RequiredMutexError, self).__init__(
-        'Exactly one of {conflict} must be specified.',
-        conflict=conflict,
-        **kwargs)
+class OtherParsingError(ArgumentError):
+  """Some other parsing error that is not any of the above."""
 
 
 class TooFewArgumentsError(ArgumentError):
@@ -122,12 +87,51 @@ class UnrecognizedArgumentsError(ArgumentError):
   """User entered arguments that were not recognized by argparse."""
 
 
-class WrongTrackError(ArgumentError):
+class DetailedArgumentError(ArgumentError):
+  """A DetailedArgumentError is preferable to an ArgumentError."""
+
+
+class ModalGroupError(DetailedArgumentError):
+  """Modal group conflict error."""
+
+  def __init__(self, conflict, **kwargs):
+    super(ModalGroupError, self).__init__(
+        '{conflict} must be specified.',
+        conflict=conflict,
+        **kwargs)
+
+
+class OptionalMutexError(DetailedArgumentError):
+  """Optional mutex conflict error."""
+
+  def __init__(self, conflict, **kwargs):
+    super(OptionalMutexError, self).__init__(
+        'At most one of {conflict} may be specified.',
+        conflict=conflict,
+        **kwargs)
+
+
+class RequiredError(DetailedArgumentError):
+  """Required error."""
+
+  def __init__(self, **kwargs):
+    super(RequiredError, self).__init__(
+        'Must be specified.',
+        **kwargs)
+
+
+class RequiredMutexError(DetailedArgumentError):
+  """Required mutex conflict error."""
+
+  def __init__(self, conflict, **kwargs):
+    super(RequiredMutexError, self).__init__(
+        'Exactly one of {conflict} must be specified.',
+        conflict=conflict,
+        **kwargs)
+
+
+class WrongTrackError(DetailedArgumentError):
   """For parsed commands in a different track."""
-
-
-class OtherParsingError(ArgumentError):
-  """Some other parsing error that is not any of the above."""
 
 
 class ArgumentException(Exception):

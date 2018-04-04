@@ -133,8 +133,7 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
     def List(self, request, global_params=None):
       """Lists jobs.
 
-ListJobsRequest.filter can be used to specify a subset of
-jobs. ListJobsRequest.response_view controls the subset of
+ListJobsRequest.response_view controls the subset of
 information returned. By default response_view is
 Job.View.BASIC; not all information is returned by default
 due to performance considerations.
@@ -167,10 +166,7 @@ due to performance considerations.
       """Forces a job to run now.
 
 When this method is called, Cloud Scheduler will immediately attempt the
-job. The attempt will be counted in the job's Job.total_attempt_count.
-
-The job's existing schedule is not modified, so the job
-will also be attempted according to its normal schedule.
+job.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsRunRequest) input message

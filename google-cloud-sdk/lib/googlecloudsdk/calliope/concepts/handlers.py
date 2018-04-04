@@ -47,6 +47,7 @@ class RuntimeHandler(object):
     # This is set by the ArgumentInterceptor later.
     self.parsed_args = None
     self._arg_name_lookup = {}
+    self._all_concepts = []
 
   def ParsedArgs(self):
     """Basically a lazy property to use during lazy concept parsing."""
@@ -77,11 +78,16 @@ class RuntimeHandler(object):
           return None
 
     setattr(self, name, LazyParse(concept_info.Parse, self.ParsedArgs))
+    self._all_concepts.append(concept_info)
     for _, arg_name in six.iteritems(concept_info.attribute_to_args_map):
       self._arg_name_lookup[util.NormalizeFormat(arg_name)] = concept_info
 
   def ArgNameToConceptInfo(self, arg_name):
     return self._arg_name_lookup.get(util.NormalizeFormat(arg_name))
+
+  def Reset(self):
+    for concept_info in self._all_concepts:
+      concept_info.ClearCache()
 
 
 class ConceptInfo(six.with_metaclass(abc.ABCMeta, object)):
@@ -120,6 +126,10 @@ class ConceptInfo(six.with_metaclass(abc.ABCMeta, object)):
       [str], a list of string hints.
     """
 
+  def ClearCache(self):
+    """Clear cache if it exists. Override where needed."""
+    pass
+
 
 class ResourceInfo(object):
   """Holds information for a resource argument."""
@@ -147,6 +157,7 @@ class ResourceInfo(object):
 
     self._result = None
     self._result_computed = False
+    self.sentinel = 0
 
   @property
   def resource_spec(self):
@@ -273,3 +284,7 @@ class ResourceInfo(object):
       return resources
     return self.concept_spec.Initialize(deps_lib.Deps(
         fallthroughs_map))
+
+  def ClearCache(self):
+    self._result = None
+    self._result_computed = False

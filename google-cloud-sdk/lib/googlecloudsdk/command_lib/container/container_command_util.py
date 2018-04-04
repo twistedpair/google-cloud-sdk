@@ -41,7 +41,7 @@ def _NodePoolFromCluster(cluster, node_pool_name):
 
 
 def ClusterUpgradeMessage(cluster, master=False, node_pool=None,
-                          new_version=None):
+                          new_version=None, concurrent_node_count=None):
   """Get a message to print during gcloud container clusters upgrade.
 
   Args:
@@ -50,6 +50,7 @@ def ClusterUpgradeMessage(cluster, master=False, node_pool=None,
     node_pool: str, the name of the node pool if the upgrade is for a specific
         node pool.
     new_version: str, the name of the new version, if given.
+    concurrent_node_count: int, the number of nodes to upgrade concurrently.
 
   Raises:
     NodePoolError: if the node pool name can't be found in the cluster.
@@ -74,11 +75,16 @@ def ClusterUpgradeMessage(cluster, master=False, node_pool=None,
         cluster.currentNodeCount,
         text.Pluralize(cluster.currentNodeCount, 'node'))
     current_version = cluster.currentNodeVersion
-  return ('{} of cluster [{}] will be upgraded from version [{}] to {}. '
+  concurrent_message = ''
+  if not master and concurrent_node_count:
+    concurrent_message = '{} {} will be upgraded at a time. '.format(
+        concurrent_node_count,
+        text.Pluralize(concurrent_node_count, 'node'))
+  return ('{} of cluster [{}] will be upgraded from version [{}] to {}. {}'
           'This operation is long-running and will block other operations '
           'on the cluster (including delete) until it has run to completion.'
           .format(node_message, cluster.name, current_version,
-                  new_version_message))
+                  new_version_message, concurrent_message))
 
 
 def GetZone(args, ignore_property=False, required=True):

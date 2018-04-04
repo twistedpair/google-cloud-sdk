@@ -19,21 +19,21 @@ from googlecloudsdk.command_lib.category_manager import util
 from googlecloudsdk.command_lib.iam import iam_util
 
 
-def AddIamPolicyBinding(resource_ref, role, member, module):
+def AddIamPolicyBinding(resource_resource, role, member, module):
   """Add a member to an iam role binding on resource."""
-  policy = module.GetIamPolicy(resource_ref)
+  policy = module.GetIamPolicy(resource_resource)
   iam_util.AddBindingToIamPolicy(utils.GetMessagesModule().Binding, policy,
                                  member, role)
-  return module.SetIamPolicy(resource_ref, policy)
+  return module.SetIamPolicy(resource_resource, policy)
 
 
-def RemoveIamPolicyBinding(resource_ref, role, member, module):
+def RemoveIamPolicyBinding(resource_resource, role, member, module):
   """Remove a member to a resource."""
-  policy = module.GetIamPolicy(resource_ref)
+  policy = module.GetIamPolicy(resource_resource)
   iam_util.RemoveBindingFromIamPolicy(policy, member, role)
-  return module.SetIamPolicy(resource_ref, policy)
+  return module.SetIamPolicy(resource_resource, policy)
 
 
-def GetOrgIamPolicy(org_ref):
+def GetOrgIamPolicy(org_resource):
   """Get Iam policy with an organization reference."""
-  return store.GetIamPolicy(util.GetTaxonomyStoreRefFromOrgRef(org_ref))
+  return store.GetIamPolicy(util.GetTaxonomyStoreFromOrgResource(org_resource))

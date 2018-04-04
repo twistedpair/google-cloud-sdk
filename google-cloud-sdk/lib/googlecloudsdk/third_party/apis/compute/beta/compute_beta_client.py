@@ -3262,7 +3262,7 @@ You can specify a maximum of 1000 instances with this method per request.
     )
 
     def Get(self, request, global_params=None):
-      """Returns all of the details about the specified managed instance group. Get a list of available managed instance groups by making a list() request.
+      """Returns all of the details about the specified managed instance group. Gets a list of available managed instance groups by making a list() request.
 
       Args:
         request: (ComputeInstanceGroupManagersGetRequest) input message
@@ -3920,7 +3920,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified instance template. Get a list of available instance templates by making a list() request.
+      """Returns the specified instance template. Gets a list of available instance templates by making a list() request.
 
       Args:
         request: (ComputeInstanceTemplatesGetRequest) input message
@@ -5446,7 +5446,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified machine type. Get a list of available machine types by making a list() request.
+      """Returns the specified machine type. Gets a list of available machine types by making a list() request.
 
       Args:
         request: (ComputeMachineTypesGetRequest) input message
@@ -5882,7 +5882,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetXpnHost(self, request, global_params=None):
-      """Get the shared VPC host project that this project links to. May be empty if no link exists.
+      """Gets the shared VPC host project that this project links to. May be empty if no link exists.
 
       Args:
         request: (ComputeProjectsGetXpnHostRequest) input message
@@ -5908,7 +5908,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetXpnResources(self, request, global_params=None):
-      """Get service resources (a.k.a service project) associated with this host project.
+      """Gets service resources (a.k.a service project) associated with this host project.
 
       Args:
         request: (ComputeProjectsGetXpnResourcesRequest) input message
@@ -5934,7 +5934,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListXpnHosts(self, request, global_params=None):
-      """List all shared VPC host projects visible to the user in an organization.
+      """Lists all shared VPC host projects visible to the user in an organization.
 
       Args:
         request: (ComputeProjectsListXpnHostsRequest) input message
@@ -8598,7 +8598,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """List all of the ordered rules present in a single specified policy.
+      """Lists all of the ordered rules present in a single specified policy.
 
       Args:
         request: (ComputeSslPoliciesGetRequest) input message
@@ -8650,7 +8650,7 @@ For more information, see Deleting snaphots.
     )
 
     def List(self, request, global_params=None):
-      """List all the SSL policies that have been configured for the specified project.
+      """Lists all the SSL policies that have been configured for the specified project.
 
       Args:
         request: (ComputeSslPoliciesListRequest) input message

@@ -185,9 +185,8 @@
           }
         },
         "nextPageToken": {
-          "description": "A token to retrieve next page of results. Pass this value in the\nListJobsRequest.page_token field in the subsequent call to\nCloudScheduler.ListJobs to retrieve the next page of results.\nIf this is empty it indicates that there are no more results\nthrough which to paginate.\n\nFor JSON requests, the value of this field must be\nbase64-encoded.\n\nThe page token is valid for only 2 hours.",
-          "type": "string",
-          "format": "byte"
+          "description": "A token to retrieve next page of results. Pass this value in the\nListJobsRequest.page_token field in the subsequent call to\nCloudScheduler.ListJobs to retrieve the next page of results.\nIf this is empty it indicates that there are no more results\nthrough which to paginate.\n\nThe page token is valid for only 2 hours.",
+          "type": "string"
         }
       }
     },
@@ -226,7 +225,7 @@
           "format": "google-datetime"
         },
         "jobState": {
-          "description": "Output only. State of the job. For example: running, paused, or disabled.",
+          "description": "Output only. State of the job. For example: enabled, paused, or disabled.",
           "enumDescriptions": [
             "Unspecified state.",
             "The job is executing normally.",
@@ -356,11 +355,11 @@
     },
     "HttpTarget": {
       "id": "HttpTarget",
-      "description": "Http target. The job will be pushed to the job handler by means of\nan HTTP request via an HttpTarget.http_method such as HTTP\nPOST, HTTP GET, etc. The job is acknowledged by means of an HTTP\nresponse code in the range [200 - 299]. A failure to receive a response\nbefore the deadline constitutes a failed execution.",
+      "description": "Http target. The job will be pushed to the job handler by means of\nan HTTP request via an HttpTarget.http_method such as HTTP\nPOST, HTTP GET, etc. The job is acknowledged by means of an HTTP\nresponse code in the range [200 - 299]. A failure to receive a response\nconstitutes a failed execution.",
       "type": "object",
       "properties": {
         "url": {
-          "description": "Required.\n\nThe full url path that the request will be sent to. This string\nmust begin with either \"http:\/\/\" or \"https:\/\/\". Some examples of\nvalid values for HttpTarget.url are:\n`http:\/\/acme.com` and `https:\/\/acme.com\/sales:8080`.",
+          "description": "Required.\n\nThe full url path that the request will be sent to. This string\nmust begin with either \"http:\/\/\" or \"https:\/\/\". Some examples of\nvalid values for HttpTarget.url are:\n`http:\/\/acme.com` and `https:\/\/acme.com\/sales:8080`. Cloud Scheduler will\nencode some characters for safety and compatibility. The maximum allowed\nURL length is 2083 characters after encoding.",
           "type": "string"
         },
         "httpMethod": {
@@ -445,11 +444,11 @@
     },
     "RetryConfig": {
       "id": "RetryConfig",
-      "description": "Settings that determine the retry behavior.\n\nBy default, if a job does not complete successfully (meaning that\nan acknowledgement is not received from the handler before the\n[deadline](\/appengine\/docs\/python\/taskqueue\/push\/#the_task_deadline),\nthen it will be retried with exponential backoff according to the settings\nin RetryConfig.",
+      "description": "Settings that determine the retry behavior.\n\nBy default, if a job does not complete successfully (meaning that\nan acknowledgement is not received from the handler, then it will be retried\nwith exponential backoff according to the settings in RetryConfig.",
       "type": "object",
       "properties": {
         "retryCount": {
-          "description": "It determines the total number  attempts that the system will make to\ndeliver a job using the exponential backoff procedure described above.\n\nThe default value of retry_count is zero.\n\nIf retry_count is zero, a job attempt will *not* be retried if\nit fails. Instead the Cloud Scheduler system will wait for the\nnext scheduled execution time.\n\nIf retry_count is set to a non-zero number then Cloud Scheduler\nwill retry failed attempts, using exponential backoff,\nretry_count times, or until the next scheduled execution time,\nwhichever comes first.\n\nValue greater than 5 and negative values are not allowed.",
+          "description": "It determines the  number attempts that the system will make to deliver a\njob using the exponential backoff procedure described above.\n\nThe default value of retry_count is zero.\n\nIf retry_count is zero, a job attempt will *not* be retried if\nit fails. Instead the Cloud Scheduler system will wait for the\nnext scheduled execution time.\n\nIf retry_count is set to a non-zero number then Cloud Scheduler\nwill retry failed attempts, using exponential backoff,\nretry_count times, or until the next scheduled execution time,\nwhichever comes first.\n\nValue greater than 5 and negative values are not allowed.",
           "type": "integer",
           "format": "int32"
         },
@@ -608,7 +607,7 @@
                       "type": "string"
                     },
                     "responseView": {
-                      "description": "The response_view specifies which subset of the Job will be\nreturned.\n\nBy default response_view is Job.View.BASIC; not all\ninformation is retrieved by default because some data, such as\npayloads, might be desirable to return only when needed because\nof its large size or because of the sensitivity of data that it\ncontains.\n\nAuthorization for Job.View.FULL requires\n`cloudscheduler.jobs.fullView`\n[Google IAM](https:\/\/cloud.google.com\/iam\/) permission on the\nJob.name resource.",
+                      "description": "The response_view specifies which subset of the Job will be\nreturned.\n\nBy default response_view is Job.View.BASIC; not all\ninformation is retrieved by default because some data, such as\npayloads, might be desirable to return only when needed because\nof its large size or because of the sensitivity of data that it\ncontains.",
                       "location": "query",
                       "type": "string",
                       "enum": [
@@ -624,10 +623,9 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A token identifying a page of results the server will return. To\nrequest the first page results, page_token must be empty. To\nrequest the next page of results, page_token must be the value of\nListJobsResponse.next_page_token returned from the previous\ncall to CloudScheduler.ListJobs. It is an error to switch the\nvalue of ListJobsRequest.filter or\nListJobsRequest.order_by while iterating through pages.\n\nFor JSON requests, the value of this field must be\nbase64-encoded.",
+                      "description": "A token identifying a page of results the server will return. To\nrequest the first page results, page_token must be empty. To\nrequest the next page of results, page_token must be the value of\nListJobsResponse.next_page_token returned from the previous\ncall to CloudScheduler.ListJobs. It is an error to switch the\nvalue of ListJobsRequest.filter or\nListJobsRequest.order_by while iterating through pages.",
                       "location": "query",
-                      "type": "string",
-                      "format": "byte"
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -639,7 +637,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists jobs.\n\nListJobsRequest.filter can be used to specify a subset of\njobs. ListJobsRequest.response_view controls the subset of\ninformation returned. By default response_view is\nJob.View.BASIC; not all information is returned by default\ndue to performance considerations."
+                  "description": "Lists jobs.\n\nListJobsRequest.response_view controls the subset of\ninformation returned. By default response_view is\nJob.View.BASIC; not all information is returned by default\ndue to performance considerations."
                 },
                 "get": {
                   "id": "cloudscheduler.projects.locations.jobs.get",
@@ -655,7 +653,7 @@
                       "type": "string"
                     },
                     "responseView": {
-                      "description": "The response_view specifies which subset of the Job will be\nreturned.\n\nBy default ListJobsRequest.response_view is\nJob.View.BASIC; not all\ninformation is retrieved by default because some data, such as\npayloads, might be desirable to return only when needed because\nof its large size or because of the sensitivity of data that it\ncontains.\n\nAuthorization for Job.View.FULL requires\n`cloudscheduler.jobs.fullView`\n[Google IAM](https:\/\/cloud.google.com\/iam\/) permission on the\nJob.name resource.",
+                      "description": "The response_view specifies which subset of the Job will be\nreturned.\n\nBy default ListJobsRequest.response_view is\nJob.View.BASIC; not all\ninformation is retrieved by default because some data, such as\npayloads, might be desirable to return only when needed because\nof its large size or because of the sensitivity of data that it\ncontains.",
                       "location": "query",
                       "type": "string",
                       "enum": [
@@ -755,7 +753,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Forces a job to run now.\n\nWhen this method is called, Cloud Scheduler will immediately attempt the\njob. The attempt will be counted in the job's Job.total_attempt_count.\n\nThe job's existing schedule is not modified, so the job\nwill also be attempted according to its normal schedule."
+                  "description": "Forces a job to run now.\n\nWhen this method is called, Cloud Scheduler will immediately attempt the\njob."
                 }
               }
             }

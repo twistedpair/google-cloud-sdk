@@ -22,6 +22,7 @@ import io
 import os
 import sys
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import markdown
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
@@ -94,6 +95,7 @@ def FunctionExitAction(func):
       super(Action, self).__init__(**kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
+      base.LogCommand(parser.prog, namespace)
       metrics.Loaded()
       func()
       sys.exit(0)
@@ -425,6 +427,7 @@ def RenderDocumentAction(command, default_style=None):
       Raises:
         parser_errors.ArgumentError: For unknown flag value attribute name.
       """
+      base.LogCommand(parser.prog, namespace)
       if default_style:
         # --help
         metrics.Loaded()
