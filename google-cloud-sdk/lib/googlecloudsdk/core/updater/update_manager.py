@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import hashlib
 import os
 import shutil
@@ -344,9 +345,9 @@ class UpdateManager(object):
       return True
 
     raise InvalidCWDError(
-        u'Your current working directory is inside the Cloud SDK install root:'
-        u' {root}.  In order to perform this update, run the command from '
-        u'outside of this directory.'.format(root=self.__sdk_root))
+        'Your current working directory is inside the Cloud SDK install root:'
+        ' {root}.  In order to perform this update, run the command from '
+        'outside of this directory.'.format(root=self.__sdk_root))
 
   def _GetDontCancelMessage(self, disable_backup):
     """Get the message to print before udpates.
@@ -1008,7 +1009,7 @@ To revert your SDK to the previously installed version, you may run:
         encoding.GetEncodedValue(os.environ, 'CLOUDSDK_REINSTALL_COMPONENTS')):
       bad_commands = self.FindAllOldToolsOnPath()
       if bad_commands:
-        log.warning(u"""\
+        log.warning("""\
   There are older versions of Google Cloud Platform tools on your system PATH.
   Please remove the following to avoid accidentally invoking these old tools:
 
@@ -1017,7 +1018,7 @@ To revert your SDK to the previously installed version, you may run:
   """.format('\n'.join(bad_commands)))
       duplicate_commands = self.FindAllDuplicateToolsOnPath()
       if duplicate_commands:
-        log.warning(u"""\
+        log.warning("""\
   There are alternate versions of the following Google Cloud Platform tools on
   your system PATH. Please double check your PATH:
 
@@ -1578,6 +1579,6 @@ def RestartCommand(command=None, args=None, python=None, block=True):
         # end. Otherwise, the output is either lost (without `pause`) or comes
         # out asynchronously over the next commands (without the new window).
         def Quote(s):
-          return '"' + s + '"'
+          return '"' + encoding.Decode(s) + '"'
         args = 'cmd.exe /c "{0} & pause"'.format(' '.join(map(Quote, args)))
     subprocess.Popen(args, shell=True, **popen_args)

@@ -196,6 +196,18 @@ def _ValidateObbFileList(arg_internal_name, arg_value):
   return arg_value
 
 
+def _ValidateAdditionalApksList(arg_internal_name, arg_value):
+  """Validates that 'additional-apks' contains [1, 100] entries."""
+  arg_value = ValidateStringList(arg_internal_name, arg_value)
+  if len(arg_value) < 1:
+    raise test_exceptions.InvalidArgException(
+        arg_internal_name, 'At least 1 additional apk must be specified.')
+  if len(arg_value) > 100:
+    raise test_exceptions.InvalidArgException(
+        arg_internal_name, 'At most 100 additional apks may be specified.')
+  return arg_value
+
+
 def _ValidateKeyValueStringPairs(arg_internal_name, arg_value):
   """Validates that an argument is a dict of string-type key-value pairs."""
   if isinstance(arg_value, dict):
@@ -230,6 +242,7 @@ def _ValidateListOfStringToStringDicts(arg_internal_name, arg_value):
 # Map of internal arg names to their appropriate validation functions.
 # Any arg not appearing in this map is assumed to be a simple string.
 _FILE_ARG_VALIDATORS = {
+    'additional_apks': _ValidateAdditionalApksList,
     'async': _ValidateBool,
     'auto_google_login': _ValidateBool,
     'device': _ValidateListOfStringToStringDicts,

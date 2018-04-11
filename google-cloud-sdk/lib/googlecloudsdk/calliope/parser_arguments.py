@@ -364,7 +364,7 @@ class ArgumentInterceptor(Argument):
     return self.parser.parse_known_args(args=args, namespace=namespace)
 
   def add_group(self, help=None, category=None, mutex=False, required=False,
-                **kwargs):
+                hidden=False, **kwargs):
     """Adds an argument group with mutex/required attributes to the parser.
 
     Args:
@@ -372,6 +372,7 @@ class ArgumentInterceptor(Argument):
       category: str, The group flag category name, None for no category.
       mutex: bool, A mutually exclusive group if True.
       required: bool, A required group if True.
+      hidden: bool, A hidden group if True.
       **kwargs: Passed verbatim to ArgumentInterceptor().
 
     Returns:
@@ -381,7 +382,7 @@ class ArgumentInterceptor(Argument):
       raise parser_errors.ArgumentException(
           'parser.add_group(): description or title kwargs not supported '
           '-- use help=... instead.')
-    new_parser = self.parser.add_argument_group(**kwargs)
+    new_parser = self.parser.add_argument_group()
     group = ArgumentInterceptor(parser=new_parser,
                                 is_global=self.is_global,
                                 cli_generator=self.cli_generator,
@@ -390,7 +391,9 @@ class ArgumentInterceptor(Argument):
                                 help=help,
                                 category=category,
                                 mutex=mutex,
-                                required=required)
+                                required=required,
+                                hidden=hidden,
+                                **kwargs)
     self.arguments.append(group)
     return group
 

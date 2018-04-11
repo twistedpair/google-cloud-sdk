@@ -17,12 +17,14 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core.document_renderers import render_document
 from googlecloudsdk.core.updater import installers
+from googlecloudsdk.core.util import encoding
 
 from six.moves import StringIO
 
@@ -82,6 +84,7 @@ class ReleaseNotes(object):
       if code and code != 200:
         return None
       text = response.read()
+      text = encoding.Decode(text)
       return cls(text)
     # pylint: disable=broad-except, We don't want any failure to download or
     # parse the release notes to block an update.  Returning None here will

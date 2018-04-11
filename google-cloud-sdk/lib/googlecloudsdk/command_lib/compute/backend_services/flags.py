@@ -84,6 +84,13 @@ MULTISCOPE_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
+NETWORK_ENDPOINT_GROUP_ARG = compute_flags.ResourceArgument(
+    name='--network-endpoint-group',
+    resource_name='network endpoint group',
+    zonal_collection='compute.networkEndpointGroups',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
+
+
 GLOBAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
     resource_name='backend service',
@@ -539,3 +546,13 @@ def AddFailoverRatio(parser):
       number, traffic arriving at the load-balanced IP will be directed to the
       failover backend(s). Not compatible with the --global flag.
       """)
+
+
+def AddInstanceGroupAndNetworkEndpointGroupArgs(parser, verb):
+  backend_group = parser.add_group(required=True, mutex=True)
+  instance_group = backend_group.add_group('Instance Group')
+  neg_group = backend_group.add_group('Network Endpoint Group')
+  MULTISCOPE_INSTANCE_GROUP_ARG.AddArgument(
+      instance_group, operation_type='{} the backend service'.format(verb))
+  NETWORK_ENDPOINT_GROUP_ARG.AddArgument(
+      neg_group, operation_type='{} the backend service'.format(verb))

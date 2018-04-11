@@ -13,7 +13,8 @@
 # limitations under the License.
 """Utilities for gcloud ml products commands."""
 
-import os
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import re
 
 from apitools.base.py import encoding
@@ -34,12 +35,6 @@ PRODUCT_ID_VALIDATION = ('Product Id is restricted to 255 characters '
                          'hyphen (-).')
 PRODUCT_ID_VALIDATION_ERROR = ('Invalid product_id [{}]. ' +
                                PRODUCT_ID_VALIDATION)
-_GCS_PATH_ERROR_MESSAGE = (
-    'The {object} path [{data}] is not a properly formatted URI for a remote '
-    '{object}. URI must be a Google Cloud Storage image URI, in '
-    'the form `gs://bucket_name/object_name`. Please double-check your input '
-    'and try again.')
-
 BOUNDING_POLY_ERROR = ('vertices must be a list of coordinate pairs '
                        'representing the vertices of the bounding polygon '
                        'e.g. [x1:y1, x2:y2, x3:y3,...]. Received [{}]: {}')
@@ -60,6 +55,13 @@ class Error(exceptions.Error):
 class GcsPathError(Error):
   """Error if an fcs path is improperly formatted."""
 
+  def __init__(self, obj, data):
+    super(GcsPathError, self).__init__(
+        'The {obj} path [{data}] is not a properly formatted URI for a '
+        'remote {obj}. URI must be a Google Cloud Storage image URI, in '
+        'the form `gs://bucket_name/object_name`. Please double-check your '
+        'input and try again.'.format(obj=obj, data=data))
+
 
 class ProductIdError(Error):
   """Error if a ReferenceImage product_id is malformed."""
@@ -75,32 +77,6 @@ class InvalidBoundsError(Error):
 
 class ProductSearchException(Error):
   """Raised if the image product search resulted in an error."""
-
-
-def GetImageFromPath(path):
-  """Builds an Image message from a path.
-
-  Args:
-    path: the path arg given to the command.
-
-  Raises:
-    ImagePathError: if the image path does not exist and does not seem to be
-        a remote URI.
-
-  Returns:
-    alpha_vision_v1_messages.Image: an image message containing information
-      for the API on the image to analyze.
-  """
-  messages = GetApiMessages(PRODUCTS_SEARCH_VERSION)
-  image = messages.Image()
-  if os.path.isfile(path):
-    with open(path, 'rb') as content_file:
-      image.content = content_file.read()
-  elif re.match(GCS_URI_FORMAT, path):
-    image.source = messages.ImageSource(imageUri=path)
-  else:
-    GcsPathError(_GCS_PATH_ERROR_MESSAGE.format(object='image', data=path))
-  return image
 
 
 class ProductsClient(object):
@@ -237,8 +213,7 @@ class ProductsClient(object):
           product_id, PRODUCT_ID_FORMAT))
 
     if not re.match(GCS_URI_FORMAT, image_path):
-      raise GcsPathError(_GCS_PATH_ERROR_MESSAGE.format(object='image',
-                                                        data=image_path))
+      raise GcsPathError(obj='image', data=image_path)
 
     if bounds and not isinstance(bounds, self.messages.BoundingPoly):
       raise TypeError('bounds must be a valid BoundingPoly message.')
@@ -315,8 +290,7 @@ class ProductsClient(object):
       GcsPathError: If CSV file path is not a valid GCS URI.
     """
     if not re.match(GCS_URI_FORMAT, catalog_file_uri):
-      raise GcsPathError(_GCS_PATH_ERROR_MESSAGE.format(
-          object='catalog csv file', data=catalog_file_uri))
+      raise GcsPathError(obj='catalog csv file', data=catalog_file_uri)
 
     import_config = self.import_catalog_config(
         gcsSource=self.import_catalog_src(csvFileUri=catalog_file_uri))

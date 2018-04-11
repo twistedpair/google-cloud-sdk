@@ -25,4 +25,4 @@ def MakeDiskTypeArg(regional):
       name='DISK_TYPE',
       zonal_collection='compute.diskTypes',
       regional_collection='compute.regionDiskTypes' if regional else None,
-      region_hidden=regional)
+      region_hidden=not regional)

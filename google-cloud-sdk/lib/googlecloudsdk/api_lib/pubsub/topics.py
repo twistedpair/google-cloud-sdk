@@ -11,7 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Utilities for Cloud Pub/Sub Topics API."""
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
@@ -155,7 +160,7 @@ class TopicsClient(object):
 
     Args:
       topic_ref (Resource): Resource reference to Topic to publish to.
-      message_body (str): Message to send.
+      message_body (bytes): Message to send.
       attributes (list[AdditionalProperty]): List of attributes to attach to
         the message.
     Returns:

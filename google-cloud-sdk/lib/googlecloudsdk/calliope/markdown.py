@@ -409,14 +409,14 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
     self._out('\n')
 
-  def _PrintArgDefinition(self, arg, depth=0):
+  def _PrintArgDefinition(self, arg, depth=0, single=False):
     """Prints a positional or flag arg definition list item at depth."""
     usage = usage_text.GetArgUsage(arg, definition=True, markdown=True)
     if not usage:
       return
     self._out('\n{usage}{depth}\n'.format(
         usage=usage, depth=':' * (depth + 2)))
-    if arg.is_required and depth:
+    if arg.is_required and depth and not single:
       modal = (' This {arg_type} must be specified if any of the other '
                'arguments in this group are specified.').format(
                    arg_type=self._ArgTypeName(arg))
@@ -425,7 +425,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     self._out('\n{details}{modal}\n'.format(
         details=self.GetArgDetails(arg), modal=modal))
 
-  def _PrintArgGroup(self, arg, depth=0):
+  def _PrintArgGroup(self, arg, depth=0, single=False):
     """Prints an arg group definition list at depth."""
 
     args = sorted(arg.arguments, key=usage_text.GetArgSortKey)
@@ -435,6 +435,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         heading.append(arg.help)
       if len(args) == 1 or args[0].is_required:
         if arg.is_required:
+          # TODO (b/77314072): Put this before (NOTE) section in resource args.
           heading.append('This must be specified.')
       elif arg.is_mutex:
         if arg.is_required:
@@ -451,13 +452,17 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         heading = None
         depth += 1
       if a.is_group:
+        single = False
         singleton = usage_text.GetSingleton(a)
         if singleton:
-          a = singleton
+          if not a.help:
+            a = singleton
+          else:
+            single = True
       if a.is_group:
-        self._PrintArgGroup(a, depth=depth)
+        self._PrintArgGroup(a, depth=depth, single=single)
       else:
-        self._PrintArgDefinition(a, depth=depth)
+        self._PrintArgDefinition(a, depth=depth, single=single)
 
   def PrintPositionalDefinition(self, arg):
     self._out('\n{0}::\n'.format(

@@ -39,10 +39,6 @@ class CallFunctionResponse(_messages.Message):
   result = _messages.StringField(3)
 
 
-class CancelOperationRequest(_messages.Message):
-  """The request message for Operations.CancelOperation."""
-
-
 class CloudFunction(_messages.Message):
   """Describes a Cloud Function that contains user computation executed in
   response to an event. It encapsulate function and triggers configurations.
@@ -51,8 +47,6 @@ class CloudFunction(_messages.Message):
     StatusValueValuesEnum: Output only. Status of the function deployment.
 
   Messages:
-    EnvironmentVariablesValue: Environment variables that shall be available
-      during function execution.
     LabelsValue: Labels associated with this Cloud Function.
 
   Fields:
@@ -65,8 +59,6 @@ class CloudFunction(_messages.Message):
       the system will try to use function named "function". For Node.js this
       is name of a function exported by the module specified in
       `source_location`.
-    environmentVariables: Environment variables that shall be available during
-      function execution.
     eventTrigger: A source that fires events in response to a condition in
       another service.
     httpsTrigger: An HTTPS endpoint type of source that can be triggered via
@@ -74,15 +66,6 @@ class CloudFunction(_messages.Message):
     labels: Labels associated with this Cloud Function.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
-    network: The Google Compute Engine network that this function can connect
-      to. Either the fully-qualified URI of the network resource, or the short
-      name of the network must be specified. If the network belongs to another
-      project, the URI of the resource must be specified e.g., `https://www.go
-      ogleapis.com/compute/v1/projects/{project}/global/networks/{network}`
-      or `my-network`.  See [the VPC
-      documentation](https://cloud.google.com/compute/docs/vpc) for more
-      information on connecting Cloud projects.
-    runtime: The runtime in which the function is going to run.
     serviceAccountEmail: Output only. The email of the function's service
       account.
     sourceArchiveUrl: The Google Cloud Storage URL, starting with gs://,
@@ -121,33 +104,6 @@ class CloudFunction(_messages.Message):
     UNKNOWN = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class EnvironmentVariablesValue(_messages.Message):
-    """Environment variables that shall be available during function
-    execution.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        EnvironmentVariablesValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        EnvironmentVariablesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      """An additional property for a EnvironmentVariablesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     """Labels associated with this Cloud Function.
 
@@ -174,44 +130,18 @@ class CloudFunction(_messages.Message):
   availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   description = _messages.StringField(2)
   entryPoint = _messages.StringField(3)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 4)
-  eventTrigger = _messages.MessageField('EventTrigger', 5)
-  httpsTrigger = _messages.MessageField('HttpsTrigger', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  runtime = _messages.MessageField('Runtime', 10)
-  serviceAccountEmail = _messages.StringField(11)
-  sourceArchiveUrl = _messages.StringField(12)
-  sourceRepository = _messages.MessageField('SourceRepository', 13)
-  sourceUploadUrl = _messages.StringField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  timeout = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  versionId = _messages.IntegerField(18)
-
-
-class CloudfunctionsOperationsCancelRequest(_messages.Message):
-  """A CloudfunctionsOperationsCancelRequest object.
-
-  Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class CloudfunctionsOperationsDeleteRequest(_messages.Message):
-  """A CloudfunctionsOperationsDeleteRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
+  eventTrigger = _messages.MessageField('EventTrigger', 4)
+  httpsTrigger = _messages.MessageField('HttpsTrigger', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  serviceAccountEmail = _messages.StringField(8)
+  sourceArchiveUrl = _messages.StringField(9)
+  sourceRepository = _messages.MessageField('SourceRepository', 10)
+  sourceUploadUrl = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  timeout = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  versionId = _messages.IntegerField(15)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -350,16 +280,6 @@ class CloudfunctionsProjectsLocationsFunctionsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
-class CloudfunctionsProjectsLocationsGetRequest(_messages.Message):
-  """A CloudfunctionsProjectsLocationsGetRequest object.
-
-  Fields:
-    name: Resource name for the location.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
   """A CloudfunctionsProjectsLocationsListRequest object.
 
@@ -374,16 +294,6 @@ class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
-  """
-
 
 
 class EventTrigger(_messages.Message):
@@ -850,18 +760,6 @@ class Retry(_messages.Message):
   Retried execution is charged as any other execution.
   """
 
-
-
-class Runtime(_messages.Message):
-  """The runtime in which a function is going to run.
-
-  Fields:
-    name: The name of the runtime.
-    version: Version specification.
-  """
-
-  name = _messages.StringField(1)
-  version = _messages.StringField(2)
 
 
 class SourceRepository(_messages.Message):

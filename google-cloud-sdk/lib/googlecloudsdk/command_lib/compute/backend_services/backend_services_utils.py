@@ -13,6 +13,9 @@
 # limitations under the License.
 """Code that's shared between multiple backend-services subcommands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -64,16 +67,22 @@ def GetIAP(iap_arg, messages, existing_iap_settings=None):
     else:
       value = True
 
+    def _Repr(s):
+      r = repr(s)
+      if r.startswith('u'):
+        r = r[1:]
+      return r
+
     if subarg in ('enabled', 'disabled', 'oauth2-client-id',
                   'oauth2-client-secret'):
       if subarg in iap_arg_parsed:
         raise exceptions.InvalidArgumentException(
-            '--iap', 'Sub-argument %r specified multiple times' %
-            subarg)
+            '--iap', 'Sub-argument %s specified multiple times' %
+            _Repr(subarg))
       iap_arg_parsed[subarg] = value
     else:
       raise exceptions.InvalidArgumentException(
-          '--iap', 'Invalid sub-argument %r' % subarg)
+          '--iap', 'Invalid sub-argument %s' % _Repr(subarg))
 
   if not iap_arg_parsed or not iap_arg:
     raise exceptions.InvalidArgumentException(
@@ -119,8 +128,32 @@ def IapHttpWarning():
           'Data sent from the Load Balancer to your VM will not be encrypted.')
 
 
+def _ValidateGroupMatchesArgs(args):
+  """Validate if the group arg is used with the correct group specific flags."""
+  invalid_arg = None
+  if args.instance_group:
+    if args.max_rate_per_endpoint is not None:
+      invalid_arg = '--max-rate-per-endpoint'
+    elif args.max_connections_per_endpoint is not None:
+      invalid_arg = '--max-connections-per-endpoint'
+    if invalid_arg is not None:
+      raise exceptions.InvalidArgumentException(
+          invalid_arg,
+          'cannot be set with --instance-group')
+  elif args.network_endpoint_group:
+    if args.max_rate_per_instance is not None:
+      invalid_arg = '--max-rate-per-instance'
+    elif args.max_connections_per_instance is not None:
+      invalid_arg = '--max-connections-per-instance'
+    if invalid_arg is not None:
+      raise exceptions.InvalidArgumentException(
+          invalid_arg,
+          'cannot be set with --network-endpoint-group')
+
+
 def ValidateBalancingModeArgs(messages, add_or_update_backend_args,
-                              current_balancing_mode=None):
+                              current_balancing_mode=None,
+                              supports_neg=False):
   """Check whether the setup of the backend LB related fields is valid.
 
   Args:
@@ -130,38 +163,55 @@ def ValidateBalancingModeArgs(messages, add_or_update_backend_args,
     current_balancing_mode: BalancingModeValueValuesEnum. The balancing mode
       of the existing backend, in case of update-backend command. Must be
       None otherwise.
+    supports_neg: bool, if the args contains network endpoint group related
+      args.
   """
+  balancing_mode_enum = messages.Backend.BalancingModeValueValuesEnum
   balancing_mode = current_balancing_mode
   if add_or_update_backend_args.balancing_mode:
-    balancing_mode = messages.Backend.BalancingModeValueValuesEnum(
+    balancing_mode = balancing_mode_enum(
         add_or_update_backend_args.balancing_mode)
 
+  if supports_neg:  # Validate flags are specified with the correct group.
+    _ValidateGroupMatchesArgs(add_or_update_backend_args)
+
   invalid_arg = None
-  if balancing_mode == messages.Backend.BalancingModeValueValuesEnum.RATE:
+  if balancing_mode == balancing_mode_enum.RATE:
     if add_or_update_backend_args.max_utilization is not None:
       invalid_arg = '--max-utilization'
     elif add_or_update_backend_args.max_connections is not None:
       invalid_arg = '--max-connections'
     elif add_or_update_backend_args.max_connections_per_instance is not None:
       invalid_arg = '--max-connections-per-instance'
+    elif (supports_neg and
+          add_or_update_backend_args.max_connections_per_endpoint is not None):
+      invalid_arg = '--max-connections-per-endpoint'
 
     if invalid_arg is not None:
       raise exceptions.InvalidArgumentException(
           invalid_arg,
           'cannot be set with RATE balancing mode')
-  elif (balancing_mode ==
-        messages.Backend.BalancingModeValueValuesEnum.CONNECTION):
+  elif balancing_mode == balancing_mode_enum.CONNECTION:
     if add_or_update_backend_args.max_utilization is not None:
       invalid_arg = '--max-utilization'
     elif add_or_update_backend_args.max_rate is not None:
       invalid_arg = '--max-rate'
     elif add_or_update_backend_args.max_rate_per_instance is not None:
       invalid_arg = '--max-rate-per-instance'
+    elif (supports_neg and
+          add_or_update_backend_args.max_rate_per_endpoint is not None):
+      invalid_arg = '--max-rate-per-endpoint'
 
     if invalid_arg is not None:
       raise exceptions.InvalidArgumentException(
           invalid_arg,
           'cannot be set with CONNECTION balancing mode')
+  elif balancing_mode == balancing_mode_enum.UTILIZATION:
+    if (supports_neg and
+        add_or_update_backend_args.network_endpoint_group is not None):
+      raise exceptions.InvalidArgumentException(
+          '--network-endpoint-group',
+          'cannot be set with UTILIZATION balancing mode')
 
 
 def UpdateCacheKeyPolicy(args, cache_key_policy):

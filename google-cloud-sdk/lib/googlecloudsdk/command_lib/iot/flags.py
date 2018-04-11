@@ -11,12 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Shared flags for Cloud IoT commands."""
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import enum
 
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 def GetIdFlag(noun, action, metavar=None):

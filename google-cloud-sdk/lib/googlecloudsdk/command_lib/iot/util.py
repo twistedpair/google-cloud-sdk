@@ -11,14 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """General utilties for Cloud IoT commands."""
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.cloudiot import devices
 from googlecloudsdk.api_lib.cloudiot import registries
 from googlecloudsdk.command_lib.iot import flags
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import http_encoding
 from googlecloudsdk.core.util import times
+
+import six
 
 
 LOCATIONS_COLLECTION = 'cloudiot.projects.locations'
@@ -305,7 +313,7 @@ def ReadConfigData(args):
   if args.IsSpecified('config_data') and args.IsSpecified('config_file'):
     raise ValueError('Both --config-data and --config-file given.')
   if args.IsSpecified('config_data'):
-    return args.config_data
+    return http_encoding.Encode(args.config_data)
   elif args.IsSpecified('config_file'):
     # Note: use 'rb' for Windows
     with open(args.config_file, 'rb') as f:
@@ -366,7 +374,7 @@ def ParseMetadata(metadata, metadata_from_file, messages=None):
   total_size = 0
   messages = messages or devices.GetMessagesModule()
   additional_properties = []
-  for key, value in metadata.iteritems():
+  for key, value in six.iteritems(metadata):
     total_size += len(key) + len(value)
     additional_properties.append(
         _ValidateAndCreateAdditionalProperty(messages, key, value))

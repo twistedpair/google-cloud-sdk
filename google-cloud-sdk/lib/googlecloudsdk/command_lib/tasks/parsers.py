@@ -13,6 +13,9 @@
 # limitations under the License.
 """Utilities for parsing arguments to `gcloud tasks` commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from apitools.base.py import encoding
 from googlecloudsdk.command_lib.tasks import app
 from googlecloudsdk.command_lib.tasks import constants
@@ -20,6 +23,11 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import http_encoding
+
+import six  # pylint: disable=unused-import
+from six.moves import filter  # pylint:disable=redefined-builtin
+from six.moves import map  # pylint:disable=redefined-builtin
 
 
 _PROJECT = properties.VALUES.core.project.GetOrFail
@@ -208,14 +216,18 @@ def _ParseAppEngineHttpRequestArgs(args, task_type, messages):
 
 def _ParsePayloadArgs(args):
   if args.IsSpecified('payload_file'):
-    return console_io.ReadFromFileOrStdin(args.payload_file, binary=False)
+    payload = console_io.ReadFromFileOrStdin(args.payload_file, binary=False)
   elif args.IsSpecified('payload_content'):
-    return args.payload_content
+    payload = args.payload_content
+  else:
+    return None
+  return http_encoding.Encode(payload)
 
 
 def _ParseHeaderArg(args, messages):
   if args.header:
-    headers_dict = {k: v for k, v in map(_SplitHeaderArgValue, args.header)}
+    headers_dict = {http_encoding.Encode(k): http_encoding.Encode(v)
+                    for k, v in map(_SplitHeaderArgValue, args.header)}
     return encoding.DictToAdditionalPropertyMessage(
         headers_dict, messages.AppEngineHttpRequest.HeadersValue)
 

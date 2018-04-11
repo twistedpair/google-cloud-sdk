@@ -28,6 +28,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags
+from googlecloudsdk.command_lib.compute.sole_tenancy import util as sole_tenancy_util
 from googlecloudsdk.command_lib.util.ssh import ssh
 import ipaddress
 import six
@@ -216,7 +217,8 @@ def CreateOnHostMaintenanceMessage(messages, maintenance_policy):
 
 
 def CreateSchedulingMessage(
-    messages, maintenance_policy, preemptible, restart_on_failure):
+    messages, maintenance_policy, preemptible, restart_on_failure,
+    node_affinities=None):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
   # makes sense, since no-restart-on-failure is defined as "store-true", and
@@ -233,6 +235,9 @@ def CreateSchedulingMessage(
   else:
     scheduling = messages.Scheduling(automaticRestart=restart_on_failure,
                                      onHostMaintenance=on_host_maintenance)
+  if node_affinities:
+    scheduling.nodeAffinities = node_affinities
+
   return scheduling
 
 
@@ -768,16 +773,23 @@ def GetSkipDefaults(source_instance_template):
   return source_instance_template is not None
 
 
-def GetScheduling(args, client, skip_defaults):
+def GetScheduling(args, client, skip_defaults, support_node_affinity=False):
+  """Generate a Scheduling Message or None based on specified args."""
+  node_affinities = None
+  if support_node_affinity:
+    node_affinities = sole_tenancy_util.GetSchedulingNodeAffinityListFromArgs(
+        args, client.messages)
   if (skip_defaults and
       not IsAnySpecified(
-          args, 'maintenance_policy', 'preemptible', 'restart_on_failure')):
+          args, 'maintenance_policy', 'preemptible', 'restart_on_failure') and
+      not node_affinities):
     return None
   return CreateSchedulingMessage(
       messages=client.messages,
       maintenance_policy=args.maintenance_policy,
       preemptible=args.preemptible,
-      restart_on_failure=args.restart_on_failure)
+      restart_on_failure=args.restart_on_failure,
+      node_affinities=node_affinities)
 
 
 def GetServiceAccounts(args, client, skip_defaults):
@@ -853,6 +865,42 @@ def GetNetworkInterfaces(
           public_ptr=args.public_ptr,
           no_public_ptr_domain=args.no_public_ptr_domain,
           public_ptr_domain=args.public_ptr_domain,
+      )
+  ]
+
+
+def GetNetworkInterfacesBeta(args, client, holder, instance_refs,
+                             skip_defaults):
+  """Returns a list of network interface messages."""
+
+  if (skip_defaults and not args.IsSpecified('network') and not IsAnySpecified(
+      args,
+      'address',
+      'network_tier',
+      'no_address',
+      'no_public_ptr',
+      'no_public_ptr_domain',
+      'private_network_ip',
+      'public_ptr',
+      'public_ptr_domain',
+      'subnet',
+  )):
+    return []
+  return [
+      CreateNetworkInterfaceMessage(
+          resources=holder.resources,
+          compute_client=client,
+          network=args.network,
+          subnet=args.subnet,
+          private_network_ip=args.private_network_ip,
+          no_address=args.no_address,
+          address=args.address,
+          instance_refs=instance_refs,
+          no_public_ptr=args.no_public_ptr,
+          public_ptr=args.public_ptr,
+          no_public_ptr_domain=args.no_public_ptr_domain,
+          public_ptr_domain=args.public_ptr_domain,
+          network_tier=getattr(args, 'network_tier', None),
       )
   ]
 

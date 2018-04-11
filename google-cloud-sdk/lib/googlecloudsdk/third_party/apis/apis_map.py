@@ -510,6 +510,20 @@ MAP = {
             default_version=True
         ),
     },
+    'redis': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.redis.v1alpha1',
+            client_classpath='redis_v1alpha1_client.RedisV1alpha1',
+            messages_modulepath='redis_v1alpha1_messages',
+            default_version=False
+        ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.redis.v1beta1',
+            client_classpath='redis_v1beta1_client.RedisV1beta1',
+            messages_modulepath='redis_v1beta1_messages',
+            default_version=True
+        ),
+    },
     'replicapoolupdater': {
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.replicapoolupdater.v1beta1',
@@ -580,6 +594,12 @@ MAP = {
             client_classpath='speech_v1_client.SpeechV1',
             messages_modulepath='speech_v1_messages',
             default_version=True
+        ),
+        'v1p1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.speech.v1p1beta1',
+            client_classpath='speech_v1p1beta1_client.SpeechV1p1beta1',
+            messages_modulepath='speech_v1p1beta1_messages',
+            default_version=False
         ),
     },
     'sqladmin': {

@@ -290,6 +290,12 @@ apis:
       discovery_doc: pubsub_v1.json
       resources:
         projects.snapshots: "projects/{projectsId}/snapshots/{snapshotsId}"
+  redis:
+    v1alpha1:
+      discovery_doc: redis_v1alpha1.json
+    v1beta1:
+      discovery_doc: redis_v1beta1.json
+      default: true
   replicapoolupdater:
     v1beta1:
       discovery_doc: replicapoolupdater_v1beta1.json
@@ -317,6 +323,11 @@ apis:
   speech:
     v1:
       discovery_doc: speech_v1.json
+      resources:
+        speech: 'speech'
+      default: true
+    v1p1beta1:
+      discovery_doc: speech_v1p1beta1.json
       resources:
         speech: 'speech'
   sqladmin:

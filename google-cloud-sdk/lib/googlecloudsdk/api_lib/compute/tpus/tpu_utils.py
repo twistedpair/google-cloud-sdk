@@ -67,3 +67,10 @@ class TpusClient(object):
             node=node,
             nodeId=name,
             parent=parent_ref.RelativeName()))
+
+  def Reimage(self, node_ref, version):
+    return self.client.projects_locations_nodes.Reimage(
+        self.messages.TpuProjectsLocationsNodesReimageRequest(
+            name=node_ref.RelativeName(),
+            reimageNodeRequest=self.messages.ReimageNodeRequest(
+                tensorflowVersion=version)))

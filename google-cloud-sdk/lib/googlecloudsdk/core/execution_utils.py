@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import contextlib
 import errno
 import os
@@ -32,6 +33,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
+
+import six
 
 
 class PermissionError(exceptions.Error):
@@ -260,7 +263,7 @@ def Exec(args,
       process. This can be e.g. log.file_only_logger.debug or log.out.write.
     err_func: str->None, a function to call with the stderr of the executed
       process. This can be e.g. log.file_only_logger.debug or log.err.write.
-    in_str: str, input to send to the subprocess' stdin.
+    in_str: bytes or str, input to send to the subprocess' stdin.
     **extra_popen_kwargs: Any additional kwargs will be passed through directly
       to subprocess.Popen
 
@@ -305,7 +308,11 @@ def Exec(args,
           raise InvalidCommandError(args[0])
         raise
       process_holder.process = p
-      stdout, stderr = p.communicate(input=in_str)
+
+      if isinstance(in_str, six.text_type):
+        in_str = in_str.encode('utf-8')
+      stdout, stderr = map(encoding.Decode, p.communicate(input=in_str))
+
       if out_func:
         out_func(stdout)
       if err_func:

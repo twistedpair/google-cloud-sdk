@@ -18,6 +18,7 @@ import StringIO
 import time
 
 from googlecloudsdk.api_lib.deployment_manager import exceptions
+from googlecloudsdk.command_lib.deployment_manager import dm_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
@@ -94,6 +95,9 @@ def WaitForOperation(client, messages, operation_name,
     project: The name of the project that this operation belongs to.
     timeout: Number of seconds to wait for. Defaults to 3 minutes.
 
+  Returns:
+    The operation when it is done.
+
   Raises:
       HttpException: A http error response was received while executing api
           request. Will be raised if the operation cannot be found.
@@ -115,9 +119,9 @@ def WaitForOperation(client, messages, operation_name,
         if operation.error:
           raise exceptions.OperationError(
               'Error in Operation [{0}]: {1}'.format(
-                  operation_name, GetOperationError(operation.error)))
+                  operation_name, dm_util.RenderMessageAsYaml(operation.error)))
         else:  # Operation succeeded
-          return
+          return operation
 
       ticks += tick_increment
       ticker.Tick()

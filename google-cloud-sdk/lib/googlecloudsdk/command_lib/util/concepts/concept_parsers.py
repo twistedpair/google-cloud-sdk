@@ -263,13 +263,8 @@ class ResourcePresentationSpec(PresentationSpec):
     # a more robust solution will be needed, e.g. a GetFallthroughsForAttribute
     # method.
     required = is_anchor and not attribute.fallthroughs
-    # If this is the only argument in the group, the help text should be the
-    # "group" help.
-    if len(list(filter(bool, self.attribute_to_args_map.values()))) == 1:
-      help_text = self.group_help
-    else:
-      # Expand the help text.
-      help_text = attribute.help_text.format(resource=self.resource_spec.name)
+    # Expand the help text.
+    help_text = attribute.help_text.format(resource=self.resource_spec.name)
     plural = attribute == self.resource_spec.anchor and self.plural
     if attribute.completer:
       completer = attribute.completer
@@ -323,16 +318,26 @@ class ResourcePresentationSpec(PresentationSpec):
 
   def GetGroupHelp(self):
     """Build group help for the argument group."""
-    description = ['{} - {} The arguments in this group can be used to specify '
-                   'the attributes of this resource.'.format(self.title,
-                                                             self.group_help)]
+    if len(list(filter(bool, self.attribute_to_args_map.values()))) == 1:
+      generic_help = 'This represents a Cloud resource.'
+    else:
+      generic_help = ('The arguments in this group can be used to specify the '
+                      'attributes of this resource.')
+    description = ['{} - {} {}'.format(self.title,
+                                       self.group_help,
+                                       generic_help)]
     if self._skip_flags:
       description.append('(NOTE) Some attributes are not given arguments in '
                          'this group but can be set in other ways.')
       for attr_name in self._skip_flags:
+        hints = self.GetInfo().GetHints(attr_name)
+        if not hints:
+          # This may be an error, but existence of fallthroughs should not be
+          # enforced here.
+          continue
         hint = 'To set the [{}] attribute: {}.'.format(
             attr_name,
-            '; '.join(self.GetInfo().GetHints(attr_name)))
+            '; '.join(hints))
         description.append(hint)
     return ' '.join(description)
 

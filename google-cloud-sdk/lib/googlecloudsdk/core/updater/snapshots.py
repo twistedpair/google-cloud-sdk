@@ -22,7 +22,9 @@ as well as diff'ing snapshots.
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import collections
+import io
 import json
 import os
 import re
@@ -33,6 +35,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.updater import schemas
+from googlecloudsdk.core.util import encoding
 
 import six
 from six.moves import urllib
@@ -132,7 +135,7 @@ class ComponentSnapshot(object):
     Returns:
       A ComponentSnapshot object
     """
-    with open(snapshot_file) as input_file:
+    with io.open(snapshot_file, 'rt') as input_file:
       data = json.load(input_file)
     # Windows paths will start with a drive letter so they need an extra '/' up
     # front.  Also, URLs must only have forward slashes to work correctly.
@@ -208,8 +211,9 @@ class ComponentSnapshot(object):
     code = response.getcode()
     if code and code != 200:
       raise URLFetchError(code=code, extra_repo=extra_repo)
+    response_text = encoding.Decode(response.read())
     try:
-      data = json.loads(response.read())
+      data = json.loads(response_text)
       return data
     except ValueError as e:
       log.debug('Failed to parse snapshot [{}]: {}'.format(url, e))
@@ -515,8 +519,8 @@ class ComponentSnapshot(object):
             .format(component_id,
                     ','.join([c['id'] for c in sdk_def_dict['components']])))
       if 'data' in component_dict[0]:
-        # Remove non-esential/random parts from component data.
-        for f in component_dict[0]['data'].keys():
+        # Remove non-essential/random parts from component data.
+        for f in list(component_dict[0]['data'].keys()):
           if f not in ('contents_checksum', 'type', 'source'):
             del component_dict[0]['data'][f]
         # Source field is required for global snapshot, but is not for
@@ -524,7 +528,7 @@ class ComponentSnapshot(object):
         component_dict[0]['data']['source'] = ''
       sdk_def_dict['components'] = component_dict
       # Remove unnecessary artifacts from snapshot.
-      for key in sdk_def_dict.keys():
+      for key in list(sdk_def_dict.keys()):
         if key not in ('components', 'schema_version', 'revision', 'version'):
           del sdk_def_dict[key]
     with open(path, 'w') as fp:

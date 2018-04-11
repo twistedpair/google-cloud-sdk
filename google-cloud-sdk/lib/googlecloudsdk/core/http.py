@@ -30,6 +30,7 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import session_capturer
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 
 import httplib2
@@ -253,7 +254,12 @@ class Modifiers(object):
 
     def WrappedRequest(*args, **kwargs):
       """Replacement http.request() method."""
-      modified_args = args
+      modified_args = list(args)
+
+      if not six.PY2:
+        # httplib2 needs text under Python 3.
+        modified_args[0] = encoding.Decode(modified_args[0])
+
       # We need to make a copy here because if we don't we will be modifying the
       # dictionary that people pass in.
       # TODO(b/37281703): Copy the entire dictionary. This is blocked on making

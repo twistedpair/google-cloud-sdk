@@ -25,6 +25,8 @@ from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 
+import six
+
 
 class JobBase(object):
   """Base class for Jobs."""
@@ -62,7 +64,7 @@ class JobBase(object):
       # TODO(b/36049793): Validate file suffixes.
       if not file_or_files:
         continue
-      elif isinstance(file_or_files, str):
+      elif isinstance(file_or_files, six.string_types):
         self.files_by_type[file_type] = self._GetStagedFile(file_or_files)
       else:
         staged_files = [self._GetStagedFile(f) for f in file_or_files]

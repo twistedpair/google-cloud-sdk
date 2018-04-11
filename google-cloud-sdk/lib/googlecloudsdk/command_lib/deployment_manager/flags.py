@@ -39,7 +39,8 @@ OPERATION_FORMAT = """
       operationType:label=TYPE,
       status,
       targetLink.basename():label=TARGET,
-      error.errors.group(code)
+      error.errors.group(code),
+      warnings.group(code)
     )
 """
 
@@ -48,7 +49,7 @@ DEPLOYMENT_FORMAT = """
       name, id, description, fingerprint,insertTime, manifest.basename(),
       labels, operation.operationType, operation.progress,
       operation.status, operation.user, operation.endTime, operation.startTime,
-      operation.error, update)
+      operation.error, operation.warnings, update)
 """
 
 _DELETE_FLAG_KWARGS = {

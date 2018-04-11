@@ -966,6 +966,11 @@ class _SectionCore(_Section):
         hidden=True,
         help_text='If true, will prompt to enable an API if a command fails due'
         ' to the API not being enabled.')
+    self.allow_py3 = self._AddBool(
+        'allow_py3',
+        default=False,
+        hidden=True,
+        help_text='If true, allow a Python 3 interpreter to run gcloud.')
 
     def CaptureSessionFileValidator(filename):
       """Validates if session could be captured to given file."""

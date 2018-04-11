@@ -1637,12 +1637,13 @@ def AddDiskScopeFlag(parser):
       '--disk-scope',
       choices={'zonal':
                'The disk specified in --disk is interpreted as a '
-               'zonal disk in the same zone as the instance',
+               'zonal disk in the same zone as the instance. '
+               'Ignored if a full URI is provided to the `--disk` flag.',
                'regional':
                'The disk specified in --disk is interpreted as a '
-               'regional disk in the same region as the instance'},
+               'regional disk in the same region as the instance. '
+               'Ignored if a full URI is provided to the `--disk` flag.'},
       help='The scope of the disk.',
-      hidden=True,
       default='zonal')
 
 

@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import re
 import time
 
@@ -360,8 +361,10 @@ class ComponentPlatform(object):
         this component works on.  None indicates all architectures.
     """
     # Sort to make this independent of specified ordering.
-    self.operating_systems = operating_systems and sorted(operating_systems)
-    self.architectures = architectures and sorted(architectures)
+    self.operating_systems = operating_systems and sorted(
+        operating_systems, key=lambda x: (0, x) if x is None else (1, x))
+    self.architectures = architectures and sorted(
+        architectures, key=lambda x: (0, x) if x is None else (1, x))
 
   def Matches(self, platform):
     """Determines if the platform for this component matches the environment.

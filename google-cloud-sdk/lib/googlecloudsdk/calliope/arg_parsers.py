@@ -758,12 +758,64 @@ class ArgList(ArgType):
 
     return arg_list
 
+  _MAX_METAVAR_LENGTH = 30  # arbitrary, but this is pretty long
+
   def GetUsageMsg(self, is_custom_metavar, metavar):
-    is_custom_metavar = is_custom_metavar
-    msg = '[{metavar},...]'.format(metavar=metavar)
-    if self.min_length:
-      msg = ','.join([metavar]*self.min_length+[msg])
-    return msg
+    """Get a specially-formatted metavar for the ArgList to use in help.
+
+    An example is worth 1,000 words:
+
+    >>> ArgList().GetUsageMetavar('FOO')
+    '[FOO,...]'
+    >>> ArgList(min_length=1).GetUsageMetavar('FOO')
+    'FOO,[FOO,...]'
+    >>> ArgList(max_length=2).GetUsageMetavar('FOO')
+    'FOO,[FOO]'
+    >>> ArgList(max_length=3).GetUsageMetavar('FOO')  # One, two, many...
+    'FOO,[FOO,...]'
+    >>> ArgList(min_length=2, max_length=2).GetUsageMetavar('FOO')
+    'FOO,FOO'
+    >>> ArgList().GetUsageMetavar('REALLY_VERY_QUITE_LONG_METAVAR')
+    'REALLY_VERY_QUITE_LONG_METAVAR,[...]'
+
+    Args:
+      is_custom_metavar: unused in GetUsageMsg
+      metavar: string, the base metavar to turn into an ArgList metavar
+
+    Returns:
+      string, the ArgList usage metavar
+    """
+    del is_custom_metavar  # Unused in GetUsageMsg
+
+    required = ','.join([metavar] * self.min_length)
+
+    if self.max_length:
+      num_optional = self.max_length - self.min_length
+    else:
+      num_optional = None
+
+    # Use the "1, 2, many" approach to counting
+    if num_optional == 0:
+      optional = ''
+    elif num_optional == 1:
+      optional = '[{}]'.format(metavar)
+    elif num_optional == 2:
+      optional = '[{0},[{0}]]'.format(metavar)
+    else:
+      optional = '[{0},...]'.format(metavar)
+
+    msg = ','.join(filter(None, [required, optional]))
+
+    if len(msg) < self._MAX_METAVAR_LENGTH:
+      return msg
+
+    # With long metavars, only put it in once.
+    if self.min_length == 0:
+      return '[{},...]'.format(metavar)
+    if self.min_length == 1:
+      return '{},[...]'.format(metavar)
+    else:
+      return '{},...,[...]'.format(metavar)
 
 
 class ArgDict(ArgList):

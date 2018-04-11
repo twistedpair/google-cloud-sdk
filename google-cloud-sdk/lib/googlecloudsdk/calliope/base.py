@@ -805,7 +805,8 @@ def _ChoiceValueType(value):
 
 
 def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,
-                   action=None, metavar=None, dest=None, default=None):
+                   action=None, metavar=None, dest=None, default=None,
+                   hidden=False):
   """Returns Argument with a Cloud SDK style compliant set of choices.
 
   Args:
@@ -823,6 +824,7 @@ def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,
        by parse_args().
     default: string,  The value produced if the argument is absent from the
        command line.
+    hidden: boolean, Whether or not the command-line option is hidden.
 
   Returns:
      Argument object with choices, that can accept both lowercase and uppercase
@@ -853,7 +855,7 @@ def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,
 
   return Argument(name_or_flag, choices=choices, required=required,
                   type=_ChoiceValueType, help=help_str, action=action,
-                  metavar=metavar, dest=dest, default=default)
+                  metavar=metavar, dest=dest, default=default, hidden=hidden)
 
 
 def DisableUserProjectQuota():

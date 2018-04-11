@@ -31,6 +31,10 @@ class AddonsConfig(_messages.Message):
   cluster, enabling additional functionality.
 
   Fields:
+    elafrosConfig: Configuration for Elafros, an open serverless platform that
+      runs functions, apps, and containers. The `IstioConfig` addon must be
+      enabled in order to enable Elafros. This option can only be enabled at
+      cluster creation time.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -46,11 +50,12 @@ class AddonsConfig(_messages.Message):
       whether network policy is enabled for the nodes.
   """
 
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 1)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 2)
-  istioConfig = _messages.MessageField('IstioConfig', 3)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 4)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 5)
+  elafrosConfig = _messages.MessageField('ElafrosConfig', 1)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 2)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 3)
+  istioConfig = _messages.MessageField('IstioConfig', 4)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 5)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 6)
 
 
 class AuditConfig(_messages.Message):
@@ -1244,6 +1249,17 @@ class DailyMaintenanceWindow(_messages.Message):
   startTime = _messages.StringField(3)
 
 
+class ElafrosConfig(_messages.Message):
+  """Configuration options for Elafros, an open serverless platform that runs
+  functions, apps, and containers.
+
+  Fields:
+    disabled: Whether Elafros is enabled for this cluster.
+  """
+
+  disabled = _messages.BooleanField(1)
+
+
 class Empty(_messages.Message):
   """A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1302,7 +1318,6 @@ class GoogleIamV1AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-      Next ID: 4
     exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
@@ -1661,8 +1676,8 @@ class GoogleIamV1Rule(_messages.Message):
       any entries that match the LOG action.
     notIn: If one or more 'not_in' clauses are specified, the rule matches if
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
-      for in and not_in entries is the same as for members in a Binding (see
-      google/iam/v1/policy.proto).
+      for in and not_in entries can be found at in the Local IAM documentation
+      (see go/local-iam#features).
     permissions: A permission is a string of form '<service>.<resource
       type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
       permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
@@ -2140,6 +2155,23 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
   enabled = _messages.BooleanField(2)
 
 
+class Metric(_messages.Message):
+  """Progress metric is (string, int|float|string) pair.
+
+  Fields:
+    doubleValue: For metrics with floating point value.
+    intValue: For metrics with integer value.
+    name: Metric name, required. e.g., "nodes total", "percent done"
+    stringValue: For metrics with custom values (ratios, visual progress,
+      etc.).
+  """
+
+  doubleValue = _messages.FloatField(1)
+  intValue = _messages.IntegerField(2)
+  name = _messages.StringField(3)
+  stringValue = _messages.StringField(4)
+
+
 class NetworkConfig(_messages.Message):
   """Parameters for cluster networking.
 
@@ -2543,6 +2575,7 @@ class Operation(_messages.Message):
       the cluster resides.
     name: The server-assigned ID for the operation.
     operationType: The operation type.
+    progress: [Output only] Progress information for an operation.
     selfLink: Server-defined URL for the resource.
     startTime: [Output only] The time the operation started, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
@@ -2618,12 +2651,53 @@ class Operation(_messages.Message):
   location = _messages.StringField(3)
   name = _messages.StringField(4)
   operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
-  selfLink = _messages.StringField(6)
-  startTime = _messages.StringField(7)
-  status = _messages.EnumField('StatusValueValuesEnum', 8)
-  statusMessage = _messages.StringField(9)
-  targetLink = _messages.StringField(10)
-  zone = _messages.StringField(11)
+  progress = _messages.MessageField('OperationProgress', 6)
+  selfLink = _messages.StringField(7)
+  startTime = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  statusMessage = _messages.StringField(10)
+  targetLink = _messages.StringField(11)
+  zone = _messages.StringField(12)
+
+
+class OperationProgress(_messages.Message):
+  """Information about operation (or operation stage) progress.
+
+  Enums:
+    StatusValueValuesEnum: Status of an operation stage. Unset for single-
+      stage operations.
+
+  Fields:
+    metrics: Progress metric bundle, for example:   metrics: [{name: "nodes
+      done",     int_value: 15},             {name: "nodes total",
+      int_value: 32}] or   metrics: [{name: "progress",       double_value:
+      0.56},             {name: "progress scale", double_value: 1.0}]
+    name: A non-parameterized string describing an operation stage. Unset for
+      single-stage operations.
+    stages: Substages of an operation or a stage.
+    status: Status of an operation stage. Unset for single-stage operations.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    """Status of an operation stage. Unset for single-stage operations.
+
+    Values:
+      STATUS_UNSPECIFIED: Not set.
+      PENDING: The operation has been created.
+      RUNNING: The operation is currently running.
+      DONE: The operation is done, either cancelled or completed.
+      ABORTING: The operation is aborting.
+    """
+    STATUS_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    DONE = 3
+    ABORTING = 4
+
+  metrics = _messages.MessageField('Metric', 1, repeated=True)
+  name = _messages.StringField(2)
+  stages = _messages.MessageField('OperationProgress', 3, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
 class PodSecurityPolicyConfig(_messages.Message):

@@ -6,7 +6,7 @@
   "canonicalName": "Container",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "Google Kubernetes Engine API",
+  "title": "Kubernetes Engine API",
   "description": "The Google Kubernetes Engine API is used for building and managing container based applications, powered by the open source Kubernetes technology.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -654,6 +654,10 @@
         "istioConfig": {
           "description": "Configuration for Istio, an open platform to connect, manage, and secure\nmicroservices.",
           "$ref": "IstioConfig"
+        },
+        "elafrosConfig": {
+          "description": "Configuration for Elafros, an open serverless platform that runs functions,\napps, and containers. The `IstioConfig` addon must be enabled in order to\nenable Elafros. This option can only be enabled at cluster creation time.",
+          "$ref": "ElafrosConfig"
         }
       }
     },
@@ -721,6 +725,17 @@
             "AUTH_NONE",
             "AUTH_MUTUAL_TLS"
           ]
+        }
+      }
+    },
+    "ElafrosConfig": {
+      "id": "ElafrosConfig",
+      "description": "Configuration options for Elafros, an open serverless platform that runs\nfunctions, apps, and containers.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Whether Elafros is enabled for this cluster.",
+          "type": "boolean"
         }
       }
     },
@@ -1277,6 +1292,78 @@
         "endTime": {
           "description": "[Output only] The time the operation completed, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
           "type": "string"
+        },
+        "progress": {
+          "description": "[Output only] Progress information for an operation.",
+          "$ref": "OperationProgress"
+        }
+      }
+    },
+    "OperationProgress": {
+      "id": "OperationProgress",
+      "description": "Information about operation (or operation stage) progress.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "A non-parameterized string describing an operation stage.\nUnset for single-stage operations.",
+          "type": "string"
+        },
+        "status": {
+          "description": "Status of an operation stage.\nUnset for single-stage operations.",
+          "enumDescriptions": [
+            "Not set.",
+            "The operation has been created.",
+            "The operation is currently running.",
+            "The operation is done, either cancelled or completed.",
+            "The operation is aborting."
+          ],
+          "type": "string",
+          "enum": [
+            "STATUS_UNSPECIFIED",
+            "PENDING",
+            "RUNNING",
+            "DONE",
+            "ABORTING"
+          ]
+        },
+        "metrics": {
+          "description": "Progress metric bundle, for example:\n  metrics: [{name: \"nodes done\",     int_value: 15},\n            {name: \"nodes total\",    int_value: 32}]\nor\n  metrics: [{name: \"progress\",       double_value: 0.56},\n            {name: \"progress scale\", double_value: 1.0}]",
+          "type": "array",
+          "items": {
+            "$ref": "Metric"
+          }
+        },
+        "stages": {
+          "description": "Substages of an operation or a stage.",
+          "type": "array",
+          "items": {
+            "$ref": "OperationProgress"
+          }
+        }
+      }
+    },
+    "Metric": {
+      "id": "Metric",
+      "description": "Progress metric is (string, int|float|string) pair.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Metric name, required.\ne.g., \"nodes total\", \"percent done\"",
+          "type": "string"
+        },
+        "intValue": {
+          "description": "For metrics with integer value.",
+          "type": "string",
+          "format": "int64"
+        },
+        "doubleValue": {
+          "description": "For metrics with floating point value.",
+          "type": "number",
+          "format": "double"
+        },
+        "stringValue": {
+          "description": "For metrics with custom values (ratios, visual progress, etc.).",
+          "type": "string"
         }
       }
     },
@@ -1488,7 +1575,7 @@
           "type": "string"
         },
         "name": {
-          "description": "The name (project, location, cluster, node pool) of the node pool to update.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+          "description": "The name (project, location, cluster, node pool) of the node pool to\nupdate. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
           "type": "string"
         },
         "version": {
@@ -2290,7 +2377,7 @@
           }
         },
         "auditLogConfigs": {
-          "description": "The configuration for logging of each type of permission.\nNext ID: 4",
+          "description": "The configuration for logging of each type of permission.",
           "type": "array",
           "items": {
             "$ref": "GoogleIamV1AuditLogConfig"
@@ -2372,7 +2459,7 @@
           }
         },
         "notIn": {
-          "description": "If one or more 'not_in' clauses are specified, the rule matches\nif the PRINCIPAL\/AUTHORITY_SELECTOR is in none of the entries.\nThe format for in and not_in entries is the same as for members in a\nBinding (see google\/iam\/v1\/policy.proto).",
+          "description": "If one or more 'not_in' clauses are specified, the rule matches\nif the PRINCIPAL\/AUTHORITY_SELECTOR is in none of the entries.\nThe format for in and not_in entries can be found at in the Local IAM\ndocumentation (see go\/local-iam#features).",
           "type": "array",
           "items": {
             "type": "string"
@@ -3415,7 +3502,7 @@
                       "httpMethod": "PUT",
                       "parameters": {
                         "name": {
-                          "description": "The name (project, location, cluster, node pool) of the node pool to update.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The name (project, location, cluster, node pool) of the node pool to\nupdate. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
@@ -3746,7 +3833,7 @@
                       "type": "string"
                     },
                     "zone": {
-                      "description": "Deprecated. The name of the Google Compute Engine [zone](\/compute\/docs\/zones#available)\nto return operations for, or `-` for all zones.\nThis field has been deprecated and replaced by the parent field.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) to return operations for, or `-` for\nall zones. This field has been deprecated and replaced by the parent field.",
                       "location": "query",
                       "type": "string"
                     },
@@ -5059,7 +5146,7 @@
                       "type": "string"
                     },
                     "zone": {
-                      "description": "Deprecated. The name of the Google Compute Engine [zone](\/compute\/docs\/zones#available)\nto return operations for, or `-` for all zones.\nThis field has been deprecated and replaced by the parent field.",
+                      "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) to return operations for, or `-` for\nall zones. This field has been deprecated and replaced by the parent field.",
                       "location": "path",
                       "required": true,
                       "type": "string"

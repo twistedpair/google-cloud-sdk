@@ -54,7 +54,7 @@ KUBERNETES_V1ALPHA1_API_WARNING = (
 
 CANNOT_SET_BOTH_USE_V1_API_PROPERTIES_WITH_DIFF_VALUES = (
     "You cannot specify container/use_v1_api and container/use_v1_api_client "
-    "proterties at the same time with different values.")
+    "properties at the same time with different values.")
 
 KUBERNETES_GPU_LIMITATION_MSG = (
     "Machines with GPUs have certain limitations "

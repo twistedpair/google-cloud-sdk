@@ -307,6 +307,13 @@ def AddBetaArgs(parser):
       'guide the Robo test to perform specific actions by recording a Robo '
       'Script in Android Studio and then specifying this argument. Learn more '
       'at https://firebase.google.com/docs/test-lab/robo-ux-test#scripting.')
+  parser.add_argument(
+      '--additional-apks',
+      type=arg_parsers.ArgList(min_length=1, max_length=100),
+      metavar='APK',
+      help='A list of up to 100 additional APKs to install, in addition to '
+      'those being directly tested. The path may be in the local filesystem or '
+      'in Google Cloud Storage using gs:// notation.')
 
 
 def AddMatrixArgs(parser):

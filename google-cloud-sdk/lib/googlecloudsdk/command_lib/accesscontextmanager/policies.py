@@ -162,7 +162,7 @@ def GetDefaultPolicy():
     log.info('Unable to resolve domain for account [%s]', account)
     return None
 
-  with meta_cache_util.GetCache('resource://') as cache:
+  with meta_cache_util.GetCache('resource://', create=True) as cache:
     try:
       # pylint: disable=too-many-function-args
       organization_ref = _GetOrganization(cache, domain)

@@ -60,16 +60,23 @@ def WarnOnDeprecatedFlags(args):
         ' instead. It will be removed in a future release.')
 
 
-def _GetBalancingModes():
+def _GetBalancingModes(supports_neg):
   """Returns the --balancing-modes flag value choices name:description dict."""
+  per_rate_flags = '*--max-rate-per-instance*'
+  per_connection_flags = '*--max-connections-per-instance*'
+  utilization_extra_help = ''
+  if supports_neg:
+    per_rate_flags += '/*--max-rate-per-endpoint*'
+    per_connection_flags += '*--max-max-per-endpoint*'
+    utilization_extra_help = (
+        'This is incompatible with --network-endpoint-group.')
   balancing_modes = {
       'RATE': """\
           Spreads load based on how many requests per second (RPS) the group
           can handle. There are two ways to specify max RPS: *--max-rate* which
-          defines the max RPS for the whole group or *--max-rate-per-instance*,
-          which defines the max RPS on a per-instance basis. Available only for
-          HTTP based protocols.
-          """,
+          defines the max RPS for the whole group or {}, which defines the max
+          RPS on a per-instance basis. Available only for HTTP-based protocols.
+          """.format(per_rate_flags),
       'UTILIZATION': """\
           Relies on the CPU utilization of the instances in the group when
           balancing load. Use *--max-utilization* to set a maximum target CPU
@@ -78,25 +85,25 @@ def _GetBalancingModes():
           You can optionally also limit based on connections (for TCP/SSL) in
           addition to CPU by setting *--max-connections* or
           *--max-connections-per-instance*. Available for all services without
-          *--load-balancing-scheme INTERNAL*.
-          """,
+          *--load-balancing-scheme INTERNAL*. {}
+          """.format(utilization_extra_help),
       'CONNECTION': """\
           Spreads load based on how many concurrent connections the group
           can handle. There are two ways to specify max connections:
           *--max-connections* which defines the max number of connections
-          for the whole group or *--max-connections-per-instance*, which
+          for the whole group or {}, which
           defines the max number of connections on a per-instance basis.
           Available for all services.
-          """,
+          """.format(per_connection_flags),
   }
   return balancing_modes
 
 
-def AddBalancingMode(parser):
+def AddBalancingMode(parser, supports_neg=False):
   """Add balancing mode arguments."""
   parser.add_argument(
       '--balancing-mode',
-      choices=_GetBalancingModes(),
+      choices=_GetBalancingModes(supports_neg),
       type=lambda x: x.upper(),
       help="""\
       Defines the strategy for balancing load.""")
@@ -113,12 +120,37 @@ def AddMaxUtilization(parser):
       """)
 
 
-def AddCapacityLimits(parser):
+def AddCapacityLimits(parser, supports_neg=False):
   """Add capacity thresholds arguments."""
   AddMaxUtilization(parser)
-  capacity_group = parser.add_mutually_exclusive_group()
+  capacity_group = parser.add_group(mutex=True)
+  rate_group, connections_group = capacity_group, capacity_group
+  if supports_neg:
+    rate_group = capacity_group.add_group(mutex=True)
+    connections_group = capacity_group.add_group(mutex=True)
+    rate_group.add_argument(
+        '--max-rate-per-endpoint',
+        type=float,
+        help="""\
+        Valid only for `--network-endpoint-group`. This is used to
+        calculate the capacity of the group. Can be used in any
+        balancing mode except `UTILIZATION`. Maximum number of requests
+        per second that can be sent to each endpoint in the network
+        endpoint group.
+        """)
+    connections_group.add_argument(
+        '--max-connections-per-endpoint',
+        type=int,
+        help="""\
+        Valid only for `--network-endpoint-group`. The maximum number of
+        simultaneous connections that a single network endpoint can
+        handle. This is used to calculate the capacity of the group.
+        Balancing mode must be set to CONNECTION and one of
+        --max-connections, --max-connections-per-instance, or
+        --max-connections-per-endpoint must be set.
+        """)
 
-  capacity_group.add_argument(
+  rate_group.add_argument(
       '--max-rate',
       type=int,
       help="""\
@@ -133,29 +165,27 @@ def AddCapacityLimits(parser):
       `UTILIZATION`, then instances are judged to be at capacity when either the
       `UTILIZATION` or `RATE` value is reached.
       """)
-
-  capacity_group.add_argument(
+  rate_group.add_argument(
       '--max-rate-per-instance',
       type=float,
       help="""\
       Maximum number of requests per second that can be sent to each instance in
-      the instance group. `--max-rate` and `--max-rate-per-instance` are
-      mutually exclusive. However, one of them can be set even if
-      `--balancing-mode` is set to `UTILIZATION`. If either `--max-rate` or
-      `--max-rate-per-instance` is set and `--balancing-mode` is set to `RATE`,
-      then only that value is considered when judging capacity. If either
-      `--max-rate` or `--max-rate-per-instance` is set and `--balancing-mode`
-      is set to `UTILIZATION`, then instances are judged to be at capacity when
-      either the `UTILIZATION` or `RATE` value is reached.
+      the instance group.
+      `--max-rate` and `--max-rate-per-instance` are mutually exclusive.
+      However, one of them can be set even if `--balancing-mode` is set to
+      `UTILIZATION`. If either `--max-rate` or `--max-rate-per-instance` is set
+      and `--balancing-mode` is set to `RATE`, then only that value is
+      considered when judging capacity. If either `--max-rate` or
+      `--max-rate-per-instance` is set and `--balancing-mode` is set to
+      `UTILIZATION`, then instances are judged to be at capacity when either the
+      `UTILIZATION` or `RATE` value is reached.
       """)
-
-  capacity_group.add_argument(
+  connections_group.add_argument(
       '--max-connections',
       type=int,
       help=('Maximum concurrent connections that the group can handle. '
             'Valid only for TCP/SSL connections.'))
-
-  capacity_group.add_argument(
+  connections_group.add_argument(
       '--max-connections-per-instance',
       type=int,
       help=('The maximum concurrent connections per instance. '

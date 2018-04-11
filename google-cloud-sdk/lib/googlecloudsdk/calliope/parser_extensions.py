@@ -290,7 +290,7 @@ class _ErrorContext(object):
   """
 
   def __init__(self, message, parser, error):
-    self.message = message
+    self.message = re.sub(r"\bu'", "'", message)
     self.parser = parser
     self.error = error
 
@@ -314,7 +314,6 @@ class ArgumentParser(argparse.ArgumentParser):
       metrics. This value is initialized and propagated to the deepest parser
       namespace in parse_known_args() from specified args collected in
       _get_values().
-    _too_few_arguments: True if argparse hit a 'too few arguments' error.
   """
 
   def __init__(self, *args, **kwargs):
@@ -326,7 +325,6 @@ class ArgumentParser(argparse.ArgumentParser):
     self._specified_args = {}
     self._error_context = None  # type: _ErrorContext
     self._probe_error = False
-    self._too_few_arguments = False
     super(ArgumentParser, self).__init__(*args, **kwargs)
 
   def _Error(self, error):
@@ -579,9 +577,10 @@ class ArgumentParser(argparse.ArgumentParser):
         namespace, args = self._remainder_action.ParseKnownArgs(args, namespace)
       # _get_values() updates self._specified_args.
       self._specified_args = namespace._specified_args  # pylint: disable=protected-access
-      namespace, unknown_args, error_context = (
-          self._ParseKnownArgs(args, namespace, wrapper=False) or
-          (namespace, [], None))
+      namespace, unknown_args, error_context = self._ParseKnownArgs(
+          args, namespace, wrapper=False)
+      # Propagate _specified_args.
+      namespace._specified_args.update(self._specified_args)  # pylint: disable=protected-access
       if unknown_args:
         self._Suggest(unknown_args)
       elif error_context:
@@ -598,8 +597,7 @@ class ArgumentParser(argparse.ArgumentParser):
 
   def parse_args(self, args=None, namespace=None):
     """Overrides argparse.ArgumentParser's .parse_args method."""
-    namespace, unknown_args = (self.parse_known_args(args, namespace) or
-                               (namespace, []))
+    namespace, unknown_args, _ = self._ParseKnownArgs(args, namespace)
 
     # pylint:disable=protected-access
     deepest_parser = namespace._GetParser()
@@ -615,7 +613,7 @@ class ArgumentParser(argparse.ArgumentParser):
           parser.validate_specified_args(parser.ai, namespace._specified_args)
         except argparse.ArgumentError as e:
           deepest_parser._Error(e)
-      if deepest_parser._too_few_arguments:
+      if namespace._GetCommand().is_group:
         deepest_parser.error('Command name argument expected.')
 
       # No argument/group conflicts.
@@ -766,7 +764,7 @@ class ArgumentParser(argparse.ArgumentParser):
       top_element = self._calliope_command._TopCLIElement()
       # Sort by the release track prefix.
       for _, command_path in sorted(six.iteritems(alternates),
-                                    key=lambda x: x[0].prefix):
+                                    key=lambda x: x[0].prefix or ''):
         alternative_cmd = top_element.LoadSubElementByPath(command_path[1:])
         if alternative_cmd and not alternative_cmd.IsHidden():
           existing_alternatives.append(' '.join(command_path))
@@ -826,10 +824,11 @@ class ArgumentParser(argparse.ArgumentParser):
     self._ReportErrorMetricsHelper(dotted_command_path,
                                    parser_errors.OtherParsingError)
 
-  def error(self, message=None, context=None, reproduce=False):
+  def error(self, message='', context=None, reproduce=False):
     """Overrides argparse.ArgumentParser's .error(message) method.
 
-    Specifically, it avoids reprinting the program name and the string "error:".
+    Specifically, it avoids reprinting the program name and the string
+    "error:".
 
     Args:
       message: str, The error message to print.
@@ -849,20 +848,20 @@ class ArgumentParser(argparse.ArgumentParser):
         parser = context.parser
         error = context.error
       else:
-        if message and 'Invalid choice:' in message:
+        if 'Invalid choice:' in message:
           exc = parser_errors.UnrecognizedArgumentsError
         else:
           exc = parser_errors.ArgumentError
+        if message:
+          message = re.sub(r"\bu'", "'", message)
         error = exc(message, parser=self)
         parser = self
       if ('_ARGCOMPLETE' not in os.environ and
           not isinstance(error, parser_errors.DetailedArgumentError) and
           (
               self._probe_error or
-              'too few arguments' in message or
               'Invalid choice' in message or
-              'unknown parser' in message or
-              message.startswith('argument') and message.endswith('required')
+              'unknown parser' in message
           )
          ):
         if 'unknown parser' in message:
@@ -879,11 +878,10 @@ class ArgumentParser(argparse.ArgumentParser):
 
     # Ignore errors better handled by validate_specified_args().
     if '_ARGCOMPLETE' not in os.environ:
-      if re.search('arguments? (.+?) required$', message):
-        return
       if re.search('too few arguments', message):
-        # validate_specified_args() could miss these errors.
-        self._too_few_arguments = True
+        return
+      if (re.search('arguments? .* required', message) and
+          not re.search('in dict arg but not provided', message)):
         return
 
     parser.ReportErrorMetrics(error, message)

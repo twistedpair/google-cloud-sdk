@@ -1,0 +1,73 @@
+# common parameters
+
+project:
+  name: project
+  collection: cloudresourcemanager.projects
+  attributes:
+    - &project
+      parameter_name: project
+      attribute_name: project
+      help: The Google Cloud Platform project name.
+
+region:
+  name: region
+  collection: compute.regions
+  attributes:
+    - &region
+      parameter_name: region
+      attribute_name: region
+      help: The name of the Google Compute Engine region.
+
+zone:
+  name: zone
+  collection: compute.zones
+  attributes:
+    - &zone
+      parameter_name: zone
+      attribute_name: zone
+      help: The name of the Google Compute Engine zone.
+
+# resource name parameters
+
+disk:
+  name: disk
+  collection: compute.disks
+  attributes:
+    - *project
+    - *zone
+    - &disk
+      parameter_name: disk
+      attribute_name: disk_name
+      help: The name of Google Compute Engine disk.
+
+image:
+  name: image
+  collection: compute.images
+  attributes:
+    - *project
+    - &image
+      parameter_name: image
+      attribute_name: image_name
+      help: The name of Google Compute Engine image.
+
+instance:
+  name: instance
+  collection: compute.instances
+  attributes:
+    - *project
+    - *zone
+    - &instance
+      parameter_name: instance
+      attribute_name: instance_name
+      help: The name of Google Compute Engine instance.
+
+subnet:
+  name: subnetwork
+  collection: compute.subnetworks
+  attributes:
+    - *project
+    - *region
+    - &subnetwork
+      parameter_name: subnetwork
+      attribute_name: name
+      help: The name of Google Compute Engine subnetwork.

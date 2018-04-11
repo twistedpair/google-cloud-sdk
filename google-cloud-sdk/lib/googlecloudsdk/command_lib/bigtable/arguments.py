@@ -13,6 +13,9 @@
 # limitations under the License.
 """Module for wrangling bigtable command arguments."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -120,50 +123,40 @@ class ArgAdder(object):
     return self
 
   def AddInstanceDisplayName(self, required=False):
-    """Add argument group for description and display-name to parser."""
-    group = self.parser.add_mutually_exclusive_group(required=required)
-
-    # TODO(b/73365914) Remove after deprecation period
-    group.add_argument(
+    """Add argument group for display-name to parser."""
+    self.parser.add_argument(
+        '--display-name',
+        help='Friendly name of the instance.',
+        required=required)
+    # Specify old flag as removed with an error message
+    self.parser.add_argument(
         '--description',
         action=actions.DeprecationAction(
             '--description',
-            warn='Flag --description is deprecated. '
-            'Use --display-name=DISPLAY_NAME instead.'),
-        help='Friendly name of the instance.')
-
-    group.add_argument('--display-name', help='Friendly name of the instance.')
+            removed=True,
+            error=('Flag {flag_name} has been removed. '
+                   'Use --display-name=DISPLAY_NAME instead.')),
+        help='Friendly name of the instance.',
+        hidden=True)
     return self
 
-  # TODO(b/38428550) Remove create flag after deprecation period
-  def AddInstanceType(self, create=True, default=None, help_text=None):
+  def AddInstanceType(self, default=None, help_text=None):
     """Add default instance type choices to parser."""
     choices = {
         'PRODUCTION':
             'Production instances have a minimum of '
             'three nodes, provide high availability, and are suitable for '
-            'applications in production.'
+            'applications in production.',
+        'DEVELOPMENT': 'Development instances are low-cost instances meant '
+                       'for development and testing only. They do not '
+                       'provide high availability and no service level '
+                       'agreement applies.'
     }
-    action = None
-
-    if create:
-      choices.update({
-          'DEVELOPMENT': 'Development instances are low-cost instances meant '
-                         'for development and testing only. They do not '
-                         'provide high availability and no service level '
-                         'agreement applies.'
-      })
-    else:
-      action = actions.DeprecationAction(
-          '--instance-type',
-          warn='Upgrading development instances with --instance-type is '
-          'deprecated. Use the bigtable instances upgrade command instead.')
 
     self.parser.add_argument(
         '--instance-type',
-        action=action,
         default=default,
-        type=str.upper,
+        type=lambda x: x.upper(),
         choices=choices,
         help=help_text)
 

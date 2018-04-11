@@ -63,6 +63,14 @@ PYTHON_SSL_WARNING = (
     'For more information, visit {}.'
 ).format('https://cloud.google.com/appengine/docs/deprecations/python-ssl-27')
 
+FLEX_PY34_WARNING = (
+    'You are using a deprecated version [3.4] of Python on the App '
+    'Engine Flexible environment. Please update your app.yaml file to specify '
+    '[python_version: latest]. Python 3.4 will be decommissioned on March 29, '
+    '2019. After this date, new deployments will fail. For more information '
+    'about this deprecation, visit  {}.'
+).format('https://cloud.google.com/appengine/docs/deprecations/python34')
+
 # This is the equivalent of the following in app.yaml:
 # skip_files:
 # - ^(.*/)?#.*#$
@@ -310,6 +318,11 @@ class ServiceYamlInfo(_YamlInfo):
         HasLib(parsed, 'ssl', '2.7')):
       log.warning(PYTHON_SSL_WARNING)
 
+    if (util.IsFlex(parsed.env) and
+        vm_runtime == 'python' and
+        GetRuntimeConfigAttr(parsed, 'python_version') == '3.4'):
+      log.warning(FLEX_PY34_WARNING)
+
     _CheckIllegalAttribute(
         name='application',
         yaml_info=parsed,
@@ -395,6 +408,19 @@ def HasLib(parsed, name, version=None):
     return any(lib.name == name and lib.version == version for lib in libs)
   else:
     return any(lib.name == name for lib in libs)
+
+
+def GetRuntimeConfigAttr(parsed, attr):
+  """Retrieve an attribute under runtime_config section.
+
+  Args:
+    parsed: parsed from yaml to python object
+    attr: str, Attribute name, e.g. `runtime_version`
+
+  Returns:
+    The value of runtime_config.attr or None if the attribute isn't set.
+  """
+  return (parsed.runtime_config or {}).get(attr)
 
 
 def _CheckIllegalAttribute(name, yaml_info, extractor_func, file_path, msg=''):

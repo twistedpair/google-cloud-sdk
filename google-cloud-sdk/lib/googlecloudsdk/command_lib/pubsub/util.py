@@ -11,7 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """A library that is used to support Cloud Pub/Sub commands."""
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.pubsub import subscriptions
 from googlecloudsdk.api_lib.pubsub import topics
 from googlecloudsdk.command_lib.projects import util as projects_util
@@ -20,6 +25,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.util import times
+
+import six
 
 # Format for the seek time argument.
 SEEK_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -142,7 +149,7 @@ def ParseAttributes(attribute_dict, messages=None):
   messages = messages or topics.GetMessagesModule()
   attributes = []
   if attribute_dict:
-    for key, value in sorted(attribute_dict.iteritems()):
+    for key, value in sorted(six.iteritems(attribute_dict)):
       attributes.append(
           messages.PubsubMessage.AttributesValue.AdditionalProperty(
               key=key,

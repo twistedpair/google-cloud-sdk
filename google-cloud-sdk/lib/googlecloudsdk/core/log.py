@@ -36,6 +36,8 @@ from googlecloudsdk.core.util import times
 import six
 
 
+LOG_FILE_ENCODING = 'utf-8'
+
 DEFAULT_VERBOSITY = logging.WARNING
 DEFAULT_VERBOSITY_STRING = 'warning'
 DEFAULT_USER_OUTPUT_ENABLED = True
@@ -161,7 +163,7 @@ class _ConsoleWriter(object):
       *msg: str, The messages to print.
     """
     msg = (
-        console_attr.SafeText(x, encoding='utf-8', escape=False) for x in msg)
+        console_attr.SafeText(x, encoding=LOG_FILE_ENCODING, escape=False) for x in msg)
     message = ' '.join(msg)
     self._Write(message + '\n')
 
@@ -176,7 +178,7 @@ class _ConsoleWriter(object):
       msg: A text string that only has characters that are safe to encode with
         utf-8.
     """
-    # The log file always users utf-8 encoding, just give it the string.
+    # The log file always uses utf-8 encoding, just give it the string.
     self.__logger.info(msg)
 
     if self.__filter.enabled:
@@ -192,7 +194,7 @@ class _ConsoleWriter(object):
 
   # pylint: disable=g-bad-name, This must match file-like objects
   def write(self, msg):
-    self._Write(console_attr.SafeText(msg, encoding='utf-8', escape=False))
+    self._Write(console_attr.SafeText(msg, encoding=LOG_FILE_ENCODING, escape=False))
 
   # pylint: disable=g-bad-name, This must match file-like objects
   def writelines(self, lines):
@@ -319,7 +321,7 @@ class _LogFileFormatter(logging.Formatter):
   def format(self, record):
     # The log file handler expects text strings always, and encodes them to
     # utf-8 before writing to the file.
-    with _SafeDecodedLogRecord(record, 'utf-8'):
+    with _SafeDecodedLogRecord(record, LOG_FILE_ENCODING):
       msg = super(_LogFileFormatter, self).format(record)
     return msg
 
@@ -600,7 +602,7 @@ class _LogManager(object):
     # A handler to write DEBUG and above to log files in the given directory
     try:
       log_file = self._SetupLogsDir(logs_dir)
-      file_handler = logging.FileHandler(log_file, encoding='utf-8')
+      file_handler = logging.FileHandler(log_file, encoding=LOG_FILE_ENCODING)
     except (OSError, IOError, files.Error) as exp:
       warning('Could not setup log file in {0}, ({1}: {2})'
               .format(logs_dir, type(exp).__name__, exp))

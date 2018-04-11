@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import os
 import re
 import ssl
@@ -29,6 +30,7 @@ from googlecloudsdk.core import url_opener
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import http_encoding
 from googlecloudsdk.core.util import retry
 
 from six.moves import urllib
@@ -213,7 +215,7 @@ class ComponentInstaller(object):
     try:
       req = ComponentInstaller.MakeRequest(url, command_path)
       try:
-        total_size = float(req.info().getheader('Content-Length', '0'))
+        total_size = float(req.info().get('Content-length', '0'))
       # pylint: disable=broad-except, We never want progress bars to block an
       # update.
       except Exception:
@@ -275,8 +277,9 @@ class ComponentInstaller(object):
       urllib2.Request, The request.
     """
     headers = {
-        'Cache-Control': 'no-cache',
-        'User-Agent': http.MakeUserAgentString(command_path)
+        b'Cache-Control': b'no-cache',
+        b'User-Agent': http_encoding.Encode(
+            http.MakeUserAgentString(command_path))
     }
     timeout = TIMEOUT_IN_SEC
     if command_path == UPDATE_MANAGER_COMMAND_PATH:

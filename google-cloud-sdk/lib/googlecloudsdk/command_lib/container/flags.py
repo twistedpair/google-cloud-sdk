@@ -21,6 +21,7 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.container import constants
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
@@ -662,7 +663,8 @@ def AddTagsFlag(parser, help_text):
       help=help_text)
 
 
-def AddMasterAuthorizedNetworksFlags(parser, update_group=None, hidden=False):
+def AddMasterAuthorizedNetworksFlags(parser, enable_group_for_update=None,
+                                     hidden=False):
   """Adds Master Authorized Networks related flags to parser.
 
   Master Authorized Networks related flags are:
@@ -670,15 +672,27 @@ def AddMasterAuthorizedNetworksFlags(parser, update_group=None, hidden=False):
 
   Args:
     parser: A given parser.
-    update_group: An optional group of mutually exclusive flag options
-        to which an --enable-master-authorized-networks flag is added.
+    enable_group_for_update: An optional group of mutually exclusive flag
+        options to which an --enable-master-authorized-networks flag is added
+        in an update command. If given, the flag will default to None instead
+        of False.
     hidden: If true, suppress help text for added options.
   """
-  group = parser.add_argument_group('Master Authorized Networks')
-  authorized_networks_group = group if update_group is None else update_group
-  authorized_networks_group.add_argument(
+  if enable_group_for_update is None:
+    # Flags are being added to the same group.
+    master_flag_group = parser.add_argument_group('Master Authorized Networks')
+    enable_flag_group = master_flag_group
+    enable_default = False
+  else:
+    # Flags are being added to different groups, so the new one should have no
+    # help text (has only one arg).
+    master_flag_group = parser.add_argument_group('')
+    enable_flag_group = enable_group_for_update
+    enable_default = None
+
+  enable_flag_group.add_argument(
       '--enable-master-authorized-networks',
-      default=None if update_group else False,
+      default=enable_default,
       help='Allow only Authorized Networks (specified by the '
       '`--master-authorized-networks` flag) and Google Compute Engine Public '
       'IPs to connect to Kubernetes master through HTTPS. By default public  '
@@ -686,7 +700,7 @@ def AddMasterAuthorizedNetworksFlags(parser, update_group=None, hidden=False):
       'HTTPS.',
       hidden=hidden,
       action='store_true')
-  group.add_argument(
+  master_flag_group.add_argument(
       '--master-authorized-networks',
       type=arg_parsers.ArgList(min_length=1, max_length=10),
       metavar='NETWORK',
@@ -1486,3 +1500,13 @@ your cluster size.'
       # TODO(b/76150055): Un-hide once this is ready for release.
       hidden=True,
       help=help_text)
+
+
+# TODO(b/76157677): Drop this warning when changing the default value of the
+# flag.
+def WarnForUnspecifiedAutorepair(args):
+  if not args.IsSpecified('enable_autorepair'):
+    log.warning(
+        'Currently node auto repairs are disabled by default. In the future '
+        'this will change and they will be enabled by default. Use '
+        '`--[no-]enable-autorepair` flag  to suppress this warning.')

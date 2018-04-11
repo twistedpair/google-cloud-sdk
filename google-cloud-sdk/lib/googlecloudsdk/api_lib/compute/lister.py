@@ -538,11 +538,11 @@ def _GetBaseListerFrontendPrototype(args, message=None):
   default = args.filter  # must preserve '' and None for default processing
   if args.filter:
     filter_args.append('('+args.filter+')')
-  if args.regexp:
+  if getattr(args, 'regexp', None):
     filter_args.append(
         '(name ~ "^{}$")'.format(resource_expr_rewrite.BackendBase()
                                  .Quote(args.regexp)))
-  if args.names:
+  if getattr(args, 'names', None):
     name_regexp = ' '.join([
         resource_expr_rewrite.BackendBase().Quote(name) for name in args.names
         if not name.startswith('https://')

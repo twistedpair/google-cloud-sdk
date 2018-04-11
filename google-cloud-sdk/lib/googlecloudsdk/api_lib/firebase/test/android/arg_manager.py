@@ -71,6 +71,7 @@ def SharedArgRules():
   return {
       'required': ['type', 'app'],
       'optional': [
+          'additional_apks',
           'app_package',
           'async',
           'auto_google_login',

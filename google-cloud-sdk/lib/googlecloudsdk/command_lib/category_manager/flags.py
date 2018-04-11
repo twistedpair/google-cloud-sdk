@@ -23,7 +23,9 @@ def AddOrganizationIdArg(parser):
   """Adds 'organization_id' argument as a required CLI input."""
   concept_parsers.ConceptParser.ForResource(
       name='organization_id',
-      resource_spec=concepts.ResourceSpec('cloudresourcemanager.organizations'),
+      resource_spec=concepts.ResourceSpec(
+          'cloudresourcemanager.organizations',
+          resource_name='organization'),
       group_help='Your organization\'s id.',
       required=True).AddToParser(parser)
 
@@ -66,11 +68,28 @@ def _GetProjectAnnotationResourceSpec():
       annotationsId=_AnnotationsAttributeConfig())
 
 
+def _GetProjectTaxonomyResourceSpec():
+  return concepts.ResourceSpec(
+      'categorymanager.projects.taxonomies',
+      resource_name='taxonomy',
+      projectsId=_ProjectAttributeConfig(),
+      taxonomiesId=_TaxonomyAttributeConfig())
+
+
 def CreateAnnotationResourceArg(positional=False):
   return concept_parsers.ResourcePresentationSpec(
       'annotation' if positional else '--annotation',
       _GetProjectAnnotationResourceSpec(),
       'An annotation reference.',
+      required=True,
+      prefixes=False)
+
+
+def CreateTaxonomyResourceArg(positional=False):
+  return concept_parsers.ResourcePresentationSpec(
+      'taxonomy' if positional else '--taxonomy',
+      _GetProjectTaxonomyResourceSpec(),
+      'A taxonomy reference.',
       required=True,
       prefixes=False)
 
@@ -82,20 +101,6 @@ def CreateAssetResourceArg(positional=False):
       group_help='The asset reference.',
       required=True,
       prefixes=False)
-
-
-def AddTaxonomyResourceArg(parser, required=True, positional=True):
-  if positional:
-    parser.add_argument('taxonomy', help='The ID of the taxonomy.')
-  else:
-    parser.add_argument(
-        '--taxonomy', required=required, help='The ID of the taxonomy.')
-
-
-def AddAnnotationAnnotation(parser, positional=True):
-  parser.add_argument(
-      'annotation' if positional else '--annotation',
-      help='The ID of the annotation.')
 
 
 def AddSubAssetFlag(parser, hidden=False):

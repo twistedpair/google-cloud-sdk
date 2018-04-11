@@ -23,8 +23,10 @@ tracking when we check for updates.
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import compileall
 import errno
+import io
 import logging
 import os
 import posixpath
@@ -79,8 +81,8 @@ class PermissionsError(Error):
           operated on, but can't because of insufficient permissions.
     """
     super(PermissionsError, self).__init__(
-        u'{message}: [{path}]\n\nEnsure you have the permissions to access the '
-        u'file and that the file is not in use.'
+        '{message}: [{path}]\n\nEnsure you have the permissions to access the '
+        'file and that the file is not in use.'
         .format(message=message, path=path))
 
 
@@ -101,12 +103,6 @@ def _RaisesPermissionsError(func):
   def _TryFunc(*args, **kwargs):
     try:
       return func(*args, **kwargs)  # pytype: disable=missing-parameter
-    except (OSError, IOError) as e:
-      if e.errno == errno.EACCES:
-        exceptions.reraise(
-            PermissionsError(message=e.strerror,
-                             path=os.path.abspath(e.filename)))
-      raise
     except shutil.Error as e:
       args = e.args[0][0]
       # unfortunately shutil.Error *only* has formatted strings to inspect.
@@ -116,6 +112,12 @@ def _RaisesPermissionsError(func):
         exceptions.reraise(
             PermissionsError(message=args[2],
                              path=os.path.abspath(args[0])))
+      raise
+    except (OSError, IOError) as e:
+      if e.errno == errno.EACCES:
+        exceptions.reraise(
+            PermissionsError(message=e.strerror,
+                             path=os.path.abspath(e.filename)))
       raise
   return _TryFunc
 
@@ -194,7 +196,7 @@ class InstallationState(object):
       ValueError: If the given SDK root does not exist.
     """
     if not os.path.isdir(sdk_root):
-      raise ValueError(u'The given Cloud SDK root does not exist: [{0}]'
+      raise ValueError('The given Cloud SDK root does not exist: [{0}]'
                        .format(sdk_root))
 
     self.__sdk_root = encoding.Decode(sdk_root)
@@ -644,7 +646,7 @@ class InstallationManifest(object):
         of the install.
       files: list of str, The files that were created by the installation.
     """
-    with open(self.manifest_file, 'w') as fp:
+    with io.open(self.manifest_file, 'wt') as fp:
       for f in _NormalizeFileList(files):
         fp.write(f + '\n')
     snapshot.WriteToFile(self.snapshot_file, component_id=self.id)

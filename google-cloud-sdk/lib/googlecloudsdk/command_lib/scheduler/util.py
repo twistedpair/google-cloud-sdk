@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for "gcloud scheduler" commands."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import base64
 
 from apitools.base.py import extra_types
@@ -20,6 +23,7 @@ from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.tasks import app
+from googlecloudsdk.core.util import http_encoding
 
 
 _PUBSUB_MESSAGE_URL = 'type.googleapis.com/google.pubsub.v1.PubsubMessage'
@@ -89,7 +93,8 @@ def ParseMessageBody(message_body):
 
   # First, put into a PubsubMessage to make sure we've got the general format
   # right.
-  pubsub_message = pubsub_messages.PubsubMessage(data=message_body)
+  pubsub_message = pubsub_messages.PubsubMessage(
+      data=http_encoding.Encode(message_body))
 
   pubsub_message_type = scheduler_messages.PubsubTarget.PubsubMessageValue
   encoded_data = base64.urlsafe_b64encode(pubsub_message.data)

@@ -603,6 +603,40 @@ def _ArgComplete(ai, **kwargs):
       argcomplete.mute_stderr = mute_stderr
 
 
+def _SubParsersActionCall(self, parser, namespace, values, option_string=None):
+  """argparse._SubParsersAction.__call__ version 1.2.1 MonkeyPatch."""
+  del option_string
+
+  # pylint: disable=protected-access
+  # pytype: disable=module-attr
+
+  parser_name = values[0]
+  arg_strings = values[1:]
+
+  # set the parser name if requested
+  if self.dest is not argparse.SUPPRESS:
+    setattr(namespace, self.dest, parser_name)
+
+  # select the parser
+  try:
+    parser = self._name_parser_map[parser_name]
+  except KeyError:
+    tup = parser_name, ', '.join(self._name_parser_map)
+    msg = argparse._('unknown parser %r (choices: %s)' % tup)
+    raise argparse.ArgumentError(self, msg)
+
+  # parse all the remaining options into the namespace
+  # store any unrecognized options on the object, so that the top
+  # level parser can decide what to do with them
+  namespace, arg_strings = parser.parse_known_args(arg_strings, namespace)
+  if arg_strings:
+    vars(namespace).setdefault(argparse._UNRECOGNIZED_ARGS_ATTR, [])
+    getattr(namespace, argparse._UNRECOGNIZED_ARGS_ATTR).extend(arg_strings)
+
+  # pytype: enable=module-attr
+  # pylint: enable=protected-access
+
+
 class CLI(object):
   """A generated command line tool."""
 
@@ -618,63 +652,6 @@ class CLI(object):
 
   def _TopElement(self):
     return self.__top_element
-
-  def _ConvertNonAsciiArgsToUnicode(self, args):
-    """Converts non-ascii args to unicode.
-
-    The args most likely came from sys.argv, and Python 2.7 passes them in as
-    bytestrings instead of unicode.
-
-    Args:
-      args: [str], The list of args to convert.
-
-    Raises:
-      InvalidCharacterInArgException if a non-ascii arg cannot be converted to
-      unicode.
-
-    Returns:
-      A new list of args with non-ascii args converted to unicode.
-    """
-    argv = []
-    for arg in args:
-      if isinstance(arg, six.text_type):
-        # Arg is already a text string, just use it.
-        argv.append(arg)
-      else:
-        # Argument is a byte string.
-        try:
-          # For now we want to leave byte strings as is if they are only ascii
-          # characters. Later we should always convert everything to text.
-          decoded_arg = arg.decode('ascii')  # If this passes, it's ascii only.
-          # Add the original byte string if on PY2, for PY3 start living in the
-          # text only world.
-          argv.append(arg if six.PY2 else decoded_arg)
-        except UnicodeError:
-          # There are unicode characters in the byte string.
-          try:
-            argv.append(console_attr.Decode(arg))
-          except UnicodeError:
-            raise exceptions.InvalidCharacterInArgException(
-                [self.name] + args, arg)
-    return argv
-
-  def _EnforceAsciiArgs(self, argv):
-    """Fail if any arg in argv is not ascii.
-
-    Args:
-      argv: [str], The list of args to check.
-
-    Raises:
-      InvalidCharacterInArgException if there is a non-ascii arg.
-    """
-    for arg in argv:
-      try:
-        if isinstance(arg, six.text_type):
-          arg.encode('ascii')
-        else:
-          arg.decode('ascii')
-      except UnicodeError:
-        raise exceptions.InvalidCharacterInArgException([self.name] + argv, arg)
 
   @property
   def name(self):
@@ -721,6 +698,10 @@ class CLI(object):
     # Python 2. Doing it here ensures that the workaround is in place for
     # calliope argparse use cases.
     argparse.str = six.text_type
+    # We need the argparse 1.2.1 patch in _SubParsersActionCall.
+    # TODO(b/77288697) delete after py3 tests use non-hermetic python
+    if argparse.__version__ == '1.1':  # pytype: disable=module-attr
+      argparse._SubParsersAction.__call__ = _SubParsersActionCall  # pylint: disable=protected-access
 
     if call_arg_complete:
       _ArgComplete(self.__top_element.ai)
@@ -747,15 +728,14 @@ class CLI(object):
     command_path_string = self.__name
     specified_arg_names = None
 
-    argv = self._ConvertNonAsciiArgsToUnicode(args)
+    # Convert py2 args to text.
+    argv = [console_attr.Decode(arg) for arg in args] if six.PY2 else args
     old_user_output_enabled = None
     old_verbosity = None
     try:
       args = self.__parser.parse_args(argv)
       calliope_command = args._GetCommand()  # pylint: disable=protected-access
       command_path_string = '.'.join(calliope_command.GetPath())
-      if not calliope_command.IsUnicodeSupported():
-        self._EnforceAsciiArgs(argv)
       specified_arg_names = args.GetSpecifiedArgNames()
       # If the CLI has not been reloaded since the last command execution (e.g.
       # in test runs), args.CONCEPTS may contain cached values.

@@ -30,9 +30,9 @@ node:
     - &node
       parameter_name: nodesId
       attribute_name: tpu_id
-      help: The name of the Cloud TPU.
+      help: The identifier of the Cloud TPU
 
-tesnorflow_version:
+tensorflowversion:
   name: tensorflowversion
   api_version: v1alpha1
   collection: tpu.projects.locations.tensorflowVersions

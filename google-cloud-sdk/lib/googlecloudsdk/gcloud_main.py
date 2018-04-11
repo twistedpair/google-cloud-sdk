@@ -45,11 +45,6 @@ import surface
 keyboard_interrupt.InstallHandler()
 
 
-def _DoStartupChecks():
-  if not platforms.PythonVersion().IsCompatible():
-    sys.exit(1)
-
-
 if not config.Paths().sdk_root:
   # Don't do update checks if there is no install root.
   properties.VALUES.component_manager.disable_update_check.Set(True)
@@ -125,7 +120,9 @@ def _IssueTestWarning(command_path=None):
 
 
 def main(gcloud_cli=None, credential_providers=None):
-  _DoStartupChecks()
+  if not platforms.PythonVersion().IsCompatible(
+      allow_py3=properties.VALUES.core.allow_py3.GetBool()):
+    sys.exit(1)
   metrics.Started(START_TIME)
   # TODO(b/36049857): Put a real version number here
   metrics.Executions(

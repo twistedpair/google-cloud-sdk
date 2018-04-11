@@ -50,72 +50,6 @@ class CloudfunctionsV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
-
-      Args:
-        request: (CloudfunctionsOperationsCancelRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Cancel')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'cloudfunctions.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1/{+name}:cancel',
-        request_field=u'cancelOperationRequest',
-        request_type_name=u'CloudfunctionsOperationsCancelRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      """Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
-
-      Args:
-        request: (CloudfunctionsOperationsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/operations/{operationsId}',
-        http_method=u'DELETE',
-        method_id=u'cloudfunctions.operations.delete',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1/{+name}',
-        request_field='',
-        request_type_name=u'CloudfunctionsOperationsDeleteRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       """Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
@@ -440,33 +374,6 @@ When making a HTTP PUT request, these two headers need to be specified:
       super(CloudfunctionsV1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Get(self, request, global_params=None):
-      """Gets information about a location.
-
-      Args:
-        request: (CloudfunctionsProjectsLocationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Location) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}',
-        http_method=u'GET',
-        method_id=u'cloudfunctions.projects.locations.get',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1/{+name}',
-        request_field='',
-        request_type_name=u'CloudfunctionsProjectsLocationsGetRequest',
-        response_type_name=u'Location',
-        supports_download=False,
-    )
 
     def List(self, request, global_params=None):
       """Lists information about the supported locations for this service.
