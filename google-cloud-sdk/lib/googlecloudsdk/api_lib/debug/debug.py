@@ -14,9 +14,10 @@
 
 """Debug apis layer."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import re
 import threading
-import urllib
 
 from apitools.base.py import exceptions as apitools_exceptions
 
@@ -26,6 +27,9 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import retry
+
+import six
+from six.moves import urllib
 
 # Names for default module and version. In App Engine, the default module and
 # version don't report explicit names to the debugger, so use these strings
@@ -157,7 +161,7 @@ def DebugViewUrl(breakpoint):
       ('dbgee', breakpoint.target_id),
       ('bp', breakpoint.id)
   ]
-  return debug_view_url + urllib.urlencode(data)
+  return debug_view_url + urllib.parse.urlencode(data)
 
 
 def LogQueryV2String(breakpoint, separator=' '):
@@ -207,7 +211,7 @@ def LogViewUrl(breakpoint):
       ('project', breakpoint.project),
       ('advancedFilter', LogQueryV2String(breakpoint, separator='\n') + '\n')
   ]
-  return debug_view_url + urllib.urlencode(data)
+  return debug_view_url + urllib.parse.urlencode(data)
 
 
 class DebugObject(object):
@@ -366,28 +370,27 @@ class Debugger(DebugObject):
     latest_debuggees = _FilterStaleMinorVersions(all_debuggees)
 
     # Find all debuggees specified by ID, plus all debuggees which are the
-    # latest minor version when specified by name. The sets should be
-    # disjoint, but ensure that there are no duplicates, since the list will
-    # tend to be very small and it is cheap to handle that case.
-    debuggees = set(
-        [d for d in all_debuggees if d.target_id == pattern] +
-        [d for d in latest_debuggees if pattern == d.name])
+    # latest minor version when specified by name.
+    debuggees = ([d for d in all_debuggees if d.target_id == pattern] +
+                 [d for d in latest_debuggees if pattern == d.name])
     if not debuggees:
       # Try matching as an RE on name or description. Name and description
       # share common substrings, so filter out duplicates.
       match_re = re.compile(pattern)
-      debuggees = set(
+      debuggees = (
           [d for d in latest_debuggees if match_re.search(d.name)] +
           [d for d in latest_debuggees
            if d.description and match_re.search(d.description)])
 
     if not debuggees:
       raise errors.NoDebuggeeError(pattern, debuggees=all_debuggees)
-    if len(debuggees) > 1:
+
+    debuggee_ids = set(d.target_id for d in debuggees)
+    if len(debuggee_ids) > 1:
       raise errors.MultipleDebuggeesError(pattern, debuggees)
 
     # Just one possible target
-    return list(debuggees)[0]
+    return debuggees[0]
 
   def RegisterDebuggee(self, description, uniquifier, agent_version=None):
     """Register a debuggee with the Cloud Debugger.
@@ -639,7 +642,7 @@ class Debuggee(DebugObject):
           additionalProperties=[
               self._debug_messages.Breakpoint.LabelsValue.AdditionalProperty(
                   key=key, value=value)
-              for key, value in labels.iteritems()])
+              for key, value in six.iteritems(labels)])
     location = self._LocationFromString(location)
     if not expressions:
       expressions = []
@@ -694,7 +697,7 @@ class Debuggee(DebugObject):
           additionalProperties=[
               self._debug_messages.Breakpoint.LabelsValue.AdditionalProperty(
                   key=key, value=value)
-              for key, value in labels.iteritems()])
+              for key, value in six.iteritems(labels)])
     location = self._LocationFromString(location)
     if log_level:
       log_level = (

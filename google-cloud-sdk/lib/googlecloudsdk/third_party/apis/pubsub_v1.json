@@ -6,7 +6,7 @@
   "canonicalName": "Pubsub",
   "version": "v1",
   "revision": "0",
-  "title": "Google Cloud Pub\/Sub API",
+  "title": "Cloud Pub\/Sub API",
   "description": "Provides reliable, many-to-many, asynchronous messaging between applications.\n",
   "ownerDomain": "google.com",
   "ownerName": "Google",

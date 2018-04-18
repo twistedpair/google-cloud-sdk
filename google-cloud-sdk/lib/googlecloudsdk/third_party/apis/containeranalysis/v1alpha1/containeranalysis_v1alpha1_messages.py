@@ -116,7 +116,6 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-      Next ID: 4
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
@@ -388,7 +387,7 @@ class ContaineranalysisProjectsNotesCreateRequest(_messages.Message):
     note: A Note resource to be passed as the request body.
     noteId: The ID to use for this note.
     parent: This field contains the project Id for example:
-      "project/{project_id}
+      "projects/{project_id}
   """
 
   name = _messages.StringField(1)
@@ -763,7 +762,7 @@ class ContaineranalysisProvidersNotesCreateRequest(_messages.Message):
     note: A Note resource to be passed as the request body.
     noteId: The ID to use for this note.
     parent: This field contains the project Id for example:
-      "project/{project_id}
+      "projects/{project_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -1265,6 +1264,20 @@ class GoogleDevtoolsContaineranalysisV1alpha1GitSourceContext(_messages.Message)
   url = _messages.StringField(2)
 
 
+class GoogleDevtoolsContaineranalysisV1alpha1OperationMetadata(_messages.Message):
+  """Metadata for all operations used and required for all operations that
+  created by Container Analysis Providers
+
+  Fields:
+    createTime: Output only. The time this operation was created.
+    endTime: Output only. The time that this operation was marked completed or
+      failed.
+  """
+
+  createTime = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+
+
 class GoogleDevtoolsContaineranalysisV1alpha1ProjectRepoId(_messages.Message):
   """Selects a repo using a Google Cloud Platform project ID (e.g., winged-
   cargo-31) and a repo name within that project.
@@ -1334,6 +1347,18 @@ class GoogleDevtoolsContaineranalysisV1alpha1SourceContext(_messages.Message):
   gerrit = _messages.MessageField('GoogleDevtoolsContaineranalysisV1alpha1GerritSourceContext', 2)
   git = _messages.MessageField('GoogleDevtoolsContaineranalysisV1alpha1GitSourceContext', 3)
   labels = _messages.MessageField('LabelsValue', 4)
+
+
+class GrafeasV1beta1OperationMetadata(_messages.Message):
+  """Metadata for an operation.
+
+  Fields:
+    createTime: Output only. The time this operation was created.
+    endTime: Output only. The time that this operation was marked as done.
+  """
+
+  createTime = _messages.StringField(1)
+  endTime = _messages.StringField(2)
 
 
 class Hash(_messages.Message):
@@ -1764,20 +1789,6 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
-
-
-class OperationMetadata(_messages.Message):
-  """Metadata for all operations used and required for all operations that
-  created by Container Analysis Providers
-
-  Fields:
-    createTime: Output only. The time this operation was created.
-    endTime: Output only. The time that this operation was marked completed or
-      failed.
-  """
-
-  createTime = _messages.StringField(1)
-  endTime = _messages.StringField(2)
 
 
 class Package(_messages.Message):

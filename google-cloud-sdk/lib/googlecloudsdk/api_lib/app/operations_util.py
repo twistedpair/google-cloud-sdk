@@ -15,6 +15,7 @@
 """Utilities for working with long running operations go/long-running-operation.
 """
 
+from __future__ import absolute_import
 import json
 
 from apitools.base.py import encoding

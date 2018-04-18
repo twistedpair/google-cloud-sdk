@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20180323",
+ "revision": "20180406",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -6021,7 +6021,7 @@
     },
     "fingerprint": {
      "type": "string",
-     "description": "[Output Only] The fingerprint of the resource data. You can use this optional field for optimistic locking when you update the resource.",
+     "description": "Fingerprint of this resource. This field may be used in optimistic locking. It will be ignored when inserting an InstanceGroupManager. An up-to-date fingerprint must be provided in order to update the InstanceGroupManager or the field need to be unset.",
      "format": "byte"
     },
     "id": {
@@ -12849,15 +12849,13 @@
     },
     "minTlsVersion": {
      "type": "string",
-     "description": "The minimum version of SSL protocol that can be used by the clients to establish a connection with the load balancer. This can be one of TLS_1_0, TLS_1_1, TLS_1_2, TLS_1_3.",
+     "description": "The minimum version of SSL protocol that can be used by the clients to establish a connection with the load balancer. This can be one of TLS_1_0, TLS_1_1, TLS_1_2.",
      "enum": [
       "TLS_1_0",
       "TLS_1_1",
-      "TLS_1_2",
-      "TLS_1_3"
+      "TLS_1_2"
      ],
      "enumDescriptions": [
-      "",
       "",
       "",
       ""
@@ -22701,7 +22699,7 @@
      "id": "compute.instances.start",
      "path": "{project}/zones/{zone}/instances/{instance}/start",
      "httpMethod": "POST",
-     "description": "Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.",
+     "description": "Starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -22747,7 +22745,7 @@
      "id": "compute.instances.startWithEncryptionKey",
      "path": "{project}/zones/{zone}/instances/{instance}/startWithEncryptionKey",
      "httpMethod": "POST",
-     "description": "Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.",
+     "description": "Starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.",
      "parameters": {
       "instance": {
        "type": "string",

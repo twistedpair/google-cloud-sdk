@@ -25,7 +25,9 @@ class AcceleratorConfig(_messages.Message):
       * https://www.googleapis.com/compute/beta/projects/[project_id]/zones
       /us-east1-a/acceleratorTypes/nvidia-tesla-k80 *
       projects/[project_id]/zones/us-east1-a/acceleratorTypes/nvidia-tesla-k80
-      * nvidia-tesla-k80
+      * nvidia-tesla-k80Auto Zone Exception: If you are using the Cloud
+      Dataproc Auto Zone Placement feature, you must use the short name of the
+      accelerator type resource, for example, nvidia-tesla-k80.
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1319,14 +1321,14 @@ class GceClusterConfig(_messages.Message):
       projects/[project_id]/regions/global/default default
     serviceAccount: Optional. The service account of the instances. Defaults
       to the default Compute Engine service account. Custom service accounts
-      need permissions equivalent to the folloing IAM roles:
+      need permissions equivalent to the following IAM roles:
       roles/logging.logWriter roles/storage.objectAdmin(see
       https://cloud.google.com/compute/docs/access/service-
       accounts#custom_service_accounts for more information). Example:
       [account_id]@[project_id].iam.gserviceaccount.com
     serviceAccountScopes: Optional. The URIs of service account scopes to be
-      included in Google Compute Engine instances. The following base set of
-      scopes is always included:
+      included in Compute Engine instances. The following base set of scopes
+      is always included:
       https://www.googleapis.com/auth/cloud.useraccounts.readonly
       https://www.googleapis.com/auth/devstorage.read_write
       https://www.googleapis.com/auth/logging.writeIf no scopes are specified,
@@ -1579,7 +1581,10 @@ class InstanceGroupConfig(_messages.Message):
       instances.A full URL, partial URI, or short name are valid. Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/zones/us-
       east1-a/machineTypes/n1-standard-2 projects/[project_id]/zones/us-
-      east1-a/machineTypes/n1-standard-2 n1-standard-2
+      east1-a/machineTypes/n1-standard-2 n1-standard-2Auto Zone Exception: If
+      you are using the Cloud Dataproc Auto Zone Placement feature, you must
+      use the short name of the machine type resource, for example,
+      n1-standard-2.
     managedGroupConfig: Output only. The config for Compute Engine Instance
       Group Manager that manages this group. This is only used for preemptible
       instance groups.

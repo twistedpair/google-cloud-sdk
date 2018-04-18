@@ -14,6 +14,7 @@
 
 """Common functionality to support source fingerprinting."""
 
+from __future__ import absolute_import
 from googlecloudsdk.core import properties
 
 _PROMPTS_DISABLED_ERROR_MESSAGE = (

@@ -207,7 +207,7 @@ def _RetryOperation(exc_info, func, args,
 
 
 def _HandleRemoveError(func, failed_path, exc_info):
-  """A fucntion to pass as the onerror arg to rmdir for handling errors.
+  """A function to pass as the onerror arg to rmdir for handling errors.
 
   Args:
     func: function, The function that failed.
@@ -1028,7 +1028,7 @@ def WriteFileAtomically(file_name, contents):
   else:
     # This opens files with 0600, which are the correct permissions.
     with tempfile.NamedTemporaryFile(
-        dir=dirname, delete=False) as temp_file:
+        mode='w', dir=dirname, delete=False) as temp_file:
       temp_file.write(contents)
       # This was a user-submitted patch to fix a race condition that we couldn't
       # reproduce. It may be due to the file being renamed before the OS's

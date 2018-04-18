@@ -1355,6 +1355,10 @@
           "description": "A struct value describing properties of a distribution of numeric values.",
           "type": "any"
         },
+        "gauge": {
+          "description": "A struct value describing properties of a Gauge.\nMetrics of gauge type show the value of a metric across time, and is\naggregated based on the newest value.",
+          "type": "any"
+        },
         "internal": {
           "description": "Worker-computed aggregate value for internal use by the Dataflow\nservice.",
           "type": "any"

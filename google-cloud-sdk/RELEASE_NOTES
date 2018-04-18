@@ -5,6 +5,72 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 198.0.0 (2018-04-18)
+
+### Breaking Changes
+
+*   **(Cloud Endpoints)** Deprecated support for uploading uncompiled .proto files with `gcloud
+  endpoints services deploy`. Support will be removed in a future release.
+
+
+### App Engine
+
+* Fixed a rare, intermittent bug where deployments would fail with an error
+  message about "copying files to App Engine".
+
+* Updated the Python SDK to version 1.9.69.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+* Added [PyTz version 2017.3](https://pypi.python.org/pypi/pytz/2017.3) to the
+  built-in third-party libraries.
+
+### BigQuery
+
+* Added support for reauth. Reauth allows using two-factor authentication for
+  end-user credentials.
+
+### Cloud DNS
+
+* Promoted `gcloud dns managed-zones update` to GA.
+
+### Cloud TPU
+
+* Added `gcloud compute tpus accelerator-types <list|describe>` to beta.
+
+### Compute Engine
+
+* Promoted the `--region` flag of `gcloud compute disks` and related commands to beta
+* Updated `gcloud compute instances create` command to support
+  blank disk creation.
+* Modified `gcloud compute sign-url` to accept HTTP URLs in addition to HTTPS URLs
+  for signing.
+* Promoted the following Cloud CDN Signed URL commands to beta:
+    *   `gcloud beta compute sign-url`
+    *   `gcloud beta compute backend-buckets add-signed-url-key`
+    *   `gcloud beta compute backend-buckets delete-signed-url-key`
+    *   `gcloud beta compute backend-services add-signed-url-key`
+    *   `gcloud beta compute backend-services delete-signed-url-key`
+* Promoted `--signed-url-cache-max-age` flag to beta in the following commands:
+    *   `gcloud beta compute backend-buckets create`
+    *   `gcloud beta compute backend-buckets update`
+    *   `gcloud beta compute backend-services create`
+    *   `gcloud beta compute backend-services update`
+
+### Firebase Test Lab
+
+* Added `--other-files` flag to `gcloud beta firebase test android run` to support running tests with non-OBB files pushed to device.
+
+### Kubernetes Engine
+
+* Added `gcloud alpha container subnets list-usable` command for listing subnets
+  usable for creating clusters in Google Kubernetes Engine.
+* Fixed `--node-locations` of `gcloud containers clusters create` to correctly
+  specify what node-pools should be created during the creation of a cluster.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 197.0.0 (2018-04-11)
 
 ### Breaking Changes
@@ -3075,7 +3141,7 @@ disabled on existing clusters via the
 *   Removed deprecated "unique-writer-identity" flag. All created/updated sinks
     will use custom service accounts to increase security.
     Please see documentation for more details:
-    *   https://cloud.google.com/logging/docs/export/configure_export_v2#destination_authorization
+    *   https://cloud.google.com/logging/docs/export/configure_export_v2#dest-auth
 *   Remove support for creating/updating sinks with legacy V1 format.
 
 ### Google Cloud Resource Manager

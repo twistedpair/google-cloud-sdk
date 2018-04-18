@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utilities shared by cloud-shell commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import base64
 
 from googlecloudsdk.api_lib.util import apis

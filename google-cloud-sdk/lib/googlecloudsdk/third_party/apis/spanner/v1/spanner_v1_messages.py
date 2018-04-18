@@ -37,7 +37,6 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-      Next ID: 4
     exemptedMembers: A string attribute.
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
@@ -551,16 +550,16 @@ class ExecuteSqlRequest(_messages.Message):
       right SQL type from a JSON value.  For example, values of type `BYTES`
       and values of type `STRING` both appear in params as JSON strings.  In
       these cases, `param_types` can be used to specify the exact SQL type for
-      some or all of the SQL query parameters. See the definition of Type for
-      more information about SQL types.
-    ParamsValue: The SQL query string can contain parameter placeholders. A
+      some or all of the SQL statement parameters. See the definition of Type
+      for more information about SQL types.
+    ParamsValue: The SQL string can contain parameter placeholders. A
       parameter placeholder consists of `'@'` followed by the parameter name.
       Parameter names consist of any combination of letters, numbers, and
       underscores.  Parameters can appear anywhere that a literal value is
       expected.  The same parameter name can be used more than once, for
       example:   `"WHERE id > @msg_id AND id < @msg_id + 100"`  It is an error
-      to execute an SQL query with unbound parameters.  Parameter values are
-      specified using `params`, which is a JSON object whose keys are
+      to execute an SQL statement with unbound parameters.  Parameter values
+      are specified using `params`, which is a JSON object whose keys are
       parameter names, and whose values are the corresponding parameter
       values.
 
@@ -569,18 +568,17 @@ class ExecuteSqlRequest(_messages.Message):
       SQL type from a JSON value.  For example, values of type `BYTES` and
       values of type `STRING` both appear in params as JSON strings.  In these
       cases, `param_types` can be used to specify the exact SQL type for some
-      or all of the SQL query parameters. See the definition of Type for more
-      information about SQL types.
-    params: The SQL query string can contain parameter placeholders. A
-      parameter placeholder consists of `'@'` followed by the parameter name.
-      Parameter names consist of any combination of letters, numbers, and
-      underscores.  Parameters can appear anywhere that a literal value is
-      expected.  The same parameter name can be used more than once, for
-      example:   `"WHERE id > @msg_id AND id < @msg_id + 100"`  It is an error
-      to execute an SQL query with unbound parameters.  Parameter values are
-      specified using `params`, which is a JSON object whose keys are
-      parameter names, and whose values are the corresponding parameter
-      values.
+      or all of the SQL statement parameters. See the definition of Type for
+      more information about SQL types.
+    params: The SQL string can contain parameter placeholders. A parameter
+      placeholder consists of `'@'` followed by the parameter name. Parameter
+      names consist of any combination of letters, numbers, and underscores.
+      Parameters can appear anywhere that a literal value is expected.  The
+      same parameter name can be used more than once, for example:   `"WHERE
+      id > @msg_id AND id < @msg_id + 100"`  It is an error to execute an SQL
+      statement with unbound parameters.  Parameter values are specified using
+      `params`, which is a JSON object whose keys are parameter names, and
+      whose values are the corresponding parameter values.
     partitionToken: If present, results will be restricted to the specified
       partition previously created using PartitionQuery().  There must be an
       exact match for the values of fields common to this message and the
@@ -589,12 +587,12 @@ class ExecuteSqlRequest(_messages.Message):
       ResultSetStats. If partition_token is set, query_mode can only be set to
       QueryMode.NORMAL.
     resumeToken: If this request is resuming a previously interrupted SQL
-      query execution, `resume_token` should be copied from the last
+      statement execution, `resume_token` should be copied from the last
       PartialResultSet yielded before the interruption. Doing this enables the
-      new SQL query execution to resume where the last one left off. The rest
-      of the request parameters must exactly match the request that yielded
-      this token.
-    sql: Required. The SQL query string.
+      new SQL statement execution to resume where the last one left off. The
+      rest of the request parameters must exactly match the request that
+      yielded this token.
+    sql: Required. The SQL string.
     transaction: The transaction to use. If none is provided, the default is a
       temporary read-only transaction with strong concurrency.
   """
@@ -605,12 +603,11 @@ class ExecuteSqlRequest(_messages.Message):
     QueryMode.NORMAL.
 
     Values:
-      NORMAL: The default mode where only the query result, without any
-        information about the query plan is returned.
-      PLAN: This mode returns only the query plan, without any result rows or
+      NORMAL: The default mode. Only the statement results are returned.
+      PLAN: This mode returns only the query plan, without any results or
         execution statistics information.
       PROFILE: This mode returns both the query plan and the execution
-        statistics along with the result rows.
+        statistics along with the results.
     """
     NORMAL = 0
     PLAN = 1
@@ -622,8 +619,8 @@ class ExecuteSqlRequest(_messages.Message):
     from a JSON value.  For example, values of type `BYTES` and values of type
     `STRING` both appear in params as JSON strings.  In these cases,
     `param_types` can be used to specify the exact SQL type for some or all of
-    the SQL query parameters. See the definition of Type for more information
-    about SQL types.
+    the SQL statement parameters. See the definition of Type for more
+    information about SQL types.
 
     Messages:
       AdditionalProperty: An additional property for a ParamTypesValue object.
@@ -647,15 +644,15 @@ class ExecuteSqlRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamsValue(_messages.Message):
-    """The SQL query string can contain parameter placeholders. A parameter
+    """The SQL string can contain parameter placeholders. A parameter
     placeholder consists of `'@'` followed by the parameter name. Parameter
     names consist of any combination of letters, numbers, and underscores.
     Parameters can appear anywhere that a literal value is expected.  The same
     parameter name can be used more than once, for example:   `"WHERE id >
-    @msg_id AND id < @msg_id + 100"`  It is an error to execute an SQL query
-    with unbound parameters.  Parameter values are specified using `params`,
-    which is a JSON object whose keys are parameter names, and whose values
-    are the corresponding parameter values.
+    @msg_id AND id < @msg_id + 100"`  It is an error to execute an SQL
+    statement with unbound parameters.  Parameter values are specified using
+    `params`, which is a JSON object whose keys are parameter names, and whose
+    values are the corresponding parameter values.
 
     Messages:
       AdditionalProperty: An additional property for a ParamsValue object.
@@ -1210,7 +1207,7 @@ class PartialResultSet(_messages.Message):
       results can be resumed by re-sending the original request and including
       `resume_token`. Note that executing any other transaction in the same
       session invalidates the token.
-    stats: Query plan and execution statistics for the query that produced
+    stats: Query plan and execution statistics for the statement that produced
       this streaming result set. These can be requested by setting
       ExecuteSqlRequest.query_mode and are sent only once with the last
       response in the stream.
@@ -1451,6 +1448,10 @@ class PartitionResponse(_messages.Message):
 
   partitions = _messages.MessageField('Partition', 1, repeated=True)
   transaction = _messages.MessageField('Transaction', 2)
+
+
+class PartitionedDml(_messages.Message):
+  """Message type to initiate a Partitioned DML transaction."""
 
 
 class PlanNode(_messages.Message):
@@ -1748,8 +1749,8 @@ class ResultSet(_messages.Message):
     rows: Each element in `rows` is a row whose format is defined by
       metadata.row_type. The ith element in each row matches the ith field in
       metadata.row_type. Elements are encoded based on type as described here.
-    stats: Query plan and execution statistics for the query that produced
-      this result set. These can be requested by setting
+    stats: Query plan and execution statistics for the SQL statement that
+      produced this result set. These can be requested by setting
       ExecuteSqlRequest.query_mode.
   """
 
@@ -1799,6 +1800,10 @@ class ResultSetStats(_messages.Message):
       present when the query is profiled. For example, a query could return
       the statistics as follows:      {       "rows_returned": "3",
       "elapsed_time": "1.22 secs",       "cpu_time": "1.19 secs"     }
+    rowCountExact: Standard DML returns an exact count of rows that were
+      modified.
+    rowCountLowerBound: Partitioned DML does not offer exactly-once semantics,
+      so it returns a lower bound of the rows modified.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1830,6 +1835,8 @@ class ResultSetStats(_messages.Message):
 
   queryPlan = _messages.MessageField('QueryPlan', 1)
   queryStats = _messages.MessageField('QueryStatsValue', 2)
+  rowCountExact = _messages.IntegerField(3)
+  rowCountLowerBound = _messages.IntegerField(4)
 
 
 class RollbackRequest(_messages.Message):
@@ -1859,8 +1866,8 @@ class Rule(_messages.Message):
       any entries that match the LOG action.
     notIn: If one or more 'not_in' clauses are specified, the rule matches if
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
-      for in and not_in entries is the same as for members in a Binding (see
-      google/iam/v1/policy.proto).
+      for in and not_in entries can be found at in the Local IAM documentation
+      (see go/local-iam#features).
     permissions: A permission is a string of form '<service>.<resource
       type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
       permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
@@ -2798,7 +2805,7 @@ class TransactionOptions(_messages.Message):
   provides guaranteed      consistency across several reads, but does not
   allow      writes. Snapshot read-only transactions can be configured to
   read at timestamps in the past. Snapshot read-only      transactions do not
-  need to be committed.  For transactions that only read, snapshot read-only
+  need to be committed.   For transactions that only read, snapshot read-only
   transactions provide simpler semantics and are almost always faster. In
   particular, read-only transactions do not take locks, so they do not
   conflict with read-write transactions. As a consequence of not taking locks,
@@ -2910,9 +2917,10 @@ class TransactionOptions(_messages.Message):
   read timestamps more than one hour in the past. This restriction also
   applies to in-progress reads and/or SQL queries whose timestamp become too
   old while executing. Reads and SQL queries with too-old read timestamps fail
-  with the error `FAILED_PRECONDITION`.
+  with the error `FAILED_PRECONDITION`.  ##
 
   Fields:
+    partitionedDml: A PartitionedDml attribute.
     readOnly: Transaction will not write.  Authorization to begin a read-only
       transaction requires `spanner.databases.beginReadOnlyTransaction`
       permission on the `session` resource.
@@ -2922,8 +2930,9 @@ class TransactionOptions(_messages.Message):
       the `session` resource.
   """
 
-  readOnly = _messages.MessageField('ReadOnly', 1)
-  readWrite = _messages.MessageField('ReadWrite', 2)
+  partitionedDml = _messages.MessageField('PartitionedDml', 1)
+  readOnly = _messages.MessageField('ReadOnly', 2)
+  readWrite = _messages.MessageField('ReadWrite', 3)
 
 
 class TransactionSelector(_messages.Message):

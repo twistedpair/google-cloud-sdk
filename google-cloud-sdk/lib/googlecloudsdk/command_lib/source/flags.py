@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Common arguments for `gcloud source repos` commands."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 
 REPO_NAME_VALIDATOR = arg_parsers.RegexpValidator(

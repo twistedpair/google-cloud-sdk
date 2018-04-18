@@ -13,6 +13,7 @@
 # limitations under the License.
 """Functions for creating a client to talk to the App Engine Admin SSL APIs."""
 
+from __future__ import absolute_import
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions

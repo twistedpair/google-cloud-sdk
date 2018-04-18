@@ -14,6 +14,7 @@
 
 """Fingerprinting code for the Go runtime."""
 
+from __future__ import absolute_import
 import fnmatch
 import os
 import re

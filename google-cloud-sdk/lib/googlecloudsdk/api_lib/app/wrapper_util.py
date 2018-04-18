@@ -16,11 +16,13 @@
 
 Functions for parsing app.yaml files and installing the required components.
 """
+from __future__ import absolute_import
 import argparse
 import os
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
+import six
 
 # Runtime ID to component mapping. python27-libs is a special token indicating
 # that the real runtime id is python27, and that a libraries section has been
@@ -123,7 +125,7 @@ def GetComponents(runtimes):
   # Always install python.
   components = ['app-engine-python']
   for requested_runtime in runtimes:
-    for component_runtime, component in _RUNTIME_COMPONENTS.iteritems():
+    for component_runtime, component in six.iteritems(_RUNTIME_COMPONENTS):
       if component_runtime in requested_runtime:
         components.append(component)
   return components

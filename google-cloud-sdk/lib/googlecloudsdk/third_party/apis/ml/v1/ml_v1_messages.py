@@ -855,7 +855,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   command to submit your training job, you can specify the input parameters as
   command-line arguments and/or in a YAML configuration file referenced from
   the --config command-line argument. For details, see the guide to <a href
-  ="/ml-engine/docs/training-jobs">submitting a training job</a>. Next ID: 22
+  ="/ml-engine/docs/training-jobs">submitting a training job</a>.
 
   Enums:
     ScaleTierValueValuesEnum: Required. Specifies the machine types, the
@@ -1212,7 +1212,6 @@ class GoogleIamV1AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-      Next ID: 4
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.

@@ -477,9 +477,9 @@ def AddCreateDiskArgs(parser, enable_kms=False):
       *image*::: Specifies the name of the image that the disk will be
       initialized with. A new disk will be created based on the given
       image. To view a list of public images and projects, run
-      `$ gcloud compute images list`. If omitted image-family must be
-      specified to identify the image. It is best practice to use image when
-      a specific version of an image is needed.
+      `$ gcloud compute images list`. It is best practice to use image when
+      a specific version of an image is needed. If both image and image-family
+      flags are omitted a blank disk will be created.
 
       *image-family*::: The family of the image that the disk will be
       initialized with. When a family is specified instead of an image,
@@ -810,12 +810,8 @@ def ValidateCreateDiskFlags(args):
     image_family_value = disk.get('image-family')
     if image_value and image_family_value:
       raise exceptions.ToolException(
-          'Cannot specify [image] and [image-family] for a [--create-disk].'
-          'The fields are mutually excusive.')
-    if not image_value and not image_family_value:
-      raise exceptions.ToolException(
-          'Either [image] or [image-family] must be specified for '
-          '[--create-disk].')
+          'Cannot specify [image] and [image-family] for a [--create-disk]. '
+          'The fields are mutually exclusive.')
 
 
 def AddAddressArgs(parser,

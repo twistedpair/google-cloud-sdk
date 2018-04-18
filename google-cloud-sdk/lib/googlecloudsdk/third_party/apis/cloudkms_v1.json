@@ -6,7 +6,7 @@
   "canonicalName": "Cloud KMS",
   "version": "v1",
   "revision": "0",
-  "title": "Google Cloud Key Management Service (KMS) API",
+  "title": "Cloud Key Management Service (KMS) API",
   "description": "Manages encryption for your cloud services the same way you do on-premises. You can generate, use, rotate, and destroy AES256 encryption keys.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -512,7 +512,7 @@
           "type": "string"
         },
         "auditLogConfigs": {
-          "description": "The configuration for logging of each type of permission.\nNext ID: 4",
+          "description": "The configuration for logging of each type of permission.",
           "type": "array",
           "items": {
             "$ref": "AuditLogConfig"

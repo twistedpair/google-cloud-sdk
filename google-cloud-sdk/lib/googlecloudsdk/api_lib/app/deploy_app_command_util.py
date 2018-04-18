@@ -14,10 +14,14 @@
 
 """Utility methods used by the deploy_app command."""
 
+from __future__ import absolute_import
+import datetime
 import hashlib
 import json
 import os
 import shutil
+
+from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.app import util
@@ -29,7 +33,9 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import times
 from googlecloudsdk.third_party.appengine.tools import context_util
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 # Max App Engine file size; see https://cloud.google.com/appengine/docs/quotas
@@ -37,6 +43,10 @@ _MAX_FILE_SIZE = 32 * 1024 * 1024
 
 
 _DEFAULT_NUM_THREADS = 8
+
+# TTL expiry margin, to compensate for incorrect local time and timezone,
+# as well as deployment time.
+_TTL_MARGIN = datetime.timedelta(1)
 
 
 class LargeFileError(core_exceptions.Error):
@@ -115,6 +125,56 @@ def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
   return manifest
 
 
+def _GetLifecycleDeletePolicy(storage_client, bucket_ref):
+  """Get the TTL of objects in days as specified by the lifecycle policy.
+
+  Only "delete by age" policies are accounted for.
+
+  Args:
+    storage_client: storage_api.StorageClient, API client wrapper.
+    bucket_ref: The GCS bucket reference.
+
+  Returns:
+    datetime.timedelta, TTL of objects in days, or None if no deletion
+    policy on the bucket.
+  """
+  try:
+    bucket = storage_client.client.buckets.Get(
+        request=storage_client.messages.StorageBucketsGetRequest(
+            bucket=bucket_ref.bucket),
+        global_params=storage_client.messages.StandardQueryParameters(
+            fields='lifecycle'))
+  except apitools_exceptions.HttpForbiddenError:
+    return None
+  if not bucket.lifecycle:
+    return None
+  rules = bucket.lifecycle.rule
+  ages = [rule.condition.age for rule in rules
+          if rule.condition.age >= 0 and rule.action.type == 'Delete']
+  return datetime.timedelta(min(ages)) if ages else None
+
+
+def _IsTTLSafe(ttl, obj):
+  """Determines whether a GCS object is close to end-of-life.
+
+  In order to reduce false negative rate (objects that are close to deletion but
+  aren't marked as such) the returned filter is forward-adjusted with
+  _TTL_MARGIN.
+
+  Args:
+    ttl: datetime.timedelta, TTL of objects, or None if no TTL.
+    obj: storage object to check.
+
+  Returns:
+    True if the ojbect is safe or False if it is approaching end of life.
+  """
+  if ttl is None:
+    return True
+  now = times.Now(times.UTC)
+  delta = ttl - _TTL_MARGIN
+  return (now - obj.timeCreated) <= delta
+
+
 def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir):
   """Builds a map of files to upload, indexed by their hash.
 
@@ -137,7 +197,9 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir):
   """
   files_to_upload = {}
   storage_client = storage_api.StorageClient()
-  existing_items = storage_client.ListBucket(bucket_ref)
+  ttl = _GetLifecycleDeletePolicy(storage_client, bucket_ref)
+  existing_items = set(o.name for o in storage_client.ListBucket(bucket_ref)
+                       if _IsTTLSafe(ttl, o))
   skipped_size, total_size = 0, 0
   for rel_path in manifest:
     full_path = os.path.join(source_dir, rel_path)
@@ -188,7 +250,7 @@ def _UploadFilesThreads(files_to_upload, bucket_ref):
   tasks = []
   # Have to sort files because the test framework requires a known order for
   # mocked API calls.
-  for sha1_hash, path in sorted(files_to_upload.iteritems()):
+  for sha1_hash, path in sorted(files_to_upload.items()):
     task = storage_parallel.FileUploadTask(path, bucket_ref.ToBucketUrl(),
                                            sha1_hash)
     tasks.append(task)

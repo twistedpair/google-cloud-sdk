@@ -13,45 +13,86 @@
 # limitations under the License.
 """Flags for binauthz command group."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import textwrap
+
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import properties
 
 
-def ProviderAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='project',
-      help_text='The Container Analysis provider project for the {resource}.',
-  )
-
-
-def NoteAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='note',
-      help_text='The Container Analysis Note ID for the {resource}.',
-  )
-
-
-def GetNoteResourceSpec():
+def _GetNoteResourceSpec():
   return concepts.ResourceSpec(
       'containeranalysis.providers.notes',
       resource_name='note',
-      providersId=ProviderAttributeConfig(),
-      notesId=NoteAttributeConfig(),
+      providersId=concepts.ResourceParameterAttributeConfig(
+          name='project',
+          help_text=(
+              'The Container Analysis provider project for the {resource}.'),
+      ),
+      notesId=concepts.ResourceParameterAttributeConfig(
+          name='note',
+          help_text='The Container Analysis Note ID for the {resource}.',
+      )
   )
 
 
-def GetAttestationAuthorityNoteConceptParser(group_help, required=True):
+def _FormatArgName(base_name, positional):
+  if positional:
+    return base_name.replace('-', '_').upper()
+  else:
+    return '--' + base_name.replace('_', '-').lower()
 
-  return concept_parsers.ConceptParser.ForResource(
-      name='--attestation-authority-note',
-      resource_spec=GetNoteResourceSpec(),
+
+def GetAuthorityNotePresentationSpec(base_name,
+                                     group_help,
+                                     required=True,
+                                     positional=True):
+  return concept_parsers.ResourcePresentationSpec(
+      name=_FormatArgName(base_name, positional),
+      concept_spec=_GetNoteResourceSpec(),
       group_help=group_help,
       required=required,
       flag_name_overrides={
-          'project': '--attestation-authority-note-project',
+          'project': _FormatArgName('{}-project'.format(base_name), positional),
       },
   )
+
+
+def _GetAuthorityResourceSpec():
+  return concepts.ResourceSpec(
+      'binaryauthorization.projects.attestationAuthorities',
+      resource_name='authority',
+      projectsId=concepts.ResourceParameterAttributeConfig(
+          name='project',
+          help_text='The project of the {resource}.',
+          fallthroughs=[
+              deps.PropertyFallthrough(properties.VALUES.core.project)],
+      ),
+      attestationAuthoritiesId=concepts.ResourceParameterAttributeConfig(
+          name='name',
+          help_text='The ID of the {resource}.',
+      )
+  )
+
+
+def GetAuthorityPresentationSpec(group_help,
+                                 required=True,
+                                 positional=True):
+  return concept_parsers.ResourcePresentationSpec(
+      name=_FormatArgName('authority', positional),
+      concept_spec=_GetAuthorityResourceSpec(),
+      group_help=group_help,
+      required=required,
+  )
+
+
+def AddConcepts(parser, *presentation_specs):
+  concept_parsers.ConceptParser(presentation_specs).AddToParser(parser)
 
 
 def AddArtifactUrlFlag(parser, required=True):
@@ -64,17 +105,24 @@ def AddArtifactUrlFlag(parser, required=True):
             'optionally contain the `http` or `https` scheme'))
 
 
-def AddListFlags(parser):
+def AddListAttestationsFlags(parser):
   AddArtifactUrlFlag(parser, required=False)
-  GetAttestationAuthorityNoteConceptParser(
-      required=False,
-      group_help=textwrap.dedent("""\
-        The Container Analysis ATTESTATION_AUTHORITY Note that will be queried
-        for attestations.  When this option is passed, only occurrences with
-        kind ATTESTATION_AUTHORITY will be returned.  The occurrences might be
-        from any project, not just the project where the note lives.  Note that
-        the caller must have the `containeranalysis.notes.listOccurrences`
-        permission on the note being queried.""")).AddToParser(parser)
+  AddConcepts(
+      parser,
+      GetAuthorityNotePresentationSpec(
+          base_name='attestation-authority-note',
+          required=False,
+          positional=False,
+          group_help=textwrap.dedent("""\
+            The Container Analysis ATTESTATION_AUTHORITY Note that will be
+            queried for attestations.  When this option is passed, only
+            occurrences with kind ATTESTATION_AUTHORITY will be returned.  The
+            occurrences might be from any project, not just the project where
+            the note lives.  Note that the caller must have the
+            `containeranalysis.notes.listOccurrences` permission on the note
+            being queried.""")
+      )
+  )
 
 
 def AddCreateAttestationFlags(parser):
@@ -103,14 +151,20 @@ def AddCreateAttestationFlags(parser):
   v2_attestation_group = attestation_types_group.add_group(
       help='v2 (ATTESTATION_AUTHORITY) attestation parameters.')
 
-  GetAttestationAuthorityNoteConceptParser(
-      group_help=textwrap.dedent("""\
-        The Container Analysis ATTESTATION_AUTHORITY Note that the created
-        attestation will be bound to.  This note must exist and the active
-        gcloud account (core/account) must have the
-        `containeranalysis.notes.attachOccurrence` permission for the note
-        resource (usually via the `containeranalysis.notes.attacher` role).""")
-  ).AddToParser(v2_attestation_group)
+  AddConcepts(
+      v2_attestation_group,
+      GetAuthorityNotePresentationSpec(
+          base_name='attestation-authority-note',
+          positional=False,
+          group_help=textwrap.dedent("""\
+            The Container Analysis ATTESTATION_AUTHORITY Note that the created
+            attestation will be bound to.  This note must exist and the active
+            gcloud account (core/account) must have the
+            `containeranalysis.notes.attachOccurrence` permission for the note
+            resource (usually via the `containeranalysis.notes.attacher`
+            role).""")
+      )
+  )
 
   v2_attestation_group.add_argument(
       '--pgp-key-fingerprint',

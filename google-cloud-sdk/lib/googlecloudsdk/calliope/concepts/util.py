@@ -23,8 +23,8 @@ PREFIX = '--'
 def NormalizeFormat(arg_name):
   """Converts arg name to lower snake case, no '--' prefix."""
   if arg_name.startswith(PREFIX):
-    return arg_name[len(PREFIX):].lower().replace('-', '_')
-  return arg_name.lower()
+    arg_name = arg_name[len(PREFIX):]
+  return arg_name.lower().replace('-', '_')
 
 
 def IsPositional(arg_name):
@@ -41,3 +41,9 @@ def NamespaceFormat(arg_name):
 def MetavarFormat(arg_name):
   """Gets arg name in upper snake case."""
   return arg_name.lstrip('-').replace('-', '_').upper()
+
+
+def FlagNameFormat(arg_name):
+  """Format a string as a flag name."""
+  prefix = '' if arg_name.startswith(PREFIX) else PREFIX
+  return prefix + arg_name.lower().replace('_', '-')

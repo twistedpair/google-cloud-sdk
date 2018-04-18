@@ -84,6 +84,7 @@ def SharedArgRules():
           'obb_files',
           'orientations',
           'os_version_ids',
+          'other_files',
           'performance_metrics',
           'record_video',
           'results_bucket',

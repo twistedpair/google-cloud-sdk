@@ -19,6 +19,7 @@ active gcloud credential.
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import base64
 import json
 import os
@@ -238,7 +239,8 @@ def _UpdateDockerConfig(server, username, access_token):
     dockercfg_contents = {}
 
   # Add the entry for our server.
-  auth = base64.b64encode(username + ':' + access_token)
+  auth = username + ':' + access_token
+  auth = base64.b64encode(auth.encode('ascii')).decode('ascii')
 
   # Sanitize and normalize the server input.
   parsed_url = client_lib.GetNormalizedURL(server)

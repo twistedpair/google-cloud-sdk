@@ -49,13 +49,14 @@ def Create(instance, config, description, nodes):
   return client.projects_instances.Create(req)
 
 
-def SetPolicy(instance_ref, policy):
+def SetPolicy(instance_ref, policy, field_mask=None):
   """Saves the given policy on the instance, overwriting whatever exists."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   req = msgs.SpannerProjectsInstancesSetIamPolicyRequest(
       resource=instance_ref.RelativeName(),
-      setIamPolicyRequest=msgs.SetIamPolicyRequest(policy=policy))
+      setIamPolicyRequest=msgs.SetIamPolicyRequest(policy=policy,
+                                                   updateMask=field_mask))
   return client.projects_instances.SetIamPolicy(req)
 
 

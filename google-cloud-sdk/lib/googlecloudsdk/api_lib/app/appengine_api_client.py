@@ -14,6 +14,7 @@
 
 """Functions for creating a client to talk to the App Engine Admin API."""
 
+from __future__ import absolute_import
 import itertools
 import json
 import operator
@@ -36,6 +37,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
+from six.moves import filter  # pylint: disable=redefined-builtin
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 APPENGINE_VERSIONS_MAP = {
@@ -380,10 +383,10 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         services, [service] if service else None)
 
     versions = self.ListVersions(services)
-    log.debug('Versions: {0}'.format(map(str, versions)))
+    log.debug('Versions: {0}'.format(list(map(str, versions))))
     versions = version_util.GetMatchingVersions(
         versions, [version] if version else None, service)
-    versions = filter(version_filter, versions)
+    versions = list(filter(version_filter, versions))
 
     return self.ListInstances(versions)
 
@@ -624,7 +627,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       # pylint: disable=protected-access
       schema_parser = convert_yaml.GetSchemaParser(self.client._VERSION)
       json_version_resource = schema_parser.ConvertValue(config_dict)
-    except ValueError, e:
+    except ValueError as e:
       raise exceptions.ConfigError(
           '[{f}] could not be converted to the App Engine configuration '
           'format for the following reason: {msg}'.format(
@@ -663,7 +666,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     if 'betaSettings' in json_version_resource:
       json_dict = json_version_resource.get('betaSettings')
       attributes = []
-      for key, value in sorted(json_dict.iteritems()):
+      for key, value in sorted(json_dict.items()):
         attributes.append(
             self.messages.Version.BetaSettingsValue.AdditionalProperty(
                 key=key, value=value))

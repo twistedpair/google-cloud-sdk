@@ -15,18 +15,20 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 import errno
 import json
 import os
 import subprocess
 import sys
-import urlparse
 
 from distutils import version as distutils_version
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
+
+from six.moves import urllib
 
 
 DOCKER_NOT_FOUND_ERROR = 'Docker is not installed.'
@@ -179,16 +181,16 @@ def GetDockerVersion():
 
 def GetNormalizedURL(server):
   """Sanitize and normalize the server input."""
-  parsed_url = urlparse.urlparse(server)
+  parsed_url = urllib.parse.urlparse(server)
   # Work around the fact that Python 2.6 does not properly
   # look for :// and simply splits on colon, so something
   # like 'gcr.io:1234' returns the scheme 'gcr.io'.
   if '://' not in server:
     # Server doesn't have a scheme, set it to HTTPS.
-    parsed_url = urlparse.urlparse('https://' + server)
+    parsed_url = urllib.parse.urlparse('https://' + server)
     if parsed_url.hostname == 'localhost':
       # Now that it parses, if the hostname is localhost switch to HTTP.
-      parsed_url = urlparse.urlparse('http://' + server)
+      parsed_url = urllib.parse.urlparse('http://' + server)
 
   return parsed_url
 

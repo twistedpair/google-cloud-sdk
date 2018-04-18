@@ -14,6 +14,27 @@ from apitools.base.py import extra_types
 package = 'alpha_vision'
 
 
+class AddProductToProductSetRequest(_messages.Message):
+  """Request message for the `AddProductToProductSet` method.
+
+  Fields:
+    product: The resource name for the Product to be added to this ProductSet.
+      Format is: `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`
+  """
+
+  product = _messages.StringField(1)
+
+
+class AlphaVisionLocationsOperationsGetRequest(_messages.Message):
+  """A AlphaVisionLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AlphaVisionOperationsCancelRequest(_messages.Message):
   """A AlphaVisionOperationsCancelRequest object.
 
@@ -61,6 +82,276 @@ class AlphaVisionOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class AlphaVisionProjectsLocationsProductSetsAddProductRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductSetsAddProductRequest object.
+
+  Fields:
+    addProductToProductSetRequest: A AddProductToProductSetRequest resource to
+      be passed as the request body.
+    name: The resource name for the ProductSet to modify.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
+  """
+
+  addProductToProductSetRequest = _messages.MessageField('AddProductToProductSetRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AlphaVisionProjectsLocationsProductSetsCreateRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductSetsCreateRequest object.
+
+  Fields:
+    parent: The project in which the ProductSet should be created.  Format is
+      `projects/PROJECT_ID/locations/LOC_ID`.
+    productSet: A ProductSet resource to be passed as the request body.
+    productSetId: A user-supplied resource id for this ProductSet. If set, the
+      server will attempt to use this value as the resource id. If it is
+      already in use, an error is returned with code ALREADY_EXISTS. Must be
+      at most 128 characters long. It cannot contain the character `/`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  productSet = _messages.MessageField('ProductSet', 2)
+  productSetId = _messages.StringField(3)
+
+
+class AlphaVisionProjectsLocationsProductSetsDeleteRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductSetsDeleteRequest object.
+
+  Fields:
+    name: Resource name of the ProductSet to delete.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AlphaVisionProjectsLocationsProductSetsGetRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductSetsGetRequest object.
+
+  Fields:
+    name: Resource name of the ProductSet to get.  Format is:
+      `projects/PROJECT_ID/locations/LOG_ID/productSets/PRODUCT_SET_ID`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AlphaVisionProjectsLocationsProductSetsImportRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductSetsImportRequest object.
+
+  Fields:
+    importProductSetsRequest: A ImportProductSetsRequest resource to be passed
+      as the request body.
+    parent: The project in which the ProductSets should be imported.  Format
+      is `projects/PROJECT_ID/locations/LOC_ID`.
+  """
+
+  importProductSetsRequest = _messages.MessageField('ImportProductSetsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AlphaVisionProjectsLocationsProductSetsListRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductSetsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. Default 10, maximum 100.
+    pageToken: The next_page_token returned from a previous List request, if
+      any.
+    parent: The project from which ProductSets should be listed.  Format is
+      `projects/PROJECT_ID/locations/LOC_ID`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AlphaVisionProjectsLocationsProductSetsPatchRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductSetsPatchRequest object.
+
+  Fields:
+    name: The resource name of the ProductSet.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.  This
+      field is ignored when creating a ProductSet.
+    productSet: A ProductSet resource to be passed as the request body.
+    updateMask: The FieldMask that specifies which fields to update. If
+      update_mask isn't specified, all mutable fields are to be updated. Valid
+      mask path is `display_name`.
+  """
+
+  name = _messages.StringField(1, required=True)
+  productSet = _messages.MessageField('ProductSet', 2)
+  updateMask = _messages.StringField(3)
+
+
+class AlphaVisionProjectsLocationsProductSetsProductsListRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductSetsProductsListRequest object.
+
+  Fields:
+    name: The ProductSet resource for which to retrieve Products.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
+    pageSize: The maximum number of items to return. Default 10, maximum 100.
+    pageToken: The next_page_token returned from a previous List request, if
+      any.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class AlphaVisionProjectsLocationsProductSetsRemoveProductRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductSetsRemoveProductRequest object.
+
+  Fields:
+    name: The resource name for the ProductSet to modify.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
+    removeProductFromProductSetRequest: A RemoveProductFromProductSetRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  removeProductFromProductSetRequest = _messages.MessageField('RemoveProductFromProductSetRequest', 2)
+
+
+class AlphaVisionProjectsLocationsProductsCreateRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductsCreateRequest object.
+
+  Fields:
+    parent: The project in which the Product should be created.  Format is
+      `projects/PROJECT_ID/locations/LOC_ID`.
+    product: A Product resource to be passed as the request body.
+    productId: A user-supplied resource id for this Product. If set, the
+      server will attempt to use this value as the resource id. If it is
+      already in use, an error is returned with code ALREADY_EXISTS. Must be
+      at most 128 characters long. It cannot contain the character `/`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  product = _messages.MessageField('Product', 2)
+  productId = _messages.StringField(3)
+
+
+class AlphaVisionProjectsLocationsProductsDeleteRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductsDeleteRequest object.
+
+  Fields:
+    name: Resource name of product to delete.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AlphaVisionProjectsLocationsProductsGetRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductsGetRequest object.
+
+  Fields:
+    name: Resource name of the Product to get.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AlphaVisionProjectsLocationsProductsListRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. Default 10, maximum 100.
+    pageToken: The next_page_token returned from a previous List request, if
+      any.
+    parent: The project OR ProductSet from which Products should be listed.
+      Format: `projects/PROJECT_ID/locations/LOC_ID`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AlphaVisionProjectsLocationsProductsPatchRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductsPatchRequest object.
+
+  Fields:
+    name: The resource name of the product.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+      is ignored when creating a product.
+    product: A Product resource to be passed as the request body.
+    updateMask: The FieldMask that specifies which fields to update. If
+      update_mask isn't specified, all mutable fields are to be updated. Valid
+      mask paths include `display_name` and `description`.
+  """
+
+  name = _messages.StringField(1, required=True)
+  product = _messages.MessageField('Product', 2)
+  updateMask = _messages.StringField(3)
+
+
+class AlphaVisionProjectsLocationsProductsReferenceImagesCreateRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductsReferenceImagesCreateRequest
+  object.
+
+  Fields:
+    parent: Resource name of the product in which to create the reference
+      image.  Format is
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.
+    referenceImage: A ReferenceImage resource to be passed as the request
+      body.
+    referenceImageId: A user-supplied resource id for the ReferenceImage to be
+      added. If set, the server will attempt to use this value as the resource
+      id. If it is already in use, an error is returned with code
+      ALREADY_EXISTS. Must be at most 128 characters long. It cannot contain
+      the character `/`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  referenceImage = _messages.MessageField('ReferenceImage', 2)
+  referenceImageId = _messages.StringField(3)
+
+
+class AlphaVisionProjectsLocationsProductsReferenceImagesDeleteRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductsReferenceImagesDeleteRequest
+  object.
+
+  Fields:
+    name: The resource name of the reference image to delete.  Format is:  `pr
+      ojects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/I
+      MAGE_ID`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AlphaVisionProjectsLocationsProductsReferenceImagesGetRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductsReferenceImagesGetRequest object.
+
+  Fields:
+    name: The resource name of the ReferenceImage to get.  Format is:  `projec
+      ts/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/IMAGE
+      _ID`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AlphaVisionProjectsLocationsProductsReferenceImagesListRequest(_messages.Message):
+  """A AlphaVisionProjectsLocationsProductsReferenceImagesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. Default 10, maximum 100.
+    pageToken: A token identifying a page of results to be returned. This is
+      the value of `nextPageToken` returned in a previous reference image list
+      request.  Defaults to the first page if not specified.
+    parent: Resource name of the product containing the reference images.
+      Format is `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class AnnotateImageRequest(_messages.Message):
@@ -214,10 +505,10 @@ class BatchOperationMetadata(_messages.Message):
     StateValueValuesEnum: The current state of the batch operation.
 
   Fields:
-    createTime: The time when the batch request was submitted to the server.
-    state: The current state of the batch operation.
-    updateTime: The time when the batch request is recently updated.
+    endTime: The time when the batch request is finished and
       google.longrunning.Operation.done is set to true.
+    state: The current state of the batch operation.
+    submitTime: The time when the batch request was submitted to the server.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -225,23 +516,24 @@ class BatchOperationMetadata(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: Invalid.
-      CREATED: Request is created.
-      RUNNING: The batch request is running.
-      DONE: The batch is done and no item has been successfully processed.
-      CANCELLED: The batch is done after the
+      PROCESSING: Request is actively being processed.
+      SUCCESSFUL: The request is done and at least one item has been
+        successfully processed.
+      FAILED: The request is done and no item has been successfully processed.
+      CANCELLED: The request is done after the
         longrunning.Operations.CancelOperation has been called by the user.
         Any records that were processed before the cancel command are output
         as specified in the request.
     """
     STATE_UNSPECIFIED = 0
-    CREATED = 1
-    RUNNING = 2
-    DONE = 3
+    PROCESSING = 1
+    SUCCESSFUL = 2
+    FAILED = 3
     CANCELLED = 4
 
-  createTime = _messages.StringField(1)
+  endTime = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
-  updateTime = _messages.StringField(3)
+  submitTime = _messages.StringField(3)
 
 
 class Block(_messages.Message):
@@ -297,10 +589,12 @@ class BoundingPoly(_messages.Message):
   """A bounding polygon for the detected image annotation.
 
   Fields:
+    normalizedVertices: The bounding polygon normalized vertices.
     vertices: The bounding polygon vertices.
   """
 
-  vertices = _messages.MessageField('Vertex', 1, repeated=True)
+  normalizedVertices = _messages.MessageField('NormalizedVertex', 1, repeated=True)
+  vertices = _messages.MessageField('Vertex', 2, repeated=True)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -875,6 +1169,181 @@ class GcsSource(_messages.Message):
   uri = _messages.StringField(1)
 
 
+class GoogleCloudVisionV1alpha1BatchOperationMetadata(_messages.Message):
+  """Metadata for the batch operations such as the current state.  This is
+  included in the `metadata` field of the `Operation` returned by the
+  `GetOperation` call of the `google::longrunning::Operations` service.
+
+  Enums:
+    StateValueValuesEnum: The current state of the batch operation.
+
+  Fields:
+    createTime: The time when the batch request was submitted to the server.
+    state: The current state of the batch operation.
+    updateTime: The time when the batch request is recently updated.
+      google.longrunning.Operation.done is set to true.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    """The current state of the batch operation.
+
+    Values:
+      STATE_UNSPECIFIED: Invalid.
+      CREATED: Request is created.
+      RUNNING: The batch request is running.
+      DONE: The batch is done and no item has been successfully processed.
+      CANCELLED: The batch is done after the
+        longrunning.Operations.CancelOperation has been called by the user.
+        Any records that were processed before the cancel command are output
+        as specified in the request.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATED = 1
+    RUNNING = 2
+    DONE = 3
+    CANCELLED = 4
+
+  createTime = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  updateTime = _messages.StringField(3)
+
+
+class GoogleCloudVisionV1alpha1ImportCatalogsResponse(_messages.Message):
+  """Response message for the `ImportCatalogs` method.  This message is
+  returned by the google.longrunning.Operations.GetOperation method in the
+  returned google.longrunning.Operation.response field.
+
+  Fields:
+    referenceImages: The list of reference_images that are imported
+      successfully.
+    statuses: The rpc status for each ImportCatalogs request, including
+      errors.
+  """
+
+  referenceImages = _messages.MessageField('GoogleCloudVisionV1alpha1ReferenceImage', 1, repeated=True)
+  statuses = _messages.MessageField('Status', 2, repeated=True)
+
+
+class GoogleCloudVisionV1alpha1ReferenceImage(_messages.Message):
+  """A `ReferenceImage` represents a product image and its associated
+  metadata, such as product ID, category, and bounding box.
+
+  Enums:
+    CategoryValueValuesEnum: The category for the product identified by the
+      reference image. Optional. Inferred by the system if not specified in
+      the create request. [Deprecated] Use `product_category`.
+
+  Fields:
+    boundingPoly: The bounding polygon around the area of interest in the
+      reference image. Optional. Inferred by the system if not provided. If
+      `product_category` is specified in the create request without
+      `bounding_poly`, the inferred bounding polygon is the entire image.  The
+      provided shape is converted into a non-rotated rectangle. Once
+      converted, the small edge of the rectangle must be greater than or equal
+      to 300 pixels. The aspect ratio must be 1:4 or less (i.e. 1:3 is ok; 1:5
+      is not).
+    category: The category for the product identified by the reference image.
+      Optional. Inferred by the system if not specified in the create request.
+      [Deprecated] Use `product_category`.
+    createTime: Resource creation timestamp. Output only.
+    deleteTime: Resource deletion timestamp.  This timestamp indicates when
+      the resource was marked for deletion. Resources marked for deletion will
+      continue to show up in product search results until the index is rebuilt
+      (currently daily).  The value of this field is 0 for resources that have
+      NOT been deleted.  Output only.
+    imageUri: The Google Cloud Storage URI of the reference image.  Required.
+    name: The resource name of the reference image.  Format is:
+      `productSearch/catalogs/CATALOG_NUMBER/referenceImages/IMAGE_NUMBER`.
+      This field is ignored when creating a reference image.
+    productCategory: The category for the product identified by the reference
+      image. Optional. Inferred by the system if not specified in the create
+      request. Supported values are `bag` and `shoe`.
+    productId: A user-defined ID for the product identified by the reference
+      image. Required. A `productId` can be associated with multiple reference
+      images.  Restricted to 255 characters matching the following regular
+      expression: `[a-zA-Z0-9_-]+`
+  """
+
+  class CategoryValueValuesEnum(_messages.Enum):
+    """The category for the product identified by the reference image.
+    Optional. Inferred by the system if not specified in the create request.
+    [Deprecated] Use `product_category`.
+
+    Values:
+      PRODUCT_SEARCH_CATEGORY_UNSPECIFIED: Default value used when a category
+        is not specified.
+      SHOES: Shoes category.
+      BAGS: Bags category.
+    """
+    PRODUCT_SEARCH_CATEGORY_UNSPECIFIED = 0
+    SHOES = 1
+    BAGS = 2
+
+  boundingPoly = _messages.MessageField('BoundingPoly', 1)
+  category = _messages.EnumField('CategoryValueValuesEnum', 2)
+  createTime = _messages.StringField(3)
+  deleteTime = _messages.StringField(4)
+  imageUri = _messages.StringField(5)
+  name = _messages.StringField(6)
+  productCategory = _messages.StringField(7)
+  productId = _messages.StringField(8)
+
+
+class GoogleCloudVisionV1p2beta1AnnotateFileResponse(_messages.Message):
+  """Response to a single file annotation request. A file may contain one or
+  more images, which individually have their own responses.
+
+  Fields:
+    inputConfig: Information about the file for which this response is
+      generated.
+    responses: Individual responses to images found within the file.
+  """
+
+  inputConfig = _messages.MessageField('GoogleCloudVisionV1p2beta1InputConfig', 1)
+  responses = _messages.MessageField('GoogleCloudVisionV1p2beta1AnnotateImageResponse', 2, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1AnnotateImageResponse(_messages.Message):
+  """Response to an image annotation request.
+
+  Fields:
+    context: If present, contextual information is needed to understand where
+      this image comes from.
+    cropHintsAnnotation: If present, crop hints have completed successfully.
+    error: If set, represents the error message for the operation. Note that
+      filled-in image annotations are guaranteed to be correct, even when
+      `error` is set.
+    faceAnnotations: If present, face detection has completed successfully.
+    fullTextAnnotation: If present, text (OCR) detection or document (OCR)
+      text detection has completed successfully. This annotation provides the
+      structural hierarchy for the OCR detected text.
+    imagePropertiesAnnotation: If present, image properties were extracted
+      successfully.
+    labelAnnotations: If present, label detection has completed successfully.
+    landmarkAnnotations: If present, landmark detection has completed
+      successfully.
+    logoAnnotations: If present, logo detection has completed successfully.
+    safeSearchAnnotation: If present, safe-search annotation has completed
+      successfully.
+    textAnnotations: If present, text (OCR) detection has completed
+      successfully.
+    webDetection: If present, web detection has completed successfully.
+  """
+
+  context = _messages.MessageField('GoogleCloudVisionV1p2beta1ImageAnnotationContext', 1)
+  cropHintsAnnotation = _messages.MessageField('GoogleCloudVisionV1p2beta1CropHintsAnnotation', 2)
+  error = _messages.MessageField('Status', 3)
+  faceAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1FaceAnnotation', 4, repeated=True)
+  fullTextAnnotation = _messages.MessageField('GoogleCloudVisionV1p2beta1TextAnnotation', 5)
+  imagePropertiesAnnotation = _messages.MessageField('GoogleCloudVisionV1p2beta1ImageProperties', 6)
+  labelAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 7, repeated=True)
+  landmarkAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 8, repeated=True)
+  logoAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 9, repeated=True)
+  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p2beta1SafeSearchAnnotation', 10)
+  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 11, repeated=True)
+  webDetection = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetection', 12)
+
+
 class GoogleCloudVisionV1p2beta1AsyncAnnotateFileResponse(_messages.Message):
   """The response for a single offline file annotation request.
 
@@ -897,6 +1366,473 @@ class GoogleCloudVisionV1p2beta1AsyncBatchAnnotateFilesResponse(_messages.Messag
   responses = _messages.MessageField('GoogleCloudVisionV1p2beta1AsyncAnnotateFileResponse', 1, repeated=True)
 
 
+class GoogleCloudVisionV1p2beta1Block(_messages.Message):
+  """Logical element on the page.
+
+  Enums:
+    BlockTypeValueValuesEnum: Detected block type (text, image etc) for this
+      block.
+
+  Fields:
+    blockType: Detected block type (text, image etc) for this block.
+    boundingBox: The bounding box for the block. The vertices are in the order
+      of top-left, top-right, bottom-right, bottom-left. When a rotation of
+      the bounding box is detected the rotation is represented as around the
+      top-left corner as defined when the text is read in the 'natural'
+      orientation. For example:  * when the text is horizontal it might look
+      like:          0----1         |    |         3----2  * when it's rotated
+      180 degrees around the top-left corner it becomes:          2----3
+      |    |         1----0    and the vertice order will still be (0, 1, 2,
+      3).
+    confidence: Confidence of the OCR results on the block. Range [0, 1].
+    paragraphs: List of paragraphs in this block (if this blocks is of type
+      text).
+    property: Additional information detected for the block.
+  """
+
+  class BlockTypeValueValuesEnum(_messages.Enum):
+    """Detected block type (text, image etc) for this block.
+
+    Values:
+      UNKNOWN: Unknown block type.
+      TEXT: Regular text block.
+      TABLE: Table block.
+      PICTURE: Image block.
+      RULER: Horizontal/vertical line box.
+      BARCODE: Barcode block.
+    """
+    UNKNOWN = 0
+    TEXT = 1
+    TABLE = 2
+    PICTURE = 3
+    RULER = 4
+    BARCODE = 5
+
+  blockType = _messages.EnumField('BlockTypeValueValuesEnum', 1)
+  boundingBox = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 2)
+  confidence = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  paragraphs = _messages.MessageField('GoogleCloudVisionV1p2beta1Paragraph', 4, repeated=True)
+  property = _messages.MessageField('GoogleCloudVisionV1p2beta1TextAnnotationTextProperty', 5)
+
+
+class GoogleCloudVisionV1p2beta1BoundingPoly(_messages.Message):
+  """A bounding polygon for the detected image annotation.
+
+  Fields:
+    normalizedVertices: The bounding polygon normalized vertices.
+    vertices: The bounding polygon vertices.
+  """
+
+  normalizedVertices = _messages.MessageField('GoogleCloudVisionV1p2beta1NormalizedVertex', 1, repeated=True)
+  vertices = _messages.MessageField('GoogleCloudVisionV1p2beta1Vertex', 2, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1ColorInfo(_messages.Message):
+  """Color information consists of RGB channels, score, and the fraction of
+  the image that the color occupies in the image.
+
+  Fields:
+    color: RGB components of the color.
+    pixelFraction: The fraction of pixels the color occupies in the image.
+      Value in range [0, 1].
+    score: Image-specific score for this color. Value in range [0, 1].
+  """
+
+  color = _messages.MessageField('Color', 1)
+  pixelFraction = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  score = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVisionV1p2beta1CropHint(_messages.Message):
+  """Single crop hint that is used to generate a new crop when serving an
+  image.
+
+  Fields:
+    boundingPoly: The bounding polygon for the crop region. The coordinates of
+      the bounding box are in the original image's scale, as returned in
+      `ImageParams`.
+    confidence: Confidence of this being a salient region.  Range [0, 1].
+    importanceFraction: Fraction of importance of this salient region with
+      respect to the original image.
+  """
+
+  boundingPoly = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 1)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  importanceFraction = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVisionV1p2beta1CropHintsAnnotation(_messages.Message):
+  """Set of crop hints that are used to generate new crops when serving
+  images.
+
+  Fields:
+    cropHints: Crop hint results.
+  """
+
+  cropHints = _messages.MessageField('GoogleCloudVisionV1p2beta1CropHint', 1, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1DominantColorsAnnotation(_messages.Message):
+  """Set of dominant colors and their corresponding scores.
+
+  Fields:
+    colors: RGB color values with their score and pixel fraction.
+  """
+
+  colors = _messages.MessageField('GoogleCloudVisionV1p2beta1ColorInfo', 1, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1EntityAnnotation(_messages.Message):
+  """Set of detected entity features.
+
+  Fields:
+    boundingPoly: Image region to which this entity belongs. Not produced for
+      `LABEL_DETECTION` features.
+    confidence: **Deprecated. Use `score` instead.** The accuracy of the
+      entity detection in an image. For example, for an image in which the
+      "Eiffel Tower" entity is detected, this field represents the confidence
+      that there is a tower in the query image. Range [0, 1].
+    description: Entity textual description, expressed in its `locale`
+      language.
+    locale: The language code for the locale in which the entity textual
+      `description` is expressed.
+    locations: The location information for the detected entity. Multiple
+      `LocationInfo` elements can be present because one location may indicate
+      the location of the scene in the image, and another location may
+      indicate the location of the place where the image was taken. Location
+      information is usually present for landmarks.
+    mid: Opaque entity ID. Some IDs may be available in [Google Knowledge
+      Graph Search API](https://developers.google.com/knowledge-graph/).
+    properties: Some entities may have optional user-supplied `Property`
+      (name/value) fields, such a score or string that qualifies the entity.
+    score: Overall score of the result. Range [0, 1].
+    topicality: The relevancy of the ICA (Image Content Annotation) label to
+      the image. For example, the relevancy of "tower" is likely higher to an
+      image containing the detected "Eiffel Tower" than to an image containing
+      a detected distant towering building, even though the confidence that
+      there is a tower in each image may be the same. Range [0, 1].
+  """
+
+  boundingPoly = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 1)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  description = _messages.StringField(3)
+  locale = _messages.StringField(4)
+  locations = _messages.MessageField('GoogleCloudVisionV1p2beta1LocationInfo', 5, repeated=True)
+  mid = _messages.StringField(6)
+  properties = _messages.MessageField('GoogleCloudVisionV1p2beta1Property', 7, repeated=True)
+  score = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  topicality = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVisionV1p2beta1FaceAnnotation(_messages.Message):
+  """A face annotation object contains the results of face detection.
+
+  Enums:
+    AngerLikelihoodValueValuesEnum: Anger likelihood.
+    BlurredLikelihoodValueValuesEnum: Blurred likelihood.
+    HeadwearLikelihoodValueValuesEnum: Headwear likelihood.
+    JoyLikelihoodValueValuesEnum: Joy likelihood.
+    SorrowLikelihoodValueValuesEnum: Sorrow likelihood.
+    SurpriseLikelihoodValueValuesEnum: Surprise likelihood.
+    UnderExposedLikelihoodValueValuesEnum: Under-exposed likelihood.
+
+  Fields:
+    angerLikelihood: Anger likelihood.
+    blurredLikelihood: Blurred likelihood.
+    boundingPoly: The bounding polygon around the face. The coordinates of the
+      bounding box are in the original image's scale, as returned in
+      `ImageParams`. The bounding box is computed to "frame" the face in
+      accordance with human expectations. It is based on the landmarker
+      results. Note that one or more x and/or y coordinates may not be
+      generated in the `BoundingPoly` (the polygon will be unbounded) if only
+      a partial face appears in the image to be annotated.
+    detectionConfidence: Detection confidence. Range [0, 1].
+    fdBoundingPoly: The `fd_bounding_poly` bounding polygon is tighter than
+      the `boundingPoly`, and encloses only the skin part of the face.
+      Typically, it is used to eliminate the face from any image analysis that
+      detects the "amount of skin" visible in an image. It is not based on the
+      landmarker results, only on the initial face detection, hence the
+      <code>fd</code> (face detection) prefix.
+    headwearLikelihood: Headwear likelihood.
+    joyLikelihood: Joy likelihood.
+    landmarkingConfidence: Face landmarking confidence. Range [0, 1].
+    landmarks: Detected face landmarks.
+    panAngle: Yaw angle, which indicates the leftward/rightward angle that the
+      face is pointing relative to the vertical plane perpendicular to the
+      image. Range [-180,180].
+    rollAngle: Roll angle, which indicates the amount of clockwise/anti-
+      clockwise rotation of the face relative to the image vertical about the
+      axis perpendicular to the face. Range [-180,180].
+    sorrowLikelihood: Sorrow likelihood.
+    surpriseLikelihood: Surprise likelihood.
+    tiltAngle: Pitch angle, which indicates the upwards/downwards angle that
+      the face is pointing relative to the image's horizontal plane. Range
+      [-180,180].
+    underExposedLikelihood: Under-exposed likelihood.
+  """
+
+  class AngerLikelihoodValueValuesEnum(_messages.Enum):
+    """Anger likelihood.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class BlurredLikelihoodValueValuesEnum(_messages.Enum):
+    """Blurred likelihood.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class HeadwearLikelihoodValueValuesEnum(_messages.Enum):
+    """Headwear likelihood.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class JoyLikelihoodValueValuesEnum(_messages.Enum):
+    """Joy likelihood.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class SorrowLikelihoodValueValuesEnum(_messages.Enum):
+    """Sorrow likelihood.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class SurpriseLikelihoodValueValuesEnum(_messages.Enum):
+    """Surprise likelihood.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class UnderExposedLikelihoodValueValuesEnum(_messages.Enum):
+    """Under-exposed likelihood.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  angerLikelihood = _messages.EnumField('AngerLikelihoodValueValuesEnum', 1)
+  blurredLikelihood = _messages.EnumField('BlurredLikelihoodValueValuesEnum', 2)
+  boundingPoly = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 3)
+  detectionConfidence = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  fdBoundingPoly = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 5)
+  headwearLikelihood = _messages.EnumField('HeadwearLikelihoodValueValuesEnum', 6)
+  joyLikelihood = _messages.EnumField('JoyLikelihoodValueValuesEnum', 7)
+  landmarkingConfidence = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  landmarks = _messages.MessageField('GoogleCloudVisionV1p2beta1FaceAnnotationLandmark', 9, repeated=True)
+  panAngle = _messages.FloatField(10, variant=_messages.Variant.FLOAT)
+  rollAngle = _messages.FloatField(11, variant=_messages.Variant.FLOAT)
+  sorrowLikelihood = _messages.EnumField('SorrowLikelihoodValueValuesEnum', 12)
+  surpriseLikelihood = _messages.EnumField('SurpriseLikelihoodValueValuesEnum', 13)
+  tiltAngle = _messages.FloatField(14, variant=_messages.Variant.FLOAT)
+  underExposedLikelihood = _messages.EnumField('UnderExposedLikelihoodValueValuesEnum', 15)
+
+
+class GoogleCloudVisionV1p2beta1FaceAnnotationLandmark(_messages.Message):
+  """A face-specific landmark (for example, a face feature).
+
+  Enums:
+    TypeValueValuesEnum: Face landmark type.
+
+  Fields:
+    position: Face landmark position.
+    type: Face landmark type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Face landmark type.
+
+    Values:
+      UNKNOWN_LANDMARK: Unknown face landmark detected. Should not be filled.
+      LEFT_EYE: Left eye.
+      RIGHT_EYE: Right eye.
+      LEFT_OF_LEFT_EYEBROW: Left of left eyebrow.
+      RIGHT_OF_LEFT_EYEBROW: Right of left eyebrow.
+      LEFT_OF_RIGHT_EYEBROW: Left of right eyebrow.
+      RIGHT_OF_RIGHT_EYEBROW: Right of right eyebrow.
+      MIDPOINT_BETWEEN_EYES: Midpoint between eyes.
+      NOSE_TIP: Nose tip.
+      UPPER_LIP: Upper lip.
+      LOWER_LIP: Lower lip.
+      MOUTH_LEFT: Mouth left.
+      MOUTH_RIGHT: Mouth right.
+      MOUTH_CENTER: Mouth center.
+      NOSE_BOTTOM_RIGHT: Nose, bottom right.
+      NOSE_BOTTOM_LEFT: Nose, bottom left.
+      NOSE_BOTTOM_CENTER: Nose, bottom center.
+      LEFT_EYE_TOP_BOUNDARY: Left eye, top boundary.
+      LEFT_EYE_RIGHT_CORNER: Left eye, right corner.
+      LEFT_EYE_BOTTOM_BOUNDARY: Left eye, bottom boundary.
+      LEFT_EYE_LEFT_CORNER: Left eye, left corner.
+      RIGHT_EYE_TOP_BOUNDARY: Right eye, top boundary.
+      RIGHT_EYE_RIGHT_CORNER: Right eye, right corner.
+      RIGHT_EYE_BOTTOM_BOUNDARY: Right eye, bottom boundary.
+      RIGHT_EYE_LEFT_CORNER: Right eye, left corner.
+      LEFT_EYEBROW_UPPER_MIDPOINT: Left eyebrow, upper midpoint.
+      RIGHT_EYEBROW_UPPER_MIDPOINT: Right eyebrow, upper midpoint.
+      LEFT_EAR_TRAGION: Left ear tragion.
+      RIGHT_EAR_TRAGION: Right ear tragion.
+      LEFT_EYE_PUPIL: Left eye pupil.
+      RIGHT_EYE_PUPIL: Right eye pupil.
+      FOREHEAD_GLABELLA: Forehead glabella.
+      CHIN_GNATHION: Chin gnathion.
+      CHIN_LEFT_GONION: Chin left gonion.
+      CHIN_RIGHT_GONION: Chin right gonion.
+    """
+    UNKNOWN_LANDMARK = 0
+    LEFT_EYE = 1
+    RIGHT_EYE = 2
+    LEFT_OF_LEFT_EYEBROW = 3
+    RIGHT_OF_LEFT_EYEBROW = 4
+    LEFT_OF_RIGHT_EYEBROW = 5
+    RIGHT_OF_RIGHT_EYEBROW = 6
+    MIDPOINT_BETWEEN_EYES = 7
+    NOSE_TIP = 8
+    UPPER_LIP = 9
+    LOWER_LIP = 10
+    MOUTH_LEFT = 11
+    MOUTH_RIGHT = 12
+    MOUTH_CENTER = 13
+    NOSE_BOTTOM_RIGHT = 14
+    NOSE_BOTTOM_LEFT = 15
+    NOSE_BOTTOM_CENTER = 16
+    LEFT_EYE_TOP_BOUNDARY = 17
+    LEFT_EYE_RIGHT_CORNER = 18
+    LEFT_EYE_BOTTOM_BOUNDARY = 19
+    LEFT_EYE_LEFT_CORNER = 20
+    RIGHT_EYE_TOP_BOUNDARY = 21
+    RIGHT_EYE_RIGHT_CORNER = 22
+    RIGHT_EYE_BOTTOM_BOUNDARY = 23
+    RIGHT_EYE_LEFT_CORNER = 24
+    LEFT_EYEBROW_UPPER_MIDPOINT = 25
+    RIGHT_EYEBROW_UPPER_MIDPOINT = 26
+    LEFT_EAR_TRAGION = 27
+    RIGHT_EAR_TRAGION = 28
+    LEFT_EYE_PUPIL = 29
+    RIGHT_EYE_PUPIL = 30
+    FOREHEAD_GLABELLA = 31
+    CHIN_GNATHION = 32
+    CHIN_LEFT_GONION = 33
+    CHIN_RIGHT_GONION = 34
+
+  position = _messages.MessageField('GoogleCloudVisionV1p2beta1Position', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
 class GoogleCloudVisionV1p2beta1GcsDestination(_messages.Message):
   """The Google Cloud Storage location where the output will be written to.
 
@@ -914,6 +1850,77 @@ class GoogleCloudVisionV1p2beta1GcsDestination(_messages.Message):
   """
 
   uri = _messages.StringField(1)
+
+
+class GoogleCloudVisionV1p2beta1GcsSource(_messages.Message):
+  """The Google Cloud Storage location where the input will be read from.
+
+  Fields:
+    uri: Google Cloud Storage URI for the input file. This must only be a GCS
+      object. Wildcards are not currently supported.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleCloudVisionV1p2beta1ImageAnnotationContext(_messages.Message):
+  """If an image was produced from a file (e.g. a PDF), this message gives
+  information about the source of that image.
+
+  Fields:
+    pageNumber: If the file was a PDF or TIFF, this field gives the page
+      number within the file used to produce the image.
+    uri: The URI of the file used to produce the image.
+  """
+
+  pageNumber = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(2)
+
+
+class GoogleCloudVisionV1p2beta1ImageProperties(_messages.Message):
+  """Stores image properties, such as dominant colors.
+
+  Fields:
+    dominantColors: If present, dominant colors completed successfully.
+  """
+
+  dominantColors = _messages.MessageField('GoogleCloudVisionV1p2beta1DominantColorsAnnotation', 1)
+
+
+class GoogleCloudVisionV1p2beta1InputConfig(_messages.Message):
+  """The desired input location and metadata.
+
+  Fields:
+    gcsSource: The Google Cloud Storage location to read the input from.
+    mimeType: The type of the file. Currently only "application/pdf" and
+      "image/tiff" are supported. Wildcards are not supported.
+  """
+
+  gcsSource = _messages.MessageField('GoogleCloudVisionV1p2beta1GcsSource', 1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudVisionV1p2beta1LocationInfo(_messages.Message):
+  """Detected entity location information.
+
+  Fields:
+    latLng: lat/long location coordinates.
+  """
+
+  latLng = _messages.MessageField('LatLng', 1)
+
+
+class GoogleCloudVisionV1p2beta1NormalizedVertex(_messages.Message):
+  """A vertex represents a 2D point in the image. NOTE: the normalized vertex
+  coordinates are relative to the original image and range from 0 to 1.
+
+  Fields:
+    x: X coordinate.
+    y: Y coordinate.
+  """
+
+  x = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  y = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p2beta1OperationMetadata(_messages.Message):
@@ -969,6 +1976,460 @@ class GoogleCloudVisionV1p2beta1OutputConfig(_messages.Message):
   gcsDestination = _messages.MessageField('GoogleCloudVisionV1p2beta1GcsDestination', 2)
 
 
+class GoogleCloudVisionV1p2beta1Page(_messages.Message):
+  """Detected page from OCR.
+
+  Fields:
+    blocks: List of blocks of text, images etc on this page.
+    confidence: Confidence of the OCR results on the page. Range [0, 1].
+    height: Page height. For PDFs the unit is points. For images (including
+      TIFFs) the unit is pixels.
+    property: Additional information detected on the page.
+    width: Page width. For PDFs the unit is points. For images (including
+      TIFFs) the unit is pixels.
+  """
+
+  blocks = _messages.MessageField('GoogleCloudVisionV1p2beta1Block', 1, repeated=True)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  height = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  property = _messages.MessageField('GoogleCloudVisionV1p2beta1TextAnnotationTextProperty', 4)
+  width = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudVisionV1p2beta1Paragraph(_messages.Message):
+  """Structural unit of text representing a number of words in certain order.
+
+  Fields:
+    boundingBox: The bounding box for the paragraph. The vertices are in the
+      order of top-left, top-right, bottom-right, bottom-left. When a rotation
+      of the bounding box is detected the rotation is represented as around
+      the top-left corner as defined when the text is read in the 'natural'
+      orientation. For example:   * when the text is horizontal it might look
+      like:      0----1      |    |      3----2   * when it's rotated 180
+      degrees around the top-left corner it becomes:      2----3      |    |
+      1----0   and the vertice order will still be (0, 1, 2, 3).
+    confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
+    property: Additional information detected for the paragraph.
+    words: List of words in this paragraph.
+  """
+
+  boundingBox = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 1)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  property = _messages.MessageField('GoogleCloudVisionV1p2beta1TextAnnotationTextProperty', 3)
+  words = _messages.MessageField('GoogleCloudVisionV1p2beta1Word', 4, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1Position(_messages.Message):
+  """A 3D position in the image, used primarily for Face detection landmarks.
+  A valid Position must have both x and y coordinates. The position
+  coordinates are in the same scale as the original image.
+
+  Fields:
+    x: X coordinate.
+    y: Y coordinate.
+    z: Z coordinate (or depth).
+  """
+
+  x = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  y = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  z = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVisionV1p2beta1Property(_messages.Message):
+  """A `Property` consists of a user-supplied name/value pair.
+
+  Fields:
+    name: Name of the property.
+    uint64Value: Value of numeric properties.
+    value: Value of the property.
+  """
+
+  name = _messages.StringField(1)
+  uint64Value = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+  value = _messages.StringField(3)
+
+
+class GoogleCloudVisionV1p2beta1SafeSearchAnnotation(_messages.Message):
+  """Set of features pertaining to the image, computed by computer vision
+  methods over safe-search verticals (for example, adult, spoof, medical,
+  violence).
+
+  Enums:
+    AdultValueValuesEnum: Represents the adult content likelihood for the
+      image. Adult content may contain elements such as nudity, pornographic
+      images or cartoons, or sexual activities.
+    MedicalValueValuesEnum: Likelihood that this is a medical image.
+    RacyValueValuesEnum: Likelihood that the request image contains racy
+      content. Racy content may include (but is not limited to) skimpy or
+      sheer clothing, strategically covered nudity, lewd or provocative poses,
+      or close-ups of sensitive body areas.
+    SpoofValueValuesEnum: Spoof likelihood. The likelihood that an
+      modification was made to the image's canonical version to make it appear
+      funny or offensive.
+    ViolenceValueValuesEnum: Likelihood that this image contains violent
+      content.
+
+  Fields:
+    adult: Represents the adult content likelihood for the image. Adult
+      content may contain elements such as nudity, pornographic images or
+      cartoons, or sexual activities.
+    medical: Likelihood that this is a medical image.
+    racy: Likelihood that the request image contains racy content. Racy
+      content may include (but is not limited to) skimpy or sheer clothing,
+      strategically covered nudity, lewd or provocative poses, or close-ups of
+      sensitive body areas.
+    spoof: Spoof likelihood. The likelihood that an modification was made to
+      the image's canonical version to make it appear funny or offensive.
+    violence: Likelihood that this image contains violent content.
+  """
+
+  class AdultValueValuesEnum(_messages.Enum):
+    """Represents the adult content likelihood for the image. Adult content
+    may contain elements such as nudity, pornographic images or cartoons, or
+    sexual activities.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class MedicalValueValuesEnum(_messages.Enum):
+    """Likelihood that this is a medical image.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class RacyValueValuesEnum(_messages.Enum):
+    """Likelihood that the request image contains racy content. Racy content
+    may include (but is not limited to) skimpy or sheer clothing,
+    strategically covered nudity, lewd or provocative poses, or close-ups of
+    sensitive body areas.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class SpoofValueValuesEnum(_messages.Enum):
+    """Spoof likelihood. The likelihood that an modification was made to the
+    image's canonical version to make it appear funny or offensive.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  class ViolenceValueValuesEnum(_messages.Enum):
+    """Likelihood that this image contains violent content.
+
+    Values:
+      UNKNOWN: Unknown likelihood.
+      VERY_UNLIKELY: It is very unlikely that the image belongs to the
+        specified vertical.
+      UNLIKELY: It is unlikely that the image belongs to the specified
+        vertical.
+      POSSIBLE: It is possible that the image belongs to the specified
+        vertical.
+      LIKELY: It is likely that the image belongs to the specified vertical.
+      VERY_LIKELY: It is very likely that the image belongs to the specified
+        vertical.
+    """
+    UNKNOWN = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  adult = _messages.EnumField('AdultValueValuesEnum', 1)
+  medical = _messages.EnumField('MedicalValueValuesEnum', 2)
+  racy = _messages.EnumField('RacyValueValuesEnum', 3)
+  spoof = _messages.EnumField('SpoofValueValuesEnum', 4)
+  violence = _messages.EnumField('ViolenceValueValuesEnum', 5)
+
+
+class GoogleCloudVisionV1p2beta1Symbol(_messages.Message):
+  """A single symbol representation.
+
+  Fields:
+    boundingBox: The bounding box for the symbol. The vertices are in the
+      order of top-left, top-right, bottom-right, bottom-left. When a rotation
+      of the bounding box is detected the rotation is represented as around
+      the top-left corner as defined when the text is read in the 'natural'
+      orientation. For example:   * when the text is horizontal it might look
+      like:      0----1      |    |      3----2   * when it's rotated 180
+      degrees around the top-left corner it becomes:      2----3      |    |
+      1----0   and the vertice order will still be (0, 1, 2, 3).
+    confidence: Confidence of the OCR results for the symbol. Range [0, 1].
+    property: Additional information detected for the symbol.
+    text: The actual UTF-8 representation of the symbol.
+  """
+
+  boundingBox = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 1)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  property = _messages.MessageField('GoogleCloudVisionV1p2beta1TextAnnotationTextProperty', 3)
+  text = _messages.StringField(4)
+
+
+class GoogleCloudVisionV1p2beta1TextAnnotation(_messages.Message):
+  """TextAnnotation contains a structured representation of OCR extracted
+  text. The hierarchy of an OCR extracted text structure is like this:
+  TextAnnotation -> Page -> Block -> Paragraph -> Word -> Symbol Each
+  structural component, starting from Page, may further have their own
+  properties. Properties describe detected languages, breaks etc.. Please
+  refer to the TextAnnotation.TextProperty message definition below for more
+  detail.
+
+  Fields:
+    pages: List of pages detected by OCR.
+    text: UTF-8 text detected on the pages.
+  """
+
+  pages = _messages.MessageField('GoogleCloudVisionV1p2beta1Page', 1, repeated=True)
+  text = _messages.StringField(2)
+
+
+class GoogleCloudVisionV1p2beta1TextAnnotationDetectedBreak(_messages.Message):
+  """Detected start or end of a structural component.
+
+  Enums:
+    TypeValueValuesEnum: Detected break type.
+
+  Fields:
+    isPrefix: True if break prepends the element.
+    type: Detected break type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    """Detected break type.
+
+    Values:
+      UNKNOWN: Unknown break label type.
+      SPACE: Regular space.
+      SURE_SPACE: Sure space (very wide).
+      EOL_SURE_SPACE: Line-wrapping break.
+      HYPHEN: End-line hyphen that is not present in text; does not co-occur
+        with `SPACE`, `LEADER_SPACE`, or `LINE_BREAK`.
+      LINE_BREAK: Line break that ends a paragraph.
+    """
+    UNKNOWN = 0
+    SPACE = 1
+    SURE_SPACE = 2
+    EOL_SURE_SPACE = 3
+    HYPHEN = 4
+    LINE_BREAK = 5
+
+  isPrefix = _messages.BooleanField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class GoogleCloudVisionV1p2beta1TextAnnotationDetectedLanguage(_messages.Message):
+  """Detected language for a structural component.
+
+  Fields:
+    confidence: Confidence of detected language. Range [0, 1].
+    languageCode: The BCP-47 language code, such as "en-US" or "sr-Latn". For
+      more information, see
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  languageCode = _messages.StringField(2)
+
+
+class GoogleCloudVisionV1p2beta1TextAnnotationTextProperty(_messages.Message):
+  """Additional information detected on the structural component.
+
+  Fields:
+    detectedBreak: Detected start or end of a text segment.
+    detectedLanguages: A list of detected languages together with confidence.
+  """
+
+  detectedBreak = _messages.MessageField('GoogleCloudVisionV1p2beta1TextAnnotationDetectedBreak', 1)
+  detectedLanguages = _messages.MessageField('GoogleCloudVisionV1p2beta1TextAnnotationDetectedLanguage', 2, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1Vertex(_messages.Message):
+  """A vertex represents a 2D point in the image. NOTE: the vertex coordinates
+  are in the same scale as the original image.
+
+  Fields:
+    x: X coordinate.
+    y: Y coordinate.
+  """
+
+  x = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  y = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudVisionV1p2beta1WebDetection(_messages.Message):
+  """Relevant information for the image from the Internet.
+
+  Fields:
+    bestGuessLabels: Best guess text labels for the request image.
+    fullMatchingImages: Fully matching images from the Internet. Can include
+      resized copies of the query image.
+    pagesWithMatchingImages: Web pages containing the matching images from the
+      Internet.
+    partialMatchingImages: Partial matching images from the Internet. Those
+      images are similar enough to share some key-point features. For example
+      an original image will likely have partial matching for its crops.
+    visuallySimilarImages: The visually similar image results.
+    webEntities: Deduced entities from similar images on the Internet.
+  """
+
+  bestGuessLabels = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetectionWebLabel', 1, repeated=True)
+  fullMatchingImages = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetectionWebImage', 2, repeated=True)
+  pagesWithMatchingImages = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetectionWebPage', 3, repeated=True)
+  partialMatchingImages = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetectionWebImage', 4, repeated=True)
+  visuallySimilarImages = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetectionWebImage', 5, repeated=True)
+  webEntities = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetectionWebEntity', 6, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1WebDetectionWebEntity(_messages.Message):
+  """Entity deduced from similar images on the Internet.
+
+  Fields:
+    description: Canonical description of the entity, in English.
+    entityId: Opaque entity ID.
+    score: Overall relevancy score for the entity. Not normalized and not
+      comparable across different image queries.
+  """
+
+  description = _messages.StringField(1)
+  entityId = _messages.StringField(2)
+  score = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVisionV1p2beta1WebDetectionWebImage(_messages.Message):
+  """Metadata for online images.
+
+  Fields:
+    score: (Deprecated) Overall relevancy score for the image.
+    url: The result image URL.
+  """
+
+  score = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  url = _messages.StringField(2)
+
+
+class GoogleCloudVisionV1p2beta1WebDetectionWebLabel(_messages.Message):
+  """Label to provide extra metadata for the web detection.
+
+  Fields:
+    label: Label for extra metadata.
+    languageCode: The BCP-47 language code for `label`, such as "en-US" or
+      "sr-Latn". For more information, see
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+  """
+
+  label = _messages.StringField(1)
+  languageCode = _messages.StringField(2)
+
+
+class GoogleCloudVisionV1p2beta1WebDetectionWebPage(_messages.Message):
+  """Metadata for web pages.
+
+  Fields:
+    fullMatchingImages: Fully matching images on the page. Can include resized
+      copies of the query image.
+    pageTitle: Title for the web page, may contain HTML markups.
+    partialMatchingImages: Partial matching images on the page. Those images
+      are similar enough to share some key-point features. For example an
+      original image will likely have partial matching for its crops.
+    score: (Deprecated) Overall relevancy score for the web page.
+    url: The result web page URL.
+  """
+
+  fullMatchingImages = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetectionWebImage', 1, repeated=True)
+  pageTitle = _messages.StringField(2)
+  partialMatchingImages = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetectionWebImage', 3, repeated=True)
+  score = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  url = _messages.StringField(5)
+
+
+class GoogleCloudVisionV1p2beta1Word(_messages.Message):
+  """A word representation.
+
+  Fields:
+    boundingBox: The bounding box for the word. The vertices are in the order
+      of top-left, top-right, bottom-right, bottom-left. When a rotation of
+      the bounding box is detected the rotation is represented as around the
+      top-left corner as defined when the text is read in the 'natural'
+      orientation. For example:   * when the text is horizontal it might look
+      like:      0----1      |    |      3----2   * when it's rotated 180
+      degrees around the top-left corner it becomes:      2----3      |    |
+      1----0   and the vertice order will still be (0, 1, 2, 3).
+    confidence: Confidence of the OCR results for the word. Range [0, 1].
+    property: Additional information detected for the word.
+    symbols: List of symbols in the word. The order of the symbols follows the
+      natural reading order.
+  """
+
+  boundingBox = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 1)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  property = _messages.MessageField('GoogleCloudVisionV1p2beta1TextAnnotationTextProperty', 3)
+  symbols = _messages.MessageField('GoogleCloudVisionV1p2beta1Symbol', 4, repeated=True)
+
+
 class Image(_messages.Message):
   """Client image to perform Google Cloud Vision API tasks over.
 
@@ -1012,7 +2473,7 @@ class ImageContext(_messages.Message):
       (although it will be a significant hindrance if the hint is wrong). Text
       detection returns an error if one or more of the specified languages is
       not one of the [supported languages](/vision/docs/languages).
-    latLongRect: lat/long rectangle that specifies the location of the image.
+    latLongRect: Not used.
     productSearchParams: Parameters for product search.
     webDetectionParams: Parameters for web detection.
   """
@@ -1061,16 +2522,74 @@ class ImageSource(_messages.Message):
   imageUri = _messages.StringField(2)
 
 
-class ImportCatalogsResponse(_messages.Message):
-  """Response message for the `ImportCatalogs` method.  This message is
+class ImportProductSetsGcsSource(_messages.Message):
+  """The Google Cloud Storage location for a csv file which preserves a list
+  of ImportProductSetRequests in each line.
+
+  Fields:
+    csvFileUri: The Google Cloud Storage URI of the input csv file.  The URI
+      must start with gs://  The format of the input csv file should be one
+      image per line. In each line, there are 6 columns. 1. image_uri 2.
+      product_set_id 3. product_id 4. product_category 5, labels 6.
+      bounding_poly  Columns 1, 2, 3 and 4 are required. A new
+      ProductSet/Product with the same id will be created on the fly if the
+      ProductSet/Product specified by product_set_id/product_id does not
+      exist.  If the Product with product_id already exists, the fields
+      product_category and labels are ignored.  If a Product doesn't exist and
+      needs to be created on the fly, the product_category field refers to
+      Product.product_category, and the labels field refers to Product.labels.
+      Notice that display_name of ProductSet/Product cannot be empty. Here " "
+      is used as the place holder for the display_name, which can be updated
+      through the update API.  Labels should be a line containing a list of
+      comma-separated key-value pairs, with the format
+      "key_1=value_1,key_2=value_2,...,key_n=value_n".  The bounding_poly
+      field is used to identify one region of interest from the image in the
+      same manner as CreateReferenceImage. If no bounding_poly is specified,
+      the system will try to detect regions of interest automatically.  Note
+      that the pipeline will resize the image if the image resolution is too
+      large to process (above 50MP).  Also note that at most one bounding_poly
+      is allowed per line. If the image contains multiple regions of interest,
+      the csv should contain one line per region of interest.  The
+      bounding_poly column should contain an even number of comma-separated
+      integers, with the format "p1_x,p1_y,p2_x,p2_y,...,pn_x,pn_y".
+  """
+
+  csvFileUri = _messages.StringField(1)
+
+
+class ImportProductSetsInputConfig(_messages.Message):
+  """The input content for the `ImportProductSets` method.
+
+  Fields:
+    gcsSource: The Google Cloud Storage location for a csv file which
+      preserves a list of ImportProductSetRequests in each line.
+  """
+
+  gcsSource = _messages.MessageField('ImportProductSetsGcsSource', 1)
+
+
+class ImportProductSetsRequest(_messages.Message):
+  """Request message for the `ImportProductSets` method.
+
+  Fields:
+    inputConfig: The input content for the list of requests.
+  """
+
+  inputConfig = _messages.MessageField('ImportProductSetsInputConfig', 1)
+
+
+class ImportProductSetsResponse(_messages.Message):
+  """Response message for the `ImportProductSets` method.  This message is
   returned by the google.longrunning.Operations.GetOperation method in the
   returned google.longrunning.Operation.response field.
 
   Fields:
     referenceImages: The list of reference_images that are imported
       successfully.
-    statuses: The rpc status for each ImportCatalogs request, including
-      errors.
+    statuses: The rpc status for each ImportProductSet request, including both
+      successes and errors.  The number of statuses here matches the number of
+      lines in the csv file, and statuses[i] stores the success or failure
+      status of processing the i-th line of the csv, starting from line 0.
   """
 
   referenceImages = _messages.MessageField('ReferenceImage', 1, repeated=True)
@@ -1088,6 +2607,20 @@ class InputConfig(_messages.Message):
 
   gcsSource = _messages.MessageField('GcsSource', 1)
   mimeType = _messages.StringField(2)
+
+
+class KeyValue(_messages.Message):
+  """A product label represented as a key-value pair.
+
+  Fields:
+    key: The key of the label attached to the product. Cannot be empty and
+      cannot exceed 128 bytes.
+    value: The value of the label attached to the product. Cannot be empty and
+      cannot exceed 128 bytes.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class Landmark(_messages.Message):
@@ -1221,6 +2754,60 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListProductSetsResponse(_messages.Message):
+  """Response message for the `ListProductSets` method.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    productSets: List of ProductSets.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  productSets = _messages.MessageField('ProductSet', 2, repeated=True)
+
+
+class ListProductsInProductSetResponse(_messages.Message):
+  """Response message for the `ListProductsInProductSet` method.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    products: The list of Products.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  products = _messages.MessageField('Product', 2, repeated=True)
+
+
+class ListProductsResponse(_messages.Message):
+  """Response message for the `ListProducts` method.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    products: List of products.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  products = _messages.MessageField('Product', 2, repeated=True)
+
+
+class ListReferenceImagesResponse(_messages.Message):
+  """Response message for the `ListReferenceImages` method.
+
+  Fields:
+    nextPageToken: The next_page_token returned from a previous List request,
+      if any.
+    pageSize: The maximum number of items to return. Default 10, maximum 100.
+    referenceImages: The list of reference images.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  referenceImages = _messages.MessageField('ReferenceImage', 3, repeated=True)
 
 
 class LocationInfo(_messages.Message):
@@ -1476,7 +3063,36 @@ class Position(_messages.Message):
 
 
 class Product(_messages.Message):
-  """Information about a product. .
+  """A Product contains ReferenceImages.
+
+  Fields:
+    description: User-provided metadata to be stored with this product. Must
+      be at most 4096 characters long.
+    displayName: The user-provided name for this Product. Must not be empty.
+      Must be at most 4096 characters long.
+    name: The resource name of the product.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+      is ignored when creating a product.
+    productCategory: The category for the product identified by the reference
+      image. This should be either "homegoods" or "apparel".  This field is
+      immutable.
+    productLabels: Key-value pairs that can be attached to a product. At query
+      time, constraints can be specified based on the product_labels.  Note
+      that integer values can be provided as strings, e.g. "1199". Only
+      strings with integer values can match a range-based restriction which is
+      to be supported soon.  Multiple values can be assigned to the same key.
+      One product may have up to 100 product_labels.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  productCategory = _messages.StringField(4)
+  productLabels = _messages.MessageField('KeyValue', 5, repeated=True)
+
+
+class ProductInfo(_messages.Message):
+  """Information about a product.
 
   Fields:
     imageUri: The URI of the image which matched the query image.  This field
@@ -1504,17 +3120,31 @@ class ProductSearchParams(_messages.Message):
 
   Fields:
     boundingPoly: The bounding polygon around the area of interest in the
-      image. Optional. It is inferred by the system if it is not specified. If
-      the system detects multiple areas of interest, the largest one is
-      selected.
+      image. Optional. If it is not specified, system discretion will be
+      applied.
     catalogName: The resource name of the catalog to search.  Format is:
       `productSearch/catalogs/CATALOG_NAME`.
     category: The category to search in. Optional. It is inferred by the
       system if it is not specified. [Deprecated] Use `product_category`.
+    filter: The filtering expression. This can be used to restrict search
+      results based on Product labels. We currently support an AND of OR of
+      key-value expressions, where each expression within an OR must have the
+      same key.  For example, "(color = red OR color = blue) AND brand =
+      Google" is acceptable, but not "(color = red OR brand = Google)" or
+      "color: red".
+    normalizedBoundingPoly: The bounding polygon around the area of interest
+      in the image. Optional. If it is not specified, system discretion will
+      be applied. [Deprecated] Use `bounding_poly`.
+    productCategories: The list of product categories to search in. Currently,
+      we only consider the first category, and either "homegoods" or "apparel"
+      should be specified.
     productCategory: The product category to search in. Optional. It is
       inferred by the system if it is not specified. Supported values are
       `bag`, `shoe`, `sunglasses`, `dress`, `outerwear`, `skirt`, `top`,
       `shorts`, and `pants`.
+    productSet: The resource name of a ProductSet to be searched for similar
+      images.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.
     view: Specifies the verbosity of the  product search results. Optional.
       Defaults to `BASIC`.
   """
@@ -1546,11 +3176,15 @@ class ProductSearchParams(_messages.Message):
     BASIC = 0
     FULL = 1
 
-  boundingPoly = _messages.MessageField('NormalizedBoundingPoly', 1)
+  boundingPoly = _messages.MessageField('BoundingPoly', 1)
   catalogName = _messages.StringField(2)
   category = _messages.EnumField('CategoryValueValuesEnum', 3)
-  productCategory = _messages.StringField(4)
-  view = _messages.EnumField('ViewValueValuesEnum', 5)
+  filter = _messages.StringField(4)
+  normalizedBoundingPoly = _messages.MessageField('NormalizedBoundingPoly', 5)
+  productCategories = _messages.StringField(6, repeated=True)
+  productCategory = _messages.StringField(7)
+  productSet = _messages.StringField(8)
+  view = _messages.EnumField('ViewValueValuesEnum', 9)
 
 
 class ProductSearchResults(_messages.Message):
@@ -1567,6 +3201,7 @@ class ProductSearchResults(_messages.Message):
     productCategory: Product category. Supported values are `bag` and `shoe`.
       [Deprecated] `product_category` is provided in each Product.
     products: List of detected products.
+    results: List of results, one for each product match.
   """
 
   class CategoryValueValuesEnum(_messages.Enum):
@@ -1585,7 +3220,34 @@ class ProductSearchResults(_messages.Message):
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   indexTime = _messages.StringField(2)
   productCategory = _messages.StringField(3)
-  products = _messages.MessageField('Product', 4, repeated=True)
+  products = _messages.MessageField('ProductInfo', 4, repeated=True)
+  results = _messages.MessageField('Result', 5, repeated=True)
+
+
+class ProductSet(_messages.Message):
+  """A ProductSet contains Products. A ProductSet can contain a maximum of 1
+  million reference images. If the limit is exceeded, periodic indexing will
+  fail.
+
+  Fields:
+    displayName: The user-provided name for this ProductSet. Must not be
+      empty. Must be at most 4096 characters long.
+    indexError: Output only. If there was an error with indexing the product
+      set, the field is populated.  This field is ignored when creating a
+      ProductSet.
+    indexTime: Output only. The time at which this ProductSet was last
+      indexed. Query results will reflect all updates before this time. If
+      this ProductSet has never been indexed, this field is 0.  This field is
+      ignored when creating a ProductSet.
+    name: The resource name of the ProductSet.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.  This
+      field is ignored when creating a ProductSet.
+  """
+
+  displayName = _messages.StringField(1)
+  indexError = _messages.MessageField('Status', 2)
+  indexTime = _messages.StringField(3)
+  name = _messages.StringField(4)
 
 
 class Property(_messages.Message):
@@ -1604,67 +3266,52 @@ class Property(_messages.Message):
 
 class ReferenceImage(_messages.Message):
   """A `ReferenceImage` represents a product image and its associated
-  metadata, such as product ID, category, and bounding box.
-
-  Enums:
-    CategoryValueValuesEnum: The category for the product identified by the
-      reference image. Optional. Inferred by the system if not specified in
-      the create request. [Deprecated] Use `product_category`.
+  metadata, such as bounding boxes.
 
   Fields:
-    boundingPoly: The bounding polygon around the area of interest in the
-      reference image. Optional. Inferred by the system if not provided. If
-      `product_category` is specified in the create request without
-      `bounding_poly`, the inferred bounding polygon is the entire image.  The
-      provided shape is converted into a non-rotated rectangle. Once
-      converted, the small edge of the rectangle must be greater than or equal
-      to 300 pixels. The aspect ratio must be 1:4 or less (i.e. 1:3 is ok; 1:5
-      is not).
-    category: The category for the product identified by the reference image.
-      Optional. Inferred by the system if not specified in the create request.
-      [Deprecated] Use `product_category`.
-    createTime: Resource creation timestamp. Output only.
-    deleteTime: Resource deletion timestamp.  This timestamp indicates when
-      the resource was marked for deletion. Resources marked for deletion will
-      continue to show up in product search results until the index is rebuilt
-      (currently daily).  The value of this field is 0 for resources that have
-      NOT been deleted.  Output only.
-    imageUri: The Google Cloud Storage URI of the reference image.  Required.
-    name: The resource name of the reference image.  Format is:
-      `productSearch/catalogs/CATALOG_NUMBER/referenceImages/IMAGE_NUMBER`.
+    boundingPolys: Bounding polygons around the areas of interest in the
+      reference image. Optional. If this field is empty, the system will try
+      to detect regions of interest. At most 10 bounding polygons will be
+      used.  The provided shape is converted into a non-rotated rectangle.
+      Once converted, the small edge of the rectangle must be greater than or
+      equal to 300 pixels. The aspect ratio must be 1:4 or less (i.e. 1:3 is
+      ok; 1:5 is not).
+    name: The resource name of the reference image.  Format is:  `projects/PRO
+      JECT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/IMAGE_ID`.
       This field is ignored when creating a reference image.
-    productCategory: The category for the product identified by the reference
-      image. Optional. Inferred by the system if not specified in the create
-      request. Supported values are `bag` and `shoe`.
-    productId: A user-defined ID for the product identified by the reference
-      image. Required. A `productId` can be associated with multiple reference
-      images.  Restricted to 255 characters matching the following regular
-      expression: `[a-zA-Z0-9_-]+`
+    uri: The Google Cloud Storage URI of the reference image.  The URI must
+      start with `gs://`.  Required.
   """
 
-  class CategoryValueValuesEnum(_messages.Enum):
-    """The category for the product identified by the reference image.
-    Optional. Inferred by the system if not specified in the create request.
-    [Deprecated] Use `product_category`.
+  boundingPolys = _messages.MessageField('BoundingPoly', 1, repeated=True)
+  name = _messages.StringField(2)
+  uri = _messages.StringField(3)
 
-    Values:
-      PRODUCT_SEARCH_CATEGORY_UNSPECIFIED: Default value used when a category
-        is not specified.
-      SHOES: Shoes category.
-      BAGS: Bags category.
-    """
-    PRODUCT_SEARCH_CATEGORY_UNSPECIFIED = 0
-    SHOES = 1
-    BAGS = 2
 
-  boundingPoly = _messages.MessageField('BoundingPoly', 1)
-  category = _messages.EnumField('CategoryValueValuesEnum', 2)
-  createTime = _messages.StringField(3)
-  deleteTime = _messages.StringField(4)
-  imageUri = _messages.StringField(5)
-  name = _messages.StringField(6)
-  productCategory = _messages.StringField(7)
-  productId = _messages.StringField(8)
+class RemoveProductFromProductSetRequest(_messages.Message):
+  """Request message for the `RemoveProductFromProductSet` method.
+
+  Fields:
+    product: The resource name for the Product to be removed from this
+      ProductSet.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`
+  """
+
+  product = _messages.StringField(1)
+
+
+class Result(_messages.Message):
+  """Information about a product.
+
+  Fields:
+    product: The Product.
+    score: A confidence level on the match, ranging from 0 (no confidence) to
+      1 (full confidence).  This field is returned only if `view` is set to
+      `FULL` in the request.
+  """
+
+  product = _messages.MessageField('Product', 1)
+  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class SafeSearchAnnotation(_messages.Message):

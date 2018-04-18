@@ -15,3 +15,22 @@ location:
       parameter_name: locationsId
       attribute_name: location_id
       help: The name of the Google Cloud ML Engine location.
+
+model:
+  name: model
+  collection: ml.projects.models
+  attributes:
+    - &model
+      parameter_name: modelsId
+      attribute_name: model
+      help: The name of the Google Cloud ML Engine model.
+
+version:
+  name: version
+  collection: ml.projects.models.versions
+  attributes:
+    - *model
+    - &version
+      parameter_name: versionsId
+      attribute_name: version
+      help: The name of the Google Cloud ML Engine model version.

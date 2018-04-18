@@ -1640,7 +1640,7 @@
           "type": "string"
         },
         "auditLogConfigs": {
-          "description": "The configuration for logging of each type of permission.\nNext ID: 4",
+          "description": "The configuration for logging of each type of permission.",
           "type": "array",
           "items": {
             "$ref": "AuditLogConfig"
@@ -1780,8 +1780,8 @@
         }
       }
     },
-    "OperationMetadata": {
-      "id": "OperationMetadata",
+    "GoogleDevtoolsContaineranalysisV1alpha1OperationMetadata": {
+      "id": "GoogleDevtoolsContaineranalysisV1alpha1OperationMetadata",
       "description": "Metadata for all operations used and required for all operations\nthat created by Container Analysis Providers",
       "type": "object",
       "properties": {
@@ -1792,6 +1792,23 @@
         },
         "endTime": {
           "description": "Output only. The time that this operation was marked completed or failed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GrafeasV1beta1OperationMetadata": {
+      "id": "GrafeasV1beta1OperationMetadata",
+      "description": "Metadata for an operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time this operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time that this operation was marked as done.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -2227,7 +2244,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "This field contains the project Id for example:\n\"project\/{project_id}",
+                  "description": "This field contains the project Id for example:\n\"projects\/{project_id}",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -2705,7 +2722,7 @@
                   "type": "string"
                 },
                 "parent": {
-                  "description": "This field contains the project Id for example:\n\"project\/{project_id}",
+                  "description": "This field contains the project Id for example:\n\"projects\/{project_id}",
                   "location": "query",
                   "type": "string"
                 },

@@ -4632,7 +4632,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Start(self, request, global_params=None):
-      """Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.
+      """Starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
 
       Args:
         request: (ComputeInstancesStartRequest) input message
@@ -4658,7 +4658,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def StartWithEncryptionKey(self, request, global_params=None):
-      """Starts an instance that was stopped using the using the instances().stop method. For more information, see Restart an instance.
+      """Starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
 
       Args:
         request: (ComputeInstancesStartWithEncryptionKeyRequest) input message

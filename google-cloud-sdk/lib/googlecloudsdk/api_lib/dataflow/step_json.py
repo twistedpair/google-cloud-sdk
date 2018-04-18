@@ -23,6 +23,9 @@ Example clean-ups:
   to read the serialized Java object.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+import six
 _BLACKLISTED_PROPERTIES = set(['serialized_fn'])
 
 _VALUE_RETRIEVERS = {
@@ -73,7 +76,7 @@ def _ExtractDecoratedObject(proto):
     # No retriever means that this was created "by us", so we just want to
     # output the properties. We leave the @type around since it has semantic
     # value.
-    return dict((k, _ExtractValue(v)) for k, v in prop_dict.iteritems())
+    return dict((k, _ExtractValue(v)) for k, v in six.iteritems(prop_dict))
 
   # If we have a retriever,we can throw away everything except the value, and
   # convert it to a more reasonable type. This is important since it cleans

@@ -13,12 +13,15 @@
 # limitations under the License.
 """Utilities for manipulating GCE instances running an App Engine project."""
 
+from __future__ import absolute_import
 import re
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+from six.moves import filter  # pylint: disable=redefined-builtin
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 class InvalidInstanceSpecificationError(exceptions.Error):
@@ -187,11 +190,11 @@ def GetMatchingInstance(instances, service=None, version=None, instance=None):
   if len(matching) > 1:
     raise InvalidInstanceSpecificationError(
         'More than one instance matches the given specification.\n\n'
-        'Matching instances: {0}'.format(map(str, sorted(matching))))
+        'Matching instances: {0}'.format(list(map(str, sorted(matching)))))
   elif not matching:
     raise InvalidInstanceSpecificationError(
         'No instances match the given specification.\n\n'
-        'All instances: {0}'.format(map(str, sorted(instances))))
+        'All instances: {0}'.format(list(map(str, sorted(instances)))))
   return matching[0]
 
 

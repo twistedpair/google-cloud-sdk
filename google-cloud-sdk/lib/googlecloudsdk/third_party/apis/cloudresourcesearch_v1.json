@@ -6,7 +6,7 @@
   "canonicalName": "Cloud Resource Search",
   "version": "v1",
   "revision": "0",
-  "title": "Google Cloud Resource Search",
+  "title": "Cloud Resource Search",
   "description": "An API for searching over Google Cloud Platform Resources.",
   "ownerDomain": "google.com",
   "ownerName": "Google",

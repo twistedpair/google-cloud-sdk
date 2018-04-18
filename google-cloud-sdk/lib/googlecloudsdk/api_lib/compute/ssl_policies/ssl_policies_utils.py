@@ -139,28 +139,29 @@ class SslPolicyHelper(object):
         project=ref.project, sslPolicy=ref.Name())
     return self._service.Get(request)
 
-  def Patch(self, ref, ssl_policy, include_custom_features):
+  def Patch(self, ref, ssl_policy, clear_custom_features):
     """Sends a Patch request for an SSL policy and returns the operation.
 
     Args:
       ref: The SSL policy reference object.
       ssl_policy: The SSL policy message object to use in the patch request.
-      include_custom_features: If True, customFeatures field is included
-        always in the request (even if empty), otherwise it is included
-        only if the SSL policy message has non-empty customFeatures field.
+      clear_custom_features: If True, customFeatures field is explicitly
+        cleared by including it in the request even if empty. Otherwise it is
+        included only if the SSL policy message has non-empty customFeatures
+        field.
 
     Returns:
       The operation reference object for the patch request.
     """
     request = self._messages.ComputeSslPoliciesPatchRequest(
         project=ref.project, sslPolicy=ref.Name(), sslPolicyResource=ssl_policy)
-    include_fields = []
-    # Explicitly include the field custom_features in the request if it
-    # needs to be cleared since this is a repeated field.
-    # pylint: disable=g-explicit-bool-comparison
-    if include_custom_features:
-      include_fields.append('customFeatures')
-    with self._client.IncludeFields(include_fields):
+    cleared_fields = []
+    # Since custom_features is a repeated field, we need to explicitly indicate
+    # that the field must be cleared when it is empty, for patch requests.
+    # Otherwise the field is ignored and will not be part of the request.
+    if clear_custom_features:
+      cleared_fields.append('customFeatures')
+    with self._client.IncludeFields(cleared_fields):
       operation = self._service.Patch(request)
 
     return self._resources.Parse(

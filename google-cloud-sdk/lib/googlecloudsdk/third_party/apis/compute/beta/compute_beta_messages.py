@@ -14377,6 +14377,8 @@ class CustomerEncryptionKey(_messages.Message):
   """Represents a customer-supplied encryption key
 
   Fields:
+    kmsKeyName: The name of the encryption key that is stored in Google Cloud
+      KMS.
     rawKey: Specifies a 256-bit customer-supplied encryption key, encoded in
       RFC 4648 base64 to either encrypt or decrypt this resource.
     rsaEncryptedKey: Specifies an RFC 4648 base64 encoded, RSA-wrapped
@@ -14391,9 +14393,10 @@ class CustomerEncryptionKey(_messages.Message):
       customer-supplied encryption key that protects this resource.
   """
 
-  rawKey = _messages.StringField(1)
-  rsaEncryptedKey = _messages.StringField(2)
-  sha256 = _messages.StringField(3)
+  kmsKeyName = _messages.StringField(1)
+  rawKey = _messages.StringField(2)
+  rsaEncryptedKey = _messages.StringField(3)
+  sha256 = _messages.StringField(4)
 
 
 class CustomerEncryptionKeyProtectedDisk(_messages.Message):
@@ -18445,9 +18448,10 @@ class InstanceGroupManager(_messages.Message):
       groups.
     failoverAction: The action to perform in case of zone failure. Only one
       value is supported, NO_FAILOVER. The default is NO_FAILOVER.
-    fingerprint: [Output Only] The fingerprint of the resource data. You can
-      use this optional field for optimistic locking when you update the
-      resource.
+    fingerprint: Fingerprint of this resource. This field may be used in
+      optimistic locking. It will be ignored when inserting an
+      InstanceGroupManager. An up-to-date fingerprint must be provided in
+      order to update the InstanceGroupManager or the field need to be unset.
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
@@ -18467,10 +18471,10 @@ class InstanceGroupManager(_messages.Message):
       group resides (for regional resources).
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
-    serviceAccount: [Output Only] The service account to be used as
-      credentials for all operations performed by the managed instance group
-      on instances. The service accounts needs all permissions required to
-      create and delete instances. By default, the service account
+    serviceAccount: The service account to be used as credentials for all
+      operations performed by the managed instance group on instances. The
+      service accounts needs all permissions required to create and delete
+      instances. By default, the service account
       {projectNumber}@cloudservices.gserviceaccount.com is used.
     targetPools: The URLs for all TargetPool resources to which instances in
       the instanceGroup field are added. The target pools automatically apply
@@ -25624,6 +25628,12 @@ class RouterBgpPeer(_messages.Message):
     AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
       to use for advertisement.
     AdvertisedGroupsValueListEntryValuesEnum:
+    ManagementTypeValueValuesEnum: [Output Only] Type of how the
+      resource/configuration of the BGP peer is managed. MANAGED_BY_USER is
+      the default value; MANAGED_BY_ATTACHMENT represents an BGP peer that is
+      automatically created for PARTNER interconnectAttachment, Google will
+      automatically create/delete this type of BGP peer when the PARTNER
+      interconnectAttachment is created/deleted.
 
   Fields:
     advertiseMode: User-specified flag to indicate which mode to use for
@@ -25645,6 +25655,12 @@ class RouterBgpPeer(_messages.Message):
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
+    managementType: [Output Only] Type of how the resource/configuration of
+      the BGP peer is managed. MANAGED_BY_USER is the default value;
+      MANAGED_BY_ATTACHMENT represents an BGP peer that is automatically
+      created for PARTNER interconnectAttachment, Google will automatically
+      create/delete this type of BGP peer when the PARTNER
+      interconnectAttachment is created/deleted.
     name: Name of this BGP peer. The name must be 1-63 characters long and
       comply with RFC1035.
     peerAsn: Peer BGP Autonomous System Number (ASN). For VPN use case, this
@@ -25671,19 +25687,42 @@ class RouterBgpPeer(_messages.Message):
     """
     ALL_SUBNETS = 0
 
+  class ManagementTypeValueValuesEnum(_messages.Enum):
+    """[Output Only] Type of how the resource/configuration of the BGP peer is
+    managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT
+    represents an BGP peer that is automatically created for PARTNER
+    interconnectAttachment, Google will automatically create/delete this type
+    of BGP peer when the PARTNER interconnectAttachment is created/deleted.
+
+    Values:
+      MANAGED_BY_ATTACHMENT: <no description>
+      MANAGED_BY_USER: <no description>
+    """
+    MANAGED_BY_ATTACHMENT = 0
+    MANAGED_BY_USER = 1
+
   advertiseMode = _messages.EnumField('AdvertiseModeValueValuesEnum', 1)
   advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
   interfaceName = _messages.StringField(5)
   ipAddress = _messages.StringField(6)
-  name = _messages.StringField(7)
-  peerAsn = _messages.IntegerField(8, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(9)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  peerAsn = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(10)
 
 
 class RouterInterface(_messages.Message):
   """A RouterInterface object.
+
+  Enums:
+    ManagementTypeValueValuesEnum: [Output Only] Type of how the
+      resource/configuration of the interface is managed. MANAGED_BY_USER is
+      the default value; MANAGED_BY_ATTACHMENT represents an interface that is
+      automatically created for PARTNER type interconnectAttachment, Google
+      will automatically create/update/delete this type of interface when the
+      PARTNER interconnectAttachment is created/provisioned/deleted.
 
   Fields:
     ipRange: IP address and range of the interface. The IP range must be in
@@ -25698,14 +25737,36 @@ class RouterInterface(_messages.Message):
       region as the router. Each interface can have at most one linked
       resource and it could either be a VPN Tunnel or an interconnect
       attachment.
+    managementType: [Output Only] Type of how the resource/configuration of
+      the interface is managed. MANAGED_BY_USER is the default value;
+      MANAGED_BY_ATTACHMENT represents an interface that is automatically
+      created for PARTNER type interconnectAttachment, Google will
+      automatically create/update/delete this type of interface when the
+      PARTNER interconnectAttachment is created/provisioned/deleted.
     name: Name of this interface entry. The name must be 1-63 characters long
       and comply with RFC1035.
   """
 
+  class ManagementTypeValueValuesEnum(_messages.Enum):
+    """[Output Only] Type of how the resource/configuration of the interface
+    is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT
+    represents an interface that is automatically created for PARTNER type
+    interconnectAttachment, Google will automatically create/update/delete
+    this type of interface when the PARTNER interconnectAttachment is
+    created/provisioned/deleted.
+
+    Values:
+      MANAGED_BY_ATTACHMENT: <no description>
+      MANAGED_BY_USER: <no description>
+    """
+    MANAGED_BY_ATTACHMENT = 0
+    MANAGED_BY_USER = 1
+
   ipRange = _messages.StringField(1)
   linkedInterconnectAttachment = _messages.StringField(2)
   linkedVpnTunnel = _messages.StringField(3)
-  name = _messages.StringField(4)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 4)
+  name = _messages.StringField(5)
 
 
 class RouterList(_messages.Message):
@@ -27073,7 +27134,7 @@ class SslPolicy(_messages.Message):
   Enums:
     MinTlsVersionValueValuesEnum: The minimum version of SSL protocol that can
       be used by the clients to establish a connection with the load balancer.
-      This can be one of TLS_1_0, TLS_1_1, TLS_1_2, TLS_1_3.
+      This can be one of TLS_1_0, TLS_1_1, TLS_1_2.
     ProfileValueValuesEnum: Profile specifies the set of SSL features that can
       be used by the load balancer when negotiating SSL with clients. This can
       be one of COMPATIBLE, MODERN, RESTRICTED, or CUSTOM. If using CUSTOM,
@@ -27103,7 +27164,7 @@ class SslPolicy(_messages.Message):
       policies.
     minTlsVersion: The minimum version of SSL protocol that can be used by the
       clients to establish a connection with the load balancer. This can be
-      one of TLS_1_0, TLS_1_1, TLS_1_2, TLS_1_3.
+      one of TLS_1_0, TLS_1_1, TLS_1_2.
     name: Name of the resource. The name must be 1-63 characters long, and
       comply with RFC1035. Specifically, the name must be 1-63 characters long
       and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
@@ -27122,18 +27183,16 @@ class SslPolicy(_messages.Message):
   class MinTlsVersionValueValuesEnum(_messages.Enum):
     """The minimum version of SSL protocol that can be used by the clients to
     establish a connection with the load balancer. This can be one of TLS_1_0,
-    TLS_1_1, TLS_1_2, TLS_1_3.
+    TLS_1_1, TLS_1_2.
 
     Values:
       TLS_1_0: <no description>
       TLS_1_1: <no description>
       TLS_1_2: <no description>
-      TLS_1_3: <no description>
     """
     TLS_1_0 = 0
     TLS_1_1 = 1
     TLS_1_2 = 2
-    TLS_1_3 = 3
 
   class ProfileValueValuesEnum(_messages.Enum):
     """Profile specifies the set of SSL features that can be used by the load

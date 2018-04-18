@@ -14,6 +14,7 @@
 
 """Utilities for loading runtime defs from git."""
 
+from __future__ import absolute_import
 import abc
 import contextlib
 import os
@@ -26,6 +27,7 @@ from dulwich import repo
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+import six
 
 # Fake out 'WindowsError' if it doesn't exist (the WindowsError exception
 # class only exists in Python on Windows, but we need to catch it in order to
@@ -77,14 +79,12 @@ def WrapClient(location):
     raise UnsupportedClientType(transport.__class__.__name__)
 
 
-class ClientWrapper(object):
+class ClientWrapper(six.with_metaclass(abc.ABCMeta, object)):
   """Base class for a git client wrapper.
 
   This provides a uniform interface around the various types of git clients
   from dulwich 0.10.1.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, transport, path):
     self._transport = transport
@@ -151,7 +151,7 @@ def _PullTags(local_repo, client_wrapper, target_dir):
   Raises:
     errors.HangupException: Hangup during communication to a remote repository.
   """
-  for ref, obj_id in client_wrapper.GetRefs().iteritems():
+  for ref, obj_id in six.iteritems(client_wrapper.GetRefs()):
     if ref.startswith('refs/tags/'):
       try:
         local_repo[ref] = obj_id

@@ -32,6 +32,21 @@ class ArtifactObjects(_messages.Message):
   timing = _messages.MessageField('TimeSpan', 3)
 
 
+class ArtifactResult(_messages.Message):
+  """An artifact that was uploaded during a build. This is a single record in
+  the artifact manifest JSON file.
+
+  Fields:
+    fileHash: The file hash of the artifact.
+    location: The path of an artifact in a Google Cloud Storage bucket, with
+      the generation number. For example,
+      `gs://mybucket/path/to/output.jar#generation`.
+  """
+
+  fileHash = _messages.MessageField('FileHashes', 1, repeated=True)
+  location = _messages.StringField(2)
+
+
 class Artifacts(_messages.Message):
   """Artifacts produced by a build that should be uploaded upon successful
   completion of all build steps.

@@ -6,7 +6,7 @@
   "canonicalName": "Service Management",
   "version": "v1",
   "revision": "0",
-  "title": "Google Service Management API",
+  "title": "Service Management API",
   "description": "Google Service Management allows service producers to publish their services on Google Cloud Platform so that they can be discovered and used by service consumers.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -1174,7 +1174,7 @@
           "$ref": "CustomAuthRequirements"
         },
         "allowWithoutCredential": {
-          "description": "Whether to allow requests without a credential. The credential can be\nan OAuth token, Google cookies (first-party auth) or EndUserCreds.\n\nFor requests without credentials, if the service control environment is\nspecified, each incoming request **must** be associated with a service\nconsumer. This can be done by passing an API key that belongs to a consumer\nproject.",
+          "description": "If true, the service accepts API keys without any other credential.",
           "type": "boolean"
         },
         "requirements": {
@@ -2788,7 +2788,7 @@
           "type": "string"
         },
         "auditLogConfigs": {
-          "description": "The configuration for logging of each type of permission.\nNext ID: 4",
+          "description": "The configuration for logging of each type of permission.",
           "type": "array",
           "items": {
             "$ref": "AuditLogConfig"

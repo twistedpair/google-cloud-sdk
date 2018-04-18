@@ -258,6 +258,7 @@ _FILE_ARG_VALIDATORS = {
     'max_steps': _ValidateNonNegativeInteger,
     'max_depth': _ValidatePositiveInteger,
     'os_version_ids': ValidateStringList,
+    'other_files': _ValidateKeyValueStringPairs,
     'performance_metrics': _ValidateBool,
     'record_video': _ValidateBool,
     'robo_directives': _ValidateKeyValueStringPairs,

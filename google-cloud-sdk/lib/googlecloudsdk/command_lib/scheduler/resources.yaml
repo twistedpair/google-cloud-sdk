@@ -17,6 +17,7 @@ location:
 job:
   name: job
   collection: cloudscheduler.projects.locations.jobs
+  request_id_field: job.name
   attributes:
     - *location
     - &job

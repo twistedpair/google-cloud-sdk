@@ -146,12 +146,18 @@ class MatrixCreator(object):
   def _BuildGenericTestSpec(self):
     """Build a generic TestSpecification without test-type specifics."""
     device_files = []
-    if self._args.obb_files:
-      for obb_file in self._args.obb_files:
-        device_files.append(self._messages.DeviceFile(
-            obbFile=self._messages.ObbFile(
-                obbFileName=os.path.basename(obb_file),
-                obb=self._BuildFileReference(obb_file))))
+    for obb_file in self._args.obb_files or []:
+      device_files.append(
+          self._messages.DeviceFile(
+              obbFile=self._messages.ObbFile(
+                  obbFileName=os.path.basename(obb_file),
+                  obb=self._BuildFileReference(obb_file))))
+    for other_files in getattr(self._args, 'other_files', {}) or {}:
+      device_files.append(
+          self._messages.DeviceFile(
+              regularFile=self._messages.RegularFile(
+                  content=self._BuildFileReference(other_files),
+                  devicePath=self._args.other_files[other_files])))
 
     environment_variables = []
     if self._args.environment_variables:

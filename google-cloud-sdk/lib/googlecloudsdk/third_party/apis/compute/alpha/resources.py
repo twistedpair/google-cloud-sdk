@@ -310,6 +310,12 @@ class Collections(enum.Enum):
       {},
       [u'project', u'region']
   )
+  RESOURCEPOLICIES = (
+      'resourcePolicies',
+      'projects/{project}/regions/{region}/resourcePolicies/{resourcePolicy}',
+      {},
+      [u'project', u'region', u'resourcePolicy']
+  )
   ROUTERS = (
       'routers',
       'projects/{project}/regions/{region}/routers/{router}',

@@ -87,3 +87,21 @@ def IdFromName(project_name):
     if IsValidId(i):
       return i
   return None
+
+
+def SetIamPolicyFromFileHook(ref, args, request):
+  """Hook to perserve SetIAMPolicy behavior for declarative surface."""
+  del ref
+  del args
+  update_mask = request.setIamPolicyRequest.updateMask
+  if update_mask:
+    # To preserve the existing set-iam-policy behavior of always overwriting
+    # bindings and etag, add bindings and etag to update_mask.
+    mask_fields = update_mask.split(',')
+    if 'bindings' not in mask_fields:
+      mask_fields.append('bindings')
+
+    if 'etag' not in update_mask:
+      mask_fields.append('etag')
+    request.setIamPolicyRequest.updateMask = ','.join(mask_fields)
+  return request

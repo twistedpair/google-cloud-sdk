@@ -14,6 +14,8 @@
 
 """Common flags for the consumers subcommand group."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.services import services_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers

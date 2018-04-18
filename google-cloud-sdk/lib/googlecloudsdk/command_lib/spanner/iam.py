@@ -30,8 +30,9 @@ def AddInstanceIamPolicyBinding(instance_ref, member, role):
 def SetInstanceIamPolicy(instance_ref, policy):
   """Sets the IAM policy on an instance."""
   msgs = apis.GetMessagesModule('spanner', 'v1')
-  policy = iam_util.ParsePolicyFile(policy, msgs.Policy)
-  return instances.SetPolicy(instance_ref, policy)
+  policy, field_mask = iam_util.ParsePolicyFileWithUpdateMask(policy,
+                                                              msgs.Policy)
+  return instances.SetPolicy(instance_ref, policy, field_mask)
 
 
 def RemoveInstanceIamPolicyBinding(instance_ref, member, role):

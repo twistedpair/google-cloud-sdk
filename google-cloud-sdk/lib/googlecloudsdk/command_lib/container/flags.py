@@ -801,6 +801,23 @@ to point to the new IP."""
       help=help_text)
 
 
+def AddStartCredentialRotationFlag(parser, hidden=False):
+  """Adds a --start-credential-rotation flag to parser."""
+  help_text = """\
+Start the rotation of IP and credentials for this cluster. For example:
+
+  $ {command} example-cluster --start-credential-rotation
+
+This causes the cluster to serve on two IPs, and will initiate a node upgrade \
+to point to the new IP."""
+  parser.add_argument(
+      '--start-credential-rotation',
+      action='store_true',
+      default=False,
+      hidden=hidden,
+      help=help_text)
+
+
 def AddCompleteIpRotationFlag(parser, hidden=False):
   """Adds a --complete-ip-rotation flag to parser."""
   help_text = """\
@@ -812,6 +829,23 @@ This causes the cluster to stop serving its old IP, and return to a single IP \
 state."""
   parser.add_argument(
       '--complete-ip-rotation',
+      action='store_true',
+      default=False,
+      hidden=hidden,
+      help=help_text)
+
+
+def AddCompleteCredentialRotationFlag(parser, hidden=False):
+  """Adds a --complete-credential-rotation flag to parser."""
+  help_text = """\
+Complete the IP and credential rotation for this cluster. For example:
+
+  $ {command} example-cluster --complete-credential-rotation
+
+This causes the cluster to stop serving its old IP, return to a single IP, and \
+invalidate old credentials."""
+  parser.add_argument(
+      '--complete-credential-rotation',
       action='store_true',
       default=False,
       hidden=hidden,
@@ -1132,9 +1166,12 @@ def AddNodeLocationsFlag(parser):
       metavar='ZONE',
       help="""\
 The set of zones in which the specified node footprint should be replicated.
-All zones must be in the same region as the cluster's primary zone, specified by
-the --zone flag. --node-locations must contain the primary zone.
-If node-locations is not specified, all nodes will be in the primary zone.
+All zones must be in the same region as the cluster's master(s), specified by
+the `--zone` or `--region` flag. Additionally, for zonal clusters,
+`--node-locations` must contain the cluster's primary zone. If not specified,
+all nodes will be in the cluster's primary zone (for zonal clusters) or spread
+across three randomly chosen zones within the cluster's region (for regional
+clusters).
 
 Note that `NUM_NODES` nodes will be created in each zone, such that if you
 specify `--num-nodes=4` and choose two locations, 8 nodes will be created.

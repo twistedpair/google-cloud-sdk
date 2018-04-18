@@ -393,6 +393,9 @@ class Projector(object):
     elif isinstance(obj, bytearray):
       # bytearray copied to disassociate from original obj.
       obj = encoding.Decode(bytes(obj))
+    elif isinstance(obj, protorpc_message.Enum):
+      # protorpc enum
+      obj = obj.name
     else:
       self._been_here_done_that.append(obj)
       if isinstance(obj, protorpc_message.Message):
@@ -401,9 +404,6 @@ class Projector(object):
       elif isinstance(obj, protobuf_message.Message):
         # protobuf message
         obj = protobuf_encoding.MessageToDict(obj)
-      elif isinstance(obj, protorpc_message.Enum):
-        # protorpc enum
-        obj = obj.name
       elif not hasattr(obj, '__iter__') or hasattr(obj, '_fields'):
         # class object or collections.namedtuple() (via the _fields test).
         obj = self._ProjectClass(obj, projection, flag)

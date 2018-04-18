@@ -143,6 +143,9 @@ def _GetClientInstance(api_name, api_version, no_http=False,
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
   """
+  # TODO(b/77278279): Decide whether we should always set this or not.
+  encoding = None if six.PY2 else 'utf8'
+
   # pylint: disable=g-import-not-at-top
   if no_http:
     http_client = None
@@ -150,17 +153,14 @@ def _GetClientInstance(api_name, api_version, no_http=False,
     # Import http only when needed, as it depends on credential infrastructure
     # which is not needed in all cases.
     from googlecloudsdk.core.credentials import http
-    http_client = http.Http(enable_resource_quota=enable_resource_quota)
-
-  # TODO(b/77278279): Decide whether we should always set this or not.
-  encoding = None if six.PY2 else 'utf8'
+    http_client = http.Http(enable_resource_quota=enable_resource_quota,
+                            response_encoding=encoding)
 
   client_class = _GetClientClass(api_name, api_version)
   client_instance = client_class(
       url=_GetEffectiveApiEndpoint(api_name, api_version, client_class),
       get_credentials=False,
-      http=http_client,
-      response_encoding=encoding)
+      http=http_client)
   if check_response_func is not None:
     client_instance.check_response_func = check_response_func
   api_key = properties.VALUES.core.api_key.Get()

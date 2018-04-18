@@ -30,9 +30,15 @@ def GetSchedulingNodeAffinityListFromArgs(args, messages):
   operator_enum = messages.SchedulingNodeAffinity.OperatorValueValuesEnum
 
   node_affinities = []
-  if args.node_affinity_file:
+  if args.IsSpecified('node_affinity_file'):
     affinities_yaml = yaml.load(args.node_affinity_file)
+    if not affinities_yaml:  # Catch empty files/lists.
+      raise NodeAffinityFileParseError(
+          'No node affinity labels specified. You must specify at least one '
+          'label to create a sole tenancy instance.')
     for affinity in affinities_yaml:
+      if not affinity:  # Catches None and empty dicts
+        raise NodeAffinityFileParseError('Empty list item in JSON/YAML file.')
       try:
         node_affinity = encoding.PyValueToMessage(
             messages.SchedulingNodeAffinity, affinity)

@@ -235,6 +235,11 @@ class Rewriter(resource_expr_rewrite.Backend):
     Returns:
       A rewritten expression node or None if not supported server side.
     """
+    # TODO(b/77934881) compute API labels filter workaround
+    if key.split('.')[0] == 'labels':
+      # server side labels matching is currently problematic
+      return None
+
     if isinstance(operand, list):
       # foo:(bar,baz) needs OR
       return None

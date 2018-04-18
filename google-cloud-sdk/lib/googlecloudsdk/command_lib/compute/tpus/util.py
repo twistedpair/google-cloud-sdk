@@ -32,21 +32,21 @@ TPU_LOCATION_COLLECTION = 'tpu.projects.locations'
 TPU_OPERATION_COLLECTION = 'tpu.projects.locations.operations'
 # Note: the URI segment which contains the zone is at position -3
 LIST_FORMAT = """
-     table(
-            name.basename(),
-            name.segment(-3):label=ZONE,
-            acceleratorType.basename():label=ACCELERATOR_TYPE,
-            format('{0}:{1}',ipAddress,port):label=NETWORK_ENDPOINT,
-            network.basename():label=NETWORK,
-            cidrBlock:label=RANGE,
-            state:label=STATUS
-         )
+      table(
+      name.basename(),
+      name.segment(-3):label=ZONE,
+      acceleratorType.basename():label=ACCELERATOR_TYPE,
+      networkEndpoints.map().extract(ipAddress,port).map().join(':').join(','):label=NETWORK_ENDPOINTS,
+      network.basename():label=NETWORK,
+      cidrBlock:label=RANGE,
+      state:label=STATUS
+      )
 """
 
 TPU_YAML_RESOURCE_PATH = 'googlecloudsdk.command_lib.compute.tpus.resources'
 
 TPU_YAML_SPEC_TEMPLATE = OrderedDict({
-    'node': {
+    'tpu': {
         'help_text': 'The name of the Cloud TPU.',
         'is_positional': True,
         'is_parent_resource': False,
@@ -149,7 +149,8 @@ def List(page_size, limit, zone=None):
 
 def WaitForOperation(operation, zone):
   """Wait for the specified tpu operation."""
-  wait_message = 'Waiting for [{0}] to finish'.format(operation.name)
+  wait_message = 'Waiting for operation [{0}] to complete'.format(
+      operation.name)
   tpu_api_client = api_util.TpusClient('v1alpha1')
   poller = TpuOperationsPoller(tpu_api_client)
   operation_ref = resources.REGISTRY.Parse(
@@ -241,7 +242,7 @@ def LoadTPUResourceSpecs(custom_help=None):
 def AddReimageResourcesToParser(parser):
   """Add TPU resource args to parser for reimage command."""
   custom_help = {
-      'node': 'The Cloud TPU to reimage.'
+      'tpu': 'The Cloud TPU to reimage.'
   }
 
   resource_specs = LoadTPUResourceSpecs(custom_help)

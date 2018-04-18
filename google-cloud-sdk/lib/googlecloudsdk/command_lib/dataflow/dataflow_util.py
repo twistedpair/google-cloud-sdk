@@ -14,6 +14,8 @@
 
 """Utilities for building the dataflow CLI."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import json
 import re
 

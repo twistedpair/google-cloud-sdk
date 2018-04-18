@@ -36,6 +36,7 @@ class ContainerV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.masterProjects_locations_projects_clusters_master = self.MasterProjectsLocationsProjectsClustersMasterService(self)
+    self.masterProjects_locations_projects_clusters_namespaces = self.MasterProjectsLocationsProjectsClustersNamespacesService(self)
     self.masterProjects_locations_projects_clusters = self.MasterProjectsLocationsProjectsClustersService(self)
     self.masterProjects_locations_projects = self.MasterProjectsLocationsProjectsService(self)
     self.masterProjects_locations_signedUrls = self.MasterProjectsLocationsSignedUrlsService(self)
@@ -116,6 +117,43 @@ any repairs to be done on the Hosted Master.
         request_field='',
         request_type_name=u'ContainerMasterProjectsLocationsProjectsClustersMasterGetRepairworkRequest',
         response_type_name=u'GetRepairWorkResponse',
+        supports_download=False,
+    )
+
+  class MasterProjectsLocationsProjectsClustersNamespacesService(base_api.BaseApiService):
+    """Service class for the masterProjects_locations_projects_clusters_namespaces resource."""
+
+    _NAME = u'masterProjects_locations_projects_clusters_namespaces'
+
+    def __init__(self, client):
+      super(ContainerV1.MasterProjectsLocationsProjectsClustersNamespacesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Finalize(self, request, global_params=None):
+      """FinalizeNamespace finalizes the GKE bits for a Kubernetes namespace.  Right.
+now, this involved purging IAM policies.
+
+      Args:
+        request: (ContainerMasterProjectsLocationsProjectsClustersNamespacesFinalizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Finalize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Finalize.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.locations.projects.clusters.namespaces.finalize',
+        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId', u'namespaceId'],
+        path_params=[u'clusterId', u'location', u'masterProjectId', u'namespaceId', u'projectNumber'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/projects/{projectNumber}/clusters/{clusterId}/namespaces/{namespaceId}/finalize',
+        request_field='',
+        request_type_name=u'ContainerMasterProjectsLocationsProjectsClustersNamespacesFinalizeRequest',
+        response_type_name=u'Empty',
         supports_download=False,
     )
 

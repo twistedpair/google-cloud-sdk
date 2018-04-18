@@ -1113,6 +1113,28 @@ class ContainerMasterProjectsLocationsProjectsClustersMasterGetRepairworkRequest
   projectNumber = _messages.IntegerField(5, required=True)
 
 
+class ContainerMasterProjectsLocationsProjectsClustersNamespacesFinalizeRequest(_messages.Message):
+  """A
+  ContainerMasterProjectsLocationsProjectsClustersNamespacesFinalizeRequest
+  object.
+
+  Fields:
+    clusterId: Cluster name of the cluster this master manages.
+    location: Location of the hosted master.
+    masterProjectId: The hosted master project in which this master resides.
+      This can be either a [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    namespaceId: Namespace name (not uuid).
+    projectNumber: Project number of the cluster this master manages.
+  """
+
+  clusterId = _messages.StringField(1, required=True)
+  location = _messages.StringField(2, required=True)
+  masterProjectId = _messages.StringField(3, required=True)
+  namespaceId = _messages.StringField(4, required=True)
+  projectNumber = _messages.IntegerField(5, required=True)
+
+
 class ContainerMasterProjectsLocationsSignedUrlsCreateRequest(_messages.Message):
   """A ContainerMasterProjectsLocationsSignedUrlsCreateRequest object.
 
@@ -3369,6 +3391,7 @@ class StartIPRotationRequest(_messages.Message):
       project
       number](https://developers.google.com/console/help/new/#projectnumber).
       This field has been deprecated and replaced by the name field.
+    rotateCredentials: Whether to rotate credentials during IP rotation.
     version: API request version that initiates this operation.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
@@ -3378,8 +3401,9 @@ class StartIPRotationRequest(_messages.Message):
   clusterId = _messages.StringField(1)
   name = _messages.StringField(2)
   projectId = _messages.StringField(3)
-  version = _messages.StringField(4)
-  zone = _messages.StringField(5)
+  rotateCredentials = _messages.BooleanField(4)
+  version = _messages.StringField(5)
+  zone = _messages.StringField(6)
 
 
 class SubjectAccessReviewSpec(_messages.Message):

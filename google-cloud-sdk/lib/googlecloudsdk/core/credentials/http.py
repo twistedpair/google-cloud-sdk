@@ -34,7 +34,7 @@ class Error(exceptions.Error):
   """Exceptions for the http module."""
 
 
-def Http(timeout='unset', enable_resource_quota=True):
+def Http(timeout='unset', enable_resource_quota=True, response_encoding=None):
   """Get an httplib2.Http client for working with the Google API.
 
   Args:
@@ -45,6 +45,7 @@ def Http(timeout='unset', enable_resource_quota=True):
         the quota of the project being operated on. For some APIs we want to use
         gcloud's quota, so you can explicitly disable that behavior by passing
         False here.
+    response_encoding: str, the encoding to use to decode the response.
 
   Returns:
     An authorized httplib2.Http client object, or a regular httplib2.Http object
@@ -53,7 +54,7 @@ def Http(timeout='unset', enable_resource_quota=True):
   Raises:
     c_store.Error: If an error loading the credentials occurs.
   """
-  http_client = http.Http(timeout=timeout)
+  http_client = http.Http(timeout=timeout, response_encoding=response_encoding)
 
   # Wrappers for IAM header injection.
   authority_selector = properties.VALUES.auth.authority_selector.Get()

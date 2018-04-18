@@ -545,7 +545,7 @@ class _CompletionFinder(argcomplete.CompletionFinder):
     return active_parsers
 
   def _get_completions(self, comp_words, cword_prefix, cword_prequote,
-                       first_colon_pos):
+                       last_wordbreak_pos):
     active_parsers = self._patch_argument_parser()
 
     parsed_args = parser_extensions.Namespace()
@@ -561,7 +561,79 @@ class _CompletionFinder(argcomplete.CompletionFinder):
     completions = self.collect_completions(
         active_parsers, parsed_args, cword_prefix, lambda *_: None)
     completions = self.filter_completions(completions)
-    return self.quote_completions(completions, cword_prequote, first_colon_pos)
+    return self.quote_completions(
+        completions, cword_prequote, last_wordbreak_pos)
+
+  def quote_completions(self, completions, cword_prequote, last_wordbreak_pos):
+    """Returns the completion (less aggressively) quoted for the shell.
+
+    If the word under the cursor started with a quote (as indicated by a
+    nonempty ``cword_prequote``), escapes occurrences of that quote character
+    in the completions, and adds the quote to the beginning of each completion.
+    Otherwise, escapes *most* characters that bash splits words on
+    (``COMP_WORDBREAKS``), and removes portions of completions before the first
+    colon if (``COMP_WORDBREAKS``) contains a colon.
+
+    If there is only one completion, and it doesn't end with a
+    **continuation character** (``/``, ``:``, or ``=``), adds a space after
+    the completion.
+
+    Args:
+      completions: The current completion strings.
+      cword_prequote: The current quote character in progress, '' if none.
+      last_wordbreak_pos: The index of the last wordbreak.
+
+    Returns:
+      The completions quoted for the shell.
+    """
+    # The *_special character sets are the only non-cosmetic changes from the
+    # argcomplete original. We drop { '!', ' ', '\n' } from _NO_QUOTE_SPECIAL
+    # and { '!' } from _DOUBLE_QUOTE_SPECIAL. argcomplete should make these
+    # settable properties.
+    no_quote_special = '\\();<>|&$*\t`"\''
+    double_quote_special = '\\`"$'
+    single_quote_special = '\\'
+    continuation_special = '=/:'
+
+    # If the word under the cursor was quoted, escape the quote char.
+    # Otherwise, escape most special characters and specially handle most
+    # COMP_WORDBREAKS chars.
+    if not cword_prequote:
+      # Bash mangles completions which contain characters in COMP_WORDBREAKS.
+      # This workaround has the same effect as __ltrim_colon_completions in
+      # bash_completion (extended to characters other than the colon).
+      if last_wordbreak_pos:
+        completions = [c[last_wordbreak_pos + 1:] for c in completions]
+      special_chars = no_quote_special
+    elif cword_prequote == '"':
+      special_chars = double_quote_special
+    else:
+      special_chars = single_quote_special
+
+    if os.environ.get('_ARGCOMPLETE_SHELL') == 'tcsh':
+      # tcsh escapes special characters itself.
+      special_chars = ''
+    elif cword_prequote == "'":
+      # Nothing can be escaped in single quotes, so we need to close
+      # the string, escape the single quote, then open a new string.
+      special_chars = ''
+      completions = [c.replace("'", r"'\''") for c in completions]
+
+    for char in special_chars:
+      completions = [c.replace(char, '\\' + char) for c in completions]
+
+    if getattr(self, 'append_space', False):
+      # Similar functionality in bash was previously turned off by supplying
+      # the "-o nospace" option to complete. Now it is conditionally disabled
+      # using "compopt -o nospace" if the match ends in a continuation
+      # character. This code is retained for environments where this isn't
+      # done natively.
+      continuation_chars = continuation_special
+      if len(completions) == 1 and completions[0][-1] not in continuation_chars:
+        if not cword_prequote:
+          completions[0] += ' '
+
+    return completions
 
 
 def _ArgComplete(ai, **kwargs):

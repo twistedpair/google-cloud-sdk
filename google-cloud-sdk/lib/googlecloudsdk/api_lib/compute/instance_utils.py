@@ -563,14 +563,19 @@ def CreatePersistentCreateDiskMessages(compute_client,
       disk_type_ref = None
       disk_type_uri = None
 
-    image_expander = image_utils.ImageExpander(compute_client,
-                                               resources)
-    image_uri, _ = image_expander.ExpandImageFlag(
-        user_project=instance_ref.project,
-        image=disk.get('image'),
-        image_family=disk.get('image-family'),
-        image_project=disk.get('image-project'),
-        return_image_resource=False)
+    img = disk.get('image')
+    img_family = disk.get('image-family')
+    img_project = disk.get('image-project')
+
+    image_uri = None
+    if img or img_family:
+      image_expander = image_utils.ImageExpander(compute_client, resources)
+      image_uri, _ = image_expander.ExpandImageFlag(
+          user_project=instance_ref.project,
+          image=img,
+          image_family=img_family,
+          image_project=img_project,
+          return_image_resource=False)
 
     image_key = None
     disk_key = None

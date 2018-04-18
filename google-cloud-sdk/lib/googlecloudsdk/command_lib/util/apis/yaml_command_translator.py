@@ -336,10 +336,28 @@ class CommandBuilder(object):
         base.URI_FLAG.RemoveFromParser(parser)
 
       def Run(self_, args):
-        policy_type = self.method.GetMessageByName('Policy')
+        """Called when command is executed."""
+        # Default Policy message and set IAM request message field names
+        policy_type_name = 'Policy'
+        policy_request_path = 'setIamPolicyRequest'
+
+        # Use Policy message and set IAM request field name overrides for API's
+        # with non-standard naming (if provided)
+        if self.spec.iam:
+          policy_type_name = (self.spec.iam.message_type_overrides['policy'] or
+                              policy_type_name)
+          policy_request_path = (self.spec.iam.set_iam_policy_request_path or
+                                 policy_request_path)
+
+        policy_field_path = policy_request_path + '.policy'
+        policy_type = self.method.GetMessageByName(policy_type_name)
+        if not policy_type:
+          raise ValueError('Policy type [{}] not found.'.format(
+              policy_type_name))
         policy, update_mask = iam_util.ParsePolicyFileWithUpdateMask(
             args.policy_file, policy_type)
-        self.spec.request.static_fields['setIamPolicyRequest.policy'] = policy
+
+        self.spec.request.static_fields[policy_field_path] = policy
         self._SetPolicyUpdateMask(update_mask)
         ref, response = self._CommonRun(args)
         iam_util.LogSetIamPolicy(ref.Name(), self.resource_type)
@@ -443,10 +461,33 @@ class CommandBuilder(object):
     return ref, response
 
   def _SetPolicyUpdateMask(self, update_mask):
-    update_request = self.method.GetMessageByName('SetIamPolicyRequest')
+    """Set Field Mask on SetIamPolicy request message.
+
+    If the API supports update_masks then adds the update_mask to the
+    SetIamPolicy request (via static fields).
+    Args:
+      update_mask: str, comma separated string listing the Policy fields to be
+        updated.
+    """
+    # Standard names for SetIamPolicyRequest message and set IAM request
+    # field name
+
+    set_iam_policy_request = 'SetIamPolicyRequest'
+    policy_request_path = 'setIamPolicyRequest'
+
+    # Use SetIamPolicyRequest message and set IAM request field name overrides
+    # for API's with non-standard naming (if provided)
+    if self.spec.iam:
+      overrides = self.spec.iam.message_type_overrides
+      set_iam_policy_request = (overrides['set_iam_policy_request']
+                                or set_iam_policy_request)
+      policy_request_path = (self.spec.iam.set_iam_policy_request_path
+                             or policy_request_path)
+
+    mask_field_path = '{}.updateMask'.format(policy_request_path)
+    update_request = self.method.GetMessageByName(set_iam_policy_request)
     if hasattr(update_request, 'updateMask'):
-      self.spec.request.static_fields['setIamPolicyRequest.updateMask'] = (
-          update_mask)
+      self.spec.request.static_fields[mask_field_path] = update_mask
 
   def _HandleAsync(self, args, resource_ref, operation,
                    request_string, extract_resource_result=True):

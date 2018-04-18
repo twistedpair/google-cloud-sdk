@@ -97,7 +97,7 @@ class ProductsClient(object):
   def _ShortenMessages(self):
     """Shorten variables for convenience/line length."""
     # ReferenceImages
-    self.ref_image_msg = self.messages.ReferenceImage
+    self.ref_image_msg = self.messages.GoogleCloudVisionV1alpha1ReferenceImage
     self.image_category_enum = self.ref_image_msg.CategoryValueValuesEnum
     self.ref_image_create_msg = (
         self.messages.
@@ -111,7 +111,6 @@ class ProductsClient(object):
     self.ref_image_list_msg = (
         self.messages.
         AlphaVisionProductSearchCatalogsReferenceImagesListRequest)
-    self.ref_image_list_resp = self.messages.ListReferenceImagesResponse
     self.ref_image_service = (self.client.
                               productSearch_catalogs_referenceImages)
 
@@ -121,17 +120,18 @@ class ProductsClient(object):
         AlphaVisionProductSearchCatalogsDeleteRequest)
     self.list_catalogs_msg = (
         self.messages.AlphaVisionProductSearchCatalogsListRequest)
-    self.list_catalogs_resp = self.messages.ListCatalogsResponse
     self.delete_catalog_images_msg = (
         self.messages.
         AlphaVisionProductSearchCatalogsDeleteReferenceImagesRequest)
     self.catalog_service = self.client.productSearch_catalogs
 
     # Catalogs Import
-    self.import_catalog_msg = self.messages.ImportCatalogsRequest
-    self.import_catalog_resp = self.messages.ImportCatalogsResponse
-    self.import_catalog_config = self.messages.ImportCatalogsInputConfig
-    self.import_catalog_src = self.messages.ImportCatalogsGcsSource
+    # pylint: disable=line-too-long
+    self.import_catalog_msg = self.messages.GoogleCloudVisionV1alpha1ImportCatalogsRequest
+    self.import_catalog_resp = self.messages.GoogleCloudVisionV1alpha1ImportCatalogsResponse
+    self.import_catalog_config = self.messages.GoogleCloudVisionV1alpha1ImportCatalogsInputConfig
+    self.import_catalog_src = self.messages.GoogleCloudVisionV1alpha1ImportCatalogsGcsSource
+    # pylint: enable=line-too-long
 
     # Search
     self.search_request_msg = self.search_messages.AnnotateImageRequest
@@ -218,15 +218,15 @@ class ProductsClient(object):
     if bounds and not isinstance(bounds, self.messages.BoundingPoly):
       raise TypeError('bounds must be a valid BoundingPoly message.')
 
-    return self.messages.ReferenceImage(imageUri=image_path,
-                                        productCategory=product_category,
-                                        productId=product_id,
-                                        boundingPoly=bounds)
+    return self.ref_image_msg(imageUri=image_path,
+                              productCategory=product_category,
+                              productId=product_id,
+                              boundingPoly=bounds)
 
   def CreateRefImage(self, input_image, catalog_ref):
     """Creates a ReferenceImage in the specified Catalog."""
     image_create_request = self.ref_image_create_msg(
-        parent=catalog_ref, referenceImage=input_image)
+        parent=catalog_ref, googleCloudVisionV1alpha1ReferenceImage=input_image)
     return self.ref_image_service.Create(image_create_request)
 
   def DescribeRefImage(self, image_name):
@@ -255,7 +255,8 @@ class ProductsClient(object):
   # Catalog Management
   def CreateCatalog(self):
     """Create Catalog."""
-    return self.catalog_service.Create(self.messages.Catalog())
+    return self.catalog_service.Create(
+        self.messages.GoogleCloudVisionV1alpha1Catalog())
 
   def DeleteCatalog(self, catalog_name):
     """Delete a Catalog."""
@@ -284,7 +285,8 @@ class ProductsClient(object):
       per line.
 
     Returns:
-      Response: messages.ImportCatalogsResponse, result of the Import request.
+      Response: messages.GoogleCloudVisionV1alpha1ImportCatalogsResponse, result
+      of the Import request.
 
     Raises:
       GcsPathError: If CSV file path is not a valid GCS URI.
@@ -301,7 +303,7 @@ class ProductsClient(object):
         collection='alpha_vision.operations')
     op_response = self.WaitOperation(operation_ref)
     import_response = encoding.JsonToMessage(
-        self.messages.ImportCatalogsResponse,
+        self.import_catalog_resp,
         encoding.MessageToJson(op_response))
     return import_response
 

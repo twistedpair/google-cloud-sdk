@@ -13,11 +13,8 @@
 # limitations under the License.
 
 """Module used by gcloud to communicate with appengine services."""
-
+from __future__ import absolute_import
 from __future__ import with_statement
-
-import urllib2
-
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.core import exceptions
@@ -31,6 +28,9 @@ from googlecloudsdk.third_party.appengine.datastore import datastore_index
 from googlecloudsdk.third_party.appengine.tools import appengine_rpc_httplib2
 from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 
 
 APPCFG_SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
@@ -295,9 +295,10 @@ class AppengineClient(object):
       # with access to the appengine.admin scope.
       url = '%s/%s/scopes' % (METADATA_BASE, SERVICE_ACCOUNT_BASE)
       try:
-        req = urllib2.Request(url, headers={'Metadata-Flavor': 'Google'})
-        vm_scopes_string = urllib2.urlopen(req).read()
-      except urllib2.URLError, e:
+        req = six.moves.urllib.request.Request(
+            url, headers={'Metadata-Flavor': 'Google'})
+        vm_scopes_string = six.moves.urllib.request.urlopen(req).read()
+      except six.moves.urllib.error.URLError as e:
         raise Error(
             'Could not obtain scope list from metadata service: %s: %s. This '
             'may be because we are not running in a Google Compute Engine VM.' %

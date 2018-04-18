@@ -15,8 +15,12 @@
 """Common flags for some of the DNS commands."""
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import properties
 
 
 class KeyCompleter(completers.ListCommandCompleter):
@@ -57,6 +61,37 @@ def GetDnsZoneArg(help_text):
       'dns_zone', metavar='ZONE_NAME',
       completer=ManagedZoneCompleter,
       help=help_text)
+
+
+def ZoneAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='zone',
+      help_text='The Cloud DNS zone for the {resource}.')
+
+
+def ProjectAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='project',
+      help_text='The Cloud project for the {resource}.',
+      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
+
+
+def GetZoneResourceSpec():
+  return concepts.ResourceSpec(
+      'dns.managedZones',
+      resource_name='zone',
+      managedZone=ZoneAttributeConfig(),
+      project=ProjectAttributeConfig(),
+      disable_auto_completers=False)
+
+
+def GetZoneResourceArg(help_text=(
+    'Name of the managed-zone whose record-sets you want to manage.')):
+  return concept_parsers.ConceptParser.ForResource(
+      'zone',
+      GetZoneResourceSpec(),
+      help_text,
+      required=True)
 
 
 def GetZoneArg(help_text=(

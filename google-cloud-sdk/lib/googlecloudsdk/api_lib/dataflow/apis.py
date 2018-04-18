@@ -14,11 +14,14 @@
 """Helpers for interacting with the Cloud Dataflow API.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import properties
+import six
 
 DATAFLOW_API_NAME = 'dataflow'
 DATAFLOW_API_VERSION = 'v1b3'
@@ -192,7 +195,7 @@ class Templates(object):
       (Job)
     """
     params_list = []
-    for k, v in parameters.iteritems() if parameters else {}:
+    for k, v in six.iteritems(parameters) if parameters else {}:
       params_list.append(
           Templates.PARAMETERS_VALUE.AdditionalProperty(
               key=k, value=v))

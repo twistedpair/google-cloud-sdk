@@ -14,6 +14,9 @@
 
 """Support library for the auth command."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import store as c_store
 

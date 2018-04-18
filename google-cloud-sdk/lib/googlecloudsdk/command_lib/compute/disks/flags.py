@@ -43,6 +43,17 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 
+MULTISCOPE_LIST_FORMAT = """
+    table(
+      name,
+      location(),
+      location_scope(),
+      sizeGb,
+      type.basename(),
+      status
+      )"""
+
+
 class SnapshotsCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
@@ -71,7 +82,7 @@ def MakeDiskArgZonalOrRegional(plural):
       zonal_collection='compute.disks',
       regional_collection='compute.regionDisks',
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
-      region_hidden=True)
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='snapshot',

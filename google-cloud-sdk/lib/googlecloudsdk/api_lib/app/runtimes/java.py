@@ -17,6 +17,7 @@ This file is almost dead.  It currently just contains constants that we use in
 runtimes_test, which should also mostly go away.
 """
 
+from __future__ import absolute_import
 import textwrap
 
 JAVA_APP_YAML = textwrap.dedent("""\

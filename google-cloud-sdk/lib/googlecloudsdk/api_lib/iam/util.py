@@ -15,7 +15,13 @@
 """Utilities for IAM commands to call IAM APIs."""
 
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
+
+
+def GetClientAndMessages():
+  client = apis.GetClientInstance('iam', 'v1')
+  return client, client.MESSAGES_MODULE
 
 
 def GetTestablePermissions(iam_client, messages, resource):

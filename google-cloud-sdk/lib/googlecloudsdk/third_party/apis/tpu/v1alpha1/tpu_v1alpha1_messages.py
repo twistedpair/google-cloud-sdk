@@ -265,6 +265,8 @@ class Node(_messages.Message):
       REPAIRING: TPU node is being repaired and may be unusable. Details can
         be found in the `help_description` field.
       STOPPED: 7 - Reserved. Was SUSPENDED. TPU node is stopped.
+      STOPPING: TPU node is currently stopping.
+      STARTING: TPU node is currently starting.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -274,6 +276,8 @@ class Node(_messages.Message):
     DELETING = 5
     REPAIRING = 6
     STOPPED = 7
+    STOPPING = 8
+    STARTING = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

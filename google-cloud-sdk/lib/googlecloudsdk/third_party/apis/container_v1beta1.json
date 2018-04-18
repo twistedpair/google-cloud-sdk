@@ -1008,7 +1008,7 @@
     },
     "NetworkConfig": {
       "id": "NetworkConfig",
-      "description": "NetworkConfig reports the full network & subnetwork names.",
+      "description": "NetworkConfig reports the relative names of network & subnetwork.",
       "type": "object",
       "properties": {
         "network": {
@@ -1903,6 +1903,10 @@
         "name": {
           "description": "The name (project, location, cluster id) of the cluster to start IP\nrotation. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
+        },
+        "rotateCredentials": {
+          "description": "Whether to rotate credentials during IP rotation.",
+          "type": "boolean"
         },
         "version": {
           "description": "API request version that initiates this operation.",

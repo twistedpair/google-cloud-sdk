@@ -484,7 +484,8 @@ class Date(_messages.Message):
   Fields:
     day: Day of month. Must be from 1 to 31 and valid for the year and month,
       or 0 if specifying a year/month where the day is not significant.
-    month: Month of year. Must be from 1 to 12.
+    month: Month of year. Must be from 1 to 12, or 0 if specifying a date
+      without a month.
     year: Year of date. Must be from 1 to 9999, or 0 if specifying a date
       without a year.
   """

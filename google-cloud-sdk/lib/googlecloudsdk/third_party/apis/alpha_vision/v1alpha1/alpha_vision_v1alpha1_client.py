@@ -77,7 +77,7 @@ Possible errors:
         request: (AlphaVisionProductSearchCatalogsReferenceImagesCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ReferenceImage) The response message.
+        (GoogleCloudVisionV1alpha1ReferenceImage) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -91,9 +91,9 @@ Possible errors:
         path_params=[u'parent'],
         query_params=[],
         relative_path=u'v1alpha1/{+parent}/referenceImages',
-        request_field=u'referenceImage',
+        request_field=u'googleCloudVisionV1alpha1ReferenceImage',
         request_type_name=u'AlphaVisionProductSearchCatalogsReferenceImagesCreateRequest',
-        response_type_name=u'ReferenceImage',
+        response_type_name=u'GoogleCloudVisionV1alpha1ReferenceImage',
         supports_download=False,
     )
 
@@ -137,7 +137,7 @@ Returns `NOT_FOUND` if the specified image does not exist.
         request: (AlphaVisionProductSearchCatalogsReferenceImagesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ReferenceImage) The response message.
+        (GoogleCloudVisionV1alpha1ReferenceImage) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -153,7 +153,7 @@ Returns `NOT_FOUND` if the specified image does not exist.
         relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'AlphaVisionProductSearchCatalogsReferenceImagesGetRequest',
-        response_type_name=u'ReferenceImage',
+        response_type_name=u'GoogleCloudVisionV1alpha1ReferenceImage',
         supports_download=False,
     )
 
@@ -173,7 +173,7 @@ is 1000. Page sizes higher than 1000 will be treated as 1000.
         request: (AlphaVisionProductSearchCatalogsReferenceImagesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListReferenceImagesResponse) The response message.
+        (GoogleCloudVisionV1alpha1ListReferenceImagesResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -189,7 +189,7 @@ is 1000. Page sizes higher than 1000 will be treated as 1000.
         relative_path=u'v1alpha1/{+parent}/referenceImages',
         request_field='',
         request_type_name=u'AlphaVisionProductSearchCatalogsReferenceImagesListRequest',
-        response_type_name=u'ListReferenceImagesResponse',
+        response_type_name=u'GoogleCloudVisionV1alpha1ListReferenceImagesResponse',
         supports_download=False,
     )
 
@@ -213,10 +213,10 @@ returned by the `CreateCatalog` request as it is required for adding
 reference images.
 
       Args:
-        request: (Catalog) input message
+        request: (GoogleCloudVisionV1alpha1Catalog) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Catalog) The response message.
+        (GoogleCloudVisionV1alpha1Catalog) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -230,8 +230,8 @@ reference images.
         query_params=[],
         relative_path=u'v1alpha1/productSearch/catalogs',
         request_field='<request>',
-        request_type_name=u'Catalog',
-        response_type_name=u'Catalog',
+        request_type_name=u'GoogleCloudVisionV1alpha1Catalog',
+        response_type_name=u'GoogleCloudVisionV1alpha1Catalog',
         supports_download=False,
     )
 
@@ -333,7 +333,7 @@ reference image. If not specified, the inferred bounding polygon is the
 entire image.
 
       Args:
-        request: (ImportCatalogsRequest) input message
+        request: (GoogleCloudVisionV1alpha1ImportCatalogsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -350,7 +350,7 @@ entire image.
         query_params=[],
         relative_path=u'v1alpha1/productSearch/catalogs:import',
         request_field='<request>',
-        request_type_name=u'ImportCatalogsRequest',
+        request_type_name=u'GoogleCloudVisionV1alpha1ImportCatalogsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )
@@ -364,7 +364,7 @@ Note: Does not return empty catalogs (catalogs without reference images).
         request: (AlphaVisionProductSearchCatalogsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListCatalogsResponse) The response message.
+        (GoogleCloudVisionV1alpha1ListCatalogsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -379,7 +379,7 @@ Note: Does not return empty catalogs (catalogs without reference images).
         relative_path=u'v1alpha1/productSearch/catalogs',
         request_field='',
         request_type_name=u'AlphaVisionProductSearchCatalogsListRequest',
-        response_type_name=u'ListCatalogsResponse',
+        response_type_name=u'GoogleCloudVisionV1alpha1ListCatalogsResponse',
         supports_download=False,
     )
 

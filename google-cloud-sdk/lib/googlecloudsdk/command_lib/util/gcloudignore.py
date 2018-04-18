@@ -31,6 +31,7 @@ from __future__ import unicode_literals
 
 import collections
 import fnmatch
+import io
 import os
 import re
 
@@ -41,8 +42,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
+import six
 from six.moves import map  # pylint: disable=redefined-builtin
-
 
 IGNORE_FILE_NAME = '.gcloudignore'
 GIT_FILES = ['.git', '.gitignore']
@@ -459,7 +460,7 @@ class FileChooser(object):
     try:
       return cls.FromFile(included_path, recurse - 1).patterns
     except BadFileError as err:
-      raise BadIncludedFileError(err.message)
+      raise BadIncludedFileError(six.text_type(err))
 
   @classmethod
   def FromFile(cls, ignore_file_path, recurse=1):
@@ -481,7 +482,7 @@ class FileChooser(object):
       FileChooser.
     """
     try:
-      with open(ignore_file_path, 'rb') as f:
+      with io.open(ignore_file_path, 'rt') as f:
         text = f.read()
     except IOError as err:
       raise BadFileError(

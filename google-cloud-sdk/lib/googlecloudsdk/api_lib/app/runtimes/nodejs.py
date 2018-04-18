@@ -17,6 +17,7 @@
 WARNING WARNING WARNING: this file will shortly be removed.  Don't make any
 changes here.  See ./ext_runtimes/runtime_defs/nodejs instead.
 """
+from __future__ import absolute_import
 import textwrap
 
 

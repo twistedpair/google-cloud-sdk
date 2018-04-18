@@ -14,6 +14,7 @@
 
 """Utility methods used by the deploy command."""
 
+from __future__ import absolute_import
 import json
 import os
 import re
@@ -48,6 +49,8 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.tools import context_util
+from six.moves import filter  # pylint: disable=redefined-builtin
+from six.moves import zip  # pylint: disable=redefined-builtin
 
 DEFAULT_DOMAIN = 'appspot.com'
 DEFAULT_SERVICE = 'default'
@@ -621,7 +624,7 @@ def GetAppHostname(app=None, app_id=None, service=None, version=None,
   # certificate.
   #
   # We've tried to do the best possible thing in every case here.
-  subdomain_parts = filter(bool, [version, service_name, app_id])
+  subdomain_parts = list(filter(bool, [version, service_name, app_id]))
   scheme = 'http'
   if use_ssl == appinfo.SECURE_HTTP:
     subdomain = '.'.join(subdomain_parts)

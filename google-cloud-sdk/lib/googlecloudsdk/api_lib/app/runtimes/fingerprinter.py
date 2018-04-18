@@ -15,6 +15,7 @@
 """Package containing fingerprinting for all runtimes.
 """
 
+from __future__ import absolute_import
 from gae_ext_runtime import ext_runtime
 
 from googlecloudsdk.api_lib.app import ext_runtime_adapter

@@ -312,7 +312,9 @@
             "TPU node is undergoing reimaging.",
             "TPU node is being deleted.",
             "TPU node is being repaired and may be unusable. Details can be\nfound in the `help_description` field.",
-            "7 - Reserved. Was SUSPENDED.\nTPU node is stopped."
+            "7 - Reserved. Was SUSPENDED.\nTPU node is stopped.",
+            "TPU node is currently stopping.",
+            "TPU node is currently starting."
           ],
           "type": "string",
           "enum": [
@@ -323,7 +325,9 @@
             "REIMAGING",
             "DELETING",
             "REPAIRING",
-            "STOPPED"
+            "STOPPED",
+            "STOPPING",
+            "STARTING"
           ]
         },
         "healthDescription": {

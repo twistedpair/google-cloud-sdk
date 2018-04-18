@@ -14,6 +14,7 @@
 
 """Fingerprinting code for the Python runtime."""
 
+from __future__ import absolute_import
 import textwrap
 
 DOCKERFILE_PREAMBLE = 'FROM gcr.io/google-appengine/python\n'

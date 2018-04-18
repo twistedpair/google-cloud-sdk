@@ -916,8 +916,8 @@ class Registry(object):
       raise UnknownCollectionException(resource_id)
 
     parser = self.GetParserForCollection(collection, api_version=api_version)
-    base_url = _GetApiBaseUrl(parser.collection_info.api_name,
-                              parser.collection_info.api_version)
+    base_url = GetApiBaseUrl(parser.collection_info.api_name,
+                             parser.collection_info.api_version)
 
     parser_collection = parser.collection_info.full_name
     subcollection = ''
@@ -1045,8 +1045,8 @@ class Registry(object):
                         api_version=None):
     """Parser relative names. See Resource.RelativeName() method."""
     parser = self.GetParserForCollection(collection, api_version=api_version)
-    base_url = _GetApiBaseUrl(parser.collection_info.api_name,
-                              parser.collection_info.api_version)
+    base_url = GetApiBaseUrl(parser.collection_info.api_name,
+                             parser.collection_info.api_version)
     subcollection = parser.collection_info.GetSubcollection(collection)
 
     return parser.ParseRelativeName(
@@ -1177,7 +1177,7 @@ class Registry(object):
 REGISTRY = Registry()
 
 
-def _GetApiBaseUrl(api_name, api_version):
+def GetApiBaseUrl(api_name, api_version):
   """Determine base url to use for resources of given version."""
   # Use current override endpoint for this resource name.
   endpoint_override_property = getattr(

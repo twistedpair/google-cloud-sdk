@@ -19,7 +19,11 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import text
 
 
@@ -161,3 +165,37 @@ class ArgAdder(object):
         help=help_text)
 
     return self
+
+
+def InstanceAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='instance',
+      help_text='The Cloud Bigtable instance for the {resource}.')
+
+
+def ProjectAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='project',
+      help_text='The Cloud project for the {resource}.',
+      # Fall back to the project configured as the gcloud default
+      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
+
+
+def GetInstanceResourceSpec():
+  """Return the resource specification for a Bigtable instance."""
+  return concepts.ResourceSpec(
+      'bigtableadmin.projects.instances',
+      resource_name='instance',
+      instancesId=InstanceAttributeConfig(),
+      projectsId=ProjectAttributeConfig(),
+      disable_auto_completers=False)
+
+
+def AddInstanceResourceArg(parser, verb):
+  """Add --instance resource argument to the parser."""
+  concept_parsers.ConceptParser.ForResource(
+      'instance',
+      GetInstanceResourceSpec(),
+      'The instance {}.'.format(verb),
+      required=True,
+      plural=False).AddToParser(parser)

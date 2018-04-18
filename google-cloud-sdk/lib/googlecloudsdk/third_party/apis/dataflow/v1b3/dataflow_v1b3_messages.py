@@ -2623,6 +2623,9 @@ class MetricUpdate(_messages.Message):
       reported as a delta that is not associated with any WorkItem.
     distribution: A struct value describing properties of a distribution of
       numeric values.
+    gauge: A struct value describing properties of a Gauge. Metrics of gauge
+      type show the value of a metric across time, and is aggregated based on
+      the newest value.
     internal: Worker-computed aggregate value for internal use by the Dataflow
       service.
     kind: Metric aggregation kind.  The possible metric aggregation kinds are
@@ -2652,14 +2655,15 @@ class MetricUpdate(_messages.Message):
 
   cumulative = _messages.BooleanField(1)
   distribution = _messages.MessageField('extra_types.JsonValue', 2)
-  internal = _messages.MessageField('extra_types.JsonValue', 3)
-  kind = _messages.StringField(4)
-  meanCount = _messages.MessageField('extra_types.JsonValue', 5)
-  meanSum = _messages.MessageField('extra_types.JsonValue', 6)
-  name = _messages.MessageField('MetricStructuredName', 7)
-  scalar = _messages.MessageField('extra_types.JsonValue', 8)
-  set = _messages.MessageField('extra_types.JsonValue', 9)
-  updateTime = _messages.StringField(10)
+  gauge = _messages.MessageField('extra_types.JsonValue', 3)
+  internal = _messages.MessageField('extra_types.JsonValue', 4)
+  kind = _messages.StringField(5)
+  meanCount = _messages.MessageField('extra_types.JsonValue', 6)
+  meanSum = _messages.MessageField('extra_types.JsonValue', 7)
+  name = _messages.MessageField('MetricStructuredName', 8)
+  scalar = _messages.MessageField('extra_types.JsonValue', 9)
+  set = _messages.MessageField('extra_types.JsonValue', 10)
+  updateTime = _messages.StringField(11)
 
 
 class MountedDataDisk(_messages.Message):

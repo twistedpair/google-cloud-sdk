@@ -48,3 +48,7 @@ def Resource(collection, api_version=None):
     return ref
 
   return Parse
+
+
+def LowerCaseType(value):
+  return value.lower()

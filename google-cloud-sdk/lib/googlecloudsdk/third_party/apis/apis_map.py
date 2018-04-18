@@ -130,6 +130,14 @@ MAP = {
             default_version=True
         ),
     },
+    'binaryauthorization': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.binaryauthorization.v1alpha1',
+            client_classpath='binaryauthorization_v1alpha1_client.BinaryauthorizationV1alpha1',
+            messages_modulepath='binaryauthorization_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'bio': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.bio.v1',

@@ -14,6 +14,7 @@
 
 """Utilities for dealing with version resources."""
 
+from __future__ import absolute_import
 import re
 
 from apitools.base.py import exceptions as apitools_exceptions
@@ -26,6 +27,7 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import text
 from googlecloudsdk.core.util import times
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 class VersionValidationError(exceptions.Error):
@@ -157,7 +159,7 @@ def ParseVersionResourcePaths(paths, project):
     VersionValidationError: If not all versions are valid resource paths for the
       current project.
   """
-  versions = map(Version.FromResourcePath, paths)
+  versions = list(map(Version.FromResourcePath, paths))
 
   for version in versions:
     if not (version.project or version.service):

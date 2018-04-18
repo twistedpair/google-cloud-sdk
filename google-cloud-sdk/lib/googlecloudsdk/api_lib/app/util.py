@@ -14,20 +14,21 @@
 
 """Utility functions for gcloud app."""
 
+from __future__ import absolute_import
 import datetime
 import os
 import posixpath
 import sys
 import time
-import urllib2
-
 import enum
-
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.appengine.api import client_deployinfo
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 
 
 class Error(exceptions.Error):
@@ -402,7 +403,7 @@ class ClientDeployLoggingContext(object):
           success=success,
           sdk_version=config.CLOUD_SDK_VERSION)
       self.Send('/api/logclientdeploy', info.ToYAML())
-    except BaseException, e:
+    except BaseException as e:  # pylint: disable=broad-except
       log.debug('Exception logging deploy info continuing - {0}'.format(e))
 
 
@@ -425,7 +426,7 @@ class RPCServer(object):
       response = self._server.Send(*args, **kwargs)
       log.debug('Got response: %s', response)
       return response
-    except urllib2.HTTPError as e:
+    except six.moves.urllib.error.HTTPError as e:
       # This is the message body, if included in e
       if hasattr(e, 'read'):
         body = e.read()

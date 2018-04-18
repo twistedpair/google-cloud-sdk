@@ -6,7 +6,7 @@
   "canonicalName": "Cloud Functions",
   "version": "v1",
   "revision": "0",
-  "title": "Google Cloud Functions API",
+  "title": "Cloud Functions API",
   "description": "Manages lightweight user-provided functions executed in response to events.",
   "ownerDomain": "google.com",
   "ownerName": "Google",

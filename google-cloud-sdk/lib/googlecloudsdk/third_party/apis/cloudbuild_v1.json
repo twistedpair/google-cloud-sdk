@@ -889,6 +889,24 @@
           "$ref": "Build"
         }
       }
+    },
+    "ArtifactResult": {
+      "id": "ArtifactResult",
+      "description": "An artifact that was uploaded during a build. This\nis a single record in the artifact manifest JSON file.",
+      "type": "object",
+      "properties": {
+        "location": {
+          "description": "The path of an artifact in a Google Cloud Storage bucket, with the\ngeneration number. For example,\n`gs:\/\/mybucket\/path\/to\/output.jar#generation`.",
+          "type": "string"
+        },
+        "fileHash": {
+          "description": "The file hash of the artifact.",
+          "type": "array",
+          "items": {
+            "$ref": "FileHashes"
+          }
+        }
+      }
     }
   },
   "resources": {

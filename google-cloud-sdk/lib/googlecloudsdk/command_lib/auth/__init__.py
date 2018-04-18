@@ -13,3 +13,6 @@
 # limitations under the License.
 
 """Libraries to support the auth command surface."""
+
+from __future__ import unicode_literals
+

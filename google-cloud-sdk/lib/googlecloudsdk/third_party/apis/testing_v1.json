@@ -5,7 +5,7 @@
   "name": "testing",
   "version": "v1",
   "revision": "0",
-  "title": "Google Cloud Testing API",
+  "title": "Cloud Testing API",
   "description": "Allows developers to run automated tests for their mobile applications on Google infrastructure.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -1221,7 +1221,7 @@
           "format": "int32"
         },
         "month": {
-          "description": "Month of year. Must be from 1 to 12.",
+          "description": "Month of year. Must be from 1 to 12, or 0 if specifying a date without a\nmonth.",
           "type": "integer",
           "format": "int32"
         },

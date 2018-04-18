@@ -83,11 +83,10 @@ Or (even easier) use a 'custom' runtime:
     runtime: custom
     $ gcloud beta app deploy
 """
+from __future__ import absolute_import
 import contextlib
 import os
 import re
-import urllib2
-
 import enum
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import config as cloudbuild_config
@@ -98,6 +97,9 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 
 
 # "test-{ga,beta}" runtimes are canaries for unit testing
@@ -247,7 +249,7 @@ def _Read(uri):
   """
   try:
     if uri.startswith('file://'):
-      with contextlib.closing(urllib2.urlopen(uri)) as req:
+      with contextlib.closing(six.moves.urllib.request.urlopen(uri)) as req:
         yield req
     elif uri.startswith('gs://'):
       storage_client = storage_api.StorageClient()
@@ -256,7 +258,7 @@ def _Read(uri):
         yield f
     else:
       raise InvalidRuntimeBuilderURI(uri)
-  except (urllib2.HTTPError, urllib2.URLError,
+  except (six.moves.urllib.error.HTTPError, six.moves.urllib.error.URLError,
           calliope_exceptions.BadFileException) as e:
     log.debug('', exc_info=True)
     raise FileReadError(str(e))
@@ -410,7 +412,7 @@ class Manifest(object):
     Returns:
       [str], The runtime names.
     """
-    return self._data.get('runtimes', {}).keys()
+    return list(self._data.get('runtimes', {}).keys())
 
   def GetBuilderReference(self, runtime):
     """Gets the associated reference for the given runtime.

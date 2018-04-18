@@ -16029,9 +16029,10 @@ class InstanceGroupManager(_messages.Message):
       of those actions.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    fingerprint: [Output Only] The fingerprint of the resource data. You can
-      use this optional field for optimistic locking when you update the
-      resource.
+    fingerprint: Fingerprint of this resource. This field may be used in
+      optimistic locking. It will be ignored when inserting an
+      InstanceGroupManager. An up-to-date fingerprint must be provided in
+      order to update the InstanceGroupManager or the field need to be unset.
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
@@ -23441,7 +23442,7 @@ class SslPolicy(_messages.Message):
   Enums:
     MinTlsVersionValueValuesEnum: The minimum version of SSL protocol that can
       be used by the clients to establish a connection with the load balancer.
-      This can be one of TLS_1_0, TLS_1_1, TLS_1_2, TLS_1_3.
+      This can be one of TLS_1_0, TLS_1_1, TLS_1_2.
     ProfileValueValuesEnum: Profile specifies the set of SSL features that can
       be used by the load balancer when negotiating SSL with clients. This can
       be one of COMPATIBLE, MODERN, RESTRICTED, or CUSTOM. If using CUSTOM,
@@ -23471,7 +23472,7 @@ class SslPolicy(_messages.Message):
       policies.
     minTlsVersion: The minimum version of SSL protocol that can be used by the
       clients to establish a connection with the load balancer. This can be
-      one of TLS_1_0, TLS_1_1, TLS_1_2, TLS_1_3.
+      one of TLS_1_0, TLS_1_1, TLS_1_2.
     name: Name of the resource. The name must be 1-63 characters long, and
       comply with RFC1035. Specifically, the name must be 1-63 characters long
       and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
@@ -23490,18 +23491,16 @@ class SslPolicy(_messages.Message):
   class MinTlsVersionValueValuesEnum(_messages.Enum):
     """The minimum version of SSL protocol that can be used by the clients to
     establish a connection with the load balancer. This can be one of TLS_1_0,
-    TLS_1_1, TLS_1_2, TLS_1_3.
+    TLS_1_1, TLS_1_2.
 
     Values:
       TLS_1_0: <no description>
       TLS_1_1: <no description>
       TLS_1_2: <no description>
-      TLS_1_3: <no description>
     """
     TLS_1_0 = 0
     TLS_1_1 = 1
     TLS_1_2 = 2
-    TLS_1_3 = 3
 
   class ProfileValueValuesEnum(_messages.Enum):
     """Profile specifies the set of SSL features that can be used by the load

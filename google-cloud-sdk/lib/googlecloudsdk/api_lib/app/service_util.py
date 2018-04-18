@@ -14,9 +14,11 @@
 
 """Utilities for dealing with service resources."""
 
+from __future__ import absolute_import
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import text
+import six
 
 
 class ServiceValidationError(exceptions.Error):
@@ -155,7 +157,7 @@ def ParseTrafficAllocations(args_allocations, split_method):
     raise err
 
   allocations = {}
-  for version, split in args_allocations.iteritems():
+  for version, split in six.iteritems(args_allocations):
     allocation = float(split) / sum_of_splits
     allocation = round(allocation, max_decimal_places)
     if allocation == 0.0:

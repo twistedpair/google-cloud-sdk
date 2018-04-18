@@ -14,6 +14,7 @@
 
 """Module to parse .yaml files for an appengine app."""
 
+from __future__ import absolute_import
 import os
 
 from googlecloudsdk.api_lib.app import util

@@ -14,6 +14,7 @@
 
 """This module holds exceptions raised by api lib."""
 
+from __future__ import absolute_import
 from googlecloudsdk.core import exceptions
 
 

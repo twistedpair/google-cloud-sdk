@@ -1249,12 +1249,13 @@ class APIAdapter(object):
     op = self.client.projects_locations_clusters.SetMasterAuth(req)
     return self.ParseOperation(op.name, cluster_ref.zone)
 
-  def StartIpRotation(self, cluster_ref):
+  def StartIpRotation(self, cluster_ref, rotate_credentials):
     operation = self.client.projects_locations_clusters.StartIpRotation(
         self.messages.StartIPRotationRequest(
             name=ProjectLocationCluster(cluster_ref.projectId,
                                         cluster_ref.zone,
-                                        cluster_ref.clusterId)))
+                                        cluster_ref.clusterId),
+            rotateCredentials=rotate_credentials))
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
   def CompleteIpRotation(self, cluster_ref):
@@ -1782,6 +1783,33 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             resource=ProjectLocationCluster(cluster_ref.projectId,
                                             cluster_ref.zone,
                                             cluster_ref.clusterId)))
+
+  def ListUsableSubnets(self, project_ref, network_project, filter_arg):
+    """List usable subnets for a given project.
+
+    Args:
+      project_ref: project where clusters will be created.
+      network_project: project ID where clusters will be created.
+      filter_arg: value of filter flag.
+    Returns:
+      Response containing the list of subnetworks and a next page token.
+    """
+    filters = []
+    if network_project is not None:
+      filters.append('networkProjectId=' + network_project)
+
+    if filter_arg is not None:
+      filters.append(filter_arg)
+
+    filters = ' AND '.join(filters)
+
+    req = self.messages.ContainerProjectsAggregatedUsableSubnetworksListRequest(
+        # parent example: 'projects/abc'
+        parent=project_ref.RelativeName(),
+        # max pageSize accepted by GKE
+        pageSize=500,
+        filter=filters)
+    return self.client.projects_aggregated_usableSubnetworks.List(req)
 
 
 def _AddNodeLabelsToNodeConfig(node_config, options):

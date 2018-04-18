@@ -1478,7 +1478,7 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
 
 
 class NetworkConfig(_messages.Message):
-  """NetworkConfig reports the full network & subnetwork names.
+  """NetworkConfig reports the relative names of network & subnetwork.
 
   Fields:
     network: Output only. The name of the Google Compute Engine
@@ -2499,6 +2499,7 @@ class StartIPRotationRequest(_messages.Message):
       project
       number](https://developers.google.com/console/help/new/#projectnumber).
       This field has been deprecated and replaced by the name field.
+    rotateCredentials: Whether to rotate credentials during IP rotation.
     version: API request version that initiates this operation.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
@@ -2508,8 +2509,9 @@ class StartIPRotationRequest(_messages.Message):
   clusterId = _messages.StringField(1)
   name = _messages.StringField(2)
   projectId = _messages.StringField(3)
-  version = _messages.StringField(4)
-  zone = _messages.StringField(5)
+  rotateCredentials = _messages.BooleanField(4)
+  version = _messages.StringField(5)
+  zone = _messages.StringField(6)
 
 
 class UpdateClusterRequest(_messages.Message):

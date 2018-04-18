@@ -504,10 +504,13 @@ class Job(_messages.Message):
   Enums:
     JobStateValueValuesEnum: Output only. State of the job. For example:
       enabled, paused, or disabled.
+    ViewValueValuesEnum: Output only. The view specifies which subset of the
+      Job has been returned.
 
   Fields:
     appEngineHttpTarget: App Engine Http target.
-    description: A human-readable description for the job.
+    description: A human-readable description for the job. This string must
+      not contain more than 500 characters.
     httpTarget: Http target.
     jobState: Output only. State of the job. For example: enabled, paused, or
       disabled.
@@ -531,6 +534,8 @@ class Job(_messages.Message):
       execution.
     userUpdateTime: Output only. The time of the last user update to the job,
       or the creation time if there have been no updates.
+    view: Output only. The view specifies which subset of the Job has been
+      returned.
   """
 
   class JobStateValueValuesEnum(_messages.Enum):
@@ -551,6 +556,27 @@ class Job(_messages.Message):
     PAUSED = 2
     DISABLED = 3
 
+  class ViewValueValuesEnum(_messages.Enum):
+    """Output only. The view specifies which subset of the Job has been
+    returned.
+
+    Values:
+      VIEW_UNSPECIFIED: Unspecified. Defaults to BASIC.
+      BASIC: The basic view omits fields which can be large or can contain
+        sensitive data.  This view does not include the payload and
+        PubsubTarget.pubsub_message.
+      FULL: All information is returned.  Payloads and
+        PubsubTarget.pubsub_message might be desirable to return only when
+        needed, because they can be large and because of the sensitivity of
+        the data that you choose to store in it.  Authorization for
+        Job.View.FULL requires `cloudscheduler.jobs.fullView` [Google
+        IAM](https://cloud.google.com/iam/) permission on the Job.name
+        resource.
+    """
+    VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
   appEngineHttpTarget = _messages.MessageField('AppEngineHttpTarget', 1)
   description = _messages.StringField(2)
   httpTarget = _messages.MessageField('HttpTarget', 3)
@@ -563,6 +589,7 @@ class Job(_messages.Message):
   schedule = _messages.MessageField('Schedule', 10)
   status = _messages.MessageField('Status', 11)
   userUpdateTime = _messages.StringField(12)
+  view = _messages.EnumField('ViewValueValuesEnum', 13)
 
 
 class ListJobsResponse(_messages.Message):

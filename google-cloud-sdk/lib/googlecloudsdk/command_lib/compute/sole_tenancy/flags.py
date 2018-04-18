@@ -56,6 +56,10 @@ def AddSoleTenancyArgsToParser(parser):
       '--sole-tenancy-host',
       action=actions.DeprecationAction(
           '--sole-tenancy-host',
-          warn='{flag_name} is now deprecated. Use --node-affinity instead.'),
+          removed=True,
+          error='Instance creation on sole tenancy hosts is deprecated. Use '
+                '--node-affinity-file, --node-group, --node-index flags '
+                'instead. See `alpha compute sole-tenancy node-groups` for '
+                'more information.'),
       hidden=True,
       help='The name of the sole tenancy host to create this instance on.')

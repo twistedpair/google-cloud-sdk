@@ -314,6 +314,26 @@ def AddBetaArgs(parser):
       help='A list of up to 100 additional APKs to install, in addition to '
       'those being directly tested. The path may be in the local filesystem or '
       'in Google Cloud Storage using gs:// notation.')
+  parser.add_argument(
+      '--other-files',
+      type=arg_parsers.ArgDict(min_length=1),
+      action='append',
+      metavar='FILE=DEVICE_DIR',
+      help="""\
+      A list of file=device-directory pairs that indicate paths of files to push
+      to the device before starting tests, and the device directory to push them
+      to.\n
+      Source file paths may be in the local filesystem or in Google Cloud
+      Storage (gs://...). Device directories must be absolute, whitelisted paths
+      (${EXTERNAL_STORAGE}, or ${ANDROID_DATA}/local/tmp).\n
+      Examples:\n
+      ```
+      --other-files local/file1=/sdcard/dir1/
+      --other-files gs://bucket/file2=/sdcard/dir2
+      ```\n
+      This flag only copies files to the device. To install files, like OBB or
+      APK files, see --obb-files and --additional-apks.
+      """)
 
 
 def AddMatrixArgs(parser):

@@ -14,6 +14,8 @@
 
 """Resource parsing utilities for services."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.core import resources
 
 

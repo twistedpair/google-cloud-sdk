@@ -39,7 +39,7 @@ from six.moves import urllib
 from six.moves import zip  # pylint: disable=redefined-builtin
 
 
-def Http(timeout='unset'):
+def Http(timeout='unset', response_encoding=None):
   """Get an httplib2.Http client that is properly configured for use by gcloud.
 
   This method does not add credentials to the client.  For an Http client that
@@ -49,6 +49,7 @@ def Http(timeout='unset'):
     timeout: double, The timeout in seconds to pass to httplib2.  This is the
         socket level timeout.  If timeout is None, timeout is infinite.  If
         default argument 'unset' is given, a sensible default is selected.
+    response_encoding: str, the encoding to use to decode the response.
 
   Returns:
     An httplib2.Http client object configured with all the required settings
@@ -76,6 +77,7 @@ def Http(timeout='unset'):
       gcloud_ua,
       properties.VALUES.core.log_http.GetBool(),
       properties.VALUES.core.log_http_redact_token.GetBool(),
+      response_encoding
   )
 
   return http_client
@@ -120,7 +122,7 @@ def GetDefaultTimeout():
 
 def _Wrap(
     http_client, trace_token, trace_email, trace_log, request_reason, gcloud_ua,
-    log_http, log_http_redact_token):
+    log_http, log_http_redact_token, response_encoding):
   """Wrap request with user-agent, and trace reporting.
 
   Args:
@@ -133,6 +135,7 @@ def _Wrap(
     log_http: bool, True to enable request/response logging.
     log_http_redact_token: bool, True to avoid logging access tokens if log_http
                            is set.
+    response_encoding: str, the encoding to use to decode the response.
 
   Returns:
     http, The same http object but with the request method wrapped.
@@ -173,7 +176,8 @@ def _Wrap(
         Modifiers.DumpRequest(session_capturer.SessionCapturer.capturer),
         Modifiers.DumpResponse(session_capturer.SessionCapturer.capturer)))
 
-  return Modifiers.WrapRequest(http_client, handlers)
+  return Modifiers.WrapRequest(http_client, handlers,
+                               response_encoding=response_encoding)
 
 
 class Modifiers(object):
@@ -234,8 +238,8 @@ class Modifiers(object):
       self.data = data
 
   @classmethod
-  def WrapRequest(cls, http_client, handlers,
-                  exc_handler=None, exc_type=Exception):
+  def WrapRequest(cls, http_client, handlers, exc_handler=None,
+                  exc_type=Exception, response_encoding=None):
     """Wraps an http client with request modifiers.
 
     Args:
@@ -246,6 +250,7 @@ class Modifiers(object):
         should also throw an exception if you don't want it to be swallowed.
       exc_type: The type of exception that should be caught and given to the
         handler.
+      response_encoding: str, the encoding to use to decode the response.
 
     Returns:
       The wrapped http client.
@@ -283,6 +288,9 @@ class Modifiers(object):
         else:
           raise
 
+      if response_encoding is not None:
+        response = Modifiers._DecodeResponse(response, response_encoding)
+
       for handler, data in zip(handlers, modifier_data):
         if handler.response:
           handler.response(response, data)
@@ -310,6 +318,13 @@ class Modifiers(object):
     if isinstance(value, six.text_type):
       value = value.encode('utf8')
     return header, value
+
+  @classmethod
+  def _DecodeResponse(cls, response, response_encoding):
+    """Decodes the response content if an encoding is given."""
+    response, content = response
+    content = content.decode(response_encoding)
+    return response, content
 
   @classmethod
   def AppendToHeader(cls, header, value):
@@ -379,7 +394,7 @@ class Modifiers(object):
     """Logs the contents of the http request.
 
     Args:
-      redact_token: bool, True to redact Authorization header.
+      redact_token: bool, True to redact auth tokens.
 
     Returns:
       A function that can be used in a Handler.request.
@@ -410,7 +425,8 @@ class Modifiers(object):
       log.status.Print('method: {method}'.format(method=method))
       log.status.Print('== headers start ==')
       for h, v in sorted(six.iteritems(headers)):
-        if redact_token and h == b'Authorization':
+        if redact_token and (h == b'Authorization' or
+                             h == b'x-goog-iam-authorization-token'):
           v = '--- Token Redacted ---'
         log.status.Print('{0}: {1}'.format(h, v))
       log.status.Print('== headers end ==')

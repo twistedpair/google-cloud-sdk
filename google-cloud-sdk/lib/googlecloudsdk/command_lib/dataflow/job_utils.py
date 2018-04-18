@@ -14,6 +14,8 @@
 """Helpers for writing commands interacting with jobs and their IDs.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.dataflow import apis
 
 from googlecloudsdk.core import properties

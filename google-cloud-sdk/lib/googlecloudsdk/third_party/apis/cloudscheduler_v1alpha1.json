@@ -200,7 +200,7 @@
           "type": "string"
         },
         "description": {
-          "description": "A human-readable description for the job.",
+          "description": "A human-readable description for the job. This string must not contain\nmore than 500 characters.",
           "type": "string"
         },
         "pubsubTarget": {
@@ -243,6 +243,20 @@
         "status": {
           "description": "Output only. The response from the target of the last attempted execution.",
           "$ref": "Status"
+        },
+        "view": {
+          "description": "Output only. The view specifies which subset of the Job has been\nreturned.",
+          "enumDescriptions": [
+            "Unspecified. Defaults to BASIC.",
+            "The basic view omits fields which can be large or can contain\nsensitive data.\n\nThis view does not include the payload and\nPubsubTarget.pubsub_message.",
+            "All information is returned.\n\nPayloads and PubsubTarget.pubsub_message might be desirable\nto return only when needed, because they can be large and\nbecause of the sensitivity of the data that you choose to store\nin it.\n\nAuthorization for Job.View.FULL requires\n`cloudscheduler.jobs.fullView`\n[Google IAM](https:\/\/cloud.google.com\/iam\/) permission on the\nJob.name resource."
+          ],
+          "type": "string",
+          "enum": [
+            "VIEW_UNSPECIFIED",
+            "BASIC",
+            "FULL"
+          ]
         },
         "nextScheduleTime": {
           "description": "Output only. The next time the job is scheduled. Note that this may be a\nretry of a previously failed execution or the next execution time\naccording to the schedule.",

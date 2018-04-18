@@ -13,6 +13,7 @@
 # limitations under the License.
 """Adapter to use externalized runtimes loaders from gcloud."""
 
+from __future__ import absolute_import
 import os
 
 from gae_ext_runtime import ext_runtime

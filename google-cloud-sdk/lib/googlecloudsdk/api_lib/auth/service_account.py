@@ -14,6 +14,9 @@
 
 """Manages logic for service accounts."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import io
 import json
 import os
@@ -23,6 +26,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
+
 from oauth2client import service_account
 
 

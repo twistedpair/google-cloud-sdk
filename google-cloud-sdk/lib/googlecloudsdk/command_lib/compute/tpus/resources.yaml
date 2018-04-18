@@ -11,6 +11,7 @@ location:
   name: location
   api_version: v1alpha1
   collection: tpu.projects.locations
+  disable_auto_completers: False
   attributes:
     - &location
       parameter_name: locationsId
@@ -21,8 +22,8 @@ location:
         If not specified, will use `default` compute/zone.
       property: compute/zone
 
-node:
-  name: node
+tpu:
+  name: tpu
   api_version: v1alpha1
   collection: tpu.projects.locations.nodes
   attributes:
@@ -42,3 +43,14 @@ tensorflowversion:
       parameter_name: tensorflowVersionsId
       attribute_name: version
       help: The id of the Tensorflow version.
+
+acceleratortype:
+  name: acceleratortype
+  api_version: v1alpha1
+  collection: tpu.projects.locations.acceleratorTypes
+  attributes:
+    - *location
+    - &acceleratortype
+      parameter_name: acceleratorTypesId
+      attribute_name: accelerator_type
+      help: The id of the accelerator type.

@@ -281,20 +281,18 @@ class StorageClient(object):
 
     Args:
       bucket_ref: The reference to the bucket.
-    Returns:
-      A set of names of items.
+    Yields:
+      Object messages.
     """
     request = self.messages.StorageObjectsListRequest(bucket=bucket_ref.bucket)
-    items = set()
     try:
       # batch_size=None gives us the API default
-      for item in list_pager.YieldFromList(self.client.objects, request,
-                                           batch_size=None):
-        items.add(item.name)
+      for obj in list_pager.YieldFromList(self.client.objects,
+                                          request, batch_size=None):
+        yield obj
     except api_exceptions.HttpError as e:
       raise UploadError('Error uploading files: {e}'.format(
           e=http_exc.HttpException(e)))
-    return items
 
   def DeleteObject(self, bucket_ref, object_path):
     """Delete the specified object.

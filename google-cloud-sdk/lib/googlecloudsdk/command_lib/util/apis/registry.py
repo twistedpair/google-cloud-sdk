@@ -146,6 +146,8 @@ class APIMethod(object):
     self.response_type = method_config.response_type_name
 
     self._request_collection = self._RequestCollection()
+    # Keep track of method query parameters
+    self.query_params = method_config.query_params
 
   @property
   def resource_argument_collection(self):
