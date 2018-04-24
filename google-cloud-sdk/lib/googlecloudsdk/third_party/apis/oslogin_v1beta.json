@@ -203,6 +203,20 @@
         "accountId": {
           "description": "Output only. A POSIX account identifier.",
           "type": "string"
+        },
+        "operatingSystemType": {
+          "description": "The operating system type where this account applies.",
+          "enumDescriptions": [
+            "The operating system type associated with the user account information is\nunspecified.",
+            "Linux user account information.",
+            "Windows user account information."
+          ],
+          "type": "string",
+          "enum": [
+            "OPERATING_SYSTEM_TYPE_UNSPECIFIED",
+            "LINUX",
+            "WINDOWS"
+          ]
         }
       }
     },

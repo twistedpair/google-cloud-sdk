@@ -192,7 +192,7 @@
     },
     "Job": {
       "id": "Job",
-      "description": "Configuration for a job.",
+      "description": "Configuration for a job.\nThe maximum allowed size for a job is 100KB.",
       "type": "object",
       "properties": {
         "name": {
@@ -243,20 +243,6 @@
         "status": {
           "description": "Output only. The response from the target of the last attempted execution.",
           "$ref": "Status"
-        },
-        "view": {
-          "description": "Output only. The view specifies which subset of the Job has been\nreturned.",
-          "enumDescriptions": [
-            "Unspecified. Defaults to BASIC.",
-            "The basic view omits fields which can be large or can contain\nsensitive data.\n\nThis view does not include the payload and\nPubsubTarget.pubsub_message.",
-            "All information is returned.\n\nPayloads and PubsubTarget.pubsub_message might be desirable\nto return only when needed, because they can be large and\nbecause of the sensitivity of the data that you choose to store\nin it.\n\nAuthorization for Job.View.FULL requires\n`cloudscheduler.jobs.fullView`\n[Google IAM](https:\/\/cloud.google.com\/iam\/) permission on the\nJob.name resource."
-          ],
-          "type": "string",
-          "enum": [
-            "VIEW_UNSPECIFIED",
-            "BASIC",
-            "FULL"
-          ]
         },
         "nextScheduleTime": {
           "description": "Output only. The next time the job is scheduled. Note that this may be a\nretry of a previously failed execution or the next execution time\naccording to the schedule.",
@@ -401,7 +387,7 @@
           ]
         },
         "headers": {
-          "description": "The user can specify HTTP request headers to send with the Job's\nHTTP request. This map contains the header field names and\nvalues. Repeated headers are not supported, but a header value can\ncontain commas. These headers represent a subset of the headers\nthat will accompany the Job's HTTP request. Some HTTP request\nheaders will be ignored or replaced. A partial list of headers that\nwill be ignored or replaced is below:\n- Host: This will be computed by Cloud Scheduler and derived from\nHttpTarget.url.\n- Content-Length: This will be computed by Cloud Scheduler.\n- User-Agent: This will be populated by Cloud Scheduler.\n- X-Google-*: Google internal use only.\n- X-AppEngine-*: Google internal use only.\n",
+          "description": "The user can specify HTTP request headers to send with the Job's\nHTTP request. This map contains the header field names and\nvalues. Repeated headers are not supported, but a header value can\ncontain commas. These headers represent a subset of the headers\nthat will accompany the Job's HTTP request. Some HTTP request\nheaders will be ignored or replaced. A partial list of headers that\nwill be ignored or replaced is below:\n- Host: This will be computed by Cloud Scheduler and derived from\nHttpTarget.url.\n- Content-Length: This will be computed by Cloud Scheduler.\n- User-Agent: This will be populated by Cloud Scheduler.\n- X-Google-*: Google internal use only.\n- X-AppEngine-*: Google internal use only.\n\nThe total size of headers must be less than 80KB.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -419,8 +405,8 @@
       "description": "Scheduler schedule in an English-like format.",
       "type": "object",
       "properties": {
-        "timezone": {
-          "description": "Specifies the time zone to be used in interpreting\nSchedule.schedule. The value of this field must be a\ntime zone name from the tz database:\nhttp:\/\/en.wikipedia.org\/wiki\/Tz_database.\n\nNote that some timezones include a includes a provision for\ndaylight savings time. The rules for daylight saving time are\ndetermined by the chosen tz. For UTC use the string \"utc\". If a\ntimezone is not specified, the default will be in UTC (also known\nas GMT).",
+        "timeZone": {
+          "description": "Specifies the time zone to be used in interpreting\nSchedule.schedule. The value of this field must be a\ntime zone name from the tz database:\nhttp:\/\/en.wikipedia.org\/wiki\/Tz_database.\n\nNote that some time zones include a provision for\ndaylight savings time. The rules for daylight saving time are\ndetermined by the chosen tz. For UTC use the string \"utc\". If a\ntime zone is not specified, the default will be in UTC (also known\nas GMT).",
           "type": "string"
         },
         "schedule": {
@@ -462,27 +448,27 @@
       "type": "object",
       "properties": {
         "retryCount": {
-          "description": "It determines the  number attempts that the system will make to deliver a\njob using the exponential backoff procedure described above.\n\nThe default value of retry_count is zero.\n\nIf retry_count is zero, a job attempt will *not* be retried if\nit fails. Instead the Cloud Scheduler system will wait for the\nnext scheduled execution time.\n\nIf retry_count is set to a non-zero number then Cloud Scheduler\nwill retry failed attempts, using exponential backoff,\nretry_count times, or until the next scheduled execution time,\nwhichever comes first.\n\nValue greater than 5 and negative values are not allowed.",
+          "description": "It determines the  number attempts that the system will make to run a\njob using the exponential backoff procedure described above.\n\nThe default value of retry_count is zero.\n\nIf retry_count is zero, a job attempt will *not* be retried if\nit fails. Instead the Cloud Scheduler system will wait for the\nnext scheduled execution time.\n\nIf retry_count is set to a non-zero number then Cloud Scheduler\nwill retry failed attempts, using exponential backoff,\nretry_count times, or until the next scheduled execution time,\nwhichever comes first.\n\nValue greater than 5 and negative values are not allowed.",
           "type": "integer",
           "format": "int32"
         },
-        "jobAgeLimit": {
-          "description": "The time limit for retrying a failed job, measured from when the\njob was first run. If specified with RetryConfig.retry_count,\nthe job will be retried until both limits are reached.\n\nThe default value for job_age_limit is zero, which means job age is\nunlimited.",
+        "maxRetryDuration": {
+          "description": "The time limit for retrying a failed job, measured from time when an\nexecution was first attempted. If specified with\nRetryConfig.retry_count, the job will be retried until both limits are\nreached.\n\nThe default value for max_retry_duration is zero, which means retry\nduration is unlimited.",
           "type": "string",
           "format": "google-duration"
         },
-        "minBackoffSeconds": {
-          "description": "The minimum amount of time to wait before retrying a task after\nit fails.\n\nThe default value of this field is 0.1 seconds.",
+        "minBackoffDuration": {
+          "description": "The minimum amount of time to wait before retrying a job after\nit fails.\n\nThe default value of this field is 5 seconds.",
           "type": "string",
           "format": "google-duration"
         },
-        "maxBackoffSeconds": {
-          "description": "The maximum amount of time to wait before retrying a task after\nit fails.\n\nThe default value of this field is 1 hour.",
+        "maxBackoffDuration": {
+          "description": "The maximum amount of time to wait before retrying a job after\nit fails.\n\nThe default value of this field is 1 hour.",
           "type": "string",
           "format": "google-duration"
         },
         "maxDoublings": {
-          "description": "The maximum number of times that the interval between failed job\nretries will be doubled before the increase becomes constant. The\nconstant is: 2**(max_doublings - 1) *\nRetryConfig.min_backoff_seconds.\n\nThe default value of this field is 16.",
+          "description": "The time between retries will double `max_doublings` times.\n\nA job's retry interval starts at\nmin_backoff_duration, then doubles\n`max_doublings` times, then increases linearly, and finally\nretries retries at intervals of\nmax_backoff_duration up to\nretry_count times.\n\nFor example, if min_backoff_duration is\n10s, max_backoff_duration is 300s, and\n`max_doublings` is 3, then the a job will first be retried in 10s. The\nretry interval will double three times, and then increase linearly by\n2^3 * 10s.  Finally, the job will retry at intervals of\nmax_backoff_duration until the job has\nbeen attempted retry_count times. Thus, the\nrequests will retry at 10s, 20s, 40s, 80s, 160s, 240s, 300s, 300s, ....\n\nThe default value of this field is 5.",
           "type": "integer",
           "format": "int32"
         }
@@ -620,16 +606,6 @@
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
-                    "responseView": {
-                      "description": "The response_view specifies which subset of the Job will be\nreturned.\n\nBy default response_view is Job.View.BASIC; not all\ninformation is retrieved by default because some data, such as\npayloads, might be desirable to return only when needed because\nof its large size or because of the sensitivity of data that it\ncontains.",
-                      "location": "query",
-                      "type": "string",
-                      "enum": [
-                        "VIEW_UNSPECIFIED",
-                        "BASIC",
-                        "FULL"
-                      ]
-                    },
                     "pageSize": {
                       "description": "Requested page size. Fewer jobs than requested might be returned.\n\nThe maximum page size is 500. If unspecified, the page size will\nbe the maximum. Fewer jobs than requested might be returned,\neven if more jobs exist; use next_page_token to determine if more\njobs exist.",
                       "location": "query",
@@ -651,7 +627,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists jobs.\n\nListJobsRequest.response_view controls the subset of\ninformation returned. By default response_view is\nJob.View.BASIC; not all information is returned by default\ndue to performance considerations."
+                  "description": "Lists jobs."
                 },
                 "get": {
                   "id": "cloudscheduler.projects.locations.jobs.get",
@@ -665,16 +641,6 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
                       "type": "string"
-                    },
-                    "responseView": {
-                      "description": "The response_view specifies which subset of the Job will be\nreturned.\n\nBy default ListJobsRequest.response_view is\nJob.View.BASIC; not all\ninformation is retrieved by default because some data, such as\npayloads, might be desirable to return only when needed because\nof its large size or because of the sensitivity of data that it\ncontains.",
-                      "location": "query",
-                      "type": "string",
-                      "enum": [
-                        "VIEW_UNSPECIFIED",
-                        "BASIC",
-                        "FULL"
-                      ]
                     }
                   },
                   "parameterOrder": [

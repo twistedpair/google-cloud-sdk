@@ -259,10 +259,12 @@ VERSION_NAME = base.Argument('version', help='Name of the model version.')
 
 RUNTIME_VERSION = base.Argument(
     '--runtime-version',
-    help=('The Google Cloud ML Engine runtime version for this job. '
-          'Defaults to the latest stable version. See '
-          'https://cloud.google.com/ml/docs/concepts/runtime-version-list for '
-          'a list of accepted versions.'))
+    help=(
+        'The Google Cloud ML Engine runtime version for this job. Defaults '
+        'to a stable version, which is defined in the documentation along '
+        'with the list of supported versions: '
+        'https://cloud.google.com/ml-engine/docs/tensorflow/runtime-version-list'  # pylint: disable=line-too-long
+    ))
 
 
 POLLING_INTERVAL = base.Argument(

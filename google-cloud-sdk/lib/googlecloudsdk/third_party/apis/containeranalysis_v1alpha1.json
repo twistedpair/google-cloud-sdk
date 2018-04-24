@@ -110,15 +110,6 @@
       "location": "query"
     }
   },
-  "auth": {
-    "oauth2": {
-      "scopes": {
-        "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
-        }
-      }
-    }
-  },
   "schemas": {
     "Occurrence": {
       "id": "Occurrence",
@@ -1840,9 +1831,6 @@
               "response": {
                 "$ref": "Occurrence"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Returns the requested `Occurrence`."
             },
             "list": {
@@ -1901,9 +1889,6 @@
               "response": {
                 "$ref": "ListOccurrencesResponse"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Lists active `Occurrences` for a given project matching the filters."
             },
             "delete": {
@@ -1926,9 +1911,6 @@
               "response": {
                 "$ref": "Empty"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Deletes the given `Occurrence` from the system. Use this when\nan `Occurrence` is no longer applicable for the given resource."
             },
             "create": {
@@ -1959,9 +1941,6 @@
               "response": {
                 "$ref": "Occurrence"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Creates a new `Occurrence`. Use this method to create `Occurrences`\nfor a resource."
             },
             "patch": {
@@ -1993,9 +1972,6 @@
               "response": {
                 "$ref": "Occurrence"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Updates an existing occurrence."
             },
             "getNotes": {
@@ -2018,9 +1994,6 @@
               "response": {
                 "$ref": "Note"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Gets the `Note` attached to the given `Occurrence`."
             },
             "getVulnerabilitySummary": {
@@ -2048,9 +2021,6 @@
               "response": {
                 "$ref": "GetVulnzOccurrencesSummaryResponse"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Gets a summary of the number and severity of occurrences."
             },
             "setIamPolicy": {
@@ -2076,9 +2046,6 @@
               "response": {
                 "$ref": "Policy"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Sets the access control policy on the specified `Note` or `Occurrence`.\nRequires `containeranalysis.notes.setIamPolicy` or\n`containeranalysis.occurrences.setIamPolicy` permission if the resource is\na `Note` or an `Occurrence`, respectively.\nAttempting to call this method without these permissions will result in a `\n`PERMISSION_DENIED` error.\nAttempting to call this method on a non-existent resource will result in a\n`NOT_FOUND` error if the user has `containeranalysis.notes.list` permission\non a `Note` or `containeranalysis.occurrences.list` on an `Occurrence`, or\na `PERMISSION_DENIED` error otherwise. The resource takes the following\nformats: `projects\/{projectid}\/occurrences\/{occurrenceid}` for occurrences\nand projects\/{projectid}\/notes\/{noteid} for notes"
             },
             "getIamPolicy": {
@@ -2104,9 +2071,6 @@
               "response": {
                 "$ref": "Policy"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Gets the access control policy for a note or an `Occurrence` resource.\nRequires `containeranalysis.notes.setIamPolicy` or\n`containeranalysis.occurrences.setIamPolicy` permission if the resource is\na note or occurrence, respectively.\nAttempting to call this method on a resource without the required\npermission will result in a `PERMISSION_DENIED` error. Attempting to call\nthis method on a non-existent resource will result in a `NOT_FOUND` error\nif the user has list permission on the project, or a `PERMISSION_DENIED`\nerror otherwise. The resource takes the following formats:\n`projects\/{PROJECT_ID}\/occurrences\/{OCCURRENCE_ID}` for occurrences and\nprojects\/{PROJECT_ID}\/notes\/{NOTE_ID} for notes"
             },
             "testIamPermissions": {
@@ -2132,9 +2096,6 @@
               "response": {
                 "$ref": "TestIamPermissionsResponse"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Returns the permissions that a caller has on the specified note or\noccurrence resource. Requires list permission on the project (for example,\n\"storage.objects.list\" on the containing bucket for testing permission of\nan object). Attempting to call this method on a non-existent resource will\nresult in a `NOT_FOUND` error if the user has list permission on the\nproject, or a `PERMISSION_DENIED` error otherwise. The resource takes the\nfollowing formats: `projects\/{PROJECT_ID}\/occurrences\/{OCCURRENCE_ID}` for\n`Occurrences` and `projects\/{PROJECT_ID}\/notes\/{NOTE_ID}` for `Notes`"
             }
           }
@@ -2161,9 +2122,6 @@
               "response": {
                 "$ref": "Note"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Returns the requested `Note`."
             },
             "list": {
@@ -2207,9 +2165,6 @@
               "response": {
                 "$ref": "ListNotesResponse"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Lists all `Notes` for a given project."
             },
             "delete": {
@@ -2232,9 +2187,6 @@
               "response": {
                 "$ref": "Empty"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Deletes the given `Note` from the system."
             },
             "create": {
@@ -2270,9 +2222,6 @@
               "response": {
                 "$ref": "Note"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Creates a new `Note`."
             },
             "patch": {
@@ -2304,9 +2253,6 @@
               "response": {
                 "$ref": "Note"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Updates an existing `Note`."
             },
             "setIamPolicy": {
@@ -2332,9 +2278,6 @@
               "response": {
                 "$ref": "Policy"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Sets the access control policy on the specified `Note` or `Occurrence`.\nRequires `containeranalysis.notes.setIamPolicy` or\n`containeranalysis.occurrences.setIamPolicy` permission if the resource is\na `Note` or an `Occurrence`, respectively.\nAttempting to call this method without these permissions will result in a `\n`PERMISSION_DENIED` error.\nAttempting to call this method on a non-existent resource will result in a\n`NOT_FOUND` error if the user has `containeranalysis.notes.list` permission\non a `Note` or `containeranalysis.occurrences.list` on an `Occurrence`, or\na `PERMISSION_DENIED` error otherwise. The resource takes the following\nformats: `projects\/{projectid}\/occurrences\/{occurrenceid}` for occurrences\nand projects\/{projectid}\/notes\/{noteid} for notes"
             },
             "getIamPolicy": {
@@ -2360,9 +2303,6 @@
               "response": {
                 "$ref": "Policy"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Gets the access control policy for a note or an `Occurrence` resource.\nRequires `containeranalysis.notes.setIamPolicy` or\n`containeranalysis.occurrences.setIamPolicy` permission if the resource is\na note or occurrence, respectively.\nAttempting to call this method on a resource without the required\npermission will result in a `PERMISSION_DENIED` error. Attempting to call\nthis method on a non-existent resource will result in a `NOT_FOUND` error\nif the user has list permission on the project, or a `PERMISSION_DENIED`\nerror otherwise. The resource takes the following formats:\n`projects\/{PROJECT_ID}\/occurrences\/{OCCURRENCE_ID}` for occurrences and\nprojects\/{PROJECT_ID}\/notes\/{NOTE_ID} for notes"
             },
             "testIamPermissions": {
@@ -2388,9 +2328,6 @@
               "response": {
                 "$ref": "TestIamPermissionsResponse"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Returns the permissions that a caller has on the specified note or\noccurrence resource. Requires list permission on the project (for example,\n\"storage.objects.list\" on the containing bucket for testing permission of\nan object). Attempting to call this method on a non-existent resource will\nresult in a `NOT_FOUND` error if the user has list permission on the\nproject, or a `PERMISSION_DENIED` error otherwise. The resource takes the\nfollowing formats: `projects\/{PROJECT_ID}\/occurrences\/{OCCURRENCE_ID}` for\n`Occurrences` and `projects\/{PROJECT_ID}\/notes\/{NOTE_ID}` for `Notes`"
             }
           }
@@ -2434,9 +2371,6 @@
                   "response": {
                     "$ref": "ListNoteOccurrencesResponse"
                   },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
                   "description": "Lists `Occurrences` referencing the specified `Note`. Use this method to\nget all occurrences referencing your `Note` across all your customer\nprojects."
                 }
               }
@@ -2468,9 +2402,6 @@
               "response": {
                 "$ref": "Operation"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Creates a new `Operation`."
             },
             "patch": {
@@ -2496,9 +2427,6 @@
               "response": {
                 "$ref": "Operation"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Updates an existing operation returns an error if operation\n does not exist. The only valid operations are to update mark the done bit\nchange the result."
             }
           }
@@ -2525,9 +2453,6 @@
               "response": {
                 "$ref": "ScanConfig"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Gets a specific scan configuration for a project."
             },
             "list": {
@@ -2566,9 +2491,6 @@
               "response": {
                 "$ref": "ListScanConfigsResponse"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Lists scan configurations for a project."
             },
             "patch": {
@@ -2599,9 +2521,6 @@
               "response": {
                 "$ref": "ScanConfig"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Updates the scan configuration to a new value."
             }
           }
@@ -2632,9 +2551,6 @@
               "response": {
                 "$ref": "Note"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Returns the requested `Note`."
             },
             "list": {
@@ -2678,9 +2594,6 @@
               "response": {
                 "$ref": "ListNotesResponse"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Lists all `Notes` for a given project."
             },
             "delete": {
@@ -2703,9 +2616,6 @@
               "response": {
                 "$ref": "Empty"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Deletes the given `Note` from the system."
             },
             "create": {
@@ -2741,9 +2651,6 @@
               "response": {
                 "$ref": "Note"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Creates a new `Note`."
             },
             "patch": {
@@ -2775,9 +2682,6 @@
               "response": {
                 "$ref": "Note"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Updates an existing `Note`."
             },
             "setIamPolicy": {
@@ -2803,9 +2707,6 @@
               "response": {
                 "$ref": "Policy"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Sets the access control policy on the specified `Note` or `Occurrence`.\nRequires `containeranalysis.notes.setIamPolicy` or\n`containeranalysis.occurrences.setIamPolicy` permission if the resource is\na `Note` or an `Occurrence`, respectively.\nAttempting to call this method without these permissions will result in a `\n`PERMISSION_DENIED` error.\nAttempting to call this method on a non-existent resource will result in a\n`NOT_FOUND` error if the user has `containeranalysis.notes.list` permission\non a `Note` or `containeranalysis.occurrences.list` on an `Occurrence`, or\na `PERMISSION_DENIED` error otherwise. The resource takes the following\nformats: `projects\/{projectid}\/occurrences\/{occurrenceid}` for occurrences\nand projects\/{projectid}\/notes\/{noteid} for notes"
             },
             "getIamPolicy": {
@@ -2831,9 +2732,6 @@
               "response": {
                 "$ref": "Policy"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Gets the access control policy for a note or an `Occurrence` resource.\nRequires `containeranalysis.notes.setIamPolicy` or\n`containeranalysis.occurrences.setIamPolicy` permission if the resource is\na note or occurrence, respectively.\nAttempting to call this method on a resource without the required\npermission will result in a `PERMISSION_DENIED` error. Attempting to call\nthis method on a non-existent resource will result in a `NOT_FOUND` error\nif the user has list permission on the project, or a `PERMISSION_DENIED`\nerror otherwise. The resource takes the following formats:\n`projects\/{PROJECT_ID}\/occurrences\/{OCCURRENCE_ID}` for occurrences and\nprojects\/{PROJECT_ID}\/notes\/{NOTE_ID} for notes"
             },
             "testIamPermissions": {
@@ -2859,9 +2757,6 @@
               "response": {
                 "$ref": "TestIamPermissionsResponse"
               },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
               "description": "Returns the permissions that a caller has on the specified note or\noccurrence resource. Requires list permission on the project (for example,\n\"storage.objects.list\" on the containing bucket for testing permission of\nan object). Attempting to call this method on a non-existent resource will\nresult in a `NOT_FOUND` error if the user has list permission on the\nproject, or a `PERMISSION_DENIED` error otherwise. The resource takes the\nfollowing formats: `projects\/{PROJECT_ID}\/occurrences\/{OCCURRENCE_ID}` for\n`Occurrences` and `projects\/{PROJECT_ID}\/notes\/{NOTE_ID}` for `Notes`"
             }
           }
@@ -2905,9 +2800,6 @@
                   "response": {
                     "$ref": "ListNoteOccurrencesResponse"
                   },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
                   "description": "Lists `Occurrences` referencing the specified `Note`. Use this method to\nget all occurrences referencing your `Note` across all your customer\nprojects."
                 }
               }

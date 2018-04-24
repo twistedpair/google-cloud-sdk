@@ -358,6 +358,15 @@ properties:
           # If the error message is found, extract the error message from this
           # field within that message.
           message: { $ref: "#/definitions/attribute" }
+      # The list of module paths to functions to call to modify the response
+      # returned by the API request. These functions take 2 arguments: the API
+      # response first and the parsed args namespace second. They must return a
+      # modified response. The functions are called in a chain, one after
+      # another, after result_attribute and error are processed, but before
+      # id_field.
+      modify_response_hooks:
+        type: array
+        items: { $ref: "#/definitions/python_hook" }
 
   # If present, indicates that this API method uses operations and the --async
   # flag will be set up.

@@ -29,7 +29,6 @@ A typical use would be:
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import collections
 import fnmatch
 import io
 import os
@@ -338,28 +337,18 @@ class FileChooser(object):
     Returns:
       bool, whether the file should be uploaded
     """
-    path_prefixes = _GetPathPrefixes(path)
-    path_prefix_map = collections.OrderedDict(
-        [(prefix, Match.NO_MATCH) for prefix in path_prefixes])
-    for pattern in self.patterns:
-      parent_match = Match.NO_MATCH
-      for path_prefix in path_prefix_map:
-        if parent_match is not Match.NO_MATCH:
-          match = parent_match
-        else:
-          # All prefixes except the path itself are directories.
-          is_prefix_dir = path_prefix != path or is_dir
-          match = pattern.Matches(path_prefix, is_dir=is_prefix_dir)
+    path_prefixes = _GetPathPrefixes(path)[1:]  # root dir can't be matched
+    for path_prefix in path_prefixes:
+      prefix_match = Match.NO_MATCH
+      for pattern in self.patterns:
+        is_prefix_dir = path_prefix != path or is_dir
+        match = pattern.Matches(path_prefix, is_dir=is_prefix_dir)
         if match is not Match.NO_MATCH:
-          path_prefix_map[path_prefix] = match
-        parent_match = match
-        if path_prefix_map[path_prefix] is Match.IGNORE:
-          parent_match = Match.IGNORE
-
-    included = path_prefix_map[path] is not Match.IGNORE
-    if not included:
-      log.debug('Skipping file [{}]'.format(path))
-    return included
+          prefix_match = match
+      if prefix_match is Match.IGNORE:
+        log.debug('Skipping file [{}]'.format(path))
+        return False
+    return True
 
   def GetIncludedFiles(self, upload_directory, include_dirs=True):
     """Yields the files in the given directory that this FileChooser includes.

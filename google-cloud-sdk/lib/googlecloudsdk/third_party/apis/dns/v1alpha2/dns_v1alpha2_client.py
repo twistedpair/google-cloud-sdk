@@ -370,7 +370,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Update an existing ManagedZone. This method supports patch semantics.
+      """Apply a partial update to an existing ManagedZone.
 
       Args:
         request: (DnsManagedZonesPatchRequest) input message
@@ -536,13 +536,13 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Update an existing Policy. This method supports patch semantics.
+      """Apply a partial update to an existing Policy.
 
       Args:
         request: (DnsPoliciesPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (PoliciesUpdateResponse) The response message.
+        (PoliciesPatchResponse) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -557,7 +557,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
         relative_path=u'projects/{project}/policies/{policy}',
         request_field=u'policyResource',
         request_type_name=u'DnsPoliciesPatchRequest',
-        response_type_name=u'PoliciesUpdateResponse',
+        response_type_name=u'PoliciesPatchResponse',
         supports_download=False,
     )
 

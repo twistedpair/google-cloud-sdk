@@ -14,6 +14,8 @@
 """Parse cloudbuild config files.
 
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 import re
 
@@ -23,6 +25,7 @@ from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
+import six
 
 
 # Don't apply camel case to keys for dict or list values with these field names.
@@ -121,7 +124,7 @@ def _SnakeToCamel(msg):
     return {
         _SnakeToCamelString(key):
         _SnakeToCamel(val) if key not in _SKIP_CAMEL_CASE else val
-        for key, val in msg.iteritems()
+        for key, val in six.iteritems(msg)
     }
   elif isinstance(msg, list):
     return [_SnakeToCamel(elem) for elem in msg]
@@ -216,7 +219,7 @@ def LoadCloudbuildConfigFromStream(stream, messages, params=None,
 
   subst = structured_data.get('substitutions', {})
   # Validate the substitution keys in the message.
-  for key in subst.iterkeys():
+  for key in six.iterkeys(subst):
     if not _BUILTIN_SUBSTITUTION_REGEX.match(key):
       raise BadConfigException(
           path,

@@ -14,6 +14,8 @@
 
 """Support library for execution with the container builds submit command."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import threading
 
 from googlecloudsdk.core import log

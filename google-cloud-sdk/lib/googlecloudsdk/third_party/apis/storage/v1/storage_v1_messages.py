@@ -19,8 +19,7 @@ class Bucket(_messages.Message):
   Messages:
     BillingValue: The bucket's billing configuration.
     CorsValueListEntry: A CorsValueListEntry object.
-    EncryptionValue: Encryption configuration used by default for newly
-      inserted objects, when no encryption config is specified.
+    EncryptionValue: Encryption configuration for a bucket.
     LabelsValue: User-provided labels, in key/value pairs.
     LifecycleValue: The bucket's lifecycle configuration. See lifecycle
       management for more information.
@@ -60,8 +59,7 @@ class Bucket(_messages.Message):
       deleted, overwritten or archived until the hold is removed.
     defaultObjectAcl: Default access controls to apply to new objects when no
       ACL is provided.
-    encryption: Encryption configuration used by default for newly inserted
-      objects, when no encryption config is specified.
+    encryption: Encryption configuration for a bucket.
     etag: HTTP 1.1 Entity tag for the bucket.
     id: The ID of the bucket. For buckets, the id and name properties are the
       same.
@@ -136,13 +134,11 @@ class Bucket(_messages.Message):
     responseHeader = _messages.StringField(4, repeated=True)
 
   class EncryptionValue(_messages.Message):
-    """Encryption configuration used by default for newly inserted objects,
-    when no encryption config is specified.
+    """Encryption configuration for a bucket.
 
     Fields:
       defaultKmsKeyName: A Cloud KMS key that will be used to encrypt objects
         inserted into this bucket, if no encryption method is specified.
-        Limited availability; usable only by enabled projects.
     """
 
     defaultKmsKeyName = _messages.StringField(1)

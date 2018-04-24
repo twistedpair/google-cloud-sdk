@@ -169,7 +169,7 @@ class Walker(object):
 
     Returns:
       A new parent value for the node subtree. This value is the parent arg
-      for the Vistit() calls for the children of this node.
+      for the Visit() calls for the children of this node.
     """
     pass
 

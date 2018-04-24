@@ -13,8 +13,10 @@
 # limitations under the License.
 
 """Common utilities for the containers tool."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
+import io
 import os
-import StringIO
 
 
 from googlecloudsdk.api_lib.container import kubeconfig as kconfig
@@ -26,7 +28,6 @@ from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import platforms
-
 
 CLUSTERS_FORMAT = """
     table(
@@ -72,7 +73,7 @@ class Error(core_exceptions.Error):
 
 
 def ConstructList(title, items):
-  buf = StringIO.StringIO()
+  buf = io.StringIO()
   resource_printer.Print(items, 'list[title="{0}"]'.format(title), out=buf)
   return buf.getvalue()
 

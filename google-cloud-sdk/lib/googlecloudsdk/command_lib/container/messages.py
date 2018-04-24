@@ -13,6 +13,8 @@
 # limitations under the License.
 """Helper methods for constructing messages for the container CLI."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.container import constants
 from googlecloudsdk.command_lib.container import container_command_util

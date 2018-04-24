@@ -4,7 +4,7 @@
  "id": "dns:v2beta1",
  "name": "dns",
  "version": "v2beta1",
- "revision": "20180406",
+ "revision": "20180413",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -591,6 +591,10 @@
    "type": "object",
    "description": "Limits associated with a Project.",
    "properties": {
+    "blackHoleHidesSystemZones": {
+     "type": "boolean",
+     "description": "Whether a black hole zone should suppress system zones for this project."
+    },
     "dnsKeysPerManagedZone": {
      "type": "integer",
      "description": "Maximum allowed number of DnsKeys per ManagedZone.",

@@ -47,6 +47,16 @@ class Collections(enum.Enum):
       },
       [u'name']
   )
+  PROJECTS_INSTANCES_APPPROFILES = (
+      'projects.instances.appProfiles',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instances/{instancesId}/appProfiles/'
+              '{appProfilesId}',
+      },
+      [u'name']
+  )
   PROJECTS_INSTANCES_CLUSTERS = (
       'projects.instances.clusters',
       '{+name}',

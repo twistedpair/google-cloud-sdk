@@ -14,6 +14,8 @@
 
 """Flags and helpers for the container related commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.api_lib.container import util
@@ -978,9 +980,8 @@ def AddIPAliasFlags(parser):
       default=None,
       help="""\
 Enable use of alias IPs (https://cloud.google.com/compute/docs/alias-ip/)
-for pod IPs. This will create two new subnetworks, one for the
-instance and pod IPs, and another to reserve space for the services
-range.
+for pod IPs. This will create two secondary ranges, one for the pod IPs
+and another to reserve space for the services range.
 """)
   parser.add_argument(
       '--services-ipv4-cidr',
@@ -992,7 +993,8 @@ Can be specified as a netmask size (e.g. '/20') or as in CIDR notion
 (e.g. '10.100.0.0/20'). If given as a netmask size, the IP range will
 be chosen automatically from the available space in the network.
 
-If unspecified, the services CIDR range will use automatic defaults.
+If unspecified, the services CIDR range will be chosen with a default
+mask size.
 
 Can not be specified unless '--enable-ip-alias' is also specified.
 """)
@@ -1009,8 +1011,8 @@ pairs.
 
 'range' specifies the IP range for the new subnetwork. This can either
 be a netmask size (e.g. '/20') or a CIDR range (e.g. '10.0.0.0/20').
-If a netmask size is specified, the IP is automatically taken from
-the free space in the cluster's network.
+If a netmask size is specified, the IP is automatically taken from the
+free space in the cluster's network.
 
 Examples:
 
@@ -1049,9 +1051,9 @@ with --create-subnetwork.
       '--services-secondary-range-name',
       metavar='NAME',
       help="""\
-Set the secondary range to be used for services
-(e.g. ClusterIPs). NAME must be the name of an existing secondary
-range in the cluster subnetwork.
+Set the secondary range to be used for services (e.g. ClusterIPs).
+NAME must be the name of an existing secondary range in the cluster
+subnetwork.
 
 Must be used in conjunction with '--enable-ip-alias'. Cannot be used
 with --create-subnetwork.

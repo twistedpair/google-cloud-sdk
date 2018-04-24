@@ -16711,6 +16711,50 @@ class GuestOsFeature(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
+class HTTP2HealthCheck(_messages.Message):
+  """A HTTP2HealthCheck object.
+
+  Enums:
+    ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
+      before sending data to the backend, either NONE or PROXY_V1. The default
+      is NONE.
+
+  Fields:
+    host: The value of the host header in the HTTP/2 health check request. If
+      left empty (default value), the IP on behalf of which this health check
+      is performed will be used.
+    port: The TCP port number for the health check request. The default value
+      is 443. Valid values are 1 through 65535.
+    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
+      port and port_name are defined, port takes precedence.
+    proxyHeader: Specifies the type of proxy header to append before sending
+      data to the backend, either NONE or PROXY_V1. The default is NONE.
+    requestPath: The request path of the HTTP/2 health check request. The
+      default value is /.
+    response: The string to match anywhere in the first 1024 bytes of the
+      response body. If left empty (the default value), the status code
+      determines health. The response data can only be ASCII.
+  """
+
+  class ProxyHeaderValueValuesEnum(_messages.Enum):
+    """Specifies the type of proxy header to append before sending data to the
+    backend, either NONE or PROXY_V1. The default is NONE.
+
+    Values:
+      NONE: <no description>
+      PROXY_V1: <no description>
+    """
+    NONE = 0
+    PROXY_V1 = 1
+
+  host = _messages.StringField(1)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(3)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  requestPath = _messages.StringField(5)
+  response = _messages.StringField(6)
+
+
 class HTTPHealthCheck(_messages.Message):
   """A HTTPHealthCheck object.
 
@@ -16818,6 +16862,7 @@ class HealthCheck(_messages.Message):
       property when you create the resource.
     healthyThreshold: A so-far unhealthy instance will be marked healthy after
       this many consecutive successes. The default value is 2.
+    http2HealthCheck: A HTTP2HealthCheck attribute.
     httpHealthCheck: A HTTPHealthCheck attribute.
     httpsHealthCheck: A HTTPSHealthCheck attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -16852,6 +16897,7 @@ class HealthCheck(_messages.Message):
 
     Values:
       HTTP: <no description>
+      HTTP2: <no description>
       HTTPS: <no description>
       INVALID: <no description>
       SSL: <no description>
@@ -16859,28 +16905,30 @@ class HealthCheck(_messages.Message):
       UDP: <no description>
     """
     HTTP = 0
-    HTTPS = 1
-    INVALID = 2
-    SSL = 3
-    TCP = 4
-    UDP = 5
+    HTTP2 = 1
+    HTTPS = 2
+    INVALID = 3
+    SSL = 4
+    TCP = 5
+    UDP = 6
 
   checkIntervalSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   healthyThreshold = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 5)
-  httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default=u'compute#healthCheck')
-  name = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 11)
-  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 12)
-  timeoutSec = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 14)
-  udpHealthCheck = _messages.MessageField('UDPHealthCheck', 15)
-  unhealthyThreshold = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  http2HealthCheck = _messages.MessageField('HTTP2HealthCheck', 5)
+  httpHealthCheck = _messages.MessageField('HTTPHealthCheck', 6)
+  httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default=u'compute#healthCheck')
+  name = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 12)
+  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 13)
+  timeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  udpHealthCheck = _messages.MessageField('UDPHealthCheck', 16)
+  unhealthyThreshold = _messages.IntegerField(17, variant=_messages.Variant.INT32)
 
 
 class HealthCheckList(_messages.Message):
@@ -17805,11 +17853,11 @@ class Instance(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#instance for
       instances.
     labelFingerprint: A fingerprint for this request, which is essentially a
-      hash of the metadata's contents and used for optimistic locking. The
+      hash of the label's contents and used for optimistic locking. The
       fingerprint is initially generated by Compute Engine and changes after
-      every request to modify or update metadata. You must always provide an
-      up-to-date fingerprint hash in order to update or change metadata.  To
-      see the latest fingerprint, make get() request to the instance.
+      every request to modify or update labels. You must always provide an up-
+      to-date fingerprint hash in order to update or change labels.  To see
+      the latest fingerprint, make get() request to the instance.
     labels: Labels to apply to this instance. These can be later modified by
       the setLabels method.
     machineType: Full or partial URL of the machine type resource to use for
@@ -21606,7 +21654,7 @@ class InterconnectOutageNotification(_messages.Message):
       values.
 
   Fields:
-    affectedCircuits: Iff issue_type is IT_PARTIAL_OUTAGE, a list of the
+    affectedCircuits: If issue_type is IT_PARTIAL_OUTAGE, a list of the
       Google-side circuit IDs that will be affected.
     description: A description about the purpose of the outage.
     endTime: Scheduled end time for the outage (milliseconds since Unix
@@ -27929,12 +27977,12 @@ class Tags(_messages.Message):
 
   Fields:
     fingerprint: Specifies a fingerprint for this request, which is
-      essentially a hash of the metadata's contents and used for optimistic
+      essentially a hash of the tags' contents and used for optimistic
       locking. The fingerprint is initially generated by Compute Engine and
-      changes after every request to modify or update metadata. You must
-      always provide an up-to-date fingerprint hash in order to update or
-      change metadata.  To see the latest fingerprint, make get() request to
-      the instance.
+      changes after every request to modify or update tags. You must always
+      provide an up-to-date fingerprint hash in order to update or change
+      tags.  To see the latest fingerprint, make get() request to the
+      instance.
     items: An array of tags. Each tag must be 1-63 characters long, and comply
       with RFC1035.
   """

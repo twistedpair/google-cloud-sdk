@@ -23,6 +23,7 @@ from googlecloudsdk.core import resources
 
 PROJECTS_COLLECTION = 'binaryauthorization.projects'
 PROJECTS_POLICY_COLLECTION = 'binaryauthorization.projects.policy'
+PROJECTS_AUTHORITIES_COLLECTION = 'binaryauthorization.projects.attestationAuthorities'
 
 
 def GetProjectRef():
@@ -38,4 +39,12 @@ def GetPolicyRef():
       None,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection=PROJECTS_POLICY_COLLECTION,
+  )
+
+
+def GetAuthorityRef(authority_name):
+  return resources.REGISTRY.Parse(
+      authority_name,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection=PROJECTS_AUTHORITIES_COLLECTION,
   )

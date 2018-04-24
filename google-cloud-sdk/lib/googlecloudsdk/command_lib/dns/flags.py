@@ -85,12 +85,13 @@ def GetZoneResourceSpec():
       disable_auto_completers=False)
 
 
-def GetZoneResourceArg(help_text=(
-    'Name of the managed-zone whose record-sets you want to manage.')):
+def GetZoneResourceArg(help_text, positional=True, plural=False):
+  arg_name = 'zones' if plural else 'zone'
   return concept_parsers.ConceptParser.ForResource(
-      'zone',
+      arg_name if positional else '--{}'.format(arg_name),
       GetZoneResourceSpec(),
       help_text,
+      plural=plural,
       required=True)
 
 

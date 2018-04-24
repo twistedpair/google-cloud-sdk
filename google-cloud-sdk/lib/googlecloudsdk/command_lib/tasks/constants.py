@@ -26,11 +26,10 @@ TASKS_COLLECTION = 'cloudtasks.projects.locations.queues.tasks'
 CLOUD_MULTIREGION_TO_REGION_MAP = {
     'us-central': 'us-central1',
     'europe-west': 'europe-west1',
-    'asia-northeast': 'asia-northeast1',
 }
 VALID_REGIONS = [
-    region_util.Region('us-central1', True, True),
-    region_util.Region('europe-west1', True, True),
+    region_util.Region('us-central', True, True),
+    region_util.Region('europe-west', True, True),
     region_util.Region('asia-northeast1', True, True)
 ]
 

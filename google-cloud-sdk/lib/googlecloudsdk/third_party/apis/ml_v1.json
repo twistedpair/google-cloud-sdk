@@ -189,7 +189,7 @@
           "$ref": "GoogleCloudMlV1__PredictionOutput"
         },
         "labels": {
-          "description": "Optional. One or more labels that you can add, to organize your jobs.\nEach label is a key-value pair, where both the key and the value are\narbitrary strings that you supply.\nFor more information, see the documentation on\n<a href=\"\/ml-engine\/docs\/how-tos\/resource-labels\">using labels<\/a>.",
+          "description": "Optional. One or more labels that you can add, to organize your jobs.\nEach label is a key-value pair, where both the key and the value are\narbitrary strings that you supply.\nFor more information, see the documentation on\n<a href=\"\/ml-engine\/docs\/tensorflow\/resource-labels\">using labels<\/a>.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -204,7 +204,7 @@
     },
     "GoogleCloudMlV1__TrainingInput": {
       "id": "GoogleCloudMlV1__TrainingInput",
-      "description": "Represents input parameters for a training job. When using the\ngcloud command to submit your training job, you can specify\nthe input parameters as command-line arguments and\/or in a YAML configuration\nfile referenced from the --config command-line argument. For\ndetails, see the guide to\n<a href=\"\/ml-engine\/docs\/training-jobs\">submitting a training job<\/a>.",
+      "description": "Represents input parameters for a training job. When using the\ngcloud command to submit your training job, you can specify\nthe input parameters as command-line arguments and\/or in a YAML configuration\nfile referenced from the --config command-line argument. For\ndetails, see the guide to\n<a href=\"\/ml-engine\/docs\/tensorflow\/training-jobs\">submitting a training\njob<\/a>.",
       "type": "object",
       "properties": {
         "scaleTier": {
@@ -213,8 +213,8 @@
             "A single worker instance. This tier is suitable for learning how to use\nCloud ML, and for experimenting with new models using small datasets.",
             "Many workers and a few parameter servers.",
             "A large number of workers with many parameter servers.",
-            "A single worker instance [with a\nGPU](\/ml-engine\/docs\/how-tos\/using-gpus).",
-            "A single worker instance with a [Cloud TPU](\/tpu)",
+            "A single worker instance [with a\nGPU](\/ml-engine\/docs\/tensorflow\/using-gpus).",
+            "A single worker instance with a\n[Cloud TPU](\/ml-engine\/docs\/tensorflow\/using-tpus).\nThe availability of Cloud TPU is in <i>Beta<\/i> launch stage.",
             "The CUSTOM tier is not a set tier, but rather enables you to use your\nown cluster specification. When you use this tier, set values to\nconfigure your processing cluster according to these guidelines:\n\n*   You _must_ set `TrainingInput.masterType` to specify the type\n    of machine to use for your master node. This is the only required\n    setting.\n\n*   You _may_ set `TrainingInput.workerCount` to specify the number of\n    workers to use. If you specify one or more workers, you _must_ also\n    set `TrainingInput.workerType` to specify the type of machine to use\n    for your worker nodes.\n\n*   You _may_ set `TrainingInput.parameterServerCount` to specify the\n    number of parameter servers to use. If you specify one or more\n    parameter servers, you _must_ also set\n    `TrainingInput.parameterServerType` to specify the type of machine to\n    use for your parameter servers.\n\nNote that all of your workers must use the same machine type, which can\nbe different from your parameter server type and master type. Your\nparameter servers must likewise use the same machine type, which can be\ndifferent from your worker type and master type."
           ],
           "type": "string",
@@ -228,7 +228,7 @@
           ]
         },
         "masterType": {
-          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_s<\/code>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_m<\/code>.\n  <\/dd>\n  <dt>standard_gpu<\/dt>\n  <dd>\n  A machine equivalent to <code suppresswarning=\"true\">standard<\/code> that\n  also includes a single NVIDIA Tesla K80 GPU. See more about\n  <a href=\"\/ml-engine\/docs\/how-tos\/using-gpus\">\n  using GPUs for training your model<\/a>.\n  <\/dd>\n  <dt>complex_model_m_gpu<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">complex_model_m<\/code> that also includes\n  four NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>complex_model_l_gpu<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">complex_model_l<\/code> that also includes\n  eight NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>standard_p100<\/dt>\n  <dd>\n  A machine equivalent to <code suppresswarning=\"true\">standard<\/code> that\n  also includes a single NVIDIA Tesla P100 GPU. The availability of these\n  GPUs is in the Beta launch stage.\n  <\/dd>\n  <dt>complex_model_m_p100<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">complex_model_m<\/code> that also includes\n  four NVIDIA Tesla P100 GPUs. The availability of these GPUs is in\n  the Beta launch stage.\n  <\/dd>\n<\/dl>\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
+          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_s<\/code>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <code suppresswarning=\"true\">complex_model_m<\/code>.\n  <\/dd>\n  <dt>standard_gpu<\/dt>\n  <dd>\n  A machine equivalent to <code suppresswarning=\"true\">standard<\/code> that\n  also includes a single NVIDIA Tesla K80 GPU. See more about\n  <a href=\"\/ml-engine\/docs\/tensorflow\/using-gpus\">using GPUs to\n  train your model<\/a>.\n  <\/dd>\n  <dt>complex_model_m_gpu<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">complex_model_m<\/code> that also includes\n  four NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>complex_model_l_gpu<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">complex_model_l<\/code> that also includes\n  eight NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>standard_p100<\/dt>\n  <dd>\n  A machine equivalent to <code suppresswarning=\"true\">standard<\/code> that\n  also includes a single NVIDIA Tesla P100 GPU. The availability of these\n  GPUs is in the Beta launch stage.\n  <\/dd>\n  <dt>complex_model_m_p100<\/dt>\n  <dd>\n  A machine equivalent to\n  <code suppresswarning=\"true\">complex_model_m<\/code> that also includes\n  four NVIDIA Tesla P100 GPUs. The availability of these GPUs is in\n  the Beta launch stage.\n  <\/dd>\n  <dt>standard_tpu<\/dt>\n  <dd>\n  A TPU VM including one Cloud TPU. The availability of Cloud TPU is in\n  <i>Beta<\/i> launch stage. See more about\n  <a href=\"\/ml-engine\/docs\/tensorflow\/using-tpus\">using TPUs to train\n  your model<\/a>.\n  <\/dd>\n<\/dl>\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
           "type": "string"
         },
         "workerType": {
@@ -272,7 +272,7 @@
           "$ref": "GoogleCloudMlV1__HyperparameterSpec"
         },
         "region": {
-          "description": "Required. The Google Compute Engine region to run the training job in.\nSee the <a href=\"\/ml-engine\/docs\/regions\">available regions<\/a> for\nML Engine services.",
+          "description": "Required. The Google Compute Engine region to run the training job in.\nSee the <a href=\"\/ml-engine\/docs\/tensorflow\/regions\">available regions<\/a>\nfor ML Engine services.",
           "type": "string"
         },
         "jobDir": {
@@ -336,6 +336,20 @@
         "enableTrialEarlyStopping": {
           "description": "Optional. Indicates if the hyperparameter tuning job enables auto trial\nearly stopping.",
           "type": "boolean"
+        },
+        "algorithm": {
+          "description": "Optional. The search algorithm specified for the hyperparameter\ntuning job.\nUses the default CloudML Engine hyperparameter tuning\nalgorithm if unspecified.",
+          "enumDescriptions": [
+            "The default algorithm used by hyperparameter tuning service.",
+            "Simple grid search within the feasible space. To use grid search,\nall parameters must be `INTEGER`, `CATEGORICAL`, or `DISCRETE`.",
+            "Simple random search within the feasible space."
+          ],
+          "type": "string",
+          "enum": [
+            "ALGORITHM_UNSPECIFIED",
+            "GRID_SEARCH",
+            "RANDOM_SEARCH"
+          ]
         }
       }
     },
@@ -415,11 +429,11 @@
       "type": "object",
       "properties": {
         "modelName": {
-          "description": "Use this field if you want to use the default version for the specified\nmodel. The string must use the following format:\n\n`\"projects\/<var>[YOUR_PROJECT]<\/var>\/models\/<var>[YOUR_MODEL]<\/var>\"`",
+          "description": "Use this field if you want to use the default version for the specified\nmodel. The string must use the following format:\n\n`\"projects\/YOUR_PROJECT\/models\/YOUR_MODEL\"`",
           "type": "string"
         },
         "versionName": {
-          "description": "Use this field if you want to specify a version of the model to use. The\nstring is formatted the same way as `model_version`, with the addition\nof the version information:\n\n`\"projects\/<var>[YOUR_PROJECT]<\/var>\/models\/<var>YOUR_MODEL\/versions\/<var>[YOUR_VERSION]<\/var>\"`",
+          "description": "Use this field if you want to specify a version of the model to use. The\nstring is formatted the same way as `model_version`, with the addition\nof the version information:\n\n`\"projects\/YOUR_PROJECT\/models\/YOUR_MODEL\/versions\/YOUR_VERSION\"`",
           "type": "string"
         },
         "uri": {
@@ -461,7 +475,7 @@
           "format": "int64"
         },
         "region": {
-          "description": "Required. The Google Compute Engine region to run the prediction job in.\nSee the <a href=\"\/ml-engine\/docs\/regions\">available regions<\/a> for\nML Engine services.",
+          "description": "Required. The Google Compute Engine region to run the prediction job in.\nSee the <a href=\"\/ml-engine\/docs\/tensorflow\/regions\">available regions<\/a>\nfor ML Engine services.",
           "type": "string"
         },
         "runtimeVersion": {
@@ -814,7 +828,7 @@
           "$ref": "GoogleCloudMlV1__Version"
         },
         "regions": {
-          "description": "Optional. The list of regions where the model is going to be deployed.\nCurrently only one region per model is supported.\nDefaults to 'us-central1' if nothing is set.\nSee the <a href=\"\/ml-engine\/docs\/regions\">available regions<\/a> for\nML Engine services.\nNote:\n*   No matter where a model is deployed, it can always be accessed by\n    users from anywhere, both for online and batch prediction.\n*   The region for a batch prediction job is set by the region field when\n    submitting the batch prediction job and does not take its value from\n    this field.",
+          "description": "Optional. The list of regions where the model is going to be deployed.\nCurrently only one region per model is supported.\nDefaults to 'us-central1' if nothing is set.\nSee the <a href=\"\/ml-engine\/docs\/tensorflow\/regions\">available regions<\/a>\nfor ML Engine services.\nNote:\n*   No matter where a model is deployed, it can always be accessed by\n    users from anywhere, both for online and batch prediction.\n*   The region for a batch prediction job is set by the region field when\n    submitting the batch prediction job and does not take its value from\n    this field.",
           "type": "array",
           "items": {
             "type": "string"
@@ -825,7 +839,7 @@
           "type": "boolean"
         },
         "labels": {
-          "description": "Optional. One or more labels that you can add, to organize your models.\nEach label is a key-value pair, where both the key and the value are\narbitrary strings that you supply.\nFor more information, see the documentation on\n<a href=\"\/ml-engine\/docs\/how-tos\/resource-labels\">using labels<\/a>.",
+          "description": "Optional. One or more labels that you can add, to organize your models.\nEach label is a key-value pair, where both the key and the value are\narbitrary strings that you supply.\nFor more information, see the documentation on\n<a href=\"\/ml-engine\/docs\/tensorflow\/resource-labels\">using labels<\/a>.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -856,7 +870,7 @@
           "type": "boolean"
         },
         "deploymentUri": {
-          "description": "Required. The Google Cloud Storage location of the trained model used to\ncreate the version. See the\n[overview of model\ndeployment](\/ml-engine\/docs\/concepts\/deployment-overview) for more\ninformation.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.\nThe total number of model files can't exceed 1000.",
+          "description": "Required. The Google Cloud Storage location of the trained model used to\ncreate the version. See the\n[guide to model\ndeployment](\/ml-engine\/docs\/tensorflow\/deploying-models) for more\ninformation.\n\nWhen passing Version to\n[projects.models.versions.create](\/ml-engine\/reference\/rest\/v1\/projects.models.versions\/create)\nthe model service uses the specified location as the source of the model.\nOnce deployed, the model version is hosted by the prediction service, so\nthis location is useful only as a historical record.\nThe total number of model files can't exceed 1000.",
           "type": "string"
         },
         "createTime": {
@@ -910,7 +924,7 @@
           "type": "string"
         },
         "labels": {
-          "description": "Optional. One or more labels that you can add, to organize your model\nversions. Each label is a key-value pair, where both the key and the value\nare arbitrary strings that you supply.\nFor more information, see the documentation on\n<a href=\"\/ml-engine\/docs\/how-tos\/resource-labels\">using labels<\/a>.",
+          "description": "Optional. One or more labels that you can add, to organize your model\nversions. Each label is a key-value pair, where both the key and the value\nare arbitrary strings that you supply.\nFor more information, see the documentation on\n<a href=\"\/ml-engine\/docs\/tensorflow\/resource-labels\">using labels<\/a>.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -949,7 +963,7 @@
       "type": "object",
       "properties": {
         "minNodes": {
-          "description": "Optional. The minimum number of nodes to allocate for this model. These\nnodes are always up, starting from the time the model is deployed, so the\ncost of operating this model will be at least\n`rate` * `min_nodes` * number of hours since last billing cycle,\nwhere `rate` is the cost per node-hour as documented in\n[pricing](https:\/\/cloud.google.com\/ml-engine\/pricing#prediction_pricing),\neven if no predictions are performed. There is additional cost for each\nprediction performed.\n\nUnlike manual scaling, if the load gets too heavy for the nodes\nthat are up, the service will automatically add nodes to handle the\nincreased load as well as scale back as traffic drops, always maintaining\nat least `min_nodes`. You will be charged for the time in which additional\nnodes are used.\n\nIf not specified, `min_nodes` defaults to 0, in which case, when traffic\nto a model stops (and after a cool-down period), nodes will be shut down\nand no charges will be incurred until traffic to the model resumes.",
+          "description": "Optional. The minimum number of nodes to allocate for this model. These\nnodes are always up, starting from the time the model is deployed, so the\ncost of operating this model will be at least\n`rate` * `min_nodes` * number of hours since last billing cycle,\nwhere `rate` is the cost per node-hour as documented in the\n[pricing guide](\/ml-engine\/docs\/pricing),\neven if no predictions are performed. There is additional cost for each\nprediction performed.\n\nUnlike manual scaling, if the load gets too heavy for the nodes\nthat are up, the service will automatically add nodes to handle the\nincreased load as well as scale back as traffic drops, always maintaining\nat least `min_nodes`. You will be charged for the time in which additional\nnodes are used.\n\nIf not specified, `min_nodes` defaults to 0, in which case, when traffic\nto a model stops (and after a cool-down period), nodes will be shut down\nand no charges will be incurred until traffic to the model resumes.",
           "type": "integer",
           "format": "int32"
         }
@@ -1341,7 +1355,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Get the service account information associated with your project. You need\nthis information in order to grant the service account persmissions for\nthe Google Cloud Storage location where you put your model training code\nfor training the model with Google Cloud Machine Learning."
+          "description": "Get the service account information associated with your project. You need\nthis information in order to grant the service account permissions for\nthe Google Cloud Storage location where you put your model training code\nfor training the model with Google Cloud Machine Learning."
         }
       }
       ,
@@ -1390,7 +1404,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "Optional. Specifies the subset of jobs to retrieve.\nYou can filter on the value of one or more attributes of the job object.\nFor example, retrieve jobs with a job identifier that starts with 'census':\n<p><code>gcloud ml-engine jobs list --filter='jobId:census*'<\/code>\n<p>List all failed jobs with names that start with 'rnn':\n<p><code>gcloud ml-engine jobs list --filter='jobId:rnn*\nAND state:FAILED'<\/code>\n<p>For more examples, see the guide to\n<a href=\"\/ml-engine\/docs\/monitor-training\">monitoring jobs<\/a>.",
+                  "description": "Optional. Specifies the subset of jobs to retrieve.\nYou can filter on the value of one or more attributes of the job object.\nFor example, retrieve jobs with a job identifier that starts with 'census':\n<p><code>gcloud ml-engine jobs list --filter='jobId:census*'<\/code>\n<p>List all failed jobs with names that start with 'rnn':\n<p><code>gcloud ml-engine jobs list --filter='jobId:rnn*\nAND state:FAILED'<\/code>\n<p>For more examples, see the guide to\n<a href=\"\/ml-engine\/docs\/tensorflow\/monitor-training\">monitoring jobs<\/a>.",
                   "location": "query",
                   "type": "string"
                 },

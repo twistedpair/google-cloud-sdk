@@ -397,6 +397,9 @@ class AnnotateImageResponse(_messages.Message):
     labelAnnotations: If present, label detection has completed successfully.
     landmarkAnnotations: If present, landmark detection has completed
       successfully.
+    localizedObjectAnnotations: If present, localized object detection has
+      completed successfully. This will be sorted descending by confidence
+      score.
     logoAnnotations: If present, logo detection has completed successfully.
     productSearchResults: If present, product search has completed
       successfully.
@@ -416,11 +419,12 @@ class AnnotateImageResponse(_messages.Message):
   imagePropertiesAnnotation = _messages.MessageField('ImageProperties', 7)
   labelAnnotations = _messages.MessageField('EntityAnnotation', 8, repeated=True)
   landmarkAnnotations = _messages.MessageField('EntityAnnotation', 9, repeated=True)
-  logoAnnotations = _messages.MessageField('EntityAnnotation', 10, repeated=True)
-  productSearchResults = _messages.MessageField('ProductSearchResults', 11)
-  safeSearchAnnotation = _messages.MessageField('SafeSearchAnnotation', 12)
-  textAnnotations = _messages.MessageField('EntityAnnotation', 13, repeated=True)
-  webDetection = _messages.MessageField('WebDetection', 14)
+  localizedObjectAnnotations = _messages.MessageField('LocalizedObjectAnnotation', 10, repeated=True)
+  logoAnnotations = _messages.MessageField('EntityAnnotation', 11, repeated=True)
+  productSearchResults = _messages.MessageField('ProductSearchResults', 12)
+  safeSearchAnnotation = _messages.MessageField('SafeSearchAnnotation', 13)
+  textAnnotations = _messages.MessageField('EntityAnnotation', 14, repeated=True)
+  webDetection = _messages.MessageField('WebDetection', 15)
 
 
 class AsyncAnnotateFileRequest(_messages.Message):
@@ -1119,6 +1123,7 @@ class Feature(_messages.Message):
       WEB_DETECTION: Run web detection.
       PRODUCT_SEARCH: Run Product Search.
       CUSTOM_LABEL_DETECTION: Run custom label detection.
+      OBJECT_LOCALIZATION: Run localizer for object detection.
     """
     TYPE_UNSPECIFIED = 0
     FACE_DETECTION = 1
@@ -1133,6 +1138,7 @@ class Feature(_messages.Message):
     WEB_DETECTION = 10
     PRODUCT_SEARCH = 11
     CUSTOM_LABEL_DETECTION = 12
+    OBJECT_LOCALIZATION = 13
 
   maxResults = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   model = _messages.StringField(2)
@@ -1162,8 +1168,8 @@ class GcsSource(_messages.Message):
   """The Google Cloud Storage location where the input will be read from.
 
   Fields:
-    uri: Google Cloud Storage URI for the input file. This must only be a GCS
-      object. Wildcards are not currently supported.
+    uri: Google Cloud Storage URI for the input file. This must only be a
+      Google Cloud Storage object. Wildcards are not currently supported.
   """
 
   uri = _messages.StringField(1)
@@ -1856,8 +1862,8 @@ class GoogleCloudVisionV1p2beta1GcsSource(_messages.Message):
   """The Google Cloud Storage location where the input will be read from.
 
   Fields:
-    uri: Google Cloud Storage URI for the input file. This must only be a GCS
-      object. Wildcards are not currently supported.
+    uri: Google Cloud Storage URI for the input file. This must only be a
+      Google Cloud Storage object. Wildcards are not currently supported.
   """
 
   uri = _messages.StringField(1)
@@ -1961,13 +1967,13 @@ class GoogleCloudVisionV1p2beta1OutputConfig(_messages.Message):
 
   Fields:
     batchSize: The max number of response protos to put into each output JSON
-      file on GCS. The valid range is [1, 100]. If not specified, the default
-      value is 20.  For example, for one pdf file with 100 pages, 100 response
-      protos will be generated. If `batch_size` = 20, then 5 json files each
-      containing 20 response protos will be written under the prefix
-      `gcs_destination`.`uri`.  Currently, batch_size only applies to
-      GcsDestination, with potential future support for other output
-      configurations.
+      file on Google Cloud Storage. The valid range is [1, 100]. If not
+      specified, the default value is 20.  For example, for one pdf file with
+      100 pages, 100 response protos will be generated. If `batch_size` = 20,
+      then 5 json files each containing 20 response protos will be written
+      under the prefix `gcs_destination`.`uri`.  Currently, batch_size only
+      applies to GcsDestination, with potential future support for other
+      output configurations.
     gcsDestination: The Google Cloud Storage location to write the output(s)
       to.
   """
@@ -2551,7 +2557,9 @@ class ImportProductSetsGcsSource(_messages.Message):
       is allowed per line. If the image contains multiple regions of interest,
       the csv should contain one line per region of interest.  The
       bounding_poly column should contain an even number of comma-separated
-      integers, with the format "p1_x,p1_y,p2_x,p2_y,...,pn_x,pn_y".
+      numbers, with the format "p1_x,p1_y,p2_x,p2_y,...,pn_x,pn_y".
+      Nonnegative integers should be used for absolute bounding polygons, and
+      float values in [0, 1] should be used for normalized bounding polygons.
   """
 
   csvFileUri = _messages.StringField(1)
@@ -2810,6 +2818,27 @@ class ListReferenceImagesResponse(_messages.Message):
   referenceImages = _messages.MessageField('ReferenceImage', 3, repeated=True)
 
 
+class LocalizedObjectAnnotation(_messages.Message):
+  """Set of detected objects with bounding boxes.
+
+  Fields:
+    boundingPoly: Image region to which this object belongs. This must be
+      populated.
+    languageCode: The BCP-47 language code, such as "en-US" or "sr-Latn". For
+      more information, see
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+    mid: Object ID that should align with EntityAnnotation mid.
+    name: Object name, expressed in its `language_code` language.
+    score: Score of the result. Range [0, 1].
+  """
+
+  boundingPoly = _messages.MessageField('BoundingPoly', 1)
+  languageCode = _messages.StringField(2)
+  mid = _messages.StringField(3)
+  name = _messages.StringField(4)
+  score = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+
+
 class LocationInfo(_messages.Message):
   """Detected entity location information.
 
@@ -2988,13 +3017,13 @@ class OutputConfig(_messages.Message):
 
   Fields:
     batchSize: The max number of response protos to put into each output JSON
-      file on GCS. The valid range is [1, 100]. If not specified, the default
-      value is 20.  For example, for one pdf file with 100 pages, 100 response
-      protos will be generated. If `batch_size` = 20, then 5 json files each
-      containing 20 response protos will be written under the prefix
-      `gcs_destination`.`uri`.  Currently, batch_size only applies to
-      GcsDestination, with potential future support for other output
-      configurations.
+      file on Google Cloud Storage. The valid range is [1, 100]. If not
+      specified, the default value is 20.  For example, for one pdf file with
+      100 pages, 100 response protos will be generated. If `batch_size` = 20,
+      then 5 json files each containing 20 response protos will be written
+      under the prefix `gcs_destination`.`uri`.  Currently, batch_size only
+      applies to GcsDestination, with potential future support for other
+      output configurations.
     gcsDestination: The Google Cloud Storage location to write the output(s)
       to.
   """

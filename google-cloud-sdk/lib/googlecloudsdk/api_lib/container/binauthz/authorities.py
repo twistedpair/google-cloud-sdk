@@ -74,7 +74,7 @@ class Client(object):
       comment: The comment on the public key.
 
     Returns:
-      The updated authority.
+      The added public key.
 
     Raises:
       AlreadyExistsError: If a public key with the same key content was found on
@@ -95,7 +95,12 @@ class Client(object):
             asciiArmoredPgpPublicKey=key_content,
             comment=comment))
 
-    return self.client.projects_attestationAuthorities.Update(authority)
+    updated_authority = (
+        self.client.projects_attestationAuthorities.Update(authority))
+    return next(
+        public_key
+        for public_key in updated_authority.userOwnedDrydockNote.publicKeys
+        if public_key.asciiArmoredPgpPublicKey == key_content)
 
   def RemoveKey(self, authority_ref, fingerprint_to_remove):
     """Remove a key on an attestation authority.
@@ -103,9 +108,6 @@ class Client(object):
     Args:
       authority_ref: ResourceSpec, The authority to be updated.
       fingerprint_to_remove: The fingerprint of the key to remove.
-
-    Returns:
-      The updated authority.
 
     Raises:
       NotFoundError: If an expected public key could not be located by
@@ -125,7 +127,7 @@ class Client(object):
         public_key for public_key in authority.userOwnedDrydockNote.publicKeys
         if public_key.id != fingerprint_to_remove]
 
-    return self.client.projects_attestationAuthorities.Update(authority)
+    self.client.projects_attestationAuthorities.Update(authority)
 
   def UpdateKey(
       self, authority_ref, fingerprint, key_content=None, comment=None):
@@ -138,7 +140,7 @@ class Client(object):
       comment: The comment on the public key.
 
     Returns:
-      The updated authority.
+      The updated public key.
 
     Raises:
       NotFoundError: If an expected public key could not be located by
@@ -168,7 +170,12 @@ class Client(object):
     if comment is not None:
       existing_key.comment = comment
 
-    return self.client.projects_attestationAuthorities.Update(authority)
+    updated_authority = (
+        self.client.projects_attestationAuthorities.Update(authority))
+    return next(
+        public_key
+        for public_key in updated_authority.userOwnedDrydockNote.publicKeys
+        if public_key.id == fingerprint)
 
   def Update(self, authority_ref):
     """Update an attestation authorities associated with the current project.
@@ -187,7 +194,7 @@ class Client(object):
 
   def Delete(self, authority_ref):
     """Delete the specified attestation authority."""
-    return self.client.projects_attestationAuthorities.Delete(
+    self.client.projects_attestationAuthorities.Delete(
         self.messages.BinaryauthorizationProjectsAttestationAuthoritiesDeleteRequest(  # pylint: disable=line-too-long
             name=authority_ref.RelativeName(),
         ))

@@ -17,6 +17,7 @@ Based on the runtime and environment, this can entail generating a new
 .gcloudignore, using an existing .gcloudignore, or using existing skip_files.
 """
 
+from __future__ import absolute_import
 import os
 import re
 

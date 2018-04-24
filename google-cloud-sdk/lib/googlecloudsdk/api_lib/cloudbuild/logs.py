@@ -13,6 +13,8 @@
 # limitations under the License.
 """Manage and stream build logs from Cloud Builds."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import time
 
 from apitools.base.py import exceptions as api_exceptions
@@ -22,6 +24,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.credentials import http
+from googlecloudsdk.core.util import encoding
 
 
 class NoLogsBucketException(exceptions.Error):
@@ -122,7 +125,9 @@ class LogTailer(object):
       if self.cursor == 0:
         self._PrintFirstLine()
       self.cursor += len(body)
-      self._PrintLogLine(body.rstrip('\n'))
+      body = encoding.Decode(body)
+      self._PrintLogLine(body.rstrip(u'\n'))
+
       if is_last:
         self._PrintLastLine()
       return

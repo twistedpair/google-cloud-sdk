@@ -14,6 +14,8 @@
 
 """container builds resource filter expression rewrite backend."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.core.resource import resource_expr_rewrite
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import times

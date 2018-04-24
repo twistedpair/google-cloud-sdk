@@ -38,6 +38,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     self.operations_projects_operations = self.OperationsProjectsOperationsService(self)
     self.operations_projects = self.OperationsProjectsService(self)
     self.operations = self.OperationsService(self)
+    self.projects_instances_appProfiles = self.ProjectsInstancesAppProfilesService(self)
     self.projects_instances_clusters = self.ProjectsInstancesClustersService(self)
     self.projects_instances_tables = self.ProjectsInstancesTablesService(self)
     self.projects_instances = self.ProjectsInstancesService(self)
@@ -204,6 +205,151 @@ service.
         supports_download=False,
     )
 
+  class ProjectsInstancesAppProfilesService(base_api.BaseApiService):
+    """Service class for the projects_instances_appProfiles resource."""
+
+    _NAME = u'projects_instances_appProfiles'
+
+    def __init__(self, client):
+      super(BigtableadminV2.ProjectsInstancesAppProfilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      """Creates an app profile within an instance.
+
+      Args:
+        request: (BigtableadminProjectsInstancesAppProfilesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AppProfile) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles',
+        http_method=u'POST',
+        method_id=u'bigtableadmin.projects.instances.appProfiles.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'appProfileId', u'ignoreWarnings'],
+        relative_path=u'v2/{+parent}/appProfiles',
+        request_field=u'appProfile',
+        request_type_name=u'BigtableadminProjectsInstancesAppProfilesCreateRequest',
+        response_type_name=u'AppProfile',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      """Deletes an app profile from an instance.
+
+      Args:
+        request: (BigtableadminProjectsInstancesAppProfilesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}',
+        http_method=u'DELETE',
+        method_id=u'bigtableadmin.projects.instances.appProfiles.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'ignoreWarnings'],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'BigtableadminProjectsInstancesAppProfilesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      """Gets information about an app profile.
+
+      Args:
+        request: (BigtableadminProjectsInstancesAppProfilesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AppProfile) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}',
+        http_method=u'GET',
+        method_id=u'bigtableadmin.projects.instances.appProfiles.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'BigtableadminProjectsInstancesAppProfilesGetRequest',
+        response_type_name=u'AppProfile',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      """Lists information about app profiles in an instance.
+
+      Args:
+        request: (BigtableadminProjectsInstancesAppProfilesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAppProfilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles',
+        http_method=u'GET',
+        method_id=u'bigtableadmin.projects.instances.appProfiles.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageToken'],
+        relative_path=u'v2/{+parent}/appProfiles',
+        request_field='',
+        request_type_name=u'BigtableadminProjectsInstancesAppProfilesListRequest',
+        response_type_name=u'ListAppProfilesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      """Updates an app profile within an instance.
+
+      Args:
+        request: (BigtableadminProjectsInstancesAppProfilesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}',
+        http_method=u'PATCH',
+        method_id=u'bigtableadmin.projects.instances.appProfiles.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'ignoreWarnings', u'updateMask'],
+        relative_path=u'v2/{+name}',
+        request_field=u'appProfile',
+        request_type_name=u'BigtableadminProjectsInstancesAppProfilesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsInstancesClustersService(base_api.BaseApiService):
     """Service class for the projects_instances_clusters resource."""
 
@@ -359,6 +505,35 @@ service.
       self._upload_configs = {
           }
 
+    def CheckConsistency(self, request, global_params=None):
+      """Checks replication consistency based on a consistency token, that is, if.
+replication has caught up based on the conditions specified in the token
+and the check request.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesCheckConsistencyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckConsistencyResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckConsistency')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckConsistency.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:checkConsistency',
+        http_method=u'POST',
+        method_id=u'bigtableadmin.projects.instances.tables.checkConsistency',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}:checkConsistency',
+        request_field=u'checkConsistencyRequest',
+        request_type_name=u'BigtableadminProjectsInstancesTablesCheckConsistencyRequest',
+        response_type_name=u'CheckConsistencyResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       """Creates a new table in the specified instance.
 The table can be created with a full set of initial column families,
@@ -441,6 +616,36 @@ particular prefix.
         request_field=u'dropRowRangeRequest',
         request_type_name=u'BigtableadminProjectsInstancesTablesDropRowRangeRequest',
         response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def GenerateConsistencyToken(self, request, global_params=None):
+      """Generates a consistency token for a Table, which can be used in.
+CheckConsistency to check whether mutations to the table that finished
+before this call started have been replicated. The tokens will be available
+for 90 days.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesGenerateConsistencyTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateConsistencyTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateConsistencyToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateConsistencyToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:generateConsistencyToken',
+        http_method=u'POST',
+        method_id=u'bigtableadmin.projects.instances.tables.generateConsistencyToken',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}:generateConsistencyToken',
+        request_field=u'generateConsistencyTokenRequest',
+        request_type_name=u'BigtableadminProjectsInstancesTablesGenerateConsistencyTokenRequest',
+        response_type_name=u'GenerateConsistencyTokenResponse',
         supports_download=False,
     )
 

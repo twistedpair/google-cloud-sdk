@@ -1,0 +1,11 @@
+account:
+  name: account_id
+  collection: cloudbilling.billingAccounts
+  attributes:
+    - &account
+      parameter_name: billingAccountsId
+      attribute_name: account_id
+      help: |
+        The billing account ID. Billing account IDs are of the form
+        *0X0X0X-0X0X0X-0X0X0X*. To see available IDs, run
+        $ gcloud beta billing accounts list.

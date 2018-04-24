@@ -19,7 +19,7 @@ tool. We use the command-line tool for syncing the contents of buckets as well
 as listing the contents. We use the API for checking ACLs.
 """
 
-import cStringIO
+import io
 import mimetypes
 import os
 
@@ -228,7 +228,7 @@ class StorageClient(object):
     Returns:
       file-like object containing the data read.
     """
-    data = cStringIO.StringIO()
+    data = io.BytesIO()
     download = transfer.Download.FromStream(data)
     get_req = self.messages.StorageObjectsGetRequest(
         bucket=object_ref.bucket,

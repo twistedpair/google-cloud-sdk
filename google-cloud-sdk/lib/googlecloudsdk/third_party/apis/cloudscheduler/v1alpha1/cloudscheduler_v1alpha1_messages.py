@@ -260,53 +260,16 @@ class CloudschedulerProjectsLocationsJobsDeleteRequest(_messages.Message):
 class CloudschedulerProjectsLocationsJobsGetRequest(_messages.Message):
   """A CloudschedulerProjectsLocationsJobsGetRequest object.
 
-  Enums:
-    ResponseViewValueValuesEnum: The response_view specifies which subset of
-      the Job will be returned.  By default ListJobsRequest.response_view is
-      Job.View.BASIC; not all information is retrieved by default because some
-      data, such as payloads, might be desirable to return only when needed
-      because of its large size or because of the sensitivity of data that it
-      contains.
-
   Fields:
     name: The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.
-    responseView: The response_view specifies which subset of the Job will be
-      returned.  By default ListJobsRequest.response_view is Job.View.BASIC;
-      not all information is retrieved by default because some data, such as
-      payloads, might be desirable to return only when needed because of its
-      large size or because of the sensitivity of data that it contains.
   """
 
-  class ResponseViewValueValuesEnum(_messages.Enum):
-    """The response_view specifies which subset of the Job will be returned.
-    By default ListJobsRequest.response_view is Job.View.BASIC; not all
-    information is retrieved by default because some data, such as payloads,
-    might be desirable to return only when needed because of its large size or
-    because of the sensitivity of data that it contains.
-
-    Values:
-      VIEW_UNSPECIFIED: <no description>
-      BASIC: <no description>
-      FULL: <no description>
-    """
-    VIEW_UNSPECIFIED = 0
-    BASIC = 1
-    FULL = 2
-
   name = _messages.StringField(1, required=True)
-  responseView = _messages.EnumField('ResponseViewValueValuesEnum', 2)
 
 
 class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
   """A CloudschedulerProjectsLocationsJobsListRequest object.
-
-  Enums:
-    ResponseViewValueValuesEnum: The response_view specifies which subset of
-      the Job will be returned.  By default response_view is Job.View.BASIC;
-      not all information is retrieved by default because some data, such as
-      payloads, might be desirable to return only when needed because of its
-      large size or because of the sensitivity of data that it contains.
 
   Fields:
     pageSize: Requested page size. Fewer jobs than requested might be
@@ -322,33 +285,11 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
       through pages.
     parent: Required.  The location name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID`.
-    responseView: The response_view specifies which subset of the Job will be
-      returned.  By default response_view is Job.View.BASIC; not all
-      information is retrieved by default because some data, such as payloads,
-      might be desirable to return only when needed because of its large size
-      or because of the sensitivity of data that it contains.
   """
-
-  class ResponseViewValueValuesEnum(_messages.Enum):
-    """The response_view specifies which subset of the Job will be returned.
-    By default response_view is Job.View.BASIC; not all information is
-    retrieved by default because some data, such as payloads, might be
-    desirable to return only when needed because of its large size or because
-    of the sensitivity of data that it contains.
-
-    Values:
-      VIEW_UNSPECIFIED: <no description>
-      BASIC: <no description>
-      FULL: <no description>
-    """
-    VIEW_UNSPECIFIED = 0
-    BASIC = 1
-    FULL = 2
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-  responseView = _messages.EnumField('ResponseViewValueValuesEnum', 4)
 
 
 class CloudschedulerProjectsLocationsJobsRunRequest(_messages.Message):
@@ -411,7 +352,8 @@ class HttpTarget(_messages.Message):
       derived from HttpTarget.url. - Content-Length: This will be computed by
       Cloud Scheduler. - User-Agent: This will be populated by Cloud
       Scheduler. - X-Google-*: Google internal use only. - X-AppEngine-*:
-      Google internal use only.
+      Google internal use only.  The total size of headers must be less than
+      80KB.
 
   Fields:
     body: HTTP request body. A request body is allowed only if the HTTP method
@@ -427,7 +369,8 @@ class HttpTarget(_messages.Message):
       derived from HttpTarget.url. - Content-Length: This will be computed by
       Cloud Scheduler. - User-Agent: This will be populated by Cloud
       Scheduler. - X-Google-*: Google internal use only. - X-AppEngine-*:
-      Google internal use only.
+      Google internal use only.  The total size of headers must be less than
+      80KB.
     httpMethod: Which HTTP method to use for the request. The default is POST.
     url: Required.  The full url path that the request will be sent to. This
       string must begin with either "http://" or "https://". Some examples of
@@ -470,7 +413,8 @@ class HttpTarget(_messages.Message):
     This will be computed by Cloud Scheduler and derived from HttpTarget.url.
     - Content-Length: This will be computed by Cloud Scheduler. - User-Agent:
     This will be populated by Cloud Scheduler. - X-Google-*: Google internal
-    use only. - X-AppEngine-*: Google internal use only.
+    use only. - X-AppEngine-*: Google internal use only.  The total size of
+    headers must be less than 80KB.
 
     Messages:
       AdditionalProperty: An additional property for a HeadersValue object.
@@ -499,13 +443,11 @@ class HttpTarget(_messages.Message):
 
 
 class Job(_messages.Message):
-  """Configuration for a job.
+  """Configuration for a job. The maximum allowed size for a job is 100KB.
 
   Enums:
     JobStateValueValuesEnum: Output only. State of the job. For example:
       enabled, paused, or disabled.
-    ViewValueValuesEnum: Output only. The view specifies which subset of the
-      Job has been returned.
 
   Fields:
     appEngineHttpTarget: App Engine Http target.
@@ -534,8 +476,6 @@ class Job(_messages.Message):
       execution.
     userUpdateTime: Output only. The time of the last user update to the job,
       or the creation time if there have been no updates.
-    view: Output only. The view specifies which subset of the Job has been
-      returned.
   """
 
   class JobStateValueValuesEnum(_messages.Enum):
@@ -556,27 +496,6 @@ class Job(_messages.Message):
     PAUSED = 2
     DISABLED = 3
 
-  class ViewValueValuesEnum(_messages.Enum):
-    """Output only. The view specifies which subset of the Job has been
-    returned.
-
-    Values:
-      VIEW_UNSPECIFIED: Unspecified. Defaults to BASIC.
-      BASIC: The basic view omits fields which can be large or can contain
-        sensitive data.  This view does not include the payload and
-        PubsubTarget.pubsub_message.
-      FULL: All information is returned.  Payloads and
-        PubsubTarget.pubsub_message might be desirable to return only when
-        needed, because they can be large and because of the sensitivity of
-        the data that you choose to store in it.  Authorization for
-        Job.View.FULL requires `cloudscheduler.jobs.fullView` [Google
-        IAM](https://cloud.google.com/iam/) permission on the Job.name
-        resource.
-    """
-    VIEW_UNSPECIFIED = 0
-    BASIC = 1
-    FULL = 2
-
   appEngineHttpTarget = _messages.MessageField('AppEngineHttpTarget', 1)
   description = _messages.StringField(2)
   httpTarget = _messages.MessageField('HttpTarget', 3)
@@ -589,7 +508,6 @@ class Job(_messages.Message):
   schedule = _messages.MessageField('Schedule', 10)
   status = _messages.MessageField('Status', 11)
   userUpdateTime = _messages.StringField(12)
-  view = _messages.EnumField('ViewValueValuesEnum', 13)
 
 
 class ListJobsResponse(_messages.Message):
@@ -808,33 +726,41 @@ class RetryConfig(_messages.Message):
   to the settings in RetryConfig.
 
   Fields:
-    jobAgeLimit: The time limit for retrying a failed job, measured from when
-      the job was first run. If specified with RetryConfig.retry_count, the
-      job will be retried until both limits are reached.  The default value
-      for job_age_limit is zero, which means job age is unlimited.
-    maxBackoffSeconds: The maximum amount of time to wait before retrying a
-      task after it fails.  The default value of this field is 1 hour.
-    maxDoublings: The maximum number of times that the interval between failed
-      job retries will be doubled before the increase becomes constant. The
-      constant is: 2**(max_doublings - 1) * RetryConfig.min_backoff_seconds.
-      The default value of this field is 16.
-    minBackoffSeconds: The minimum amount of time to wait before retrying a
-      task after it fails.  The default value of this field is 0.1 seconds.
+    maxBackoffDuration: The maximum amount of time to wait before retrying a
+      job after it fails.  The default value of this field is 1 hour.
+    maxDoublings: The time between retries will double `max_doublings` times.
+      A job's retry interval starts at min_backoff_duration, then doubles
+      `max_doublings` times, then increases linearly, and finally retries
+      retries at intervals of max_backoff_duration up to retry_count times.
+      For example, if min_backoff_duration is 10s, max_backoff_duration is
+      300s, and `max_doublings` is 3, then the a job will first be retried in
+      10s. The retry interval will double three times, and then increase
+      linearly by 2^3 * 10s.  Finally, the job will retry at intervals of
+      max_backoff_duration until the job has been attempted retry_count times.
+      Thus, the requests will retry at 10s, 20s, 40s, 80s, 160s, 240s, 300s,
+      300s, ....  The default value of this field is 5.
+    maxRetryDuration: The time limit for retrying a failed job, measured from
+      time when an execution was first attempted. If specified with
+      RetryConfig.retry_count, the job will be retried until both limits are
+      reached.  The default value for max_retry_duration is zero, which means
+      retry duration is unlimited.
+    minBackoffDuration: The minimum amount of time to wait before retrying a
+      job after it fails.  The default value of this field is 5 seconds.
     retryCount: It determines the  number attempts that the system will make
-      to deliver a job using the exponential backoff procedure described
-      above.  The default value of retry_count is zero.  If retry_count is
-      zero, a job attempt will *not* be retried if it fails. Instead the Cloud
-      Scheduler system will wait for the next scheduled execution time.  If
-      retry_count is set to a non-zero number then Cloud Scheduler will retry
-      failed attempts, using exponential backoff, retry_count times, or until
-      the next scheduled execution time, whichever comes first.  Value greater
+      to run a job using the exponential backoff procedure described above.
+      The default value of retry_count is zero.  If retry_count is zero, a job
+      attempt will *not* be retried if it fails. Instead the Cloud Scheduler
+      system will wait for the next scheduled execution time.  If retry_count
+      is set to a non-zero number then Cloud Scheduler will retry failed
+      attempts, using exponential backoff, retry_count times, or until the
+      next scheduled execution time, whichever comes first.  Value greater
       than 5 and negative values are not allowed.
   """
 
-  jobAgeLimit = _messages.StringField(1)
-  maxBackoffSeconds = _messages.StringField(2)
-  maxDoublings = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minBackoffSeconds = _messages.StringField(4)
+  maxBackoffDuration = _messages.StringField(1)
+  maxDoublings = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxRetryDuration = _messages.StringField(3)
+  minBackoffDuration = _messages.StringField(4)
   retryCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
@@ -851,17 +777,17 @@ class Schedule(_messages.Message):
     schedule: Required.  Scheduler schedules are specified using an English-
       like format. See https://cloud.google.com/appengine/docs/standard/python
       /config/cronref#schedule_format
-    timezone: Specifies the time zone to be used in interpreting
+    timeZone: Specifies the time zone to be used in interpreting
       Schedule.schedule. The value of this field must be a time zone name from
       the tz database: http://en.wikipedia.org/wiki/Tz_database.  Note that
-      some timezones include a includes a provision for daylight savings time.
-      The rules for daylight saving time are determined by the chosen tz. For
-      UTC use the string "utc". If a timezone is not specified, the default
-      will be in UTC (also known as GMT).
+      some time zones include a provision for daylight savings time. The rules
+      for daylight saving time are determined by the chosen tz. For UTC use
+      the string "utc". If a time zone is not specified, the default will be
+      in UTC (also known as GMT).
   """
 
   schedule = _messages.StringField(1)
-  timezone = _messages.StringField(2)
+  timeZone = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

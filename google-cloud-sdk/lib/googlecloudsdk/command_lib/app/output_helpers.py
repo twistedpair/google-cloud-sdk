@@ -14,6 +14,7 @@
 
 """This module holds exceptions raised by commands."""
 
+from __future__ import absolute_import
 from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.api_lib.services import enable_api

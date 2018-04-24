@@ -330,7 +330,7 @@
           "format": "float"
         },
         "words": {
-          "description": "Output only. A list of word-specific information for each recognized word.",
+          "description": "Output only. A list of word-specific information for each recognized word.\nNote: When enable_speaker_diarization is true, you will see all the words\nfrom the beginning of the audio.",
           "type": "array",
           "items": {
             "$ref": "WordInfo"
@@ -356,6 +356,11 @@
         "word": {
           "description": "Output only. The word corresponding to this set of information.",
           "type": "string"
+        },
+        "speakerTag": {
+          "description": "Output only. A distinct integer value is assigned for every speaker within\nthe audio. This field specifies which one of those speakers was detected to\nhave spoken this word. Value ranges from '1' to diarization_speaker_count.\nspeaker_tag is set if enable_speaker_diarization = 'true' and only in the\ntop alternative.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

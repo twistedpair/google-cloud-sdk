@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Defines tool-wide constants."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import collections
 
+import six
 
 BYTES_IN_ONE_MB = 2 ** 20
 BYTES_IN_ONE_GB = 2 ** 30
@@ -207,7 +210,7 @@ def ScopesForHelp():
   than one scope) more lines containing comma and one scope url each.
   """
   aliases = []
-  for alias, value in sorted(SCOPES.iteritems()):
+  for alias, value in sorted(six.iteritems(SCOPES)):
     aliases.append('{0},{1}'.format(alias, value[0]))
     for item in value[1:]:
       aliases.append(',' + item)

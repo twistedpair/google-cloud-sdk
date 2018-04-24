@@ -189,6 +189,9 @@ class RecognitionConfig(_messages.Message):
       AudioEncoding.
 
   Fields:
+    diarizationSpeakerCount: *Optional* If set, specifies the estimated number
+      of speakers in the conversation. If not set, defaults to '2'. Ignored
+      unless enable_speaker_diarization is set to true."
     enableAutomaticPunctuation: *Optional* If 'true', adds punctuation to
       recognition result hypotheses. This feature is only available in select
       languages. Setting this for requests in other languages has no effect at
@@ -196,6 +199,13 @@ class RecognitionConfig(_messages.Message):
       hypotheses. NOTE: "This is currently offered as an experimental service,
       complimentary to all users. In the future this may be exclusively
       available as a premium feature."
+    enableSpeakerDiarization: *Optional* If 'true', enables speaker detection
+      for each recognized word in the top alternative of the recognition
+      result using a speaker_tag provided in the WordInfo. Note: When this is
+      true, we send all the words from the beginning of the audio for the top
+      alternative in every consecutive responses. This is done in order to
+      improve our speaker tags as our models learn to identify the speakers in
+      the conversation over time.
     enableWordConfidence: *Optional* If `true`, the top result includes a list
       of words and the confidence for those words. If `false`, no word-level
       confidence information is returned. The default is `false`.
@@ -311,19 +321,21 @@ class RecognitionConfig(_messages.Message):
     OGG_OPUS = 6
     SPEEX_WITH_HEADER_BYTE = 7
 
-  enableAutomaticPunctuation = _messages.BooleanField(1)
-  enableWordConfidence = _messages.BooleanField(2)
-  enableWordTimeOffsets = _messages.BooleanField(3)
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 4)
-  googleDataCollectionOptIn = _messages.MessageField('GoogleDataCollectionConfig', 5)
-  languageCode = _messages.StringField(6)
-  maxAlternatives = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  metadata = _messages.MessageField('RecognitionMetadata', 8)
-  model = _messages.StringField(9)
-  profanityFilter = _messages.BooleanField(10)
-  sampleRateHertz = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 12, repeated=True)
-  useEnhanced = _messages.BooleanField(13)
+  diarizationSpeakerCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  enableAutomaticPunctuation = _messages.BooleanField(2)
+  enableSpeakerDiarization = _messages.BooleanField(3)
+  enableWordConfidence = _messages.BooleanField(4)
+  enableWordTimeOffsets = _messages.BooleanField(5)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 6)
+  googleDataCollectionOptIn = _messages.MessageField('GoogleDataCollectionConfig', 7)
+  languageCode = _messages.StringField(8)
+  maxAlternatives = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  metadata = _messages.MessageField('RecognitionMetadata', 10)
+  model = _messages.StringField(11)
+  profanityFilter = _messages.BooleanField(12)
+  sampleRateHertz = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 14, repeated=True)
+  useEnhanced = _messages.BooleanField(15)
 
 
 class RecognitionMetadata(_messages.Message):
@@ -523,7 +535,8 @@ class SpeechRecognitionAlternative(_messages.Message):
     transcript: Output only. Transcript text representing the words that the
       user spoke.
     words: Output only. A list of word-specific information for each
-      recognized word.
+      recognized word. Note: When enable_speaker_diarization is true, you will
+      see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -704,6 +717,11 @@ class WordInfo(_messages.Message):
       and corresponding to the end of the spoken word. This field is only set
       if `enable_word_time_offsets=true` and only in the top hypothesis. This
       is an experimental feature and the accuracy of the time offset can vary.
+    speakerTag: Output only. A distinct integer value is assigned for every
+      speaker within the audio. This field specifies which one of those
+      speakers was detected to have spoken this word. Value ranges from '1' to
+      diarization_speaker_count. speaker_tag is set if
+      enable_speaker_diarization = 'true' and only in the top alternative.
     startTime: Output only. Time offset relative to the beginning of the
       audio, and corresponding to the start of the spoken word. This field is
       only set if `enable_word_time_offsets=true` and only in the top
@@ -714,8 +732,9 @@ class WordInfo(_messages.Message):
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   endTime = _messages.StringField(2)
-  startTime = _messages.StringField(3)
-  word = _messages.StringField(4)
+  speakerTag = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(4)
+  word = _messages.StringField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -19,6 +19,10 @@ supports lookups by matching both the runtime and the environment.
 """
 
 
+from __future__ import absolute_import
+from six.moves import map  # pylint:disable=redefined-builtin
+
+
 class RegistryEntry(object):
   """An entry in the Registry.
 

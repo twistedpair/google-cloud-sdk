@@ -5,6 +5,72 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 199.0.0 (2018-04-24)
+
+### Breaking Changes
+
+*   **(App Engine)** Deprecated the `gcloud app gen-config` command and "app.yaml" generation
+  feature of the `gcloud app deploy` command (both in beta).
+  As an alternative, create an app.yaml file yourself using the [App Engine
+  Flexible
+  Environment](https://cloud.google.com/appengine/docs/flexible/python/configuring-your-app-with-app-yaml)
+  directions or the [App Engine Standard
+  Environment](https://cloud.google.com/appengine/docs/standard/python/config/appref) directions for your application's language.
+
+
+### BigQuery
+
+* Enabled creation of tables with second-level clustering.
+
+### Cloud Bigtable
+
+*   Updated the Cloud Bigtable `cbt` tool for regional replication.
+    *    Added the following commands:
+         *   `createcluster`
+         *   `updatecluster`
+         *   `deletecluster`
+         *   `waitforreplication`
+    *    Added application profile support in `read`, `lookup` and `set`
+*   Added the following commands to beta:
+    *    `app-profiles` to manage application profiles for your instances.
+    *    `clusters create` to create additional clusters within an existing
+         instance.
+    *    `clusters delete` to delete clusters from an instance.
+
+### Cloud Billing API
+
+* Added `gcloud billing accounts <get|set>-iam-policy` in alpha and beta.
+* Modified output of `gcloud billing accounts list` in beta to include the
+  master account ID of any subaccounts.
+
+### Cloud DNS
+
+* Promoted `gcloud dns operations <list|describe>` commands to GA.
+
+### Cloud Datalab
+
+* Updated the `datalab` component to the 20180412 release.
+  Released changes are documented in its tracking issue at
+      [https://github.com/googledatalab/datalab/issues/1989](https://github.com/googledatalab/datalab/issues/1989).
+
+### Cloud Spanner
+
+*   The following commands are now available in beta:
+  *     `gcloud spanner rows delete`
+  *     `gcloud spanner rows insert`
+  *     `gcloud spanner rows update`
+
+### Kubernetes Engine
+
+* Updated for Python 3 compatibility.
+*   Promoted `gcloud container clusters create --enable-ip-alias` to GA.
+    *   `--enable-ip-alias` no longer requires the `--create-subnetwork`
+        option to be specified when creating a GKE cluster.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 198.0.0 (2018-04-18)
 
 ### Breaking Changes

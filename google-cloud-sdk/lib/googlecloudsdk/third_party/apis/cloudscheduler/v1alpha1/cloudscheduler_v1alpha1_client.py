@@ -122,7 +122,7 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
         method_id=u'cloudscheduler.projects.locations.jobs.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'responseView'],
+        query_params=[],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'CloudschedulerProjectsLocationsJobsGetRequest',
@@ -132,11 +132,6 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
 
     def List(self, request, global_params=None):
       """Lists jobs.
-
-ListJobsRequest.response_view controls the subset of
-information returned. By default response_view is
-Job.View.BASIC; not all information is returned by default
-due to performance considerations.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsListRequest) input message
@@ -154,7 +149,7 @@ due to performance considerations.
         method_id=u'cloudscheduler.projects.locations.jobs.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'responseView'],
+        query_params=[u'pageSize', u'pageToken'],
         relative_path=u'v1alpha1/{+parent}/jobs',
         request_field='',
         request_type_name=u'CloudschedulerProjectsLocationsJobsListRequest',

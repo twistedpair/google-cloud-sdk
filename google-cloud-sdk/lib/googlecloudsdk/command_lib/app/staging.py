@@ -30,6 +30,7 @@ The interface is defined as follows:
   STDOUT and STDERR of the staging command (which are surfaced to the user as an
   ERROR message).
 """
+from __future__ import absolute_import
 import abc
 import cStringIO
 import os
@@ -46,6 +47,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+import six
 
 
 _JAVA_APPCFG_ENTRY_POINT = 'com.google.appengine.tools.admin.AppCfg'
@@ -103,7 +105,7 @@ def _JavaStagingMapper(command_path, descriptor, app_dir, staging_dir):
   return args
 
 
-class _Command(object):
+class _Command(six.with_metaclass(abc.ABCMeta, object)):
   """Interface for a staging command to be invoked on the user source.
 
   This abstract class facilitates running an executable command that conforms to
@@ -112,8 +114,6 @@ class _Command(object):
   It implements the parts that are common to any such command while allowing
   interface implementors to swap out how the command is created.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def EnsureInstalled(self):

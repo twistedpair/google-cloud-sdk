@@ -13,6 +13,7 @@
 # limitations under the License.
 
 """This module holds common flags used by the gcloud app commands."""
+from __future__ import absolute_import
 import argparse
 
 from googlecloudsdk.api_lib.app import logs_util

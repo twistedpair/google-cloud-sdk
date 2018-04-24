@@ -110,18 +110,16 @@ class GoogleCloudMlV1AutoScaling(_messages.Message):
       model. These nodes are always up, starting from the time the model is
       deployed, so the cost of operating this model will be at least `rate` *
       `min_nodes` * number of hours since last billing cycle, where `rate` is
-      the cost per node-hour as documented in
-      [pricing](https://cloud.google.com/ml-
-      engine/pricing#prediction_pricing), even if no predictions are
-      performed. There is additional cost for each prediction performed.
-      Unlike manual scaling, if the load gets too heavy for the nodes that are
-      up, the service will automatically add nodes to handle the increased
-      load as well as scale back as traffic drops, always maintaining at least
-      `min_nodes`. You will be charged for the time in which additional nodes
-      are used.  If not specified, `min_nodes` defaults to 0, in which case,
-      when traffic to a model stops (and after a cool-down period), nodes will
-      be shut down and no charges will be incurred until traffic to the model
-      resumes.
+      the cost per node-hour as documented in the [pricing guide](/ml-
+      engine/docs/pricing), even if no predictions are performed. There is
+      additional cost for each prediction performed.  Unlike manual scaling,
+      if the load gets too heavy for the nodes that are up, the service will
+      automatically add nodes to handle the increased load as well as scale
+      back as traffic drops, always maintaining at least `min_nodes`. You will
+      be charged for the time in which additional nodes are used.  If not
+      specified, `min_nodes` defaults to 0, in which case, when traffic to a
+      model stops (and after a cool-down period), nodes will be shut down and
+      no charges will be incurred until traffic to the model resumes.
   """
 
   minNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -264,10 +262,16 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
   """Represents a set of hyperparameters to optimize.
 
   Enums:
+    AlgorithmValueValuesEnum: Optional. The search algorithm specified for the
+      hyperparameter tuning job. Uses the default CloudML Engine
+      hyperparameter tuning algorithm if unspecified.
     GoalValueValuesEnum: Required. The type of goal to use for tuning.
       Available types are `MAXIMIZE` and `MINIMIZE`.  Defaults to `MAXIMIZE`.
 
   Fields:
+    algorithm: Optional. The search algorithm specified for the hyperparameter
+      tuning job. Uses the default CloudML Engine hyperparameter tuning
+      algorithm if unspecified.
     enableTrialEarlyStopping: Optional. Indicates if the hyperparameter tuning
       job enables auto trial early stopping.
     goal: Required. The type of goal to use for tuning. Available types are
@@ -293,6 +297,23 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
       corresponding vizier study guid and resume the study.
   """
 
+  class AlgorithmValueValuesEnum(_messages.Enum):
+    """Optional. The search algorithm specified for the hyperparameter tuning
+    job. Uses the default CloudML Engine hyperparameter tuning algorithm if
+    unspecified.
+
+    Values:
+      ALGORITHM_UNSPECIFIED: The default algorithm used by hyperparameter
+        tuning service.
+      GRID_SEARCH: Simple grid search within the feasible space. To use grid
+        search, all parameters must be `INTEGER`, `CATEGORICAL`, or
+        `DISCRETE`.
+      RANDOM_SEARCH: Simple random search within the feasible space.
+    """
+    ALGORITHM_UNSPECIFIED = 0
+    GRID_SEARCH = 1
+    RANDOM_SEARCH = 2
+
   class GoalValueValuesEnum(_messages.Enum):
     """Required. The type of goal to use for tuning. Available types are
     `MAXIMIZE` and `MINIMIZE`.  Defaults to `MAXIMIZE`.
@@ -306,13 +327,14 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
     MAXIMIZE = 1
     MINIMIZE = 2
 
-  enableTrialEarlyStopping = _messages.BooleanField(1)
-  goal = _messages.EnumField('GoalValueValuesEnum', 2)
-  hyperparameterMetricTag = _messages.StringField(3)
-  maxParallelTrials = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maxTrials = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  params = _messages.MessageField('GoogleCloudMlV1ParameterSpec', 6, repeated=True)
-  resumePreviousJobId = _messages.StringField(7)
+  algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
+  enableTrialEarlyStopping = _messages.BooleanField(2)
+  goal = _messages.EnumField('GoalValueValuesEnum', 3)
+  hyperparameterMetricTag = _messages.StringField(4)
+  maxParallelTrials = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxTrials = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  params = _messages.MessageField('GoogleCloudMlV1ParameterSpec', 7, repeated=True)
+  resumePreviousJobId = _messages.StringField(8)
 
 
 class GoogleCloudMlV1Job(_messages.Message):
@@ -325,7 +347,7 @@ class GoogleCloudMlV1Job(_messages.Message):
     LabelsValue: Optional. One or more labels that you can add, to organize
       your jobs. Each label is a key-value pair, where both the key and the
       value are arbitrary strings that you supply. For more information, see
-      the documentation on <a href="/ml-engine/docs/how-tos/resource-
+      the documentation on <a href="/ml-engine/docs/tensorflow/resource-
       labels">using labels</a>.
 
   Fields:
@@ -343,8 +365,8 @@ class GoogleCloudMlV1Job(_messages.Message):
     labels: Optional. One or more labels that you can add, to organize your
       jobs. Each label is a key-value pair, where both the key and the value
       are arbitrary strings that you supply. For more information, see the
-      documentation on <a href="/ml-engine/docs/how-tos/resource-labels">using
-      labels</a>.
+      documentation on <a href="/ml-engine/docs/tensorflow/resource-
+      labels">using labels</a>.
     predictionInput: Input parameters to create a prediction job.
     predictionOutput: The current prediction job result.
     startTime: Output only. When the job processing was started.
@@ -383,8 +405,8 @@ class GoogleCloudMlV1Job(_messages.Message):
     """Optional. One or more labels that you can add, to organize your jobs.
     Each label is a key-value pair, where both the key and the value are
     arbitrary strings that you supply. For more information, see the
-    documentation on <a href="/ml-engine/docs/how-tos/resource-labels">using
-    labels</a>.
+    documentation on <a href="/ml-engine/docs/tensorflow/resource-
+    labels">using labels</a>.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -507,7 +529,7 @@ class GoogleCloudMlV1Model(_messages.Message):
     LabelsValue: Optional. One or more labels that you can add, to organize
       your models. Each label is a key-value pair, where both the key and the
       value are arbitrary strings that you supply. For more information, see
-      the documentation on <a href="/ml-engine/docs/how-tos/resource-
+      the documentation on <a href="/ml-engine/docs/tensorflow/resource-
       labels">using labels</a>.
 
   Fields:
@@ -528,8 +550,8 @@ class GoogleCloudMlV1Model(_messages.Message):
     labels: Optional. One or more labels that you can add, to organize your
       models. Each label is a key-value pair, where both the key and the value
       are arbitrary strings that you supply. For more information, see the
-      documentation on <a href="/ml-engine/docs/how-tos/resource-labels">using
-      labels</a>.
+      documentation on <a href="/ml-engine/docs/tensorflow/resource-
+      labels">using labels</a>.
     name: Required. The name specified for the model when it was created.  The
       model name must be unique within the project it is created in.
     onlinePredictionLogging: Optional. If true, enables StackDriver Logging
@@ -537,12 +559,12 @@ class GoogleCloudMlV1Model(_messages.Message):
     regions: Optional. The list of regions where the model is going to be
       deployed. Currently only one region per model is supported. Defaults to
       'us-central1' if nothing is set. See the <a href="/ml-
-      engine/docs/regions">available regions</a> for ML Engine services. Note:
-      *   No matter where a model is deployed, it can always be accessed by
-      users from anywhere, both for online and batch prediction. *   The
-      region for a batch prediction job is set by the region field when
-      submitting the batch prediction job and does not take its value from
-      this field.
+      engine/docs/tensorflow/regions">available regions</a> for ML Engine
+      services. Note: *   No matter where a model is deployed, it can always
+      be accessed by     users from anywhere, both for online and batch
+      prediction. *   The region for a batch prediction job is set by the
+      region field when     submitting the batch prediction job and does not
+      take its value from     this field.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -550,8 +572,8 @@ class GoogleCloudMlV1Model(_messages.Message):
     """Optional. One or more labels that you can add, to organize your models.
     Each label is a key-value pair, where both the key and the value are
     arbitrary strings that you supply. For more information, see the
-    documentation on <a href="/ml-engine/docs/how-tos/resource-labels">using
-    labels</a>.
+    documentation on <a href="/ml-engine/docs/tensorflow/resource-
+    labels">using labels</a>.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -773,11 +795,11 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
       parallel processing. Defaults to 10 if not specified.
     modelName: Use this field if you want to use the default version for the
       specified model. The string must use the following format:
-      `"projects/<var>[YOUR_PROJECT]</var>/models/<var>[YOUR_MODEL]</var>"`
+      `"projects/YOUR_PROJECT/models/YOUR_MODEL"`
     outputPath: Required. The output Google Cloud Storage location.
     region: Required. The Google Compute Engine region to run the prediction
-      job in. See the <a href="/ml-engine/docs/regions">available regions</a>
-      for ML Engine services.
+      job in. See the <a href="/ml-engine/docs/tensorflow/regions">available
+      regions</a> for ML Engine services.
     runtimeVersion: Optional. The Google Cloud ML runtime version to use for
       this batch prediction. If not set, Google Cloud ML will pick the runtime
       version used during the CreateVersion request for this model version, or
@@ -793,8 +815,8 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
       the model to use.
     versionName: Use this field if you want to specify a version of the model
       to use. The string is formatted the same way as `model_version`, with
-      the addition of the version information:  `"projects/<var>[YOUR_PROJECT]
-      </var>/models/<var>YOUR_MODEL/versions/<var>[YOUR_VERSION]</var>"`
+      the addition of the version information:
+      `"projects/YOUR_PROJECT/models/YOUR_MODEL/versions/YOUR_VERSION"`
   """
 
   class DataFormatValueValuesEnum(_messages.Enum):
@@ -855,7 +877,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   command to submit your training job, you can specify the input parameters as
   command-line arguments and/or in a YAML configuration file referenced from
   the --config command-line argument. For details, see the guide to <a href
-  ="/ml-engine/docs/training-jobs">submitting a training job</a>.
+  ="/ml-engine/docs/tensorflow/training-jobs">submitting a training job</a>.
 
   Enums:
     ScaleTierValueValuesEnum: Required. Specifies the machine types, the
@@ -887,12 +909,12 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       suppresswarning="true">complex_model_m</code>.   </dd>
       <dt>standard_gpu</dt>   <dd>   A machine equivalent to <code
       suppresswarning="true">standard</code> that   also includes a single
-      NVIDIA Tesla K80 GPU. See more about   <a href="/ml-engine/docs/how-tos
-      /using-gpus">   using GPUs for training your model</a>.   </dd>
-      <dt>complex_model_m_gpu</dt>   <dd>   A machine equivalent to   <code
-      suppresswarning="true">complex_model_m</code> that also includes   four
-      NVIDIA Tesla K80 GPUs.   </dd>   <dt>complex_model_l_gpu</dt>   <dd>   A
-      machine equivalent to   <code
+      NVIDIA Tesla K80 GPU. See more about   <a href="/ml-
+      engine/docs/tensorflow/using-gpus">using GPUs to   train your model</a>.
+      </dd>   <dt>complex_model_m_gpu</dt>   <dd>   A machine equivalent to
+      <code suppresswarning="true">complex_model_m</code> that also includes
+      four NVIDIA Tesla K80 GPUs.   </dd>   <dt>complex_model_l_gpu</dt>
+      <dd>   A machine equivalent to   <code
       suppresswarning="true">complex_model_l</code> that also includes   eight
       NVIDIA Tesla K80 GPUs.   </dd>   <dt>standard_p100</dt>   <dd>   A
       machine equivalent to <code suppresswarning="true">standard</code> that
@@ -901,8 +923,12 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       <dt>complex_model_m_p100</dt>   <dd>   A machine equivalent to   <code
       suppresswarning="true">complex_model_m</code> that also includes   four
       NVIDIA Tesla P100 GPUs. The availability of these GPUs is in   the Beta
-      launch stage.   </dd> </dl>  You must set this value when `scaleTier` is
-      set to `CUSTOM`.
+      launch stage.   </dd>   <dt>standard_tpu</dt>   <dd>   A TPU VM
+      including one Cloud TPU. The availability of Cloud TPU is in
+      <i>Beta</i> launch stage. See more about   <a href="/ml-
+      engine/docs/tensorflow/using-tpus">using TPUs to train   your model</a>.
+      </dd> </dl>  You must set this value when `scaleTier` is set to
+      `CUSTOM`.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies. The maximum
       number of package URIs is 100.
@@ -923,8 +949,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       `runtime_version` is set to '1.4' and above. Python '2.7' works with all
       supported runtime versions.
     region: Required. The Google Compute Engine region to run the training job
-      in. See the <a href="/ml-engine/docs/regions">available regions</a> for
-      ML Engine services.
+      in. See the <a href="/ml-engine/docs/tensorflow/regions">available
+      regions</a> for ML Engine services.
     runtimeVersion: Optional. The Google Cloud ML runtime version to use for
       training.  If not set, Google Cloud ML will choose the latest stable
       version.
@@ -951,9 +977,11 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
         datasets.
       STANDARD_1: Many workers and a few parameter servers.
       PREMIUM_1: A large number of workers with many parameter servers.
-      BASIC_GPU: A single worker instance [with a GPU](/ml-engine/docs/how-tos
-        /using-gpus).
-      BASIC_TPU: A single worker instance with a [Cloud TPU](/tpu)
+      BASIC_GPU: A single worker instance [with a GPU](/ml-
+        engine/docs/tensorflow/using-gpus).
+      BASIC_TPU: A single worker instance with a [Cloud TPU](/ml-
+        engine/docs/tensorflow/using-tpus). The availability of Cloud TPU is
+        in <i>Beta</i> launch stage.
       CUSTOM: The CUSTOM tier is not a set tier, but rather enables you to use
         your own cluster specification. When you use this tier, set values to
         configure your processing cluster according to these guidelines:  *
@@ -1034,8 +1062,8 @@ class GoogleCloudMlV1Version(_messages.Message):
     LabelsValue: Optional. One or more labels that you can add, to organize
       your model versions. Each label is a key-value pair, where both the key
       and the value are arbitrary strings that you supply. For more
-      information, see the documentation on <a href="/ml-engine/docs/how-tos
-      /resource-labels">using labels</a>.
+      information, see the documentation on <a href="/ml-
+      engine/docs/tensorflow/resource-labels">using labels</a>.
 
   Fields:
     autoScaling: Automatically scale the number of nodes used to serve the
@@ -1044,8 +1072,8 @@ class GoogleCloudMlV1Version(_messages.Message):
       you will start seeing increases in latency and 429 response codes.
     createTime: Output only. The time the version was created.
     deploymentUri: Required. The Google Cloud Storage location of the trained
-      model used to create the version. See the [overview of model deployment
-      ](/ml-engine/docs/concepts/deployment-overview) for more information.
+      model used to create the version. See the [guide to model deployment
+      ](/ml-engine/docs/tensorflow/deploying-models) for more information.
       When passing Version to [projects.models.versions.create](/ml-
       engine/reference/rest/v1/projects.models.versions/create) the model
       service uses the specified location as the source of the model. Once
@@ -1074,7 +1102,7 @@ class GoogleCloudMlV1Version(_messages.Message):
     labels: Optional. One or more labels that you can add, to organize your
       model versions. Each label is a key-value pair, where both the key and
       the value are arbitrary strings that you supply. For more information,
-      see the documentation on <a href="/ml-engine/docs/how-tos/resource-
+      see the documentation on <a href="/ml-engine/docs/tensorflow/resource-
       labels">using labels</a>.
     lastUseTime: Output only. The time the version was last used for
       prediction.
@@ -1147,8 +1175,8 @@ class GoogleCloudMlV1Version(_messages.Message):
     """Optional. One or more labels that you can add, to organize your model
     versions. Each label is a key-value pair, where both the key and the value
     are arbitrary strings that you supply. For more information, see the
-    documentation on <a href="/ml-engine/docs/how-tos/resource-labels">using
-    labels</a>.
+    documentation on <a href="/ml-engine/docs/tensorflow/resource-
+    labels">using labels</a>.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1637,7 +1665,7 @@ class MlProjectsJobsListRequest(_messages.Message):
       <p>List all failed jobs with names that start with 'rnn':
       <p><code>gcloud ml-engine jobs list --filter='jobId:rnn* AND
       state:FAILED'</code> <p>For more examples, see the guide to <a href
-      ="/ml-engine/docs/monitor-training">monitoring jobs</a>.
+      ="/ml-engine/docs/tensorflow/monitor-training">monitoring jobs</a>.
     pageSize: Optional. The number of jobs to retrieve per "page" of results.
       If there are more remaining results than this number, the response
       message will contain a valid value in the `next_page_token` field.  The

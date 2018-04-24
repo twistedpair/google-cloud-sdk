@@ -110,6 +110,8 @@ class Response(object):
     self.id_field = data.get('id_field')
     self.result_attribute = data.get('result_attribute')
     self.error = ResponseError(data['error']) if 'error' in data else None
+    self.modify_response_hooks = [
+        util.Hook.FromPath(p) for p in data.get('modify_response_hooks', [])]
 
 
 class ResponseError(object):

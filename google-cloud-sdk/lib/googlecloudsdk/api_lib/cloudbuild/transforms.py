@@ -41,6 +41,8 @@ Pythonicness of the Transform*() methods:
       Exceptions for arguments explicitly under the caller's control are OK.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import resources

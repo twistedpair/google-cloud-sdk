@@ -156,11 +156,16 @@ class OsloginUsersSshPublicKeysPatchRequest(_messages.Message):
 class PosixAccount(_messages.Message):
   """The POSIX account information associated with a Google account.
 
+  Enums:
+    OperatingSystemTypeValueValuesEnum: The operating system type where this
+      account applies.
+
   Fields:
     accountId: Output only. A POSIX account identifier.
     gecos: The GECOS (user information) entry for this account.
     gid: The default group ID.
     homeDirectory: The path to the home directory for this account.
+    operatingSystemType: The operating system type where this account applies.
     primary: Only one POSIX account can be marked as primary.
     shell: The path to the logic shell for this account.
     systemId: System identifier for which account the username or uid applies
@@ -169,15 +174,29 @@ class PosixAccount(_messages.Message):
     username: The username of the POSIX account.
   """
 
+  class OperatingSystemTypeValueValuesEnum(_messages.Enum):
+    """The operating system type where this account applies.
+
+    Values:
+      OPERATING_SYSTEM_TYPE_UNSPECIFIED: The operating system type associated
+        with the user account information is unspecified.
+      LINUX: Linux user account information.
+      WINDOWS: Windows user account information.
+    """
+    OPERATING_SYSTEM_TYPE_UNSPECIFIED = 0
+    LINUX = 1
+    WINDOWS = 2
+
   accountId = _messages.StringField(1)
   gecos = _messages.StringField(2)
   gid = _messages.IntegerField(3)
   homeDirectory = _messages.StringField(4)
-  primary = _messages.BooleanField(5)
-  shell = _messages.StringField(6)
-  systemId = _messages.StringField(7)
-  uid = _messages.IntegerField(8)
-  username = _messages.StringField(9)
+  operatingSystemType = _messages.EnumField('OperatingSystemTypeValueValuesEnum', 5)
+  primary = _messages.BooleanField(6)
+  shell = _messages.StringField(7)
+  systemId = _messages.StringField(8)
+  uid = _messages.IntegerField(9)
+  username = _messages.StringField(10)
 
 
 class SshPublicKey(_messages.Message):

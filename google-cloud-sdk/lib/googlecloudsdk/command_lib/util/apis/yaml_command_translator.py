@@ -120,7 +120,7 @@ class CommandBuilder(object):
 
       def Run(self_, args):
         unused_ref, response = self._CommonRun(args)
-        return self._HandleResponse(response)
+        return self._HandleResponse(response, args)
 
     return Command
 
@@ -155,7 +155,7 @@ class CommandBuilder(object):
       def Run(self_, args):
         self._RegisterURIFunc(args)
         unused_ref, response = self._CommonRun(args)
-        return self._HandleResponse(response)
+        return self._HandleResponse(response, args)
 
     return Command
 
@@ -194,9 +194,9 @@ class CommandBuilder(object):
               .format(yaml_command_schema.NAME_FORMAT_KEY),
               extract_resource_result=False)
           if args.async:
-            return self._HandleResponse(response)
+            return self._HandleResponse(response, args)
 
-        response = self._HandleResponse(response)
+        response = self._HandleResponse(response, args)
         log.DeletedResource(ref.Name(), kind=self.resource_type)
         return response
 
@@ -240,9 +240,9 @@ class CommandBuilder(object):
               args, ref, response,
               request_string=request_string)
           if args.async:
-            return self._HandleResponse(response)
+            return self._HandleResponse(response, args)
 
-        response = self._HandleResponse(response)
+        response = self._HandleResponse(response, args)
         log.CreatedResource(ref.Name() if ref else None,
                             kind=self.resource_type)
         return response
@@ -277,7 +277,7 @@ class CommandBuilder(object):
         ref = self.arg_generator.GetRequestResourceRef(args)
         response = self._WaitForOperation(
             ref, resource_ref=None, extract_resource_result=False)
-        response = self._HandleResponse(response)
+        response = self._HandleResponse(response, args)
         return response
 
     return Command
@@ -307,7 +307,7 @@ class CommandBuilder(object):
 
       def Run(self_, args):
         _, response = self._CommonRun(args)
-        return self._HandleResponse(response)
+        return self._HandleResponse(response, args)
 
     return Command
 
@@ -361,7 +361,7 @@ class CommandBuilder(object):
         self._SetPolicyUpdateMask(update_mask)
         ref, response = self._CommonRun(args)
         iam_util.LogSetIamPolicy(ref.Name(), self.resource_type)
-        return self._HandleResponse(response)
+        return self._HandleResponse(response, args)
 
     return Command
 
@@ -398,7 +398,7 @@ class CommandBuilder(object):
                 yaml_command_schema.NAME_FORMAT_KEY)
           response = self._HandleAsync(
               args, ref, response, request_string=request_string)
-        return self._HandleResponse(response)
+        return self._HandleResponse(response, args)
 
     return Command
 
@@ -533,11 +533,12 @@ class CommandBuilder(object):
     return waiter.WaitFor(
         poller, operation_ref, self._Format(progress_string, resource_ref))
 
-  def _HandleResponse(self, response):
+  def _HandleResponse(self, response, args=None):
     """Process the API response.
 
     Args:
       response: The apitools message object containing the API response.
+      args: argparse.Namespace, The parsed args.
 
     Raises:
       core.exceptions.Error: If an error was detected and extracted from the
@@ -562,6 +563,8 @@ class CommandBuilder(object):
         raise exceptions.Error(str(error))
     if self.spec.response.result_attribute:
       response = _GetAttribute(response, self.spec.response.result_attribute)
+    for hook in self.spec.response.modify_response_hooks:
+      response = hook(response, args)
     return response
 
   def _FindPopulatedAttribute(self, obj, attributes):

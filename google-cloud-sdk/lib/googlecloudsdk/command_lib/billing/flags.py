@@ -71,7 +71,7 @@ def GetAccountIdArgument(positional=True, required=False):
       '`$ gcloud alpha billing accounts list`.')
   if positional:
     return base.Argument(
-        'id',
+        'account_id',
         metavar=metavar,
         completer=BillingAccountsCompleter,
         help=help_)

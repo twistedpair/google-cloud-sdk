@@ -243,6 +243,7 @@ class _Sections(object):
     self.auth = _SectionAuth()
     self.billing = _SectionBilling()
     self.component_manager = _SectionComponentManager()
+    self.composer = _SectionComposer()
     self.compute = _SectionCompute()
     self.container = _SectionContainer()
     self.core = _SectionCore()
@@ -257,6 +258,7 @@ class _Sections(object):
     self.ml_engine = _SectionMlEngine()
     self.proxy = _SectionProxy()
     self.pubsub = _SectionPubsub()
+    self.redis = _SectionRedis()
     self.spanner = _SectionSpanner()
     self.test = _SectionTest()
 
@@ -268,6 +270,7 @@ class _Sections(object):
         self.auth,
         self.billing,
         self.component_manager,
+        self.composer,
         self.compute,
         self.container,
         self.core,
@@ -281,6 +284,7 @@ class _Sections(object):
         self.metrics,
         self.ml_engine,
         self.proxy,
+        self.redis,
         self.spanner,
         self.test,
     ]
@@ -1220,6 +1224,22 @@ class _SectionPubsub(_Section):
                    'eventually be removed.'))
 
 
+class _SectionComposer(_Section):
+  """Contains the properties for the 'composer' section."""
+
+  def __init__(self):
+    super(_SectionComposer, self).__init__('composer')
+    self.location = self._Add(
+        'location',
+        help_text=(
+            'Specifies the Composer location to use. Each Composer location'
+            'constitutes an independent resource namespace constrained to '
+            'deploying environments into Compute Engine regions inside the '
+            'location. This location parameter corresponds to the '
+            '/locations/<location> segment of the Composer resource URIs being '
+            'referenced.'))
+
+
 class _SectionDataproc(_Section):
   """Contains the properties for the 'ml_engine' section."""
 
@@ -1362,6 +1382,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.cloudkms = self._Add('cloudkms')
     self.cloudresourcemanager = self._Add('cloudresourcemanager')
     self.cloudresourcesearch = self._Add('cloudresourcesearch')
+    self.composer = self._Add('composer')
     self.compute = self._Add('compute')
     self.container = self._Add('container')
     self.containeranalysis = self._Add('containeranalysis')
@@ -1382,6 +1403,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.pubsub = self._Add('pubsub')
     self.replicapoolupdater = self._Add('replicapoolupdater')
     self.runtimeconfig = self._Add('runtimeconfig')
+    self.redis = self._Add('redis')
     self.servicemanagement = self._Add('servicemanagement')
     self.serviceregistry = self._Add('serviceregistry')
     self.serviceuser = self._Add('serviceuser')
@@ -1457,6 +1479,18 @@ class _SectionAccessContextManager(_Section):
         help_text=('The ID of the policy resource to operate on. Can be found '
                    'by running the `access-context-manager policies list` '
                    'command.'))
+
+
+class _SectionRedis(_Section):
+  """Contains the properties for the 'redis' section."""
+
+  def __init__(self):
+    super(_SectionRedis, self).__init__('redis', hidden=True)
+    self.region = self._Add(
+        'region',
+        help_text='The default region to use when working with Cloud '
+        'Memorystore for Redis resources. When a `region` is required but not '
+        'provided by a flag, the command will fall back to this value, if set.')
 
 
 class _Property(object):

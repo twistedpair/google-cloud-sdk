@@ -4,7 +4,7 @@
  "id": "dns:v1alpha2",
  "name": "dns",
  "version": "v1alpha2",
- "revision": "20180406",
+ "revision": "20180413",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -672,6 +672,18 @@
     }
    }
   },
+  "PoliciesPatchResponse": {
+   "id": "PoliciesPatchResponse",
+   "type": "object",
+   "properties": {
+    "header": {
+     "$ref": "ResponseHeader"
+    },
+    "policy": {
+     "$ref": "Policy"
+    }
+   }
+  },
   "PoliciesUpdateResponse": {
    "id": "PoliciesUpdateResponse",
    "type": "object",
@@ -809,6 +821,10 @@
    "type": "object",
    "description": "Limits associated with a Project.",
    "properties": {
+    "blackHoleHidesSystemZones": {
+     "type": "boolean",
+     "description": "Whether a black hole zone should suppress system zones for this project."
+    },
     "dnsKeysPerManagedZone": {
      "type": "integer",
      "description": "Maximum allowed number of DnsKeys per ManagedZone.",
@@ -1475,7 +1491,7 @@
      "id": "dns.managedZones.patch",
      "path": "{project}/managedZones/{managedZone}",
      "httpMethod": "PATCH",
-     "description": "Update an existing ManagedZone. This method supports patch semantics.",
+     "description": "Apply a partial update to an existing ManagedZone.",
      "parameters": {
       "clientOperationId": {
        "type": "string",
@@ -1697,7 +1713,7 @@
      "id": "dns.policies.patch",
      "path": "{project}/policies/{policy}",
      "httpMethod": "PATCH",
-     "description": "Update an existing Policy. This method supports patch semantics.",
+     "description": "Apply a partial update to an existing Policy.",
      "parameters": {
       "clientOperationId": {
        "type": "string",
@@ -1725,7 +1741,7 @@
       "$ref": "Policy"
      },
      "response": {
-      "$ref": "PoliciesUpdateResponse"
+      "$ref": "PoliciesPatchResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

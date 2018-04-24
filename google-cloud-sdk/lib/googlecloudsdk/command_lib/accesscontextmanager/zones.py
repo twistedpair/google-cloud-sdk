@@ -137,7 +137,7 @@ def _AddResources(parser):
   repeated.AddPrimitiveArgs(
       parser, 'zone', 'resources', 'resources',
       additional_help=('Resources must be projects, in the form '
-                       '`project/<projectnumber>`.'))
+                       '`projects/<projectnumber>`.'))
 
 
 def ParseResources(args, zone_result):

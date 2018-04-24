@@ -235,6 +235,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "consumer": {
+          "description": "Resource representing service consumer. It may be different from\nthe project number in consumer network parameter in case of that network\nbeing a shared VPC network. In that case, Service Networking will validate\nthat this resource belongs to that shared VPC.  Required.\nFor example 'projects\/123456'.",
+          "type": "string"
         }
       }
     },

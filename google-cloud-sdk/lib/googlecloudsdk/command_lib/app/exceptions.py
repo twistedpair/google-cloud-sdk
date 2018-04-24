@@ -14,6 +14,7 @@
 
 """This module holds exceptions raised by commands."""
 
+from __future__ import absolute_import
 from googlecloudsdk.core import exceptions
 
 

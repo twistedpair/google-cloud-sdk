@@ -320,7 +320,8 @@ class SpeechRecognitionAlternative(_messages.Message):
     transcript: Output only. Transcript text representing the words that the
       user spoke.
     words: Output only. A list of word-specific information for each
-      recognized word.
+      recognized word. Note: When enable_speaker_diarization is true, you will
+      see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -494,6 +495,11 @@ class WordInfo(_messages.Message):
       and corresponding to the end of the spoken word. This field is only set
       if `enable_word_time_offsets=true` and only in the top hypothesis. This
       is an experimental feature and the accuracy of the time offset can vary.
+    speakerTag: Output only. A distinct integer value is assigned for every
+      speaker within the audio. This field specifies which one of those
+      speakers was detected to have spoken this word. Value ranges from '1' to
+      diarization_speaker_count. speaker_tag is set if
+      enable_speaker_diarization = 'true' and only in the top alternative.
     startTime: Output only. Time offset relative to the beginning of the
       audio, and corresponding to the start of the spoken word. This field is
       only set if `enable_word_time_offsets=true` and only in the top
@@ -503,8 +509,9 @@ class WordInfo(_messages.Message):
   """
 
   endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
-  word = _messages.StringField(3)
+  speakerTag = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(3)
+  word = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

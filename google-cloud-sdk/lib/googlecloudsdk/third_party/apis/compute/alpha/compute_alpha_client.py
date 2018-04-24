@@ -138,7 +138,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified accelerator type. Get a list of available accelerator types by making a list() request.
+      """Returns the specified accelerator type. Gets a list of available accelerator types by making a list() request.
 
       Args:
         request: (ComputeAcceleratorTypesGetRequest) input message
@@ -444,7 +444,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified autoscaler resource. Get a list of available autoscalers by making a list() request.
+      """Returns the specified autoscaler resource. Gets a list of available autoscalers by making a list() request.
 
       Args:
         request: (ComputeAutoscalersGetRequest) input message
@@ -688,7 +688,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified BackendBucket resource. Get a list of available backend buckets by making a list() request.
+      """Returns the specified BackendBucket resource. Gets a list of available backend buckets by making a list() request.
 
       Args:
         request: (ComputeBackendBucketsGetRequest) input message
@@ -1010,7 +1010,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified BackendService resource. Get a list of available backend services by making a list() request.
+      """Returns the specified BackendService resource. Gets a list of available backend services by making a list() request.
 
       Args:
         request: (ComputeBackendServicesGetRequest) input message
@@ -1254,7 +1254,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified disk type. Get a list of available disk types by making a list() request.
+      """Returns the specified disk type. Gets a list of available disk types by making a list() request.
 
       Args:
         request: (ComputeDiskTypesGetRequest) input message
@@ -1420,7 +1420,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns a specified persistent disk. Get a list of available persistent disks by making a list() request.
+      """Returns a specified persistent disk. Gets a list of available persistent disks by making a list() request.
 
       Args:
         request: (ComputeDisksGetRequest) input message
@@ -2126,7 +2126,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified address resource. Get a list of available addresses by making a list() request.
+      """Returns the specified address resource. Gets a list of available addresses by making a list() request.
 
       Args:
         request: (ComputeGlobalAddressesGetRequest) input message
@@ -2292,7 +2292,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified GlobalForwardingRule resource. Get a list of available forwarding rules by making a list() request.
+      """Returns the specified GlobalForwardingRule resource. Gets a list of available forwarding rules by making a list() request.
 
       Args:
         request: (ComputeGlobalForwardingRulesGetRequest) input message
@@ -2536,7 +2536,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves the specified Operations resource. Get a list of operations by making a list() request.
+      """Retrieves the specified Operations resource. Gets a list of operations by making a list() request.
 
       Args:
         request: (ComputeGlobalOperationsGetRequest) input message
@@ -2676,7 +2676,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified HealthCheck resource. Get a list of available health checks by making a list() request.
+      """Returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.
 
       Args:
         request: (ComputeHealthChecksGetRequest) input message
@@ -2868,7 +2868,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified host type. Get a list of available host types by making a list() request.
+      """Returns the specified host type. Gets a list of available host types by making a list() request.
 
       Args:
         request: (ComputeHostTypesGetRequest) input message
@@ -2982,7 +2982,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified host. Get a list of available hosts by making a list() request.
+      """Returns the specified host. Gets a list of available hosts by making a list() request.
 
       Args:
         request: (ComputeHostsGetRequest) input message
@@ -3174,7 +3174,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified HttpHealthCheck resource. Get a list of available HTTP health checks by making a list() request.
+      """Returns the specified HttpHealthCheck resource. Gets a list of available HTTP health checks by making a list() request.
 
       Args:
         request: (ComputeHttpHealthChecksGetRequest) input message
@@ -3366,7 +3366,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified HttpsHealthCheck resource. Get a list of available HTTPS health checks by making a list() request.
+      """Returns the specified HttpsHealthCheck resource. Gets a list of available HTTPS health checks by making a list() request.
 
       Args:
         request: (ComputeHttpsHealthChecksGetRequest) input message
@@ -3586,7 +3586,7 @@ If an empty request body is given, clears the deprecation status instead.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified image. Get a list of available images by making a list() request.
+      """Returns the specified image. Gets a list of available images by making a list() request.
 
       Args:
         request: (ComputeImagesGetRequest) input message
@@ -4458,7 +4458,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified instance group. Get a list of available instance groups by making a list() request.
+      """Returns the specified instance group. Gets a list of available instance groups by making a list() request.
 
       Args:
         request: (ComputeInstanceGroupsGetRequest) input message
@@ -4974,7 +4974,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified Instance resource. Get a list of available instances by making a list() request.
+      """Returns the specified Instance resource. Gets a list of available instances by making a list() request.
 
       Args:
         request: (ComputeInstancesGetRequest) input message
@@ -6060,7 +6060,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Get(self, request, global_params=None):
-      """Returns the details for the specified interconnect location. Get a list of available interconnect locations by making a list() request.
+      """Returns the details for the specified interconnect location. Gets a list of available interconnect locations by making a list() request.
 
       Args:
         request: (ComputeInterconnectLocationsGetRequest) input message
@@ -6174,7 +6174,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified interconnect. Get a list of available interconnects by making a list() request.
+      """Returns the specified interconnect. Gets a list of available interconnects by making a list() request.
 
       Args:
         request: (ComputeInterconnectsGetRequest) input message
@@ -6890,7 +6890,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified network endpoint group. Get a list of available network endpoint groups by making a list() request.
+      """Returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
 
       Args:
         request: (ComputeNetworkEndpointGroupsGetRequest) input message
@@ -7082,7 +7082,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified network. Get a list of available networks by making a list() request.
+      """Returns the specified network. Gets a list of available networks by making a list() request.
 
       Args:
         request: (ComputeNetworksGetRequest) input message
@@ -7404,7 +7404,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified NodeGroup. Get a list of available NodeGroups by making a list() request.
+      """Returns the specified NodeGroup. Gets a list of available NodeGroups by making a list() request.
 
       Args:
         request: (ComputeNodeGroupsGetRequest) input message
@@ -7648,7 +7648,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified node template. Get a list of available node templates by making a list() request.
+      """Returns the specified node template. Gets a list of available node templates by making a list() request.
 
       Args:
         request: (ComputeNodeTemplatesGetRequest) input message
@@ -7840,7 +7840,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified node type. Get a list of available node types by making a list() request.
+      """Returns the specified node type. Gets a list of available node types by making a list() request.
 
       Args:
         request: (ComputeNodeTypesGetRequest) input message
@@ -8712,7 +8712,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified commitment resource. Get a list of available commitments by making a list() request.
+      """Returns the specified commitment resource. Gets a list of available commitments by making a list() request.
 
       Args:
         request: (ComputeRegionCommitmentsGetRequest) input message
@@ -8826,7 +8826,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Get(self, request, global_params=None):
-      """Returns the specified regional disk type. Get a list of available disk types by making a list() request.
+      """Returns the specified regional disk type. Gets a list of available disk types by making a list() request.
 
       Args:
         request: (ComputeRegionDiskTypesGetRequest) input message
@@ -9132,7 +9132,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified HealthCheck resource. Get a list of available health checks by making a list() request.
+      """Returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.
 
       Args:
         request: (ComputeRegionHealthChecksGetRequest) input message
@@ -10264,7 +10264,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified UrlMap resource. Get a list of available URL maps by making a list() request.
+      """Returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
 
       Args:
         request: (ComputeRegionUrlMapsGetRequest) input message
@@ -10456,7 +10456,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Get(self, request, global_params=None):
-      """Returns the specified Region resource. Get a list of available regions by making a list() request.
+      """Returns the specified Region resource. Gets a list of available regions by making a list() request.
 
       Args:
         request: (ComputeRegionsGetRequest) input message
@@ -10788,7 +10788,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified Router resource. Get a list of available routers by making a list() request.
+      """Returns the specified Router resource. Gets a list of available routers by making a list() request.
 
       Args:
         request: (ComputeRoutersGetRequest) input message
@@ -11032,7 +11032,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified Route resource. Get a list of available routes by making a list() request.
+      """Returns the specified Route resource. Gets a list of available routes by making a list() request.
 
       Args:
         request: (ComputeRoutesGetRequest) input message
@@ -11444,7 +11444,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified Snapshot resource. Get a list of available snapshots by making a list() request.
+      """Returns the specified Snapshot resource. Gets a list of available snapshots by making a list() request.
 
       Args:
         request: (ComputeSnapshotsGetRequest) input message
@@ -11636,7 +11636,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified SslCertificate resource. Get a list of available SSL certificates by making a list() request.
+      """Returns the specified SslCertificate resource. Gets a list of available SSL certificates by making a list() request.
 
       Args:
         request: (ComputeSslCertificatesGetRequest) input message
@@ -11802,7 +11802,7 @@ For more information, see Deleting snaphots.
     )
 
     def Insert(self, request, global_params=None):
-      """Returns the specified SSL policy resource. Get a list of available SSL policies by making a list() request.
+      """Returns the specified SSL policy resource. Gets a list of available SSL policies by making a list() request.
 
       Args:
         request: (ComputeSslPoliciesInsertRequest) input message
@@ -12020,7 +12020,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified subnetwork. Get a list of available subnetworks list() request.
+      """Returns the specified subnetwork. Gets a list of available subnetworks list() request.
 
       Args:
         request: (ComputeSubnetworksGetRequest) input message
@@ -12316,7 +12316,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified TargetHttpProxy resource. Get a list of available target HTTP proxies by making a list() request.
+      """Returns the specified TargetHttpProxy resource. Gets a list of available target HTTP proxies by making a list() request.
 
       Args:
         request: (ComputeTargetHttpProxiesGetRequest) input message
@@ -12482,7 +12482,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified TargetHttpsProxy resource. Get a list of available target HTTPS proxies by making a list() request.
+      """Returns the specified TargetHttpsProxy resource. Gets a list of available target HTTPS proxies by making a list() request.
 
       Args:
         request: (ComputeTargetHttpsProxiesGetRequest) input message
@@ -12752,7 +12752,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified TargetInstance resource. Get a list of available target instances by making a list() request.
+      """Returns the specified TargetInstance resource. Gets a list of available target instances by making a list() request.
 
       Args:
         request: (ComputeTargetInstancesGetRequest) input message
@@ -12970,7 +12970,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified target pool. Get a list of available target pools by making a list() request.
+      """Returns the specified target pool. Gets a list of available target pools by making a list() request.
 
       Args:
         request: (ComputeTargetPoolsGetRequest) input message
@@ -13214,7 +13214,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified TargetSslProxy resource. Get a list of available target SSL proxies by making a list() request.
+      """Returns the specified TargetSslProxy resource. Gets a list of available target SSL proxies by making a list() request.
 
       Args:
         request: (ComputeTargetSslProxiesGetRequest) input message
@@ -13458,7 +13458,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified TargetTcpProxy resource. Get a list of available target TCP proxies by making a list() request.
+      """Returns the specified TargetTcpProxy resource. Gets a list of available target TCP proxies by making a list() request.
 
       Args:
         request: (ComputeTargetTcpProxiesGetRequest) input message
@@ -13676,7 +13676,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified target VPN gateway. Get a list of available target VPN gateways by making a list() request.
+      """Returns the specified target VPN gateway. Gets a list of available target VPN gateways by making a list() request.
 
       Args:
         request: (ComputeTargetVpnGatewaysGetRequest) input message
@@ -13842,7 +13842,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified UrlMap resource. Get a list of available URL maps by making a list() request.
+      """Returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
 
       Args:
         request: (ComputeUrlMapsGetRequest) input message
@@ -14112,7 +14112,7 @@ For more information, see Deleting snaphots.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the specified VpnTunnel resource. Get a list of available VPN tunnels by making a list() request.
+      """Returns the specified VpnTunnel resource. Gets a list of available VPN tunnels by making a list() request.
 
       Args:
         request: (ComputeVpnTunnelsGetRequest) input message
@@ -14366,7 +14366,7 @@ For more information, see Deleting snaphots.
           }
 
     def Get(self, request, global_params=None):
-      """Returns the specified Zone resource. Get a list of available zones by making a list() request.
+      """Returns the specified Zone resource. Gets a list of available zones by making a list() request.
 
       Args:
         request: (ComputeZonesGetRequest) input message

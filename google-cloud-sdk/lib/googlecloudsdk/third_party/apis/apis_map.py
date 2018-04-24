@@ -280,6 +280,14 @@ MAP = {
             default_version=True
         ),
     },
+    'composer': {
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.composer.v1beta1',
+            client_classpath='composer_v1beta1_client.ComposerV1beta1',
+            messages_modulepath='composer_v1beta1_messages',
+            default_version=True
+        ),
+    },
     'compute': {
         'alpha': APIDef(
             class_path='googlecloudsdk.third_party.apis.compute.alpha',
@@ -389,6 +397,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.discovery.v1',
             client_classpath='discovery_v1_client.DiscoveryV1',
             messages_modulepath='discovery_v1_messages',
+            default_version=True
+        ),
+    },
+    'dlp': {
+        'v2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.dlp.v2',
+            client_classpath='dlp_v2_client.DlpV2',
+            messages_modulepath='dlp_v2_messages',
             default_version=True
         ),
     },

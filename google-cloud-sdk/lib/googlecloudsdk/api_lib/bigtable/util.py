@@ -14,15 +14,17 @@
 
 """A library that is used to support our commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+import json
 import re
-import time
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.calliope import exceptions as sdk_ex
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.console import progress_tracker
 
 
 def GetAdminClient():
@@ -98,60 +100,104 @@ def ExtractZoneAndCluster(cluster_id):
   return m.group(1), m.group(2)
 
 
-def WaitForOp(context, op_id, text):
-  cli = context['clusteradmin']
-  msg = context['clusteradmin-msgs'].BigtableclusteradminOperationsGetRequest(
-      name=op_id)
-  with progress_tracker.ProgressTracker(text, autotick=False) as pt:
-    while True:
-      # TODO(b/36049792): set reasonable timeout with input from API team
-      resp = cli.operations.Get(msg)
-      if resp.error:
-        raise sdk_ex.HttpException(resp.error.message)
-      if resp.done:
-        break
-      pt.Tick()
-      time.sleep(0.5)
-
-
-def WaitForOpV2(operation, spinner_text):
-  """Wait for a longrunning.Operation to complete, using the V2 API.
-
-  Currently broken pending fix of b/29563942.
-
-  Args:
-    operation: a longrunning.Operation message.
-    spinner_text: message text to display on the console.
-
-  Returns:
-    true if completed successfully, false if timed out
-  """
-  tick_freq = 1  # poll every second
-  tick_limit = 600  # timeout after ten minutes
-  cli = GetAdminClient()
-  msg = GetAdminMessages().BigtableadminOperationsGetRequest(
-      operationsId=operation.name[11:])
-  with progress_tracker.ProgressTracker(spinner_text, autotick=False) as pt:
-    while tick_limit > 0:
-      resp = cli.operations.Get(msg)
-      if resp.error:
-        raise sdk_ex.HttpException(resp.error.message)
-      if resp.done:
-        break
-      pt.Tick()
-      tick_limit -= tick_freq
-      time.sleep(tick_freq)
-  return resp.done
-
-
-def WaitForInstance(client, operation_ref, message):
-  poller = waiter.CloudOperationPoller(
-      client.projects_instances, client.operations)
+def _Await(result_service, operation_ref, message):
+  client = GetAdminClient()
+  poller = waiter.CloudOperationPoller(result_service, client.operations)
   return waiter.WaitFor(poller, operation_ref, message)
 
 
+def AwaitCluster(operation_ref, message):
+  """Waits for cluster long running operation to complete."""
+  client = GetAdminClient()
+  return _Await(client.projects_instances_clusters, operation_ref, message)
+
+
+def AwaitInstance(operation_ref, message):
+  """Waits for instance long running operation to complete."""
+  client = GetAdminClient()
+  return _Await(client.projects_instances, operation_ref, message)
+
+
+def AwaitAppProfile(operation_ref, message):
+  """Waits for app profile long running operation to complete."""
+  client = GetAdminClient()
+  return _Await(client.projects_instances_appProfiles, operation_ref, message)
+
+
+def GetAppProfileRef(instance, app_profile):
+  """Get a resource reference to an app profile."""
+  return resources.REGISTRY.Parse(
+      app_profile,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance,
+      },
+      collection='bigtableadmin.projects.instances.appProfiles')
+
+
+def GetClusterRef(instance, cluster):
+  """Get a resource reference to a cluster."""
+  return resources.REGISTRY.Parse(
+      cluster,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance,
+      },
+      collection='bigtableadmin.projects.instances.clusters')
+
+
+def GetOperationRef(operation):
+  """Get a resource reference to a long running operation."""
+  return resources.REGISTRY.ParseRelativeName(operation.name,
+                                              'bigtableadmin.operations')
+
+
 def GetInstanceRef(instance):
+  """Get a resource reference to an instance."""
   return resources.REGISTRY.Parse(
       instance,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+      },
       collection='bigtableadmin.projects.instances')
+
+
+WARNING_TYPE_PREFIX = 'CLOUD_BIGTABLE_APP_PROFILE_WARNING'
+
+
+def FormatErrorMessages(exception):
+  """Format app profile error message from API and raise new exception.
+
+  The error messages returned from the backend API are not formatted well when
+  using the default format. This raises a new generic exception with a well
+  formatted error message built from the original response.
+
+  Args:
+    exception: HttpError raised by API.
+
+  Raises:
+    exceptions.HttpException: Reformatted error raised by API.
+  """
+  response = json.loads(exception.content)
+  if not (response['error'] and response['error']['details']):
+    raise exception
+  errors = ['Errors:']
+  warnings = ['Warnings (use --force to ignore):']
+  for detail in response['error']['details']:
+    violations = detail.get('violations', [])
+    for violation in violations:
+      if violation.get('type').startswith(WARNING_TYPE_PREFIX):
+        warnings.append(violation.get('description'))
+      else:
+        errors.append(violation.get('description'))
+
+  error_msg = ''
+  if len(warnings) > 1:
+    error_msg += '\n\t'.join(warnings)
+  if len(errors) > 1:
+    error_msg += '\n\t'.join(errors)
+
+  if not error_msg:
+    raise exception
+  raise exceptions.HttpException(
+      exception, '{}\n{}'.format(response['error']['message'], error_msg))

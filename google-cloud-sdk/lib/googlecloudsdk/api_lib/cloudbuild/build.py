@@ -13,6 +13,8 @@
 # limitations under the License.
 """High-level client for interacting with the Cloud Build API."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import json
 import time
 
@@ -23,6 +25,7 @@ from googlecloudsdk.api_lib.util import requests
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 _ERROR_FORMAT_STRING = ('Error Response:{status_code? [{?}]}'
@@ -219,7 +222,7 @@ class CloudBuildClient(object):
     request_type = self.client.operations.GetRequestType('Get')
     request = request_type(name=operation.name)
 
-    for _ in xrange(self._MAX_RETRIES):
+    for _ in range(self._MAX_RETRIES):
       operation = self.client.operations.Get(request)
       if operation.done:
         log.debug('Operation [{0}] complete. Result: {1}'.format(

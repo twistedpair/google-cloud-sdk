@@ -16,6 +16,7 @@
 Paths are typically given as positional params, like
 `gcloud app deploy <path1> <path2>...`.
 """
+from __future__ import absolute_import
 import collections
 import os
 
@@ -24,6 +25,17 @@ from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.core import log
+
+_STANDARD_APP_YAML_URL = (
+    'https://cloud.google.com/appengine/docs/standard/python/config/appref')
+_FLEXIBLE_APP_YAML_URL = (
+    'https://cloud.google.com/'
+    'appengine/docs/flexible/python/configuring-your-app-with-app-yaml')
+FINGERPRINTING_WARNING = (
+    'As an alternative, create an app.yaml file yourself using the '
+    'directions at {flex} (App Engine Flexible Environment) or {std} (App '
+    'Engine Standard Environment) under the tab for your language.').format(
+        flex=_FLEXIBLE_APP_YAML_URL, std=_STANDARD_APP_YAML_URL)
 
 
 class Service(object):
@@ -183,7 +195,9 @@ def UnidentifiedDirMatcher(path, stager):
         requirements described above.
   """
   if os.path.isdir(path):
-    log.warning('Automatic app detection is currently in Beta')
+    log.warning(
+        'Automatic app detection is deprecated and will soon be removed. ' +
+        FINGERPRINTING_WARNING)
     yaml = deploy_command_util.CreateAppYamlForAppDirectory(path)
     return ServiceYamlMatcher(yaml, stager)
 
@@ -240,7 +254,7 @@ class Services(object):
     Returns:
       List[Service], list of services.
     """
-    return self._services.values()
+    return list(self._services.values())
 
 
 class Configs(object):
@@ -271,7 +285,7 @@ class Configs(object):
     Returns:
       List[ConfigYamlInfo], list of config file objects.
     """
-    return self._configs.values()
+    return list(self._configs.values())
 
 
 def GetDeployables(args, stager, path_matchers):
@@ -312,7 +326,7 @@ def GetDeployables(args, stager, path_matchers):
   """
   if not args:
     args = ['.']
-  paths = map(os.path.abspath, args)
+  paths = [os.path.abspath(arg) for arg in args]
   configs = Configs()
   services = Services()
   for path in paths:

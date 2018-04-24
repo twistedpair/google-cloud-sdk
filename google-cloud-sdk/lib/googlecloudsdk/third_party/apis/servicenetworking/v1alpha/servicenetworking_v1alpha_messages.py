@@ -17,6 +17,11 @@ class AddSubnetworkRequest(_messages.Message):
   """Request to create a subnetwork in a previously peered service network.
 
   Fields:
+    consumer: Resource representing service consumer. It may be different from
+      the project number in consumer network parameter in case of that network
+      being a shared VPC network. In that case, Service Networking will
+      validate that this resource belongs to that shared VPC.  Required. For
+      example 'projects/123456'.
     consumerNetwork: Network name in the consumer project.   This network must
       have been already peered with a shared VPC network using
       PeerSharedServiceNetwork method. Must be in a form
@@ -35,12 +40,13 @@ class AddSubnetworkRequest(_messages.Message):
       'compute.networkUser' role on the newly added subnetwork.
   """
 
-  consumerNetwork = _messages.StringField(1)
-  description = _messages.StringField(2)
-  ipPrefixLength = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  region = _messages.StringField(4)
-  subnetwork = _messages.StringField(5)
-  subnetworkUsers = _messages.StringField(6, repeated=True)
+  consumer = _messages.StringField(1)
+  consumerNetwork = _messages.StringField(2)
+  description = _messages.StringField(3)
+  ipPrefixLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  region = _messages.StringField(5)
+  subnetwork = _messages.StringField(6)
+  subnetworkUsers = _messages.StringField(7, repeated=True)
 
 
 class Api(_messages.Message):

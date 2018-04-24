@@ -409,6 +409,73 @@
         }
       }
     },
+    "AppProfile": {
+      "id": "AppProfile",
+      "description": "A configuration object describing how Cloud Bigtable should treat traffic\nfrom a particular end user application.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "(`OutputOnly`)\nThe unique name of the app profile. Values are of the form\n`projects\/<project>\/instances\/<instance>\/appProfiles\/_a-zA-Z0-9*`.",
+          "type": "string"
+        },
+        "etag": {
+          "description": "Strongly validated etag for optimistic concurrency control. Preserve the\nvalue returned from `GetAppProfile` when calling `UpdateAppProfile` to\nfail the request if there has been a modification in the mean time. The\n`update_mask` of the request need not include `etag` for this protection\nto apply.\nSee [Wikipedia](https:\/\/en.wikipedia.org\/wiki\/HTTP_ETag) and\n[RFC 7232](https:\/\/tools.ietf.org\/html\/rfc7232#section-2.3) for more\ndetails.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional long form description of the use case for this AppProfile.",
+          "type": "string"
+        },
+        "multiClusterRoutingUseAny": {
+          "description": "Use a multi-cluster routing policy that may pick any cluster.",
+          "$ref": "MultiClusterRoutingUseAny"
+        },
+        "singleClusterRouting": {
+          "description": "Use a single-cluster routing policy.",
+          "$ref": "SingleClusterRouting"
+        }
+      }
+    },
+    "MultiClusterRoutingUseAny": {
+      "id": "MultiClusterRoutingUseAny",
+      "description": "Read\/write requests may be routed to any cluster in the instance, and will\nfail over to another cluster in the event of transient errors or delays.\nChoosing this option sacrifices read-your-writes consistency to improve\navailability.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "SingleClusterRouting": {
+      "id": "SingleClusterRouting",
+      "description": "Unconditionally routes all read\/write requests to a specific cluster.\nThis option preserves read-your-writes consistency, but does not improve\navailability.",
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "description": "The cluster to which read\/write requests should be routed.",
+          "type": "string"
+        },
+        "allowTransactionalWrites": {
+          "description": "Whether or not `CheckAndMutateRow` and `ReadModifyWriteRow` requests are\nallowed by this app profile. It is unsafe to send these requests to\nthe same table\/row\/column in multiple clusters.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ListAppProfilesResponse": {
+      "id": "ListAppProfilesResponse",
+      "description": "Response message for BigtableInstanceAdmin.ListAppProfiles.",
+      "type": "object",
+      "properties": {
+        "appProfiles": {
+          "description": "The list of requested app profiles.",
+          "type": "array",
+          "items": {
+            "$ref": "AppProfile"
+          }
+        },
+        "nextPageToken": {
+          "description": "Set if not all app profiles could be returned in a single response.\nPass this value to `page_token` in another request to get the next\npage of results.",
+          "type": "string"
+        }
+      }
+    },
     "GetIamPolicyRequest": {
       "id": "GetIamPolicyRequest",
       "description": "Request message for `GetIamPolicy` method.",
@@ -585,8 +652,15 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "(`OutputOnly`)\nThe unique name of the table. Values are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/_a-zA-Z0-9*`.\nViews: `NAME_ONLY`, `SCHEMA_VIEW`, `FULL`",
+          "description": "(`OutputOnly`)\nThe unique name of the table. Values are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/_a-zA-Z0-9*`.\nViews: `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`",
           "type": "string"
+        },
+        "clusterStates": {
+          "description": "(`OutputOnly`)\nMap from cluster ID to per-cluster table state.\nIf it could not be determined whether or not the table has data in a\nparticular cluster (for example, if its zone is unavailable), then\nthere will be an entry for the cluster with UNKNOWN `replication_status`.\nViews: `REPLICATION_VIEW`, `FULL`",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ClusterState"
+          }
         },
         "columnFamilies": {
           "description": "(`CreationOnly`)\nThe column families configured for this table, mapped by column family ID.\nViews: `SCHEMA_VIEW`, `FULL`",
@@ -605,6 +679,31 @@
           "enum": [
             "TIMESTAMP_GRANULARITY_UNSPECIFIED",
             "MILLIS"
+          ]
+        }
+      }
+    },
+    "ClusterState": {
+      "id": "ClusterState",
+      "description": "The state of a table's data in a particular cluster.",
+      "type": "object",
+      "properties": {
+        "replicationState": {
+          "description": "(`OutputOnly`)\nThe state of replication for the table in this cluster.",
+          "enumDescriptions": [
+            "The replication state of the table is unknown in this cluster.",
+            "The cluster was recently created, and the table must finish copying\nover pre-existing data from other clusters before it can begin\nreceiving live replication updates and serving\nData API requests.",
+            "The table is temporarily unable to serve\nData API requests from this\ncluster due to planned internal maintenance.",
+            "The table is temporarily unable to serve\nData API requests from this\ncluster due to unplanned or emergency maintenance.",
+            "The table can serve\nData API requests from this\ncluster. Depending on replication delay, reads may not immediately\nreflect the state of the table in other clusters."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_NOT_KNOWN",
+            "INITIALIZING",
+            "PLANNED_MAINTENANCE",
+            "UNPLANNED_MAINTENANCE",
+            "READY"
           ]
         }
       }
@@ -756,6 +855,46 @@
         }
       }
     },
+    "GenerateConsistencyTokenRequest": {
+      "id": "GenerateConsistencyTokenRequest",
+      "description": "Request message for\ngoogle.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GenerateConsistencyTokenResponse": {
+      "id": "GenerateConsistencyTokenResponse",
+      "description": "Response message for\ngoogle.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken",
+      "type": "object",
+      "properties": {
+        "consistencyToken": {
+          "description": "The generated consistency token.",
+          "type": "string"
+        }
+      }
+    },
+    "CheckConsistencyRequest": {
+      "id": "CheckConsistencyRequest",
+      "description": "Request message for\ngoogle.bigtable.admin.v2.BigtableTableAdmin.CheckConsistency",
+      "type": "object",
+      "properties": {
+        "consistencyToken": {
+          "description": "The token created using GenerateConsistencyToken for the Table.",
+          "type": "string"
+        }
+      }
+    },
+    "CheckConsistencyResponse": {
+      "id": "CheckConsistencyResponse",
+      "description": "Response message for\ngoogle.bigtable.admin.v2.BigtableTableAdmin.CheckConsistency",
+      "type": "object",
+      "properties": {
+        "consistent": {
+          "description": "True only if the token is consistent. A token is consistent if replication\nhas caught up with the restrictions specified in the request.",
+          "type": "boolean"
+        }
+      }
+    },
     "CreateInstanceMetadata": {
       "id": "CreateInstanceMetadata",
       "description": "The metadata for the Operation returned by CreateInstance.",
@@ -873,6 +1012,13 @@
           "type": "string",
           "format": "google-datetime"
         }
+      }
+    },
+    "UpdateAppProfileMetadata": {
+      "id": "UpdateAppProfileMetadata",
+      "description": "The metadata for the Operation returned by UpdateAppProfile.",
+      "type": "object",
+      "properties": {
       }
     }
   },
@@ -1510,6 +1656,197 @@
                 }
               }
             },
+            "appProfiles": {
+              "methods": {
+                "create": {
+                  "id": "bigtableadmin.projects.instances.appProfiles.create",
+                  "path": "v2/{+parent}/appProfiles",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/appProfiles",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "The unique name of the instance in which to create the new app profile.\nValues are of the form\n`projects\/<project>\/instances\/<instance>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "appProfileId": {
+                      "description": "The ID to be used when referring to the new app profile within its\ninstance, e.g., just `myprofile` rather than\n`projects\/myproject\/instances\/myinstance\/appProfiles\/myprofile`.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "ignoreWarnings": {
+                      "description": "If true, ignore safety checks when creating the app profile.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "AppProfile"
+                  },
+                  "response": {
+                    "$ref": "AppProfile"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/bigtable.admin.instance",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates an app profile within an instance."
+                },
+                "get": {
+                  "id": "bigtableadmin.projects.instances.appProfiles.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The unique name of the requested app profile. Values are of the form\n`projects\/<project>\/instances\/<instance>\/appProfiles\/<app_profile>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/appProfiles\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "AppProfile"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/bigtable.admin.instance",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets information about an app profile."
+                },
+                "list": {
+                  "id": "bigtableadmin.projects.instances.appProfiles.list",
+                  "path": "v2/{+parent}/appProfiles",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/appProfiles",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The unique name of the instance for which a list of app profiles is\nrequested. Values are of the form\n`projects\/<project>\/instances\/<instance>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageToken": {
+                      "description": "The value of `next_page_token` returned by a previous call.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListAppProfilesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/bigtable.admin.instance",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists information about app profiles in an instance."
+                },
+                "patch": {
+                  "id": "bigtableadmin.projects.instances.appProfiles.patch",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "(`OutputOnly`)\nThe unique name of the app profile. Values are of the form\n`projects\/<project>\/instances\/<instance>\/appProfiles\/_a-zA-Z0-9*`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/appProfiles\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The subset of app profile fields which should be replaced.\nIf unset, all fields will be replaced.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "ignoreWarnings": {
+                      "description": "If true, ignore safety checks when updating the app profile.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "AppProfile"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/bigtable.admin.instance",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates an app profile within an instance."
+                },
+                "delete": {
+                  "id": "bigtableadmin.projects.instances.appProfiles.delete",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/appProfiles/{appProfilesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The unique name of the app profile to be deleted. Values are of the form\n`projects\/<project>\/instances\/<instance>\/appProfiles\/<app_profile>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/appProfiles\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "ignoreWarnings": {
+                      "description": "If true, ignore safety checks when deleting the app profile.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/bigtable.admin.instance",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes an app profile from an instance."
+                }
+              }
+            },
             "tables": {
               "methods": {
                 "create": {
@@ -1565,6 +1902,7 @@
                         "VIEW_UNSPECIFIED",
                         "NAME_ONLY",
                         "SCHEMA_VIEW",
+                        "REPLICATION_VIEW",
                         "FULL"
                       ]
                     },
@@ -1611,6 +1949,7 @@
                         "VIEW_UNSPECIFIED",
                         "NAME_ONLY",
                         "SCHEMA_VIEW",
+                        "REPLICATION_VIEW",
                         "FULL"
                       ]
                     }
@@ -1723,6 +2062,70 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Permanently drop\/delete a row range from a specified table. The request can\nspecify whether to delete all rows in a table, or only those that match a\nparticular prefix."
+                },
+                "generateConsistencyToken": {
+                  "id": "bigtableadmin.projects.instances.tables.generateConsistencyToken",
+                  "path": "v2/{+name}:generateConsistencyToken",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:generateConsistencyToken",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The unique name of the Table for which to create a consistency token.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GenerateConsistencyTokenRequest"
+                  },
+                  "response": {
+                    "$ref": "GenerateConsistencyTokenResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.table",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.table",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Generates a consistency token for a Table, which can be used in\nCheckConsistency to check whether mutations to the table that finished\nbefore this call started have been replicated. The tokens will be available\nfor 90 days."
+                },
+                "checkConsistency": {
+                  "id": "bigtableadmin.projects.instances.tables.checkConsistency",
+                  "path": "v2/{+name}:checkConsistency",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}:checkConsistency",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The unique name of the Table for which to check replication consistency.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/tables\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CheckConsistencyRequest"
+                  },
+                  "response": {
+                    "$ref": "CheckConsistencyResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.table",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.table",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Checks replication consistency based on a consistency token, that is, if\nreplication has caught up based on the conditions specified in the token\nand the check request."
                 }
               }
             }

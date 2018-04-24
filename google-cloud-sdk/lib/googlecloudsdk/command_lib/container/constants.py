@@ -14,6 +14,7 @@
 
 """Shared constants used by container commands."""
 
+from __future__ import unicode_literals
 DEGRADED_WARNING = (
     "! Clusters in DEGRADED status are missing edit permissions on project.\n"
     "Please refer to https://cloud.google.com/kubernetes-engine/docs/support\n"

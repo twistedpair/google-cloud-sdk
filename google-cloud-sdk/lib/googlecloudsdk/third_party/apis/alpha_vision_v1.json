@@ -490,7 +490,7 @@
       "type": "object",
       "properties": {
         "csvFileUri": {
-          "description": "The Google Cloud Storage URI of the input csv file.\n\nThe URI must start with gs:\/\/\n\nThe format of the input csv file should be one image per line.\nIn each line, there are 6 columns.\n1. image_uri\n2. product_set_id\n3. product_id\n4. product_category\n5, labels\n6. bounding_poly\n\nColumns 1, 2, 3 and 4 are required. A new ProductSet\/Product with the same\nid will be created on the fly if the ProductSet\/Product specified by\nproduct_set_id\/product_id does not exist.\n\nIf the Product with product_id already exists, the fields product_category\nand labels are ignored.\n\nIf a Product doesn't exist and needs to be created on the fly, the\nproduct_category field refers to Product.product_category, and the\nlabels field refers to Product.labels. Notice that display_name of\nProductSet\/Product cannot be empty. Here \" \" is used as the place holder\nfor the display_name, which can be updated through the update API.\n\nLabels should be a line containing a list of comma-separated key-value\npairs, with the format \"key_1=value_1,key_2=value_2,...,key_n=value_n\".\n\nThe bounding_poly field is used to identify one region of interest\nfrom the image in the same manner as CreateReferenceImage. If no\nbounding_poly is specified, the system will try to detect regions of\ninterest automatically.\n\nNote that the pipeline will resize the image if the image resolution is too\nlarge to process (above 50MP).\n\nAlso note that at most one bounding_poly is allowed per line. If the image\ncontains multiple regions of interest, the csv should contain one line per\nregion of interest.\n\nThe bounding_poly column should contain an even number of comma-separated\nintegers, with the format \"p1_x,p1_y,p2_x,p2_y,...,pn_x,pn_y\".",
+          "description": "The Google Cloud Storage URI of the input csv file.\n\nThe URI must start with gs:\/\/\n\nThe format of the input csv file should be one image per line.\nIn each line, there are 6 columns.\n1. image_uri\n2. product_set_id\n3. product_id\n4. product_category\n5, labels\n6. bounding_poly\n\nColumns 1, 2, 3 and 4 are required. A new ProductSet\/Product with the same\nid will be created on the fly if the ProductSet\/Product specified by\nproduct_set_id\/product_id does not exist.\n\nIf the Product with product_id already exists, the fields product_category\nand labels are ignored.\n\nIf a Product doesn't exist and needs to be created on the fly, the\nproduct_category field refers to Product.product_category, and the\nlabels field refers to Product.labels. Notice that display_name of\nProductSet\/Product cannot be empty. Here \" \" is used as the place holder\nfor the display_name, which can be updated through the update API.\n\nLabels should be a line containing a list of comma-separated key-value\npairs, with the format \"key_1=value_1,key_2=value_2,...,key_n=value_n\".\n\nThe bounding_poly field is used to identify one region of interest\nfrom the image in the same manner as CreateReferenceImage. If no\nbounding_poly is specified, the system will try to detect regions of\ninterest automatically.\n\nNote that the pipeline will resize the image if the image resolution is too\nlarge to process (above 50MP).\n\nAlso note that at most one bounding_poly is allowed per line. If the image\ncontains multiple regions of interest, the csv should contain one line per\nregion of interest.\n\nThe bounding_poly column should contain an even number of comma-separated\nnumbers, with the format \"p1_x,p1_y,p2_x,p2_y,...,pn_x,pn_y\". Nonnegative\nintegers should be used for absolute bounding polygons, and float values\nin [0, 1] should be used for normalized bounding polygons.",
           "type": "string"
         }
       }
@@ -589,7 +589,8 @@
             "Run crop hints.",
             "Run web detection.",
             "Run Product Search.",
-            "Run custom label detection."
+            "Run custom label detection.",
+            "Run localizer for object detection."
           ],
           "type": "string",
           "enum": [
@@ -605,7 +606,8 @@
             "CROP_HINTS",
             "WEB_DETECTION",
             "PRODUCT_SEARCH",
-            "CUSTOM_LABEL_DETECTION"
+            "CUSTOM_LABEL_DETECTION",
+            "OBJECT_LOCALIZATION"
           ]
         },
         "maxResults": {
@@ -830,6 +832,13 @@
           "type": "array",
           "items": {
             "$ref": "EntityAnnotation"
+          }
+        },
+        "localizedObjectAnnotations": {
+          "description": "If present, localized object detection has completed successfully.\nThis will be sorted descending by confidence score.",
+          "type": "array",
+          "items": {
+            "$ref": "LocalizedObjectAnnotation"
           }
         },
         "customLabelAnnotations": {
@@ -1258,6 +1267,34 @@
           "description": "Value of numeric properties.",
           "type": "string",
           "format": "uint64"
+        }
+      }
+    },
+    "LocalizedObjectAnnotation": {
+      "id": "LocalizedObjectAnnotation",
+      "description": "Set of detected objects with bounding boxes.",
+      "type": "object",
+      "properties": {
+        "mid": {
+          "description": "Object ID that should align with EntityAnnotation mid.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "The BCP-47 language code, such as \"en-US\" or \"sr-Latn\". For more\ninformation, see\nhttp:\/\/www.unicode.org\/reports\/tr35\/#Unicode_locale_identifier.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Object name, expressed in its `language_code` language.",
+          "type": "string"
+        },
+        "score": {
+          "description": "Score of the result. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        },
+        "boundingPoly": {
+          "description": "Image region to which this object belongs. This must be populated.",
+          "$ref": "BoundingPoly"
         }
       }
     },
@@ -2028,7 +2065,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI for the input file. This must only be a GCS\nobject. Wildcards are not currently supported.",
+          "description": "Google Cloud Storage URI for the input file. This must only be a\nGoogle Cloud Storage object. Wildcards are not currently supported.",
           "type": "string"
         }
       }
@@ -2043,7 +2080,7 @@
           "$ref": "GcsDestination"
         },
         "batchSize": {
-          "description": "The max number of response protos to put into each output JSON file on GCS.\nThe valid range is [1, 100]. If not specified, the default value is 20.\n\nFor example, for one pdf file with 100 pages, 100 response protos will\nbe generated. If `batch_size` = 20, then 5 json files each\ncontaining 20 response protos will be written under the prefix\n`gcs_destination`.`uri`.\n\nCurrently, batch_size only applies to GcsDestination, with potential future\nsupport for other output configurations.",
+          "description": "The max number of response protos to put into each output JSON file on\nGoogle Cloud Storage.\nThe valid range is [1, 100]. If not specified, the default value is 20.\n\nFor example, for one pdf file with 100 pages, 100 response protos will\nbe generated. If `batch_size` = 20, then 5 json files each\ncontaining 20 response protos will be written under the prefix\n`gcs_destination`.`uri`.\n\nCurrently, batch_size only applies to GcsDestination, with potential future\nsupport for other output configurations.",
           "type": "integer",
           "format": "int32"
         }
@@ -2099,7 +2136,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Google Cloud Storage URI for the input file. This must only be a GCS\nobject. Wildcards are not currently supported.",
+          "description": "Google Cloud Storage URI for the input file. This must only be a\nGoogle Cloud Storage object. Wildcards are not currently supported.",
           "type": "string"
         }
       }
@@ -3224,7 +3261,7 @@
           "$ref": "GoogleCloudVisionV1p2beta1GcsDestination"
         },
         "batchSize": {
-          "description": "The max number of response protos to put into each output JSON file on GCS.\nThe valid range is [1, 100]. If not specified, the default value is 20.\n\nFor example, for one pdf file with 100 pages, 100 response protos will\nbe generated. If `batch_size` = 20, then 5 json files each\ncontaining 20 response protos will be written under the prefix\n`gcs_destination`.`uri`.\n\nCurrently, batch_size only applies to GcsDestination, with potential future\nsupport for other output configurations.",
+          "description": "The max number of response protos to put into each output JSON file on\nGoogle Cloud Storage.\nThe valid range is [1, 100]. If not specified, the default value is 20.\n\nFor example, for one pdf file with 100 pages, 100 response protos will\nbe generated. If `batch_size` = 20, then 5 json files each\ncontaining 20 response protos will be written under the prefix\n`gcs_destination`.`uri`.\n\nCurrently, batch_size only applies to GcsDestination, with potential future\nsupport for other output configurations.",
           "type": "integer",
           "format": "int32"
         }

@@ -2496,8 +2496,9 @@ class SoftwareConfig(_messages.Message):
 
   Fields:
     imageVersion: Optional. The version of software inside the cluster. It
-      must match the regular expression [0-9]+\.[0-9]+. If unspecified, it
-      defaults to the latest version (see Cloud Dataproc Versioning).
+      must be one of the supported Cloud Dataproc Versions, such as "1.2"
+      (including a subminor version, such as "1.2.29"), or the "preview"
+      version. If unspecified, it defaults to the latest version.
     properties: Optional. The properties to set on daemon config
       files.Property keys are specified in prefix:property format, such as
       core:fs.defaultFS. The following are supported prefixes and their

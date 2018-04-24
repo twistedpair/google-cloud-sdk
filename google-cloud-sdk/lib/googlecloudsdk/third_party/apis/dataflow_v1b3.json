@@ -1259,6 +1259,10 @@
           "description": "The time this event was emitted to indicate a new target or current\nnum_workers value.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "workerPool": {
+          "description": "A short and friendly name for the worker pool this event refers to,\npopulated from the value of PoolStageRelation::user_pool_name.",
+          "type": "string"
         }
       }
     },

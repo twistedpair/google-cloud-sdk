@@ -598,6 +598,20 @@ class InstancesListResponse(_messages.Message):
   nextPageToken = _messages.StringField(3)
 
 
+class InstancesListServerCasResponse(_messages.Message):
+  """Instances ListServerCas response.
+
+  Fields:
+    activeVersion: A string attribute.
+    certs: List of server CA certificates for the instance.
+    kind: This is always sql#instancesListServerCas.
+  """
+
+  activeVersion = _messages.StringField(1)
+  certs = _messages.MessageField('SslCert', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'sql#instancesListServerCas')
+
+
 class InstancesRestoreBackupRequest(_messages.Message):
   """Database instance restore backup request.
 
@@ -607,6 +621,17 @@ class InstancesRestoreBackupRequest(_messages.Message):
   """
 
   restoreBackupContext = _messages.MessageField('RestoreBackupContext', 1)
+
+
+class InstancesRotateServerCaRequest(_messages.Message):
+  """Rotate Server CA request.
+
+  Fields:
+    rotateServerCaContext: Contains details about the rotate server CA
+      operation.
+  """
+
+  rotateServerCaContext = _messages.MessageField('RotateServerCaContext', 1)
 
 
 class InstancesTruncateLogRequest(_messages.Message):
@@ -874,6 +899,20 @@ class RestoreBackupContext(_messages.Message):
   kind = _messages.StringField(3, default=u'sql#restoreBackupContext')
 
 
+class RotateServerCaContext(_messages.Message):
+  """Instance rotate server CA context.
+
+  Fields:
+    kind: This is always sql#rotateServerCaContext.
+    nextVersion: The fingerprint of the next version to be rotated to. If left
+      unspecified, will be rotated to the most recently added server CA
+      version.
+  """
+
+  kind = _messages.StringField(1, default=u'sql#rotateServerCaContext')
+  nextVersion = _messages.StringField(2)
+
+
 class Settings(_messages.Message):
   """Database instance settings.
 
@@ -1136,6 +1175,18 @@ class SqlFlagsListRequest(_messages.Message):
   databaseVersion = _messages.StringField(1)
 
 
+class SqlInstancesAddServerCaRequest(_messages.Message):
+  """A SqlInstancesAddServerCaRequest object.
+
+  Fields:
+    instance: Cloud SQL instance ID. This does not include the project ID.
+    project: Project ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class SqlInstancesCloneRequest(_messages.Message):
   """A SqlInstancesCloneRequest object.
 
@@ -1256,6 +1307,18 @@ class SqlInstancesListRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
 
 
+class SqlInstancesListServerCasRequest(_messages.Message):
+  """A SqlInstancesListServerCasRequest object.
+
+  Fields:
+    instance: Cloud SQL instance ID. This does not include the project ID.
+    project: Project ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class SqlInstancesPatchRequest(_messages.Message):
   """A SqlInstancesPatchRequest object.
 
@@ -1320,6 +1383,21 @@ class SqlInstancesRestoreBackupRequest(_messages.Message):
 
   instance = _messages.StringField(1, required=True)
   instancesRestoreBackupRequest = _messages.MessageField('InstancesRestoreBackupRequest', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class SqlInstancesRotateServerCaRequest(_messages.Message):
+  """A SqlInstancesRotateServerCaRequest object.
+
+  Fields:
+    instance: Cloud SQL instance ID. This does not include the project ID.
+    instancesRotateServerCaRequest: A InstancesRotateServerCaRequest resource
+      to be passed as the request body.
+    project: Project ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesRotateServerCaRequest = _messages.MessageField('InstancesRotateServerCaRequest', 2)
   project = _messages.StringField(3, required=True)
 
 

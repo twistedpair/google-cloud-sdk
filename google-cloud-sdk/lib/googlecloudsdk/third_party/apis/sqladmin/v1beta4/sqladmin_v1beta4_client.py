@@ -370,6 +370,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AddServerCa(self, request, global_params=None):
+      """Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There can not be more than one CA version waiting to be rotated in.
+
+      Args:
+        request: (SqlInstancesAddServerCaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddServerCa')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddServerCa.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'sql.instances.addServerCa',
+        ordered_params=[u'project', u'instance'],
+        path_params=[u'instance', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/instances/{instance}/addServerCa',
+        request_field='',
+        request_type_name=u'SqlInstancesAddServerCaRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Clone(self, request, global_params=None):
       """Creates a Cloud SQL instance as a clone of the source instance. The API is not ready for Second Generation instances yet.
 
@@ -604,6 +630,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListServerCas(self, request, global_params=None):
+      """Lists all of the trusted Certificate Authorities (CAs) for the specified instance. There can be up to three CAs listed: the CA that was used to sign the certificate that is currently in use, a CA that has been added but not yet used to sign a certificate, and a CA used to sign a certificate that has previously rotated out.
+
+      Args:
+        request: (SqlInstancesListServerCasRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstancesListServerCasResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListServerCas')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListServerCas.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'sql.instances.listServerCas',
+        ordered_params=[u'project', u'instance'],
+        path_params=[u'instance', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/instances/{instance}/listServerCas',
+        request_field='',
+        request_type_name=u'SqlInstancesListServerCasRequest',
+        response_type_name=u'InstancesListServerCasResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       """Updates settings of a Cloud SQL instance. Caution: This is not a partial update, so you must include values for all the settings that you want to retain. For partial updates, use patch.. This method supports patch semantics.
 
@@ -730,6 +782,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         relative_path=u'projects/{project}/instances/{instance}/restoreBackup',
         request_field=u'instancesRestoreBackupRequest',
         request_type_name=u'SqlInstancesRestoreBackupRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def RotateServerCa(self, request, global_params=None):
+      """Rotates the server certificate to one signed by the Certificate Authority (CA) version previously added with the addServerCA method.
+
+      Args:
+        request: (SqlInstancesRotateServerCaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RotateServerCa')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RotateServerCa.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'sql.instances.rotateServerCa',
+        ordered_params=[u'project', u'instance'],
+        path_params=[u'instance', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/instances/{instance}/rotateServerCa',
+        request_field=u'instancesRotateServerCaRequest',
+        request_type_name=u'SqlInstancesRotateServerCaRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

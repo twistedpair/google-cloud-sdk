@@ -14,6 +14,7 @@
 
 """Utilities for `app instances *` commands using SSH."""
 
+from __future__ import absolute_import
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util

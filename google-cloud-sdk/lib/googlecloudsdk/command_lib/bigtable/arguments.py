@@ -16,9 +16,11 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.bigtable import util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util import completers
@@ -45,6 +47,42 @@ class InstanceCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
+def ProcessInstanceTypeAndNodes(args, instance_type):
+  """Ensure that --instance-type and --num-nodes are consistent.
+
+  If --instance-type is DEVELOPMENT, then no --cluster-num-nodes can be
+  specified. If --instance-type is PRODUCTION, then --cluster-num-nodes must be
+  at least 3 if specified and defaults to 3 if not specified.
+
+  Args:
+    args: an argparse namespace.
+    instance_type: string, The instance type; PRODUCTION or DEVELOPMENT.
+
+  Raises:
+    exceptions.InvalidArgumentException: If --cluster-num-nodes is specified
+        when --instance-type is DEVELOPMENT, or if --instance-type is PRODUCTION
+        and --cluster-num-nodes is less than 3.
+
+  Returns:
+    Number of nodes or None if DEVELOPMENT instance-type.
+  """
+  msgs = util.GetAdminMessages()
+  num_nodes = args.cluster_num_nodes
+  if not args.IsSpecified('cluster_num_nodes'):
+    if instance_type == msgs.Instance.TypeValueValuesEnum.PRODUCTION:
+      num_nodes = 3
+  else:
+    if instance_type == msgs.Instance.TypeValueValuesEnum.DEVELOPMENT:
+      raise exceptions.InvalidArgumentException(
+          '--cluster-num-nodes',
+          'Cannot set --cluster-num-nodes for DEVELOPMENT instances.')
+    elif num_nodes < 3:
+      raise exceptions.InvalidArgumentException(
+          '--cluster-num-nodes',
+          'Clusters of PRODUCTION instances must have at least 3 nodes.')
+  return num_nodes
+
+
 class ArgAdder(object):
   """A class for adding Bigtable command-line arguments."""
 
@@ -58,38 +96,31 @@ class ArgAdder(object):
         action='store_true')
     return self
 
-  def AddCluster(self, positional=True):
+  def AddCluster(self):
     """Add cluster argument."""
-
-    help_text = 'ID of the cluster.'
-    if positional:
-      self.parser.add_argument(
-          'cluster',
-          completer=ClusterCompleter,
-          help=help_text)
-    else:
-      self.parser.add_argument(
-          '--cluster',
-          completer=ClusterCompleter,
-          help=help_text,
-          required=True)
+    self.parser.add_argument(
+        '--cluster',
+        completer=ClusterCompleter,
+        help='ID of the cluster.',
+        required=True)
     return self
 
-  def AddClusterNodes(self, in_instance=False):
+  def AddClusterNodes(self, in_instance=False, required=None, default=None):
+    is_required = required if required is not None else not in_instance
     self.parser.add_argument(
         '--cluster-num-nodes' if in_instance else '--num-nodes',
         help='Number of nodes to serve.',
-        required=not in_instance,
+        default=default,
+        required=is_required,
         type=int)
     return self
 
-  def AddClusterStorage(self, in_instance=False):
+  def AddClusterStorage(self):
     storage_argument = base.ChoiceArgument(
-        '--cluster-storage-type' if in_instance else '--storage',
+        '--cluster-storage-type',
         choices=['hdd', 'ssd'],
         default='ssd',
-        help_str='Storage class for the cluster.'
-    )
+        help_str='Storage class for the cluster.')
     storage_argument.AddToParser(self.parser)
     return self
 
@@ -124,6 +155,45 @@ class ArgAdder(object):
       args['required'] = required
 
     self.parser.add_argument(name, **args)
+    return self
+
+  def AddAppProfileRouting(self, required=True):
+    """Adds arguments for app_profile routing to parser."""
+    routing_group = self.parser.add_mutually_exclusive_group(required=required)
+    any_group = routing_group.add_group('Multi Cluster Routing Policy')
+    any_group.add_argument(
+        '--route-any',
+        action='store_true',
+        default=False,
+        help='Use Multi Cluster Routing policy.')
+    route_to_group = routing_group.add_group('Single Cluster Routing Policy')
+    route_to_group.add_argument(
+        '--route-to',
+        completer=ClusterCompleter,
+        required=True,
+        help='Cluster ID to route to using Single Cluster Routing policy.')
+    route_to_group.add_argument(
+        '--transactional-writes',
+        action='store_true',
+        default=False,
+        help='Allow transactional writes with a Single Cluster Routing policy.')
+    return self
+
+  def AddDescription(self, resource, required=True):
+    """Add argument for description to parser."""
+    self.parser.add_argument(
+        '--description',
+        help='Friendly name of the {}.'.format(resource),
+        required=required)
+    return self
+
+  def AddForce(self, verb):
+    """Add argument for force to the parser."""
+    self.parser.add_argument(
+        '--force',
+        action='store_true',
+        default=False,
+        help='Ignore warnings and force {}.'.format(verb))
     return self
 
   def AddInstanceDisplayName(self, required=False):
@@ -181,6 +251,18 @@ def ProjectAttributeConfig():
       fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
 
 
+def ClusterAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='cluster',
+      help_text='The Cloud Bigtable cluster for the {resource}.')
+
+
+def AppProfileAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='app profile',
+      help_text='The Cloud Bigtable application profile for the {resource}.')
+
+
 def GetInstanceResourceSpec():
   """Return the resource specification for a Bigtable instance."""
   return concepts.ResourceSpec(
@@ -191,11 +273,60 @@ def GetInstanceResourceSpec():
       disable_auto_completers=False)
 
 
-def AddInstanceResourceArg(parser, verb):
+def GetClusterResourceSpec():
+  """Return the resource specification for a Bigtable cluster."""
+  return concepts.ResourceSpec(
+      'bigtableadmin.projects.instances.clusters',
+      resource_name='cluster',
+      clustersId=ClusterAttributeConfig(),
+      instancesId=InstanceAttributeConfig(),
+      projectsId=ProjectAttributeConfig(),
+      disable_auto_completers=False)
+
+
+def GetAppProfileResourceSpec():
+  """Return the resource specification for a Bigtable app profile."""
+  return concepts.ResourceSpec(
+      'bigtableadmin.projects.instances.appProfiles',
+      resource_name='app-profile',
+      instancesId=InstanceAttributeConfig(),
+      projectsId=ProjectAttributeConfig(),
+      disable_auto_completers=False)
+
+
+def AddInstancesResourceArg(parser, verb):
+  """Add --instances resource argument to the parser."""
+  concept_parsers.ConceptParser.ForResource(
+      '--instances',
+      GetInstanceResourceSpec(),
+      'The instances {}.'.format(verb),
+      required=False,
+      plural=True).AddToParser(parser)
+
+
+def AddInstanceResourceArg(parser, verb, positional=False):
   """Add --instance resource argument to the parser."""
   concept_parsers.ConceptParser.ForResource(
-      'instance',
+      'instance' if positional else '--instance',
       GetInstanceResourceSpec(),
       'The instance {}.'.format(verb),
       required=True,
       plural=False).AddToParser(parser)
+
+
+def AddClusterResourceArg(parser, verb):
+  """Add cluster positional resource argument to the parser."""
+  concept_parsers.ConceptParser.ForResource(
+      'cluster',
+      GetClusterResourceSpec(),
+      'The cluster {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddAppProfileResourceArg(parser, verb):
+  """Add app profile positional resource argument to the parser."""
+  concept_parsers.ConceptParser.ForResource(
+      'app_profile',
+      GetAppProfileResourceSpec(),
+      'The app profile {}.'.format(verb),
+      required=True).AddToParser(parser)

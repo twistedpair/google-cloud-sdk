@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for the cloudbuild API."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
+import six
 
 
 _API_NAME = 'cloudbuild'
@@ -36,7 +39,7 @@ def EncodeSubstitutions(substitutions, messages):
     return None
   substition_properties = []
   # TODO(b/35470611): Use map encoder function instead when implemented
-  for key, value in sorted(substitutions.iteritems()):  # Sort for tests
+  for key, value in sorted(six.iteritems(substitutions)):  # Sort for tests
     substition_properties.append(
         messages.Build.SubstitutionsValue.AdditionalProperty(key=key,
                                                              value=value))

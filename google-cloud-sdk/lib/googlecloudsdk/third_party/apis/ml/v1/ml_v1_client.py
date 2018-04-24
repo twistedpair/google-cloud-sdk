@@ -960,7 +960,7 @@ is the parent resource, without the operations collection id.
 
     def GetConfig(self, request, global_params=None):
       """Get the service account information associated with your project. You need.
-this information in order to grant the service account persmissions for
+this information in order to grant the service account permissions for
 the Google Cloud Storage location where you put your model training code
 for training the model with Google Cloud Machine Learning.
 

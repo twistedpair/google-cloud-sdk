@@ -187,7 +187,8 @@ create an app using the following command:
 
 
 VALID_REGIONS = [
-    region_util.Region('us-central1', True, True),
+    region_util.Region('us-central', True, True),
+    region_util.Region('europe-west', True, True),
 ]
 
 

@@ -13,6 +13,8 @@
 # limitations under the License.
 
 """Utilities for loading and parsing kubeconfig."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 
 from googlecloudsdk.core import config
@@ -66,9 +68,9 @@ class Kubeconfig(object):
     Raises:
       Error: don't have the permission to open kubeconfig file.
     """
-    self._data['clusters'] = self.clusters.values()
-    self._data['users'] = self.users.values()
-    self._data['contexts'] = self.contexts.values()
+    self._data['clusters'] = list(self.clusters.values())
+    self._data['users'] = list(self.users.values())
+    self._data['contexts'] = list(self.contexts.values())
     # We use os.open here to explicitly set file mode 0600.
     # the flags passed should mimic behavior of open(self._filename, 'w'),
     # which does write with truncate and creates file if not existing.
